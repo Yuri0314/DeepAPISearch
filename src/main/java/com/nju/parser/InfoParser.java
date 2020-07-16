@@ -8,6 +8,7 @@ import com.github.javaparser.ast.body.*;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
 import com.nju.config.Config;
+import com.nju.util.ParserUtil;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -62,8 +63,19 @@ public class InfoParser {
 
     private void parseClassOrInterface(String prefix, BodyDeclaration classOrInterface,
                                        List<String> infoList) {
-        NodeList<BodyDeclaration<?>> list =
-                ((ClassOrInterfaceDeclaration)classOrInterface.toClassOrInterfaceDeclaration().get()).getMembers();
+        ClassOrInterfaceDeclaration classInterface = (ClassOrInterfaceDeclaration)classOrInterface.toClassOrInterfaceDeclaration().get();
+        // 过滤私有类或接口
+        List<Modifier> classModifiers = classInterface.getModifiers();
+        boolean classPrivateFlag = false;
+        for (Modifier modifier : classModifiers) {
+            if (modifier.getKeyword() == Modifier.Keyword.PRIVATE) {
+                classPrivateFlag = true;
+                break;
+            }
+        }
+        if (classPrivateFlag) return;
+
+        NodeList<BodyDeclaration<?>> list = classInterface.getMembers();
         for (BodyDeclaration body : list) {
             if (body.isClassOrInterfaceDeclaration())
                 parseClassOrInterface(
@@ -82,19 +94,18 @@ public class InfoParser {
                 }
                 if (privateFlag) continue;
 
-                // 添加方法签名，形式为MethodName(paramTypes)->receiveType
+                // 添加方法签名字符串
                 StringBuilder strBuilder = new StringBuilder(prefix + "#");
-                String methodSignature = method.getDeclarationAsString(false, false, false).trim();
-                int pos = methodSignature.indexOf(" ");
-                String newSignature = methodSignature.substring(pos).trim() + "->" +
-                        methodSignature.substring(0, pos).trim();
-                strBuilder.append(newSignature);
+                strBuilder.append(ParserUtil.generateMethodSignature(
+                        method.getDeclarationAsString(false, false, false).trim(),
+                        method.getNameAsString()));
                 // 添加方法文档注释
                 Javadoc javaDoc = (Javadoc)method.getJavadoc().orElse(new Javadoc(new JavadocDescription()));
-                String strDocDescription = javaDoc.getDescription().toText().replaceAll("[\\r\\n]", " ");
-                int endPos = strDocDescription.indexOf(". ");
-                strBuilder.append(":::" +
-                        (endPos == -1 ? strDocDescription : strDocDescription.substring(0, endPos)));
+
+                String description = ParserUtil.generateBriefDescription(javaDoc.getDescription().toText());
+                description = ParserUtil.removeTag(description);
+                description = ParserUtil.removeAtTag(description);
+                strBuilder.append(":::" + description);
                 infoList.add(strBuilder.toString());
             }
         }
