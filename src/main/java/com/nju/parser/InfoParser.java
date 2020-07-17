@@ -105,6 +105,12 @@ public class InfoParser {
                 String description = ParserUtil.generateBriefDescription(javaDoc.getDescription().toText());
                 description = ParserUtil.removeTag(description);
                 description = ParserUtil.removeAtTag(description);
+                description = ParserUtil.replaceHtmlChar(description);
+                if (description == null || description.trim().equals("")) {
+                    String className = classInterface.getNameAsString();
+                    String methodName = method.getNameAsString();
+                    description = ParserUtil.generateDescriptionFromMethod(className, methodName);
+                }
                 strBuilder.append(":::" + description);
                 infoList.add(strBuilder.toString());
             }
