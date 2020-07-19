@@ -43,7 +43,7 @@ def processline(x,y):
         else:
             line2+=j+' '   
     # 返回处理之后的x与y字符串
-    return line1.strip(),line2.strip()
+    return line1.lower().strip(),line2.lower().strip()
 
 # 将一个序列中所有的词记录在all_tokens中以便之后构造词典，然后在该序列后面添加PAD直到序列
 # 长度变为max_seq_len，然后将序列保存在all_seqs中
