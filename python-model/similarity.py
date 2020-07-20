@@ -15,6 +15,7 @@ import pandas as pd
 
 PAD,EOS='<pad>','<eos>'
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+api_dict = {}
 
 #处理数据对
 def processline(x,y):
@@ -34,8 +35,8 @@ def processline(x,y):
             line1+=i+' '
         else:      
             #下面语句是将方法名按照大写字母分割开,对于y为空的语句将#后面切割之后的方法名替代
-            if y=='':
-                y=re.sub("[A-Z]",lambda x:" "+x.group(0),i[1:])
+#             if y=='':
+#                 y=re.sub("[A-Z]",lambda x:" "+x.group(0),i[1:])
             line1+=(re.sub("[A-Z]",lambda x:" "+x.group(0),i[1:]))+' '
     for j in y.split(' '):
         if j=='':
@@ -62,14 +63,15 @@ def build_data(all_tokens, all_seqs):
 
 # 开始读取数据，构建词典，以及数据集
 def read_data(path,query_max_length,api_max_length):
-    in_tokens,out_tokens,in_seqs,out_seqs=[],[],[],[]
+    in_tokens,out_tokens,in_seqs,out_seqs,raw_apis=[],[],[],[],[]
     with io.open(path) as f:
         lines=f.readlines()
     for line in lines:
         #将每一行语句按照'：'将api与对应的query查询分开
         out_seq,in_seq=line.split(':::')
+        raw_apis.append(out_seq)
         #使用processline处理输入输出数据的各种标点，输出干净字符串
-        out_seq,in_seq=processline(out_seq,in_seq)
+        out_seq,in_seq=processline(out_seq,in_seq.strip())
         
         in_seq_tokens,out_seq_tokens=in_seq.split(' '),out_seq.split(' ')
        #针对描述语句过长的进行截断，下面减一操作是因为要对句末添加EOS
@@ -82,6 +84,9 @@ def read_data(path,query_max_length,api_max_length):
         process_one_seq(out_seq_tokens,out_tokens,out_seqs,api_max_length)
     in_vocab,in_data=build_data(in_tokens,in_seqs)
     out_vocab,out_data=build_data(out_tokens,out_seqs)
+    for i in range(len(out_data)):
+        tmp=out_data[i]
+        api_dict[tmp.numpy()] = raw_apis[i]
 
     return in_vocab,out_vocab,Data.TensorDataset(in_data,out_data)
 
@@ -167,7 +172,7 @@ def train(rnn_q,rnn_api,dataset,lr,batch_size,num_epochs):
 
 #设置相关超参数
 hidden_size,out_size = 128, 64
-lr, batch_size, num_epochs =0.01, 8, 20
+lr, batch_size, num_epochs =0.01, 8, 5
 
 #注意此时 res_tag的形状即为（batch_size,batch_size）
 
@@ -183,3 +188,65 @@ rnn_q = GRU(len(in_vocab),hidden_size,out_size)
 rnn_api = GRU(len(in_vocab),hidden_size,out_size)
 train(rnn_q, rnn_api, dataset, lr, batch_size, num_epochs)
 
+
+print('........预测开始.........')
+
+print('收集所有的api特征向量')
+
+#收集训练后的API特征向量
+#注意此时的DataLoader生成的序列应该只包含分类为1的query与api
+data_iter=Data.DataLoader(dataset,batch_size,shuffle=True)
+
+def collection(rnn_api,data_iter):
+    api_output=torch.tensor([0.0]).expand(batch_size,out_size)
+    #使用apis收集对应的api_idx序列
+    apis=[]
+    for query,api in data_iter:
+    #初始化rnn_api的初始隐层状态
+        apis+=api
+        api_state=None
+        output=rnn_api(api,api_state)
+        api_output=torch.cat((api_output,output))
+    #对生成的向量进行裁剪，去除最开始初始化为零的api_output部分
+    #   注 意！！！
+#   需要把输出的api_output初始expand函数产生的全为零的部分清除,之后才可以保存到csv文件中(已裁剪)
+    api_output=api_output[batch_size:,:]
+    api_output=api_output/torch.norm(api_output,dim=1).unsqueeze(1)
+    return api_output,apis
+
+
+#根据build_data函数更改，转化字符串为index序列
+def build_query(vocab,query_seq):
+    query_idx=[vocab.stoi[w] for w in query_seq]
+    return torch.tensor(query_idx)
+
+#计算输入查询的index表示并将其输入进模型中生成特征向量，与api序列的特征向量进行查询相似度，输出相似度最高的api接口
+def caculate(vocab,api_output,apis,query,query_max_length):
+    query_seq=query.split(' ')
+    if len(query_seq)>query_max_length-1:
+            query_seq=query_seq[:query_max_length-1]
+    query_data=build_query(vocab,query_seq).unsqueeze(0)
+    query_state=None
+    q_output=rnn_q(query_data,query_state)
+    #q_output形状应为（1，output_size）
+    q_output=q_output/torch.norm(q_output,dim=1).unsqueeze(1)
+    #此处传进来的api_output形状应为(所有api个数，output_size)
+    pre_score=torch.mm(q_output,api_output.permute(1,0))
+    #此处进行sigmoid方程与结果的概率进行（0-1）匹配。
+    score=torch.sigmoid(pre_score)
+    #之后针对分数最高的那个API进行输出序列
+    _,idx=torch.max(score,1)
+#     求出最大的那个api index
+    idx=int(idx)
+    #根据idx查询出apis中的index，之后通过字典查询出对应的原生字符串
+    reslut=apis[idx]
+    print(api_dict.get(reslut))
+    print('ceshi')
+
+
+query='see the general contract of the read method of input stream'
+api_output,apis=collection(rnn_api,data_iter)
+caculate(in_vocab,api_output,apis,query,query_max_length)
+
+# 对collection函数进行调用，得到api_output(特征向量)，api（api的字符串序列）
+print('收集结束。。。。。')
