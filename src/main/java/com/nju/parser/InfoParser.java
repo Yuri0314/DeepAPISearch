@@ -4,6 +4,7 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
@@ -13,6 +14,7 @@ import com.nju.util.ParserUtil;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class InfoParser {
     private String parseFolder; // 需要解析的java文件所在目录
@@ -48,7 +50,9 @@ public class InfoParser {
         try {
             cu = StaticJavaParser.parse(file);
             infoList = new ArrayList<>();
-            String packageName = cu.getPackageDeclaration().get().getNameAsString();
+            Optional<PackageDeclaration> op = cu.getPackageDeclaration();
+            if (!op.isPresent()) return;
+            String packageName = op.get().getNameAsString();
             for (TypeDeclaration type : cu.getTypes()) {
                 if (type.isClassOrInterfaceDeclaration())
                     parseClassOrInterface((String)type.getFullyQualifiedName().get(),
