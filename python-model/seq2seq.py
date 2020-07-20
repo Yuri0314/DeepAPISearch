@@ -53,7 +53,7 @@ def readlangs(filename, api, query, reverse=False):
     print("Reading lines...")
 
     # 读取文件并按行分割
-    lines = open('pythonProject/data/%s.dat' % (filename), encoding='utf-8').\
+    lines = open('E:/Code/IdeaProjects/DeepAPISearch/output/%s.dat' % (filename), encoding='utf-8').\
         read().strip().split('\n')
     # 将每行分割成对并标准化
     pairs = [[normalizeString(s) for s in l.split(":::")] for l in lines]
