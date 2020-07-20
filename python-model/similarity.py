@@ -13,7 +13,7 @@ import torch.utils.data as Data
 import sys
 import pandas as pd
 
-PAD,EOS='<pad>','<eos>'
+PAD,EOS,UNK='<pad>','<eos>','<unk>'
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 api_dict = {}
 
@@ -56,13 +56,14 @@ def process_one_seq(seq_tokens, all_tokens, all_seqs, max_seq_len):
 # 使用所有的词来构造词典。并将所有序列中的词变换为词索引后构造Tensor
 def build_data(all_tokens, all_seqs):
     vocab = Vocab.Vocab(collections.Counter(all_tokens),
-                        specials=[PAD, EOS])
+                        specials=[PAD, EOS,UNK])
     indices = [[vocab.stoi[w] for w in seq] for seq in all_seqs]
     return vocab, torch.tensor(indices)
 
 
 # 开始读取数据，构建词典，以及数据集
 def read_data(path,query_max_length,api_max_length):
+#     使用raw_apis列表装所有的原生api
     in_tokens,out_tokens,in_seqs,out_seqs,raw_apis=[],[],[],[],[]
     with io.open(path) as f:
         lines=f.readlines()
@@ -84,10 +85,9 @@ def read_data(path,query_max_length,api_max_length):
         process_one_seq(out_seq_tokens,out_tokens,out_seqs,api_max_length)
     in_vocab,in_data=build_data(in_tokens,in_seqs)
     out_vocab,out_data=build_data(out_tokens,out_seqs)
+    #构建一个词典
     for i in range(len(out_data)):
-        tmp=out_data[i]
-        api_dict[tmp.numpy()] = raw_apis[i]
-
+         api_dict[tuple(out_data[i].numpy().tolist())] = raw_apis[i] 
     return in_vocab,out_vocab,Data.TensorDataset(in_data,out_data)
 
 
@@ -188,13 +188,10 @@ rnn_q = GRU(len(in_vocab),hidden_size,out_size)
 rnn_api = GRU(len(in_vocab),hidden_size,out_size)
 train(rnn_q, rnn_api, dataset, lr, batch_size, num_epochs)
 
-
-print('........预测开始.........')
-
-print('收集所有的api特征向量')
-
 #收集训练后的API特征向量
 #注意此时的DataLoader生成的序列应该只包含分类为1的query与api
+
+# 注意此时应该重新建立一个dataset,因为我们所需要的api应该是完全的API而不是将各种标点符号删除的训练数据！！！！！
 data_iter=Data.DataLoader(dataset,batch_size,shuffle=True)
 
 def collection(rnn_api,data_iter):
@@ -203,6 +200,7 @@ def collection(rnn_api,data_iter):
     apis=[]
     for query,api in data_iter:
     #初始化rnn_api的初始隐层状态
+#     !!!!注意 apis中添加的应该是一个原生的字符串序列，该功能应该在接下来添加！！！！！！
         apis+=api
         api_state=None
         output=rnn_api(api,api_state)
@@ -220,7 +218,7 @@ def build_query(vocab,query_seq):
     query_idx=[vocab.stoi[w] for w in query_seq]
     return torch.tensor(query_idx)
 
-#计算输入查询的index表示并将其输入进模型中生成特征向量，与api序列的特征向量进行查询相似度，输出相似度最高的api接口
+#计算输入查询的index表示并将其输入进模型中生成特征向量，与api序列的特征向量进行查询相似度，输出相似度最高的api接口  
 def caculate(vocab,api_output,apis,query,query_max_length):
     query_seq=query.split(' ')
     if len(query_seq)>query_max_length-1:
@@ -239,14 +237,12 @@ def caculate(vocab,api_output,apis,query,query_max_length):
 #     求出最大的那个api index
     idx=int(idx)
     #根据idx查询出apis中的index，之后通过字典查询出对应的原生字符串
-    reslut=apis[idx]
-    print(api_dict.get(reslut))
-    print('ceshi')
+    print(api_dict[tuple(apis[idx].numpy().tolist())])
 
-
-query='see the general contract of the read method of input stream'
+#处理query语句使其大转小写
+query='am scsbh nsjdkvb snvj dscj jsvdb ccc'
 api_output,apis=collection(rnn_api,data_iter)
-caculate(in_vocab,api_output,apis,query,query_max_length)
-
+caculate(in_vocab,api_output,apis,query.lower(),query_max_length)
+        
 # 对collection函数进行调用，得到api_output(特征向量)，api（api的字符串序列）
 print('收集结束。。。。。')
