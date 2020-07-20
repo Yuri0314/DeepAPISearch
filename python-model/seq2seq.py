@@ -1,404 +1,410 @@
-import matplotlib.pyplot as plt
-import numpy as np
-import matplotlib.ticker as ticker
+import random
+import torch.nn.functional as F
+import torch
+import torchtext
+from torchtext import data
+import torch.nn as nn
+import os
+import re
+import spacy
+import torch.optim as optim
 import time
 import math
-import random
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch import optim
+
+spacy_en = spacy.load('en_core_web_sm')  # 英文文本处理库
+
+# 分词
 
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-SOS_token = 0  # 开始标记
-EOS_token = 1  # 结束标记
-
-# **********************
-
-# 数据处理
+def tokenize_query(text):
+    return [tok.text for tok in spacy_en.tokenizer(text)]
 
 
-class lang:
-    def __init__(self, name):
-        self.name = name
-        self.word2index = {}  # 单词->序号
-        self.word2count = {}  # 单词数
-        self.index2word = {0: "SOS", 1: "EOS"}  # 序号->单词
-        self.n_words = 2  # SOS EOS
-
-    def addSentence(self, sentence):  # 读进一个句子，构造语言类，实际通过调用下面读进单词实现
-        for word in sentence.split(' '):
-            self.addWord(word)
-
-    def addWord(self, word):
-        if word not in self.word2index:
-            self.word2index[word] = self.n_words
-            self.word2count[word] = 1
-            self.index2word[self.n_words] = word
-            self.n_words += 1
-        else:
-            self.word2count[word] += 1
+def tokenize_api(text):
+    return text.split()
 
 
-# 数据规范化
-def normalizeString(s):
-    return s
-
-# 读取数据
-
-
-def readlangs(filename, api, query, reverse=False):
-    print("Reading lines...")
-
-    # 读取文件并按行分割
-    lines = open('E:/Code/IdeaProjects/DeepAPISearch/output/%s.dat' % (filename), encoding='utf-8').\
-        read().strip().split('\n')
-    # 将每行分割成对并标准化
-    pairs = [[normalizeString(s) for s in l.split(":::")] for l in lines]
-    # 注意，这里的pairs实际上就是一个存有多个语言对的list，其中每个元素又是一个list，存着api，描述两个元素
-    # 翻转pairs
-    if reverse:
-        pairs = [list(reversed(p)) for p in pairs]
-        input_lang = lang(query)
-        output_lang = lang(api)
-    else:
-        input_lang = lang(api)
-        output_lang = lang(query)
-
-    return input_lang, output_lang, pairs
+SRC = torchtext.data.Field(tokenize=tokenize_query,
+                           init_token='<sos>', eos_token='<eos>', lower=True)
+TRG = torchtext.data.Field(tokenize=tokenize_api,
+                           init_token='<sos>', eos_token='<eos>', lower=False)
 
 
-MAX_LENGTH = 100
+dataset = torchtext.data.TabularDataset('merge.csv', format='csv', fields=[
+                                        (',', None), ('src', SRC), ('trg', TRG)])
+SRC.build_vocab(dataset, min_freq=1)
+TRG.build_vocab(dataset, min_freq=1)
 
 
-def filterPair(p):
-    return len(p[0].split('') < MAX_LENGTH and
-            len(p[1].split('')) < MAX_LENGTH)
+class Encoder(nn.Module):
+    def __init__(self, input_dim, emb_dim, enc_hid_dim, dec_hid_dim, dropout):
+        super().__init__()
+
+        self.embedding = nn.Embedding(input_dim, emb_dim)
+
+        self.rnn = nn.GRU(emb_dim, enc_hid_dim, bidirectional=True)
+
+        self.fc = nn.Linear(enc_hid_dim * 2, dec_hid_dim)
+
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, src):
+        # src=[src,batch size]
+        embedded = self.dropout(self.embedding(src))
+        # embedded=[src len,batch size,emb dim]
+        outputs, hidden = self.rnn(embedded)
+        # outputs=[src len,batch size,hid dim*n directions]
+        # hidden=[n layers*m directions,batch size,hid dim]
+        hidden = torch.tanh(
+            self.fc(torch.cat((hidden[-2, :, :], hidden[-1, :, :]), dim=1)))
+
+        return outputs, hidden
 
 
-def filterPairs(p):
-    return [pair for pair in pairs if filterPair(pair)]
+class Attention(nn.Module):
+    def __init__(self, enc_hid_dim, dec_hid_dim):
+        super().__init__()
+
+        self.attn = nn.Linear((enc_hid_dim*2)+dec_hid_dim, dec_hid_dim)
+        self.v = nn.Linear(dec_hid_dim, 1, bias=False)
+
+    def forward(self, hidden, encoder_outputs):
+        # hidden = [batch size, dec hid dim]
+        # encoder_outputs = [src len, batch size, enc hid dim * 2]
+
+        batch_size = encoder_outputs.shape[1]
+        src_len = encoder_outputs.shape[0]
+
+        hidden = hidden.unsqueeze(1).repeat(
+            1, src_len, 1)  # 增加一维，并对相应维度*！，*src_len，*1的操作
+        encoder_outputs = encoder_outputs.permute(1, 0, 2)  # permute换维
+
+        energy = torch.tanh(
+            self.attn(torch.cat((hidden, encoder_outputs), dim=2)))
+
+        # energy = [batch size, src len, dec hid dim]
+
+        attention = self.v(energy).squeeze(2)
+
+        # attention= [batch size, src len]
+
+        return F.softmax(attention, dim=1)
 
 
-def prepareData(filename, api, query, reverse=False):
-    input_lang, output_lang, pairs = readlangs(filename, api, query, reverse)
-    print("read %s sentence pairs" % len(pairs))
-    print("trimmed to %s sentence pairs" % len(pairs))
-    print("counting words...")
-    for pair in pairs:
-        input_lang.addSentence(pair[0])
-        output_lang.addSentence(pair[1])
-    print("counted word:")
-    print(input_lang.name, input_lang.n_words)
-    print(output_lang.name, output_lang.n_words)
-    return input_lang, output_lang, pairs
+class Decoder(nn.Module):
+    def __init__(self, output_dim, emb_dim, enc_hid_dim, dec_hid_dim, dropout, attention):
+        super().__init__()
 
+        self.output_dim = output_dim
+        self.attention = attention
 
-# *************
+        self.embedding = nn.Embedding(output_dim, emb_dim)
 
-# seq2seq
+        self.rnn = nn.GRU((enc_hid_dim * 2) + emb_dim, dec_hid_dim)
 
+        self.fc_out = nn.Linear(
+            (enc_hid_dim * 2) + dec_hid_dim + emb_dim, output_dim)
 
-class EncoderRNN(nn.Module):
-    def __init__(self, input_size, hidden_size):
-        super(EncoderRNN, self).__init__()
-        self.hidden_size = hidden_size
-
-        self.embedding = nn.Embedding(input_size, hidden_size)
-        self.gru = nn.GRU(hidden_size, hidden_size)
-
-    def forward(self, input, hidden):
-        embedded = self.embedding(input).view(1, 1, -1)
-        output = embedded
-        output, hidden = self.gru(output, hidden)
-        return output, hidden
-
-    def initHidden(self):
-        return torch.zeros(1, 1, self.hidden_size, device=device)
-
-
-class DecoderRNN(nn.Module):
-    def __init__(self, hidden_size, output_size):
-        super(DecoderRNN, self).__init__()
-        self.hidden_size = hidden_size
-
-        self.embedding = nn.Eembedding(output_size, hidden_size)
-        self.gru = nn.GRU(hidden_size, hidden_size)
-        self.out = nn.Linear(hidden_size, output_size)
-        self.softmax = nn.LogSoftmax(dim=1)
-
-    def forward(self, input, hidden):
-        output = self.embedding(input).view(1, 1, -1)
-        output = F.relu(output)
-        output, hidden = self.gru(output, hidden)
-        output = self.softmax(self.out(output[0]))
-        return output, hidden
-
-    def initHidden(self):
-        return torch.zeros(1, 1, self.hidden_size, device=device)
-
-# 注意力机制decoder
-
-
-class AttnDecoderRNN(nn.Module):
-    def __init__(self, hidden_size, output_size, dropout_p=0.1, max_length=MAX_LENGTH):
-        super(AttnDecoderRNN, self).__init__()
-        self.hidden_size = hidden_size
-        self.output_size = output_size
-        self.dropout_p = dropout_p
-        self.max_length = max_length
-
-        self.embedding = nn.Embedding(self.output_size, self.hidden_size)
-        self.attn = nn.Linear(self.hidden_size*2, self.max_length)
-        self.attn_combine = nn.Linear(self.hidden_size*2, self.hidden_size)
-        self.dropout = nn.Dropout(self.dropout_p)
-        self.gru = nn.GRU(self.hidden_size, self.hidden_size)
-        self.out = nn.Linear(self.hidden_size, self.output_size)
+        self.dropout = nn.Dropout(dropout)
 
     def forward(self, input, hidden, encoder_outputs):
-        embedded = self.embedding(input).view(1, 1, -1)
-        embedded = self.dropout(embedded)
+        # input = [batch size]
+        # hidden = [batch size, dec hid dim]
+        # encoder_outputs = [src len, batch size, enc hid dim * 2]
 
-        attn_weights = F.softmax(
-            self.attn(torch.cat((embedded[0], hidden[0]), 1)), dim=1)
-        attn_applied = torch.bmm(attn_weights.unsqueeze(
-            0), encoder_outputs.unsqueeze(0))
+        input = input.unsqueeze(0)
+        # input=[1,batch size]
+        embedded = self.dropout(self.embedding(input))
+        # embedded = [1, batch size, emb dim]
+        a = self.attention(hidden, encoder_outputs)
 
-        output = torch.cat((embedded[0], attn_applied[0]), 1)
-        output = self.attn_combine(output).unsqueeze(0)
+        # a = [batch size, src len]
 
-        output = F.relu(output)
-        output, hidden = self.gru(output, hidden)
+        a = a.unsqueeze(1)
 
-        output = F.log_softmax(self.out(output[0]), dim=1)
-        return output, hidden, attn_weights
+        # a = [batch size, 1, src len]
 
-    def initHidden(self):
-        return torch.zeros(1, 1, self.hidden_size, device=device)
+        encoder_outputs = encoder_outputs.permute(1, 0, 2)
 
-# ***********
-#
-# 准备训练数据
+        # encoder_outputs = [batch size, src len, enc hid dim * 2]
+
+        weighted = torch.bmm(a, encoder_outputs)
+
+        # weighted = [batch size, 1, enc hid dim * 2]
+
+        weighted = weighted.permute(1, 0, 2)
+
+        # weighted = [1, batch size, enc hid dim * 2]
+
+        rnn_input = torch.cat((embedded, weighted), dim=2)
+
+        # rnn_input = [1, batch size, (enc hid dim * 2) + emb dim]
+
+        output, hidden = self.rnn(rnn_input, hidden.unsqueeze(0))
+
+        # output = [seq len, batch size, dec hid dim * n directions]
+        # hidden = [n layers * n directions, batch size, dec hid dim]
+
+        # seq len, n layers and n directions will always be 1 in this decoder, therefore:
+        # output = [1, batch size, dec hid dim]
+        # hidden = [1, batch size, dec hid dim]
+        # this also means that output == hidden
+        assert (output == hidden).all()
+
+        embedded = embedded.squeeze(0)
+        output = output.squeeze(0)
+        weighted = weighted.squeeze(0)
+
+        prediction = self.fc_out(
+            torch.cat((output, weighted, embedded), dim=1))
+
+        # prediction = [batch size, output dim]
+
+        return prediction, hidden.squeeze(0)
 
 
-def indexesFromSentence(lang, sentence):
-    return [lang.word2index[word] for word in sentence.split(' ')]
+class Seq2Seq(nn.Module):
+    def __init__(self, encoder, decoder, device):
+        super().__init__()
+
+        self.encoder = encoder
+        self.decoder = decoder
+        self.device = device
+
+    def forward(self, src, trg, teacher_forcing_ratio=0.5):
+        # src = [src len, batch size]
+        # trg = [trg len, batch size]
+        # teacher_forcing_ratio 是使用teacher forcing的概率
+        # 如果teacher_forcing_ratio是0.75 我们将有75%概率输入ground_truth
+
+        batch_size = trg.shape[1]
+        trg_len = trg.shape[0]
+        trg_vocab_size = self.decoder.output_dim
+
+        outputs = torch.zeros(trg_len, batch_size,
+                              trg_vocab_size).to(self.device)
+
+        # last hidden state of the encoder is the context
+        encoder_outputs, hidden = self.encoder(src)
+
+        input = trg[0, :]
+
+        for t in range(1, trg_len):
+
+            output, hidden = self.decoder(input, hidden, encoder_outputs)
+
+            outputs[t] = output
+
+            teacher_force = random.random() < teacher_forcing_ratio
+
+            # 获得概率最高的预测
+            top1 = output.argmax(1)
+            input = trg[t] if teacher_force else top1
+
+        return outputs
 
 
-def tensorFromSentence(lang, sentence):
-    indexes = indexesFromSentence(lang, sentence)
-    indexes.append(EOS_token)
-    return torch.tensor(indexes, dtype=torch.long, device=device).view(-1, 1)
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+BATCH_SIZE = 256
+train_iterator = data.BucketIterator(
+    dataset, batch_size=BATCH_SIZE, device=device)
+INPUT_DIM = len(SRC.vocab)
+OUTPUT_DIM = len(TRG.vocab)
+ENC_EMB_DIM = 256
+DEC_EMB_DIM = 256
+ENC_HID_DIM = 512
+DEC_HID_DIM = 512
+ENC_DROPOUT = 0.5
+DEC_DROPOUT = 0.5
+
+attn = Attention(ENC_HID_DIM, DEC_HID_DIM)
+enc = Encoder(INPUT_DIM, ENC_EMB_DIM,
+                      ENC_HID_DIM, DEC_HID_DIM, ENC_DROPOUT)
+dec = Decoder(OUTPUT_DIM, DEC_EMB_DIM, ENC_HID_DIM,
+                      DEC_HID_DIM, DEC_DROPOUT, attn)
+
+model = Seq2Seq(enc, dec, device).to(device)
+
+# 权重初始化
 
 
-def tensorsFromPair(pair):
-    input_tensor = tensorFromSentence(input_lang, pair[0])
-    target_tensor = tensorFromSentence(output_lang, pair[1])
-    return (input_tensor, target_tensor)
+def init_weights(m):
+    for name, param in m.named_parameters():
+        if 'weight' in name:
+            nn.init.normal_(param.data, mean=0, std=0.01)
+        else:
+            nn.init.constant_(param.data, 0)
 
 
-# *********
-#
-# 训练模型
-# “Teacher Forcing”是将真实目标输出用作每个下一个输入的概念，
-# 而不是使用解码器的猜测作为下一个输入。使用teacher forcing使模型 更快地收敛，
-# 但是当利用受过训练的网络时，它可能表现出不稳定性。
-#
-teacher_forcing_ratio = 0.5
+model.apply(init_weights)
+
+# 计算网络中共多少可训练的参数
 
 
-def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer,
-        decoder_optimizer, criterion, max_length=MAX_LENGTH):
-    encoder_hidden = encoder.initHidden()
-    encoder_optimizer.zero_grad()
-    decoder_optimizer.zero_grad()
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-    input_length = input_tensor.size(0)
-    target_length = target_tensor.size(0)
 
-    encoder_outputs = torch.zeros(
-        max_length, encoder.hidden_size, device=device)
+optimizer = optim.Adam(model.parameters())
+TRG_PAD_IDX = TRG.vocab.stoi[TRG.pad_token]  # stoi 返回单词与其对应的下标
+criterion = nn.CrossEntropyLoss(ignore_index=TRG_PAD_IDX)
 
-    loss = 0
+# 训练函数
 
-    for ei in range(input_length):
-        encoder_output, encoder_hidden = encoder(
-            input_tensor[ei], encoder_hidden)
-        encoder_outputs[ei] = encoder_output[0, 0]
 
-    decoder_input = torch.tensor([[SOS_token]], device=device)
+# def train(model, iterator, optimizer, criterion, clip):
+#     model.train()
 
-    decoder_hidden = encoder_hidden
+#     epoch_loss = 0
 
-    use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
+#     for i, batch in enumerate(iterator):
+#         src = batch.src
+#         trg = batch.trg
 
-    if use_teacher_forcing:
-        # Teacher forcing: Feed the target as the next input
-        for di in range(target_length):
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
-            loss += criterion(decoder_output, target_tensor[di])
-            decoder_input = target_tensor[di]
+#         optimizer.zero_grad()
+#         output = model(src, trg)
+#         # trg = [trg len, batch size]
+#         # output = [trg len, batch size, output dim]
+
+#         output_dim = output.shape[-1]
+#         output = output[1:].view(-1, output_dim)
+#         trg = trg[1:].view(-1)
+#         # trg = [(trg len - 1) * batch size]
+#         # output = [(trg len - 1) * batch size, output dim]
+#         loss = criterion(output, trg)
+#         loss.backward()
+#         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)  # 梯度裁剪，应对梯度爆炸
+#         optimizer.step()
+#         epoch_loss += loss.item()
+#     return epoch_loss/len(iterator)
+
+# # 评估函数
+
+
+# def evaluate(model, iterator, criterion):
+#     model.eval()
+#     epoch_loss = 0
+#     with torch.no_grad():
+#         for i, batch in enumerate(iterator):
+#             src = batch.src
+#             trg = batch.trg
+
+#             output = model(src, trg, 0)
+#             # trg = [trg len, batch size]
+#             # output = [trg len, batch size, output dim]
+
+#             output_dim = output.shape[-1]
+#             output = output[1:].view(-1, output_dim)
+#             trg = trg[1:].view(-1)
+#             # trg = [(trg len - 1) * batch size]
+#             # output = [(trg len - 1) * batch size, output dim]
+
+#             loss = criterion(output, trg)
+
+#             epoch_loss += loss.item()
+
+#     return epoch_loss / len(iterator)
+
+# # epoch花费时间
+
+
+# def epoch_time(start_time, end_time):
+#     elapsed_time = end_time - start_time
+#     elapsed_mins = int(elapsed_time / 60)
+#     elapsed_secs = int(elapsed_time - (elapsed_mins * 60))
+#     return elapsed_mins, elapsed_secs
+
+# N_EPOCHS = 30
+# CLIP = 1
+
+# best_train_loss = float('inf')#float('inf)正负无穷
+
+# for epoch in range(N_EPOCHS):
+
+#     start_time = time.time()
+
+#     train_loss = train(model, train_iterator, optimizer, criterion, CLIP)
+#     # valid_loss = evaluate(model, train_iterator, criterion)
+
+#     end_time = time.time()
+
+#     epoch_mins, epoch_secs = epoch_time(start_time, end_time)
+
+#     if train_loss < best_train_loss:
+#         best_train_loss = train_loss
+#         torch.save(model.state_dict(), 'tut1-model.pt')
+
+
+#     print(f'Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s')
+#     print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
+
+# torch.save(model,'seq2seq.pth')
+
+
+model = torch.load('seq2seq.pth')
+# 测试
+
+
+def searchApi(sentence, src_field, trg_field, model, device, max_len=25):
+    model.eval()
+
+    if isinstance(sentence, str):
+        nlp = spacy.load('en_core_web_sm')
+        tokens = [token.text.lower() for token in nlp(sentence)]
     else:
-        # Without teacher forcing: use its own predictions as the next input
-        for di in range(target_length):
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
-            topv, topi = decoder_output.topk(1)
-            decoder_input = topi.squeeze().detach()  # detach:截断反向传播的梯度流
-
-            loss += criterion(decoder_output, target_tensor[di])
-            if decoder_input.item() == EOS_token:
-                break
-
-    loss.backward()
-    encoder_optimizer.step()
-    decoder_optimizer.step()
-
-    return loss.item()/target_length
-
-# ***********
-#
-# 辅助函数
-# 用于打印经过的时间和估计的剩余时间
+        tokens = [token.lower() for token in sentence]
 
 
-def asMinutes(s):
-    m = math.floor(s/60)
-    s -= m*60
-    return '%dm %ds' % (m, s)
+    tokens = [src_field.init_token] + tokens + [src_field.eos_token]
 
+    src_indexes = [src_field.vocab.stoi[token] for token in tokens]
 
-def timeSince(since, percent):
-    now = time.time()
-    s = now-since
-    es = s/(percent)
-    rs = es-s
-    return '%s (-%s)' % (asMinutes(s), asMinutes(rs))
+    src_tensor = torch.LongTensor(src_indexes).unsqueeze(1).to(device)
 
-# *****************
-#
-# 整个训练
+    src_len = torch.LongTensor([len(src_indexes)]).to(device)
 
-
-def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, learning_rate=0.01):
-    start = time.time()
-    plot_losses = []
-    print_loss_total = 0
-    plot_loss_total = 0
-    encoder_optimizer = optim.SGD(encoder.parameters(), lr=learning_rate)
-    decoder_optimizer = optim.SGD(decoder.parameters(), lr=learning_rate)
-    training_pairs = [tensorsFromPair(
-        random.choice(pairs)) for i in range(n_iters)]
-    criterion = nn.NLLLoss()
-
-    for iter in range(1, n_iters+1):
-        training_pair = training_pairs[iter-1]
-        input_tensor = training_pair[0]
-        target_tensor = training_pair[1]
-
-        loss = train(input_tensor, target_tensor, encoder, decoder,
-                     encoder_optimizer, decoder_optimizer, criterion)
-        print_loss_total += loss
-        plot_loss_total += loss
-
-        if iter % print_every == 0:
-            print_loss_avg = print_loss_total/print_every
-            print_loss_total = 0
-            print('%s (%d %d%%) %.4f' % (timeSince(start, iter / n_iters),
-                                         iter, iter / n_iters * 100, print_loss_avg))
-
-        if iter % plot_every == 0:
-            plot_loss_avg = plot_loss_total / plot_every
-            plot_losses.append(plot_loss_avg)
-            plot_loss_total = 0
-
-    showPlot(plot_losses)
-
-
-plt.switch_backend('agg')
-
-
-def showPlot(points):
-    plt.figure()
-    fig, ax = plt.subplots()
-    # this locator puts ticks at regular intervals
-    loc = ticker.MultipleLocator(base=0.2)
-    ax.yaxis.set_major_locator(loc)
-    plt.plot(points)
-
-# *********
-# 评价函数
-#
-
-
-def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
     with torch.no_grad():
-        input_tensor = tensorFromSentence(input_lang, sentence)
-        input_length = input_tensor.size()[0]
-        encoder_hidden = encoder.initHidden()
+        encoder_outputs, hidden = model.encoder(src_tensor)
 
-        encoder_outputs = torch.zeros(
-            max_length, encoder.hidden_size, device=device)
+    trg_indexes = [trg_field.vocab.stoi[trg_field.init_token]]
 
-        for ei in range(input_length):
-            encoder_output, encoder_hidden = encoder(input_tensor[ei],
-                                                    encoder_hidden)
-            encoder_outputs[ei] += encoder_output[0, 0]
+    attentions = torch.zeros(max_len, 1, len(src_indexes)).to(device)
+    trg_tensor = torch.LongTensor([trg_indexes[-1]]).to(device)
+    for i in range(max_len):
 
-        decoder_input = torch.tensor([[SOS_token]], device=device)  # SOS
+        
 
-        decoder_hidden = encoder_hidden
+        with torch.no_grad():
+            output, hidden = model.decoder(trg_tensor, hidden, encoder_outputs)
 
-        decoded_words = []
-        decoder_attentions = torch.zeros(max_length, max_length)
+        pred_token = output.argmax(1).item()
+        if pred_token in trg_indexes:
+            continue
+        else:
+            trg_indexes.append(pred_token)
 
-        for di in range(max_length):
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
-            decoder_attentions[di] = decoder_attention.data
-            topv, topi = decoder_output.data.topk(1)
-            if topi.item() == EOS_token:
-                decoded_words.append('<EOS>')
-                break
-            else:
-                decoded_words.append(output_lang.index2word[topi.item()])
+        if pred_token == trg_field.vocab.stoi[trg_field.eos_token]:
+            break
 
-            decoder_input = topi.squeeze().detach()
+    trg_tokens = [trg_field.vocab.itos[i] for i in trg_indexes]
 
-        return decoded_words, decoder_attentions[:di + 1]
+    return trg_tokens[1:]
 
-
-
-
-def ceshi(encoder, decoder):
+def test():
+    sear=""
     print("输入exit()退出")
     while True:
         str = input("请输入：")
         if str == 'exit()':
             break
         else:
-            output_word, attentions = evaluate(encoder, decoder, str)
-            output_sentence = ''.join(output_word)
-            print("你需要的api为：", output_sentence)
+            src = str
+            search = searchApi(src, SRC, TRG, model, device)
+            if search[-1]=="<eos>":
+                search=search[:-1]
+            for i in search:
+                sear+=i
+            print("你可能需要：", sear)
 
 
-# ****************
-# 训练和评价
-input_lang, output_lang, pairs = prepareData(
-    'java.util.spi', 'api', 'query', True)
-
-hidden_size = 256
-encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
-attn_decoder1 = AttnDecoderRNN(
-    hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
-
-trainIters(encoder1, attn_decoder1, 30000, print_every=5000)
-
-
-# ************
-# 测试
-
-ceshi(encoder1, attn_decoder1)
+test()
