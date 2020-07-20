@@ -70,7 +70,7 @@ public class ParserUtil {
         Matcher matcher = Pattern.compile(pattern).matcher(description);
         StringBuffer sBuffer = new StringBuffer();
         while (matcher.find()) {
-            matcher.appendReplacement(sBuffer, matcher.group(3).trim());
+            matcher.appendReplacement(sBuffer, "$3");
         }
         matcher.appendTail(sBuffer);
         return sBuffer.toString().replaceAll("\\{@(.)+?}", "");
