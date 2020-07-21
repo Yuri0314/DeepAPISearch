@@ -11,6 +11,8 @@ import torch.nn.functional as F
 import torchtext.vocab as Vocab
 import torch.utils.data as Data
 import sys
+import numpy as np
+import json
 #import pandas as pd
 
 PAD,EOS,UNK='<pad>','<eos>','<unk>'
@@ -96,7 +98,7 @@ def read_data(path,query_max_length,api_max_length):
 # 语义相似度GRU模型
 class GRU(nn.Module):
     #其中input_size是指词表的大小
-    def __init__(self,batch_size,input_size,hidden_size,out_size):
+    def __init__(self,input_size,hidden_size,out_size):
         super(GRU,self).__init__()
         self.batch_size=batch_size
         self.hidden_size=hidden_size
@@ -112,15 +114,12 @@ class GRU(nn.Module):
         output=embedded
         output,state=self.gru(output,hidden)
         output=self.linear1(state)
-        output=self.linear2(output)
-        output=self.linear2(output)
+        output=torch.tanh(self.linear2(output))
+        output=torch.tanh(self.linear2(output))
         output=torch.tanh(self.linear2(output))
         #移除时间步维，输出形状为(批量大小, 输出词典大小)
         #疑问：state是否是最后linear层的输入,输出的尺寸应该为（GRU层数，batch_size，num_hidden）
         return self.out(output).squeeze(dim=0)
-    def init_hidden(self):
-        #初始化隐藏层参数hidden
-        return torch.zeros(1,self.batch_size,self.hidden_size).to(device)
 
 
    # def initRNN(self):
@@ -134,11 +133,13 @@ class GRU(nn.Module):
 # 返回的状态为state为(隐藏层个数, 批量大小, 隐藏单元个数) torch.Size([2, 4, 16])
 
 #小批量计算损失
-def batch_loss(rnn_q,rnn_api,query,api,tag,loss, tmperature = 0.2):
+def batch_loss(rnn_q,rnn_api,query,api,tag,loss, tmperature = 0.5):
     batch_size=query.shape[0]
 #   初始化GRU的隐藏层状态
-    q_state=rnn_q.init_hidden()
-    api_state=rnn_api.init_hidden()
+    w = torch.empty(1,batch_size,hidden_size).to(device)
+    init_state=torch.nn.init.orthogonal_(w, gain=1)
+    q_state=init_state
+    api_state=init_state
     q_output=rnn_q(query,q_state)
     api_output=rnn_api(api,api_state)
     #此时输出的维度猜测应该是（batch_size,hidden_size）
@@ -159,8 +160,8 @@ def batch_loss(rnn_q,rnn_api,query,api,tag,loss, tmperature = 0.2):
 
 #训练过程
 def train(rnn_q,rnn_api,dataset,lr,batch_size,num_epochs,device):
-    query_optimizer=torch.optim.SGD(rnn_q.parameters(),lr=lr)
-    api_optimizier=torch.optim.SGD(rnn_api.parameters(),lr=lr)
+    query_optimizer=torch.optim.SGD(rnn_q.parameters(),lr=lr,momentum=0.3)
+    api_optimizier=torch.optim.SGD(rnn_api.parameters(),lr=lr,momentum=0.3)
     #将损失函数由交叉熵损失改为MSE损失
     loss=nn.MSELoss(reduction='none')
 
@@ -179,13 +180,13 @@ def train(rnn_q,rnn_api,dataset,lr,batch_size,num_epochs,device):
             query_optimizer.step()
             api_optimizier.step()
             l_sum+=l.item()
-            if (iter + 1) % 1000 == 0:
+            if (iter + 1) % 10000 == 0:
                 print("iter[{}/{}], loss {:.4f}".format((iter+1)*batch_size, len(dataset), l_sum / (iter+1)))
         print("epoch[{}/{}], loss {:.4f}".format(epoch, num_epochs, l_sum/len(data_iter)))
 
 #设置相关超参数
 hidden_size,out_size = 512, 64
-lr, batch_size, num_epochs =0.01, 8, 3
+lr, batch_size, num_epochs =1,1, 5
 
 #注意此时 res_tag的形状即为（batch_size,batch_size）
 
@@ -196,9 +197,10 @@ query_max_length=15
 api_max_length=50
 path="./result.txt"
 in_vocab,out_vocab,dataset=read_data(path,query_max_length,api_max_length)
+
 print(in_vocab)
-rnn_q = GRU(batch_size,len(in_vocab),hidden_size,out_size).to(device)
-rnn_api = GRU(batch_size,len(in_vocab),hidden_size,out_size).to(device)
+rnn_q = GRU(len(in_vocab),hidden_size,out_size).to(device)
+rnn_api = GRU(len(in_vocab),hidden_size,out_size).to(device)
 train(rnn_q, rnn_api, dataset, lr, batch_size, num_epochs,device)
 
 print('训练阶段完毕。。。。。。。')
@@ -210,24 +212,34 @@ print('训练阶段完毕。。。。。。。')
 data_iter=Data.DataLoader(dataset,batch_size,shuffle=True)
 
 def collection(rnn_api,data_iter,device):
-    api_output=torch.tensor([0.0]).expand(batch_size,out_size).to(device)
+    # api_output=torch.tensor([0.0]).expand(batch_size,out_size).to(device)
     #使用apis收集对应的api_idx序列
+    api_output = []
     apis=[]
-    for query,api in data_iter:
+    for iter, (query,api) in enumerate(data_iter):
         query=query.to(device)
         api=api.to(device)
     #初始化rnn_api的初始隐层状态
 #     !!!!注意 apis中添加的应该是一个原生的字符串序列，该功能应该在接下来添加！！！！！！
         apis+=api
+
         # 初始化网络的隐藏层
-        api_state=rnn_api.init_hidden()
+        w = torch.empty(1,query.shape[0],hidden_size).to(device)
+        init_state=torch.nn.init.orthogonal_(w, gain=1)
+        api_state=init_state
         output=rnn_api(api,api_state)
-        api_output=torch.cat((api_output,output))
+        api_output.append(output.cpu().detach().numpy())
+        if (iter + 1) % 1000 == 0:
+            print("iter[{}/{}]".format((iter+1)*batch_size, len(dataset)))
+        # api_output=torch.cat((api_output,output))
     #对生成的向量进行裁剪，去除最开始初始化为零的api_output部分
     #   注 意！！！
 #   需要把输出的api_output初始expand函数产生的全为零的部分清除,之后才可以保存到csv文件中(已裁剪)
-    api_output=api_output[batch_size:,:]
-    api_output=api_output/torch.norm(api_output,dim=1).unsqueeze(1)
+    api_output=np.concatenate(api_output, axis=0)
+    # print(api_output.shape)
+    # print(np.sum(api_output * api_output, axis=1).shape)
+    api_output = api_output / np.sum(api_output * api_output, axis=1).reshape([-1, 1])
+    # api_output=api_output/torch.norm(api_output,dim=1).unsqueeze(1)
     return api_output,apis
 
 
@@ -242,13 +254,18 @@ def caculate(vocab,rnn_q,api_output,apis,query,query_max_length):
     if len(query_seq)>query_max_length-1:
             query_seq=query_seq[:query_max_length-1]
     query_data=build_query(vocab,query_seq).unsqueeze(0)
+    query_data=query_data.to(device)
     # 初始化网络的隐藏层
-    query_state=rnn_q.init_hidden()
+    w = torch.empty(1,1,hidden_size).to(device)
+    init_state=torch.nn.init.orthogonal_(w, gain=1)
+    query_state=init_state
     q_output=rnn_q(query_data,query_state)
     #q_output形状应为（1，output_size）
     q_output=q_output/torch.norm(q_output,dim=1).unsqueeze(1)
     #此处传进来的api_output形状应为(所有api个数，output_size)
-    pre_score=torch.mm(q_output,api_output.permute(1,0)).cpu()
+    api_output=torch.from_numpy(api_output)
+    api_output=api_output.to(device)
+    pre_score=torch.mm(q_output,api_output.permute(1,0))
     #此处进行sigmoid方程与结果的概率进行（0-1）匹配。
     score=torch.sigmoid(pre_score)
     #之后针对分数最高的那个API进行输出序列
@@ -263,8 +280,19 @@ def caculate(vocab,rnn_q,api_output,apis,query,query_max_length):
 # rnn_q=rnn_q.cpu()
 # query='See the general contract of the skip method of InputStream'
 # api_output,apis=collection(rnn_api,data_iter,device)
-# api_output=api_output.cpu()
+# # api_output=api_output.cpu()
 # caculate(in_vocab,rnn_q,api_output,apis,query.lower(),query_max_length)
 
 # 对collection函数进行调用，得到api_output(特征向量)，api（api的字符串序列）
 print('收集结束。。。。。')
+
+# 存储与取出所有的api向量
+def jsonwrite(file_name, obj):
+    with open(file_name, "w") as f:
+        json.dump(f, obj)
+
+def jsonread(file_name):
+    with open(file_name, "r") as f:
+        obj = json.load(f)
+    o = np.array(obj)
+    return obj
