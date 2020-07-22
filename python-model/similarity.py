@@ -103,8 +103,9 @@ class GRU(nn.Module):
         self.batch_size=batch_size
         self.hidden_size=hidden_size
         self.embedding=nn.Embedding(input_size,hidden_size)
-        self.gru=nn.GRU(hidden_size,hidden_size)
-        self.linear1=nn.Linear(hidden_size,256)
+        self.gru=nn.GRU(hidden_size,hidden_size,num_layers=3)
+        self.linear1=nn.Linear(hidden_size,512)
+        self.linear3=nn.Linear(512,256)
         self.linear2=nn.Linear(256,256)
         self.out = nn.Linear(256, out_size)
     def forward(self,input,hidden):
@@ -113,9 +114,13 @@ class GRU(nn.Module):
         embedded=self.embedding(input.long()).permute(1,0,2)# (seq_len, batch, input_size)
         output=embedded
         output,state=self.gru(output,hidden)
-        output=self.linear1(state)
-        output=torch.tanh(self.linear2(output))
-        output=torch.tanh(self.linear2(output))
+        output=self.linear1(output[-1])
+        output=self.linear3(output)
+        output=self.linear2(output)
+        output=self.linear2(output)
+        output=self.linear2(output)
+        output=self.linear2(output)
+        output=self.linear2(output)
         output=torch.tanh(self.linear2(output))
         #移除时间步维，输出形状为(批量大小, 输出词典大小)
         #疑问：state是否是最后linear层的输入,输出的尺寸应该为（GRU层数，batch_size，num_hidden）
@@ -133,10 +138,10 @@ class GRU(nn.Module):
 # 返回的状态为state为(隐藏层个数, 批量大小, 隐藏单元个数) torch.Size([2, 4, 16])
 
 #小批量计算损失
-def batch_loss(rnn_q,rnn_api,query,api,tag,loss, tmperature = 0.5):
+def batch_loss(rnn_q,rnn_api,query,api,tag,loss, tmperature = 1):
     batch_size=query.shape[0]
 #   初始化GRU的隐藏层状态
-    w = torch.empty(1,batch_size,hidden_size).to(device)
+    w = torch.empty(3,batch_size,hidden_size).to(device)
     init_state=torch.nn.init.orthogonal_(w, gain=1)
     q_state=init_state
     api_state=init_state
@@ -152,7 +157,8 @@ def batch_loss(rnn_q,rnn_api,query,api,tag,loss, tmperature = 0.5):
 
     pre_score=torch.mm(q_output,api_output.permute(1,0))
     #此处进行sigmoid方程与结果的概率进行（0-1）匹配。可能存在一部分问题，待确定
-    score=torch.sigmoid(torch.flatten(pre_score))
+    # score=torch.sigmoid(torch.flatten(pre_score))
+    score=torch.flatten((pre_score))#与下方损失函数相对应
   #！！！！！这个l的初始化可能有问题！！！！
     #tag应该是一个1维向量（由对角矩阵拉直）
     l=loss(score / tmperature,tag/tmperature).mean()
@@ -160,11 +166,20 @@ def batch_loss(rnn_q,rnn_api,query,api,tag,loss, tmperature = 0.5):
 
 #训练过程
 def train(rnn_q,rnn_api,dataset,lr,batch_size,num_epochs,device):
-    query_optimizer=torch.optim.SGD(rnn_q.parameters(),lr=lr,momentum=0.3)
-    api_optimizier=torch.optim.SGD(rnn_api.parameters(),lr=lr,momentum=0.3)
-    #将损失函数由交叉熵损失改为MSE损失
-    loss=nn.MSELoss(reduction='none')
+    # query_optimizer=torch.optim.SGD(rnn_q.parameters(),lr=lr,momentum=0.5)
+    # api_optimizier=torch.optim.SGD(rnn_api.parameters(),lr=lr,momentum=0.5)
+    query_optimizer=torch.optim.Adam(rnn_q.parameters(),lr=lr,weight_decay=10.0)
+    api_optimizier=torch.optim.Adam(rnn_api.parameters(),lr=lr,weight_decay=10.0)
 
+    #将损失函数由交叉熵损失改为MSE损失
+    # loss=nn.MSELoss(reduction='none')
+
+    # 损失尝试换为二分类交叉熵损失
+    # loss=nn.BCELoss()
+
+    # 也是二分类，但将sigmoid函数包含住，比单纯二分类交叉熵损失更稳定（此改动与batch_loss中最后使用sigmoid联动）（尝试一下）
+    loss=nn.BCEWithLogitsLoss()
+    print('开始训练~~~~~~~~~~~~~')
     for epoch in range(num_epochs):
         data_iter=Data.DataLoader(dataset,batch_size,shuffle=True)
         ##print("epoch为：{}, iter: {}".format(epoch, len(data_iter)))
@@ -180,13 +195,13 @@ def train(rnn_q,rnn_api,dataset,lr,batch_size,num_epochs,device):
             query_optimizer.step()
             api_optimizier.step()
             l_sum+=l.item()
-            if (iter + 1) % 10000 == 0:
-                print("iter[{}/{}], loss {:.4f}".format((iter+1)*batch_size, len(dataset), l_sum / (iter+1)))
+            if (iter + 1) % 100 == 0:
+                print("iter[{}/{}], loss {:.5f}".format((iter+1)*batch_size, len(dataset), l_sum / (iter+1)))
         print("epoch[{}/{}], loss {:.4f}".format(epoch, num_epochs, l_sum/len(data_iter)))
 
 #设置相关超参数
-hidden_size,out_size = 512, 64
-lr, batch_size, num_epochs =1,1, 5
+hidden_size,out_size = 512, 128
+lr, batch_size, num_epochs =0.01,32, 5
 
 #注意此时 res_tag的形状即为（batch_size,batch_size）
 
@@ -224,7 +239,7 @@ def collection(rnn_api,data_iter,device):
         apis+=api
 
         # 初始化网络的隐藏层
-        w = torch.empty(1,query.shape[0],hidden_size).to(device)
+        w = torch.empty(3,query.shape[0],hidden_size).to(device)
         init_state=torch.nn.init.orthogonal_(w, gain=1)
         api_state=init_state
         output=rnn_api(api,api_state)
