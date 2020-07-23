@@ -55,7 +55,7 @@ public class InfoParser {
             String packageName = op.get().getNameAsString();
             for (TypeDeclaration type : cu.getTypes()) {
                 if (type.isClassOrInterfaceDeclaration())
-                    parseClassOrInterface((String)type.getFullyQualifiedName().get(),
+                    parseClassOrInterface(type.getNameAsString(),
                             type, infoList);
             }
             saveToFile(infoList, packageName);
@@ -83,7 +83,7 @@ public class InfoParser {
         for (BodyDeclaration body : list) {
             if (body.isClassOrInterfaceDeclaration())
                 parseClassOrInterface(
-                        ((ClassOrInterfaceDeclaration)body.toClassOrInterfaceDeclaration().get()).getFullyQualifiedName().get(),
+                        prefix + "." + ((ClassOrInterfaceDeclaration)body.toClassOrInterfaceDeclaration().get()).getNameAsString(),
                         body, infoList);
             else if (body.isMethodDeclaration()) {
                 CallableDeclaration method = (CallableDeclaration)body.toCallableDeclaration().get();
@@ -98,23 +98,21 @@ public class InfoParser {
                 }
                 if (privateFlag) continue;
 
+                // 处理方法文档注释，提取对应描述并预处理
+                Javadoc javaDoc = (Javadoc)method.getJavadoc().orElse(new Javadoc(new JavadocDescription()));
+                String description = ParserUtil.generateBriefDescription(javaDoc.getDescription().toText());
+                description = ParserUtil.removeTag(description);
+                description = ParserUtil.removeAtTag(description);
+                description = ParserUtil.replaceHtmlChar(description);
+                // 过滤没有注释的方法
+                if (description == null || description.trim().equals(""))
+                    continue;
                 // 添加方法签名字符串
                 StringBuilder strBuilder = new StringBuilder(prefix + "#");
                 strBuilder.append(ParserUtil.generateMethodSignature(
                         method.getDeclarationAsString(false, false, false).trim(),
                         method.getNameAsString()));
                 // 添加方法文档注释
-                Javadoc javaDoc = (Javadoc)method.getJavadoc().orElse(new Javadoc(new JavadocDescription()));
-
-                String description = ParserUtil.generateBriefDescription(javaDoc.getDescription().toText());
-                description = ParserUtil.removeTag(description);
-                description = ParserUtil.removeAtTag(description);
-                description = ParserUtil.replaceHtmlChar(description);
-                if (description == null || description.trim().equals("")) {
-                    String className = classInterface.getNameAsString();
-                    String methodName = method.getNameAsString();
-                    description = ParserUtil.generateDescriptionFromMethod(className, methodName);
-                }
                 strBuilder.append(":::" + description);
                 infoList.add(strBuilder.toString());
             }

@@ -31,9 +31,7 @@ public class ParserUtil {
     public static String generateMethodSignature(String methodSignature, String methodName) {
         String newSignature = methodSignature.replaceAll("<(.)*?>", "");
         int pos = newSignature.indexOf(methodName);
-        newSignature = newSignature.substring(pos).trim() + "->" +
-                newSignature.substring(0, pos).trim();
-        return newSignature;
+        return newSignature.substring(pos).trim();
     }
 
     /**
@@ -85,19 +83,5 @@ public class ParserUtil {
         for (Map.Entry<String, String> entry : charEntity.entrySet())
             description.replaceAll(entry.getKey(), entry.getValue());
         return description;
-    }
-
-    /**
-     * 根据类名和方法名为没有文档描述的方法生成方法描述
-     * @param className
-     * @param methodName
-     * @return
-     */
-    public static String generateDescriptionFromMethod(String className, String methodName) {
-        StringBuffer sBuf = new StringBuffer();
-        String regex = "([A-Z])+";
-        sBuf.append(className.replaceAll(regex, " $1").toLowerCase() + " ");
-        sBuf.append(methodName.replaceAll(regex, " $1").toLowerCase());
-        return sBuf.toString();
     }
 }
