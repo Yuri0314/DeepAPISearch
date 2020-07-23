@@ -24,16 +24,22 @@ def processline(x,y):
     #使用line1存储处理过后的x字符串，line2存储处理过后的y字符串
     line1=''
     line2=''
-    for i in x.split(' '):
+    for iter,(i) in enumerate(x.split(' ')):
         if i=='':
             continue
+        if iter==0:
+            line1+=re.sub("[A-Z]",lambda x:" "+x.group(0),i)+' '
+            continue
         if not re.match('#.*',i):
+
             line1+=i+' '
         else:
-            #下面语句是将方法名按照大写字母分割开,对于y为空的语句将#后面切割之后的方法名替代
+            #下面语句是将方法名按照大写字母分割开,对于y为空的语句将#后面切割之后的方法名替代(源数据集中已经对无描述部分进行了处理，此处代码注释)
 #             if y=='':
 #                 y=re.sub("[A-Z]",lambda x:" "+x.group(0),i[1:])
             line1+=(re.sub("[A-Z]",lambda x:" "+x.group(0),i[1:]))+' '
+#         将line1中多个空格在一块的改为一个空格
+        line1=re.sub(r'\s+',' ',line1)
     for j in y.split(' '):
         if j=='':
             continue
@@ -74,6 +80,8 @@ def read_data(path,query_max_length,api_max_length,api_dict):
        #针对描述语句过长的进行截断，下面减一操作是因为要对句末添加EOS
         if len(in_seq_tokens)>query_max_length-1:
             in_seq_tokens=in_seq_tokens[:query_max_length-1]
+        if len(out_seq_tokens)>api_max_length-1:
+            out_seq_tokens=out_seq_tokens[:api_max_length-1]
         #api序列名数据比较规整可以使用最大长度为api_max_length，对于短于最大值的api序列进行padding
 #       if len(out_seq_tokens)>api_max_length-1:
 #          out_seq_tokens=out_seq_tokens[:api_max_length]

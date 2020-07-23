@@ -4,6 +4,7 @@ from predict import *
 
 
 
+
 #小批量计算损失
 def batch_loss(rnn_q,rnn_api,query,api,tag,loss,hidden_size, temperature = 0.3):
 #   初始化GRU的隐藏层状态
@@ -77,7 +78,7 @@ if __name__=='__main__':
     api_dict = {}
     #设置相关超参数
     hidden_size,out_size = 512, 128
-    lr, batch_size, num_epochs =1, 2, 1
+    lr, batch_size, num_epochs =0.1, 2, 1
 
     #注意此时 res_tag的形状即为（batch_size,batch_size）
 
@@ -85,8 +86,8 @@ if __name__=='__main__':
     #假设此时的batch_size为2，应该是一个对角矩阵（对角线均为1.0）
     query_max_length=15
     #需要提前计算api数据集中api序列的最大长度
-    api_max_length=50
-    path="./test.txt"
+    api_max_length=11
+    path="./11111.txt"
     in_vocab,out_vocab,dataset=read_data(path,query_max_length,api_max_length,api_dict)
 
     print(in_vocab)
