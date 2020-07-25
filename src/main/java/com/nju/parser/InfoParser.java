@@ -6,6 +6,7 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
 import com.nju.config.Config;
@@ -28,17 +29,17 @@ public class InfoParser {
     }
 
     public void parse() {
-            parseIteratable(new File(this.parseFolder));
+            parseIterable(new File(this.parseFolder));
     }
 
-    private void parseIteratable(File folder){
+    private void parseIterable(File folder){
         if (!folder.exists()) {
             System.err.println("输入文件夹" + folder.getAbsolutePath() + "不存在！");
             return;
         }
         for (File file : folder.listFiles()) {
             if (file.isDirectory())
-                parseIteratable(file);
+                parseIterable(file);
             else if (file.getName().endsWith(".java"))
                 parseFile(file);
         }
@@ -114,6 +115,12 @@ public class InfoParser {
                         method.getNameAsString()));
                 // 添加方法文档注释
                 strBuilder.append(":::" + description);
+
+                // 添加API调用序列
+                BlockStmt bStmt = ((MethodDeclaration)method.toMethodDeclaration().get()).getBody().orElse(new BlockStmt());
+                String apiSeq = new APISequenceParser().parserMethodBody(bStmt);
+                strBuilder.append(":::" + apiSeq);
+
                 infoList.add(strBuilder.toString());
             }
         }

@@ -1,16 +1,16 @@
-Cleaner#create():::Returns a new Cleaner
-Cleaner#create(ThreadFactory):::Returns a new Cleaner using a Thread from the ThreadFactory
-Cleaner#register(Object, Runnable):::Registers an object and a cleaning action to run when the object becomes phantom reachable
-Cleaner.Cleanable#clean():::Unregisters the cleanable and invokes the cleaning action
-PhantomReference#get():::Returns this reference object's referent
-Reference#get():::Returns this reference object's referent
-Reference#clear():::Clears this reference object
-Reference#isEnqueued():::Tells whether or not this reference object has been enqueued, either by the program or by the garbage collector
-Reference#enqueue():::Clears this reference object and adds it to the queue with which it is registered, if any
-Reference#clone():::Throws CloneNotSupportedException
-Reference#reachabilityFence(Object):::Ensures that the object referenced by the given reference remains strongly reachable, regardless of any prior actions of the program that might otherwise cause the object to become unreachable; thus, the referenced object is not reclaimable by garbage collection at least until after the invocation of this method
-ReferenceQueue#poll():::Polls this queue to see if a reference object is available
-ReferenceQueue#remove(long):::Removes the next reference object in this queue, blocking until either one becomes available or the given timeout period expires
-ReferenceQueue#remove():::Removes the next reference object in this queue, blocking until one becomes available.
-ReferenceQueue#forEach(Consumer>):::Iterate queue and invoke given action with each Reference
-SoftReference#get():::Returns this reference object's referent
+Cleaner#create():::Returns a new Cleaner:::cleaner.impl.start
+Cleaner#create(ThreadFactory):::Returns a new Cleaner using a Thread from the ThreadFactory:::Objects.requireNonNull->cleaner.impl.start
+Cleaner#register(Object, Runnable):::Registers an object and a cleaning action to run when the object becomes phantom reachable:::Objects.requireNonNull->Objects.requireNonNull
+Cleaner.Cleanable#clean():::Unregisters the cleanable and invokes the cleaning action:::
+PhantomReference#get():::Returns this reference object's referent:::
+Reference#get():::Returns this reference object's referent:::
+Reference#clear():::Clears this reference object:::
+Reference#isEnqueued():::Tells whether or not this reference object has been enqueued, either by the program or by the garbage collector:::
+Reference#enqueue():::Clears this reference object and adds it to the queue with which it is registered, if any:::this.queue.enqueue
+Reference#clone():::Throws CloneNotSupportedException:::
+Reference#reachabilityFence(Object):::Ensures that the object referenced by the given reference remains strongly reachable, regardless of any prior actions of the program that might otherwise cause the object to become unreachable; thus, the referenced object is not reclaimable by garbage collection at least until after the invocation of this method:::
+ReferenceQueue#poll():::Polls this queue to see if a reference object is available:::this.reallyPoll
+ReferenceQueue#remove(long):::Removes the next reference object in this queue, blocking until either one becomes available or the given timeout period expires:::this.reallyPoll->System.nanoTime->lock.wait->this.reallyPoll->System.nanoTime
+ReferenceQueue#remove():::Removes the next reference object in this queue, blocking until one becomes available.:::this.remove
+ReferenceQueue#forEach(Consumer>):::Iterate queue and invoke given action with each Reference:::action.accept
+SoftReference#get():::Returns this reference object's referent:::super.get
