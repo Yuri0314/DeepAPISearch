@@ -1,0 +1,16 @@
+ConnectionDesc#equals(Object):::Two desc are equal if their PooledConnections are the same:::return
+ConnectionDesc#hashCode():::Hashcode is that of PooledConnection to facilitate searching for a ConnectionDesc using only its PooledConnection.:::return->conn->hashCode
+ConnectionDesc#release():::Changes the state of a ConnectionDesc from BUSY to IDLE and records the current time so that we will know how long it has been idle.:::d->if->System->currentTimeMillis->return->else->return
+ConnectionDesc#tryUse():::If ConnectionDesc is IDLE, change its state to BUSY and return its connection.:::d->if->return->return
+ConnectionDesc#expire(long):::If ConnectionDesc is IDLE and has expired, close the corresponding PooledConnection.:::if->d->conn->closeConnection->return->else->d->return
+Connections#get(long, PooledConnectionFactory):::Retrieves a PooledConnection from this list of connections:::conn->start->System->currentTimeMillis->waittime->d->while->getOrCreateConnection->if->throw->new->CommunicationException->try->d->if->wait->else->wait->catch->throw->new->InterruptedNamingException->finally->if->now->System->currentTimeMillis->d->return
+Connections#releasePooledConnection(PooledConnection):::Releases connection back into list:::entry->loc->conns->new->ConnectionDesc->indexOf->d->if->if->conns->size->d->td->conns->remove->conn->closeConnection->else->d->td->conns->get->entry->release->notifyAll->d->return->else->return
+Connections#removePooledConnection(PooledConnection):::Removes PooledConnection from list of connections:::if->conns->new->ConnectionDesc->remove->d->notifyAll->d->td->if->conns->isEmpty->return->else->d->return
+Connections#expire(long):::Goes through all entries in list, removes and closes ones that have been idle before threshold.:::clonedConns->synchronized->new->ArrayList<>->expired->new->ArrayList<>->foreach->d->if->entry->expire->expired->add->td->synchronized->conns->removeAll->return->conns->isEmpty
+Connections#close():::Called when this instance of Connections has been removed from Pool:::System->currentTimeMillis->expire
+Pool#getPooledConnection(Object, long, PooledConnectionFactory):::Gets a pooled connection for id:::d->if->synchronized->map->size->d->expungeStaleConnections->conns->synchronized->getConnections->if->d->new->Connections->connsRef->new->ConnectionsRef->map->put->weakRef->new->ConnectionsWeakRef->weakRefs->add->map->size->d->return->conns->get
+Pool#expire(long):::Goes through the connections in this Pool and expires ones that have been idle before 'threshold':::copy->synchronized->map->values->new->ArrayList<>->removed->new->ArrayList<>->conns->foreach->ref->getConnections->if->conns->expire->d->removed->add->synchronized->map->values->removeAll->expungeStaleConnections
+PoolCallback#releasePooledConnection(PooledConnection):::Releases a useable connection back to the pool.:::
+PoolCallback#removePooledConnection(PooledConnection):::Removes a connection from the pool:::
+PooledConnection#closeConnection():::Closes the physical connection.:::
+PooledConnectionFactory#createPooledConnection(PoolCallback):::Creates a pooled connection.:::

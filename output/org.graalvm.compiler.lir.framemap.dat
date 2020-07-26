@@ -1,0 +1,19 @@
+FrameMap#accessesCallerFrame():::Determines if an offset to an incoming stack argument was ever returned by #offsetForStackSlot(StackSlot).:::return
+FrameMap#frameSize():::Gets the frame size of the compiled frame, not including the size of the Architecture#getReturnAddressSize() return address slot.:::return
+FrameMap#frameNeedsAllocating():::Determines if any space is used in the frame apart from the Architecture#getReturnAddressSize() return address slot.:::unalignedFrameSize->returnAddressSize->return
+FrameMap#totalFrameSize():::Gets the total frame size of the compiled frame, including the size of the Architecture#getReturnAddressSize() return address slot.:::
+FrameMap#currentFrameSize():::Gets the current size of this frame:::
+FrameMap#alignFrameSize(int):::Aligns the given frame size to the stack alignment size and return the aligned size.:::return->NumUtil->getTarget->roundUp
+FrameMap#finish():::Computes the final size of this frame:::currentFrameSize->if->getRegisterConfig->getMaximumFrameSize->throw->getRegisterConfig->getMaximumFrameSize->new->PermanentBailoutException
+FrameMap#offsetForStackSlot(StackSlot):::Computes the offset of a stack slot relative to the frame register.:::if->slot->isInCallerFrame->return->slot->totalFrameSize->getOffset
+FrameMap#callsMethod(CallingConvention):::Informs the frame map that the compiled code calls a particular method, which may need stack space for outgoing arguments.:::cc->getStackSize->reserveOutgoing
+FrameMap#reserveOutgoing(int):::Reserves space for stack-based outgoing arguments.:::Math->max
+FrameMap#spillSlotSize(ValueKind):::Returns the spill slot size for the given ValueKind:::return->kind->getPlatformKind->getSizeInBytes
+FrameMap#allocateSpillSlot(ValueKind):::Reserves a spill slot in the frame of the method being compiled:::size->spillSlotSize->NumUtil->roundUp->return->newStackSlot
+FrameMap#spillSlotRangeSize(int):::Returns the size of the stack slot range for slots objects.:::return->getTarget
+FrameMap#allocateStackSlots(int):::Reserves a number of contiguous slots in the frame of the method being compiled:::if->return->NumUtil->spillSlotRangeSize->getTarget->roundUp->return->LIRKind->getTarget->getWordKind->value->newStackSlot
+FrameMapBuilder#allocateSpillSlot(ValueKind):::Reserves a spill slot in the frame of the method being compiled:::
+FrameMapBuilder#allocateStackSlots(int):::Reserves a number of contiguous slots in the frame of the method being compiled:::
+FrameMapBuilder#callsMethod(CallingConvention):::Informs the frame map that the compiled code calls a particular method, which may need stack space for outgoing arguments.:::
+FrameMapBuilder#buildFrameMap(LIRGenerationResult):::Creates a FrameMap based on the information collected by this FrameMapBuilder.:::
+FrameMapBuilderTool#getNumberOfStackSlots():::Returns the number of VirtualStackSlots created by this FrameMapBuilder:::

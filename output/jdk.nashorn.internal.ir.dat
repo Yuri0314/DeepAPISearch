@@ -1,0 +1,524 @@
+AccessNode#accept(NodeVisitor):::Assist in IR navigation.:::if->visitor->enterAccessNode->return->visitor->base->accept->setBase->leaveAccessNode->return
+AccessNode#getProperty():::Get the property name:::return
+Assignment#getAssignmentDest():::Get assignment destination:::
+Assignment#getAssignmentSource():::Get the assignment source:::
+Assignment#setAssignmentDest(D):::Set assignment destination node.:::
+BaseNode#getBase():::Get the base node for this access:::return
+BaseNode#isIndex():::Return true if this node represents an index operation normally represented as IndexNode.:::return->isTokenType
+BaseNode#setIsFunction():::Mark this node as being the callee operand of a CallNode.:::
+BaseNode#setIsSuper():::Mark this node as being a SuperProperty access.:::
+BinaryNode#isComparison():::Returns true if the node is a comparison operation (either equality, inequality, or relational).:::switch->tokenType->return->return
+BinaryNode#isRelational():::Returns true if the node is a relational operation (less than (or equals), greater than (or equals)).:::switch->tokenType->return->return
+BinaryNode#isLogical():::Returns true if the node is a logical operation.:::return->tokenType->isLogical
+BinaryNode#isLogical(TokenType):::Returns true if the token type represents a logical operation.:::switch->return->return
+BinaryNode#getWidestOperandType():::Return the widest possible operand type for this operation.:::switch->tokenType->return->return->if->isComparison->return->return->getWidestOperationType
+BinaryNode#isAssignment():::Check if this node is an assignment:::switch->tokenType->return->return
+BinaryNode#accept(NodeVisitor):::Assist in IR navigation.:::if->visitor->enterBinaryNode->return->visitor->lhs->accept->setLHS->rhs->accept->setRHS->leaveBinaryNode->return
+BinaryNode#lhs():::Get the left hand side expression for this node:::return
+BinaryNode#rhs():::Get the right hand side expression for this node:::return
+BinaryNode#setLHS(Expression):::Set the left hand side expression for this node:::if->return->return->new->BinaryNode
+BinaryNode#setRHS(Expression):::Set the right hand side expression for this node:::if->return->return->new->BinaryNode
+BinaryNode#setOperands(Expression, Expression):::Set both the left and the right hand side expression for this node:::if->return->return->new->BinaryNode
+BinaryNode#isOptimisticUndecidedType():::Returns true if the node has the optimistic type of the node is not yet decided:::return
+BinaryNode#decideType():::If the node is a node representing an add operation and has #isOptimisticUndecidedType() optimistic undecided type, decides its type:::return->lhs->getType->rhs->getType->decideType->setType
+Block#isGlobalScope():::Is this block the outermost eager global scope - i.e:::return->getFlag
+Block#hasSymbols():::Returns true if this block defines any symbols.:::return->symbols->isEmpty
+Block#replaceSymbols(LexicalContext, Map):::Replaces symbols defined in this block with different symbols:::if->symbols->isEmpty->return->newSymbols->new->LinkedHashMap<>->foreach->newSymbols->entrySet->newSymbol->replacements->entry->getValue->get->entry->setValue->return->Node->new->Block->replaceInLexicalContext
+Block#copyWithNewSymbols():::Returns a copy of this block with a shallow copy of the symbol table.:::return->new->LinkedHashMap<>->new->Block
+Block#accept(LexicalContext, NodeVisitor):::Assist in IR navigation.:::if->visitor->enterBlock->return->visitor->Node->accept->setStatements->leaveBlock->return
+Block#getSymbols():::Get a copy of the list for all the symbols defined in this block:::return->symbols->isEmpty->Collections->emptyList->Collections->symbols->values->new->ArrayList<>->unmodifiableList
+Block#getExistingSymbol(String):::Retrieves an existing symbol defined in the current block.:::return->symbols->get
+Block#isCatchBlock():::Test if this block represents a catch block in a try statement:::return->statements->size->statements->get
+Block#printSymbols(PrintWriter):::Print symbols in block in alphabetical order, sorted on name Used for debugging, see the --print-symbols flag:::values->symbols->values->new->ArrayList<>->Collections->new->Comparator<Symbol>->sort->foreach->symbol->print->return->values->isEmpty
+Block#setIsTerminal(LexicalContext, boolean):::Tag block as terminal or non terminal:::return->setFlag->clearFlag
+Block#isTerminal():::Is this a terminal block, i.e:::return->getFlag->getFlag
+Block#getEntryLabel():::Get the entry label for this block:::return
+Block#getStatements():::Get the list of statements in this block:::return->Collections->unmodifiableList
+Block#getStatementCount():::Returns the number of statements in the block.:::return->statements->size
+Block#getFirstStatementLineNumber():::Returns the line number of the first statement in the block.:::if->statements->isEmpty->return->return->statements->get->getLineNumber
+Block#getLastStatement():::Returns the last statement in the block.:::return->statements->isEmpty->statements->statements->size->get
+Block#setStatements(LexicalContext, List):::Reset the statement list for this block:::if->return->lastFinish->if->statements->isEmpty->statements->statements->size->get->getFinish->return->Node->Math->max->new->Block->replaceInLexicalContext
+Block#putSymbol(Symbol):::Add or overwrite an existing symbol in the block:::symbols->symbol->getName->put
+Block#needsScope():::Check whether scope is necessary for this Block:::return
+Block#isSynthetic():::Check whether this block is synthetic or not.:::return
+Block#setNeedsScope(LexicalContext):::Set the needs scope flag.:::if->needsScope->return->return->Node->new->Block->replaceInLexicalContext
+Block#nextSlot():::Computationally determine the next slot for this block, indexed from 0:::next->foreach->getSymbols->if->symbol->hasSlot->symbol->slotCount->return
+Block#providesScopeCreator():::Determine whether this block needs to provide its scope object creator for use by its child nodes:::return->needsScope->isSynthetic->getLastStatement->getLastStatement->needsScopeCreator
+Block#isFunctionBody():::Checks if this is a function body.:::return->getFlag
+Block#isParameterBlock():::Checks if this is a parameter block.:::return->getFlag
+Block#isSwitchBlock():::Checks whether this is a switch block.:::return->getFlag
+BlockLexicalContext#popStatements():::Get the statement list from the stack, possibly filtered:::return->sstack->pop
+BlockLexicalContext#afterSetStatements(Block):::Override this method to perform some additional processing on the block after its statements have been set:::return
+BlockLexicalContext#appendStatement(Statement):::Append a statement to the block being generated:::sstack->peek->add
+BlockLexicalContext#prependStatement(Statement):::Prepend a statement to the block being generated:::sstack->peek->add->return
+BlockLexicalContext#prependStatements(List):::Prepend a list of statement to the block being generated:::sstack->peek->addAll
+BlockLexicalContext#getLastStatement():::Get the last statement that was emitted into a block:::return
+BlockStatement#createReplacement(Statement, List):::Use this method to create a block statement meant to replace a single statement.:::return->stmt->getFinish->createReplacement
+BlockStatement#createReplacement(Statement, int, List):::Use this method to create a block statement meant to replace a single statement.:::return->stmt->getLineNumber->stmt->getToken->new->Block->new->BlockStatement
+BlockStatement#isSynthetic():::Tells if this is a synthetic block statement or not.:::return->block->isSynthetic
+BlockStatement#getBlock():::Return the block to be executed:::return
+BlockStatement#setBlock(Block):::Reset the block to be executed:::if->return->return->new->BlockStatement
+BreakableNode#ensureUniqueLabels(LexicalContext):::Ensure that any labels in this breakable node are unique so that new jumps won't go to old parts of the tree:::
+BreakableNode#isBreakableWithoutLabel():::Check whether this can be broken out from without using a label, e.g:::
+BreakableNode#getBreakLabel():::Return the break label, i.e:::
+BreakableStatement#isBreakableWithoutLabel():::Check whether this can be broken out from without using a label, e.g:::return
+BreakableStatement#getBreakLabel():::Return the break label, i.e:::return
+BreakableStatement#getLabels():::Return the labels associated with this node:::return->Collections->Collections->singletonList->unmodifiableList
+CallNode.EvalArgs#getArgs():::Return the code that is to be eval:ed by this eval function:::return->Collections->unmodifiableList
+CallNode.EvalArgs#getLocation():::Get the human readable location for this eval call:::return
+CallNode#getLineNumber():::Returns the line number.:::return
+CallNode#accept(LexicalContext, NodeVisitor):::Assist in IR navigation.:::if->visitor->enterCallNode->newCallNode->visitor->function->accept->setFunction->Node->accept->setArgs->evalArgs->Node->evalArgs->getArgs->accept->setArgs->setEvalArgs->leaveCallNode->if->return->Node->replaceInLexicalContext->return
+CallNode#getArgs():::Get the arguments for the call:::return->Collections->unmodifiableList
+CallNode#setArgs(List):::Reset the arguments for the call:::if->return->return->new->CallNode
+CallNode#getEvalArgs():::If this call is an eval call, get its EvalArgs structure:::return
+CallNode#setEvalArgs(EvalArgs):::Set the EvalArgs structure for this call, if it has been determined it is an eval:::if->return->return->new->CallNode
+CallNode#isEval():::Check if this call is a call to eval:::return
+CallNode#isApplyToCall():::Is this an apply call that we optimistically should try to turn into a call instead:::return
+CallNode#setIsApplyToCall():::Flag this call node as one that tries to call call instead of apply:::return->setFlags
+CallNode#getFunction():::Return the function expression that this call invokes:::return
+CallNode#setFunction(Expression):::Reset the function expression that this call invokes:::if->return->return->new->CallNode
+CallNode#isNew():::Check if this call is a new operation:::return
+CaseNode#isTerminal():::Is this a terminal case node, i.e:::return->body->isTerminal
+CaseNode#accept(NodeVisitor):::Assist in IR navigation.:::if->visitor->enterCaseNode->newTest->test->accept->newBody->body->accept->return->visitor->setTest->setBody->leaveCaseNode->return
+CaseNode#getBody():::Get the body for this case node:::return
+CaseNode#getEntry():::Get the entry label for this case node:::return
+CaseNode#getTest():::Get the test expression for this case node:::return
+CaseNode#setTest(Expression):::Reset the test expression for this case node:::if->return->return->new->CaseNode
+CatchNode#accept(NodeVisitor):::Assist in IR navigation.:::if->visitor->enterCatchNode->return->visitor->exception->accept->setException->exceptionCondition->accept->setExceptionCondition->body->accept->setBody->leaveCatchNode->return
+CatchNode#getException():::Get the binding pattern representing the exception thrown:::return
+CatchNode#getExceptionIdentifier():::Get the identifier representing the exception thrown:::return
+CatchNode#getExceptionCondition():::Get the exception condition for this catch block:::return
+CatchNode#setExceptionCondition(Expression):::Reset the exception condition for this catch block:::if->return->return->new->CatchNode
+CatchNode#getBody():::Get the body for this catch block:::return
+CatchNode#setException(Expression):::Resets the exception of a catch block:::if->return->if->throw->new->IllegalArgumentException->return->new->CatchNode
+CatchNode#isSyntheticRethrow():::Is this catch block a non-JavaScript constructor, for example created as part of the rethrow mechanism of a finally block in Lower? Then we just pass the exception on and need not unwrap whatever is in the ECMAException object catch symbol:::return
+ClassNode#getIdent():::Class identifier:::return
+ClassNode#getClassHeritage():::The expression of the extends clause:::return
+ClassNode#getConstructor():::Get the constructor method definition.:::return
+ClassNode#getClassElements():::Get method definitions except the constructor.:::return->Collections->unmodifiableList
+ClassNode#isStatement():::Returns if this class was a statement or an expression:::return
+ClassNode#getLineNumber():::Returns the line number.:::return
+CompileUnitHolder#getCompileUnit():::Return the compile unit held by this instance:::
+Expression#getType():::Returns the type of the expression.:::
+Expression#isLocal():::Returns true if this expression depends exclusively on state that is constant or local to the currently running function and thus inaccessible to other functions:::return
+Expression#isSelfModifying():::Is this a self modifying assignment?:::return
+Expression#getWidestOperationType():::Returns widest operation type of this operation.:::return
+Expression#isOptimistic():::Returns true if the type of this expression is narrower than its widest operation type (thus, it is optimistically typed).:::return->getType->getWidestOperationType->narrowerThan
+Expression#isAlwaysFalse():::Returns true if the runtime value of this expression is always false when converted to boolean as per ECMAScript ToBoolean conversion:::return
+Expression#isAlwaysTrue():::Returns true if the runtime value of this expression is always true when converted to boolean as per ECMAScript ToBoolean conversion:::return
+Expression#isAlwaysFalse(Expression):::Returns true if the expression is not null and #isAlwaysFalse().:::return->test->isAlwaysFalse
+Expression#isAlwaysTrue(Expression):::Returns true if the expression is null or #isAlwaysTrue():::return->test->isAlwaysTrue
+ExpressionList#getExpressions():::Get the list of expressions.:::return->Collections->unmodifiableList
+ExpressionStatement#getExpression():::Return the expression to be executed:::return
+ExpressionStatement#destructuringDeclarationType():::Return declaration type if this expression statement is a destructuring declaration:::return
+ExpressionStatement#setExpression(Expression):::Reset the expression to be executed:::if->return->return->new->ExpressionStatement
+Flags#getFlags():::Get all flags of a LexicalContextNode:::
+Flags#getFlag(int):::Check if a flag is set in a lexical context node:::
+Flags#clearFlag(LexicalContext, int):::Clear a flag of a LexicalContextNode:::
+Flags#setFlag(LexicalContext, int):::Set a flag of a LexicalContextNode:::
+Flags#setFlags(LexicalContext, int):::Set all flags of a LexicalContextNode, overwriting previous flags:::
+ForNode#getInit():::Get the initialization expression for this for loop:::return
+ForNode#setInit(LexicalContext, Expression):::Reset the initialization expression for this for loop:::if->return->return->Node->new->ForNode->replaceInLexicalContext
+ForNode#isForIn():::Is this a for in construct rather than a standard init;condition;modification one:::return
+ForNode#isForOf():::Is this a for-of loop?:::return
+ForNode#isForInOrOf():::Is this a for-in or for-of statement?:::return->isForIn->isForOf
+ForNode#isForEach():::Is this a for each construct, known from e.g:::return
+ForNode#getIterator():::If this is a for in or for each construct, there is an iterator symbol:::return
+ForNode#setIterator(LexicalContext, Symbol):::Assign an iterator symbol to this ForNode:::if->return->return->Node->new->ForNode->replaceInLexicalContext
+ForNode#getModify():::Get the modification expression for this ForNode:::return
+ForNode#setModify(LexicalContext, JoinPredecessorExpression):::Reset the modification expression for this ForNode:::if->return->return->Node->new->ForNode->replaceInLexicalContext
+ForNode#needsScopeCreator():::Returns true if this for-node needs the scope creator of its containing block to create per-iteration scope:::return->isForInOrOf->hasPerIterationScope
+FunctionCall#isFunction():::Returns true if the value of this expression will be treated as a function and immediately invoked.:::
+FunctionNode#visitParameters(NodeVisitor):::Visits the parameter nodes of this function:::return->Node->accept
+FunctionNode#getCallSiteFlags():::Get additional callsite flags to be used specific to this function.:::callsiteFlags->if->getFlag->if->return->if->getDebugFlag->if->getDebugFlag->if->getDebugFlag->if->getDebugFlag->return
+FunctionNode#getSource():::Get the source for this function:::return
+FunctionNode#initializeDeserialized(Source, Namespace):::Sets the source and namespace for this function:::if->throw->new->IllegalArgumentException->else->if->return->else->if->throw->new->IllegalStateException->return->new->FunctionNode
+FunctionNode#getId():::Get the unique ID for this function within the script file.:::return->isProgram->Token->descPosition
+FunctionNode#getSourceName():::get source name - sourceURL or name derived from Source.:::return->getSourceName
+FunctionNode#getSourceName(Source):::Static source name getter:::explicitURL->source->getExplicitURL->return->source->getName
+FunctionNode#getDirectiveFlag(String):::Function to parse nashorn per-function extension directive comments.:::switch->return->return->return->return->return->return->return->return->return->return
+FunctionNode#getLineNumber():::Returns the line number.:::return
+FunctionNode#uniqueName(String):::Create a unique name in the namespace of this FunctionNode:::return->namespace->uniqueName
+FunctionNode#getDebugFlags():::Returns the debug flags for this function.:::return
+FunctionNode#getDebugFlag(int):::Checks whether a debug flag is set for this function.:::return
+FunctionNode#isProgram():::Returns true if the function is the top-level program.:::return->getFlag
+FunctionNode#canBeDeoptimized():::Returns true if the function contains at least one optimistic operation (and thus can be deoptimized).:::return->getFlag
+FunctionNode#hasEval():::Check if this function has a call expression for the identifier "eval" (that is, eval(...)).:::return->getFlag
+FunctionNode#hasNestedEval():::Returns true if a function nested (directly or transitively) within this function #hasEval().:::return->getFlag
+FunctionNode#getFirstToken():::Get the first token for this function:::return
+FunctionNode#hasDeclaredFunctions():::Check whether this function has nested function declarations:::return->getFlag
+FunctionNode#needsCallee():::Check if this function's generated Java method needs a callee parameter:::return->needsParentScope->usesSelfSymbol->isSplit->needsArguments->hasApplyToCallSpecialization->isStrict
+FunctionNode#usesThis():::Return true if this function makes use of the this object.:::return->getFlag
+FunctionNode#hasApplyToCallSpecialization():::Return true if function contains an apply to call transform:::return->getFlag
+FunctionNode#getIdent():::Get the identifier for this function, this is its symbol.:::return
+FunctionNode#getBody():::Get the function body:::return
+FunctionNode#setBody(LexicalContext, Block):::Reset the function body:::if->return->return->Node->body->needsScope->new->FunctionNode->replaceInLexicalContext
+FunctionNode#isVarArg():::Does this function's method needs to be variable arity (gather all script-declared parameters in a final Object[] parameter:::return->needsArguments->parameters->size
+FunctionNode#inDynamicContext():::Was this function declared in a dynamic context, i.e:::return->getFlag
+FunctionNode#needsDynamicScope():::Check whether a function would need dynamic scope, which is does if it has evals and isn't strict.:::return->hasEval->isStrict
+FunctionNode#setInDynamicContext(LexicalContext):::Flag this function as declared in a dynamic context:::return->setFlag
+FunctionNode#needsArguments():::Returns true if this function needs to have an Arguments object defined as a local variable named "arguments":::return->getFlag->getFlag->isProgram
+FunctionNode#needsParentScope():::Returns true if this function needs access to its parent scope:::return->getFlag
+FunctionNode#setThisProperties(LexicalContext, int):::Set the number of properties assigned to the this object in this function.:::if->return->return->Node->new->FunctionNode->replaceInLexicalContext
+FunctionNode#getThisProperties():::Get the number of properties assigned to the this object in this function.:::return
+FunctionNode#hasScopeBlock():::Returns true if any of the blocks in this function create their own scope.:::return->getFlag
+FunctionNode#getKind():::Return the kind of this function:::return
+FunctionNode#getLastToken():::Return the last token for this function's code:::return
+FunctionNode#getEndParserState():::Returns the end parser state for this function.:::return
+FunctionNode#getName():::Get the name of this function:::return
+FunctionNode#setName(LexicalContext, String):::Set the internal name for this function:::if->equals->return->return->Node->new->FunctionNode->replaceInLexicalContext
+FunctionNode#allVarsInScope():::Check if this function should have all its variables in its own scope:::return->getFlag
+FunctionNode#isSplit():::Checks if this function is split into several smaller fragments.:::return->getFlag
+FunctionNode#getParameters():::Get the parameters to this function:::return->Collections->unmodifiableList
+FunctionNode#getParameterExpressions():::Get the ES6 style parameter expressions of this function:::return
+FunctionNode#getNumOfParams():::Return the number of parameters to this function:::return->parameters->size
+FunctionNode#getParameter(int):::Returns the identifier for a named parameter at the specified position in this function's parameter list.:::return->parameters->get
+FunctionNode#setParameters(LexicalContext, List):::Reset the compile unit used to compile this function:::if->return->return->Node->new->FunctionNode->replaceInLexicalContext
+FunctionNode#isDeclared():::Check if this function is created as a function declaration (as opposed to function expression):::return->getFlag
+FunctionNode#isAnonymous():::Check if this function is anonymous:::return->getFlag
+FunctionNode#usesSelfSymbol():::Does this function use its self symbol - this is needed only for self-referencing named function expressions:::return->getFlag
+FunctionNode#isNamedFunctionExpression():::Returns true if this is a named function expression (that is, it isn't a declared function, it isn't an anonymous function expression, and it isn't a program).:::return->getFlag
+FunctionNode#getReturnType():::Get the return type for this function:::return
+FunctionNode#setReturnType(LexicalContext, Type):::Set the function return type:::type->returnType->isObject->if->return->return->Node->new->FunctionNode->replaceInLexicalContext
+FunctionNode#isStrict():::Check if the function is generated in strict mode:::return->getFlag
+FunctionNode#isCached():::Returns true if this function node has been cached.:::return->getFlag
+FunctionNode#setCached(LexicalContext):::Mark this function node as having been cached.:::return->setFlag
+FunctionNode#isStrong():::Checks if the function is generated in strong mode.:::return->getFlag
+FunctionNode#isMethod():::Checks if this is an ES6 method.:::return->getFlag
+FunctionNode#usesSuper():::Checks if this function uses the ES6 super binding.:::return->getFlag
+FunctionNode#hasDirectSuper():::Checks if this function directly uses the super binding.:::return->getFlag
+FunctionNode#isClassConstructor():::Checks if this is an ES6 class constructor.:::return->getFlag
+FunctionNode#isSubclassConstructor():::Checks if this is an ES6 subclass constructor.:::return->getFlag
+FunctionNode#usesNewTarget():::Checks if this function uses the ES6 new-targert.:::return->getFlag
+FunctionNode#isModule():::Checks if this is an ES6 module.:::return
+FunctionNode#getModule():::Returns the functions's ES6 module.:::return
+FunctionNode#getCompileUnit():::Get the compile unit used to compile this function:::return
+FunctionNode#setCompileUnit(LexicalContext, CompileUnit):::Reset the compile unit used to compile this function:::if->return->return->Node->new->FunctionNode->replaceInLexicalContext
+FunctionNode#compilerConstant(CompilerConstants):::Get the symbol for a compiler constant, or null if not available (yet):::return->body->cc->symbolName->getExistingSymbol
+FunctionNode#getRootClass():::Get the root class that this function node compiles to:::return
+FunctionNode#setRootClass(LexicalContext, Class):::Reset the root class that this function is compiled to:::if->return->return->Node->new->FunctionNode->replaceInLexicalContext
+IdentNode#createInternalIdentifier(Symbol):::Creates an identifier for the symbol:::return->Token->toDesc->symbol->getName->new->IdentNode->setSymbol
+IdentNode#accept(NodeVisitor):::Assist in IR navigation.:::if->visitor->enterIdentNode->return->visitor->leaveIdentNode->return
+IdentNode#getName():::Get the name of the identifier:::return
+IdentNode#getSymbol():::Return the Symbol the compiler has assigned to this identifier:::return
+IdentNode#setSymbol(Symbol):::Assign a symbol to this identifier:::if->return->newIdent->clone->return
+IdentNode#isPropertyName():::Check if this IdentNode is a property name:::return
+IdentNode#setIsPropertyName():::Flag this IdentNode as a property name:::if->isPropertyName->return->return->new->IdentNode
+IdentNode#isFutureStrictName():::Check if this IdentNode is a future strict name:::return
+IdentNode#setIsFutureStrictName():::Flag this IdentNode as a future strict name:::if->isFutureStrictName->return->return->new->IdentNode
+IdentNode#isInitializedHere():::Helper function for local def analysis.:::return
+IdentNode#setIsInitializedHere():::Flag IdentNode to be initialized on creation:::if->isInitializedHere->return->return->new->IdentNode
+IdentNode#isDead():::Is this a LET or CONST identifier used before its declaration?:::return
+IdentNode#markDead():::Flag this IdentNode as a LET or CONST identifier used before its declaration.:::return->new->IdentNode
+IdentNode#isDeclaredHere():::Is this IdentNode declared here?:::return
+IdentNode#setIsDeclaredHere():::Flag this IdentNode as being declared here.:::if->isDeclaredHere->return->return->new->IdentNode
+IdentNode#isCompileTimePropertyName():::Check if the name of this IdentNode is same as that of a compile-time property (currently __DIR__, __FILE__, and __LINE__).:::return->name->__DIR__->symbolName->equals->name->__FILE__->symbolName->equals->name->__LINE__->symbolName->equals
+IdentNode#setIsFunction():::Mark this node as being the callee operand of a CallNode.:::if->isFunction->return->return->new->IdentNode
+IdentNode#setIsNotFunction():::Mark this node as not being the callee operand of a CallNode.:::if->isFunction->return->return->new->IdentNode
+IdentNode#isInternal():::Is this an internal symbol, i.e:::return->name->charAt
+IdentNode#isDirectSuper():::Checks if this is a direct super identifier:::return
+IdentNode#setIsDirectSuper():::Return a new identifier with the direct super flag set.:::return->new->IdentNode
+IdentNode#isRestParameter():::Checks if this is a rest parameter:::return
+IdentNode#setIsRestParameter():::Return a new identifier with the rest parameter flag set.:::return->new->IdentNode
+IdentNode#isProtoPropertyName():::Checks if this is a proto property name.:::return
+IdentNode#setIsProtoPropertyName():::Return a new identifier with the proto property name flag set.:::return->new->IdentNode
+IdentNode#isDefaultParameter():::Checks whether this is a default parameter.:::return
+IdentNode#setIsDefaultParameter():::Return a new identifier with the default parameter flag set.:::return->new->IdentNode
+IdentNode#isDestructuredParameter():::Checks whether this is a destructured parameter.:::return
+IdentNode#setIsDestructuredParameter():::Return a new identifier with the destructured parameter flag set.:::return->new->IdentNode
+IdentNode#containsEscapes():::Checks whether the source code for this ident contains a unicode escape sequence by comparing the length of its name with its length in source code.:::return->Token->getToken->descLength->name->length
+IfNode#getFail():::Get the else block of this IfNode:::return
+IfNode#getPass():::Get the then block for this IfNode:::return
+IfNode#getTest():::Get the test expression for this IfNode:::return
+IfNode#setTest(Expression):::Reset the test expression for this IfNode:::if->return->return->new->IfNode
+IndexNode#getIndex():::Get the index expression for this IndexNode:::return
+IndexNode#setIndex(Expression):::Set the index expression for this node:::if->return->return->isFunction->isSuper->new->IndexNode
+JoinPredecessor#setLocalVariableConversion(LexicalContext, LocalVariableConversion):::Set the local variable conversions needed to unify their types at a control flow join point.:::
+JoinPredecessor#getLocalVariableConversion():::Returns the local variable conversions needed to unify their types at a control flow join point.:::
+JoinPredecessorExpression#getExpression():::Returns the underlying expression.:::return
+JoinPredecessorExpression#setExpression(Expression):::Sets the underlying expression.:::if->return->return->new->JoinPredecessorExpression
+JumpStatement#getLabelName():::Get the label name for this break node:::return
+JumpStatement#getTarget(LexicalContext):::Finds the target for this jump statement in a lexical context.:::
+JumpStatement#getTargetLabel(BreakableNode):::Returns the label corresponding to this kind of jump statement (either a break or continue label) in the target.:::
+JumpStatement#getTargetLabel(LexicalContext):::Returns the label this jump statement targets.:::return->getTarget->getTargetLabel
+JumpStatement#getPopScopeLimit(LexicalContext):::Returns the limit node for popping scopes when this jump statement is effected.:::return->getTarget
+LabelNode#getBody():::Get the body of the node:::return
+LabelNode#setBody(LexicalContext, Block):::Reset the body of the node:::if->return->return->Node->new->LabelNode->replaceInLexicalContext
+LabelNode#getLabelName():::Get the label name:::return
+Labels#getLabels():::Return the labels associated with this node:::
+LexicalContext#setFlag(LexicalContextNode, int):::Set the flags for a lexical context node on the stack:::if->for->i
+LexicalContext#setBlockNeedsScope(Block):::Marks the block as one that creates a scope:::for->i
+LexicalContext#getFlags(LexicalContextNode):::Get the flags for a lexical context node on the stack.:::for->i->throw->new->AssertionError
+LexicalContext#getFunctionBody(FunctionNode):::Get the function body of a function node on the lexical context stack:::for->i->throw->functionNode->getName->new->AssertionError
+LexicalContext#getOutermostFunction():::Returns the outermost function in this context:::return
+LexicalContext#push(T):::Pushes a new block on top of the context, making it the innermost open block.:::if->newStack->new->LexicalContextNodeArr->System->arraycopy->newFlags->new->intArr->System->arraycopy->return
+LexicalContext#isEmpty():::Is the context empty?:::return
+LexicalContext#pop(T):::Pops the innermost block off the context and all nodes that has been contributed since it was put there.:::popped->if->return->setFlag->return
+LexicalContext#applyTopFlags(T):::Explicitly apply flags to the topmost element on the stack:::return->node->setFlag
+LexicalContext#peek():::Return the top element in the context.:::return
+LexicalContext#contains(LexicalContextNode):::Check if a node is in the lexical context.:::for->i->return
+LexicalContext#replace(LexicalContextNode, LexicalContextNode):::Replace a node on the lexical context with a new one:::for->i->return
+LexicalContext#getBlocks():::Returns an iterator over all blocks in the context, with the top block (innermost lexical context) first.:::return->new->NodeIterator<>
+LexicalContext#getFunctions():::Returns an iterator over all functions in the context, with the top (innermost open) function first.:::return->new->NodeIterator<>
+LexicalContext#getParentBlock():::Get the parent block for the current lexical context block:::iter->getCurrentFunction->new->NodeIterator<>->iter->next->return->iter->hasNext->iter->next
+LexicalContext#getCurrentBlockLabelNode():::Gets the label node of the current block.:::if->return->parent->return
+LexicalContext#getAncestorBlocks(Block):::Returns an iterator over all ancestors block of the given block, with its parent block first.:::iter->getBlocks->while->iter->hasNext->b->iter->next->if->return->throw->new->AssertionError
+LexicalContext#getBlocks(Block):::Returns an iterator over a block and all its ancestors blocks, with the block first.:::iter->getAncestorBlocks->return->new->Iterator<Block>
+LexicalContext#getFunction(Block):::Get the function for this block.:::iter->new->NodeIterator<>->while->iter->hasNext->next->iter->next->if->while->iter->hasNext->next2->iter->next->if->return->return
+LexicalContext#getDefiningBlock(Symbol):::Get the block in which a symbol is defined.:::name->symbol->getName->for->it->getBlocks->it->hasNext->throw->new->AssertionError
+LexicalContext#getDefiningFunction(Symbol):::Get the function in which a symbol is defined.:::name->symbol->getName->for->iter->new->NodeIterator<>->iter->hasNext->throw->new->AssertionError
+LexicalContext#isFunctionBody():::Is the topmost lexical context element a function body?:::return->getParentBlock
+LexicalContext#isSplitBody():::Is the topmost lexical context element body of a SplitNode?:::return
+LexicalContext#getParentFunction(FunctionNode):::Get the parent function for a function in the lexical context.:::iter->new->NodeIterator<>->while->iter->hasNext->next->iter->next->if->return->iter->hasNext->iter->next->return
+LexicalContext#getScopeNestingLevelTo(LexicalContextNode):::Count the number of scopes until a given node:::n->for->iter->getAllNodes->iter->hasNext->return
+LexicalContext#inLoop():::Check whether the lexical context is currently inside a loop.:::return->getCurrentLoop
+LexicalContext#getBreakable(String):::Find the breakable node corresponding to this label.:::if->foundLabel->findLabel->if->breakable->for->iter->new->NodeIterator<>->iter->hasNext->return->return->return->getBreakable
+LexicalContext#getContinueTo(String):::Find the continue target node corresponding to this label.:::if->foundLabel->findLabel->if->loop->for->iter->new->NodeIterator<>->iter->hasNext->return->return->return->getContinueTo
+LexicalContext#getInlinedFinally(String):::Find the inlined finally block node corresponding to this label.:::for->iter->new->NodeIterator<>->iter->hasNext->return
+LexicalContext#getTryNodeForInlinedFinally(String):::Find the try node for an inlined finally block corresponding to this label.:::for->iter->new->NodeIterator<>->iter->hasNext->return
+LexicalContext#isExternalTarget(SplitNode, BreakableNode):::Checks whether a given target is a jump destination that lies outside a given split node.:::for->i->throw->new->AssertionError
+LexicalContext#inUnprotectedSwitchContext():::Checks whether the current context is inside a switch statement without explicit blocks (curly braces).:::for->i->return
+LexicalContextNode#accept(LexicalContext, NodeVisitor):::Accept function for the node given a lexical context:::
+LiteralNode#initialize(LexicalContext):::Initialization setter, if required for immutable state:::return
+LiteralNode#isNull():::Check if the literal value is null:::return
+LiteralNode#getBoolean():::Fetch boolean value of node.:::return->JSType->toBoolean
+LiteralNode#getInt32():::Fetch int32 value of node.:::return->JSType->toInt32
+LiteralNode#getUint32():::Fetch uint32 value of node.:::return->JSType->toUint32
+LiteralNode#getLong():::Fetch long value of node:::return->JSType->toLong
+LiteralNode#getNumber():::Fetch double value of node.:::return->JSType->toNumber
+LiteralNode#getString():::Fetch String value of node.:::return->JSType->toString
+LiteralNode#getObject():::Fetch Object value of node.:::return
+LiteralNode#isArray():::Test if the value is an array:::return
+LiteralNode#isBoolean():::Test if the value is a boolean.:::return
+LiteralNode#isString():::Test if the value is a string.:::return
+LiteralNode#isNumeric():::Test if tha value is a number:::return
+LiteralNode#accept(NodeVisitor):::Assist in IR navigation.:::if->visitor->enterLiteralNode->return->visitor->leaveLiteralNode->return
+LiteralNode#getValue():::Get the literal node value:::return
+LiteralNode#newInstance(long, int):::Create a new null literal:::return->new->NullLiteralNode
+LiteralNode#newInstance(Node):::Create a new null literal based on a parent node (source, token, finish):::return->parent->getToken->parent->getFinish->new->NullLiteralNode
+LiteralNode.PrimitiveLiteralNode#isTrue():::Check if the literal value is boolean true:::return->JSType->toBoolean
+LiteralNode#newInstance(long, int, boolean):::Create a new boolean literal:::return->new->BooleanLiteralNode
+LiteralNode#newInstance(Node, boolean):::Create a new boolean literal based on a parent node (source, token, finish):::return->parent->getToken->parent->getFinish->new->BooleanLiteralNode
+LiteralNode#newInstance(long, int, Number):::Create a new number literal:::return->new->NumberLiteralNode
+LiteralNode#newInstance(Node, Number):::Create a new number literal based on a parent node (source, token, finish):::return->parent->getToken->parent->getFinish->new->NumberLiteralNode
+LiteralNode#newInstance(long, int, Undefined):::Create a new undefined literal:::return->new->UndefinedLiteralNode
+LiteralNode#newInstance(Node, Undefined):::Create a new null literal based on a parent node (source, token, finish):::return->parent->getToken->parent->getFinish->new->UndefinedLiteralNode
+LiteralNode#newInstance(long, int, String):::Create a new string literal:::return->new->StringLiteralNode
+LiteralNode#newInstance(Node, String):::Create a new String literal based on a parent node (source, token, finish):::return->parent->getToken->parent->getFinish->new->StringLiteralNode
+LiteralNode#newInstance(long, int, LexerToken):::Create a new literal node for a lexer token:::return->new->LexerTokenLiteralNode
+LiteralNode#newInstance(Node, LexerToken):::Create a new lexer token literal based on a parent node (source, token, finish):::return->parent->getToken->parent->getFinish->new->LexerTokenLiteralNode
+LiteralNode#objectAsConstant(Object):::Get the constant value for an object, or #POSTSET_MARKER if the value can't be statically computed.:::if->return->else->if->return->else->if->return->getValue->objectAsConstant->return
+LiteralNode#isConstant(Object):::Test whether object represents a constant value.:::return->objectAsConstant
+LiteralNode.ArrayLiteralNode#hasSpread():::Returns true if this array literal has a spread element.:::return
+LiteralNode.ArrayLiteralNode#hasTrailingComma():::Returns true if this array literal has a trailing comma.:::return
+LiteralNode.ArrayLiteralNode#getElementExpressions():::Returns a list of array element expressions:::return->Collections->Arrays->asList->unmodifiableList
+LiteralNode.ArrayLiteralNode#initialize(LexicalContext):::Setter that initializes all code generation meta data for an ArrayLiteralNode:::return->Node->ArrayLiteralInitializer->initialize->replaceInLexicalContext
+LiteralNode.ArrayLiteralNode#getArrayType():::Get the array element type as Java format, e.g:::return->getElementType->getArrayType
+LiteralNode.ArrayLiteralNode#getElementType():::Get the element type of this array literal:::return
+LiteralNode.ArrayLiteralNode#getPostsets():::Get indices of arrays containing computed post sets:::return
+LiteralNode.ArrayLiteralNode#getPresets():::Get presets constant array:::return
+LiteralNode.ArrayLiteralNode#getSplitRanges():::Get the split ranges for this ArrayLiteral, or null if this array does not have to be split.:::return->Collections->unmodifiableList
+LiteralNode.ArrayLiteralNode#setSplitRanges(LexicalContext, List):::Set the SplitRanges that make up this ArrayLiteral:::if->return->return->Node->new->ArrayLiteralNode->replaceInLexicalContext
+LiteralNode#newInstance(long, int, List):::Create a new array literal of Nodes from a list of Node values:::return->valueToArray->new->ArrayLiteralNode
+LiteralNode#newInstance(Node, List):::Create a new array literal based on a parent node (source, token, finish):::return->parent->getToken->parent->getFinish->valueToArray->new->ArrayLiteralNode
+LiteralNode#newInstance(long, int, Expression[]):::Create a new array literal of Nodes:::return->new->ArrayLiteralNode
+LocalVariableConversion#getFrom():::Returns the type being converted from.:::return
+LocalVariableConversion#getTo():::Returns the type being converted to.:::return
+LocalVariableConversion#getNext():::Returns the next conversion at the same join point, or null if this is the last one.:::return
+LocalVariableConversion#getSymbol():::Returns the symbol representing the local variable whose value is being converted.:::return
+LocalVariableConversion#isLive():::Returns true if this conversion is live:::return->symbol->hasSlotFor
+LocalVariableConversion#isAnyLive():::Returns true if this conversion #isLive(), or if any of its #getNext() conversions are live.:::return->isLive->isAnyLive
+LocalVariableConversion#hasLiveConversion(JoinPredecessor):::Returns true if the passed join predecessor has #isAnyLive() conversion.:::return->jp->getLocalVariableConversion->isAnyLive
+LocalVariableConversion#toString(StringBuilder):::Generates a string representation of this conversion in the passed string builder.:::if->isLive->return->sb->append->toStringNext->append->return->next->toString
+LocalVariableConversion#toString(LocalVariableConversion, StringBuilder):::Generates a string representation of the passed conversion in the passed string builder.:::return->conv->toString
+LoopNode#controlFlowEscapes():::Does the control flow escape from this loop, i.e:::return
+LoopNode#mustEnter():::Conservative check: does this loop have to be entered?:::
+LoopNode#getContinueLabel():::Get the continue label for this while node, i.e:::return
+LoopNode#getBody():::Get the body for this for node:::
+LoopNode#getTest():::Get the test for this for node:::return
+LoopNode#setTest(LexicalContext, JoinPredecessorExpression):::Set the test for this for node:::
+LoopNode#setControlFlowEscapes(LexicalContext, boolean):::Set the control flow escapes flag for this node:::
+LoopNode#hasPerIterationScope():::Does this loop have a LET declaration and hence require a per-iteration scope?:::
+Module.ExportEntry#exportStarFrom(IdentNode, IdentNode, int, int):::Creates a export * export entry.:::return->new->ExportEntry
+Module.ExportEntry#exportDefault(IdentNode, IdentNode, int, int):::Creates a export default export entry with a local name.:::return->new->ExportEntry
+Module.ExportEntry#exportSpecifier(IdentNode, IdentNode, int, int):::Creates a export entry with a local name and export name.:::return->new->ExportEntry
+Module.ExportEntry#exportSpecifier(IdentNode, int, int):::Creates a export entry with an export name.:::return->exportSpecifier
+Module.ExportEntry#withFrom(IdentNode, int):::Create a copy of this entry with the specified module request string.:::return->new->ExportEntry
+Module.ExportEntry#getExportName():::Returns the entry's export name.:::return
+Module.ExportEntry#getModuleRequest():::Returns the entry's module request.:::return
+Module.ExportEntry#getImportName():::Returns the entry's import name.:::return
+Module.ExportEntry#getLocalName():::Returns the entry's local name.:::return
+Module.ExportEntry#getStartPosition():::Returns the entry's start position.:::return
+Module.ExportEntry#getEndPosition():::Returns the entry's end position.:::return
+Module.ImportEntry#importSpecifier(IdentNode, IdentNode, int, int):::Creates an import entry with the given import and local names.:::return->new->ImportEntry
+Module.ImportEntry#importSpecifier(IdentNode, int, int):::Creates a new import entry with the given import name.:::return->importSpecifier
+Module.ImportEntry#withFrom(IdentNode, int):::Returns a copy of this import entry with the given module request and end position.:::return->new->ImportEntry
+Module.ImportEntry#getModuleRequest():::Returns the entry's module request.:::return
+Module.ImportEntry#getImportName():::Returns the entry's import name.:::return
+Module.ImportEntry#getLocalName():::Returns the entry's local name.:::return
+Module.ImportEntry#getStartPosition():::Returns the entry's start position.:::return
+Module.ImportEntry#getEndPosition():::Returns the entry's end position.:::return
+Module#getRequestedModules():::Returns the list of requested modules.:::return
+Module#getImportEntries():::Returns the list of import entries.:::return
+Module#getLocalExportEntries():::Returns the list of local export entries.:::return
+Module#getIndirectExportEntries():::Returns the list of indirect export entries.:::return
+Module#getStarExportEntries():::Returns the list of star export entries.:::return
+Node#isLoop():::Is this a loop node?:::return
+Node#isAssignment():::Is this an assignment node - for example a var node with an init or a binary node that writes to a destination:::return
+Node#ensureUniqueLabels(LexicalContext):::For reference copies - ensure that labels in the copy node are unique using an appropriate copy constructor:::return
+Node#accept(NodeVisitor):::Provides a means to navigate the IR.:::
+Node#toString(StringBuilder):::String conversion helper:::toString
+Node#toString(StringBuilder, boolean):::Print logic that decides whether to show the optimistic type or not - for example it should not be printed after just parse, when it hasn't been computed, or has been set to a trivially provable value:::
+Node#getFinish():::Get the finish position for this node in the source string:::return
+Node#getStart():::Get start position for node:::return
+Node#getSourceOrder():::Integer to sort nodes in source order:::return->getStart
+Node#position():::Return token position from a token descriptor.:::return->Token->descPosition
+Node#length():::Return token length from a token descriptor.:::return->Token->descLength
+Node#tokenType():::Returns this node's token's type:::return->Token->descType
+Node#isTokenType(TokenType):::Tests if this node has the specific token type.:::return->tokenType
+Node#getToken():::Get the token for this node:::return
+ObjectNode#getElements():::Get the elements of this literal node:::return->Collections->unmodifiableList
+ObjectNode#setSplitRanges(LexicalContext, List):::Set the split ranges for this ObjectNode:::if->return->return->Node->new->ObjectNode->replaceInLexicalContext
+ObjectNode#getSplitRanges():::Get the split ranges for this ObjectNode, or null if the object is not split.:::return->Collections->unmodifiableList
+Optimistic#getProgramPoint():::Unique node ID that is associated with an invokedynamic call that mail fail and its callsite:::
+Optimistic#setProgramPoint(int):::Set the node number for this node, associating with a unique per-function program point:::
+Optimistic#canBeOptimistic():::Is it possible for this particular implementor to actually have any optimism? SHIFT operators for instance are binary nodes, but never optimistic:::
+Optimistic#getMostOptimisticType():::Get the most optimistic type for this node:::
+Optimistic#getMostPessimisticType():::Most pessimistic type that is guaranteed to be safe:::
+Optimistic#setType(Type):::Set the override type:::
+OptimisticLexicalContext#isEnabled():::Are optimistic types enabled:::return
+OptimisticLexicalContext#logOptimisticAssumption(Symbol, Type):::Log an optimistic assumption during codegen TODO : different parameters and more info about the assumption for future profiling needs:::if->peek->optimisticAssumptions->peek->peek->new->Assumption->add
+OptimisticLexicalContext#getOptimisticAssumptions():::Get the list of optimistic assumptions made:::return->Collections->optimisticAssumptions->peek->unmodifiableList
+OptimisticLexicalContext#hasOptimisticAssumptions():::Does this method have optimistic assumptions made during codegen?:::return->optimisticAssumptions->isEmpty->getOptimisticAssumptions->isEmpty
+PropertyKey#getPropertyName():::Get the property name:::
+PropertyNode#getKeyName():::Get the name of the property key, or null if key is a computed name.:::return->getPropertyName
+PropertyNode#getGetter():::Get the getter for this property:::return
+PropertyNode#setGetter(FunctionNode):::Set the getter of this property, null if none:::if->return->return->new->PropertyNode
+PropertyNode#getKey():::Return the key for this property node:::return
+PropertyNode#getSetter():::Get the setter for this property:::return
+PropertyNode#setSetter(FunctionNode):::Set the setter for this property, null if none:::if->return->return->new->PropertyNode
+PropertyNode#getValue():::Get the value of this property:::return
+PropertyNode#setValue(Expression):::Set the value of this property:::if->return->return->new->PropertyNode
+PropertyNode#isStatic():::Returns true if this is a static property.:::return
+PropertyNode#isComputed():::Returns true if this is a computed property.:::return
+ReturnNode#isReturn():::Return true if is a RETURN node.:::return->isTokenType
+ReturnNode#hasExpression():::Check if this return node has an expression:::return
+ReturnNode#isYield():::Return true if is a YIELD node.:::return->isTokenType
+ReturnNode#getExpression():::Get the expression this node returns:::return
+ReturnNode#setExpression(Expression):::Reset the expression this node returns:::if->return->return->new->ReturnNode
+RuntimeNode#setRequest(Request):::Reset the request for this runtime node:::if->return->return->new->RuntimeNode
+RuntimeNode#getType():::Return type for the ReferenceNode:::return->request->getReturnType
+RuntimeNode#getArgs():::Get the arguments for this runtime node:::return->Collections->unmodifiableList
+RuntimeNode#setArgs(List):::Set the arguments of this runtime node:::if->return->return->new->RuntimeNode
+RuntimeNode#getRequest():::Get the request that this runtime node implements:::return
+RuntimeNode#isPrimitive():::Is this runtime node, engineered to handle the "at least one object" case of the defined requests and specialize on demand, really primitive:::foreach->if->arg->getType->isObject->return->return
+SetSplitState#getState():::Returns the state this setter sets.:::return
+SplitNode#getBody():::Get the body for this split node - i.e:::return
+SplitNode#getName():::Get the name for this split node:::return
+SplitNode#getCompileUnit():::Get the compile unit for this split node:::return
+SplitNode#setCompileUnit(LexicalContext, CompileUnit):::Set the compile unit for this split node:::if->return->return->Node->new->SplitNode->replaceInLexicalContext
+Splittable#getSplitRanges():::Get a list of split ranges for this splittable expression, or null if the expression should not be split.:::
+Splittable.SplitRange#getHigh():::Get the high index position of the ArrayUnit (exclusive):::return
+Splittable.SplitRange#getLow():::Get the low index position of the ArrayUnit (inclusive):::return
+Splittable.SplitRange#getCompileUnit():::The array compile unit:::return
+Statement#getLineNumber():::Return the line number:::return
+Statement#isTerminal():::Is this a terminal statement, i.e:::return
+Statement#hasGoto():::Check if this statement repositions control flow with goto like semantics, for example BreakNode or a ForNode with no test:::return
+Statement#hasTerminalFlags():::Check if this statement has terminal flags, i.e:::return->isTerminal->hasGoto
+SwitchNode#getDefaultCase():::Return the case node that is default case:::return->cases->get
+SwitchNode#getCases():::Get the cases in this switch:::return->Collections->unmodifiableList
+SwitchNode#setCases(LexicalContext, List):::Replace case nodes with new list:::return->setCases
+SwitchNode#setCases(LexicalContext, List, CaseNode):::Set or reset the list of cases in this switch:::return->cases->indexOf->setCases
+SwitchNode#getExpression():::Return the expression to switch on:::return
+SwitchNode#setExpression(LexicalContext, Expression):::Set or reset the expression to switch on:::if->return->return->Node->new->SwitchNode->replaceInLexicalContext
+SwitchNode#getTag():::Get the tag symbol for this switch:::return
+SwitchNode#setTag(LexicalContext, Symbol):::Set the tag symbol for this switch:::if->return->return->Node->new->SwitchNode->replaceInLexicalContext
+SwitchNode#isUniqueInteger():::Returns true if all cases of this switch statement are 32-bit signed integer constants, without repetitions.:::return
+SwitchNode#setUniqueInteger(LexicalContext, boolean):::Sets whether all cases of this switch statement are 32-bit signed integer constants, without repetitions.:::if->return->return->Node->new->SwitchNode->replaceInLexicalContext
+Symbol#less(int):::Compare the the symbol kind with another.:::return
+Symbol#setNeedsSlot(boolean):::Allocate a slot for this symbol.:::if->else->return
+Symbol#slotCount():::Return the number of slots required for the symbol.:::return
+Symbol#hasSlot():::Does this symbol have an allocated bytecode slot? Note that having an allocated bytecode slot doesn't necessarily mean the symbol's value will be stored in it:::return
+Symbol#isBytecodeLocal():::Is this symbol a local variable stored in bytecode local variable slots? This is true for a slotted variable that is not in scope:::return->hasSlot->isScope
+Symbol#isDead():::Returns true if this symbol is dead (it is a local variable that is statically proven to never be read in any type).:::return
+Symbol#isScope():::Check if this is a symbol in scope:::return
+Symbol#isFunctionDeclaration():::Check if this symbol is a function declaration:::return
+Symbol#setIsScope():::Flag this symbol as scope as described in Symbol#isScope():::if->isScope->if->shouldTrace->trace->if->isParam->return
+Symbol#setIsFunctionDeclaration():::Mark this symbol as a function declaration.:::if->isFunctionDeclaration->if->shouldTrace->trace
+Symbol#isVar():::Check if this symbol is a variable:::return
+Symbol#isGlobal():::Check if this symbol is a global (undeclared) variable:::return
+Symbol#isParam():::Check if this symbol is a function parameter:::return
+Symbol#isProgramLevel():::Check if this is a program (script) level definition:::return
+Symbol#isConst():::Check if this symbol is a constant:::return
+Symbol#isInternal():::Check if this is an internal symbol, without an explicit JavaScript source code equivalent:::return
+Symbol#isThis():::Check if this symbol represents this:::return
+Symbol#isLet():::Check if this symbol is a let:::return
+Symbol#isFunctionSelf():::Flag this symbol as a function's self-referencing symbol.:::return
+Symbol#isBlockScoped():::Is this a block scoped symbol:::return->isLet->isConst
+Symbol#hasBeenDeclared():::Has this symbol been declared:::return
+Symbol#setHasBeenDeclared():::Mark this symbol as declared:::if->hasBeenDeclared
+Symbol#getFieldIndex():::Get the index of the field used to store this symbol, should it be an AccessorProperty and get allocated in a JO-prefixed ScriptObject subclass.:::return
+Symbol#setFieldIndex(int):::Set the index of the field used to store this symbol, should it be an AccessorProperty and get allocated in a JO-prefixed ScriptObject subclass.:::if->return
+Symbol#getFlags():::Get the symbol flags:::return
+Symbol#setFlags(int):::Set the symbol flags:::if->return
+Symbol#setFlag(int):::Set a single symbol flag:::if->return
+Symbol#clearFlag(int):::Clears a single symbol flag:::if->return
+Symbol#getName():::Get the name of this symbol:::return
+Symbol#getFirstSlot():::Get the index of the first bytecode slot for this symbol:::return
+Symbol#getSlot(Type):::Get the index of the bytecode slot for this symbol for storing a value of the specified type.:::typeSlot->if->type->isBoolean->type->isInteger->return->if->type->isNumber->return->return
+Symbol#hasSlotFor(Type):::Returns true if this symbol has a local variable slot for storing a value of specific type.:::if->type->isBoolean->type->isInteger->return->else->if->type->isNumber->return->return
+Symbol#setHasSlotFor(Type):::Marks this symbol as having a local variable slot for storing a value of specific type.:::if->type->isBoolean->type->isInteger->setFlag->else->if->type->isNumber->setFlag->else->setFlag
+Symbol#increaseUseCount():::Increase the symbol's use count by one.:::if->isScope
+Symbol#getUseCount():::Get the symbol's use count:::return
+Symbol#setFirstSlot(int):::Set the bytecode slot for this symbol:::if->if->shouldTrace->trace->return
+Symbol#setSymbolIsScope(LexicalContext, Symbol):::From a lexical context, set this symbol as needing scope, which will set flags for the defining block that will be written when block is popped from the lexical context stack, used by codegen when flags need to be tagged, but block is in the middle of evaluation and cannot be modified.:::symbol->setIsScope->if->symbol->isGlobal->lc->lc->getDefiningBlock->setBlockNeedsScope->return
+TemplateLiteral#getExpressions():::The list of expressions that are part of this template literal.:::return->Collections->unmodifiableList
+Terminal#isTerminal():::Returns true if this AST node is (or contains) a statement that terminates function control flow.:::
+TernaryNode#getTest():::Get the test expression for this ternary expression, i.e:::return
+TernaryNode#getTrueExpression():::Get the true expression for this ternary expression, i.e:::return
+TernaryNode#getFalseExpression():::Get the false expression for this ternary expression, i.e:::return
+TernaryNode#setTest(Expression):::Set the test expression for this node:::if->return->return->new->TernaryNode
+TernaryNode#setTrueExpression(JoinPredecessorExpression):::Set the true expression for this node:::if->return->return->new->TernaryNode
+TernaryNode#setFalseExpression(JoinPredecessorExpression):::Set the false expression for this node:::if->return->return->new->TernaryNode
+ThrowNode#accept(NodeVisitor):::Assist in IR navigation.:::if->visitor->enterThrowNode->return->visitor->expression->accept->setExpression->leaveThrowNode->return
+ThrowNode#getExpression():::Get the expression that is being thrown by this node:::return
+ThrowNode#setExpression(Expression):::Reset the expression being thrown by this node:::if->return->return->new->ThrowNode
+ThrowNode#isSyntheticRethrow():::Is this a throw a synthetic rethrow in a synthetic catch-all block created when inlining finally statements? In that case we never wrap whatever is thrown into an ECMAException, just rethrow it.:::return
+TryNode#accept(LexicalContext, NodeVisitor):::Assist in IR navigation.:::if->visitor->enterTryNode->newFinallyBody->finallyBody->accept->newBody->body->accept->return->visitor->setBody->setFinallyBody->Node->accept->setCatchBlocks->Node->accept->setInlinedFinallies->leaveTryNode->return
+TryNode#getBody():::Get the body for this try block:::return
+TryNode#setBody(LexicalContext, Block):::Reset the body of this try block:::if->return->return->Node->new->TryNode->replaceInLexicalContext
+TryNode#getCatches():::Get the catches for this try block:::catches->catchBlocks->size->new->ArrayList<>->foreach->catches->getCatchNodeFromBlock->add->return->Collections->unmodifiableList
+TryNode#getCatchBlocks():::Get the catch blocks for this try block:::return->Collections->unmodifiableList
+TryNode#setCatchBlocks(LexicalContext, List):::Set the catch blocks of this try:::if->return->return->Node->new->TryNode->replaceInLexicalContext
+TryNode#getException():::Get the exception symbol for this try block:::return
+TryNode#setException(LexicalContext, Symbol):::Set the exception symbol for this try block:::if->return->return->Node->new->TryNode->replaceInLexicalContext
+TryNode#getFinallyBody():::Get the body of the finally clause for this try:::return
+TryNode#getInlinedFinally(String):::Get the inlined finally block with the given label name:::foreach->labelNode->getInlinedFinallyLabelNode->if->labelNode->getLabelName->equals->return->labelNode->getBody->return
+TryNode#getLabelledInlinedFinallyBlock(Block):::Given an outer wrapper block for the LabelNode as returned by #getInlinedFinallies(), returns its actual inlined finally block.:::return->getInlinedFinallyLabelNode->getBody
+TryNode#getInlinedFinallies():::Returns a list of inlined finally blocks:::return->Collections->unmodifiableList
+TryNode#setFinallyBody(LexicalContext, Block):::Set the finally body of this try:::if->return->return->Node->new->TryNode->replaceInLexicalContext
+TryNode#setInlinedFinallies(LexicalContext, List):::Set the inlined finally blocks of this try:::if->return->return->Node->new->TryNode->replaceInLexicalContext
+UnaryNode#isAssignment():::Is this an assignment - i.e:::switch->tokenType->return->return
+UnaryNode#accept(NodeVisitor):::Assist in IR navigation.:::if->visitor->enterUnaryNode->return->visitor->expression->accept->setExpression->leaveUnaryNode->return
+UnaryNode#toString(StringBuilder, Runnable, boolean):::Creates the string representation of this unary node, delegating the creation of the string representation of its operand to a specified runnable.:::tokenType->tokenType->name->tokenType->getName->isPostfix->if->isOptimistic->sb->append->rhsParen->tokenType->getExpression->tokenType->needsParens->if->if->sb->tokenType->name->append->else->sb->append->if->tokenType->ordinal->BIT_NOT->ordinal->sb->append->if->sb->append->rhsStringBuilder->run->if->sb->append->if->sb->append
+UnaryNode#getExpression():::Get the right hand side of this if it is inherited by a binary expression, or just the expression itself if still Unary:::return
+UnaryNode#setExpression(Expression):::Reset the right hand side of this if it is inherited by a binary expression, or just the expression itself if still Unary:::if->return->return->new->UnaryNode
+VarNode#isBlockScoped():::Is this a VAR node block scoped? This returns true for ECMAScript 6 LET and CONST nodes.:::return->getFlag->getFlag
+VarNode#isLet():::Is this an ECMAScript 6 LET node?:::return->getFlag
+VarNode#isConst():::Is this an ECMAScript 6 CONST node?:::return->getFlag
+VarNode#getSymbolFlags():::Return the flags to use for symbols for this declaration.:::if->isLet->return->else->if->isConst->return->return
+VarNode#hasInit():::Does this variable declaration have an init value:::return
+VarNode#accept(NodeVisitor):::Assist in IR navigation.:::if->visitor->enterVarNode->newInit->init->accept->newName->name->accept->newThis->if->new->VarNode->else->return->visitor->leaveVarNode->return
+VarNode#getInit():::If this is an assignment of the form var x = init;, get the init part.:::return
+VarNode#setInit(Expression):::Reset the initialization expression:::if->return->return->new->VarNode
+VarNode#getName():::Get the identifier for the variable:::return
+VarNode#setName(IdentNode):::Reset the identifier for this VarNode:::if->return->return->new->VarNode
+VarNode#getFlag(int):::Check if a flag is set for this var node:::return
+VarNode#setFlag(int):::Set a flag for this var node:::return->setFlags
+VarNode#isFunctionDeclaration():::Returns true if this is a function declaration.:::return->isDeclared
+WhileNode#isDoWhile():::Check if this is a do while loop or a normal while loop:::return
+WithNode#accept(LexicalContext, NodeVisitor):::Assist in IR navigation.:::if->visitor->enterWithNode->return->visitor->expression->accept->setExpression->body->accept->setBody->leaveWithNode->return
+WithNode#getBody():::Get the body of this WithNode:::return
+WithNode#setBody(LexicalContext, Block):::Reset the body of this with node:::if->return->return->Node->new->WithNode->replaceInLexicalContext
+WithNode#getExpression():::Get the expression of this WithNode:::return
+WithNode#setExpression(LexicalContext, Expression):::Reset the expression of this with node:::if->return->return->Node->new->WithNode->replaceInLexicalContext

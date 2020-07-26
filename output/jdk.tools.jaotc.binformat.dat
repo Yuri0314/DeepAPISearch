@@ -1,0 +1,15 @@
+BinaryContainer#freeMemory():::Free some memory.:::offsetStringTable->clear->metaspaceNames->clear
+BinaryContainer#getAOTSymbolForVMFunctionName(String):::Gets the global AOT symbol associated with the function name.:::return->functionNamesToAOTSymbols->get
+BinaryContainer#createBinary(String):::Create a platform-specific binary file representing the content of the BinaryContainer object:::osName->System->getProperty->switch->elfobj->JELFRelocObject->newInstance->elfobj->symbolTable->values->createELFRelocObject->break->machobj->new->JMachORelocObject->machobj->symbolTable->values->createMachORelocObject->break->if->osName->startsWith->pecoffobj->new->JPECoffRelocObject->pecoffobj->symbolTable->values->createPECoffRelocObject->break->else->throw->new->InternalError
+BinaryContainer#addSymbol(Symbol):::Add symbol to the symbol table:::if->symInfo->getName->startsWith->throw->new->InternalError->if->symbolTable->symInfo->getName->containsKey->throw->symInfo->getName->new->InternalError->else->symbolTable->symInfo->getName->put
+BinaryContainer#addRelocation(Relocation):::Add relocation entry for symName:::if->relocationTable->info->getSymbol->containsKey->relocationTable->info->getSymbol->get->add->else->if->uniqueRelocationTable->info->getSymbol->containsKey->list->new->ArrayList<>->list->uniqueRelocationTable->info->getSymbol->get->add->list->add->relocationTable->info->getSymbol->put->uniqueRelocationTable->info->getSymbol->remove->else->uniqueRelocationTable->info->getSymbol->put
+BinaryContainer#getSymbol(String):::Get symbol with name symName.:::return->symbolTable->get
+BinaryContainer#getStringOffset(String):::Get offset in got section with name symName.:::return->offsetStringTable->get
+BinaryContainer#addOopSymbol(String):::Add oop symbol by as follows:::oopGotOffset->getStringOffset->if->return->return->newOopSymbol
+BinaryContainer#addTwoSlotKlassSymbol(String):::Add klass symbol by as follows:::gotName->previous->getGotSymbol->gotInitName->slot1Symbol->klassesGotContainer->createGotSymbol->slot2Symbol->klassesGotContainer->createGotSymbol->slot1Symbol->getIndex->return->slot2Symbol->getIndex
+BinaryContainer#addConstantData(byte[], int):::Add constant data as follows:::constantDataOffset->alignUp->constantDataContainer->appendBytes->alignUp->return
+ByteContainer#getByteArray():::Get the byte array of ByteContainer.:::if->updateByteBuffer->return->contentBytes->array
+ByteContainer#appendBytes(byte[], int, int):::Append to byte stream:::if->throw->new->InternalError->contentStream->write->return
+ByteContainer#getByteStreamSize():::Return the current size of byte stream backing the BinaryContainer.:::return->contentStream->size
+ByteContainer#getContainerName():::Return the name of this container.:::return
+ByteContainer#putIntAt(int, int):::Modify the byte buffer version of the byte output stream:::if->updateByteBuffer->contentBytes->putInt

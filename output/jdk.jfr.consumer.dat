@@ -1,0 +1,57 @@
+Parser#parse(RecordingInput):::Parses data from a RecordingInput and return an object.:::
+RecordedClass#getModifiers():::Returns the modifiers of the class:::return->getTyped
+RecordedClass#getClassLoader():::Returns the class loader that defined the class:::return->getTyped
+RecordedClass#getName():::Returns the fully qualified name of the class (for example, "java.lang.String").:::return->getTyped->replace
+RecordedClass#getId():::Returns a unique ID for the class:::return
+RecordedClassLoader#getType():::Returns the class of the class loader:::return->getTyped
+RecordedClassLoader#getName():::Returns the name of the class loader (for example, "boot", "platform", and "app").:::return->getTyped
+RecordedClassLoader#getId():::Returns a unique ID for the class loader:::return
+RecordedEvent#getStackTrace():::Returns the stack trace that was created when the event was committed, or null if the event lacks a stack trace.:::return->getTyped
+RecordedEvent#getThread():::Returns the thread from which the event was committed, or null if the thread was not recorded.:::return->getTyped
+RecordedEvent#getEventType():::Returns the event type that describes the event.:::return
+RecordedEvent#getStartTime():::Returns the start time of the event:::return->Instant->ofEpochSecond
+RecordedEvent#getEndTime():::Returns the end time of the event:::return->Instant->ofEpochSecond
+RecordedEvent#getDuration():::Returns the duration of the event, measured in nanoseconds.:::return->Duration->ofNanos
+RecordedEvent#getFields():::Returns the list of descriptors that describes the fields of the event.:::return->getEventType->getFields
+RecordedFrame#isJavaFrame():::Returns true if this is a Java frame, false otherwise:::if->hasField->return->getTyped->return
+RecordedFrame#getBytecodeIndex():::Returns the bytecode index for the execution point that is represented by this recorded frame.:::return->Integer->valueOf->getTyped
+RecordedFrame#getLineNumber():::Returns the line number for the execution point that is represented by this recorded frame, or -1 if doesn't exist:::return->Integer->valueOf->getTyped
+RecordedFrame#getType():::Returns the frame type for the execution point that is represented by this recorded frame (for example, "Interpreted", "JIT compiled" or "Inlined").:::return->getTyped
+RecordedFrame#getMethod():::Returns the method for the execution point that is represented by this recorded frame.:::return->getTyped
+RecordedMethod#getType():::Returns the class this method belongs to, if it belong to a Java frame:::return->getTyped
+RecordedMethod#getName():::Returns the name of this method, for example "toString":::return->getTyped
+RecordedMethod#getDescriptor():::Returns the method descriptor for this method (for example, "(Ljava/lang/String;)V"):::return->getTyped
+RecordedMethod#getModifiers():::Returns the modifiers for this method:::return->Integer->valueOf->getTyped
+RecordedMethod#isHidden():::Returns whether this method is hidden (for example, wrapper code in a lambda expressions).:::return->getTyped
+RecordedObject#hasField(String):::Returns true if a field with the given name exists, false otherwise.:::Objects->requireNonNull->foreach->if->v->getName->equals->return->dotIndex->name->indexOf->if->structName->name->substring->foreach->if->v->getFields->isEmpty->v->getName->equals->child->getValue->if->return->child->name->substring->hasField->return
+RecordedObject#getValue(String):::Returns the value of the field with the given name:::t->getValue->return
+RecordedObject#getFields():::Returns an immutable list of the fields for this object.:::return
+RecordedObject#getBoolean(String):::Returns the value of a field of type boolean:::o->getValue->if->return->booleanValue->throw->newIllegalArgumentException
+RecordedObject#getByte(String):::Returns the value of a field of type byte:::o->getValue->if->return->byteValue->throw->newIllegalArgumentException
+RecordedObject#getChar(String):::Returns the value of a field of type char:::o->getValue->if->return->charValue->throw->newIllegalArgumentException
+RecordedObject#getShort(String):::Returns the value of a field of type short or of another primitive type convertible to type short by a widening conversion:::o->getValue->if->return->shortValue->if->return->byteValue->if->u->value->if->return->shortValue->if->return->Byte->toUnsignedInt->throw->newIllegalArgumentException
+RecordedObject#getInt(String):::Returns the value of a field of type int or of another primitive type that is convertible to type int by a widening conversion:::o->getValue->if->return->intValue->if->return->intValue->if->return->charValue->if->return->intValue->if->u->value->if->return->intValue->if->return->Short->toUnsignedInt->if->return->Byte->toUnsignedInt->throw->newIllegalArgumentException
+RecordedObject#getFloat(String):::Returns the value of a field of type float or of another primitive type convertible to type float by a widening conversion:::o->getValue->if->return->floatValue->if->return->floatValue->if->return->floatValue->if->return->floatValue->if->return->byteValue->if->return->charValue->throw->newIllegalArgumentException
+RecordedObject#getLong(String):::Returns the value of a field of type long or of another primitive type that is convertible to type long by a widening conversion:::o->getValue->if->return->longValue->if->return->longValue->if->return->longValue->if->return->charValue->if->return->longValue->if->u->value->if->return->Integer->toUnsignedLong->if->return->Short->toUnsignedLong->if->return->Byte->toUnsignedLong->throw->newIllegalArgumentException
+RecordedObject#getDouble(String):::Returns the value of a field of type double or of another primitive type that is convertible to type double by a widening conversion:::o->getValue->if->return->doubleValue->if->return->doubleValue->if->return->doubleValue->if->return->doubleValue->if->return->doubleValue->if->return->byteValue->if->return->charValue->throw->newIllegalArgumentException
+RecordedObject#getString(String):::Returns the value of a field of type String:::return->getTypedValue
+RecordedObject#getDuration(String):::Returns the value of a timespan field:::o->getValue->if->return->longValue->getDuration->if->return->longValue->getDuration->if->return->longValue->getDuration->if->return->charValue->getDuration->if->return->longValue->getDuration->if->u->value->if->return->Integer->toUnsignedLong->getDuration->if->return->Short->toUnsignedLong->getDuration->if->return->Short->toUnsignedLong->getDuration->throw->newIllegalArgumentException
+RecordedObject#getInstant(String):::Returns the value of a timestamp field:::o->getValue->if->return->longValue->getInstant->if->return->longValue->getInstant->if->return->longValue->getInstant->if->return->charValue->getInstant->if->return->longValue->getInstant->if->u->value->if->return->Integer->toUnsignedLong->getInstant->if->return->Short->toUnsignedLong->getInstant->if->return->Short->toUnsignedLong->getInstant->throw->newIllegalArgumentException
+RecordedObject#getClass(String):::Returns the value of a field of type Class:::return->getTypedValue
+RecordedObject#getThread(String):::Returns the value of a field of type Thread:::return->getTypedValue
+RecordedObject#toString():::Returns a textual representation of this object.:::s->new->StringWriter->p->new->PrintWriter->new->PrettyWriter->p->setStackDepth->if->p->print->else->p->print->p->flush->return->s->toString
+RecordedStackTrace#getFrames():::Returns the frames in the stack trace.:::array->getTyped->if->return->list->Arrays->asList->return
+RecordedStackTrace#isTruncated():::Returns true if the stack trace is truncated due to its size, false otherwise.:::return->getTyped
+RecordedThread#getOSName():::Returns the thread name used by the operating system.:::return->getTyped
+RecordedThread#getOSThreadId():::Returns the thread ID used by the operating system.:::l->getTyped->return->l->longValue
+RecordedThread#getThreadGroup():::Returns the Java thread group, if available.:::return->getTyped
+RecordedThread#getJavaName():::Returns the Java thread name, or null if if doesn't exist:::return->getTyped
+RecordedThread#getJavaThreadId():::Returns the Java thread ID, or -1 if it's not a Java thread.:::l->getTyped->return->l->longValue
+RecordedThread#getId():::Returns a unique ID for both native threads and Java threads that can't be reused within the lifespan of the JVM:::return
+RecordedThreadGroup#getName():::Returns the name of the thread group, or null if doesn't exist.:::return->getTyped
+RecordedThreadGroup#getParent():::Returns the parent thread group, or null if it doesn't exist.:::return->getTyped
+RecordingFile#readEvent():::Reads the next event in the recording.:::if->ensureOpen->throw->new->EOFException->event->chunkParser->readEvent->if->findNext->return
+RecordingFile#hasMoreEvents():::Returns true if unread events exist in the recording file, false otherwise.:::return
+RecordingFile#readEventTypes():::Returns a list of all event types in this recording.:::ensureOpen->types->new->ArrayList<>->foundIds->new->HashSet<>->try->ri->new->RecordingInput->ch->new->ChunkHeader->aggregateEventTypeForChunk->while->ch->isLastChunk->ch->nextHeader->aggregateEventTypeForChunk->catch->finally->return
+RecordingFile#close():::Closes this recording file and releases any system resources that are associated with it.:::if->input->close
+RecordingFile#readAllEvents(Path):::Returns a list of all events in a file:::try->r->new->RecordingFile->list->new->ArrayList<>->while->r->hasMoreEvents->list->r->readEvent->add->return->catch->finally

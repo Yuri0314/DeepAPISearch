@@ -1,0 +1,108 @@
+AnyElements#getElementWeight():::Return a numeric weight of the element type - wider is higher:::
+ArrayData#initialArray():::Factory method for unspecified array - start as int:::return->new->IntArrayData
+ArrayData#throwUnwarranted(ArrayData, int, int):::Unwarranted thrower:::throw->data->getObject->new->UnwarrantedOptimismException
+ArrayData#alignUp(int):::Align an array size up to the nearest array chunk size:::return
+ArrayData#allocate(long):::Factory method for unspecified array with given length - start as int array data:::if->return->new->IntArrayData->else->if->return->new->SparseArrayData->else->return->new->IntArrayData->new->DeletedRangeArrayFilter
+ArrayData#allocate(Object):::Factory method for unspecified given an array object:::clazz->array->getClass->if->return->new->IntArrayData->else->if->return->new->NumberArrayData->else->return->new->ObjectArrayData
+ArrayData#allocate(int[]):::Allocate an ArrayData wrapping a given array:::return->new->IntArrayData
+ArrayData#allocate(double[]):::Allocate an ArrayData wrapping a given array:::return->new->NumberArrayData
+ArrayData#allocate(Object[]):::Allocate an ArrayData wrapping a given array:::return->new->ObjectArrayData
+ArrayData#allocate(ByteBuffer):::Allocate an ArrayData wrapping a given nio ByteBuffer:::return->new->ByteBufferArrayData
+ArrayData#freeze(ArrayData):::Apply a freeze filter to an ArrayData.:::return->new->FrozenArrayFilter
+ArrayData#seal(ArrayData):::Apply a seal filter to an ArrayData.:::return->new->SealedArrayFilter
+ArrayData#preventExtension(ArrayData):::Prevent this array from being extended:::return->new->NonExtensibleArrayFilter
+ArrayData#setIsLengthNotWritable(ArrayData):::Prevent this array from having its length reset:::return->new->LengthNotWritableFilter
+ArrayData#length():::Return the length of the array data:::return
+ArrayData#copy():::Return a copy of the array that can be modified without affecting this instance:::
+ArrayData#asObjectArray():::Return a copy of the array data as an Object array.:::
+ArrayData#asArrayOfType(Class):::Return a copy of the array data as an array of the specified type.:::return->JSType->asObjectArray->convertArray
+ArrayData#setLength(long):::Set the length of the data array:::
+ArrayData#increaseLength():::Increase length by 1:::return
+ArrayData#decreaseLength():::Decrease length by 1.:::return
+ArrayData#shiftLeft(int):::Shift the array data left  TODO: This is used for Array.prototype.shift() which only shifts by 1, so we might consider dropping the offset parameter.:::
+ArrayData#shiftRight(int):::Shift the array right:::
+ArrayData#ensure(long):::Ensure that the given index exists and won't fail in a subsequent access:::
+ArrayData#shrink(long):::Shrink the array to a new length, may or may not retain the inner array:::
+ArrayData#set(int, Object, boolean):::Set an object value at a given index:::
+ArrayData#set(int, int, boolean):::Set an int value at a given index:::
+ArrayData#set(int, double, boolean):::Set an double value at a given index:::
+ArrayData#setEmpty(int):::Set an empty value at a given index:::return
+ArrayData#setEmpty(long, long):::Set an empty value for a given range:::return
+ArrayData#getInt(int):::Get an int value from a given index:::
+ArrayData#getOptimisticType():::Returns the optimistic type of this array data:::return
+ArrayData#getIntOptimistic(int, int):::Get optimistic int - default is that it's impossible:::throw->getObject->getOptimisticType->new->UnwarrantedOptimismException
+ArrayData#getDouble(int):::Get a double value from a given index:::
+ArrayData#getDoubleOptimistic(int, int):::Get optimistic double - default is that it's impossible:::throw->getObject->getOptimisticType->new->UnwarrantedOptimismException
+ArrayData#getObject(int):::Get an Object value from a given index:::
+ArrayData#has(int):::Tests to see if an entry exists (avoids boxing.):::
+ArrayData#canDelete(int, boolean):::Returns if element at specific index can be deleted or not.:::return
+ArrayData#canDelete(long, boolean):::Returns if element at specific index can be deleted or not.:::return
+ArrayData#safeDelete(long, long, boolean):::Delete a range from the array if fromIndex is less than or equal to toIndex and the array supports deletion.:::if->canDelete->return->delete->return
+ArrayData#getDescriptor(Global, int):::Returns property descriptor for element at a given index:::return->global->getObject->newDataDescriptor
+ArrayData#delete(int):::Delete an array value at the given index, substituting for an undefined:::
+ArrayData#delete(long, long):::Delete a given range from this array;:::
+ArrayData#convert(Class):::Convert the ArrayData to one with a different element type Currently Arrays are not collapsed to narrower types, just to wider ones:::
+ArrayData#push(boolean, Object...):::Push an array of items to the end of the array:::if->return->widest->widestType->newData->convert->pos->foreach->newData->ensure->newData->set->return
+ArrayData#push(boolean, Object):::Push an array of items to the end of the array:::return->new->ObjectArr->push
+ArrayData#pop():::Pop an element from the end of the array:::
+ArrayData#slice(long, long):::Slice out a section of the array and return that subsection as a new array data: [from, to):::
+ArrayData#fastSplice(int, int, int):::Fast splice operation:::throw->new->UnsupportedOperationException
+ArrayData#computeIteratorKeys():::Return a list of keys in the array for the iterators:::keys->new->ArrayList<>->len->length->for->i->nextIndex->return
+ArrayData#indexIterator():::Return an iterator that goes through all indexes of elements in this array:::return->computeIteratorKeys->iterator
+ArrayData#nextSize(int):::Exponential growth function for array size when in need of resizing.:::return->alignUp
+ArrayData#nextIndex(long):::Return the next valid index from a given one:::return
+ArrayData#findFastCallMethod(Class, CallSiteDescriptor, LinkRequest):::Find a fast call if one exists:::return
+ArrayData#findFastGetIndexMethod(Class, CallSiteDescriptor, LinkRequest):::Find a fast element getter if one exists:::return
+ArrayData#findFastSetIndexMethod(Class, CallSiteDescriptor, LinkRequest):::Find a fast element setter if one exists:::return
+ArrayFilter#getUnderlying():::Get the underlying ArrayData that this filter wraps:::return
+ArrayIndex#getArrayIndex(Object):::Returns a valid array index in an int, if the object represents one:::if->return->intValue->getArrayIndex->else->if->return->doubleValue->getArrayIndex->else->if->return->fromString->else->if->return->longValue->getArrayIndex->else->if->return->key->toString->fromString->return
+ArrayIndex#getArrayIndex(int):::Returns a valid array index in an int, if key represents one.:::return
+ArrayIndex#getArrayIndex(long):::Returns a valid array index in an int, if the long represents one.:::if->return->return
+ArrayIndex#getArrayIndex(double):::Return a valid index for this double, if it represents one:::if->JSType->isRepresentableAsInt->return->getArrayIndex->else->if->JSType->isRepresentableAsLong->return->getArrayIndex->return
+ArrayIndex#getArrayIndex(String):::Return a valid array index for this string, if it represents one.:::return->fromString
+ArrayIndex#isValidArrayIndex(int):::Check whether an index is valid as an array index:::return
+ArrayIndex#toLongIndex(int):::Convert an index to a long value:::return->JSType->toUint32
+ArrayIndex#toKey(int):::Convert an index to a key string:::return->Long->JSType->toUint32->toString
+ArrayLikeIterator#isReverse():::Is this a reverse order iteration?:::return
+ArrayLikeIterator#bumpIndex():::Go the the next valid element index of the iterator:::return
+ArrayLikeIterator#nextIndex():::Return the next valid element index of the iterator:::return
+ArrayLikeIterator#getLength():::Get the length of the iteration:::
+ArrayLikeIterator#arrayLikeIterator(Object):::ArrayLikeIterator factory:::return->arrayLikeIterator
+ArrayLikeIterator#reverseArrayLikeIterator(Object):::ArrayLikeIterator factory (reverse order):::return->reverseArrayLikeIterator
+ArrayLikeIterator#arrayLikeIterator(Object, boolean):::ArrayLikeIterator factory:::obj->if->ScriptObject->isArray->return->new->ScriptArrayIterator->JSType->toScriptObject->if->return->new->ScriptObjectIterator->if->return->new->JSObjectIterator->if->return->new->JavaListIterator->if->obj->getClass->isArray->return->new->JavaArrayIterator->return->new->EmptyArrayLikeIterator
+ArrayLikeIterator#reverseArrayLikeIterator(Object, boolean):::ArrayLikeIterator factory (reverse order):::obj->if->ScriptObject->isArray->return->new->ReverseScriptArrayIterator->JSType->toScriptObject->if->return->new->ReverseScriptObjectIterator->if->return->new->ReverseJSObjectIterator->if->return->new->ReverseJavaListIterator->if->obj->getClass->isArray->return->new->ReverseJavaArrayIterator->return->new->EmptyArrayLikeIterator
+ByteBufferArrayData#getDescriptor(Global, int):::Returns property descriptor for element at a given index:::return->global->getObject->newDataDescriptor
+ContinuousArrayData#hasRoomFor(int):::Check if we can put one more element at the end of this continuous array without reallocating, or if we are overwriting an already allocated element:::return->has->length->ensure
+ContinuousArrayData#isEmpty():::Check if an arraydata is empty:::return->length
+ContinuousArrayData#getElementGetter(Class, int):::Return element getter for a certain type at a certain program point:::
+ContinuousArrayData#getElementSetter(Class):::Return element getter for a certain type at a certain program point:::
+ContinuousArrayData#throwHas(int):::Version of has that throws a class cast exception if element does not exist used for relinking:::if->has->throw->new->ClassCastException->return
+ContinuousArrayData#getElementType():::Returns the type used to store an element in this array:::
+ContinuousArrayData#getBoxedElementType():::Returns the boxed type of the type used to store an element in this array:::
+ContinuousArrayData#widest(ContinuousArrayData):::Get the widest element type of two arrays:::elementType->getElementType->return->Type->otherData->getElementType->widest
+ContinuousArrayData#getContinuousElementGetter(MethodHandle, Class, int):::Look up a continuous array element getter:::return->getClass->getContinuousElementGetter
+ContinuousArrayData#getContinuousElementSetter(MethodHandle, Class):::Look up a continuous array element setter:::return->getClass->getContinuousElementSetter
+ContinuousArrayData#getContinuousElementGetter(Class, MethodHandle, Class, int):::Return element getter for a ContinuousArrayData:::isOptimistic->isValid->fti->getHas->type->returnType->getAccessorTypeIndex->ti->getAccessorTypeIndex->mh->if->if->MH->methodHandle->insertArguments->MH->mh->type->changeReturnType->changeParameterType->asType->if->return->Lookup->filterReturnType->return
+ContinuousArrayData#getContinuousElementSetter(Class, MethodHandle, Class):::Return element setter for a ContinuousArrayData:::return->MH->setHas->type->changeParameterType->changeParameterType->asType
+ContinuousArrayData#findFastGetIndexMethod(Class, CallSiteDescriptor, LinkRequest):::Return a fast linked array getter, or null if we have to dispatch to super class:::callType->desc->getMethodType->indexType->callType->parameterType->returnType->callType->returnType->if->isAssignableFrom->args->request->getArguments->index->if->has->getArray->methodHandle->programPoint->NashornCallSiteDescriptor->isOptimistic->NashornCallSiteDescriptor->getProgramPoint->getElement->getElementGetter->if->MH->MH->getArray->type->changeReturnType->asType->filterArguments->guard->MH->insertArguments->return->new->GuardedInvocation->return
+ContinuousArrayData#findFastSetIndexMethod(Class, CallSiteDescriptor, LinkRequest):::Return a fast linked array setter, or null if we have to dispatch to super class:::callType->desc->getMethodType->indexType->callType->parameterType->elementType->callType->parameterType->if->isAssignableFrom->args->request->getArguments->index->if->hasRoomFor->setElement->getElementSetter->if->getArray->methodHandle->MH->getArray->type->getClass->changeReturnType->asType->MH->filterArguments->guard->MH->insertArguments->return->new->GuardedInvocation->return
+ContinuousArrayData#fastPush(int):::Specialization - fast push implementation:::throw->String->getClass->valueOf->new->ClassCastException
+ContinuousArrayData#fastPush(long):::Specialization - fast push implementation:::throw->String->getClass->valueOf->new->ClassCastException
+ContinuousArrayData#fastPush(double):::Specialization - fast push implementation:::throw->String->getClass->valueOf->new->ClassCastException
+ContinuousArrayData#fastPush(Object):::Specialization - fast push implementation:::throw->String->getClass->valueOf->new->ClassCastException
+ContinuousArrayData#fastPopInt():::Specialization - fast pop implementation:::throw->String->getClass->valueOf->new->ClassCastException
+ContinuousArrayData#fastPopDouble():::Specialization - fast pop implementation:::throw->String->getClass->valueOf->new->ClassCastException
+ContinuousArrayData#fastPopObject():::Specialization - fast pop implementation:::throw->String->getClass->valueOf->new->ClassCastException
+ContinuousArrayData#fastConcat(ContinuousArrayData):::Specialization - fast concat implementation:::throw->String->getClass->valueOf->String->otherData->getClass->valueOf->new->ClassCastException
+IteratorAction#applyLoopBegin(ArrayLikeIterator):::An action to be performed once at the start of the apply loop:::
+IteratorAction#apply():::Apply action main loop.:::strict->Bootstrap->isStrictCallable->Context->getGlobal->applyLoopBegin->reverse->iter->isReverse->while->iter->hasNext->val->iter->next->iter->nextIndex->try->if->forEach->return->catch->throw->throw->new->RuntimeException->finally->return
+IteratorAction#forEach(Object, double):::For each callback:::
+JavaArrayIterator#indexInArray():::Is the current index still inside the array:::return
+JavaListIterator#indexInArray():::Is the current index still inside the array:::return
+LengthNotWritableFilter#setLength(long):::Set the length of the data array:::
+ScriptArrayIterator#indexInArray():::Is the current index still inside the array:::return
+TypedArrayData#getElementLength():::Length in number of elements:::return->length
+TypedArrayData#isUnsigned():::Is this an unsigned array data?:::return
+TypedArrayData#isClamped():::Is this a clamped array data?:::return
+TypedArrayData#getGetElem():::Element getter method handle:::
+TypedArrayData#getSetElem():::Element setter method handle:::

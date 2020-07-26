@@ -1,0 +1,25 @@
+LogHandler#initialSnapshot():::Creates and returns the initial state of data structure that needs to be stably stored:::
+LogHandler#snapshot(OutputStream, Object):::Writes the snapshot object to a stream:::s->new->MarshalOutputStream->s->writeObject->s->flush
+LogHandler#writeUpdate(LogOutputStream, Object):::Writes the representation (a serializable object) of an update to a stream:::s->new->MarshalOutputStream->s->writeObject->s->flush
+LogHandler#readUpdate(LogInputStream, Object):::Reads a stably logged update (a serializable object) from a stream:::s->new->MarshalInputStream->return->s->readObject->applyUpdate
+LogHandler#applyUpdate(Object, Object):::Reads a stably logged update (a serializable object) from a stream:::
+LogInputStream#read():::Reads a byte of data:::if->return->c->in->read->return
+LogInputStream#read(byte[]):::Reads data into an array of bytes:::return->read
+LogInputStream#read(byte[], int, int):::Reads data into an array of bytes:::if->return->n->in->read->return
+LogInputStream#skip(long):::Skips n bytes of input.:::if->throw->new->IOException->if->return->in->skip->return
+LogInputStream#available():::Returns the number of bytes that can be read without blocking.:::avail->in->available->return
+LogInputStream#close():::Closes the input stream:::
+LogInputStream#finalize():::Closes the stream when garbage is collected.:::close
+LogOutputStream#write(int):::Writes a byte of data:::raf->write
+LogOutputStream#write(byte[]):::Writes an array of bytes:::raf->write
+LogOutputStream#write(byte[], int, int):::Writes a sub array of bytes.:::raf->write
+LogOutputStream#close():::Can not close a LogOutputStream, so this does nothing.:::
+ReliableLog#recover():::Returns an object which is the value recorded in the current snapshot:::if->println->if->return->snapshot->fname->versionName->snapshotFile->new->File->in->new->FileInputStream->new->BufferedInputStream->if->println->try->try->handler->recover->catch->throw->if->println->throw->new->IOException->finally->snapshotFile->length->catch->finally->in->close->return->recoverUpdates
+ReliableLog#update(Object):::Records this update in the log file (does not force update to disk):::update
+ReliableLog#update(Object, boolean):::Records this update in the log file:::if->throw->new->IOException->entryStart->log->getFilePointer->spansBoundary->log->checkSpansBoundary->writeInt->try->handler->new->LogOutputStream->writeUpdate->catch->throw->throw->new->IOException->initCause->finally->log->sync->entryEnd->log->getFilePointer->updateLen->log->seek->if->writeInt->log->sync->log->seek->log->writeByte->log->sync->else->writeInt->log->sync->log->seek->System->currentTimeMillis
+ReliableLog#snapshot(Object):::Records this value as the current snapshot by invoking the client supplied "snapshot" callback and then empties the log.:::oldVersion->incrVersion->fname->versionName->snapshotFile->new->File->out->new->FileOutputStream->try->try->handler->snapshot->catch->throw->throw->new->IOException->finally->System->currentTimeMillis->catch->finally->out->close->snapshotFile->length->openLogFile->writeVersionFile->commitToNewVersion->deleteSnapshot->deleteLogFile
+ReliableLog#close():::Close the stable storage directory in an orderly manner.:::if->return->try->log->close->catch->finally
+ReliableLog#snapshotSize():::Returns the size of the snapshot file in bytes;:::return
+ReliableLog#logSize():::Returns the size of the log file in bytes;:::return
+ReliableLog.LogFile#sync():::Invokes sync on the file descriptor for this log file.:::fd->sync
+ReliableLog.LogFile#checkSpansBoundary(long):::Returns true if writing 4 bytes starting at the specified file position, would span a 512 byte sector boundary; otherwise returns false.:::return

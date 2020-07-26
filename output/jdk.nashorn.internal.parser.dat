@@ -1,0 +1,129 @@
+AbstractParser#getToken(int):::Get the ith token.:::while->stream->last->if->stream->isFull->stream->grow->lexer->lexify->return->stream->get
+AbstractParser#TokenType T(int):::Return the tokenType of the ith token.:::return->Token->getToken->descType
+AbstractParser#next():::Seek next token that is not an EOL or comment.:::do->nextOrEOL->while->return
+AbstractParser#nextOrEOL():::Seek next token or EOL (skipping comments.):::do->nextToken->if->checkDirectiveComment->while->return
+AbstractParser#message(String, String...):::Get the message string for a message ID and arguments:::return->ECMAErrors->getMessage
+AbstractParser#error(String, long):::Report an error.:::return->error
+AbstractParser#error(JSErrorType, String, long):::Report an error.:::position->Token->descPosition->lineNum->source->getLine->columnNum->source->getColumn->formatted->ErrorManager->format->return->new->ParserException
+AbstractParser#error(String):::Report an error.:::return->error
+AbstractParser#error(JSErrorType, String):::Report an error.:::position->Token->descPosition->column->formatted->ErrorManager->format->return->new->ParserException
+AbstractParser#warning(JSErrorType, String, long):::Report a warning to the error manager.:::errors->error->warning
+AbstractParser#expectMessage(TokenType):::Generate 'expected' message.:::tokenString->Token->toString->msg->if->AbstractParser->message->else->expectedName->expected->getNameOrType->AbstractParser->message->return
+AbstractParser#expect(TokenType):::Check current token and advance to the next token.:::expectDontAdvance->next
+AbstractParser#expectDontAdvance(TokenType):::Check current token, but don't advance to the next token.:::if->throw->expectMessage->error
+AbstractParser#expectValue(TokenType):::Check next token, get its value and advance.:::if->throw->expectMessage->error->value->getValue->next->return
+AbstractParser#getValue():::Get the value of the current token.:::return->getValue
+AbstractParser#getValue(long):::Get the value of a specific token:::try->return->lexer->getValueOf->catch->errors->error->finally->return
+AbstractParser#isNonStrictModeIdent():::Certain future reserved words can be used as identifiers in non-strict mode:::return->type->getKind
+AbstractParser#getIdent():::Get ident.:::identToken->if->isNonStrictModeIdent->Token->recast->ident->getValue->next->return->createIdentNode->setIsFutureStrictName->ident->expectValue->if->return->return->createIdentNode
+AbstractParser#createIdentNode(long, int, String):::Creates a new IdentNode as if invoked with a IdentNode#IdentNode(long, int, String) constructor but making sure that the name is deduplicated within this parse job.:::existingName->canonicalNames->putIfAbsent->canonicalName->return->new->IdentNode
+AbstractParser#isIdentifierName():::Check if current token is in identifier name:::kind->type->getKind->if->return->if->switch->return->return->identToken->Token->recast->ident->getValue->return->ident->isEmpty->Character->ident->charAt->isJavaIdentifierStart
+AbstractParser#getIdentifierName():::Create an IdentNode from the current token:::if->return->getIdent->else->if->isIdentifierName->identToken->Token->recast->ident->getValue->next->return->createIdentNode->else->expect->return
+AbstractParser#getLiteral():::Create a LiteralNode from the current token:::literalToken->value->getValue->next->node->if->LiteralNode->newInstance->else->if->LiteralNode->newInstance->else->if->LiteralNode->newInstance->else->if->if->regex->try->RegExpFactory->regex->getExpression->regex->getOptions->validate->catch->throw->e->getMessage->error->finally->LiteralNode->newInstance->else->return
+DateParser#parse():::Try parsing the given string as date according to the extended ISO 8601 format specified in ES5 15.9.1.15:::return->parseEcmaDate->parseLegacyDate
+DateParser#parseEcmaDate():::Try parsing the date string according to the rules laid out in ES5 15.9.1.15:::if->next->while->switch->if->if->return->else->if->checkEcmaField->return->if->skipEcmaDelimiter->return->if->set->break->if->return->switch->if->return->break->if->equals->setTimezone->return->break->return->break->if->peek->return->if->else->if->readTimeZoneOffset->setTimezone->return->break->return->next->return->patchResult
+DateParser#parseLegacyDate():::Try parsing the date using a fuzzy algorithm that can handle a variety of formats:::if->return->if->next->while->switch->if->skipDelimiter->if->setTimeField->return->do->next->if->setTimeField->return->while->isSet->skipDelimiter->else->if->setDateField->return->skipDelimiter->break->if->return->switch->if->setAmPm->return->break->if->setMonth->return->break->if->setTimezone->return->break->return->break->if->skipDelimiter->break->if->peek->return->if->readTimeZoneOffset->setTimezone->return->break->if->skipParentheses->return->break->break->return->next->return->patchResult
+DateParser#getDateFields():::Get the parsed date and time fields as an array of Integers:::return
+JSONParser#quote(String):::Implementation of the Quote(value) operation as defined in the ECMAscript spec:::product->new->StringBuilder->product->append->foreach->value->toCharArray->switch->product->append->break->product->append->break->product->append->break->product->append->break->product->append->break->product->append->break->product->append->break->if->product->Lexer->unicodeEscape->append->break->product->append->break->product->append->return->product->toString
+JSONParser#parse():::Public parse method:::value->parseLiteral->skipWhiteSpace->if->throw->peek->toString->expectedError->return
+Lexer#saveState():::Save the state of the scan.:::return->new->State
+Lexer#restoreState(State):::Restore the state of the scan.:::super->restoreState
+Lexer#add(TokenType, int, int):::Add a new token to the stream.:::if->else->if->stream->Token->toDesc->put->stream->Token->toDesc->put
+Lexer#add(TokenType, int):::Add a new token to the stream.:::add
+Lexer#getWhitespaceRegExp():::Return the String of valid whitespace characters for regular expressions in JavaScript:::return
+Lexer#isJSWhitespace(char):::Test whether a char is valid JavaScript whitespace:::return->isOtherJSWhitespace
+Lexer#isJSEOL(char):::Test whether a char is valid JavaScript end of line:::return
+Lexer#isStringDelimiter(char):::Test if char is a string delimiter, e.g:::return
+Lexer#isWhitespace(char):::Test whether a char is valid JavaScript whitespace:::return->Lexer->isJSWhitespace
+Lexer#isEOL(char):::Test whether a char is valid JavaScript end of line:::return->Lexer->isJSEOL
+Lexer#skipComments():::Skip over comments.:::start->if->if->skip->directiveComment->if->while->atEOF->isEOL->skip->add->return->else->if->skip->while->atEOF->if->isEOL->skipEOL->else->skip->if->atEOF->add->else->skip->add->return->else->if->skip->while->atEOF->isEOL->skip->add->return->return
+Lexer#valueOfPattern(int, int):::Convert a regex token to a token object.:::savePosition->reset->sb->new->StringBuilder->skip->inBrackets->while->atEOF->isEOL->if->sb->append->sb->append->skip->else->if->else->if->sb->append->skip->regex->sb->toString->skip->options->source->scanIdentifier->getString->reset->return->new->RegexToken
+Lexer#canStartLiteral(TokenType):::Return true if the given token can be the beginning of a literal.:::return->token->startsWith->token->startsWith
+Lexer.LineInfoReceiver#lineInfo(int, int):::Receives line information:::
+Lexer#scanLiteral(long, TokenType, LineInfoReceiver):::Check whether the given token represents the beginning of a literal:::if->canStartLiteral->return->if->stream->stream->last->get->return->state->saveState->Token->descPosition->reset->if->return->scanRegEx->else->if->if->return->scanHereString->else->if->Character->isJavaIdentifierStart->return->scanXMLLiteral->return
+Lexer#convertDigit(char, int):::Convert a digit to a integer:::digit->if->else->if->else->if->else->return->return
+Lexer#scanString(boolean):::Scan over a string literal.:::type->quote->skip->stringState->saveState->while->atEOF->isEOL->if->skip->if->isEOL->skipEOL->continue->skip->if->skip->else->Lexer->message->error->if->stringState->setLimit->if->stringState->isEmpty->switch->add->add->editString->add->break->editString->break->add->break->break->else->add
+Lexer#scanNumber():::Scan a number.:::start->type->digit->convertDigit->if->convertDigit->skip->while->convertDigit->skip->else->if->convertDigit->skip->while->convertDigit->skip->else->if->convertDigit->skip->while->convertDigit->skip->else->octal->if->skip->while->convertDigit->skip->if->else->if->if->skip->while->convertDigit->skip->if->skip->if->skip->while->convertDigit->skip->if->Character->isJavaIdentifierStart->Lexer->message->error->add
+Lexer#valueOfXML(int, int):::Convert a regex token to a token object.:::return->source->getString->new->XMLToken
+Lexer#lexify():::Breaks source content down into lex units, adding tokens to the token stream:::while->stream->isFull->skipWhitespace->if->atEOF->if->add->break->if->skipComments->continue->if->skipComments->continue->type->if->convertDigit->scanNumber->else->if->TokenLookup->lookupOperator->if->if->else->if->if->break->typeLength->type->getLength->skip->add->if->canStartLiteral->break->else->if->break->else->if->Character->isJavaIdentifierStart->scanIdentifierOrKeyword->else->if->isStringDelimiter->scanString->else->if->Character->isDigit->scanNumber->else->if->isTemplateDelimiter->scanTemplate->else->if->isTemplateDelimiter->scanString->else->skip->add
+Lexer#getValueOf(long, boolean):::Return value of token given its token descriptor.:::start->Token->descPosition->len->Token->descLength->switch->Token->descType->return->Lexer->source->getString->valueOf->return->Lexer->source->getString->valueOf->return->Lexer->source->getString->valueOf->return->Lexer->source->getString->valueOf->return->Lexer->source->getString->valueOf->str->source->getString->value->Double->valueOf->if->str->indexOf->return->if->JSType->isStrictlyRepresentableAsInt->return->return->return->source->getString->return->valueOfString->return->valueOfIdent->return->valueOfPattern->return->valueOfString->return->valueOfXML->return->source->getString->break->return
+Lexer#valueOfRawString(long):::Get the raw string value of a template literal string part.:::start->Token->descPosition->length->Token->descLength->savePosition->end->reset->sb->new->StringBuilder->while->if->sb->append->skip->else->sb->append->skip->reset->return->sb->toString
+Lexer#message(String, String...):::Get the correctly localized error message for a given message id format arguments:::return->ECMAErrors->getMessage
+Lexer#error(String, TokenType, int, int):::Generate a runtime exception:::token->Token->toDesc->pos->Token->descPosition->lineNum->source->getLine->columnNum->source->getColumn->formatted->ErrorManager->format->throw->new->ParserException
+Lexer.LexerToken#getExpression():::Get the expression:::return
+Lexer.RegexToken#getOptions():::Get regexp options:::return
+Parser#setFunctionName(String):::Sets the name for the first function:::defaultNames->createIdentNode->push
+Parser#setReparsedFunction(RecompilableScriptFunctionData):::Sets the RecompilableScriptFunctionData representing the function being reparsed (when this parser instance is used to reparse a previously parsed function, as part of its on-demand compilation):::
+Parser#parse():::Execute parse and return the resulting function node:::return->PROGRAM->symbolName->source->getLength->parse
+Parser#parse(String, int, int, int):::Execute parse and return the resulting function node:::isTimingEnabled->env->isTimingEnabled->t0->System->nanoTime->log->info->try->new->TokenStream->new->Lexer->scanFirstToken->return->program->catch->handleParseException->return->finally->end->if->toString->System->nanoTime->accumulateTime->log->Timing->System->nanoTime->toMillisPrint->info->else->log->info
+Parser#parseModule(String, int, int):::Parse and return the resulting module:::try->new->TokenStream->new->Lexer->scanFirstToken->return->module->catch->handleParseException->return->finally
+Parser#parseModule(String):::Entry point for parsing a module.:::return->source->getLength->parseModule
+Parser#parseFormalParameterList():::Parse and return the list of function parameter list:::try->new->TokenStream->new->Lexer->scanFirstToken->return->formalParameterList->catch->handleParseException->return->finally
+Parser#parseFunctionBody():::Execute parse and return the resulting function node:::try->new->TokenStream->new->Lexer->functionLine->scanFirstToken->functionToken->Token->source->getLength->toDesc->ident->Token->descPosition->PROGRAM->symbolName->new->IdentNode->function->Collections->emptyList->createParserContextFunctionNode->lc->push->body->newBlock->new->ArrayList<>->sourceElements->addFunctionDeclarations->restoreBlock->body->setFlag->functionBody->source->getLength->body->getFlags->body->getStatements->new->Block->lc->pop->expect->functionNode->Collections->emptyList->createFunctionNode->printAST->return->catch->handleParseException->return->finally
+Parser#execString(int, long):::Convert execString to a call to $EXEC.:::execIdent->new->IdentNode->next->expect->arguments->Collections->expression->singletonList->expect->return->new->CallNode
+Parser#expression():::MultiplicativeExpression :      UnaryExpression      MultiplicativeExpression * UnaryExpression      MultiplicativeExpression / UnaryExpression      MultiplicativeExpression % UnaryExpression  See 11.5  AdditiveExpression :      MultiplicativeExpression      AdditiveExpression + MultiplicativeExpression      AdditiveExpression - MultiplicativeExpression  See 11.6  ShiftExpression :      AdditiveExpression      ShiftExpression << AdditiveExpression      ShiftExpression >> AdditiveExpression      ShiftExpression >>> AdditiveExpression  See 11.7  RelationalExpression :      ShiftExpression      RelationalExpression < ShiftExpression      RelationalExpression > ShiftExpression      RelationalExpression <= ShiftExpression      RelationalExpression >= ShiftExpression      RelationalExpression instanceof ShiftExpression      RelationalExpression in ShiftExpression // if !noIf  See 11.8       RelationalExpression      EqualityExpression == RelationalExpression      EqualityExpression != RelationalExpression      EqualityExpression === RelationalExpression      EqualityExpression !== RelationalExpression  See 11.9  BitwiseANDExpression :      EqualityExpression      BitwiseANDExpression & EqualityExpression  BitwiseXORExpression :      BitwiseANDExpression      BitwiseXORExpression ^ BitwiseANDExpression  BitwiseORExpression :      BitwiseXORExpression      BitwiseORExpression | BitwiseXORExpression  See 11.10  LogicalANDExpression :      BitwiseORExpression      LogicalANDExpression && BitwiseORExpression  LogicalORExpression :      LogicalANDExpression      LogicalORExpression || LogicalANDExpression  See 11.11  ConditionalExpression :      LogicalORExpression      LogicalORExpression ? AssignmentExpression : AssignmentExpression  See 11.12  AssignmentExpression :      ConditionalExpression      LeftHandSideExpression AssignmentOperator AssignmentExpression  AssignmentOperator :      = *= /= %= += -= <<= >>= >>>= &= ^= |=  See 11.13  Expression :      AssignmentExpression      Expression , AssignmentExpression  See 11.14   Parse expression.:::return->expression
+Parser#assignmentExpression(boolean):::AssignmentExpression:::if->inGeneratorFunction->isES6->return->yieldExpression->startToken->startLine->exprLhs->conditionalExpression->if->isES6->if->checkNoLineTerminator->paramListExpr->if->getExpressions->isEmpty->getExpressions->get->else->return->arrowFunction->if->isAssignmentOperator->isAssign->if->defaultNames->push->try->assignToken->next->exprRhs->assignmentExpression->return->verifyAssignment->catch->finally->if->defaultNames->pop->else->return
+ParserContext#push(T):::Pushes a new block on top of the context, making it the innermost open block.:::if->newStack->new->ParserContextNodeArr->System->arraycopy->return
+ParserContext#peek():::The topmost node on the stack:::return
+ParserContext#pop(T):::Removes and returns the topmost Node from the stack.:::popped->return
+ParserContext#contains(ParserContextNode):::Tests if a node is on the stack.:::for->i->return
+ParserContext#getBreakable(String):::Find the breakable node corresponding to this label.:::if->foundLabel->findLabel->if->breakable->for->iter->new->NodeIterator<>->iter->hasNext->return->return->return->getBreakable
+ParserContext#getCurrentLoop():::Returns the loop node of the current loop, or null if not inside a loop:::iter->getCurrentFunction->new->NodeIterator<>->return->iter->hasNext->iter->next
+ParserContext#getContinueTo(String):::Find the continue target node corresponding to this label.:::if->foundLabel->findLabel->if->loop->for->iter->new->NodeIterator<>->iter->hasNext->return->return->return->getContinueTo
+ParserContext#getFunctionBody(ParserContextFunctionNode):::Get the function body of a function node on the stack:::for->i->throw->functionNode->getName->new->AssertionError
+ParserContext#findLabel(String):::Check the stack for a given label node by name:::for->iter->getCurrentFunction->new->NodeIterator<>->iter->hasNext->return
+ParserContext#prependStatementToCurrentNode(Statement):::Prepends a statement to the current node.:::prependStatement
+ParserContext#appendStatementToCurrentNode(Statement):::Appends a statement to the current Node.:::appendStatement
+ParserContext#getCurrentFunction():::Returns the innermost function in the context.:::for->i->return
+ParserContext#getBlocks():::Returns an iterator over all blocks in the context, with the top block (innermost lexical context) first.:::return->new->NodeIterator<>
+ParserContext#getCurrentBlock():::Returns the innermost block in the context.:::return->getBlocks->next
+ParserContext#getLastStatement():::The last statement added to the context:::if->return->top->s->top->getStatements->size->return->top->getStatements->get
+ParserContext#getFunctions():::Returns an iterator over all functions in the context, with the top (innermost open) function first.:::return->new->NodeIterator<>
+ParserContextBaseNode#getFlag(int):::Returns a single flag:::return
+ParserContextBaseNode#appendStatement(Statement):::Adds a statement at the end of the statement list:::add
+ParserContextBaseNode#prependStatement(Statement):::Adds a statement at the beginning of the statement list:::add
+ParserContextBlockNode#getToken():::Get token:::return
+ParserContextBreakableNode#isBreakableWithoutLabel():::Returns true if not i breakable without label, false otherwise:::
+ParserContextFunctionNode#hasScopeBlock():::Returns true if any of the blocks in this function create their own scope.:::return->getFlag
+ParserContextFunctionNode#uniqueName(String):::Create a unique name in the namespace of this FunctionNode:::return->namespace->uniqueName
+ParserContextFunctionNode#getParameters():::Get parameters:::return
+ParserContextFunctionNode#getParameterExpressions():::Return ES6 function parameter expressions:::return
+ParserContextFunctionNode#setLastToken(long):::Set last token:::
+ParserContextFunctionNode#getEndParserState():::Returns the ParserState of when the parsing of this function was ended:::return
+ParserContextFunctionNode#setEndParserState(Object):::Sets the ParserState of when the parsing of this function was ended:::
+ParserContextFunctionNode#getId():::Returns the if of this function:::return->isProgram->Token->descPosition
+ParserContextFunctionNode#getDebugFlags():::Returns the debug flags for this function.:::return
+ParserContextFunctionNode#setDebugFlag(int):::Sets a debug flag for this function.:::
+ParserContextLabelNode#getLabelName():::Returns the name of the label:::return
+ParserContextModuleNode#getModuleName():::Returns the name of the module.:::return
+ParserContextNode#appendStatement(Statement):::Adds a statement at the end of the statement list:::
+ParserContextNode#prependStatement(Statement):::Adds a statement at the beginning of the statement list:::
+Scanner.State#setLimit(int):::Change the limit for a new scanner.:::
+Scanner#saveState():::Save the state of the scan.:::return->new->State
+Scanner#restoreState(State):::Restore the state of the scan.:::reset
+Scanner#atEOF():::Returns true of scanner is at end of input:::return
+Scanner#charAt(int):::Get the ith character from the content.:::return
+Scanner#reset(int):::Reset to a character position.:::charAt->charAt->charAt->charAt
+Scanner#skip(int):::Skip ahead a number of characters.:::if->atEOF->charAt->else->if->reset
+Token#toDesc(TokenType, int, int):::Create a compact form of token information.:::return->type->ordinal
+Token#descPosition(long):::Extract token position from a token descriptor.:::return
+Token#withDelimiter(long):::Normally returns the token itself, except in case of string tokens which report their position past their opening delimiter and thus need to have position and length adjusted.:::tokenType->Token->descType->switch->start->Token->descPosition->len->Token->descLength->return->toDesc->start->Token->descPosition->len->Token->descLength->return->toDesc->return
+Token#descLength(long):::Extract token length from a token descriptor.:::return
+Token#descType(long):::Extract token type from a token descriptor.:::return->TokenType->getValues
+Token#recast(long, TokenType):::Change the token to use a new type.:::return->newType->ordinal
+Token#toString(Source, long, boolean):::Return a string representation of a token.:::type->Token->descType->result->if->type->getKind->source->getString->else->type->getNameOrType->if->position->Token->descPosition->length->Token->descLength->return
+Token#toString(Source, long):::String conversion of token:::return->Token->toString
+Token#toString(long):::String conversion of token - version without source given:::return->Token->toString
+Token#hashCode(long):::Static hash code computation function token:::return
+TokenLookup#lookupKeyword(char[], int, int):::Lookup keyword.:::first->if->index->tokenType->while->tokenLength->tokenType->getLength->if->name->tokenType->getName->i->for->if->return->else->if->break->tokenType->getNext->return
+TokenLookup#lookupOperator(char, char, char, char):::Lookup operator.:::if->index->tokenType->while->name->tokenType->getName->switch->name->length->return->if->name->charAt->return->break->if->name->charAt->name->charAt->return->break->if->name->charAt->name->charAt->name->charAt->return->break->break->tokenType->getNext->return
+TokenStream#isEmpty():::Test to see if stream is empty.:::return
+TokenStream#isFull():::Test to see if stream is full.:::return
+TokenStream#count():::Get the number of tokens in the buffer.:::return
+TokenStream#first():::Get the index of the first token in the stream.:::return
+TokenStream#last():::Get the index of the last token in the stream.:::return
+TokenStream#removeLast():::Remove the last token in the stream.:::if->if
+TokenStream#put(long):::Put a token descriptor to the stream.:::if->grow->next
+TokenStream#get(int):::Get the kth token descriptor from the stream.:::return->index
+TokenStream#commit(int):::Advances the base of the stream.:::index
+TokenStream#grow():::Grow the buffer to accommodate more token descriptors.:::newBuffer->new->longArr->if->System->arraycopy->else->portion->System->arraycopy->System->arraycopy

@@ -1,0 +1,97 @@
+Krb5AcceptCredential#getName():::Returns the principal name for this credential:::return
+Krb5AcceptCredential#getInitLifetime():::Returns the init lifetime remaining.:::return
+Krb5AcceptCredential#getAcceptLifetime():::Returns the accept lifetime remaining.:::return
+Krb5AcceptCredential#getMechanism():::Returns the oid representing the underlying credential mechanism oid.:::return
+Krb5AcceptCredential#dispose():::Called to invalidate this credential element.:::try->destroy->catch->gssException->e->getMessage->new->GSSException->gssException->initCause->finally
+Krb5AcceptCredential#destroy():::Destroys the locally cached EncryptionKey value and then calls destroy in the base class.:::screds->destroy
+Krb5AcceptCredential#impersonate(GSSNameSpi):::Impersonation is only available on the initiator side:::cred->screds->getInitCred->if->return->Krb5InitCredential->getInstance->impersonate->else->throw->new->GSSException
+Krb5Context#isTransferable():::Method to determine if the context can be exported and then re-imported.:::return
+Krb5Context#getLifetime():::The lifetime remaining for this context.:::return
+Krb5Context#requestLifetime(int):::Requests the desired lifetime:::if->isInitiator
+Krb5Context#requestConf(boolean):::Requests that confidentiality be available.:::if->isInitiator
+Krb5Context#getConfState():::Is confidentiality available?:::return
+Krb5Context#requestInteg(boolean):::Requests that integrity be available.:::if->isInitiator
+Krb5Context#getIntegState():::Is integrity available?:::return
+Krb5Context#requestCredDeleg(boolean):::Requests that credential delegation be done during context establishment.:::if->isInitiator->if
+Krb5Context#getCredDelegState():::Is credential delegation enabled?:::if->isInitiator->return->else->tryConstrainedDelegation->return
+Krb5Context#requestMutualAuth(boolean):::Requests that mutual authentication be done during context establishment:::if->isInitiator
+Krb5Context#getMutualAuthState():::Is mutual authentication enabled? Since this is from the client's perspective, it essentially meas that the server is being authenticated.:::return
+Krb5Context#requestReplayDet(boolean):::Requests that replay detection be done on the GSS wrap and MIC tokens.:::if->isInitiator
+Krb5Context#getReplayDetState():::Is replay detection enabled on the GSS wrap and MIC tokens? We enable replay detection if sequence checking is enabled.:::return
+Krb5Context#requestSequenceDet(boolean):::Requests that sequence checking be done on the GSS wrap and MIC tokens.:::if->isInitiator
+Krb5Context#getSequenceDetState():::Is sequence checking enabled on the GSS Wrap and MIC tokens? We enable sequence checking if replay detection is enabled.:::return
+Krb5Context#requestDelegPolicy(boolean):::Requests that the deleg policy be respected.:::if->isInitiator
+Krb5Context#getDelegPolicyState():::Is deleg policy respected?:::return
+Krb5Context#getCipherHelper(EncryptionKey):::Get the context specific DESCipher instance, invoked in MessageToken.init():::cipherKey->if->getKey->getKey->new->CipherHelper->return
+Krb5Context#setDelegCred(Krb5CredElement):::Called on the acceptor side to store the delegated credentials received in the AcceptSecContextToken.:::
+Krb5Context#setChannelBinding(ChannelBinding):::Sets the channel bindings to be used during context establishment.:::
+Krb5Context#getMech():::Returns the mechanism oid.:::return
+Krb5Context#getSrcName():::Returns the context initiator name.:::return->isInitiator
+Krb5Context#getTargName():::Returns the context acceptor.:::return->isInitiator
+Krb5Context#getDelegCred():::Returns the delegated credential for the context:::if->throw->new->GSSException->if->isInitiator->throw->new->GSSException->tryConstrainedDelegation->if->throw->new->GSSException->return
+Krb5Context#isInitiator():::Tests if this is the initiator side of the context.:::return
+Krb5Context#isProtReady():::Tests if the context can be used for per-message service:::return
+Krb5Context#initSecContext(InputStream, int):::Initiator context establishment call:::retVal->token->errorCode->if->printState->println->if->isInitiator->throw->new->GSSException->try->if->if->Krb5InitCredential->getInstance->Krb5ProxyCredential->tryImpersonation->else->if->myCred->isInitiatorCredential->throw->new->GSSException->myCred->getName->second->if->getKrb5Credentials->else->getKrb5Credentials->peerName->getKrb5PrincipalName->getName->checkPermission->acc->AccessController->getContext->if->GSSUtil->useSubjectCredsOnly->kerbTicket->try->AccessController->new->PrivilegedExceptionAction<KerberosTicket>->doPrivileged->catch->if->println->finally->if->if->println->Krb5Util->ticketToCreds->if->if->println->if->Credentials->peerName->getKrb5PrincipalName->getName->acquireServiceCreds->else->Credentials->peerName->getKrb5PrincipalName->getName->second->getName->getKrb5PrincipalName->acquireS4U2proxyCreds->if->GSSUtil->useSubjectCredsOnly->subject->AccessController->new->java.security.PrivilegedAction<Subject>->doPrivileged->if->subject->isReadOnly->kt->Krb5Util->credsToTicket->AccessController->new->java.security.PrivilegedAction<Void>->doPrivileged->else->if->println->new->InitSecContextToken->getKrbApReq->token->encode->if->getMutualAuthState->if->new->HexDumpEncoder->encodeBuffer->println->else->if->new->AcceptSecContextToken->else->if->println->catch->if->e->printStackTrace->gssException->e->getMessage->new->GSSException->gssException->initCause->throw->gssException->e->getMessage->new->GSSException->gssException->initCause->throw->finally->return
+Krb5Context#acceptSecContext(InputStream, int):::Acceptor's context establishment call:::retVal->if->printState->println->if->isInitiator->throw->new->GSSException->try->if->if->Krb5AcceptCredential->getInstance->else->if->myCred->isAcceptorCredential->throw->new->GSSException->myCred->getName->if->Krb5MechFactory->checkAcceptCredPermission->token->new->InitSecContextToken->clientName->token->getKrbApReq->getClient->Krb5NameElement->getInstance->if->Krb5NameElement->token->getKrbApReq->getCreds->getServer->getInstance->Krb5MechFactory->checkAcceptCredPermission->if->getMutualAuthState->token->getKrbApReq->new->AcceptSecContextToken->encode->token->getKrbApReq->getCreds->getTicket->else->if->println->catch->gssException->e->getMessage->new->GSSException->gssException->initCause->throw->if->e->printStackTrace->gssException->e->getMessage->new->GSSException->gssException->initCause->throw->finally->return
+Krb5Context#getWrapSizeLimit(int, boolean, int):::Queries the context for largest data size to accommodate the specified protection and be <= maxTokSize.:::retVal->if->cipherHelper->getProto->WrapToken->getCipherHelper->getSizeLimit->else->if->cipherHelper->getProto->WrapToken_v2->getCipherHelper->getSizeLimit->return
+Krb5Context#export():::Produces a token representing this context:::throw->new->GSSException
+Krb5Context#inquireSecContext(String):::Return the mechanism-specific attribute associated with type.:::if->isEstablished->throw->new->GSSException->switch->return->new->KerberosSessionKey->return->key->getBytes->key->getEType->new->javax.security.auth.kerberos.EncryptionKey->return->tktFlags->clone->if->isInitiator->throw->new->GSSException->else->return->return->if->isInitiator->throw->new->GSSException->sender->myName->getKrb5PrincipalName->getName->new->KerberosPrincipal->recipient->peerName->getKrb5PrincipalName->getName->new->KerberosPrincipal->try->krbCred->new->KrbCred->getMessage->return->new->KerberosCredMessage->catch->gsse->new->GSSException->gsse->initCause->throw->finally->throw->new->GSSException
+Krb5InitCredential#getName():::Returns the principal name for this credential:::return
+Krb5InitCredential#getInitLifetime():::Returns the init lifetime remaining.:::d->getEndTime->if->return->retVal->d->getTime->System->currentTimeMillis->return
+Krb5InitCredential#getAcceptLifetime():::Returns the accept lifetime remaining.:::return
+Krb5InitCredential#getMechanism():::Returns the oid representing the underlying credential mechanism oid.:::return
+Krb5InitCredential#getKrb5Credentials():::Returns a sun.security.krb5.Credentials instance so that it maybe used in that package for th Kerberos protocol.:::return
+Krb5InitCredential#dispose():::Called to invalidate this credential element.:::try->destroy->catch->gssException->e->getMessage->new->GSSException->gssException->initCause->finally
+Krb5NameElement#getInstance(String, Oid):::Instantiates a new Krb5NameElement object:::if->else->if->gssNameType->equals->gssNameType->equals->gssNameType->equals->gssNameType->equals->throw->gssNameType->toString->new->GSSException->principalName->try->if->gssNameType->equals->gssNameType->equals->new->PrincipalName->else->components->getComponents->if->gssNameType->equals->new->PrincipalName->else->hostName->service->if->principal->getHostBasedInstance->new->PrincipalName->catch->throw->e->getMessage->new->GSSException->finally->if->principalName->isRealmDeduced->sm->System->getSecurityManager->if->try->sm->principalName->getRealmAsString->new->ServicePermission->checkPermission->catch->throw->new->GSSException->finally->return->new->Krb5NameElement
+Krb5NameElement#equals(GSSNameSpi):::Equal method for the GSSNameSpi objects:::if->return->if->that->return->getName->getName->equals->return
+Krb5NameElement#equals(Object):::Compares this GSSNameSpi object to another Object that might be a GSSNameSpi:::if->return->try->if->return->equals->catch->finally->return
+Krb5NameElement#hashCode():::Returns a hashcode value for this GSSNameSpi.:::return->krb5PrincipalName->getName->hashCode
+Krb5NameElement#export():::Returns the principal name in the form user@REALM or host/service@REALM but with the following constraints that are imposed by RFC 1964:   (1) all occurrences of the characters `@`,  `/`, and `\` within   principal components or realm names shall be quoted with an   immediately-preceding `\`:::retVal->try->krb5PrincipalName->getName->getBytes->catch->finally->return
+Krb5NameElement#getMechanism():::Get the mechanism type that this NameElement corresponds to.:::return
+Krb5NameElement#toString():::Returns a string representation for this name:::return
+Krb5NameElement#getGSSNameType():::Returns the name type oid.:::return
+Krb5NameElement#getStringNameType():::Returns the oid describing the format of the printable name.:::return
+Krb5NameElement#isAnonymousName():::Indicates if this name object represents an Anonymous name.:::return->gssNameType->equals
+Krb5Token#getTokenName(int):::Returns a strign representing the token type.:::retVal->switch->break->break->break->break->break->break->return
+Krb5Util#getTicketFromSubjectAndTgs(GSSCaller, String, String, String, AccessControlContext):::Retrieve the service ticket for serverPrincipal from caller's Subject or from Subject obtained by logging in, or if not found, via the Ticket Granting Service using the TGT obtained from the Subject:::accSubj->Subject->getSubject->ticket->SubjectComber->find->if->return->loginSubj->if->GSSUtil->useSubjectCredsOnly->try->GSSUtil->login->SubjectComber->find->if->return->catch->finally->tgt->SubjectComber->find->fromAcc->if->SubjectComber->find->else->if->tgtCreds->ticketToCreds->serviceCreds->Credentials->acquireServiceCreds->if->credsToTicket->if->accSubj->isReadOnly->accSubj->getPrivateCredentials->add->return
+Krb5Util#getServiceTicket(GSSCaller, String, String, AccessControlContext):::Retrieves the ticket corresponding to the client/server principal pair from the Subject in the specified AccessControlContext.:::accSubj->Subject->getSubject->ticket->SubjectComber->find->return
+Krb5Util#getInitialTicket(GSSCaller, String, AccessControlContext):::Retrieves the initial TGT corresponding to the client principal from the Subject in the specified AccessControlContext:::accSubj->Subject->getSubject->ticket->SubjectComber->find->if->GSSUtil->useSubjectCredsOnly->subject->GSSUtil->login->SubjectComber->find->return
+Krb5Util#getSubject(GSSCaller, AccessControlContext):::Retrieves the caller's Subject, or Subject obtained by logging in via the specified caller:::subject->Subject->getSubject->if->GSSUtil->useSubjectCredsOnly->GSSUtil->login->return
+Krb5Util#getServiceCreds(GSSCaller, String, AccessControlContext):::Retrieves the ServiceCreds for the specified server principal from the Subject in the specified AccessControlContext:::accSubj->Subject->getSubject->sc->if->ServiceCreds->getInstance->if->GSSUtil->useSubjectCredsOnly->subject->GSSUtil->login->ServiceCreds->getInstance->return
+Krb5Util#snapshotFromJavaxKeyTab(KeyTab):::A helper method to get a sun..KeyTab from a javax..KeyTab:::return->KerberosSecrets->getJavaxSecurityAuthKerberosAccess->keyTabTakeSnapshot
+Krb5Util#keysFromJavaxKeyTab(KeyTab, PrincipalName):::A helper method to get EncryptionKeys from a javax..KeyTab:::return->snapshotFromJavaxKeyTab->readServiceKeys
+MessageToken#getGSSHeader():::Used to obtain the GSSHeader that was at the start of this token.:::return
+MessageToken#getTokenId():::Used to obtain the token id that was contained in this token.:::return
+MessageToken#getEncSeqNumber():::Used to obtain the encrypted sequence number in this token.:::return
+MessageToken#getChecksum():::Used to obtain the checksum that was contained in this token.:::return
+MessageToken#getConfState():::Used to determine if this token contains any encrypted data.:::return
+MessageToken#genSignAndSeqNumber(MessageProp, byte[], byte[], int, int, byte[]):::Generates the checksum field and the encrypted sequence number field:::qop->prop->getQOP->if->prop->setQOP->if->prop->setPrivacy->prop->getPrivacy->new->MessageTokenHeader->getChecksum->new->byteArr->if->cipherHelper->isArcFour->writeBigEndian->else->writeLittleEndian->if->cipherHelper->encryptSeq
+MessageToken#verifySignAndSeqNumber(byte[], byte[], int, int, byte[]):::Verifies that the checksum field and sequence number direction bytes are valid and consistent with the application data.:::myChecksum->getChecksum->if->MessageDigest->isEqual->cipherHelper->decryptSeq->directionByte->if->if->return->return
+MessageToken#encode(OutputStream):::Encodes a GSSHeader and this token onto an OutputStream.:::getKrb5TokenSize->new->GSSHeader->gssHeader->encode->tokenHeader->encode->os->write->os->write
+MessageToken#getKrb5TokenSize():::Obtains the size of this token:::return->getTokenSize
+MessageToken#getSealAlg(boolean, int):::Obtains the encryption algorithm that should be used in this token given the state of confidentiality the application requested:::
+MessageToken.MessageTokenHeader#encode(OutputStream):::Encodes this MessageTokenHeader onto an OutputStream:::os->write
+MessageToken.MessageTokenHeader#getTokenId():::Returns the token id for the message token.:::return
+MessageToken.MessageTokenHeader#getSignAlg():::Returns the sign algorithm for the message token.:::return
+MessageToken.MessageTokenHeader#getSealAlg():::Returns the seal algorithm for the message token.:::return
+MessageToken.MessageTokenHeader#getBytes():::Returns the bytes of this header.:::return
+MessageToken#getSgnAlg(int):::Determine signing algorithm based on QOP.:::return->cipherHelper->getSgnAlg
+MessageToken_v2#getTokenId():::Used to obtain the token id that was contained in this token.:::return
+MessageToken_v2#getKeyUsage():::Used to obtain the key_usage type for this token.:::return
+MessageToken_v2#getConfState():::Used to determine if this token contains any encrypted data.:::return
+MessageToken_v2#genSignAndSeqNumber(MessageProp, byte[], int, int):::Generates the checksum field and the sequence number field.:::qop->prop->getQOP->if->prop->setQOP->if->prop->setPrivacy->prop->getPrivacy->new->MessageTokenHeader->if->else->if->if->prop->getPrivacy->getChecksum->if->prop->getPrivacy->tok_header->tokenHeader->getBytes
+MessageToken_v2#verifySign(byte[], int, int):::Verifies the validity of checksum field:::myChecksum->getChecksum->if->MessageDigest->isEqual->return->return
+MessageToken_v2#getChecksum(byte[], int, int):::Computes the checksum based on the algorithm stored in the tokenHeader.:::tokenHeaderBytes->tokenHeader->getBytes->conf_flag->if->return->cipherHelper->calculateChecksum
+MessageToken_v2#encodeHeader(OutputStream):::Encodes a MessageTokenHeader onto an OutputStream.:::tokenHeader->encode
+MessageToken_v2#encode(OutputStream):::Encodes a MessageToken_v2 onto an OutputStream.:::
+MessageToken_v2.MessageTokenHeader#encode(OutputStream):::Encodes this MessageTokenHeader onto an OutputStream:::os->write
+MessageToken_v2.MessageTokenHeader#getTokenId():::Returns the token id for the message token.:::return
+MessageToken_v2.MessageTokenHeader#getBytes():::Returns the bytes of this header.:::return
+ServiceCreds#getInstance(Subject, String):::Creates a ServiceCreds object based on info in a Subject for a given principal name (if specified).:::sc->new->ServiceCreds->subj->getPrincipals->foreach->SubjectComber->findMany->key->getPrincipal->add->if->new->KerberosPrincipal->else->if->size->hasUnbound->foreach->SubjectComber->findMany->if->ktab->isBound->break->if->iterator->next->getName->SubjectComber->findMany->SubjectComber->findMany->SubjectComber->find->if->isEmpty->isEmpty->return->return
+ServiceCreds#getKKeys():::Gets keys for "someone":::if->throw->new->IllegalStateException->one->if->allPrincs->isEmpty->allPrincs->iterator->next->if->foreach->pn->Krb5Util->snapshotFromJavaxKeyTab->getOneName->if->pn->getName->new->KerberosPrincipal->break->if->return->getKKeys->else->return->new->KerberosKeyArr
+ServiceCreds#getKKeys(KerberosPrincipal):::Get kkeys for a principal,:::if->throw->new->IllegalStateException->keys->new->ArrayList<>->if->princ->equals->return->new->KerberosKeyArr->foreach->if->k->getPrincipal->equals->keys->add->foreach->if->ktab->getPrincipal->ktab->isBound->if->allPrincs->contains->continue->foreach->ktab->getKeys->keys->add->return->keys->keys->size->new->KerberosKeyArr->toArray
+ServiceCreds#getEKeys(PrincipalName):::Gets EKeys for a principal.:::if->throw->new->IllegalStateException->kkeys->princ->getName->new->KerberosPrincipal->getKKeys->if->getKKeys->ekeys->new->EncryptionKeyArr->for->i->return
+WrapToken#getData():::Obtains the application data that was transmitted in this WrapToken.:::temp->new->byteArr->getData->retVal->new->byteArr->System->arraycopy->return
+WrapToken#getData(byte[], int):::Obtains the application data that was transmitted in this WrapToken, writing it into an application provided output array.:::if->getDataFromStream->else->getDataFromBuffer->return
+WrapToken_v2#getData():::Obtains the application data that was transmitted in this WrapToken.:::temp->new->byteArr->len->getData->return->Arrays->copyOf
+WrapToken_v2#getData(byte[], int):::Obtains the application data that was transmitted in this WrapToken, writing it into an application provided output array.:::if->cipherHelper->getKeyUsage->decryptData->return->cipherHelper->getChecksumLength->else->data_length->cipherHelper->getChecksumLength->System->arraycopy->if->verifySign->throw->new->GSSException->return

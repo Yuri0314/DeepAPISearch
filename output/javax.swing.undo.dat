@@ -1,0 +1,76 @@
+AbstractUndoableEdit#die():::Sets alive to false:::
+AbstractUndoableEdit#undo():::Throws CannotUndoException if canUndo returns false:::if->canUndo->throw->new->CannotUndoException
+AbstractUndoableEdit#canUndo():::Returns true if this edit is alive and hasBeenDone is true.:::return
+AbstractUndoableEdit#redo():::Throws CannotRedoException if canRedo returns false:::if->canRedo->throw->new->CannotRedoException
+AbstractUndoableEdit#canRedo():::Returns true if this edit is alive and hasBeenDone is false.:::return
+AbstractUndoableEdit#addEdit(UndoableEdit):::This default implementation returns false.:::return
+AbstractUndoableEdit#replaceEdit(UndoableEdit):::This default implementation returns false.:::return
+AbstractUndoableEdit#isSignificant():::This default implementation returns true.:::return
+AbstractUndoableEdit#getPresentationName():::This default implementation returns "":::return
+AbstractUndoableEdit#getUndoPresentationName():::Retreives the value from the defaults table with key AbstractUndoableEdit.undoText and returns that value followed by a space, followed by getPresentationName:::name->getPresentationName->if->equals->UIManager->getString->else->UIManager->getString->return
+AbstractUndoableEdit#getRedoPresentationName():::Retreives the value from the defaults table with key AbstractUndoableEdit.redoText and returns that value followed by a space, followed by getPresentationName:::name->getPresentationName->if->equals->UIManager->getString->else->UIManager->getString->return
+AbstractUndoableEdit#toString():::Returns a string that displays and identifies this object's properties.:::return->super->toString
+CompoundEdit#undo():::Sends undo to all contained UndoableEdits in the reverse of the order in which they were added.:::super->undo->i->edits->size->while->e->edits->elementAt->e->undo
+CompoundEdit#redo():::Sends redo to all contained UndoableEdits in the order in which they were added.:::super->redo->cursor->edits->elements->while->cursor->hasMoreElements->cursor->nextElement->redo
+CompoundEdit#lastEdit():::Returns the last UndoableEdit in edits, or null if edits is empty.:::count->edits->size->if->return->edits->elementAt->else->return
+CompoundEdit#die():::Sends die to each subedit, in the reverse of the order that they were added.:::size->edits->size->for->i->super->die
+CompoundEdit#addEdit(UndoableEdit):::If this edit is inProgress, accepts anEdit and returns true:::if->return->else->last->lastEdit->if->edits->addElement->else->if->last->addEdit->if->anEdit->replaceEdit->edits->edits->size->removeElementAt->edits->addElement->return
+CompoundEdit#end():::Sets inProgress to false.:::
+CompoundEdit#canUndo():::Returns false if isInProgress or if super returns false.:::return->isInProgress->super->canUndo
+CompoundEdit#canRedo():::Returns false if isInProgress or if super returns false.:::return->isInProgress->super->canRedo
+CompoundEdit#isInProgress():::Returns true if this edit is in progress--that is, it has not received end:::return
+CompoundEdit#isSignificant():::Returns true if any of the UndoableEdits in edits do:::cursor->edits->elements->while->cursor->hasMoreElements->if->cursor->nextElement->isSignificant->return->return
+CompoundEdit#getPresentationName():::Returns getPresentationName from the last UndoableEdit added to edits:::last->lastEdit->if->return->last->getPresentationName->else->return->super->getPresentationName
+CompoundEdit#getUndoPresentationName():::Returns getUndoPresentationName from the last UndoableEdit added to edits:::last->lastEdit->if->return->last->getUndoPresentationName->else->return->super->getUndoPresentationName
+CompoundEdit#getRedoPresentationName():::Returns getRedoPresentationName from the last UndoableEdit added to edits:::last->lastEdit->if->return->last->getRedoPresentationName->else->return->super->getRedoPresentationName
+CompoundEdit#toString():::Returns a string that displays and identifies this object's properties.:::return->super->toString
+StateEdit#init(StateEditable, String):::Initialize the state edit.:::new->Hashtable<Object,Object>->storeState
+StateEdit#end():::Gets the post-edit state of the StateEditable object and ends the edit.:::new->Hashtable<Object,Object>->storeState->this->removeRedundantState
+StateEdit#undo():::Tells the edited object to apply the state prior to the edit:::super->undo->restoreState
+StateEdit#redo():::Tells the edited object to apply the state after the edit:::super->redo->restoreState
+StateEdit#getPresentationName():::Gets the presentation name for this edit:::return
+StateEdit#removeRedundantState():::Remove redundant key/values in state hashtables.:::uselessKeys->new->Vector<>->myKeys->preState->keys->while->myKeys->hasMoreElements->myKey->myKeys->nextElement->if->postState->containsKey->postState->get->preState->get->equals->uselessKeys->addElement->for->i->uselessKeys->size
+StateEditable#storeState(Hashtable):::Upon receiving this message the receiver should place any relevant state into <EM>state</EM>.:::
+StateEditable#restoreState(Hashtable):::Upon receiving this message the receiver should extract any relevant state out of <EM>state</EM>.:::
+UndoableEdit#undo():::Undo the edit.:::
+UndoableEdit#canUndo():::Returns true if this edit may be undone.:::
+UndoableEdit#redo():::Re-applies the edit.:::
+UndoableEdit#canRedo():::Returns true if this edit may be redone.:::
+UndoableEdit#die():::Informs the edit that it should no longer be used:::
+UndoableEdit#addEdit(UndoableEdit):::Adds an UndoableEdit to this UndoableEdit:::
+UndoableEdit#replaceEdit(UndoableEdit):::Returns true if this UndoableEdit should replace anEdit:::
+UndoableEdit#isSignificant():::Returns true if this edit is considered significant:::
+UndoableEdit#getPresentationName():::Returns a localized, human-readable description of this edit, suitable for use in a change log, for example.:::
+UndoableEdit#getUndoPresentationName():::Returns a localized, human-readable description of the undoable form of this edit, suitable for use as an Undo menu item, for example:::
+UndoableEdit#getRedoPresentationName():::Returns a localized, human-readable description of the redoable form of this edit, suitable for use as a Redo menu item, for example:::
+UndoableEditSupport#addUndoableEditListener(UndoableEditListener):::Registers an UndoableEditListener:::listeners->addElement
+UndoableEditSupport#removeUndoableEditListener(UndoableEditListener):::Removes an UndoableEditListener.:::listeners->removeElement
+UndoableEditSupport#getUndoableEditListeners():::Returns an array of all the UndoableEditListeners added to this UndoableEditSupport with addUndoableEditListener().:::return->listeners->new->UndoableEditListenerArr->toArray
+UndoableEditSupport#_postEdit(UndoableEdit):::Called only from postEdit and endUpdate:::ev->new->UndoableEditEvent->cursor->listeners->clone->elements->while->cursor->hasMoreElements->cursor->nextElement->undoableEditHappened
+UndoableEditSupport#postEdit(UndoableEdit):::DEADLOCK WARNING: Calling this method may call undoableEditHappened in all listeners:::if->_postEdit->else->compoundEdit->addEdit
+UndoableEditSupport#getUpdateLevel():::Returns the update level value.:::return
+UndoableEditSupport#createCompoundEdit():::Called only from beginUpdate:::return->new->CompoundEdit
+UndoableEditSupport#endUpdate():::DEADLOCK WARNING: Calling this method may call undoableEditHappened in all listeners:::if->compoundEdit->end->_postEdit
+UndoableEditSupport#toString():::Returns a string that displays and identifies this object's properties.:::return->super->toString
+UndoManager#getLimit():::Returns the maximum number of edits this UndoManager holds:::return
+UndoManager#discardAllEdits():::Empties the undo manager sending each edit a die message in the process.:::foreach->e->die->new->Vector<UndoableEdit>
+UndoManager#trimForLimit():::Reduces the number of queued edits to a range of size limit, centered on the index of the next edit.:::if->size->edits->size->if->halfLimit->keepFrom->keepTo->if->if->if->delta->trimEdits->trimEdits
+UndoManager#trimEdits(int, int):::Removes edits in the specified range:::if->for->i->if->else->if
+UndoManager#setLimit(int):::Sets the maximum number of edits this UndoManager holds:::if->throw->new->RuntimeException->trimForLimit
+UndoManager#editToBeUndone():::Returns the next significant edit to be undone if undo is invoked:::i->while->edit->edits->elementAt->if->edit->isSignificant->return->return
+UndoManager#editToBeRedone():::Returns the next significant edit to be redone if redo is invoked:::count->edits->size->i->while->edit->edits->elementAt->if->edit->isSignificant->return->return
+UndoManager#undoTo(UndoableEdit):::Undoes all changes from the index of the next edit to edit, updating the index of the next edit appropriately.:::done->while->next->edits->elementAt->next->undo
+UndoManager#redoTo(UndoableEdit):::Redoes all changes from the index of the next edit to edit, updating the index of the next edit appropriately.:::done->while->next->edits->elementAt->next->redo
+UndoManager#undoOrRedo():::Convenience method that invokes one of undo or redo:::tryUndoOrRedo
+UndoManager#canUndoOrRedo():::Returns true if it is possible to invoke undo or redo.:::if->edits->size->return->canUndo->else->return->canRedo
+UndoManager#undo():::Undoes the appropriate edits:::tryUndoOrRedo
+UndoManager#canUndo():::Returns true if edits may be undone:::if->edit->editToBeUndone->return->edit->canUndo->else->return->super->canUndo
+UndoManager#redo():::Redoes the appropriate edits:::tryUndoOrRedo
+UndoManager#canRedo():::Returns true if edits may be redone:::if->edit->editToBeRedone->return->edit->canRedo->else->return->super->canRedo
+UndoManager#addEdit(UndoableEdit):::Adds an UndoableEdit to this UndoManager, if it's possible:::retVal->edits->size->trimEdits->super->addEdit->if->edits->size->trimForLimit->return
+UndoManager#end():::Turns this UndoManager into a normal CompoundEdit:::super->end->this->edits->size->trimEdits
+UndoManager#getUndoOrRedoPresentationName():::Convenience method that returns either getUndoPresentationName or getRedoPresentationName:::if->edits->size->return->getUndoPresentationName->else->return->getRedoPresentationName
+UndoManager#getUndoPresentationName():::Returns a description of the undoable form of this edit:::if->if->canUndo->return->editToBeUndone->getUndoPresentationName->else->return->UIManager->getString->else->return->super->getUndoPresentationName
+UndoManager#getRedoPresentationName():::Returns a description of the redoable form of this edit:::if->if->canRedo->return->editToBeRedone->getRedoPresentationName->else->return->UIManager->getString->else->return->super->getRedoPresentationName
+UndoManager#undoableEditHappened(UndoableEditEvent):::An UndoableEditListener method:::e->getEdit->addEdit
+UndoManager#toString():::Returns a string that displays and identifies this object's properties.:::return->super->toString

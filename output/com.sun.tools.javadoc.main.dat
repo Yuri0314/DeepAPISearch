@@ -1,0 +1,385 @@
+AnnotatedTypeImpl#annotations():::Get the annotations of this program element:::tas->type->getAnnotationMirrors->if->tas->isEmpty->return->new->AnnotationDescArr->res->tas->length->new->AnnotationDescArr->i->foreach->new->AnnotationDescImpl->return
+AnnotationDescImpl#annotationType():::Returns the annotation type of this annotation.:::atsym->if->isErroneous->env->toString->warning->return->new->AnnotationTypeDocImpl->else->return->env->getClassDoc
+AnnotationDescImpl#elementValues():::Returns this annotation's elements and their values:::vals->res->vals->length->new->ElementValuePairArr->i->foreach->new->ElementValuePairImpl->return
+AnnotationDescImpl#isSynthesized():::Check for the synthesized bit on the annotation.:::return->annotation->isSynthesized
+AnnotationDescImpl#toString():::Returns a string representation of this annotation:::sb->new->StringBuilder->sb->append->vals->elementValues->if->sb->append->first->foreach->if->sb->append->name->val->element->name->if->name->equals->sb->val->value->append->else->sb->append->sb->append->return->sb->toString
+AnnotationDescImpl.ElementValuePairImpl#element():::Returns the annotation type element.:::return->env->getAnnotationTypeElementDoc
+AnnotationDescImpl.ElementValuePairImpl#value():::Returns the value associated with the annotation type element.:::return->new->AnnotationValueImpl
+AnnotationDescImpl.ElementValuePairImpl#toString():::Returns a string representation of this pair of the form "name=value".:::return->value
+AnnotationTypeDocImpl#isAnnotationType():::Returns true, as this is an annotation type:::return->isInterface
+AnnotationTypeDocImpl#isInterface():::Returns false:::return
+AnnotationTypeDocImpl#methods(boolean):::Returns an empty array, as all methods are annotation type elements:::return->elements->new->MethodDocArr
+AnnotationTypeDocImpl#elements():::Returns the elements of this annotation type:::elements->List->nil->foreach->tsym->members->getSymbols->if->s->elements->env->getAnnotationTypeElementDoc->prepend->return->elements->elements->length->new->AnnotationTypeElementDocArr->toArray
+AnnotationTypeElementDocImpl#isAnnotationTypeElement():::Returns true, as this is an annotation type element:::return->isMethod
+AnnotationTypeElementDocImpl#isMethod():::Returns false:::return
+AnnotationTypeElementDocImpl#isAbstract():::Returns false, even though this is indeed abstract:::return
+AnnotationTypeElementDocImpl#defaultValue():::Returns the default value of this element:::return->new->AnnotationValueImpl
+AnnotationValueImpl#value():::Returns the value:::vv->new->ValueVisitor->attr->accept->return
+AnnotationValueImpl#toString():::Returns a string representation of the value.:::tv->new->ToStringVisitor->attr->accept->return->tv->toString
+ClassDocImpl#getFlags():::Returns the flags in terms of javac's flags:::return->getFlags
+ClassDocImpl#getFlags(ClassSymbol):::Returns the flags of a ClassSymbol in terms of javac's flags:::try->return->clazz->flags->catch->return->getFlags->finally
+ClassDocImpl#isAnnotationType(ClassSymbol):::Is a ClassSymbol an annotation type?:::return->getFlags
+ClassDocImpl#getContainingClass():::Identify the containing class:::return->enclClass
+ClassDocImpl#isClass():::Return true if this is a class, not an interface.:::return->Modifier->getModifiers->isInterface
+ClassDocImpl#isOrdinaryClass():::Return true if this is a ordinary class, not an enumeration, exception, an error, or an interface.:::if->isEnum->isInterface->isAnnotationType->return->for->t->t->hasTag->supertype->return
+ClassDocImpl#isEnum():::Return true if this is an enumeration:::return->getFlags
+ClassDocImpl#isInterface():::Return true if this is an interface, but not an annotation type:::return->Modifier->getModifiers->isInterface
+ClassDocImpl#isException():::Return true if this is an exception class:::if->isEnum->isInterface->isAnnotationType->return->for->t->t->hasTag->supertype->return
+ClassDocImpl#isError():::Return true if this is an error class:::if->isEnum->isInterface->isAnnotationType->return->for->t->t->hasTag->supertype->return
+ClassDocImpl#isThrowable():::Return true if this is a throwable class:::if->isEnum->isInterface->isAnnotationType->return->for->t->t->hasTag->supertype->return
+ClassDocImpl#isAbstract():::Return true if this class is abstract:::return->Modifier->getModifiers->isAbstract
+ClassDocImpl#isSynthetic():::Returns true if this class was synthesized by the compiler.:::return->getFlags
+ClassDocImpl#containingPackage():::Return the package that this class is contained in.:::p->env->tsym->packge->getPackageDoc->if->docPath->try->location->hasLocation->p->qualifiedName->getFileForInput->catch->finally->if->po->position->if->uri->toUri->if->uri->getScheme->equals->f->new->File->dir->f->getParentFile->if->pf->new->File->if->pf->exists->sfm->sfm->getJavaFileObjects->iterator->next->p->setDocPath->return
+ClassDocImpl#name():::Return the class name without package qualifier - but with enclosing class qualifier - as a String:::if->getClassName->return
+ClassDocImpl#qualifiedName():::Return the qualified class name as a String:::if->getClassName->return
+ClassDocImpl#typeName():::Return unqualified name of type excluding any dimension information:::return->name
+ClassDocImpl#qualifiedTypeName():::Return qualified name of type excluding any dimension information:::return->qualifiedName
+ClassDocImpl#simpleTypeName():::Return the simple name of this type.:::if->toString->return
+ClassDocImpl#toString():::Return the qualified name and any type parameters:::return->classToString
+ClassDocImpl#getClassName(ClassSymbol, boolean):::Return the class name as a string:::if->return->c->getQualifiedName->toString->else->n->for->enclClass->return
+ClassDocImpl#classToString(DocEnv, ClassSymbol, boolean):::Return the class name with any type parameters as a string:::s->new->StringBuilder->if->c->isInner->s->getClassName->append->else->encl->enclClass->s->classToString->append->append->append->s->TypeMaker->typeParametersString->append->return->s->toString
+ClassDocImpl#isGeneric(ClassSymbol):::Is this class (or any enclosing class) generic?  That is, does it have type parameters?:::return->allparams->nonEmpty
+ClassDocImpl#typeParameters():::Return the formal type parameters of this class or interface:::if->return->new->TypeVariableArr->res->type->getTypeArguments->length->new->TypeVariableArr->TypeMaker->type->getTypeArguments->getTypes->return
+ClassDocImpl#typeParamTags():::Return the type parameter tags of this class or interface.:::return->new->ParamTagArr->comment->typeParamTags
+ClassDocImpl#modifiers():::Return the modifier string for this class:::return->Modifier->modifierSpecifier->toString
+ClassDocImpl#superclass():::Return the superclass of this class:::if->isInterface->isAnnotationType->return->if->return->c->supertype->if->return->env->getClassDoc
+ClassDocImpl#superclassType():::Return the superclass of this class:::if->isInterface->isAnnotationType->return->sup->supertype->return->TypeMaker->sup->hasTag->getType
+ClassDocImpl#subclassOf(ClassDoc):::Test whether this class is a subclass of the specified class.:::return->tsym->isSubClass
+ClassDocImpl#interfaces():::Return interfaces implemented by this class or interfaces extended by this interface.:::ta->new->ListBuffer<>->foreach->interfaces->ta->env->getClassDoc->append->return->ta->ta->length->new->ClassDocImplArr->toArray
+ClassDocImpl#interfaceTypes():::Return interfaces implemented by this class or interfaces extended by this interface:::return->TypeMaker->interfaces->getTypes
+ClassDocImpl#fields(boolean):::Return fields in class.:::return->fields
+ClassDocImpl#fields():::Return included fields in class.:::return->fields
+ClassDocImpl#enumConstants():::Return the enum constants if this is an enum type.:::return->fields
+ClassDocImpl#methods(boolean):::Return methods in class:::names->methods->List->nil->foreach->tsym->members->getSymbols->if->s->if->env->shouldDocument->methods->env->getMethodDoc->prepend->return->methods->methods->length->new->MethodDocImplArr->toArray
+ClassDocImpl#methods():::Return included methods in class.:::return->methods
+ClassDocImpl#constructors(boolean):::Return constructors in class.:::names->constructors->List->nil->foreach->tsym->members->getSymbols->if->s->if->env->shouldDocument->constructors->env->getConstructorDoc->prepend->return->constructors->constructors->length->new->ConstructorDocImplArr->toArray
+ClassDocImpl#constructors():::Return included constructors in class.:::return->constructors
+ClassDocImpl#addAllClasses(ListBuffer, boolean):::Adds all inner classes of this class, and their inner classes recursively, to the list l.:::try->if->isSynthetic->return->if->JavadocTool->toString->isValidClassName->return->if->env->shouldDocument->return->if->l->contains->return->l->append->more->List->nil->foreach->tsym->members->getSymbols->if->s->c->env->getClassDoc->if->c->isSynthetic->continue->if->more->prepend->for->more->nonEmpty->catch->finally
+ClassDocImpl#innerClasses(boolean):::Return inner classes within this class.:::innerClasses->new->ListBuffer<>->foreach->tsym->members->getSymbols->if->s->if->continue->if->env->isVisible->innerClasses->env->getClassDoc->prepend->return->innerClasses->innerClasses->length->new->ClassDocImplArr->toArray
+ClassDocImpl#innerClasses():::Return included inner classes within this class.:::return->innerClasses
+ClassDocImpl#findMethod(String, String[]):::Find a method in this class scope:::return->new->HashSet<ClassDocImpl>->searchMethod
+ClassDocImpl#findConstructor(String, String[]):::Find constructor in this class.:::names->foreach->tsym->members->names->fromString->getSymbolsByName->if->if->hasParameterTypes->return->env->getConstructorDoc->return
+ClassDocImpl#findField(String):::Find a field in this class scope:::return->new->HashSet<ClassDocImpl>->searchField
+ClassDocImpl#importedClasses():::Get the list of classes declared as imported:::if->return->new->ClassDocArr->importedClasses->new->ListBuffer<>->compenv->getEnv->if->return->new->ClassDocImplArr->asterisk->foreach->if->t->hasTag->imp->if->TreeInfo->name->matches->importedClasses->env->getClassDoc->append->return->importedClasses->importedClasses->length->new->ClassDocImplArr->toArray
+ClassDocImpl#importedPackages():::Get the list of packages declared as imported:::if->return->new->PackageDocArr->importedPackages->new->ListBuffer<>->names->importedPackages->env->enterPackage->getPackageDoc->append->compenv->getEnv->if->return->new->PackageDocImplArr->foreach->if->t->hasTag->imp->if->TreeInfo->name->sel->s->pdoc->env->s->packge->getPackageDoc->if->importedPackages->contains->importedPackages->append->return->importedPackages->importedPackages->length->new->PackageDocImplArr->toArray
+ClassDocImpl#dimension():::Return the type's dimension information:::return
+ClassDocImpl#asClassDoc():::Return this type as a class, which it already is.:::return
+ClassDocImpl#asAnnotationTypeDoc():::Return null (unless overridden), as this is not an annotation type.:::return
+ClassDocImpl#asParameterizedType():::Return null, as this is not a class instantiation.:::return
+ClassDocImpl#asTypeVariable():::Return null, as this is not a type variable.:::return
+ClassDocImpl#asWildcardType():::Return null, as this is not a wildcard type.:::return
+ClassDocImpl#asAnnotatedType():::Returns null, as this is not an annotated type.:::return
+ClassDocImpl#isPrimitive():::Return false, as this is not a primitive type.:::return
+ClassDocImpl#isSerializable():::Return true if this class implements java.io.Serializable:::try->return->isSubtype->catch->return->finally
+ClassDocImpl#isExternalizable():::Return true if this class implements java.io.Externalizable.:::try->return->isSubtype->catch->return->finally
+ClassDocImpl#serializationMethods():::Return the serialization methods for this class.:::if->new->SerializedForm->return->serializedForm->methods
+ClassDocImpl#serializableFields():::Return the Serializable fields of class.  Return either a list of default fields documented by serial tag<br> or return a single FieldDoc for serialPersistentField member:::if->new->SerializedForm->return->serializedForm->fields
+ClassDocImpl#definesSerializableFields():::Return true if Serializable fields are explicitly defined with the special class member serialPersistentFields.:::if->isSerializable->isExternalizable->return->else->if->new->SerializedForm->return->serializedForm->definesSerializableFields
+ClassDocImpl#isRuntimeException():::Determine if a class is a RuntimeException:::return->tsym->isSubClass
+ClassDocImpl#position():::Return the source position of the entity, or null if no position is available.:::if->return->return->SourcePositionImpl->make
+Comment#commentText():::Return the text of the comment.:::return
+Comment#tags():::Return all tags in this comment.:::return->tagList->tagList->length->new->TagArr->toArray
+Comment#tags(String):::Return tags of the specified kind in this comment.:::found->new->ListBuffer<>->target->if->target->charAt->foreach->if->tag->kind->equals->found->append->return->found->found->length->new->TagArr->toArray
+Comment#throwsTags():::Return throws tags in this comment.:::found->new->ListBuffer<>->foreach->if->found->append->return->found->found->length->new->ThrowsTagArr->toArray
+Comment#paramTags():::Return param tags (excluding type param tags) in this comment.:::return->paramTags
+Comment#typeParamTags():::Return type param tags in this comment.:::return->paramTags
+Comment#seeTags():::Return see also tags in this comment.:::found->new->ListBuffer<>->foreach->if->found->append->return->found->found->length->new->SeeTagArr->toArray
+Comment#serialFieldTags():::Return serialField tags in this comment.:::found->new->ListBuffer<>->foreach->if->found->append->return->found->found->length->new->SerialFieldTagArr->toArray
+Comment#getInlineTags(DocImpl, String):::Return array of tags with text and inline See Tags for a Doc comment.:::taglist->new->ListBuffer<>->delimend->textstart->len->inlinetext->length->inPre->docenv->if->return->taglist->taglist->length->new->TagArr->toArray->while->linkstart->if->inlineTagFound->taglist->inlinetext->substring->new->TagImpl->append->break->else->scanForPre->seetextstart->for->i->inlinetext->length->linkName->inlinetext->substring->if->linkName->equals->linkName->equals->while->Character->inlinetext->charAt->isWhitespace->if->inlinetext->length->taglist->inlinetext->substring->new->TagImpl->append->docenv->warning->return->taglist->taglist->length->new->TagArr->toArray->else->taglist->inlinetext->substring->new->TagImpl->append->if->findInlineTagDelim->taglist->inlinetext->substring->new->TagImpl->append->docenv->warning->return->taglist->taglist->length->new->TagArr->toArray->else->if->linkName->equals->linkName->equals->linkName->equals->taglist->inlinetext->substring->new->SeeTagImpl->append->else->taglist->inlinetext->substring->new->TagImpl->append->if->inlinetext->length->break->return->taglist->taglist->length->new->TagArr->toArray
+Comment#firstSentenceTags(DocImpl, String):::Return array of tags for the locale specific first sentence in the text.:::doclocale->return->doclocale->localeSpecificFirstSentence->getInlineTags
+Comment#toString():::Return text for this Doc comment.:::return
+ConstructorDocImpl#isConstructor():::Return true if it is a constructor, which it is.:::return
+ConstructorDocImpl#name():::Get the name.:::c->sym->enclClass->return->toString
+ConstructorDocImpl#qualifiedName():::Get the name.:::return->sym->enclClass->getQualifiedName->toString
+ConstructorDocImpl#toString():::Returns a string representation of this constructor:::return->typeParametersString->qualifiedName->signature
+DocEnv#lookupClass(String):::Look up ClassDoc by qualified name.:::c->getClassSymbol->if->return->getClassDoc->else->return
+DocEnv#loadClass(String):::Load ClassDoc by qualified name.:::try->nameImpl->names->fromString->mod->syms->Convert->packagePart->inferModule->c->finder->loadClass->return->getClassDoc->catch->chk->completionError->return->finally
+DocEnv#lookupPackage(String):::Look up PackageDoc by qualified name.:::nameImpl->names->fromString->mod->syms->inferModule->p->syms->getPackage->c->getClassSymbol->if->return->getPackageDoc->else->return
+DocEnv#getClassSymbol(String):::Retrieve class symbol by fully-qualified name.:::nameLen->name->length->nameChars->name->toCharArray->idx->name->length->for->return
+DocEnv#setLocale(String):::Set the locale.:::new->DocLocale->messager->setLocale
+DocEnv#shouldDocument(VarSymbol):::Check whether this member should be documented.:::mod->sym->flags->if->return->return->showAccess->translateModifiers->checkModifier
+DocEnv#shouldDocument(MethodSymbol):::Check whether this member should be documented.:::mod->sym->flags->if->return->return->showAccess->translateModifiers->checkModifier
+DocEnv#shouldDocument(ClassSymbol):::check whether this class should be documented.:::return->getClassDoc->isVisible
+DocEnv#isVisible(ClassSymbol):::Check the visibility if this is an nested class:::mod->if->showAccess->translateModifiers->checkModifier->return->encl->enclClass->return->isVisible
+DocEnv#printError(String):::Print error message, increment error count.:::if->return->messager->printError
+DocEnv#error(DocImpl, String):::Print error message, increment error count.:::if->return->messager->doc->position->error
+DocEnv#error(SourcePosition, String):::Print error message, increment error count.:::if->return->messager->error
+DocEnv#printError(SourcePosition, String):::Print error message, increment error count.:::if->return->messager->printError
+DocEnv#error(DocImpl, String, String):::Print error message, increment error count.:::if->return->messager->doc->position->error
+DocEnv#error(DocImpl, String, String, String):::Print error message, increment error count.:::if->return->messager->doc->position->error
+DocEnv#error(DocImpl, String, String, String, String):::Print error message, increment error count.:::if->return->messager->doc->position->error
+DocEnv#printWarning(String):::Print warning message, increment warning count.:::if->return->messager->printWarning
+DocEnv#warning(DocImpl, String):::Print warning message, increment warning count.:::if->return->messager->doc->position->warning
+DocEnv#printWarning(SourcePosition, String):::Print warning message, increment warning count.:::if->return->messager->printWarning
+DocEnv#warning(DocImpl, String, String):::Print warning message, increment warning count.:::if->return->if->key->startsWith->return->messager->doc->position->warning
+DocEnv#warning(DocImpl, String, String, String):::Print warning message, increment warning count.:::if->return->messager->doc->position->warning
+DocEnv#warning(DocImpl, String, String, String, String):::Print warning message, increment warning count.:::if->return->messager->doc->position->warning
+DocEnv#warning(DocImpl, String, String, String, String, String):::Print warning message, increment warning count.:::if->return->messager->doc->position->warning
+DocEnv#printNotice(String):::Print a message.:::if->return->messager->printNotice
+DocEnv#notice(String):::Print a message.:::if->return->messager->notice
+DocEnv#printNotice(SourcePosition, String):::Print a message.:::if->return->messager->printNotice
+DocEnv#notice(String, String):::Print a message.:::if->return->messager->notice
+DocEnv#notice(String, String, String):::Print a message.:::if->return->messager->notice
+DocEnv#notice(String, String, String, String):::Print a message.:::if->return->messager->notice
+DocEnv#exit():::Exit, reporting errors and warnings.:::messager->exit
+DocEnv#getPackageDoc(PackageSymbol):::Return the PackageDoc of this package symbol.:::result->packageMap->get->if->return->new->PackageDocImpl->packageMap->put->return
+DocEnv#makePackageDoc(PackageSymbol, TreePath):::Create the PackageDoc (or a subtype) for a package symbol.:::result->packageMap->get->if->if->result->setTreePath->else->new->PackageDocImpl->packageMap->put
+DocEnv#getClassDoc(ClassSymbol):::Return the ClassDoc (or a subtype) of this class symbol.:::result->classMap->get->if->return->if->isAnnotationType->new->AnnotationTypeDocImpl->else->new->ClassDocImpl->classMap->put->return
+DocEnv#makeClassDoc(ClassSymbol, TreePath):::Create the ClassDoc (or a subtype) for a class symbol.:::result->classMap->get->if->if->result->setTreePath->return->if->treePath->getLeaf->isAnnotationType->new->AnnotationTypeDocImpl->else->new->ClassDocImpl->classMap->put
+DocEnv#getFieldDoc(VarSymbol):::Return the FieldDoc of this var symbol.:::result->fieldMap->get->if->return->new->FieldDocImpl->fieldMap->put->return
+DocEnv#makeFieldDoc(VarSymbol, TreePath):::Create a FieldDoc for a var symbol.:::result->fieldMap->get->if->if->result->setTreePath->else->new->FieldDocImpl->fieldMap->put
+DocEnv#makeMethodDoc(MethodSymbol, TreePath):::Create a MethodDoc for this MethodSymbol:::result->methodMap->get->if->if->result->setTreePath->else->new->MethodDocImpl->methodMap->put
+DocEnv#getMethodDoc(MethodSymbol):::Return the MethodDoc for a MethodSymbol:::result->methodMap->get->if->return->new->MethodDocImpl->methodMap->put->return
+DocEnv#makeConstructorDoc(MethodSymbol, TreePath):::Create the ConstructorDoc for a MethodSymbol:::result->methodMap->get->if->if->result->setTreePath->else->new->ConstructorDocImpl->methodMap->put
+DocEnv#getConstructorDoc(MethodSymbol):::Return the ConstructorDoc for a MethodSymbol:::result->methodMap->get->if->return->new->ConstructorDocImpl->methodMap->put->return
+DocEnv#makeAnnotationTypeElementDoc(MethodSymbol, TreePath):::Create the AnnotationTypeElementDoc for a MethodSymbol:::result->methodMap->get->if->if->result->setTreePath->else->new->AnnotationTypeElementDocImpl->methodMap->put
+DocEnv#getAnnotationTypeElementDoc(MethodSymbol):::Return the AnnotationTypeElementDoc for a MethodSymbol:::result->methodMap->get->if->return->new->AnnotationTypeElementDocImpl->methodMap->put->return
+DocEnv#getParameterizedType(ClassType):::Return the ParameterizedType of this instantiation:::return->new->ParameterizedTypeImpl
+DocEnv#setEncoding(String):::Set the encoding.:::
+DocEnv#getEncoding():::Get the encoding.:::return
+DocEnv#translateModifiers(long):::Convert modifier bits from private coding used by the compiler to that of java.lang.reflect.Modifier.:::result->if->if->if->if->if->if->if->if->if->if->if->return
+DocImpl#documentation():::So subclasses have the option to do lazy initialization of "documentation" string.:::if->return
+DocImpl#comment():::For lazy initialization of comment.:::if->d->documentation->if->new->JavaScriptScanner.Reporter->parse->if->env->treePath->getCompilationUnit->shouldCheck->d->getCommentText->equals->scan->new->Comment->return
+DocImpl#commentText():::Return the text of the comment for this doc item:::return->comment->commentText
+DocImpl#tags():::Return all tags in this Doc item.:::return->comment->tags
+DocImpl#tags(String):::Return tags of the specified kind in this Doc item.:::return->comment->tags
+DocImpl#seeTags():::Return the see also tags in this Doc item.:::return->comment->seeTags
+DocImpl#readHTMLDocumentation(InputStream, FileObject):::Utility for subclasses which read HTML documentation files.:::filecontents->input->available->new->byteArr->try->dataIn->new->DataInputStream->dataIn->readFully->catch->finally->input->close->encoding->env->getEncoding->rawDoc->new->String->new->String->bodyPat->Pattern->compile->m->bodyPat->matcher->if->m->matches->return->m->group->else->key->rawDoc->matches->env->SourcePositionImpl->make->error->return
+DocImpl#getRawCommentText():::Return the full unprocessed text of the comment:::return->documentation
+DocImpl#setRawCommentText(String):::Set the full unprocessed text of the comment:::
+DocImpl#setTreePath(TreePath):::Set the full unprocessed text of the comment and tree path.:::getCommentText
+DocImpl#key():::return a key for sorting.:::if->generateKey->return
+DocImpl#generateKey():::Generate a key for sorting:::k->name->return->getCollationKey
+DocImpl#toString():::Returns a string representation of this Doc item.:::return->qualifiedName
+DocImpl#name():::Returns the name of this Doc item.:::
+DocImpl#qualifiedName():::Returns the qualified name of this Doc item.:::
+DocImpl#compareTo(Object):::Compares this Object with the specified Object for order:::return->key->key->compareTo
+DocImpl#isField():::Is this Doc item a field?  False until overridden.:::return
+DocImpl#isEnumConstant():::Is this Doc item an enum constant?  False until overridden.:::return
+DocImpl#isConstructor():::Is this Doc item a constructor?  False until overridden.:::return
+DocImpl#isMethod():::Is this Doc item a method (but not a constructor or annotation type element)? False until overridden.:::return
+DocImpl#isAnnotationTypeElement():::Is this Doc item an annotation type element? False until overridden.:::return
+DocImpl#isInterface():::Is this Doc item a interface (but not an annotation type)? False until overridden.:::return
+DocImpl#isException():::Is this Doc item a exception class?  False until overridden.:::return
+DocImpl#isError():::Is this Doc item a error class?  False until overridden.:::return
+DocImpl#isEnum():::Is this Doc item an enum type?  False until overridden.:::return
+DocImpl#isAnnotationType():::Is this Doc item an annotation type?  False until overridden.:::return
+DocImpl#isOrdinaryClass():::Is this Doc item an ordinary class (i.e:::return
+DocImpl#isClass():::Is this Doc item a class (and not an interface or annotation type)? This includes ordinary classes, enums, errors and exceptions:::return
+DocImpl#isIncluded():::return true if this Doc is include in the active set.:::
+DocImpl#position():::Return the source position of the entity, or null if no position is available.:::return
+DocletInvoker#start(RootDoc):::Generate documentation here:::retVal->methodName->paramTypes->params->try->invoke->catch->return->finally->if->return->else->messager->error->return
+DocletInvoker#optionLength(String):::Check for doclet added options here:::retVal->methodName->paramTypes->params->try->invoke->catch->return->finally->if->return->else->messager->error->return
+DocletInvoker#validOptions(List):::Let doclet check that all options are OK:::retVal->options->optlist->optlist->length->new->StringArrs->toArray->methodName->reporter->paramTypes->params->try->invoke->catch->return->finally->if->return->else->messager->error->return
+DocletInvoker#languageVersion():::Return the language version supported by this doclet:::try->retVal->methodName->paramTypes->new->Class<?>Arr->params->new->ObjectArr->try->invoke->catch->return->finally->if->return->else->messager->error->return->catch->return->finally
+ExecutableMemberDocImpl#getFlags():::Returns the flags in terms of javac's flags:::return->sym->flags
+ExecutableMemberDocImpl#getContainingClass():::Identify the containing class:::return->sym->enclClass
+ExecutableMemberDocImpl#isNative():::Return true if this method is native:::return->Modifier->getModifiers->isNative
+ExecutableMemberDocImpl#isSynchronized():::Return true if this method is synchronized:::return->Modifier->getModifiers->isSynchronized
+ExecutableMemberDocImpl#isVarArgs():::Return true if this method was declared to take a variable number of arguments.:::return->sym->flags
+ExecutableMemberDocImpl#isSynthetic():::Returns true if this field was synthesized by the compiler.:::return->sym->flags
+ExecutableMemberDocImpl#throwsTags():::Return the throws tags in this method.:::return->comment->throwsTags
+ExecutableMemberDocImpl#paramTags():::Return the param tags in this method, excluding the type parameter tags.:::return->comment->paramTags
+ExecutableMemberDocImpl#typeParamTags():::Return the type parameter tags in this method.:::return->new->ParamTagArr->comment->typeParamTags
+ExecutableMemberDocImpl#thrownExceptions():::Return exceptions this method or constructor throws.:::l->new->ListBuffer<>->foreach->getThrownTypes->erasure->cdi->env->getClassDoc->if->l->append->return->l->l->length->new->ClassDocImplArr->toArray
+ExecutableMemberDocImpl#thrownExceptionTypes():::Return exceptions this method or constructor throws:::return->TypeMaker->getThrownTypes->getTypes
+ExecutableMemberDocImpl#parameters():::Get argument information.:::params->sym->params->result->params->length->new->ParameterArr->i->foreach->new->ParameterImpl->return
+ExecutableMemberDocImpl#receiverType():::Get the receiver type of this executable element.:::recvtype->asMethodType->return->TypeMaker->getType
+ExecutableMemberDocImpl#typeParameters():::Return the formal type parameters of this method or constructor:::if->return->new->TypeVariableArr->res->getTypeArguments->length->new->TypeVariableArr->TypeMaker->getTypeArguments->getTypes->return
+ExecutableMemberDocImpl#signature():::Get the signature:::return->makeSignature
+ExecutableMemberDocImpl#flatSignature():::Get flat signature:::return->makeSignature
+ExecutableMemberDocImpl#generateKey():::Generate a key for sorting.:::k->name->flatSignature->typeParametersString->k->replace->replace->return->getCollationKey
+ExecutableMemberDocImpl#position():::Return the source position of the entity, or null if no position is available.:::if->sym->enclClass->return->return->SourcePositionImpl->sym->enclClass->make
+FieldDocImpl#getFlags():::Returns the flags in terms of javac's flags:::return->sym->flags
+FieldDocImpl#getContainingClass():::Identify the containing class:::return->sym->enclClass
+FieldDocImpl#type():::Get type of this field.:::return->TypeMaker->getType
+FieldDocImpl#constantValue():::Get the value of a constant field.:::result->sym->getConstValue->if->hasTag->Boolean->intValue->valueOf->return
+FieldDocImpl#constantValueExpression():::Get the value of a constant field.:::return->constantValue->constantValueExpression
+FieldDocImpl#constantValueExpression(Object):::A static version of the above.:::if->return->if->return->charValue->sourceForm->if->return->byteValue->sourceForm->if->return->sourceForm->if->return->doubleValue->sourceForm->if->return->doubleValue->sourceForm->if->return->return->cb->toString
+FieldDocImpl#isIncluded():::Return true if this field is included in the active set.:::return->containingClass->isIncluded->env->shouldDocument
+FieldDocImpl#isField():::Is this Doc item a field (but not an enum constant?:::return->isEnumConstant
+FieldDocImpl#isEnumConstant():::Is this Doc item an enum constant? (For legacy doclets, return false.):::return->getFlags
+FieldDocImpl#isTransient():::Return true if this field is transient:::return->Modifier->getModifiers->isTransient
+FieldDocImpl#isVolatile():::Return true if this field is volatile:::return->Modifier->getModifiers->isVolatile
+FieldDocImpl#isSynthetic():::Returns true if this field was synthesized by the compiler.:::return->getFlags
+FieldDocImpl#serialFieldTags():::Return the serialField tags in this FieldDocImpl item.:::return->comment->serialFieldTags
+FieldDocImpl#position():::Return the source position of the entity, or null if no position is available.:::if->sym->enclClass->return->return->SourcePositionImpl->sym->enclClass->make
+JavadocClassFinder#getPackageFileKinds():::Override getPackageFileKinds to include search for package.html:::return
+JavadocClassFinder#extraFileActions(PackageSymbol, JavaFileObject):::Override extraFileActions to check for package documentation:::if->fo->isNameCompatible->docenv->getPackageDoc->setDocPath
+JavadocEnter#duplicateClass(DiagnosticPosition, ClassSymbol):::Don't complain about a duplicate class.:::
+JavadocTool#keepComments():::For javadoc, the parser needs to keep comments:::return
+JavadocTool#make0(Context)::: Construct a new javadoc tool.:::JavadocClassFinder->preRegister->JavadocEnter->preRegister->JavadocMemberEnter->preRegister->JavadocTodo->preRegister->Messager->instance0->return->new->JavadocTool
+JavadocTool#isValidPackageName(String):::Is the given string a valid package name?:::index->while->s->indexOf->if->s->substring->isValidClassName->return->s->substring->return->isValidClassName
+JavadocTool#isValidClassName(String):::Return true if given file name is a valid class name (including "package-info").:::if->s->length->return->if->s->equals->return->if->cp->s->codePointAt->if->Character->isJavaIdentifierStart->return->for->j->Character->charCount->s->length->Character->charCount->else->if->Character->s->charAt->isJavaIdentifierStart->return->for->j->s->length->return
+JavadocTool#listClasses(List):::From a list of top level trees, return the list of contained class definitions:::result->new->ListBuffer<>->foreach->foreach->if->def->hasTag->result->append->return->result->toList
+JavadocTool.PackageTable#getIncludedPackages():::Returns the aggregate set of included packages.:::return
+JavadocTool.PackageTable#getFiles(String):::Returns the set of source files for a package.:::e->getEntry->if->return->lb->new->ListBuffer<>->packageLocn->getLocation->foreach->fm->list->binaryName->fm->inferBinaryName->simpleName->getSimpleName->if->isValidClassName->lb->append->return->lb->toList
+JavaScriptScanner#blockContent():::Read block content, consisting of text, html and inline tags:::while->switch->nextChar->break->entity->break->html->break->nextChar->break->inlineTag->break->if->break->nextChar
+JavaScriptScanner#blockTags():::Read a series of block tags, including their content:::while->blockTag
+JavaScriptScanner#blockTag():::Read a single block tag, including its content:::p->try->nextChar->if->isIdentifierStart->name->readTagName->tp->tagParsers->get->if->blockContent->else->switch->tp->getKind->tp->parse->return->return->blockContent->catch->blockContent->finally
+JavaScriptScanner#inlineTag():::Read a single inline tag, including its content:::p->try->nextChar->if->isIdentifierStart->name->readTagName->tp->tagParsers->get->if->skipWhitespace->inlineText->nextChar->else->skipWhitespace->if->tp->getKind->tp->parse->else->inlineText->nextChar->catch->finally
+JavaScriptScanner#identifier():::Read Java identifier Matching pairs of { } are skipped; the text is terminated by the first unmatched }:::skipWhitespace->pos->if->isJavaIdentifierStart->readJavaIdentifier->return->throw->new->ParseException
+JavaScriptScanner#quotedString():::Read a quoted string:::pos->nextChar->while->switch->break->break->nextChar->return->if->break->nextChar
+JavaScriptScanner#inlineWord():::Read a term ie:::pos->depth->while->switch->return->if->break->break->if->return->break->nextChar
+JavaScriptScanner#entity():::Read an HTML entity:::nextChar->name->if->namep->nextChar->if->isDecimalDigit->nextChar->while->isDecimalDigit->nextChar->new->String->else->if->nextChar->if->isHexDigit->nextChar->while->isHexDigit->nextChar->new->String->else->if->isIdentifierStart->readIdentifier->if->if->return->nextChar
+JavaScriptScanner#html():::Read the start or end of an HTML tag, or an HTML comment <identifier attrs>  or </identifier> :::p->nextChar->if->isIdentifierStart->name->readIdentifier->checkHtmlTag->htmlAttrs->if->nextChar->if->nextChar->return->else->if->nextChar->if->isIdentifierStart->readIdentifier->skipWhitespace->if->nextChar->return->else->if->nextChar->if->nextChar->if->nextChar->while->dash->while->nextChar->if->nextChar->return->nextChar
+JavaScriptScanner#htmlAttrs():::Read a series of HTML attributes, terminated by > :::skipWhitespace->while->isIdentifierStart->namePos->name->readAttributeName->skipWhitespace->value->new->StringBuilder->if->nextChar->skipWhitespace->if->quote->nextChar->while->if->break->value->append->nextChar->nextChar->else->while->isUnquotedAttrValueTerminator->value->append->nextChar->skipWhitespace->value->toString->checkHtmlAttr
+MemberDocImpl#isSynthetic():::Returns true if this field was synthesized by the compiler.:::
+Messager#instance0(Context):::Get the current messager, which is also the compiler log.:::instance->context->get->if->throw->new->InternalError->return
+Messager#getText(String, Object...):::get and format message string from resource:::return->messages->getLocalizedString
+Messager#printError(String):::Print error message, increment error count:::printError
+Messager#printError(SourcePosition, String):::Print error message, increment error count:::if->report->return->if->prefix->pos->toString->errWriter->getWriter->errWriter->getText->println->errWriter->flush->prompt
+Messager#printWarning(String):::Print warning message, increment warning count:::printWarning
+Messager#printWarning(SourcePosition, String):::Print warning message, increment warning count:::if->report->return->if->prefix->pos->toString->warnWriter->getWriter->warnWriter->getText->println->warnWriter->flush
+Messager#printNotice(String):::Print a message:::printNotice
+Messager#printNotice(SourcePosition, String):::Print a message:::if->report->return->noticeWriter->getWriter->if->noticeWriter->println->else->noticeWriter->println->noticeWriter->flush
+Messager#error(SourcePosition, String, Object...):::Print error message, increment error count.:::getText->printError
+Messager#warning(SourcePosition, String, Object...):::Print warning message, increment warning count.:::getText->printWarning
+Messager#notice(String, Object...):::Print a message.:::getText->printNotice
+Messager#nerrors():::Return total number of errors, including those recorded in the compilation log.:::return
+Messager#nwarnings():::Return total number of warnings, including those recorded in the compilation log.:::return
+Messager#exitNotice():::Print exit message.:::if->notice->if->notice
+Messager#exit():::Force program exit, e.g., from a fatal error:::throw->new->ExitJavadoc
+MethodDocImpl#isMethod():::Return true if it is a method, which it is:::return
+MethodDocImpl#isDefault():::Return true if this method is default:::return->sym->flags
+MethodDocImpl#isAbstract():::Return true if this method is abstract:::return->Modifier->getModifiers->isAbstract->isDefault
+MethodDocImpl#returnType():::Get return type.:::return->TypeMaker->getReturnType->getType
+MethodDocImpl#overriddenClass():::Return the class that originally defined the method that is overridden by the current definition, or null if no such class exists.:::t->overriddenType->return->t->asClassDoc
+MethodDocImpl#overriddenType():::Return the type containing the method that this method overrides:::if->sym->flags->return->origin->for->t->supertype->t->hasTag->supertype->return
+MethodDocImpl#overriddenMethod():::Return the method that this method overrides.:::if->sym->flags->return->origin->for->t->supertype->t->hasTag->supertype->return
+MethodDocImpl#overrides(MethodDoc):::Tests whether this method overrides another:::overridee->origin->return->sym->isStatic->asSuper->sym->overrides
+MethodDocImpl#toString():::Returns a string representation of this method:::return->sym->enclClass->getQualifiedName->typeParametersString->name->signature
+ModifierFilter#checkModifier(int):::Filter on modifier bits.:::fmod->return
+PackageDocImpl#documentation():::Do lazy initialization of "documentation" string.:::if->return->if->try->s->docPath->openInputStream->readHTMLDocumentation->catch->env->docPath->getName->error->finally->else->return
+PackageDocImpl#addAllClassesTo(ListBuffer):::Add all included classes (including Exceptions and Errors) and interfaces.:::list->getClasses->appendList
+PackageDocImpl#allClasses(boolean):::Get all classes (including Exceptions and Errors) and interfaces.:::classes->getClasses->return->classes->classes->length->new->ClassDocImplArr->toArray
+PackageDocImpl#allClasses():::Get all included classes (including Exceptions and Errors) and interfaces:::return->allClasses
+PackageDocImpl#ordinaryClasses():::Get ordinary classes (that is, exclude exceptions, errors, enums, interfaces, and annotation types) in this package.:::ret->new->ListBuffer<>->foreach->getClasses->if->c->isOrdinaryClass->ret->append->return->ret->ret->length->new->ClassDocImplArr->toArray
+PackageDocImpl#exceptions():::Get Exception classes in this package.:::ret->new->ListBuffer<>->foreach->getClasses->if->c->isException->ret->append->return->ret->ret->length->new->ClassDocImplArr->toArray
+PackageDocImpl#errors():::Get Error classes in this package.:::ret->new->ListBuffer<>->foreach->getClasses->if->c->isError->ret->append->return->ret->ret->length->new->ClassDocImplArr->toArray
+PackageDocImpl#enums():::Get included enum types in this package.:::ret->new->ListBuffer<>->foreach->getClasses->if->c->isEnum->ret->append->return->ret->ret->length->new->ClassDocImplArr->toArray
+PackageDocImpl#interfaces():::Get included interfaces in this package, omitting annotation types.:::ret->new->ListBuffer<>->foreach->getClasses->if->c->isInterface->ret->append->return->ret->ret->length->new->ClassDocImplArr->toArray
+PackageDocImpl#annotationTypes():::Get included annotation types in this package.:::ret->new->ListBuffer<>->foreach->getClasses->if->c->isAnnotationType->ret->append->return->ret->ret->length->new->AnnotationTypeDocImplArr->toArray
+PackageDocImpl#annotations():::Get the annotations of this package:::res->sym->getRawAttributes->length->new->AnnotationDescArr->i->foreach->sym->getRawAttributes->new->AnnotationDescImpl->return
+PackageDocImpl#findClass(String):::Lookup for a class within this package.:::filtered->foreach->getClasses->if->c->name->equals->return->return
+PackageDocImpl#isIncluded():::Return true if this package is included in the active set.:::return
+PackageDocImpl#name():::Get package name:::return->qualifiedName
+PackageDocImpl#qualifiedName():::Get package name.:::if->fullname->sym->getQualifiedName->fullname->isEmpty->fullname->toString->return
+PackageDocImpl#setDocPath(FileObject):::set doc path for an unzipped directory:::if->return->if->path->equals->checkDoc
+PackageDocImpl#position():::Return the source position of the entity, or null if no position is available.:::return->SourcePositionImpl->make->SourcePositionImpl->make
+ParameterImpl#type():::Get the type of this parameter.:::return
+ParameterImpl#name():::Get local name of this parameter:::return->sym->toString
+ParameterImpl#typeName():::Get type name of this parameter:::return->type->typeName->type->toString
+ParameterImpl#toString():::Returns a string representation of the parameter:::return->typeName
+ParameterImpl#annotations():::Get the annotations of this parameter:::res->sym->getRawAttributes->length->new->AnnotationDescArr->i->foreach->sym->getRawAttributes->new->AnnotationDescImpl->return
+ParameterizedTypeImpl#asClassDoc():::Return the generic class or interface that declared this type.:::return->env->getClassDoc
+ParameterizedTypeImpl#typeArguments():::Return the actual type arguments of this type.:::return->TypeMaker->type->getTypeArguments->getTypes
+ParameterizedTypeImpl#superclassType():::Return the class type that is a direct supertype of this one:::if->asClassDoc->isInterface->return->sup->supertype->return->TypeMaker->getType
+ParameterizedTypeImpl#interfaceTypes():::Return the interface types directly implemented by or extended by this parameterized type:::return->TypeMaker->interfaces->getTypes
+ParameterizedTypeImpl#containingType():::Return the type that contains this type as a member:::if->type->getEnclosingType->hasTag->return->TypeMaker->type->getEnclosingType->getType->enclosing->enclClass->if->return->env->getClassDoc->return
+ParamTagImpl#parameterName():::Return the parameter name.:::return
+ParamTagImpl#parameterComment():::Return the parameter comment.:::return
+ParamTagImpl#kind():::Return the kind of this tag.:::return
+ParamTagImpl#isTypeParameter():::Return true if this ParamTag corresponds to a type parameter.:::return
+ParamTagImpl#toString():::convert this object to a string.:::return
+ParamTagImpl#inlineTags():::For the parameter comment with embedded @link tags return the array of TagImpls consisting of SeeTagImpl(s) and text containing TagImpl(s).:::if->Comment->getInlineTags->return
+PrimitiveType#typeName():::Return unqualified name of type excluding any dimension information:::return
+PrimitiveType#qualifiedTypeName():::Return qualified name of type excluding any dimension information:::return
+PrimitiveType#simpleTypeName():::Return the simple name of this type.:::return
+PrimitiveType#dimension():::Return the type's dimension information, as a string:::return
+PrimitiveType#asClassDoc():::Return this type as a class:::return
+PrimitiveType#asAnnotationTypeDoc():::Return null, as this is not an annotation type.:::return
+PrimitiveType#asParameterizedType():::Return null, as this is not an instantiation.:::return
+PrimitiveType#asTypeVariable():::Return null, as this is not a type variable.:::return
+PrimitiveType#asWildcardType():::Return null, as this is not a wildcard type.:::return
+PrimitiveType#asAnnotatedType():::Return null, as this is not an annotated type.:::return
+PrimitiveType#toString():::Returns a string representation of the type:::return->qualifiedTypeName
+PrimitiveType#isPrimitive():::Return true if this is a primitive type.:::return
+ProgramElementDocImpl#getContainingClass():::Subclasses override to identify the containing class:::
+ProgramElementDocImpl#getFlags():::Returns the flags in terms of javac's flags:::
+ProgramElementDocImpl#getModifiers():::Returns the modifier flags in terms of java.lang.reflect.Modifier.:::if->DocEnv->getFlags->translateModifiers->return
+ProgramElementDocImpl#containingClass():::Get the containing class of this program element.:::if->getContainingClass->return->return->env->getContainingClass->getClassDoc
+ProgramElementDocImpl#containingPackage():::Return the package that this member is contained in:::return->env->getContainingClass->packge->getPackageDoc
+ProgramElementDocImpl#modifierSpecifier():::Get the modifier specifier integer.:::modifiers->getModifiers->if->isMethod->containingClass->isInterface->return->return
+ProgramElementDocImpl#modifiers():::Get modifiers string:::modifiers->getModifiers->if->isAnnotationTypeElement->isMethod->containingClass->isInterface->return->Modifier->toString->else->return->Modifier->toString
+ProgramElementDocImpl#annotations():::Get the annotations of this program element:::res->sym->getRawAttributes->length->new->AnnotationDescArr->i->foreach->sym->getRawAttributes->new->AnnotationDescImpl->return
+ProgramElementDocImpl#isPublic():::Return true if this program element is public:::modifiers->getModifiers->return->Modifier->isPublic
+ProgramElementDocImpl#isProtected():::Return true if this program element is protected:::modifiers->getModifiers->return->Modifier->isProtected
+ProgramElementDocImpl#isPrivate():::Return true if this program element is private:::modifiers->getModifiers->return->Modifier->isPrivate
+ProgramElementDocImpl#isPackagePrivate():::Return true if this program element is package private:::return->isPublic->isPrivate->isProtected
+ProgramElementDocImpl#isStatic():::Return true if this program element is static:::modifiers->getModifiers->return->Modifier->isStatic
+ProgramElementDocImpl#isFinal():::Return true if this program element is final:::modifiers->getModifiers->return->Modifier->isFinal
+ProgramElementDocImpl#generateKey():::Generate a key for sorting.:::k->name->return->getCollationKey
+RootDocImpl#options():::Command line options:::return->options->options->length->new->StringArrs->toArray
+RootDocImpl#specifiedPackages():::Packages specified on the command line.:::return->cmdLinePackages->cmdLinePackages->length->new->PackageDocImplArr->toArray
+RootDocImpl#specifiedClasses():::Classes and interfaces specified on the command line.:::classesToDocument->new->ListBuffer<>->foreach->cd->addAllClasses->return->classesToDocument->classesToDocument->length->new->ClassDocImplArr->toArray
+RootDocImpl#classes():::Return all classes and interfaces (including those inside packages) to be documented.:::classesToDocument->new->ListBuffer<>->foreach->cd->addAllClasses->foreach->pd->addAllClassesTo->return->classesToDocument->classesToDocument->length->new->ClassDocImplArr->toArray
+RootDocImpl#classNamed(String):::Return a ClassDoc for the specified class/interface name:::return->env->lookupClass
+RootDocImpl#packageNamed(String):::Return a PackageDoc for the specified package name:::return->env->lookupPackage
+RootDocImpl#name():::Return the name of this Doc item.:::return
+RootDocImpl#qualifiedName():::Return the name of this Doc item.:::return
+RootDocImpl#isIncluded():::Return true if this Doc is include in the active set:::return
+RootDocImpl#printError(String):::Print error message, increment error count.:::env->printError
+RootDocImpl#printError(SourcePosition, String):::Print error message, increment error count.:::env->printError
+RootDocImpl#printWarning(String):::Print warning message, increment warning count.:::env->printWarning
+RootDocImpl#printWarning(SourcePosition, String):::Print warning message, increment warning count.:::env->printWarning
+RootDocImpl#printNotice(String):::Print a message.:::env->printNotice
+RootDocImpl#printNotice(SourcePosition, String):::Print a message.:::env->printNotice
+RootDocImpl#documentation():::Do lazy initialization of "documentation" string.:::if->overviewPath->getOverviewPath->if->else->try->overviewPath->openInputStream->readHTMLDocumentation->catch->env->overviewPath->getName->error->finally->return
+RootDocImpl#position():::Return the source position of the entity, or null if no position is available.:::path->return->getOverviewPath->SourcePositionImpl->make
+RootDocImpl#getLocale():::Return the locale provided by the user or the default locale value.:::return
+RootDocImpl#getFileManager():::Return the current file manager.:::return
+SeeTagImpl#referencedClassName():::get the class name part of @see, For instance, if the comment is @see String#startsWith(java.lang.String) :::return
+SeeTagImpl#referencedPackage():::get the package referenced by  @see:::return
+SeeTagImpl#referencedClass():::get the class referenced by the class name part of @see, For instance, if the comment is @see String#startsWith(java.lang.String) :::return
+SeeTagImpl#referencedMemberName():::get the name of the member referenced by the prototype part of @see, For instance, if the comment is @see String#startsWith(java.lang.String) :::return
+SeeTagImpl#referencedMember():::get the member referenced by the prototype part of @see, For instance, if the comment is @see String#startsWith(java.lang.String) :::return
+SeeTagImpl#kind():::Return the kind of this tag.:::return
+SeeTagImpl#label():::Return the label of the see tag.:::return
+SerialFieldTagImpl#key():::return a key for sorting.:::return
+SerialFieldTagImpl#fieldName():::Return the serialziable field name.:::return
+SerialFieldTagImpl#fieldType():::Return the field type string.:::return
+SerialFieldTagImpl#fieldTypeDoc():::Return the ClassDocImpl for field type.:::if->containingClass->findClass->return
+SerialFieldTagImpl#getMatchingField():::Return the corresponding FieldDocImpl for this SerialFieldTagImpl.:::return
+SerialFieldTagImpl#description():::Return the field comment:::if->description->length->comment->matchingField->comment->if->return->comment->commentText->return
+SerialFieldTagImpl#kind():::Return the kind of this tag.:::return
+SerialFieldTagImpl#toString():::Convert this object to a string.:::return
+SerialFieldTagImpl#compareTo(Object):::Compares this Object with the specified Object for order:::return->key->key->compareTo
+SerializedForm#fields():::Return serializable fields in class:::return->fields->fields->length->new->FieldDocImplArr->toArray
+SerializedForm#methods():::Return serialization methods in class.:::return->methods->methods->length->new->MethodDocArr->toArray
+SerializedForm#definesSerializableFields():::Returns true if Serializable fields are defined explicitly using member, serialPersistentFields.:::return
+SourcePositionImpl#file():::The source file:::return->filename->getName->new->File
+SourcePositionImpl#fileObject():::The source file:::return
+SourcePositionImpl#line():::The line in the source file:::if->return->else->return->lineMap->getLineNumber
+SourcePositionImpl#column():::The column in the source file:::if->return->else->return->lineMap->getColumnNumber
+Start#usage():::Usage:::usage
+Start#begin(String...):::Main program - external wrapper:::ok->Collections->emptySet->begin->return
+TagImpl#name():::Return the name of this tag.:::return
+TagImpl#holder():::Return the containing Doc of this Tag element.:::return
+TagImpl#kind():::Return the kind of this tag.:::return
+TagImpl#text():::Return the text of this tag, that is, portion beyond tag name.:::return
+TagImpl#divideAtWhite():::for use by subclasses which have two part tag text.:::sa->new->StringArr->len->text->length->for->inx->return
+TagImpl#toString():::convert this object to a string.:::return
+TagImpl#inlineTags():::For documentation comment with embedded @link tags, return the array of TagImpls consisting of SeeTagImpl(s) and text containing TagImpl(s):::if->Comment->getInlineTags->return
+TagImpl#firstSentenceTags():::Return array of tags for the first sentence in the doc comment text.:::if->inlineTags->try->docenv->setSilent->Comment->firstSentenceTags->catch->finally->docenv->setSilent->return
+TagImpl#position():::Return the doc item to which this tag is attached.:::return->holder->position
+ThrowsTagImpl#exceptionName():::Return the exception name.:::return
+ThrowsTagImpl#exceptionComment():::Return the exception comment.:::return
+ThrowsTagImpl#exception():::Return the exception as a ClassDocImpl.:::exceptionClass->if->else->emd->con->emd->containingClass->con->findClass->return
+ThrowsTagImpl#exceptionType():::Return the type that represents the exception:::return->exception
+ThrowsTagImpl#kind():::Return the kind of this tag:::return
+ThrowsTagImpl#inlineTags():::For the exception comment with embedded @link tags return the array of TagImpls consisting of SeeTagImpl(s) and text containing TagImpl(s).:::if->Comment->exceptionComment->getInlineTags->return
+TypeMaker#getTypes(DocEnv, List):::Convert a list of javac types into an array of javadoc types.:::return->ts->length->new->com.sun.javadoc.TypeArr->getTypes
+TypeMaker#getTypes(DocEnv, List, com.sun.javadoc.Type[]):::Like the above version, but use and return the array given.:::i->foreach->getType->return
+TypeMaker#getTypeString(DocEnv, Type, boolean):::Return the string representation of a type use:::switch->t->getTag->s->new->StringBuilder->while->t->hasTag->s->append->elemtype->s->getTypeString->insert->return->s->toString->return->ParameterizedTypeImpl->parameterizedTypeToString->a->return->WildcardTypeImpl->wildcardTypeToString->return->getQualifiedName->toString
+TypeMaker#typeParametersString(DocEnv, Symbol, boolean):::Return the formal type parameters of a class or method as an angle-bracketed string:::if->getTypeArguments->isEmpty->return->s->new->StringBuilder->foreach->getTypeArguments->s->s->length->append->s->TypeVariableImpl->typeVarToString->append->s->append->return->s->toString
+TypeMaker#typeArgumentsString(DocEnv, ClassType, boolean):::Return the actual type arguments of a parameterized type as an angle-bracketed string:::if->cl->getTypeArguments->isEmpty->return->s->new->StringBuilder->foreach->cl->getTypeArguments->s->s->length->append->s->getTypeString->append->s->append->return->s->toString
+TypeVariableImpl#bounds():::Return the bounds of this type variable.:::return->TypeMaker->getBounds->getTypes
+TypeVariableImpl#owner():::Return the class, interface, method, or constructor within which this type variable is declared.:::osym->if->matches->return->env->getClassDoc->names->if->return->env->getConstructorDoc->else->return->env->getMethodDoc
+TypeVariableImpl#asClassDoc():::Return the ClassDoc of the erasure of this type variable.:::return->env->erasure->getClassDoc
+TypeVariableImpl#typeVarToString(DocEnv, TypeVar, boolean):::Return the string form of a type variable along with any "extends" clause:::s->v->toString->new->StringBuilder->bounds->getBounds->if->bounds->nonEmpty->first->foreach->s->append->s->TypeMaker->getTypeString->append->return->s->toString
+TypeVariableImpl#annotations():::Get the annotations of this program element:::if->type->isAnnotated->return->new->AnnotationDescArr->tas->type->getAnnotationMirrors->res->tas->length->new->AnnotationDescArr->i->foreach->new->AnnotationDescImpl->return
+WildcardTypeImpl#extendsBounds():::Return the upper bounds of this wildcard type argument as given by the extends clause:::return->TypeMaker->getExtendsBounds->getTypes
+WildcardTypeImpl#superBounds():::Return the lower bounds of this wildcard type argument as given by the super clause:::return->TypeMaker->getSuperBounds->getTypes
+WildcardTypeImpl#asClassDoc():::Return the ClassDoc of the erasure of this wildcard type.:::return->env->erasure->getClassDoc
+WildcardTypeImpl#wildcardTypeToString(DocEnv, Type.WildcardType, boolean):::Return the string form of a wildcard type ("?") along with any "extends" or "super" clause:::if->return->TypeMaker->erasure->getTypeName->s->new->StringBuilder->bounds->getExtendsBounds->if->bounds->nonEmpty->s->append->else->getSuperBounds->if->bounds->nonEmpty->s->append->first->foreach->if->s->append->s->TypeMaker->getTypeString->append->return->s->toString

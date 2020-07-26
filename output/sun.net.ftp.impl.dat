@@ -1,0 +1,53 @@
+FtpClient#create():::Creates an instance of FtpClient:::return->new->FtpClient
+FtpClient#enablePassiveMode(boolean):::Set the transfer mode to passive:::return
+FtpClient#isPassiveModeEnabled():::Gets the current transfer mode.:::return
+FtpClient#setConnectTimeout(int):::Sets the timeout value to use when connecting to the server,:::return
+FtpClient#getConnectTimeout():::Returns the current connection timeout value.:::return
+FtpClient#setReadTimeout(int):::Sets the timeout value to use when reading from the server,:::return
+FtpClient#getReadTimeout():::Returns the current read timeout value.:::return
+FtpClient#getProxy():::Get the proxy of this FtpClient:::return
+FtpClient#isConnected():::Tests whether this client is connected or not to a server.:::return
+FtpClient#connect(SocketAddress, int):::Connects the FtpClient to the specified destination.:::if->throw->new->IllegalArgumentException->tryConnect->if->readReply->throw->getResponseString->new->sun.net.ftp.FtpProtocolException->getResponseString->substring->return
+FtpClient#login(String, char[]):::Attempts to log on the server with the specified user name and password.:::if->isConnected->throw->new->sun.net.ftp.FtpProtocolException->if->user->length->throw->new->IllegalArgumentException->tryLogin->l->sb->new->StringBuilder->for->i->serverResponse->size->sb->toString->return
+FtpClient#login(String, char[], String):::Attempts to log on the server with the specified user name, password and account name.:::if->isConnected->throw->new->sun.net.ftp.FtpProtocolException->if->user->length->throw->new->IllegalArgumentException->tryLogin->if->issueCommandCheck->sb->new->StringBuilder->if->foreach->if->if->l->length->l->startsWith->l->substring->sb->append->sb->toString->return
+FtpClient#close():::Logs out the current user:::if->isConnected->try->issueCommand->catch->finally->disconnect
+FtpClient#isLoggedIn():::Checks whether the client is logged in to the server or not.:::return
+FtpClient#changeDirectory(String):::Changes to a specific directory on a remote FTP server:::if->equals->throw->new->IllegalArgumentException->issueCommandCheck->return
+FtpClient#changeToParentDirectory():::Changes to the parent directory, sending the CDUP command to the server.:::issueCommandCheck->return
+FtpClient#getWorkingDirectory():::Returns the server current working directory, or null if the PWD command failed.:::issueCommandCheck->answ->getResponseString->if->answ->startsWith->return->return->answ->answ->lastIndexOf->substring
+FtpClient#setRestartOffset(long):::Sets the restart offset to the specified value:::if->throw->new->IllegalArgumentException->return
+FtpClient#getFile(String, OutputStream):::Retrieves a file from the ftp server and writes it to the specified OutputStream:::mtu->if->s->try->openDataConnection->catch->finally->issueCommandCheck->getTransferSize->remote->s->getInputStream->createInputStream->buf->new->byteArr->l->while->remote->read->if->local->write->remote->close->else->s->openDataConnection->getTransferSize->remote->s->getInputStream->createInputStream->buf->new->byteArr->l->while->remote->read->if->local->write->remote->close->return->completePending
+FtpClient#getFileStream(String):::Retrieves a file from the ftp server, using the RETR command, and returns the InputStream from* the established data connection:::s->if->try->openDataConnection->catch->finally->if->return->issueCommandCheck->getTransferSize->return->s->getInputStream->createInputStream->openDataConnection->if->return->getTransferSize->return->s->getInputStream->createInputStream
+FtpClient#putFileStream(String, boolean):::Transfers a file from the client to the server (aka a put) by sending the STOR or STOU command, depending on the unique argument, and returns the OutputStream from the established data connection:::cmd->s->openDataConnection->if->return->bm->return->s->getOutputStream->new->sun.net.TelnetOutputStream
+FtpClient#putFile(String, InputStream, boolean):::Transfers a file from the client to the server (aka a put) by sending the STOR command:::cmd->mtu->if->s->openDataConnection->remote->s->getOutputStream->createOutputStream->buf->new->byteArr->l->while->local->read->if->remote->write->remote->close->return->completePending
+FtpClient#appendFile(String, InputStream):::Sends the APPE command to the server in order to transfer a data stream passed in argument and append it to the content of the specified remote file.:::mtu->s->openDataConnection->remote->s->getOutputStream->createOutputStream->buf->new->byteArr->l->while->local->read->if->remote->write->remote->close->return->completePending
+FtpClient#rename(String, String):::Renames a file on the server.:::issueCommandCheck->issueCommandCheck->return
+FtpClient#deleteFile(String):::Deletes a file on the server.:::issueCommandCheck->return
+FtpClient#makeDirectory(String):::Creates a new directory on the server.:::issueCommandCheck->return
+FtpClient#removeDirectory(String):::Removes a directory on the server.:::issueCommandCheck->return
+FtpClient#noop():::Sends a No-operation command:::issueCommandCheck->return
+FtpClient#getStatus(String):::Sends the STAT command to the server:::issueCommandCheck->resp->getResponseStrings->sb->new->StringBuilder->for->i->resp->size->return->sb->toString
+FtpClient#getFeatures():::Sends the FEAT command to the server and returns the list of supported features in the form of strings:::features->new->ArrayList<String>->issueCommandCheck->resp->getResponseStrings->for->i->resp->size->return
+FtpClient#abort():::sends the ABOR command to the server:::issueCommandCheck->return
+FtpClient#completePending():::Some methods do not wait until completion before returning, so this method can be called to wait until completion:::while->if->readReply->throw->getLastResponseString->new->sun.net.ftp.FtpProtocolException->return
+FtpClient#reInit():::Reinitializes the USER parameters on the FTP server:::issueCommandCheck->if->if->session->getSession->session->invalidate->try->server->getOutputStream->new->BufferedOutputStream->new->PrintStream->catch->throw->new->InternalError->finally->server->getInputStream->new->BufferedInputStream->return
+FtpClient#setType(TransferType):::Changes the transfer type (binary, ascii, ebcdic) and issue the proper command (e.g:::cmd->if->if->if->issueCommandCheck->return
+FtpClient#list(String):::Issues a LIST command to the server to get the current directory listing, and returns the InputStream from the data connection:::s->openDataConnection->if->return->s->getInputStream->createInputStream->return
+FtpClient#nameList(String):::Issues a NLST path command to server to get the specified directory content:::s->openDataConnection->if->return->s->getInputStream->createInputStream->return
+FtpClient#getSize(String):::Issues the SIZE [path] command to the server to get the size of a specific file on the server:::if->path->length->throw->new->IllegalArgumentException->issueCommandCheck->if->s->getResponseString->s->s->length->substring->return->Long->parseLong->return
+FtpClient#getLastModified(String):::Issues the MDTM [path] command to the server to get the modification time of a specific file on the server:::issueCommandCheck->if->s->getResponseString->substring->d->foreach->try->dateFormat->parse->catch->finally->if->return->return
+FtpClient#setDirParser(FtpDirParser):::Sets the parser used to handle the directory output to the specified one:::return
+FtpClient#listFiles(String):::Issues a MLSD command to the server to get the specified directory listing and applies the current parser to create an Iterator of java.net.ftp.FtpDirEntry:::s->sin->try->openDataConnection->catch->finally->if->s->getInputStream->new->InputStreamReader->new->BufferedReader->return->new->FtpFileIterator->else->openDataConnection->if->s->getInputStream->new->InputStreamReader->new->BufferedReader->return->new->FtpFileIterator->return
+FtpClient#useKerberos():::Attempts to use Kerberos GSSAPI as an authentication mechanism with the ftp server:::return
+FtpClient#getWelcomeMsg():::Returns the Welcome string the server sent during initial connection.:::return
+FtpClient#getLastReplyCode():::Returns the last reply code sent by the server.:::return
+FtpClient#getLastResponseString():::Returns the last response string sent by the server.:::sb->new->StringBuilder->if->foreach->if->sb->append->return->sb->toString
+FtpClient#getLastTransferSize():::Returns, when available, the size of the latest started transfer:::return
+FtpClient#getLastFileName():::Returns, when available, the remote name of the last transfered file:::return
+FtpClient#startSecureSession():::Attempts to switch to a secure, encrypted connection:::if->isConnected->throw->new->sun.net.ftp.FtpProtocolException->if->try->SSLSocketFactory->getDefault->catch->throw->e->getLocalizedMessage->new->IOException->finally->issueCommandCheck->s->try->sslFact->serverAddr->getHostName->serverAddr->getPort->createSocket->catch->try->disconnect->catch->finally->throw->finally->try->server->getOutputStream->new->BufferedOutputStream->new->PrintStream->catch->throw->new->InternalError->finally->server->getInputStream->new->BufferedInputStream->issueCommandCheck->issueCommandCheck->return
+FtpClient#endSecureSession():::Sends a CCC command followed by a PROT C command to the server terminating an encrypted session and reverting back to a non crypted transmission.:::if->return->issueCommandCheck->issueCommandCheck->try->server->getOutputStream->new->BufferedOutputStream->new->PrintStream->catch->throw->new->InternalError->finally->server->getInputStream->new->BufferedInputStream->return
+FtpClient#allocate(long):::Sends the "Allocate" (ALLO) command to the server telling it to pre-allocate the specified number of bytes for the next transfer.:::issueCommandCheck->return
+FtpClient#structureMount(String):::Sends the "Structure Mount" (SMNT) command to the server:::issueCommandCheck->return
+FtpClient#getSystem():::Sends a SYST (System) command to the server and returns the String sent back by the server describing the operating system at the server.:::issueCommandCheck->resp->getResponseString->return->resp->substring
+FtpClient#getHelp(String):::Sends the HELP command to the server, with an optional command, like SITE, and returns the text sent back by the server.:::issueCommandCheck->resp->getResponseStrings->if->resp->size->return->resp->get->substring->sb->new->StringBuilder->for->i->resp->size->return->sb->toString
+FtpClient#siteCmd(String):::Sends the SITE command to the server:::issueCommandCheck->return

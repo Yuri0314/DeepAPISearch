@@ -1,0 +1,44 @@
+lr_parser#error_sync_size():::The number of Symbols after an error we much match to consider it  recovered from.:::return
+lr_parser#production_table():::Table of production information (supplied by generated subclass):::
+lr_parser#action_table():::The action table (supplied by generated subclass):::
+lr_parser#reduce_table():::The reduce-goto table (supplied by generated subclass):::
+lr_parser#start_state():::The index of the start state (supplied by generated subclass).:::
+lr_parser#start_production():::The index of the start production (supplied by generated subclass).:::
+lr_parser#EOF_sym():::The index of the end of file terminal Symbol (supplied by generated  subclass).:::
+lr_parser#error_sym():::The index of the special error Symbol (supplied by generated subclass).:::
+lr_parser#done_parsing():::This method is called to indicate that the parser should quit:::
+lr_parser#setScanner(Scanner):::Simple accessor method to set the default scanner.:::
+lr_parser#getScanner():::Simple accessor method to get the default scanner.:::return
+lr_parser#do_action(int, lr_parser, Stack, int):::Perform a bit of user supplied action code (supplied by generated  subclass):::
+lr_parser#user_init():::User code for initialization inside the parser:::
+lr_parser#init_actions():::Initialize the action object:::
+lr_parser#scan():::Get the next Symbol from the input (supplied by generated subclass):::return->getScanner->next_token
+lr_parser#report_fatal_error(String, Object):::Report a fatal error:::done_parsing->report_error->throw->new->Exception
+lr_parser#report_error(String, Object):::Report a non fatal error (or warning):::print->if->if->println->else->println->else->println
+lr_parser#syntax_error(Symbol):::This method is called when a syntax error has been detected and recovery  is about to be invoked:::report_error
+lr_parser#unrecovered_syntax_error(Symbol):::This method is called if it is determined that syntax error recovery  has been unsuccessful:::report_fatal_error
+lr_parser#get_action(int, int):::Fetch an action from the action table:::tag->first->last->probe->row->if->for->else->while->if->return->else->if->else->return->return
+lr_parser#get_reduce(int, int):::Fetch a state from the reduce-goto table:::tag->row->if->return->for->probe->return
+lr_parser#parse():::This method provides the main parsing routine:::act->lhs_sym->handle_size->lhs_sym_num->production_table->action_table->reduce_table->init_actions->user_init->scan->stack->removeAllElements->stack->start_state->new->Symbol->push->for->return
+lr_parser#debug_message(String):::Write a debugging message to System.err for the debugging version  of the parser.:::println
+lr_parser#dump_stack():::Dump the parse stack for debugging purposes.:::if->debug_message->return->debug_message->for->i->stack->size->debug_message
+lr_parser#debug_reduce(int, int, int):::Do debug output for a reduce.:::debug_message
+lr_parser#debug_shift(Symbol):::Do debug output for shift.:::debug_message
+lr_parser#debug_stack():::Do debug output for stack state:::sb->new->StringBuilder->for->i->stack->size
+lr_parser#debug_parse():::Perform a parse with debugging output:::act->lhs_sym->handle_size->lhs_sym_num->production_table->action_table->reduce_table->debug_message->init_actions->user_init->scan->debug_message->stack->removeAllElements->stack->start_state->new->Symbol->push->for->return
+lr_parser#error_recovery(boolean):::Attempt to recover from a syntax error:::if->debug_message->if->find_recovery_config->if->debug_message->return->read_lookahead->for->if->debug_message->parse_lookahead->return
+lr_parser#shift_under_error():::Determine if we can shift under the special error Symbol out of the  state currently on the top of the (real) parse stack.:::return->stack->peek->error_sym->get_action
+lr_parser#find_recovery_config(boolean):::Put the (real) parse stack into error recovery configuration by  popping the stack down to a state that can shift on the special  error Symbol, then doing the shift:::error_token->act->if->debug_message->right_pos->stack->peek->left_pos->stack->peek->while->shift_under_error->if->stack->peek->debug_message->stack->pop->if->stack->empty->if->debug_message->return->stack->peek->error_sym->get_action->if->stack->peek->debug_message->debug_message->error_sym->new->Symbol->stack->push->return
+lr_parser#read_lookahead():::Read from input to establish our buffer of "parse ahead" lookahead  Symbols.:::error_sync_size->new->SymbolArr->for->i->error_sync_size
+lr_parser#cur_err_token():::Return the current lookahead in our error "parse ahead" buffer.:::return
+lr_parser#advance_lookahead():::Advance to next "parse ahead" input Symbol:::return->error_sync_size
+lr_parser#restart_lookahead():::Reset the parse ahead input to one Symbol past where we started error  recovery (this consumes one new Symbol from the real input).:::for->i->error_sync_size->scan->error_sync_size
+lr_parser#try_parse_ahead(boolean):::Do a simulated parse forward (a "parse ahead") from the current  stack configuration using stored lookahead input and a virtual parse  stack:::act->lhs->rhs_size->vstack->new->virtual_parse_stack->for
+lr_parser#parse_lookahead(boolean):::Parse forward using stored lookahead Symbols:::act->lhs_sym->handle_size->lhs_sym_num->if->debug_message->cur_err_token->debug_message->stack->peek->debug_message->while->stack->peek->cur_err_token->get_action->if->cur_err_token->cur_err_token->if->cur_err_token->debug_shift->stack->cur_err_token->push->if->advance_lookahead->if->debug_message->return->if->cur_err_token->debug_message->else->if->do_action->if->debug_reduce->for->i->stack->peek->get_reduce->stack->push->if->debug_message->else->if->report_fatal_error->return
+lr_parser#unpackFromStrings(String[]):::Utility function: unpacks parse tables from strings:::sb->new->StringBuilder->for->i->n->size1->sb->charAt->sb->charAt->result->new->shortArrs->for->i->return
+Symbol#toString():::**************************     Printing this token out:::return
+virtual_parse_stack#get_from_real():::Transfer an element from the real to the virtual stack:::stack_sym->if->real_stack->size->return->real_stack->real_stack->size->get->vstack->push
+virtual_parse_stack#empty():::Indicate whether the stack is empty.:::return->vstack->empty
+virtual_parse_stack#top():::Return value on the top of the stack (without popping it).:::if->vstack->empty->throw->new->Exception->return->vstack->peek
+virtual_parse_stack#pop():::Pop the stack.:::if->vstack->empty->throw->new->Exception->vstack->pop->if->vstack->empty->get_from_real
+virtual_parse_stack#push(int):::Push a state number onto the stack.:::vstack->push

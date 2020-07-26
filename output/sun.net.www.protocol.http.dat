@@ -1,0 +1,61 @@
+AuthCache#put(String, AuthCacheValue):::Put an entry in the cache:::
+AuthCache#get(String, String):::Get an entry from the cache based on pkey as described above, but also using a pathname (skey) and the cache must return an entry if skey is a sub-path of the AuthCacheValue.path field.:::
+AuthCache#remove(String, AuthCacheValue):::remove the entry from the cache whose pkey is specified and whose path is equal to entry.path:::
+AuthCacheValue#getAuthType():::Proxy or Server:::
+AuthCacheValue#getAuthScheme():::Authentication scheme:::
+AuthCacheValue#getHost():::name of server/proxy:::
+AuthCacheValue#getPort():::portnumber of server/proxy:::
+AuthCacheValue#getRealm():::realm of authentication if known:::
+AuthCacheValue#getPath():::root path of realm or the request path if the root is not known yet.:::
+AuthCacheValue#getProtocolScheme():::returns http or https:::
+AuthCacheValue#credentials():::the credentials associated with this authentication:::
+AuthenticationHeader#headerParser():::return a header parser containing the preferred authentication scheme (only):::return
+AuthenticationHeader#scheme():::return the name of the preferred scheme:::if->return->preferred->findKey->else->return
+AuthenticationHeader#isPresent():::returns true is the header exists and contains a recognised scheme:::return
+AuthenticationInfo#useAuthCache():::Whether we should cache this instance in the AuthCache:::return
+AuthenticationInfo#getAuthenticatorKey():::The java.net.Authenticator#getKey(java.net.Authenticator) key of the authenticator that was used to obtain the credentials.:::return
+AuthenticationInfo#getServerAuth(URL, String):::Returns info for the URL, for an HTTP server auth:::port->url->getPort->if->url->getDefaultPort->key->url->getProtocol->toLowerCase->url->getHost->toLowerCase->return->getAuth
+AuthenticationInfo#getServerAuthKey(URL, String, AuthScheme, String):::Returns info for the URL, for an HTTP server auth:::port->url->getPort->if->url->getDefaultPort->key->url->getProtocol->toLowerCase->url->getHost->toLowerCase->return
+AuthenticationInfo#getAuth(String, URL):::Return the AuthenticationInfo object from the cache if it's path is a substring of the supplied URLs path.:::if->return->cache->get->else->return->cache->url->getPath->get
+AuthenticationInfo#getProxyAuth(String, int, String):::Returns a firewall authentication, for the given host/port:::key->host->toLowerCase->result->cache->get->return
+AuthenticationInfo#getProxyAuthKey(String, int, String, AuthScheme, String):::Returns a firewall authentication, for the given host/port and realm:::key->host->toLowerCase->return
+AuthenticationInfo#addToCache():::Add this authentication to the cache:::key->cacheKey->if->useAuthCache->cache->put->if->supportsPreemptiveAuthorization->cache->cacheKey->put->endAuthRequest
+AuthenticationInfo#removeFromCache():::Remove this authentication from the cache:::cache->cacheKey->remove->if->supportsPreemptiveAuthorization->cache->cacheKey->remove
+AuthenticationInfo#getHeaderValue(URL, String):::Calculates and returns the authentication header value based on the stored authentication parameters:::
+AuthenticationInfo#setHeaders(HttpURLConnection, HeaderParser, String):::Set header(s) on the given connection:::
+AuthenticationInfo#isAuthorizationStale(String):::Check if the header indicates that the current auth:::
+AuthenticationInfo#cacheKey(boolean):::Give a key for hash table lookups.:::authenticatorKey->getAuthenticatorKey->if->return->else->return
+AuthenticatorKeys#getKey(Authenticator):::Returns a key for the given authenticator.:::if->return->return->authenticatorKeyAccess->getKey
+BasicAuthentication#setHeaders(HttpURLConnection, HeaderParser, String):::Set header(s) on the given connection:::conn->getHeaderName->getHeaderValue->setAuthenticationProperty->return
+BasicAuthentication#isAuthorizationStale(String):::For Basic Authentication, the security parameters can never be stale:::return
+DigestAuthentication#getHeaderValue(URL, String):::Recalculates the request-digest and returns it:::return->url->getFile->getHeaderValueImpl
+DigestAuthentication#getHeaderValue(String, String):::Recalculates the request-digest and returns it:::return->getHeaderValueImpl
+DigestAuthentication#isAuthorizationStale(String):::Check if the header indicates that the current auth:::p->new->HeaderParser->s->p->findValue->if->s->equals->return->newNonce->p->findValue->if->equals->return->params->setNonce->return
+DigestAuthentication#setHeaders(HttpURLConnection, HeaderParser, String):::Set header(s) on the given connection.:::params->p->findValue->setNonce->params->p->findValue->setOpaque->params->p->findValue->setQop->uri->method->if->conn->tunnelState->HttpURLConnection->conn->getURL->connectRequestURI->else->try->conn->getRequestURI->catch->finally->conn->getMethod->if->return->if->authMethod->length->Character->authMethod->charAt->toUpperCase->authMethod->substring->toLowerCase->algorithm->p->findValue->if->equals->params->setAlgorithm->if->params->authQop->params->setNewCnonce->value->getHeaderValueImpl->if->conn->getHeaderName->setAuthenticationProperty->return->else->return
+HttpURLConnection#setNewClient(URL):::Create a new HttpClient object, bypassing the cache of HTTP client objects/connections.:::setNewClient
+HttpURLConnection#setNewClient(URL, boolean):::Obtain a HttpsClient object:::HttpClient->New->http->setReadTimeout
+HttpURLConnection#setProxiedClient(URL, String, int):::Create a new HttpClient object, set up so that it uses per-instance proxying to the given HTTP proxy:::setProxiedClient
+HttpURLConnection#setProxiedClient(URL, String, int, boolean):::Obtain a HttpClient object, set up so that it uses per-instance proxying to the given HTTP proxy:::proxiedConnect
+HttpURLConnection#openConnectionCheckRedirects(URLConnection):::opens a stream allowing redirects only to the same host.:::redir->redirects->in->a->do->if->setInstanceFollowRedirects->if->c->getInputStream->if->http->stat->http->getResponseCode->if->base->http->getURL->loc->http->getHeaderField->target->if->new->URL->http->disconnect->if->base->getProtocol->target->getProtocol->equals->base->getPort->target->getPort->hostsEqual->throw->new->SecurityException->target->openConnection->if->setAuthenticator->while->return
+HttpURLConnection#URLtoSocketPermission(URL)::: if the caller has a URLPermission for connecting to the  given URL, then return a SocketPermission which permits  access to that destination:::if->return->sm->System->getSecurityManager->if->return->newPerm->getHostAndPort->new->SocketPermission->actions->getRequestMethod->getUserSetHeaders->getHeaderNamesInList->urlstring->url->getProtocol->url->getAuthority->url->getPath->p->new->URLPermission->try->sm->checkPermission->return->catch->finally->return
+HttpURLConnection#tunnelState():::Returns the tunnel state.:::return
+HttpURLConnection#setTunnelState(TunnelState):::Set the tunneling status.:::
+HttpURLConnection#doTunneling():::establish a tunnel through proxy server:::retryTunnel->statusLine->respCode->proxyAuthentication->proxyHost->proxyPort->savedRequests->new->MessageHeader->inNegotiateProxy->try->setTunnelState->do->if->checkReuseConnection->proxiedConnect->sendCONNECTRequest->responses->reset->http->parseHTTP->if->logger->isLoggable->logger->responses->toString->fine->if->responses->filterNTLMResponses->if->logger->isLoggable->logger->fine->logger->responses->toString->fine->responses->getValue->st->new->StringTokenizer->st->nextToken->Integer->st->nextToken->trim->parseInt->if->dontUseNegotiate->iter->responses->multiValueIterator->while->iter->hasNext->value->iter->next->trim->if->value->equalsIgnoreCase->value->equalsIgnoreCase->if->else->break->authhdr->http->getProxyHostUsed->http->getProxyPortUsed->new->HttpCallerInfo->new->AuthenticationHeader->if->resetProxyAuthentication->if->http->getProxyHostUsed->http->getProxyPortUsed->disconnectInternal->continue->else->raw->responses->findValue->reset->if->proxyAuthentication->authhdr->headerParser->setHeaders->disconnectInternal->throw->new->IOException->continue->if->proxyAuthentication->addToCache->if->setTunnelState->break->disconnectInternal->setTunnelState->break->while->if->if->responses->reset->throw->new->IOException->catch->finally->if->AuthenticationInfo->endAuthRequest->responses->reset
+HttpURLConnection#disconnect():::Disconnect from the server (public API):::if->pi->finishTracking->if->if->hc->ka->hc->isKeepingAlive->try->inputStream->close->catch->finally->if->hc->closeIdleConnection->else->http->setDoNotRetry->http->closeServer->if->cachedHeaders->reset
+HttpURLConnection#getHeaderField(String):::Gets a header field by name:::try->getInputStream->catch->finally->if->return->cachedHeaders->findValue->filterHeaderField->return->responses->findValue->filterHeaderField
+HttpURLConnection#getHeaderFields():::Returns an unmodifiable Map of the header fields:::try->getInputStream->catch->finally->return->getFilteredHeaderFields
+HttpURLConnection#getHeaderField(int):::Gets a header field by index:::try->getInputStream->catch->finally->if->return->cachedHeaders->getKey->cachedHeaders->getValue->filterHeaderField->return->responses->getKey->responses->getValue->filterHeaderField
+HttpURLConnection#getHeaderFieldKey(int):::Gets a header field by index:::try->getInputStream->catch->finally->if->return->cachedHeaders->getKey->return->responses->getKey
+HttpURLConnection#setRequestProperty(String, String):::Sets request property:::if->throw->new->IllegalStateException->if->throw->new->NullPointerException->if->isExternalMessageHeaderAllowed->requests->set->if->key->equalsIgnoreCase->userHeaders->set
+HttpURLConnection#addRequestProperty(String, String):::Adds a general request property specified by a key-value pair:::if->throw->new->IllegalStateException->if->throw->new->NullPointerException->if->isExternalMessageHeaderAllowed->requests->add->if->key->equalsIgnoreCase->userHeaders->add
+HttpURLConnection#getRequestProperties():::Returns an unmodifiable Map of general request properties for this connection:::if->throw->new->IllegalStateException->if->return->requests->getHeaders->userCookiesMap->if->new->HashMap<>->if->userCookiesMap->Arrays->asList->put->if->userCookiesMap->Arrays->asList->put->return->requests->filterAndAddHeaders
+HttpURLConnection#getConnectTimeout():::Returns setting for connect timeout:::return
+HttpURLConnection#setReadTimeout(int):::Sets the read timeout to a specified timeout, in milliseconds:::if->throw->new->IllegalArgumentException
+HttpURLConnection#getReadTimeout():::Returns setting for read timeout:::return
+HttpURLConnection#stripIPv6ZoneId(String):::Returns the given host, without the IPv6 Zone Id, if present:::if->host->charAt->return->i->host->lastIndexOf->if->return->return->host->substring
+HttpURLConnection.HttpInputStream#mark(int):::Marks the current position in this input stream:::super->mark->if
+HttpURLConnection.HttpInputStream#reset():::Repositions this stream to the position at the time the mark method was last called on this input stream:::super->reset->if
+NegotiateAuthentication#isSupported(HttpCallerInfo):::Find out if the HttpCallerInfo supports Negotiate protocol:::if->new->HashMap<>->hostname->hostname->toLowerCase->if->supported->containsKey->return->supported->get->neg->Negotiator->getNegotiator->if->supported->put->if->new->ThreadLocal<>->cache->get->put->return->else->supported->put->return
+NegotiateAuthentication#getHeaderValue(URL, String):::Not supported:::throw->new->RuntimeException
+NegotiateAuthentication#isAuthorizationStale(String):::Check if the header indicates that the current auth:::return
+NegotiateAuthentication#setHeaders(HttpURLConnection, HeaderParser, String):::Set header(s) on the given connection.:::try->response->incoming->parts->raw->split->if->Base64->getDecoder->decode->Base64->getEncoder->firstToken->nextToken->encodeToString->conn->getHeaderName->setAuthenticationProperty->return->catch->return->finally

@@ -1,0 +1,135 @@
+BasicObjectLock#size():::Note: Use frame::interpreter_frame_monitor_size() for the size       of BasicObjectLocks in interpreter activation frames since it       includes machine-specific padding:::return
+BasicObjectLock#address():::Helper routine for Frames (also probably needed for iteration):::return
+BasicType#getTConflict():::For stack value type with conflicting contents:::return->T_CONFLICT->getType
+Bytes#swapShort(short):::Should only swap if the hardware's underlying byte order is       different from Java's:::if->return->return
+Bytes#swapInt(int):::Should only swap if the hardware's underlying byte order is       different from Java's:::if->return->return->swapShort->swapShort
+Bytes#swapLong(long):::Should only swap if the hardware's underlying byte order is       different from Java's:::if->return->return->swapInt->swapInt
+CompiledVFrame#getCode():::Returns the active method:::return->VM->getVM->getCodeCache->fr->getPC->findNMethod
+CompiledVFrame#getCodeUnsafe():::Returns the active method:::return->VM->getVM->getCodeCache->fr->getPC->findNMethodUnsafe
+CompiledVFrame#getScope():::Returns the ScopeDesc:::return
+CompiledVFrame#getMonitors():::Returns List<MonitorInfo>:::if->getScope->return->new->ArrayList<>->monitors->getScope->getMonitors->if->return->new->ArrayList<>->result->monitors->size->new->ArrayList<>->for->i->monitors->size->return
+CompiledVFrame#getRawBCI():::Returns SynchronizationEntryBCI or bci() (used for synchronization):::if->VM->getVM->isDebugging->getScope->return->return->getScope->getBCI
+CompiledVFrame#sender():::Returns the sender vframe:::if->Assert->isTop->that->return->sender
+DeadlockDetector#print(PrintStream, boolean):::prints zero or more deadlocks into 'tty' taking current      snapshot of Java threads and locks:::tty->println->tty->println->globalDfn->thisDfn->numberOfDeadlocks->currentThread->previousThread->waitingToLockMonitor->waitingToLockBlocker->VM->getVM->getThreads->VM->getVM->getObjectHeap->createThreadTable->i->threadTable->entrySet->iterator->while->i->hasNext->e->i->next->if->dfn->continue->thread->e->getKey->try->thread->getCurrentPendingMonitor->catch->tty->println->return->finally->abstractOwnableSyncKlass->if->thread->getCurrentParkBlocker->sysDict->VM->getVM->getSystemDictionary->sysDict->getAbstractOwnableSynchronizerKlass->while->if->threads->owningThreadFromMonitor->else->if->if->waitingToLockBlocker->isA->threadOop->OopUtilities->abstractOwnableSynchronizerGetOwnerThread->if->OopUtilities->threadOopGetJavaThread->if->break->if->dfn->threadTable->new->Integer->put->else->if->dfn->break->else->if->break->else->printOneDeadlock->break->currentThread->getCurrentPendingMonitor->if->currentThread->getCurrentParkBlocker->switch->tty->println->break->tty->println->break->tty->println->break->tty->println
+Frame#getPC():::pc: Returns the pc at which this frame will continue normally:::return
+Frame#equals(Object):::testers -- platform dependent:::
+Frame#isInterpretedFrame():::type testers:::return->VM->getVM->getInterpreter->getPC->contains
+Frame#isEntryFrame():::Java frame called from C?:::return->VM->getVM->getStubRoutines->getPC->returnsToCallStub
+Frame#isFirstJavaFrame():::same for Java frame:::throw->new->RuntimeException
+Frame#isSignalHandlerFrameDbg():::This is an addition for debugging purposes on platforms which       have the notion of signals.:::
+Frame#getSignalNumberDbg():::If this is a signal handler frame (again, on a platform with a       notion of signals), get the signal number.:::
+Frame#getSignalNameDbg():::If this is a signal handler frame (again, on a platform with a       notion of signals), get the name of the signal.:::
+Frame#isInterpretedFrameValid():::performs sanity checks on interpreted frames.:::
+Frame#shouldBeDeoptimized():::tells whether this frame is marked for deoptimization:::throw->new->RuntimeException
+Frame#canBeDeoptimized():::tells whether this frame can be deoptimized:::throw->new->RuntimeException
+Frame#sender(RegisterMap, CodeBlob):::returns the sending frame:::
+Frame#sender(RegisterMap):::equivalent to sender(map, null):::return->sender
+Frame#realSender(RegisterMap):::returns the sender, but skips conversion frames:::if->VM->getVM->isCore->result->sender->while->result->isRuntimeFrame->result->sender->return->else->return->sender
+Frame#hasSenderPD():::Platform-dependent query indicating whether this frame has a       sender:::
+Frame#addressOfStackSlot(int):::Returns the address of the requested "slot" on the stack:::return->getFP->VM->getVM->getAddressSize->addOffsetTo
+Frame#getOopHandleAt(int):::Fetches the OopHandle at the requested slot:::return->addressOfStackSlot->getOopHandleAt
+Frame#getIntAt(int):::Fetches the (Java) int at the requested slot:::return->addressOfStackSlot->getJIntAt
+Frame#frameSize():::returns the frame size in stack slots:::
+Frame#getLink():::Link (i.e., the pointer to the previous frame):::
+Frame#getSenderPC():::Return address:::
+Frame#getUnextendedSP():::The frame's original SP, before any extension by an interpreted       callee; used for packing debug info into vframeArray objects and       vframeArray lookup.:::
+Frame#getSenderSP():::Returns the stack pointer of the calling frame:::
+Frame#getInterpreterFrameBCI():::Byte code index:::
+Frame#addressOfInterpreterFrameTOS():::Top of expression stack:::
+Frame#addressOfInterpreterFrameTOSAt(int):::Expression stack from top down:::
+Frame#getInterpreterFrameExpressionStackSize():::FIXME: is this portable?:::return->getInterpreterFrameExpressionStackDirection->addressOfInterpreterFrameTOS->addressOfInterpreterFrameExpressionStack->minus
+Frame#interpreterFrameMonitorSize():::NOTE: this returns a size in BYTES in this system!:::
+Frame#addressOfInterpreterFrameMethod():::Current method:::
+Frame#getInterpreterFrameMethod():::Current method:::return->Metadata->addressOfInterpreterFrameMethod->getAddressAt->instantiateWrapperFor
+Frame#addressOfInterpreterFrameCPCache():::Constant pool cache:::
+Frame#getInterpreterFrameCPCache():::Constant pool cache:::return->Metadata->addressOfInterpreterFrameCPCache->getAddressAt->instantiateWrapperFor
+Frame#entryFrameIsFirst():::Tells whether there is another chunk of Delta stack above:::return->getEntryFrameCallWrapper->getLastJavaSP
+Frame#oopMapRegToLocation(VMReg, RegisterMap):::Conversion from an VMReg::Name to physical stack location:::stack0->VM->getVM->getVMRegImplInfo->getStack0->if->reg->lessThan->return->regMap->getLocation->else->spOffset->reg->reg2Stack->VM->getVM->getVMRegImplInfo->getStackSlotSize->return->getUnextendedSP->addOffsetTo
+InstanceConstructor#instantiateWrapperFor(Address):::Instantiate the most-precisely typed wrapper object available       for the type of the given Address:::
+InterpretedVFrame#getMethod():::JVM state:::return->getFrame->getInterpreterFrameMethod
+InterpretedVFrame#getMonitors():::Returns List<MonitorInfo>:::result->new->ArrayList<>->for->current->getFrame->interpreterFrameMonitorEnd->current->address->getFrame->interpreterFrameMonitorBegin->address->lessThan->getFrame->nextMonitorInInterpreterFrame->return
+InterpretedVFrame#isInterpretedFrame():::Test operation:::return
+InterpretedVFrame#getBCI():::Accessor for Byte Code Index (NOTE: access to BCP is not allowed       in this system; see Frame.java):::return->getFrame->getInterpreterFrameBCI
+JavaThread#isJavaThread():::NOTE: for convenience, this differs in definition from the underlying VM:::return
+JavaThread#getLastJavaSP():::Get the last Java stack pointer:::sp->lastJavaSPField->addr->anchorField->getOffset->addOffsetTo->getValue->return
+JavaThread#getLastJavaFP():::Abstract accessor to last Java frame pointer, implemented by       OS/CPU-specific JavaThread implementation:::return->access->getLastJavaFP
+JavaThread#getBaseOfStackPointer():::A stack pointer older than any java frame stack pointer:::return->access->getBaseOfStackPointer
+JavaThread#hasLastJavaFrame():::Tells whether the last Java frame is set:::return->getLastJavaSP
+JavaThread#getLastFrame():::Accessing frames:::return->getLastFramePD->cookLastFrame
+JavaThread#getLastFramePD():::Internal routine implemented by platform-dependent subclasses:::return->access->getLastFramePD
+JavaThread#getLastJavaVFrame(RegisterMap):::Accessing frames:::if->Assert->that->f->getLastFrame->if->return->for->vf->VFrame->newVFrame->vf->sender->return
+JavaThread#getLastJavaVFrameDbg():::This should only be used by a debugger:::regMap->newRegisterMap->f->getCurrentFrameGuess->if->return->imprecise->if->f->isInterpretedFrame->f->isInterpretedFrameValid->if->println->f->sender->vf->VFrame->newVFrame->if->if->println->return->return->vf->isJavaFrame->vf->javaSender
+JavaThread#newRegisterMap(boolean):::In this system, a JavaThread is the top-level factory for a       RegisterMap, since the JavaThread implementation is already       platform-specific and RegisterMap is also necessarily       platform-specific:::return->access->newRegisterMap
+JavaThread#getCurrentFrameGuess():::This is only designed to be used by the debugging system:::return->access->getCurrentFrameGuess
+JavaThread#printThreadIDOn(PrintStream):::Also only intended for use by the debugging system:::access->printThreadIDOn
+JavaThread#getThreadObj():::Gets the Java-side thread object for this JavaThread:::obj->try->VM->getVM->getObjectHeap->threadObjField->getValue->newOop->catch->e->printStackTrace->finally->return
+JavaThread#getThreadName():::Get the Java-side name of this thread:::threadObj->getThreadObj->if->return->return->OopUtilities->threadOopGetName
+JavaVFrame#getMethod():::JVM state:::
+JavaVFrame#isJavaFrame():::Test operation:::return
+JavaVFrame#printLockInfo(PrintStream, int):::Printing used during stack dumps:::if->if->getMethod->getName->asString->equals->getMethod->getMethodHolder->getName->asString->equals->waitState->locs->getLocals->if->locs->isEmpty->sv->locs->get->if->sv->getType->BasicType->getTObject->o->sv->getObject->printLockedObjectClassName->else->tty->println->else->if->thread->getCurrentParkBlocker->obj->thread->getCurrentParkBlocker->k->obj->getKlass->tty->obj->getHandle->asLongValue->k->getName->asString->format->tty->println->mons->getMonitors->if->mons->isEmpty->foundFirstMonitor->for->index->mons->size
+JavaVFrame#verify():::Verification operations:::
+JavaVFrame#structuralCompare(JavaVFrame):::Structural compare:::if->getMethod->other->getMethod->equals->return->if->getBCI->other->getBCI->return->locs->getLocals->otherLocs->other->getLocals->if->Assert->locs->size->otherLocs->size->that->for->i->locs->size->exprs->getExpressions->otherExprs->other->getExpressions->if->Assert->exprs->size->otherExprs->size->that->for->i->exprs->size->return
+JNIHandleBlock#blockContainingHandle(Address):::Debugging routine only:::cur->while->if->indexOfHandle->return->cur->next->return
+JNIHandleBlock#indexOfHandle(Address):::Debugging routine: returns the index (0..top() - 1) of the       handle in this block, or -1 if the handle was not contained in       this block:::for->i->top->return
+RegisterMap#clearPD():::Platform-dependent clear() functionality:::
+RegisterMap#initializePD():::Platform-dependent initialize() functionality:::
+RegisterMap#initializeFromPD(RegisterMap):::Platform-dependent initializeFrom() functionality:::
+RegisterMap#getLocationPD(VMReg):::Platform-dependent getLocation() functionality:::
+StackFrameStream#isDone():::Iteration:::if->return->else->if->return->fr->isFirstFrame->return
+StackFrameStream#getCurrent():::Query:::return
+StackValue#getType():::This returns one of the "enum" values in BasicType.java:::return
+StaticBaseConstructor#instantiateWrapperFor(Address):::Instantiate a wrapper using staticType:::if->return->return->VMObjectFactory->newObject
+Thread#oopsDo(AddressVisitor):::Memory operations:::
+Thread#threadObjectAddress():::Assistance for ObjectMonitor implementation:::return
+ThreadLocalAllocBuffer#startAsOopHandle():::Support for iteration over heap -- not sure how this will       interact with GC in reflective system, but necessary for the       debugging mechanism:::return->startField->getOopHandle
+ThreadLocalAllocBuffer#nextOopHandle(OopHandle, long):::Support for iteration over heap -- not sure how this will       interact with GC in reflective system, but necessary for the       debugging mechanism:::return->handle->addOffsetToAsOopHandle
+Threads#first():::NOTE: this returns objects of type JavaThread, CompilerThread,       JvmtiAgentThread, and ServiceThread:::threadAddr->threadListField->getValue->if->return->return->createJavaThreadWrapper
+Threads#createJavaThreadWrapper(Address):::Routine for instantiating appropriately-typed wrapper for a       JavaThread:::try->thread->virtualConstructor->instantiateWrapperFor->thread->setThreadPDAccess->return->catch->throw->new->RuntimeException->finally
+Threads#oopsDo(AddressVisitor):::Memory operations:::for->thread->first->thread->next
+VFrame#newVFrame(Frame, RegisterMap, JavaThread, boolean, boolean):::Factory method for creating vframes:::if->f->isInterpretedFrame->return->new->InterpretedVFrame->if->VM->getVM->isCore->cb->if->VM->getVM->getCodeCache->f->getPC->findBlobUnsafe->else->VM->getVM->getCodeCache->f->getPC->findBlob->if->if->cb->isNMethod->nm->scope->if->VM->getVM->isDebugging->nm->f->getPC->getScopeDescNearDbg->else->nm->f->getPC->getScopeDescAt->return->new->CompiledVFrame->if->f->isRuntimeFrame->tempMap->regMap->copy->s->f->sender->return->newVFrame->return->new->ExternalVFrame
+VFrame#newVFrame(Frame, RegisterMap, JavaThread):::Factory method for creating vframes:::return->newVFrame
+VFrame#getFrame():::Accessors:::return
+VFrame#sender():::Returns the sender vframe:::if->Assert->isTop->that->return->sender
+VFrame#sender(boolean):::Returns the sender vframe; takes argument for debugging situation:::tempMap->getRegisterMap->clone->if->fr->isFirstFrame->return->s->fr->realSender->if->return->if->s->isFirstFrame->return->return->VFrame->getThread->VM->getVM->isDebugging->newVFrame
+VFrame#javaSender():::Returns the next javaVFrame on the stack (skipping all other       kinds of frames):::imprecise->if->VM->getVM->isDebugging->if->isJavaFrame->mayBeImpreciseDbg->f->sender->while->if->f->isJavaFrame->return->f->sender->return
+VFrame#isTop():::Answers if the this is the top vframe in the frame, i.e., if the       sender vframe is in the caller frame:::return
+VFrame#top():::Returns top vframe within same frame (see isTop()):::vf->while->vf->isTop->vf->sender->return
+VFrame#isEntryFrame():::Type testing operations:::return
+VFrame#mayBeImpreciseDbg():::An indication of whether this VFrame is "precise" or a best       guess:::return
+VFrame#print():::Printing operations:::printOn
+VirtualBaseConstructor#addMapping(String, Class):::Adds a mapping from the given C++ type name to the given Java       class:::if->map->get->return->map->put->return
+VirtualBaseConstructor#instantiateWrapperFor(Address):::Instantiate the most-precisely typed wrapper object available       for the type of the given Address:::if->return->type->db->findDynamicTypeForAddress->if->return->VMObjectFactory->map->type->getName->get->newObject->else->if->return->VMObjectFactory->newObject->throw->newWrongTypeException
+VirtualConstructor#addMapping(String, Class):::Adds a mapping from the given C++ type name to the given Java       class:::if->map->get->return->map->put->return
+VirtualConstructor#instantiateWrapperFor(Address):::Instantiate the most-precisely typed wrapper object available       for the type of the given Address:::if->return->for->iter->map->keySet->iterator->iter->hasNext->throw->newWrongTypeException
+VM#initialize(TypeDataBase, boolean):::This could be used by a reflective runtime system:::if->throw->new->RuntimeException->new->VM->for->iter->vmInitializedObservers->iterator->iter->hasNext
+VM#initialize(TypeDataBase, JVMDebugger):::This is used by the debugging system:::if->return->debugger->getMachineDescription->isBigEndian->new->VM->for->iter->vmInitializedObservers->iterator->iter->hasNext->debugger->soleInstance->getHeapOopSize->soleInstance->getKlassPtrSize->Universe->getNarrowOopBase->Universe->getNarrowOopShift->Universe->getNarrowKlassBase->Universe->getNarrowKlassShift->putHeapConst
+VM#shutdown():::This is used by the debugging system:::
+VM#registerVMInitializedObserver(Observer):::This is used by both the debugger and any runtime system:::vmInitializedObservers->add->o->update
+VM#getVM():::This is the primary accessor used by both the debugger and any       potential runtime system:::if->throw->new->RuntimeException->return
+VM#registerVMResumedObserver(Observer):::This is only used by the debugging system:::vmResumedObservers->add
+VM#registerVMSuspendedObserver(Observer):::This is only used by the debugging system:::vmSuspendedObservers->add
+VM#fireVMResumed():::This is only used by the debugging system:::for->iter->vmResumedObservers->iterator->iter->hasNext
+VM#fireVMSuspended():::This is only used by the debugging system:::for->iter->vmSuspendedObservers->iterator->iter->hasNext
+VM#getOS():::Returns the OS this VM is running on:::if->return->debugger->getOS->return->PlatformInfo->getOS
+VM#getCPU():::Returns the CPU this VM is running on:::if->return->debugger->getCPU->return->PlatformInfo->getCPU
+VM#getStackBias():::NOTE: this offset is in BYTES in this system!:::return
+VM#isLP64():::Indicates whether the underlying machine supports the LP64 data       model:::if->Assert->isDebugging->that->return
+VM#getBytesPerLong():::Get bytes-per-long == long/double natural alignment.:::return
+VM#getMinObjAlignmentInBytes():::Get minimum object alignment in bytes.:::return
+VM#alignUp(long, long):::Utility routine for getting data structure alignment correct:::return
+VM#alignDown(long, long):::Utility routine for getting data structure alignment correct:::return
+VM#buildIntFromShorts(short, short):::Utility routine for building an int from two "unsigned" 16-bit       shorts:::return
+VM#buildLongFromIntsPD(int, int):::Utility routine for building a long from two "unsigned" 32-bit       ints in platform-dependent order:::if->return->else->return
+VM#isBigEndian():::Returns true if this is a isBigEndian, false otherwise:::return
+VM#isJvmtiSupported():::Returns true if JVMTI is supported, false otherwise:::return
+VM#isCore():::Returns true if this is a "core" build, false if either C1 or C2       is present:::return
+VM#isClientCompiler():::Returns true if this is a C1 build, false otherwise:::return
+VM#isServerCompiler():::Returns true if this is a C2 build, false otherwise:::return
+VM#useDerivedPointerTable():::Returns true if C2 derived pointer table should be used, false otherwise:::return
+VM#getCodeCache():::Returns the code cache; should not be used if is core build:::if->Assert->isCore->that->if->new->CodeCache->return
+VM#getRuntime1():::Should only be called for C1 builds:::if->Assert->isClientCompiler->that->if->new->Runtime1->return
+VM#isDebugging():::Test to see whether we're in debugging mode (NOTE: this really       should not be tested by this code; currently only used in       StackFrameStream):::return
+VM#getDebugger():::This is only used by the debugging (i.e., non-runtime) system:::if->throw->new->RuntimeException->return
+VM#isJavaPCDbg(Address):::Indicates whether a given program counter is in Java code:::return->getInterpreter->contains->getCodeCache->contains
+VM#getInvocationEntryBCI():::FIXME: figure out where to stick this:::return
+VM#getUseTLAB():::Indicates whether Thread-Local Allocation Buffers are used:::flag->getCommandLineFlag->return->flag->getBool

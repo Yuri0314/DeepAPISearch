@@ -1,0 +1,102 @@
+AbstractSubscription#demand():::Returns the subscription's demand.:::return
+AsyncEvent#channel():::Returns the channel:::
+AsyncEvent#interestOps():::Returns the selector interest op flags OR'd:::
+AsyncEvent#handle():::Called when event occurs:::
+AsyncEvent#abort(IOException):::Called when an error occurs during registration, or when the selector has been shut down:::
+AsyncTriggerEvent#channel():::Returns null:::return
+AsyncTriggerEvent#interestOps():::Returns 0:::return
+ConnectionPool#returnToPool(HttpConnection):::Returns the connection to the pool.:::Instant->now->returnToPool
+ConnectionPool#purgeExpiredConnectionsAndReturnNextDeadline():::Purge expired connection and return the number of milliseconds in which the next connection is scheduled to expire:::if->expiryList->purgeMaybeRequired->return->return->Instant->now->purgeExpiredConnectionsAndReturnNextDeadline
+Exchange#ignoreBody():::Called after a redirect or similar kind of retry where a body might be sent but we don't want it:::if->return->return->exchImpl->ignoreBody
+Exchange#released():::Called when a new exchange is created to replace this exchange:::impl->if->impl->released
+ExchangeImpl#connection():::Returns the HttpConnection instance to which this exchange is assigned.:::
+ExchangeImpl#get(Exchange, HttpConnection):::Initiates a new exchange and assigns it to a connection if one exists already:::if->exchange->version->if->debug->on->debug->log->return->createHttp1Exchange->else->c2->exchange->client->client2->request->exchange->request->c2f->c2->getConnectionFor->if->debug->on->debug->log->return->c2f->createExchangeImpl->handle->Function->identity->thenCompose
+ExchangeImpl#sendBodyAsync():::Sends a request body, after request headers have been sent.:::
+ExchangeImpl#ignoreBody():::Ignore/consume the body.:::
+ExchangeImpl#getResponseAsync(Executor):::Gets the response headers:::
+ExchangeImpl#cancel():::Cancels a request:::
+ExchangeImpl#cancel(IOException):::Cancels a request with a cause:::
+ExchangeImpl#released():::Called when the exchange is released, so that cleanup actions may be performed - such as deregistering callbacks:::
+ExchangeImpl#completed():::Called when the exchange is completed, so that cleanup actions may be performed - such as deregistering callbacks:::
+ExchangeImpl#isCanceled():::Returns true if this exchange was canceled.:::
+ExchangeImpl#getCancelCause():::Returns the cause for which this exchange was canceled, if available.:::
+HeaderFilter#response(Response):::Returns null if response ok to be given to user:::
+Http1AsyncReceiver.Http1AsyncDelegate#tryAsyncReceive(ByteBuffer):::Receives and handles a byte buffer reference.:::
+Http1AsyncReceiver.Http1AsyncDelegate#onReadError(Throwable):::Called when an exception is raised.:::
+Http1AsyncReceiver.Http1AsyncDelegate#onSubscribe(AbstractSubscription):::Must be called before any other method on the delegate:::
+Http1AsyncReceiver.Http1AsyncDelegate#subscription():::Returns the subscription that was passed to onSubscribe:::
+Http1AsyncReceiver.Http1AsyncDelegate#close(Throwable):::Called to make sure resources are released when the when the Http1AsyncReceiver is stopped.:::
+Http1AsyncReceiver#subscriber():::Returns the TubeSubscriber for reading from the connection flow.:::return
+Http1Exchange.Http1BodySubscriber#currentStateMessage():::A current-state message suitable for inclusion in an exception detail message.:::
+Http1Exchange#cancel():::Cancel checks to see if request and responseAsync finished already:::new->IOException->cancelImpl
+Http1Exchange#cancel(IOException):::Cancel checks to see if request and responseAsync finished already:::cancelImpl
+Http1Exchange#isCanceled():::Returns true if this exchange was canceled.:::synchronized->return
+Http1Exchange#getCancelCause():::Returns the cause for which this exchange was canceled, if available.:::synchronized->return
+Http1Exchange#appendToOutgoing(Throwable):::Convenience for #appendToOutgoing(DataPair), with just a Throwable.:::new->DataPair->appendToOutgoing
+Http1Exchange#appendToOutgoing(List):::Convenience for #appendToOutgoing(DataPair), with just data.:::new->DataPair->appendToOutgoing
+Http1HeaderParser#statusLine():::Returns the status-line.:::return
+Http1HeaderParser#responseCode():::Returns the response code.:::return
+Http1HeaderParser#headers():::Returns the headers, possibly empty.:::return
+Http1HeaderParser#currentStateMessage():::A current-state message suitable for inclusion in an exception detail message.:::stateName->state->name->msg->if->stateName->contains->return->format->else->if->stateName->contains->sb->toString->format->else->if->stateName->contains->headerName->sb->toString->if->headerName->indexOf->headerName->headerName->indexOf->substring->format->else->sb->toString->format->return->format
+Http1HeaderParser#parse(ByteBuffer):::Parses HTTP/1.X status-line and headers from the given bytes:::requireNonNull->while->canContinueParsing->switch->break->readResumeStatusLine->break->readStatusLineFeed->break->maybeStartHeaders->break->maybeEndHeaders->break->readResumeHeader->break->resumeOrLF->break->resumeOrSecondCR->break->resumeOrEndHeaders->break->throw->String->valueOf->new->InternalError->return
+Http1Response#fixupContentLen(long):::Return known fixed content length or -1 if chunked, or -2 if no content-length information in which case, connection termination delimits the response body:::if->request->method->equalsIgnoreCase->return->if->if->headers->firstValue->orElse->equalsIgnoreCase->return->if->return->return->return
+Http1Response#ignoreBody(Executor):::Read up to MAX_IGNORE bytes discarding:::clen->headers->firstValueAsLong->orElse->if->connection->close->return->MinimalFuture->completedFuture->else->return->discarding->readBody
+Http2ClientImpl#getConnectionFor(HttpRequestImpl, Exchange):::When HTTP/2 requested only:::uri->req->uri->proxy->req->proxy->key->Http2Connection->keyFor->synchronized->connection->connections->get->if->try->if->connection->reserveStream->if->debug->on->debug->log->deleteConnection->else->if->debug->on->debug->log->return->MinimalFuture->completedFuture->catch->return->MinimalFuture->failedFuture->finally->if->req->secure->failures->contains->if->debug->on->debug->log->return->MinimalFuture->completedFuture->return->Http2Connection->createAsync->synchronized->if->try->conn->reserveStream->catch->throw->new->UncheckedIOException->finally->offerConnection->else->cause->Utils->getCompletionCause->if->failures->add->whenComplete
+Http2ClientImpl#getSettingsString():::Returns the client settings as a base64 (url) encoded string:::sf->getClientSettings->settings->sf->toByteArray->encoder->Base64->getUrlEncoder->withoutPadding->return->encoder->encodeToString
+Http2Connection#setFinalStream():::Mark this connection so no more streams created on it and it will close when all are complete.:::
+Http2Connection#processFrame(Http2Frame):::Handles stream 0 (common) frames that apply to whole connection and passes other stream specific frames to that Stream object:::Log->logFrames->streamid->frame->streamid->if->Log->getMessage->logError->if->framesDecoder->close->getErrorCode->getMessage->protocolError->else->if->debug->on->debug->getMessage->log->getErrorCode->resetStream->return->if->handleConnectionFrame->else->if->framesDecoder->close->protocolError->return->stream->getStream->if->if->decoder->new->ValidatingHeadersConsumer->try->decodeHeaders->catch->e->getMessage->protocolError->return->finally->if->if->dropDataFrame->if->isServerInitiatedStream->if->Log->logTrace->else->resetStream->else->if->resetStream->return->if->pp->try->handlePushPromise->catch->e->getMessage->protocolError->return->finally->else->if->try->stream->rspHeadersConsumer->decodeHeaders->catch->e->getMessage->protocolError->return->finally->stream->incoming->else->stream->incoming
+Http2Connection#getMaxSendFrameSize():::Max frame size we are allowed to send:::param->serverSettings->getParameter->if->return
+Http2Connection#getMaxReceiveFrameSize():::Max frame size we will receive:::return->clientSettings->getParameter
+Http2Connection#getStream(int):::Returns an existing Stream with given id, or null if doesn't exist:::return->streams->get
+Http2Connection#createStream(Exchange):::Creates Stream with given id.:::stream->new->Stream<>->return
+Http2Connection.ValidatingHeadersConsumer#reset():::Called when END_HEADERS was received:::
+HttpClientImpl#registerEvent(AsyncEvent):::Wait for activity on given exchange:::selmgr->register
+HttpClientImpl#eventUpdated(AsyncEvent):::Allows an AsyncEvent to modify its interestOps.:::selmgr->eventUpdated
+HttpConnection#connectAsync(Exchange):::Initiates the connect phase:::
+HttpConnection#finishConnect():::Finishes the connection phase:::
+HttpConnection#connected():::Tells whether, or not, this connection is connected to its destination.:::
+HttpConnection#isSecure():::Tells whether, or not, this connection is secure ( over SSL ):::
+HttpConnection#isProxied():::Tells whether, or not, this connection is proxied:::
+HttpConnection#isOpen():::Tells whether, or not, this connection is open.:::return->channel->isOpen->connected->getConnectionFlow->isFinished
+HttpConnection#publisher():::Returns the HTTP publisher associated with this connection:::
+HttpConnection#getConnection(InetSocketAddress, HttpClientImpl, HttpRequestImpl, Version):::Factory for retrieving HttpConnections:::proxy->Utils->request->proxy->resolveAddress->c->secure->request->secure->pool->client->connectionPool->if->pool->getConnection->if->c->isOpen->conn->if->DEBUG_LOGGER->on->DEBUG_LOGGER->conn->getConnectionFlow->log->return->else->return->getPlainConnection->else->if->pool->getConnection->if->c->isOpen->conn->if->DEBUG_LOGGER->on->DEBUG_LOGGER->conn->getConnectionFlow->log->return->else->alpn->if->hasRequiredHTTP2TLSVersion->new->StringArr->return->getSSLConnection
+HttpConnection#headerFilter(HttpRequestImpl):::This method is used to build a filter that will accept or veto (header-name, value) tuple for transmission on the wire:::if->isTunnel->return->else->if->request->isConnect->return->else->if->request->proxy->return->else->return
+HttpConnection#close():::Closes this connection, by returning the socket to its connection pool.:::
+HttpRequestImpl#newInstanceForRedirection(URI, String, HttpRequestImpl):::Returns a new instance suitable for redirection.:::return->new->HttpRequestImpl
+HttpRequestImpl#newInstanceForAuthentication(HttpRequestImpl):::Returns a new instance suitable for authentication.:::return->other->uri->other->method->new->HttpRequestImpl
+HttpRequestImpl#createPushRequest(HttpRequestImpl, HttpHeaders):::Creates a HttpRequestImpl from the given set of Headers and the associated "parent" request:::return->new->HttpRequestImpl
+HttpRequestImpl#method():::Returns the request method for this request:::return
+HttpResponseImpl#rawChannel():::Returns a RawChannel that may be used for WebSocket protocol.:::if->exchImpl->exchangeImpl->if->throw->new->UnsupportedOperationException->initial->drainLeftOverBytes->new->RawChannelTube->return
+PlainHttpConnection#close():::Closes this connection:::synchronized->if->return->try->Log->toString->logTrace->if->debug->on->debug->client->debugInterestOps->log->if->client->cancelTimer->chan->close->tube->signalClosed->catch->Log->logTrace->finally
+RawChannelTube#initialByteBuffer():::Hands over the initial bytes:::if->inited->compareAndSet->return->initial->get->else->throw->new->IllegalStateException
+RawChannelTube#shutdownInput():::Shutdown the connection for reading without closing the channel:::if->inputClosed->compareAndSet->if->debug->on->debug->log
+RawChannelTube#shutdownOutput():::Shutdown the connection for writing without closing the channel:::if->outputClosed->compareAndSet->if->debug->on->debug->log
+RawChannelTube#close():::Closes this channel.:::if->closed->compareAndSet->if->debug->on->debug->log->connection->client->webSocketClose->connection->close
+RequestPublishers.FilePublisher#create(Path):::Factory for creating FilePublisher:::filePermission->sm->System->getSecurityManager->if->fn->pathForSecurityCheck->readPermission->new->FilePermission->sm->checkPermission->if->Files->notExists->throw->new->FileNotFoundException->return->new->FilePublisher
+ResponseBodyHandlers.PathBodyHandler#create(Path, List):::Factory for creating PathBodyHandler:::filePermission->sm->System->getSecurityManager->if->fn->pathForSecurityCheck->writePermission->new->FilePermission->sm->checkPermission->return->new->PathBodyHandler
+ResponseBodyHandlers.FileDownloadBodyHandler#create(Path, List):::Factory for creating FileDownloadBodyHandler:::filePermissions->sm->System->getSecurityManager->if->fn->pathForSecurityCheck->writePermission->new->FilePermission->writePathPerm->writeInDirPermission->new->FilePermission->sm->checkPermission->readPermission->new->FilePermission->sm->checkPermission->new->FilePermissionArr->if->Files->notExists->throw->new->IllegalArgumentException->if->Files->isDirectory->throw->new->IllegalArgumentException->if->Files->isWritable->throw->new->IllegalArgumentException->return->new->FileDownloadBodyHandler
+ResponseContent.ChunkedBodyParser#tryReadOneHunk(ByteBuffer):::Returns a ByteBuffer containing chunk of data or a "hunk" of data (a chunk of a chunk if the chunk size is larger than our ByteBuffers):::unfulfilled->toconsume->st->if->if->debug->on->debug->chunk->remaining->log->clen->tryReadChunkLen->if->return->if->debug->on->debug->log->if->else->if->if->debug->on->debug->chunk->remaining->log->if->tryConsumeBytes->return->if->clen->if->debug->on->debug->log->return->clen->returnBuffer->if->bytesread->chunk->remaining->if->debug->on->debug->log->bytes2return->Math->min->if->debug->on->debug->log->Utils->sliceWithLimitedCapacity->asReadOnlyBuffer->if->if->if->debug->on->debug->log->if->tryConsumeBytes->if->debug->on->debug->log->if->if->debug->on->debug->log->return
+ResponseContent.UnknownLengthBodyParser#complete():::Must be called externally when connection has closed and therefore no more bytes can be read:::if->debug->on->debug->log->onFinished->run->pusher->onComplete->onComplete->accept
+ResponseInfoImpl#statusCode():::Provides the response status code:::return
+ResponseInfoImpl#headers():::Provides the response headers:::return
+ResponseInfoImpl#version():::provides the response protocol version:::return
+ResponseSubscribers.PathSubscriber#create(Path, List):::Factory for creating PathSubscriber:::filePermission->sm->System->getSecurityManager->if->fn->pathForSecurityCheck->writePermission->new->FilePermission->sm->checkPermission->return->new->PathSubscriber
+SocketTube#isFinished():::Returns true if this flow is finished:::subscription->return->errorRef->get
+SocketTube.BufferSource#getBuffer():::Returns a buffer to read data from the socket.:::
+SocketTube.BufferSource#append(List, ByteBuffer, int):::Appends the read-data in buffer to the list of buffer to be sent downstream to the subscriber:::
+SocketTube.BufferSource#returnUnused(ByteBuffer):::Returns the given unused buffer, previously obtained from getBuffer.:::
+Stream#incoming(Http2Frame):::Entry point from Http2Connection reader thread:::if->debug->on->debug->log->if->hframe->if->hframe->endHeaders->Log->logTrace->handleResponse->if->hframe->getFlag->List->of->new->DataFrame->receiveDataFrame->else->if->receiveDataFrame->else->otherFrame
+Stream#setEndStreamReceived():::Sets endStreamReceived:::responseReceived
+Stream#ignoreBody():::Send a RESET frame to tell server to stop sending data on this stream:::try->connection->resetStream->return->MinimalFuture->completedFuture->catch->Log->e->toString->logTrace->return->MinimalFuture->failedFuture->finally
+Stream#completeResponse(Response):::Completes the first uncompleted CF on list, and removes it:::synchronized->cf->cfs_len->response_cfs->size->for->i->MinimalFuture->completedFuture->Log->logTrace->if->debug->on->debug->log->response_cfs->add
+Stream#completeResponseExceptionally(Throwable):::same as above but for errors:::synchronized->for->i->response_cfs->size->response_cfs->MinimalFuture->failedFuture->add
+Stream#isCanceled():::Returns true if this exchange was canceled.:::return->errorRef->get
+Stream#getCancelCause():::Returns the cause for which this exchange was canceled, if available.:::return->errorRef->get
+WindowController#registerStream(int, int):::Registers the given stream with this controller.:::controllerLock->lock->try->old->streams->put->if->throw->new->InternalError->catch->finally->controllerLock->unlock
+WindowController#removeStream(int):::Removes/De-registers the given stream with this controller.:::controllerLock->lock->try->old->streams->remove->isClientStream->if->throw->new->InternalError->else->if->throw->new->InternalError->catch->finally->controllerLock->unlock
+WindowController#tryAcquire(int, int, Stream):::Attempts to acquire the requested amount of Send Window for the given stream:::controllerLock->lock->try->streamSize->streams->get->if->throw->new->InternalError->x->Math->Math->min->min->if->if->debug->on->debug->Math->min->log->pending->Map->entry->put->return->pending->remove->streams->put->if->debug->on->debug->Math->min->log->return->catch->finally->controllerLock->unlock
+WindowController#increaseConnectionWindow(int):::Increases the Send Window size for the connection:::candidates->controllerLock->lock->try->size->if->return->if->debug->on->debug->log->iter->pending->entrySet->iterator->while->iter->hasNext->item->iter->next->streamSize->streams->item->getKey->get->if->iter->remove->else->e->item->getValue->requestedAmount->e->getValue->minAmount->if->Math->min->iter->remove->if->new->ArrayList<>->candidates->e->getKey->add->catch->finally->controllerLock->unlock->if->candidates->Stream->signalWindowUpdate->forEach->return
+WindowController#increaseStreamWindow(int, int):::Increases the Send Window size for the given stream:::s->controllerLock->lock->try->size->streams->get->if->if->debug->on->debug->log->else->prev->if->return->streams->put->if->debug->on->debug->log->p->pending->get->if->minAmount->if->pending->remove->p->getKey->catch->finally->controllerLock->unlock->if->s->signalWindowUpdate->return
+WindowController#adjustActiveStreams(int):::Adjusts, either increases or decreases, the active streams registered with this controller:::controllerLock->lock->try->foreach->streams->entrySet->streamid->entry->getKey->if->size->entry->getValue->streams->put->if->debug->on->debug->log->catch->finally->controllerLock->unlock
+WindowController#connectionWindowSize():::Returns the Send Window size for the connection.:::controllerLock->lock->try->return->catch->finally->controllerLock->unlock
+WindowController#streamWindowSize(int):::Returns the Send Window size for the given stream.:::controllerLock->lock->try->size->streams->get->if->throw->new->InternalError->return->catch->finally->controllerLock->unlock

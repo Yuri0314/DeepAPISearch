@@ -1,0 +1,52 @@
+ElementSchemePointer#parseXPointer(String):::Parses the XPointer expression and tokenizes it into Strings delimited by whitespace.:::init->tokens->new->Tokens->scanner->new->Scanner->length->xpointer->length->success->scanner->scanExpr->if->new->ObjectArr->reportError->tmpChildSequence->tokens->getTokenCount->new->intArr->i->while->tokens->hasMore->token->tokens->nextToken->switch->tokens->nextToken->tokens->getTokenString->new->ShortHandPointer->fShortHandPointer->setSchemeName->break->tokens->nextToken->break->new->ObjectArr->reportError->new->intArr->new->intArr->System->arraycopy
+ElementSchemePointer#getSchemeName():::Returns the scheme name i.e element:::return
+ElementSchemePointer#getSchemeData():::Returns the scheme data:::return
+ElementSchemePointer#setSchemeName(String):::Sets the scheme name:::
+ElementSchemePointer#setSchemeData(String):::Sets the scheme data:::
+ElementSchemePointer#resolveXPointer(QName, XMLAttributes, Augmentations, int):::Responsible for resolving the element() scheme XPointer:::isShortHandPointerResolved->if->fShortHandPointer->resolveXPointer->if->else->else->if->matchChildSequence->else->if->else->return
+ElementSchemePointer#matchChildSequence(QName, int):::Matches the current element position in the document tree with the element position specified in the element XPointer scheme.:::if->tmpCurrentChildSequence->new->intArr->System->arraycopy->new->intArr->System->arraycopy->if->if->if->if->checkMatch->else->else->if->if->else->if->else->if->if->checkMatch->if->else->else->return
+ElementSchemePointer#checkMatch():::Matches the current position of the element being visited by checking its position and previous elements against the element XPointer expression:::if->if->for->i->else->return->else->if->for->i->else->return->return
+ElementSchemePointer#isFragmentResolved():::Returns true if the node matches or is a child of a matching element() scheme XPointer.:::return
+ElementSchemePointer#isChildFragmentResolved():::Returns true if the XPointer expression resolves to a non-element child of the current resource fragment.:::if->return->fShortHandPointer->isChildFragmentResolved->else->return
+ElementSchemePointer#reportError(String, Object[]):::Reports an XPointer error:::throw->fErrorReporter->getMessageFormatter->fErrorReporter->getLocale->formatMessage->new->XNIException
+ElementSchemePointer#initErrorReporter():::Initializes error handling objects:::if->new->XMLErrorReporter->if->new->XPointerErrorHandler->fErrorReporter->new->XPointerMessageFormatter->putMessageFormatter
+ElementSchemePointer#init():::Initializes the element scheme processor:::initErrorReporter
+ShortHandPointer#parseXPointer(String):::The XPointerProcessor takes care of this:::
+ShortHandPointer#getDTDDeterminedID(XMLAttributes, int):::Rerturns the DTD determine-ID:::if->attributes->getType->equals->return->attributes->getValue->return
+ShortHandPointer#getSchemaDeterminedID(XMLAttributes, int):::Returns the schema-determined-ID.:::augs->attributes->getAugmentations->attrPSVI->augs->getItem->if->typeDef->attrPSVI->getMemberTypeDefinition->if->attrPSVI->getTypeDefinition->if->isIDType->return->attrPSVI->getSchemaValue->getNormalizedValue->return
+ShortHandPointer#getChildrenSchemaDeterminedID(XMLAttributes, int):::Not quite sure how this can be correctly implemented.:::return
+ShortHandPointer#getSchemeName():::Returns the name of the ShortHand pointer:::return
+XPointerErrorHandler#warning(String, String, XMLParseException):::Warning.:::printError
+XPointerErrorHandler#error(String, String, XMLParseException):::Error.:::printError
+XPointerErrorHandler#fatalError(String, String, XMLParseException):::Fatal error.:::printError->throw
+XPointerHandler#parseXPointer(String):::Parses the XPointer framework expression and delegates scheme specific parsing.:::init->tokens->new->Tokens->scanner->new->Scanner->length->xpointer->length->success->scanner->scanExpr->if->new->ObjectArr->reportError->while->tokens->hasMore->token->tokens->nextToken->switch->tokens->nextToken->shortHandPointerName->tokens->getTokenString->if->new->ObjectArr->reportError->shortHandPointer->new->ShortHandPointer->shortHandPointer->setSchemeName->fXPointerParts->add->break->tokens->nextToken->prefix->tokens->getTokenString->tokens->nextToken->localName->tokens->getTokenString->schemeName->openParenCount->closeParenCount->tokens->nextToken->openParen->tokens->getTokenString->if->if->new->ObjectArr->reportError->else->new->ObjectArr->reportError->schemeData->while->tokens->hasMore->tokens->nextToken->tokens->getTokenString->if->break->tokens->nextToken->tokens->getTokenString->tokens->nextToken->closeParen->tokens->getTokenString->if->new->ObjectArr->reportError->while->tokens->hasMore->if->tokens->tokens->peekToken->getTokenString->break->if->new->ObjectArr->reportError->if->schemeName->equals->elementSchemePointer->new->ElementSchemePointer->elementSchemePointer->setSchemeName->elementSchemePointer->setSchemeData->try->elementSchemePointer->parseXPointer->fXPointerParts->add->catch->throw->new->XNIException->finally->else->new->ObjectArr->reportWarning->break->new->ObjectArr->reportError
+XPointerHandler#isFragmentResolved():::Returns true if the Node fragment is resolved.:::resolved->fXPointerPart->isFragmentResolved->if->return
+XPointerHandler#isChildFragmentResolved():::Returns true if the XPointer expression resolves to a non-element child of the current resource fragment.:::resolved->fXPointerPart->isChildFragmentResolved->return
+XPointerHandler#isXPointerResolved():::Returns true if the XPointer successfully found a sub-resource .:::return
+XPointerHandler#getXPointerPart():::Returns the pointer part used to resolve the document fragment.:::return
+XPointerHandler#initErrorReporter():::Initializes error handling objects:::if->new->XMLErrorReporter->if->new->XPointerErrorHandler->fXPointerErrorReporter->new->XPointerMessageFormatter->putMessageFormatter
+XPointerHandler#init():::Initializes the XPointer Processor;:::fXPointerParts->clear->initErrorReporter
+XPointerHandler#getPointerParts():::Returns an ArrayList of XPointerPart objects:::return
+XPointerHandler#comment(XMLString, Augmentations):::If the comment is a child of a matched element, then pass else return.:::if->isChildFragmentResolved->return->super->comment
+XPointerHandler#processingInstruction(String, XMLString, Augmentations):::A processing instruction:::if->isChildFragmentResolved->return->super->processingInstruction
+XPointerHandler#startElement(QName, XMLAttributes, Augmentations):::The start of an element.:::if->resolveXPointer->if->processXMLBaseAttributes->if->processXMLLangAttributes->fNamespaceContext->setContextInvalid->return->super->startElement
+XPointerHandler#emptyElement(QName, XMLAttributes, Augmentations):::An empty element.:::if->resolveXPointer->if->processXMLBaseAttributes->if->processXMLLangAttributes->fNamespaceContext->setContextInvalid->return->super->emptyElement
+XPointerHandler#characters(XMLString, Augmentations):::Character content.:::if->isChildFragmentResolved->return->super->characters
+XPointerHandler#ignorableWhitespace(XMLString, Augmentations):::Ignorable whitespace:::if->isChildFragmentResolved->return->super->ignorableWhitespace
+XPointerHandler#endElement(QName, Augmentations):::The end of an element.:::if->resolveXPointer->return->super->endElement
+XPointerHandler#startCDATA(Augmentations):::The start of a CDATA section.:::if->isChildFragmentResolved->return->super->startCDATA
+XPointerHandler#endCDATA(Augmentations):::The end of a CDATA section.:::if->isChildFragmentResolved->return->super->endCDATA
+XPointerHandler#setProperty(String, Object)::: Sets the value of a property:::if->if->else->if->if->else->if->if->booleanValue->else->if->if->booleanValue->else->if->super->setProperty
+XPointerMessageFormatter#formatMessage(Locale, String, Object[]):::Formats a message with the specified arguments using the given locale information.:::if->if->SecuritySupport->getResourceBundle->if->SecuritySupport->getResourceBundle->msg->fResourceBundle->getString->if->try->format->catch->fResourceBundle->getString->fResourceBundle->getString->finally->if->fResourceBundle->getString->throw->new->MissingResourceException->return
+XPointerPart#parseXPointer(String):::Provides scheme specific parsing of a XPointer expression i.e:::
+XPointerPart#resolveXPointer(QName, XMLAttributes, Augmentations, int):::Evaluates an XML resource with respect to an XPointer expressions by checking if it's element and attributes parameters match the criteria specified in the xpointer expression.:::
+XPointerPart#isFragmentResolved():::Returns true if the XPointer expression resolves to a resource fragment specified as input else returns false.:::
+XPointerPart#isChildFragmentResolved():::Returns true if the XPointer expression resolves to a non-element child of the current resource fragment.:::
+XPointerPart#getSchemeName():::Returns a String containing the scheme name of the PointerPart or the name of the ShortHand Pointer.:::
+XPointerPart#getSchemeData():::Returns a String containing the scheme data of the PointerPart.:::
+XPointerPart#setSchemeName(String):::Sets the scheme name of the PointerPart or the ShortHand Pointer name.:::
+XPointerPart#setSchemeData(String):::Sets the scheme data of the PointerPart.:::
+XPointerProcessor#parseXPointer(String):::Parses an XPointer expression:::
+XPointerProcessor#resolveXPointer(QName, XMLAttributes, Augmentations, int):::Evaluates an XML resource with respect to an XPointer expressions by checking if it's element and attributes parameters match the criteria specified in the xpointer expression.:::
+XPointerProcessor#isFragmentResolved():::Returns true if the XPointer expression resolves to the current resource fragment or Node which is part of the input resource being streamed else returns false.:::
+XPointerProcessor#isXPointerResolved():::Returns true if the XPointer expression resolves any subresource of the input resource.:::

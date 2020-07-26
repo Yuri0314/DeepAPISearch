@@ -1,0 +1,60 @@
+Assembler#add(Instruction):::Add an instruction:::if
+Assembler#optimize(Environment, Label):::Optimize instructions and mark those that can be reached:::for->inst
+Assembler#eliminate():::Eliminate instructions that are not reached:::change->prev->for->inst->return
+Assembler#optimize(Environment):::Optimize the byte codes:::do->optimize->while->eliminate->env->opt
+Assembler#collect(Environment, MemberDefinition, ConstantPool):::Collect all constants into the constant table:::if->env->debug_vars->v->field->getArguments->if->for->e->v->elements->e->hasMoreElements->for->inst
+Assembler#balance(Label, int):::Determine stack size, count local variables:::for->inst
+Assembler#write(Environment, DataOutputStream, MemberDefinition, ConstantPool):::Generate code:::if->field->getArguments->sum->v->field->getArguments->for->e->v->elements->e->hasMoreElements->try->balance->catch->println->listing->throw->finally->pc->nexceptions->for->inst->out->writeShort->out->writeShort->out->writeInt->for->inst->out->writeShort->if->writeExceptions
+Assembler#writeExceptions(Environment, DataOutputStream, ConstantPool, Instruction, Instruction):::Write the exceptions table:::for->inst
+Assembler#writeCoverageTable(Environment, ClassDefinition, DataOutputStream, ConstantPool, long):::Write the coverage table:::TableLot->new->Vector<>->begseg->begmeth->whereClass->getWhere->whereTry->new->Vector<>->numberTry->count->for->inst->Lot->ln->pos->out->writeShort->for->i
+Assembler#writeLineNumberTable(Environment, DataOutputStream, ConstantPool):::Write the linenumber table:::ln->count->for->inst->out->writeShort->for->inst
+Assembler#flowFields(Environment, Label, MemberDefinition[]):::Figure out when registers contain a legal value:::if->f->for->i->return->new->MemberDefinitionArr->System->arraycopy->newlocals->new->MemberDefinitionArr->System->arraycopy->for->inst
+Assembler#writeLocalVariableTable(Environment, MemberDefinition, DataOutputStream, ConstantPool):::Write the local variable table:::locals->new->MemberDefinitionArr->i->if->field->getArguments->reg->v->field->getArguments->for->e->v->elements->e->hasMoreElements->flowFields->lvtab->new->LocalVariableTable->for->if->field->getArguments->reg->v->field->getArguments->for->e->v->elements->e->hasMoreElements->pcs->new->intArr->for->inst->for->lvtab->write
+Assembler#empty():::Return true if empty:::return
+Assembler#listing(PrintStream):::Print the byte codes:::out->println->for->inst
+CatchData#getLabel():::Get the label:::return
+CatchData#getType():::Get the clazz:::return
+ClassConstantData#write(Environment, DataOutputStream, ConstantPool):::Write the constant to the output stream:::out->writeByte->out->tab->index->writeShort
+ClassConstantData#order():::Return the order of the constant:::return
+ConstantPool#index(Object):::Find an entry, may return 0:::return->hash->get
+ConstantPool#put(Object):::Add an entry:::data->hash->get->if->if->new->StringConstantData->else->if->new->StringExpressionConstantData->else->if->new->ClassConstantData->else->if->new->ClassConstantData->else->if->new->FieldConstantData->else->if->new->NameAndTypeConstantData->else->if->new->NumberConstantData->hash->put
+ConstantPool#write(Environment, DataOutputStream):::Write to output:::list->hash->size->new->ConstantPoolDataArr->keys->new->StringArr->index->count->for->n->for->n->out->writeShort->for->n
+ConstantPoolData#write(Environment, DataOutputStream, ConstantPool):::Write the constant to the output stream:::
+ConstantPoolData#order():::Return the order of the constant:::return
+ConstantPoolData#width():::Return the number of entries that it takes up in the constant pool:::return
+FieldConstantData#write(Environment, DataOutputStream, ConstantPool):::Write the constant to the output stream:::if->field->isMethod->if->field->getClassDefinition->isInterface->out->writeByte->else->out->writeByte->else->out->writeByte->out->tab->field->getClassDeclaration->index->writeShort->out->tab->index->writeShort
+FieldConstantData#order():::Return the order of the constant:::return
+Instruction#getOpcode():::Accessor:::return
+Instruction#optimize(Environment):::Optimize:::switch->if->env->debug_vars->break->lbl->lbl->getDestination->if->break->if->env->opt->switch->break->break->getDestination->if->break->if->switch->break->break->break->break->break->break->break->break->break->getDestination->if->break->if->switch->break->break->break->break->break->break->break->break->break->sw->getDestination->for->e->keys->e->hasMoreElements->range->entries->size->tableSize->lookupSize->if->else->break
+Instruction#collect(ConstantPool):::Collect constants into the constant table:::switch->if->field->tab->field->getName->toString->put->tab->field->getType->getTypeSignature->put->return->tab->put->return->tab->put->return->tab->put->return->if->v->intValue->if->return->else->if->return->else->if->return->else->if->v->floatValue->if->if->Float->floatToIntBits->return->else->if->return->else->if->return->tab->put->return->if->v->longValue->if->return->else->if->return->else->if->v->doubleValue->if->if->Double->doubleToLongBits->return->else->if->return->tab->put->return->for->e->elements->e->hasMoreElements->return->if->tab->put->return
+Instruction#balance():::Balance the stack:::switch->return->return->return->return->return->return->return->return->return->getType->stackSize->return->getType->stackSize->return->getType->stackSize->return->getType->stackSize->return->getType->getReturnType->stackSize->getType->stackSize->return->getType->getReturnType->stackSize->getType->stackSize->throw->toString->new->CompilerError
+Instruction#size(ConstantPool):::Return the size of the instruction:::switch->return->return->return->if->tab->index->return->else->return->v->intValue->if->if->throw->toString->new->CompilerError->return->else->if->return->else->return->register->increment->if->throw->toString->new->CompilerError->if->return->else->return->v->intValue->if->if->throw->toString->new->CompilerError->return->else->if->return->else->return->v->intValue->if->if->throw->toString->new->CompilerError->return->else->return->return->return->return->sw->n->for->return->sw->n->for->return->size->if->return->else->return->return
+Instruction#write(DataOutputStream, ConstantPool):::Generate code:::switch->break->out->writeByte->out->intValue->writeByte->break->out->writeByte->out->writeByte->out->intValue->writeShort->break->out->writeByte->out->intValue->writeByte->break->out->writeByte->out->writeByte->out->intValue->writeShort->break->out->writeByte->out->intValue->writeShort->break->out->writeByte->out->tab->index->writeByte->break->out->writeByte->out->tab->index->writeShort->break->out->writeByte->out->writeByte->out->writeByte->break->out->writeByte->out->writeByte->out->writeShort->out->writeShort->break->out->writeByte->out->tab->index->writeShort->break->out->writeByte->out->tab->index->writeShort->out->writeByte->break->out->writeByte->out->tab->index->writeShort->out->getType->stackSize->writeByte->out->writeByte->break->out->writeByte->out->writeShort->break->out->writeByte->out->writeLong->break->sw->out->writeByte->for->n->out->writeInt->out->writeInt->out->writeInt->for->n->break->sw->out->writeByte->n->for->out->writeInt->out->size->writeInt->for->e->sw->sortedKeys->e->hasMoreElements->break->if->if->out->intValue->writeByte->else->out->tab->index->writeShort->return->out->writeByte->break
+Instruction#toString():::toString:::prefix->switch->return->getEndLabel->hashCode->return->register->increment->return->if->if->return->value->toString->else->if->return->value->hashCode->else->if->return->else->return->else->return
+Label#getDestination():::Get the final destination, eliminate jumps gotos, and jumps to labels that are immediately folowed by another label:::lbl->if->switch->getDestination->break->getDestination->break->if->inst->if->getDestination->if->if->intValue->else->new->Label->lbl->getDestination->break->if->if->intValue->new->Label->else->lbl->getDestination->break->break->return
+LocalVariableTable#define(MemberDefinition, int, int, int):::Define a new local variable:::if->return->for->i->if->newlocals->new->LocalVariableArr->System->arraycopy->new->LocalVariable
+LocalVariableTable#write(Environment, DataOutputStream, ConstantPool):::Write out the data.:::trim_ranges->out->writeShort->for->i
+NameAndTypeConstantData#write(Environment, DataOutputStream, ConstantPool):::Write the constant to the output stream:::out->writeByte->out->tab->index->writeShort->out->tab->index->writeShort
+NameAndTypeConstantData#order():::Return the order of the constant:::return
+NameAndTypeData#hashCode():::Hashcode:::return->field->getName->hashCode->field->getType->hashCode
+NameAndTypeData#equals(Object):::Equality:::if->nt->return->field->getName->getName->equals->field->getType->getType->equals->return
+NameAndTypeData#toString():::Convert to string:::return->field->toString
+NumberConstantData#write(Environment, DataOutputStream, ConstantPool):::Write the constant to the output stream:::if->out->writeByte->out->num->intValue->writeInt->else->if->out->writeByte->out->num->longValue->writeLong->else->if->out->writeByte->out->num->floatValue->writeFloat->else->if->out->writeByte->out->num->doubleValue->writeDouble
+NumberConstantData#order():::Return the order of the constant:::return->width
+NumberConstantData#width():::Return the number of entries that it takes up in the constant pool:::return
+StringConstantData#write(Environment, DataOutputStream, ConstantPool):::Write the constant to the output stream:::out->writeByte->out->writeUTF
+StringConstantData#order():::Return the order of the constant:::return
+StringConstantData#toString():::toString:::return->str->hashCode
+StringExpressionConstantData#write(Environment, DataOutputStream, ConstantPool):::Write the constant to the output stream:::out->writeByte->out->tab->str->getValue->index->writeShort
+StringExpressionConstantData#order():::Return the order of the constant:::return
+StringExpressionConstantData#toString():::toString:::return->str->getValue->str->getValue->hashCode
+SwitchData#get(int):::Get a label:::return->tab->get
+SwitchData#get(Integer):::Get a label:::return->tab->get
+SwitchData#add(int, Label):::Add a label:::if->tab->size->else->if->if->tab->Integer->valueOf->put
+SwitchData#getDefaultLabel():::Get the default label:::return
+SwitchData#sortedKeys():::Return the keys of this enumaration sorted in ascending order:::return->new->SwitchDataEnumeration
+SwitchDataEnumeration#hasMoreElements():::Are there more keys to return?:::return
+SwitchDataEnumeration#nextElement():::Return the next key.:::return
+TryData#add(Object):::Add a label:::cd->new->CatchData->catches->addElement->return
+TryData#getCatch(int):::Get a label:::return->catches->elementAt
+TryData#getEndLabel():::Get the default label:::return

@@ -1,0 +1,56 @@
+ClassTranslator#translate(ClassFile, Map):::Create a new ClassFile from cf, such that for all entries k&nbsp;-\&gt;&nbsp;v in translations, each occurrence of k in cf will be replaced by v:::cf2->translations->get->if->constant_pool2->translate->fields2->translate->methods2->translateMethods->attributes2->translateAttributes->if->else->new->ClassFile->translations->put->return
+ClassWriter#write(ClassFile, File):::Write a ClassFile data structure to a file.:::try->f_out->new->FileOutputStream->write->catch->finally
+ClassWriter#write(ClassFile, OutputStream):::Write a ClassFile data structure to a stream.:::out->reset->write->out->writeTo
+ConstantPool.CPInfo#size():::The number of slots in the constant pool used by this entry:::return
+ConstantPool.CONSTANT_Class_info#getName():::Get the raw value of the class referenced by this constant pool entry:::return->cp->getUTF8Value
+ConstantPool.CONSTANT_Class_info#getBaseName():::If this constant pool entry identifies either a class or interface type, or a possibly multi-dimensional array of a class of interface type, return the name of the class or interface in internal form:::name->getName->if->name->startsWith->index->name->indexOf->if->return->return->name->name->length->substring->else->return
+ConstantPool.CONSTANT_Module_info#getName():::Get the raw value of the module name referenced by this constant pool entry:::return->cp->getUTF8Value
+ConstantPool.CONSTANT_Package_info#getName():::Get the raw value of the package name referenced by this constant pool entry:::return->cp->getUTF8Value
+Dependencies.ClassFileReader#getClassFile(String):::Get the ClassFile object for a specified class.:::
+Dependencies.Recorder#addDependency(Dependency):::Record a dependency that has been found.:::
+Dependencies#getDefaultFinder():::Get the  default finder used to locate the dependencies for a class.:::return->new->APIDependencyFinder
+Dependencies#getAPIFinder(int):::Get a finder used to locate the API dependencies for a class:::return->new->APIDependencyFinder
+Dependencies#getClassDependencyFinder():::Get a finder to do class dependency analysis.:::return->new->ClassDependencyFinder
+Dependencies#getFinder():::Get the finder used to locate the dependencies for a class.:::if->getDefaultFinder->return
+Dependencies#setFinder(Finder):::Set the finder used to locate the dependencies for a class.:::Objects->requireNonNull
+Dependencies#getDefaultFilter():::Get the default filter used to determine included when searching the transitive closure of all the dependencies:::return->DefaultFilter->instance
+Dependencies#getRegexFilter(Pattern):::Get a filter which uses a regular expression on the target's class name to determine if a dependency is of interest.:::return->new->TargetRegexFilter
+Dependencies#getPackageFilter(Set, boolean):::Get a filter which checks the package of a target's class name to determine if a dependency is of interest:::return->new->TargetPackageFilter
+Dependencies#getFilter():::Get the filter used to determine the dependencies included when searching the transitive closure of all the dependencies:::if->getDefaultFilter->return
+Dependencies#setFilter(Filter):::Set the filter used to determine the dependencies included when searching the transitive closure of all the dependencies.:::Objects->requireNonNull
+Dependencies#findAllDependencies(ClassFileReader, Set, boolean):::Find the dependencies of a class, using the current Dependencies#getFinder finder and Dependencies#getFilter filter:::results->new->HashSet<>->r->results->add->findAllDependencies->return
+Dependencies#findAllDependencies(ClassFileReader, Set, boolean, Recorder):::Find the dependencies of a class, using the current Dependencies#getFinder finder and Dependencies#getFilter filter:::doneClasses->new->HashSet<>->getFinder->getFilter->deque->new->LinkedList<>->className->while->deque->poll->doneClasses->add->cf->classFinder->getClassFile->foreach->finder->findDependencies->recorder->addDependency->if->filter->accepts->cn->d->getTarget->getClassName->if->doneClasses->contains->deque->add
+Dependency.Filter#accepts(Dependency):::Return true if the dependency is of interest.:::
+Dependency.Finder#findDependencies(ClassFile):::Find the immediate dependencies of a given class file.:::
+Dependency.Location#getName():::Get the name of the class containing the location:::
+Dependency.Location#getClassName():::Get the fully-qualified name of the class containing the location.:::
+Dependency.Location#getPackageName():::Get the package name of the class containing the location.:::
+Dependency#getOrigin():::Get the location that has the dependency.:::
+Dependency#getTarget():::Get the location that is being depended upon.:::
+Instruction.KindVisitor#visitNoOperands(Instruction, P):::See Kind#NO_OPERANDS, Kind#WIDE_NO_OPERANDS.:::
+Instruction.KindVisitor#visitArrayType(Instruction, TypeKind, P):::See Kind#ATYPE.:::
+Instruction.KindVisitor#visitBranch(Instruction, int, P):::See Kind#BRANCH, Kind#BRANCH_W.:::
+Instruction.KindVisitor#visitConstantPoolRef(Instruction, int, P):::See Kind#CPREF, Kind#CPREF_W, Kind#WIDE_CPREF_W.:::
+Instruction.KindVisitor#visitConstantPoolRefAndValue(Instruction, int, int, P):::See Kind#CPREF_W_UBYTE, Kind#CPREF_W_UBYTE_ZERO, Kind#WIDE_CPREF_W_SHORT.:::
+Instruction.KindVisitor#visitLocal(Instruction, int, P):::See Kind#LOCAL, Kind#WIDE_LOCAL.:::
+Instruction.KindVisitor#visitLocalAndValue(Instruction, int, int, P):::See Kind#LOCAL_BYTE.:::
+Instruction.KindVisitor#visitLookupSwitch(Instruction, int, int, int[], int[], P):::See Kind#DYNAMIC.:::
+Instruction.KindVisitor#visitTableSwitch(Instruction, int, int, int, int[], P):::See Kind#DYNAMIC.:::
+Instruction.KindVisitor#visitValue(Instruction, int, P):::See Kind#BYTE, Kind#SHORT.:::
+Instruction.KindVisitor#visitUnknown(Instruction, P):::Instruction is unrecognized.:::
+Instruction#getPC():::Get the position of the instruction within the bytecode array.:::return
+Instruction#getByte(int):::Get a byte value, relative to the start of this instruction.:::return
+Instruction#getUnsignedByte(int):::Get an unsigned byte value, relative to the start of this instruction.:::return->getByte
+Instruction#getShort(int):::Get a 2-byte value, relative to the start of this instruction.:::return->getByte->getUnsignedByte
+Instruction#getUnsignedShort(int):::Get a unsigned 2-byte value, relative to the start of this instruction.:::return->getShort
+Instruction#getInt(int):::Get a 4-byte value, relative to the start of this instruction.:::return->getShort->getUnsignedShort
+Instruction#getOpcode():::Get the Opcode for this instruction, or null if the instruction is unrecognized.:::b->getUnsignedByte->switch->return->Opcode->getUnsignedByte->get->return->Opcode->get
+Instruction#getMnemonic():::Get the mnemonic for this instruction, or a default string if the instruction is unrecognized.:::opcode->getOpcode->if->return->getUnsignedByte->else->return->opcode->toString->toLowerCase
+Instruction#length():::Get the length, in bytes, of this instruction, including the opcode and all its operands.:::opcode->getOpcode->if->return->switch->pad->align->low->getInt->high->getInt->return->pad->align->npairs->getInt->return->return
+Instruction#getKind():::Get the Kind of this instruction.:::opcode->getOpcode->return
+Instruction#accept(KindVisitor, P):::Invoke a method on the visitor according to the kind of this instruction, passing in the decoded operands for the instruction.:::switch->getKind->return->visitor->visitNoOperands->return->visitor->TypeKind->getUnsignedByte->get->visitArrayType->return->visitor->getShort->visitBranch->return->visitor->getInt->visitBranch->return->visitor->getByte->visitValue->return->visitor->getUnsignedByte->visitConstantPoolRef->return->visitor->getUnsignedShort->visitConstantPoolRef->return->visitor->getUnsignedShort->getUnsignedByte->visitConstantPoolRefAndValue->switch->getOpcode->pad->align->default_->getInt->low->getInt->high->getInt->values->new->intArr->for->i->return->visitor->visitTableSwitch->pad->align->default_->getInt->npairs->getInt->matches->new->intArr->offsets->new->intArr->for->i->return->visitor->visitLookupSwitch->throw->new->IllegalStateException->return->visitor->getUnsignedByte->visitLocal->return->visitor->getUnsignedByte->getByte->visitLocalAndValue->return->visitor->getShort->visitValue->return->visitor->visitNoOperands->return->visitor->getUnsignedShort->visitLocal->return->visitor->getUnsignedShort->visitConstantPoolRef->return->visitor->getUnsignedShort->getUnsignedByte->visitConstantPoolRefAndValue->return->visitor->getUnsignedShort->getShort->visitLocalAndValue->return->visitor->visitUnknown->throw->new->IllegalStateException
+ReferenceFinder.Filter#accept(ConstantPool, CPRefInfo):::Decides if the given CPRefInfo entry should be accepted or filtered.:::
+ReferenceFinder.Visitor#visit(ClassFile, Method, List):::Invoked for a method containing one or more accepted CPRefInfo entries:::
+ReferenceFinder#parse(ClassFile):::Parses a given ClassFile and invoke the visitor if there is any reference to the constant pool entries referencing field, method, or interface method that are accepted:::cprefs->new->ArrayList<>->index->foreach->entries->if->cpInfo->accept->cprefs->add->cpInfo->size->if->cprefs->isEmpty->return->foreach->ids->new->HashSet<>->c_attr->get->if->foreach->c_attr->getInstructions->idx->instr->accept->if->ids->add->if->ids->size->refInfos->ids->size->new->ArrayList<>->foreach->refInfos->get->cast->add->visitor->visit->return
+TypeAnnotation.Position#emitToClassfile():::Indicates whether the target tree of the annotation has been optimized away from classfile or not.:::return->type->isLocal
+TypeAnnotation.Position#getTypePathFromBinary(List):::Decode the binary representation for a type path and set the location field.:::loc->list->size->new->ArrayList<>->idx->while->list->size->if->list->size->throw->new->AssertionError->loc->TypePathEntry->list->get->list->get->fromBinary->add->return

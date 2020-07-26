@@ -1,0 +1,118 @@
+AbstractDataLine#available():::This implementation always returns 0.:::return
+AbstractDataLine#drain():::This implementation does nothing.:::if->Printer->trace
+AbstractDataLine#flush():::This implementation does nothing.:::if->Printer->trace
+AbstractDataLine#setBufferSize(int):::This implementation does NOT change the buffer size:::return->getBufferSize
+AbstractDataLine#getLevel():::This implementation returns AudioSystem.NOT_SPECIFIED.:::return
+AbstractDataLine#setActive(boolean):::This method sets the active state and generates events if it changes.:::if->Printer->trace->synchronized->if
+AbstractDataLine#setStarted(boolean):::This method sets the started state and generates events if it changes.:::if->Printer->trace->sendEvents->position->getLongFramePosition->synchronized->if->if->if->new->LineEvent->sendEvents->else->new->LineEvent->sendEvents->if->Printer->trace
+AbstractDataLine#setEOM():::This method generates a STOP event and sets the started state to false:::if->Printer->trace->setStarted->if->Printer->trace
+AbstractDataLine#open():::Try to open the line with the current format and buffer size values:::if->Printer->getClass->getName->trace->open->if->Printer->getClass->getName->trace
+AbstractDataLine#close():::This should also stop the line:::synchronized->if->Printer->getClass->getName->trace->if->isOpen->stop->setOpen->implClose->mixer->close->if->Printer->getClass->getName->trace
+AbstractLine#removeLineListener(LineListener):::Removes an audio listener.:::listeners->removeElement
+AbstractLine#getControls():::Obtains the set of controls supported by the line:::returnedArray->new->ControlArr->for->i->return
+AbstractLine#setOpen(boolean):::This method sets the open state and generates events if it changes.:::if->Printer->getClass->getName->trace->sendEvents->position->getLongFramePosition->synchronized->if->if->if->new->LineEvent->sendEvents->else->new->LineEvent->sendEvents->if->Printer->getClass->getName->trace
+AbstractLine#sendEvents(LineEvent):::Send line events.:::getEventDispatcher->sendAudioEvents
+AbstractLine#getFramePosition():::This is an error in the API: getFramePosition should return a long value:::return->getLongFramePosition
+AbstractLine#getLongFramePosition():::Return the frame position in a long value This implementation returns AudioSystem.NOT_SPECIFIED.:::return
+AbstractMidiDevice#open():::Open the device from an application program:::if->Printer->trace->synchronized->doOpen->if->Printer->trace
+AbstractMidiDevice#closeInternal(Object):::Close the device for an object that implicitely opened it:::if->Printer->trace->synchronized->if->getOpenKeepingObjects->remove->if->if->doClose->if->Printer->trace
+AbstractMidiDevice#getMicrosecondPosition():::This implementation always returns -1:::return
+AbstractMidiDevice#getMaxReceivers():::Return the maximum number of Receivers supported by this device:::if->hasReceivers->return->else->return
+AbstractMidiDevice#getMaxTransmitters():::Return the maximum number of Transmitters supported by this device:::if->hasTransmitters->return->else->return
+AbstractMidiDevice#getReceiver():::Retrieve a Receiver for this device:::receiver->synchronized->createReceiver->getReceiverList->add->return
+AbstractMidiDevice#getTransmitter():::This implementation uses createTransmitter, which may throw an exception:::transmitter->synchronized->createTransmitter->getTransmitterList->add->return
+AbstractMidiDevice#getReceiverReferenceCounting():::Retrieve a Receiver and open the device implicitly:::receiver->synchronized->getReceiver->AbstractMidiDevice.this->openInternal->return
+AbstractMidiDevice#getTransmitterReferenceCounting():::Retrieve a Transmitter and open the device implicitly:::transmitter->synchronized->getTransmitter->AbstractMidiDevice.this->openInternal->return
+AbstractMidiDevice#hasReceivers():::Returns if this device supports Receivers:::return
+AbstractMidiDevice#createReceiver():::Create a Receiver object:::throw->new->MidiUnavailableException
+AbstractMidiDevice#getTransmitterList():::Return the internal list of Transmitters, possibly creating it first.:::synchronized->if->new->TransmitterList->return
+AbstractMidiDevice#hasTransmitters():::Returns if this device supports Transmitters:::return
+AbstractMidiDevice#createTransmitter():::Create a Transmitter object:::throw->new->MidiUnavailableException
+AbstractMidiDevice#finalize():::close this device if discarded by the garbage collector.:::close
+AbstractMidiDevice.AbstractReceiver#send(MidiMessage, long):::Deliver a MidiMessage:::if->throw->new->IllegalStateException->implSend
+AbstractMidiDevice.AbstractReceiver#close():::Close the Receiver:::synchronized->AbstractMidiDevice.this->getReceiverList->remove->AbstractMidiDevice.this->closeInternal
+AbstractMidiDevice.BasicTransmitter#close():::Close the Transmitter:::AbstractMidiDevice.this->closeInternal->if->tlist->receiverChanged->tlist->remove
+AbstractMidiDevice.TransmitterList#close():::closes all transmitters and empties the list:::synchronized->for->i->transmitters->size->transmitters->clear->if->Printer->trace
+AbstractMidiDevice.TransmitterList#sendMessage(int, long):::Send this message to all receivers status = packedMessage & 0xFF data1 = (packedMessage & 0xFF00) >> 8; data1 = (packedMessage & 0xFF0000) >> 16;:::try->synchronized->size->transmitters->size->if->if->if->Printer->println->midiOutReceiver->sendPackedMidiMessage->else->if->Printer->println->for->i->catch->finally
+AbstractMidiDevice.TransmitterList#sendMessage(MidiMessage, long):::Send this message to all transmitters.:::if->getPackedMsg->sendMessage->return->synchronized->size->transmitters->size->if->if->if->Printer->println->midiOutReceiver->send->else->if->Printer->println->for->i
+AbstractMixer#synchronize(Line[], boolean):::Default implementation always throws an exception.:::throw->new->IllegalArgumentException
+AbstractMixer#unsynchronize(Line[]):::Default implementation always throws an exception.:::throw->new->IllegalArgumentException
+AbstractMixer#isSynchronizationSupported(Line[], boolean):::Default implementation always returns false.:::return
+AbstractMixer#open():::This implementation tries to open the mixer with its current format and buffer size settings.:::open
+AbstractMixer#open(boolean):::This implementation tries to open the mixer with its current format and buffer size settings.:::if->Printer->trace->if->isOpen->implOpen->setOpen->if->if->Printer->trace
+AbstractMixer#open(Line):::The default implementation of this method just determines whether this line is a source or target line, calls open(no-arg) on the mixer, and adds the line to the appropriate vector:::if->Printer->trace->if->this->equals->if->Printer->trace->return->if->line->getLineInfo->isSourceLine->if->sourceLines->contains->open->sourceLines->addElement->else->if->line->getLineInfo->isTargetLine->if->targetLines->contains->open->targetLines->addElement->else->if->Printer->err->if->Printer->trace
+AbstractMixer#close(Line):::Removes this line from the list of open source lines and open target lines, if it exists in either:::if->Printer->trace->if->this->equals->if->Printer->trace->return->sourceLines->removeElement->targetLines->removeElement->if->Printer->sourceLines->size->debug->if->Printer->targetLines->size->debug->if->sourceLines->isEmpty->targetLines->isEmpty->if->Printer->trace->close->if->Printer->trace
+AbstractMixer#close():::Close all lines and then close this mixer.:::if->Printer->trace->if->isOpen->localLines->getSourceLines->for->i->getTargetLines->for->i->implClose->setOpen->if->Printer->trace
+AbstractMixer#start(Line):::Starts the mixer.:::if->Printer->trace->if->this->equals->if->Printer->trace->return->if->if->Printer->debug->implStart->if->Printer->trace
+AbstractMixer#stop(Line):::Stops the mixer if this was the last running line.:::if->Printer->trace->if->this->equals->if->Printer->trace->return->localSourceLines->sourceLines->clone->for->i->localSourceLines->size->localTargetLines->targetLines->clone->for->i->localTargetLines->size->if->Printer->debug->implStop->if->Printer->trace
+AbstractMixer#isSourceLine(Line.Info):::Determines whether this is a source line for this mixer:::for->i->return
+AbstractMixer#isTargetLine(Line.Info):::Determines whether this is a target line for this mixer:::for->i->return
+AbstractMixer#getLineInfo(Line.Info):::Returns the first complete Line.Info object it finds that matches the one specified, or null if no matching Line.Info object is found.:::if->return->for->i->for->i->return
+AudioSynthesizer#getFormat():::Obtains the current format (encoding, sample rate, number of channels, etc.) of the synthesizer audio data:::
+AudioSynthesizer#getPropertyInfo(Map):::Gets information about the possible properties for the synthesizer.:::
+AudioSynthesizer#open(SourceDataLine, Map):::Opens the synthesizer and starts rendering audio into SourceDataLine:::
+AudioSynthesizer#openStream(AudioFormat, Map):::Opens the synthesizer and renders audio into returned AudioInputStream:::
+AutoClosingClip#isAutoClosing():::Indicates whether this clip instance is auto closing:::
+AutoClosingClip#setAutoClosing(boolean):::Sets whether this Clip instance is auto closing or not:::
+AutoConnectSequencer#setAutoConnect(Receiver):::Set the receiver that this device is auto-connected:::
+DataPusher#run():::Write data to the source data line.:::buffer->useStream->if->new->byteArr->else->while->if->if->Printer->debug->try->synchronized->wait->catch->finally->if->Printer->debug->continue->if->toWrite->if->try->ais->read->catch->finally->else->if->if->if->if->Printer->debug->if->if->Printer->debug->continue->if->Printer->debug->source->drain->continue->if->Printer->debug->bytesWritten->source->write->if->Printer->debug->if->Printer->debug->if->Printer->trace->source->flush->if->Printer->trace->source->stop->if->Printer->trace->source->flush->if->Printer->trace->source->close->synchronized->notifyAll->if->Printer->debug
+EventDispatcher#start():::This start() method starts an event thread if one is not already active.:::if->JSSecurityManager->createThread
+EventDispatcher#processEvent(EventInfo):::Invoked when there is at least one event in the queue:::count->eventInfo->getListenerCount->if->eventInfo->getEvent->event->eventInfo->getEvent->if->Printer->debug->for->i->return->if->eventInfo->getEvent->event->eventInfo->getEvent->for->i->return->if->eventInfo->getEvent->event->eventInfo->getEvent->status->event->getStatus->if->for->i->return->Printer->eventInfo->getEvent->err
+EventDispatcher#dispatchEvents():::Wait until there is something in the event queue to process:::eventInfo->synchronized->try->if->eventQueue->size->if->autoClosingClips->size->lineMonitors->size->waitTime->if->lineMonitors->size->wait->else->wait->catch->finally->if->eventQueue->size->eventQueue->remove->if->processEvent->else->if->autoClosingClips->size->closeAutoClosingClips->if->lineMonitors->size->monitorLines
+EventDispatcher#run():::A loop to dispatch events.:::while->try->dispatchEvents->catch->if->t->printStackTrace->finally
+EventDispatcher#sendAudioEvents(Object, List):::Send audio and MIDI events.:::if->listeners->size->return->start->eventInfo->new->EventInfo->postEvent
+EventDispatcher#autoClosingClipOpened(AutoClosingClip):::called from auto-closing clips when one of their open() method is called.:::if->Printer->debug->index->synchronized->getAutoClosingClipIndex->if->if->Printer->debug->autoClosingClips->new->ClipInfo->add->if->synchronized->notifyAll->if->Printer->autoClosingClips->size->debug
+EventDispatcher#autoClosingClipClosed(AutoClosingClip):::called from auto-closing clips when their closed() method is called.:::synchronized->index->getAutoClosingClipIndex->if->autoClosingClips->remove
+EventDispatcher#addLineMonitor(LineMonitor):::Add this LineMonitor instance to the list of monitors.:::if->Printer->trace->synchronized->if->lineMonitors->indexOf->if->Printer->trace->return->if->Printer->debug->lineMonitors->add->synchronized->notifyAll->if->Printer->lineMonitors->size->debug
+EventDispatcher#removeLineMonitor(LineMonitor):::Remove this LineMonitor instance from the list of monitors.:::if->Printer->trace->synchronized->if->lineMonitors->indexOf->if->Printer->trace->return->if->Printer->debug->lineMonitors->remove->if->Printer->lineMonitors->size->debug
+EventDispatcher.LineMonitor#checkLine():::Called by event dispatcher in regular intervals.:::
+FastShortMessage#clone():::Creates a new object of the same class and with the same contents as this object.:::try->return->new->FastShortMessage->catch->finally->return
+FastSysexMessage#getReadOnlyMessage():::The returned array may be larger than this message is:::return
+JDK13Services#getProviders(Class):::Obtains a List containing installed instances of the providers for the requested service:::providers->if->equals->equals->equals->equals->equals->equals->equals->equals->new->ArrayList<>->else->JSSecurityManager->getProviders->return->Collections->unmodifiableList
+JDK13Services#getDefaultProviderClassName(Class):::Obtain the provider class name part of a default provider property.:::value->defaultProviderSpec->getDefaultProvider->if->hashpos->defaultProviderSpec->indexOf->if->else->if->defaultProviderSpec->substring->else->return
+JDK13Services#getDefaultInstanceName(Class):::Obtain the instance name part of a default provider property.:::value->defaultProviderSpec->getDefaultProvider->if->hashpos->defaultProviderSpec->indexOf->if->defaultProviderSpec->length->defaultProviderSpec->substring->return
+JSSecurityManager#loadProperties(Properties):::Load properties from a file:::customFile->AccessController->System->getProperty->doPrivileged->if->if->loadPropertiesImpl->return->AccessController->home->System->getProperty->if->throw->new->Error->loadPropertiesImpl->return->doPrivileged
+JSSecurityManager#createThread(Runnable, String, boolean, int, boolean):::Create a Thread in the current ThreadGroup.:::name->thread->new->Thread->thread->setDaemon->if->thread->setPriority->if->thread->start->return
+MidiDeviceReceiverEnvelope#getReceiver():::Obtains the receiver enveloped by this MidiDeviceReceiverEnvelope object.:::return
+MidiDeviceTransmitterEnvelope#getTransmitter():::Obtains the transmitter enveloped by this MidiDeviceTransmitterEnvelope object.:::return
+MidiInDevice#callbackShortMessage(int, long):::Callback from native code when a short MIDI event is received from hardware.:::if->return->getTransmitterList->sendMessage
+MidiOutDevice#hasReceivers():::Returns if this device supports Receivers:::return
+MidiOutDevice.MidiOutReceiver#sendPackedMidiMessage(int, long):::shortcut for the Sun implementation:::if->isOpen->nSendShortMessage
+MidiUtils#unsupportedDevice(MidiDevice.Info):::Returns an exception which should be thrown if MidiDevice is unsupported.:::return->String->format->new->IllegalArgumentException
+MidiUtils#isMetaEndOfTrack(MidiMessage):::return true if the passed message is Meta End Of Track:::if->midiMsg->getLength->midiMsg->getStatus->return->msg->midiMsg->getMessage->return
+MidiUtils#isMetaTempo(MidiMessage):::return if the given message is a meta tempo message:::if->midiMsg->getLength->midiMsg->getStatus->return->msg->midiMsg->getMessage->return
+MidiUtils#getTempoMPQ(MidiMessage):::parses this message for a META tempo message and returns the tempo in MPQ, or -1 if this isn't a tempo message:::if->midiMsg->getLength->midiMsg->getStatus->return->msg->midiMsg->getMessage->if->return->tempo->return
+MidiUtils#convertTempo(double):::converts<br> 1 - MPQ-Tempo to BPM tempo<br> 2 - BPM tempo to MPQ tempo<br>:::if->return
+MidiUtils#ticks2microsec(long, double, int):::convert tick to microsecond with given tempo:::return
+MidiUtils#microsec2ticks(long, double, int):::convert tempo to microsecond with given tempo Does not take tempo changes into account:::return
+MidiUtils#tick2microsecond(Sequence, long, TempoCache):::Given a tick, convert to microsecond:::if->seq->getDivisionType->seconds->seq->getDivisionType->seq->getResolution->return->if->new->TempoCache->resolution->seq->getResolution->ticks->tempos->cacheCount->snapshotIndex->snapshotMicro->us->if->if->i->while->ticks2microsec->ticks2microsec->return
+MidiUtils#microsecond2tick(Sequence, long, TempoCache):::Given a microsecond time, convert to tick:::if->seq->getDivisionType->dTick->seq->getDivisionType->seq->getResolution->tick->if->cache->getTempoMPQAt->return->if->new->TempoCache->ticks->tempos->cacheCount->resolution->seq->getResolution->us->tick->newReadPos->i->if->while->nextTime->ticks2microsec->if->break->microsec2ticks->if->Printer->debug->return
+MidiUtils#tick2index(Track, long):::Binary search for the event indexes of the track:::ret->if->low->high->track->size->while->t->track->get->getTick->if->break->else->if->if->break->else->return
+ModelOscillator#getAttenuation():::Attenuation is in cB.:::
+PCMtoPCMCodec.PCMtoPCMCodecStream#read():::Note that this only works for sign conversions:::temp->tempbyte->if->if->super->read->if->return->return->else->throw->new->IOException->else->throw->new->IOException
+Platform#initialize():::Dummy method for forcing initialization.:::if->Printer->trace
+Platform#isBigEndian():::Determine whether the system is big-endian.:::return
+RealTimeSequencer#sendMetaEvents(MidiMessage):::Send midi player events:::if->metaEventListeners->size->return->getEventDispatcher->sendAudioEvents
+RealTimeSequencer#sendControllerEvents(MidiMessage):::Send midi player events.:::size->controllerEventListeners->size->if->return->if->if->Printer->debug->return->msg->controller->msg->getData1->sendToListeners->new->ArrayList<>->for->i->getEventDispatcher->sendAudioEvents
+RealTimeSequencer.PlayThread#start():::start thread and pump:::if->dataPump->hasCachedTempo->tickPos->getTickPosition->dataPump->tempoCache->getTempoMPQAt->setTempoMPQ->dataPump->clearNoteOnCache->dataPump->resetLoopCount->synchronized->lock->notifyAll->if->Printer->debug
+RealTimeSequencer.PlayThread#run():::Main process loop driving the media flow:::while->EOM->wasRunning->while->dataPump->pump->try->Thread->sleep->catch->finally->if->Printer->debug->if->Printer->debug->if->Printer->debug->if->Printer->debug->playThreadImplStop->if->dataPump->notesOff->if->dataPump->sequence->getTickLength->setTickPos->message->new->MetaMessage->try->message->new->byteArr->setMessage->catch->finally->sendMetaEvents->synchronized->lock->notifyAll->while->try->lock->wait->catch->finally->if->Printer->debug
+ReferenceCountingDevice#getReceiverReferenceCounting():::Retrieve a Receiver that opens the device implicitly:::
+ReferenceCountingDevice#getTransmitterReferenceCounting():::Retrieve a Transmitter that opens the device implicitly:::
+StandardFileFormat#getLongFrameLength():::Obtains the length of the audio data contained in the file, expressed in sample frames:::return
+StandardFileFormat#getLongByteLength():::Obtains the size in bytes of the entire audio file (not just its audio data):::return
+StandardMidiFileWriter#getMidiFileTypes(Sequence):::Obtains the file types that this provider can write from the sequence specified.:::typesArray->tracks->sequence->getTracks->if->new->intArr->else->new->intArr->return
+SunFileReader#getAudioFileFormatImpl(InputStream):::Obtains the audio file format of the input stream provided:::
+SunFileReader#rllong(DataInputStream):::rllong Protected helper method to read 64 bits and changing the order of each bytes.:::b1->b2->b3->b4->i->dis->readInt->return
+SunFileReader#big2little(int):::big2little Protected helper method to swap the order of bytes in a 32 bit int:::b1->b2->b3->b4->return
+SunFileReader#rlshort(DataInputStream):::rlshort Protected helper method to read 16 bits value:::s->high->low->dis->readShort->return
+SunFileReader#big2littleShort(short):::big2little Protected helper method to swap the order of bytes in a 16 bit short:::high->low->return
+SunFileReader#calculatePCMFrameSize(int, int):::Calculates the frame size for PCM frames:::try->return->Math->multiplyExact->catch->return->finally
+SunFileWriter#rllong(DataInputStream):::rllong Protected helper method to read 64 bits and changing the order of each bytes.:::b1->b2->b3->b4->i->dis->readInt->return
+SunFileWriter#big2little(int):::big2little Protected helper method to swap the order of bytes in a 32 bit int:::b1->b2->b3->b4->return
+SunFileWriter#rlshort(DataInputStream):::rlshort Protected helper method to read 16 bits value:::s->high->low->dis->readShort->return
+SunFileWriter#big2littleShort(short):::big2little Protected helper method to swap the order of bytes in a 16 bit short:::high->low->return
+Toolkit#getUnsigned8(byte[], int, int):::Converts bytes from signed to unsigned.:::for->i
+Toolkit#getByteSwapped(byte[], int, int):::Swaps bytes.:::tempByte->for->i
+Toolkit#linearToDB(float):::Linear to DB scale conversion.:::dB->Math->log->Math->log->return
+Toolkit#dBToLinear(float):::DB to linear scale conversion.:::linear->Math->pow->return
+Toolkit#validateBuffer(int, int):::Throws an exception if the buffer size does not represent an integral number of sample frames.:::if->return->throw->String->format->new->IllegalArgumentException

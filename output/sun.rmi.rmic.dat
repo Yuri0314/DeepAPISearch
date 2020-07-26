@@ -1,0 +1,68 @@
+BatchEnvironment#createClassPath(String):::Create a ClassPath object for rmic from a class path string.:::paths->classPaths->return
+BatchEnvironment#createClassPath(String, String):::Create a ClassPath object for rmic from the relevant command line options for class path and boot class path.:::path->new->Path->if->System->getProperty->if->path->addFiles->path->expandJarClassPaths->path->emptyPathDefault->if->System->getProperty->if->path->addFiles->return->path->path->size->new->StringArr->toArray->new->ClassPath
+BatchEnvironment#getMain():::Get the instance of Main which created this environment.:::return
+BatchEnvironment#getClassPath():::Get the ClassPath.:::return
+BatchEnvironment#addGeneratedFile(File):::Remember a generated source file generated so that it can be removed later, if appropriate.:::generatedFiles->addElement
+BatchEnvironment#deleteGeneratedFiles():::Delete all the generated source files made during the execution of this environment (those that have been registered with the "addGeneratedFile" method).:::synchronized->enumeration->generatedFiles->elements->while->enumeration->hasMoreElements->file->enumeration->nextElement->file->delete->generatedFiles->removeAllElements
+BatchEnvironment#shutdown():::Release resources, if any.:::super->shutdown
+BatchEnvironment#errorString(String, Object, Object, Object):::Return the formatted, localized string for a named error message and supplied arguments:::if->err->startsWith->err->startsWith->result->Main->arg0->toString->arg1->toString->arg2->toString->getText->if->err->startsWith->return->else->return->super->errorString
+Generator#parseArgs(String[], Main):::Examine and consume command line arguments.:::
+Generator#generate(BatchEnvironment, ClassDefinition, File):::Generate output:::
+IndentingWriter#write(int):::Write a single character.:::checkWrite->super->write
+IndentingWriter#write(char[], int, int):::Write a portion of an array of characters.:::if->checkWrite->super->write
+IndentingWriter#write(String, int, int):::Write a portion of a String.:::if->checkWrite->super->write
+IndentingWriter#newLine():::Write a line separator:::super->newLine
+IndentingWriter#checkWrite():::Check if an indent needs to be written before writing the next character:::if->i->while->super->write->while->super->write
+IndentingWriter#indentIn():::Increase the current indent by the indent step.:::
+IndentingWriter#indentOut():::Decrease the current indent by the indent step.:::if
+IndentingWriter#pI():::Indent in.:::indentIn
+IndentingWriter#pO():::Indent out.:::indentOut
+IndentingWriter#p(String):::Write string.:::write
+IndentingWriter#pln():::End current line.:::newLine
+IndentingWriter#pln(String):::Write string; end current line.:::p->pln
+IndentingWriter#plnI(String):::Write string; end current line; indent in.:::p->pln->pI
+IndentingWriter#pO(String):::Indent out; write string.:::pO->p
+IndentingWriter#pOln(String):::Indent out; write string; end current line.:::pO->pln
+IndentingWriter#pOlnI(String):::Indent out; write string; end current line; indent in:::pO->pln->pI
+IndentingWriter#p(Object):::Write Object.:::o->toString->write
+IndentingWriter#pln(Object):::Write Object; end current line.:::o->toString->p->pln
+IndentingWriter#plnI(Object):::Write Object; end current line; indent in.:::o->toString->p->pln->pI
+IndentingWriter#pO(Object):::Indent out; write Object.:::pO->o->toString->p
+IndentingWriter#pOln(Object):::Indent out; write Object; end current line.:::o->toString->pO->pln
+IndentingWriter#pOlnI(Object):::Indent out; write Object; end current line; indent in:::o->toString->pO->pln->pI
+Main#output(String):::Output a message.:::out->new->PrintStream->out->println
+Main#error(String):::Top level error message:::getText->output
+Main#usage():::Usage:::error
+Main#compile(String[]):::Run the compiler:::if->parseArgs->return->if->classes->size->usage->return->if->foreach->if->getText->output->break->return->doCompile
+Main#getDestinationDir():::Get the destination directory.:::return
+Main#parseArgs(String[]):::Parse the arguments for compile.:::System->currentTimeMillis->new->Vector<>->getArray->if->return->new->Vector<>->try->CommandLine->parse->catch->e->getMessage->error->return->e->new->PrintStream->printStackTrace->return->finally->for->i->for->i->if->generators->size->addGenerator->return
+Main#checkGeneratorArg(String[], int):::If this argument is for a generator, instantiate it, call parseArgs(...) and add generator to generators vector:::result->if->startsWith->arg->substring->toLowerCase->for->i->return
+Main#addGenerator(String):::Instantiate and add a generator to the generators array.:::gen->className->getString->if->error->return->try->Class->forName->newInstance->catch->error->return->finally->generators->addElement->envClass->env->getString->if->try->Class->forName->if->environmentClass->isAssignableFrom->envClass->asSubclass->else->if->envClass->isAssignableFrom->environmentClass->getName->envClass->getName->error->return->catch->error->return->finally->return
+Main#getArray(String, boolean):::Grab a resource string and parse it into an array of strings:::result->value->getString->if->if->error->return->else->return->new->StringArr->parser->new->StringTokenizer->count->parser->countTokens->new->StringArr->for->i->return
+Main#getEnv():::Get the correct type of BatchEnvironment:::classPath->BatchEnvironment->createClassPath->result->try->ctorArgTypes->ctorArgs->constructor->environmentClass->getConstructor->constructor->newInstance->result->reset->catch->environmentClass->getName->error->finally->return
+Main#doCompile():::Do the compile with the switches and files already supplied:::env->getEnv->noMemoryErrorString->getText->stackOverflowErrorString->getText->try->for->i->classes->size->if->compileAllClasses->catch->env->output->return->env->output->return->if->env->dump->env->error->ee->new->PrintStream->printStackTrace->if->env->dump->env->error->ee->new->PrintStream->printStackTrace->finally->env->flushErrors->status->if->msg->if->getText->else->getText->if->if->getText->else->getText->output->else->if->if->getText->output->else->getText->output->if->env->deleteGeneratedFiles->if->env->verbose->System->currentTimeMillis->Long->toString->getText->output->env->shutdown->return
+Main#main(String[]):::Main program:::compiler->new->Main->System->compiler->compile->exit
+Main#getString(String):::Return the string value of a named resource in the rmic.properties resource bundle:::if->initResources->if->try->return->resourcesExt->getString->catch->finally->try->return->resources->getString->catch->finally->return
+Names#stubFor(Identifier):::Return stub class name for impl class name.:::return->Identifier->lookup
+Names#skeletonFor(Identifier):::Return skeleton class name for impl class name.:::return->Identifier->lookup
+Names#mangleClass(Identifier):::If necessary, convert a class name to its mangled form, i.e:::if->className->isInner->return->mangled->Identifier->className->getFlatName->toString->replace->lookup->if->mangled->isInner->throw->new->Error->return->Identifier->className->getQualifier->lookup
+RemoteClass#forClass(BatchEnvironment, ClassDefinition):::Create a RemoteClass object representing the remote meta-information of the given class:::rc->new->RemoteClass->if->rc->initialize->return->else->return
+RemoteClass#getClassDefinition():::Return the ClassDefinition for this class.:::return
+RemoteClass#getName():::Return the name of the class represented by this object.:::return->implClassDef->getName
+RemoteClass#getRemoteInterfaces():::Return an array of ClassDefinitions representing all of the remote interfaces implemented by this class:::return->remoteInterfaces->clone
+RemoteClass#getRemoteMethods():::Return an array of RemoteClass.Method objects representing all of the remote methods implemented by this class, i.e:::return->remoteMethods->clone
+RemoteClass#getInterfaceHash():::Return the "interface hash" used to match a stub/skeleton pair for this class in the JDK 1.1 version of the stub/skeleton protocol.:::return
+RemoteClass#toString():::Return string representation of this object, consisting of the string "remote class " followed by the class name.:::return->implClassDef->getName->toString
+RemoteClass.Method#getMemberDefinition():::Return the definition of the actual class member corresponing to this method of a remote interface:::return
+RemoteClass.Method#getName():::Return the name of this method.:::return->memberDef->getName
+RemoteClass.Method#getType():::Return the type of this method.:::return->memberDef->getType
+RemoteClass.Method#getExceptions():::Return an array of the exception classes declared to be thrown by this remote method:::return->exceptions->clone
+RemoteClass.Method#getMethodHash():::Return the "method hash" used to identify this remote method in the JDK 1.2 version of the stub protocol.:::return
+RemoteClass.Method#toString():::Return the string representation of this method.:::return->memberDef->toString
+RemoteClass.Method#getOperationString():::Return the string representation of this method appropriate for the construction of a java.rmi.server.Operation object.:::return->memberDef->toString
+RemoteClass.Method#getNameAndDescriptor():::Return a string consisting of this method's name followed by its method descriptor, using the Java VM's notation for method descriptors (see section 4.3.3 of The Java Virtual Machine Specification).:::return->memberDef->getName->toString->memberDef->getType->getTypeSignature
+RemoteClass.Method#clone():::Cloning is supported by returning a shallow copy of this object.:::try->return->super->clone->catch->throw->new->Error->finally
+RMIGenerator#parseArgs(String[], Main):::Examine and consume command line arguments.:::explicitVersion->for->i->return
+RMIGenerator#generate(BatchEnvironment, ClassDefinition, File):::Generate the source files for the stub and/or skeleton classes needed by RMI for the given remote implementation class.:::remoteClass->RemoteClass->forClass->if->return->gen->try->new->RMIGenerator->catch->env->error->return->finally->gen->generate
+RMIGenerator#sourceFileForClass(Identifier, Identifier, File, BatchEnvironment):::Return the File object that should be used as the source file for the given Java class, using the supplied destination directory for the top of the package hierarchy.:::packageDir->Util->getOutputDirectoryFor->outputName->Names->mangleClass->getName->toString->outputFileName->return->new->File
+Util#getOutputDirectoryFor(Identifier, File, BatchEnvironment):::Return the directory that should be used for output for a given class.:::outputDir->className->theClass->getFlatName->toString->replace->qualifiedClassName->packagePath->packageName->theClass->getQualifier->toString->if->packageName->length->packageName->replace->if->if->new->File->ensureDirectory->else->else->workingDirPath->System->getProperty->workingDir->new->File->if->else->new->File->ensureDirectory->return

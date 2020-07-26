@@ -1,0 +1,60 @@
+Activatable#getID():::Returns the object's activation identifier:::return
+Activatable#register(ActivationDesc):::Register an object descriptor for an activatable remote object so that is can be activated on demand.:::id->ActivationGroup->getSystem->registerObject->return->getStub
+Activatable#inactive(ActivationID):::Informs the system that the object with the corresponding activation id is currently inactive:::return->ActivationGroup->currentGroup->inactiveObject
+Activatable#unregister(ActivationID):::Revokes previous registration for the activation descriptor associated with id:::ActivationGroup->getSystem->unregisterObject
+Activatable#exportObject(Remote, String, MarshalledObject, boolean, int):::Registers an activation descriptor (with the specified location, data, and restart mode) for the specified object, and exports that object with the specified port:::return->exportObject
+Activatable#exportObject(Remote, String, MarshalledObject, boolean, int, RMIClientSocketFactory, RMIServerSocketFactory):::Registers an activation descriptor (with the specified location, data, and restart mode) for the specified object, and exports that object with the specified port, and the specified client and server socket factories:::desc->obj->getClass->getName->new->ActivationDesc->system->ActivationGroup->getSystem->id->system->registerObject->try->exportObject->catch->try->system->unregisterObject->catch->finally->throw->finally->ActivationGroup->currentGroup->activeObject->return
+Activatable#exportObject(Remote, ActivationID, int):::Export the activatable remote object to the RMI runtime to make the object available to receive incoming calls:::return->new->ActivatableServerRef->exportObject
+Activatable#exportObject(Remote, ActivationID, int, RMIClientSocketFactory, RMIServerSocketFactory):::Export the activatable remote object to the RMI runtime to make the object available to receive incoming calls:::return->new->ActivatableServerRef->exportObject
+Activatable#unexportObject(Remote, boolean):::Remove the remote object, obj, from the RMI runtime:::return->unexportObject
+ActivationDesc#getGroupID():::Returns the group identifier for the object specified by this descriptor:::return
+ActivationDesc#getClassName():::Returns the class name for the object specified by this descriptor.:::return
+ActivationDesc#getLocation():::Returns the code location for the object specified by this descriptor.:::return
+ActivationDesc#getData():::Returns a "marshalled object" containing intialization/activation data for the object specified by this descriptor.:::return
+ActivationDesc#getRestartMode():::Returns the "restart" mode of the object associated with this activation descriptor.:::return
+ActivationDesc#equals(Object):::Compares two activation descriptors for content equality.:::if->desc->return->groupID->equals->className->equals->location->equals->data->equals->else->return
+ActivationDesc#hashCode():::Return the same hashCode for similar ActivationDescs.:::return->location->hashCode->groupID->hashCode->className->hashCode->data->hashCode
+ActivationException#getMessage():::Returns the detail message, including the message from the cause, if any, of this exception.:::if->return->super->getMessage->else->return->super->getMessage->detail->toString
+ActivationException#getCause():::Returns the cause of this exception:::return
+ActivationGroup#inactiveObject(ActivationID):::The group's inactiveObject method is called indirectly via a call to the Activatable.inactive method:::getMonitor->inactiveObject->return
+ActivationGroup#activeObject(ActivationID, Remote):::The group's activeObject method is called when an object is exported (either by Activatable object construction or an explicit call to Activatable.exportObject:::
+ActivationGroup#createGroup(ActivationGroupID, ActivationGroupDesc, long):::Create and set the activation group for the current VM:::security->System->getSecurityManager->if->security->checkSetFactory->if->throw->new->ActivationException->if->throw->new->ActivationException->try->groupClassName->desc->getClassName->cl->defaultGroupClass->if->groupClassName->defaultGroupClass->getName->equals->else->cl0->try->RMIClassLoader->desc->getLocation->loadClass->catch->throw->new->ActivationException->finally->if->isAssignableFrom->cl0->asSubclass->else->throw->cl0->getName->new->ActivationException->constructor->cl->getConstructor->newGroup->constructor->desc->getData->newInstance->id->getSystem->currSystem->activeGroup->catch->e->getTargetException->printStackTrace->throw->e->getTargetException->new->ActivationException->throw->throw->new->ActivationException->finally->return
+ActivationGroup#currentGroupID():::Returns the current activation group's identifier:::return
+ActivationGroup#internalCurrentGroupID():::Returns the activation group identifier for the VM:::if->throw->new->ActivationException->return
+ActivationGroup#setSystem(ActivationSystem):::Set the activation system for the VM:::security->System->getSecurityManager->if->security->checkSetFactory->if->throw->new->ActivationException
+ActivationGroup#getSystem():::Returns the activation system for the VM:::if->try->port->AccessController->Integer->getInteger->doPrivileged->Naming->lookup->catch->throw->new->ActivationException->finally->return
+ActivationGroup#activeObject(ActivationID, MarshalledObject):::This protected method is necessary for subclasses to make the activeObject callback to the group's monitor:::getMonitor->activeObject
+ActivationGroup#inactiveGroup():::This protected method is necessary for subclasses to make the inactiveGroup callback to the group's monitor:::try->getMonitor->inactiveGroup->catch->finally->destroyGroup
+ActivationGroup#currentGroup():::Returns the current group for the VM.:::if->throw->new->ActivationException->return
+ActivationGroupDesc#getClassName():::Returns the group's class name (possibly null):::return
+ActivationGroupDesc#getLocation():::Returns the group's code location.:::return
+ActivationGroupDesc#getData():::Returns the group's initialization data.:::return
+ActivationGroupDesc#getPropertyOverrides():::Returns the group's property-override list.:::return->props->clone
+ActivationGroupDesc#getCommandEnvironment():::Returns the group's command-environment control object.:::return
+ActivationGroupDesc.CommandEnvironment#getCommandPath():::Fetch the configured path-qualified java command name.:::return
+ActivationGroupDesc.CommandEnvironment#getCommandOptions():::Fetch the configured java command options.:::return->options->clone
+ActivationGroupDesc.CommandEnvironment#equals(Object):::Compares two command environments for content equality.:::if->env->return->command->equals->Arrays->equals->else->return
+ActivationGroupDesc.CommandEnvironment#hashCode():::Return identical values for similar CommandEnvironments.:::return->command->hashCode
+ActivationGroupDesc#equals(Object):::Compares two activation group descriptors for content equality.:::if->desc->return->className->equals->location->equals->data->equals->env->equals->props->equals->else->return
+ActivationGroupDesc#hashCode():::Produce identical numbers for similar ActivationGroupDescs.:::return->location->hashCode->env->hashCode->className->hashCode->data->hashCode
+ActivationGroupID#getSystem():::Returns the group's activation system.:::return
+ActivationGroupID#hashCode():::Returns a hashcode for the group's identifier:::return->uid->hashCode
+ActivationGroupID#equals(Object):::Compares two group identifiers for content equality:::if->return->else->if->id->return->uid->equals->system->equals->else->return
+ActivationID#activate(boolean):::Activate the object for this id.:::try->mobj->activator->activate->return->AccessController->new->PrivilegedExceptionAction<Remote>->doPrivileged->catch->ex->pae->getException->if->throw->else->throw->new->UnmarshalException->finally
+ActivationID#hashCode():::Returns a hashcode for the activation id:::return->uid->hashCode
+ActivationID#equals(Object):::Compares two activation ids for content equality:::if->id->return->uid->equals->activator->equals->else->return
+ActivationInstantiator#newInstance(ActivationID, ActivationDesc):::The activator calls an instantiator's newInstance method in order to recreate in that group an object with the activation identifier, id, and descriptor, desc:::
+ActivationMonitor#inactiveObject(ActivationID):::An activation group calls its monitor's inactiveObject method when an object in its group becomes inactive (deactivates):::
+ActivationMonitor#activeObject(ActivationID, MarshalledObject):::Informs that an object is now active:::
+ActivationMonitor#inactiveGroup(ActivationGroupID, long):::Informs that the group is now inactive:::
+ActivationSystem#registerObject(ActivationDesc):::The registerObject method is used to register an activation descriptor, desc, and obtain an activation identifier for a activatable remote object:::
+ActivationSystem#unregisterObject(ActivationID):::Remove the activation id and associated descriptor previously registered with the ActivationSystem; the object can no longer be activated via the object's activation id.:::
+ActivationSystem#registerGroup(ActivationGroupDesc):::Register the activation group:::
+ActivationSystem#activeGroup(ActivationGroupID, ActivationInstantiator, long):::Callback to inform activation system that group is now active:::
+ActivationSystem#unregisterGroup(ActivationGroupID):::Remove the activation group:::
+ActivationSystem#shutdown():::Shutdown the activation system:::
+ActivationSystem#setActivationDesc(ActivationID, ActivationDesc):::Set the activation descriptor, desc for the object with the activation identifier, id:::
+ActivationSystem#setActivationGroupDesc(ActivationGroupID, ActivationGroupDesc):::Set the activation group descriptor, desc for the object with the activation group identifier, id:::
+ActivationSystem#getActivationDesc(ActivationID):::Returns the activation descriptor, for the object with the activation identifier, id.:::
+ActivationSystem#getActivationGroupDesc(ActivationGroupID):::Returns the activation group descriptor, for the group with the activation group identifier, id.:::
+Activator#activate(ActivationID, boolean):::Activate the object associated with the activation identifier, id:::

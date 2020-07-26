@@ -1,0 +1,52 @@
+ContentInfo#getContentBytes():::Returns a byte array representation of the data held in the content field.:::if->return->dis->content->toByteArray->new->DerInputStream->return->dis->getOctetString
+EncryptedPrivateKeyInfo#getAlgorithm():::Returns the encryption algorithm.:::return
+EncryptedPrivateKeyInfo#getEncryptedData():::Returns the encrypted data.:::return->clone
+EncryptedPrivateKeyInfo#getEncoded():::Returns the ASN.1 encoding of this class.:::if->return->clone->out->new->DerOutputStream->tmp->new->DerOutputStream->algid->encode->tmp->putOctetString->out->write->out->toByteArray->return->clone
+EncryptedPrivateKeyInfo#hashCode():::Returns a hashcode for this EncryptedPrivateKeyInfo.:::retval->for->i->return
+PKCS7#encodeSignedData(OutputStream):::Encodes the signed data to an output stream.:::derout->new->DerOutputStream->encodeSignedData->out->derout->toByteArray->write
+PKCS7#encodeSignedData(DerOutputStream):::Encodes the signed data to a DerOutputStream.:::signedData->new->DerOutputStream->signedData->putInteger->signedData->putOrderedSetOf->contentInfo->encode->if->implCerts->new->X509CertImplArr->for->i->signedData->putOrderedSetOf->if->implCRLs->new->HashSet<>->foreach->if->implCRLs->add->else->try->encoded->crl->getEncoded->implCRLs->new->X509CRLImpl->add->catch->throw->new->IOException->finally->signedData->implCRLs->implCRLs->size->new->X509CRLImplArr->toArray->putOrderedSetOf->signedData->putOrderedSetOf->signedDataSeq->signedData->toByteArray->new->DerValue->block->new->ContentInfo->block->encode
+PKCS7#verify(SignerInfo, byte[]):::This verifies a given SignerInfo.:::return->info->verify
+PKCS7#verify(byte[]):::Returns all signerInfos which self-verify.:::intResult->new->Vector<>->for->i->if->intResult->isEmpty->result->intResult->size->new->SignerInfoArr->intResult->copyInto->return->return
+PKCS7#verify():::Returns all signerInfos which self-verify.:::return->verify
+PKCS7#getVersion():::Returns the version number of this PKCS7 block.:::return
+PKCS7#getDigestAlgorithmIds():::Returns the message digest algorithms specified in this PKCS7 block.:::return
+PKCS7#getContentInfo():::Returns the content information specified in this PKCS7 block.:::return
+PKCS7#getCertificates():::Returns the X.509 certificates listed in this PKCS7 block.:::if->return->certificates->clone->else->return
+PKCS7#getCRLs():::Returns the X.509 crls listed in this PKCS7 block.:::if->return->crls->clone->else->return
+PKCS7#getSignerInfos():::Returns the signer's information specified in this PKCS7 block.:::return
+PKCS7#getCertificate(BigInteger, X500Name):::Returns the X.509 certificate listed in this PKCS7 block which has a matching serial number and Issuer name, or null if one is not found.:::if->if->populateCertIssuerNames->for->i->return
+PKCS7#toString():::Returns the PKCS7 block in a printable string form.:::out->if->Debug->toHexString->if->for->i->if->for->i->if->for->i->if->for->i->return
+PKCS7#isOldStyle():::Returns true if this is a JDK1.1.x-style PKCS#7 block, and false otherwise.:::return
+PKCS7#generateSignedData(byte[], X509Certificate[], byte[], String, URI, String, String):::Assembles a PKCS #7 signed data message that optionally includes a signature timestamp.:::unauthAttrs->if->tsa->new->HttpTimestamper->tsToken->generateTimestampToken->new->PKCS9AttributeArr->new->PKCS9Attribute->new->PKCS9Attributes->issuerName->X500Name->getIssuerX500Principal->asX500Name->serialNumber->getSerialNumber->encAlg->AlgorithmId->getEncAlgFromSigAlg->digAlg->AlgorithmId->getDigAlgFromSigAlg->signerInfo->AlgorithmId->get->AlgorithmId->get->new->SignerInfo->signerInfos->algorithms->signerInfo->getDigestAlgorithmId->contentInfo->new->ContentInfo->new->ContentInfo->pkcs7->new->PKCS7->p7out->new->ByteArrayOutputStream->pkcs7->encodeSignedData->return->p7out->toByteArray
+PKCS8Key#parseKey(DerValue):::Construct PKCS#8 subject public key from a DER value:::algorithm->privKey->if->throw->new->IOException->parsedVersion->getBigInteger->if->version->equals->throw->Debug->toHexString->Debug->toHexString->new->IOException->AlgorithmId->getDerValue->parse->try->getOctetString->buildPKCS8Key->catch->throw->new->IOException->finally->if->available->throw->new->IOException->return
+PKCS8Key#parseKeyBits():::Parse the key bits:::encode
+PKCS8Key#getAlgorithm():::Returns the algorithm to be used with this key.:::return->algid->getName
+PKCS8Key#getAlgorithmId():::Returns the algorithm ID to be used with this key.:::return
+PKCS8Key#encode(DerOutputStream):::PKCS#8 sequence on the DER output stream.:::encode
+PKCS8Key#getEncoded():::Returns the DER-encoded form of the key as a byte array.:::result->try->encode->catch->finally->return
+PKCS8Key#getFormat():::Returns the format for this key: "PKCS#8":::return
+PKCS8Key#encode():::Returns the DER-encoded form of the key as a byte array.:::if->try->out->new->DerOutputStream->encode->out->toByteArray->catch->throw->e->getMessage->new->InvalidKeyException->finally->return->encodedKey->clone
+PKCS8Key#decode(InputStream):::Initialize an PKCS8Key object from an input stream:::val->try->new->DerValue->if->throw->new->InvalidKeyException->version->getBigInteger->if->version->equals->throw->Debug->toHexString->Debug->toHexString->new->IOException->AlgorithmId->getDerValue->parse->getOctetString->parseKeyBits->if->available->catch->throw->e->getMessage->new->InvalidKeyException->finally
+PKCS8Key#equals(Object):::Compares two private keys:::if->return->if->b1->if->else->getEncoded->b2->getEncoded->return->MessageDigest->isEqual->return
+PKCS8Key#hashCode():::Calculates a hash code value for this object:::retval->b1->getEncoded->for->i->return
+PKCS9Attribute#derEncode(OutputStream):::Write the DER encoding of this attribute to an output stream:::temp->new->DerOutputStream->temp->putOID->switch->temp->write->break->values->temps->new->DerOutputStreamArr->for->i->temp->putOrderedSetOf->break->temp2->new->DerOutputStream->temp2->putOID->temp->temp2->toByteArray->write->break->temp2->new->DerOutputStream->temp2->putOctetString->temp->temp2->toByteArray->write->break->temp2->new->DerOutputStream->temp2->putUTCTime->temp->temp2->toByteArray->write->break->temp->putOrderedSetOf->break->temp2->new->DerOutputStream->temp2->putPrintableString->temp->temp2->toByteArray->write->break->values->temps->new->DerOutputStreamArr->for->i->temp->putOrderedSetOf->break->throw->new->IOException->throw->new->IOException->throw->new->IOException->throw->new->IOException->temp2->new->DerOutputStream->exts->try->exts->encode->catch->throw->ex->toString->new->IOException->finally->temp->temp2->toByteArray->write->break->throw->new->IOException->throw->new->IOException->temp->write->break->derOut->new->DerOutputStream->derOut->temp->toByteArray->write->out->derOut->toByteArray->write
+PKCS9Attribute#isKnown():::Returns if the attribute is known:::return
+PKCS9Attribute#getValue():::Get the value of this attribute:::return
+PKCS9Attribute#isSingleValued():::Show whether this attribute is single-valued.:::return
+PKCS9Attribute#getOID()::: Return the OID of this attribute.:::return
+PKCS9Attribute#getName()::: Return the name of this attribute.:::return->oid->toString->OID_NAME_TABLE->get
+PKCS9Attribute#getOID(String):::Return the OID for a given attribute name or null if we don't recognize the name.:::return->NAME_OID_TABLE->name->toLowerCase->get
+PKCS9Attribute#getName(ObjectIdentifier):::Return the attribute name for a given OID or null if we don't recognize the oid.:::return->OID_NAME_TABLE->get
+PKCS9Attribute#toString():::Returns a string representation of this attribute.:::sb->new->StringBuilder->sb->append->if->sb->oid->toString->append->else->sb->OID_NAME_TABLE->get->append->sb->append->if->if->hexDump->new->HexDumpEncoder->sb->hexDump->encodeBuffer->append->else->sb->value->toString->append->sb->append->return->sb->toString->else->first->values->for->j->return->sb->toString
+PKCS9Attribute#indexOf(Object, Object[], int):::Beginning the search at start, find the first index i such that a[i] = obj.:::for->i->return
+PKCS9Attributes#encode(byte, OutputStream):::Put the DER encoding of this PKCS9 attribute set on an DerOutputStream, tagged with the given implicit tag.:::out->write->out->write
+PKCS9Attributes#getDerEncoding():::Return the DER encoding of this attribute set, tagged with DerValue.tag_SetOf.:::return->derEncoding->clone
+PKCS9Attributes#getAttribute(ObjectIdentifier):::Get an attribute from this set.:::return->attributes->get
+PKCS9Attributes#getAttribute(String):::Get an attribute from this set.:::return->attributes->PKCS9Attribute->getOID->get
+PKCS9Attributes#getAttributes():::Get an array of all attributes in this set, in order of OID.:::attribs->attributes->size->new->PKCS9AttributeArr->oid->j->for->i->return
+PKCS9Attributes#getAttributeValue(ObjectIdentifier):::Get an attribute value by OID.:::try->value->getAttribute->getValue->return->catch->throw->new->IOException->finally
+PKCS9Attributes#getAttributeValue(String)::: Get an attribute value by type name.:::oid->PKCS9Attribute->getOID->if->throw->new->IOException->return->getAttributeValue
+PKCS9Attributes#toString():::Returns the PKCS9 block in a printable string form.:::sb->new->StringBuilder->sb->append->oid->value->first->for->i->sb->append->return->sb->toString
+PKCS9Attributes#castToDerEncoder(Object[]):::Cast an object array whose components are DerEncoders to DerEncoder[].:::encoders->new->DerEncoderArr->for->i->return
+SignerInfo#derEncode(OutputStream):::DER encode this object onto an output stream:::seq->new->DerOutputStream->seq->putInteger->issuerAndSerialNumber->new->DerOutputStream->issuerName->encode->issuerAndSerialNumber->putInteger->seq->write->digestAlgorithmId->encode->if->authenticatedAttributes->encode->digestEncryptionAlgorithmId->encode->seq->putOctetString->if->unauthenticatedAttributes->encode->tmp->new->DerOutputStream->tmp->write->out->tmp->toByteArray->write
+SignerInfo#getTsToken():::Returns the timestamp PKCS7 data unverified.:::if->return->tsTokenAttr->unauthenticatedAttributes->getAttribute->if->return->return->tsTokenAttr->getValue->new->PKCS7

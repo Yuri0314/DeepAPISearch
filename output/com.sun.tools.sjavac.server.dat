@@ -1,0 +1,18 @@
+PortFile#lock():::Lock the port file.:::if->initializeChannel->lockSem->acquire->channel->lock
+PortFile#getValues():::Read the values from the port file in the file system:::if->return->try->if->rwfile->length->rwfile->seek->nr->rwfile->readInt->rwfile->readInt->rwfile->readLong->if->else->catch->finally
+PortFile#containsPortInfo():::Did the locking and getValues succeed?:::return
+PortFile#getPort():::If so, then we can acquire the tcp/ip port on localhost.:::Assert->check->return
+PortFile#getCookie():::If so, then we can acquire the server cookie.:::Assert->check->return
+PortFile#setValues(int, long):::Store the values into the locked port file.:::Assert->check->rwfile->seek->rwfile->writeInt->rwfile->writeInt->rwfile->writeLong
+PortFile#delete():::Delete the port file.:::rwfile->close->file->delete->for->i->file->exists->if->file->exists->throw->new->IOException
+PortFile#exists():::Is the port file still there?:::return->file->exists
+PortFile#markedForStop():::Is a stop file there?:::if->stopFile->exists->try->stopFile->delete->catch->finally->return->return
+PortFile#unlock():::Unlock the port file.:::if->return->lock->release->lockSem->release
+PortFile#waitForValidValues():::Wait for the port file to contain values that look valid.:::MS_BETWEEN_ATTEMPTS->startTime->System->currentTimeMillis->timeout->getServerStartupTimeoutSeconds->while->Log->debug->if->exists->lock->getValues->unlock->if->Log->System->currentTimeMillis->debug->return->if->System->currentTimeMillis->break->Thread->sleep->throw->System->currentTimeMillis->new->IOException
+PortFile#stillMyValues():::Check if the portfile still contains my values, assuming that I am the server.:::for
+PortFile#getFilename():::Return the name of the port file.:::return
+SjavacServer#getPortFile(String):::Acquire the port file:::if->new->HashMap<>->pf->allPortFiles->get->if->try->if->pf->exists->catch->ioex->printStackTrace->finally->if->new->PortFile->allPortFiles->put->return
+SjavacServer#getCookie():::Get the cookie used for this server.:::return
+SjavacServer#getPort():::Get the port used for this server.:::return->serverSocket->getLocalPort
+SjavacServer#addBuildTime(long):::Sum up the total build time for this javac server.:::
+SjavacServer#startServer():::Start a server using a settings string:::serverStart->System->currentTimeMillis->getPortFile->synchronized->portFile->lock->portFile->getValues->if->portFile->containsPortInfo->Log->debug->portFile->unlock->return->new->SjavacImpl->new->PooledSjavac->new->IdleResetSjavac->new->ServerSocket->localhost->InetAddress->getByName->serverSocket->new->InetSocketAddress->bind->portFile->getPort->getCookie->setValues->portFile->unlock->new->PortFileMonitor->portFileMonitor->start->Log->debug->Log->getPort->debug->Log->new->java.util.Date->debug->Log->debug->keepAcceptingRequests->set->do->try->socket->serverSocket->accept->new->RequestHandler->start->catch->finally->while->keepAcceptingRequests->get->Log->debug->realTime->System->currentTimeMillis->Log->debug->sjavac->shutdown->return

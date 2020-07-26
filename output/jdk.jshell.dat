@@ -1,0 +1,132 @@
+Diag#isError():::Indicates whether this diagnostic is an error (as opposed to a warning or note).:::
+Diag#getPosition():::Returns a character offset from the beginning of the source object associated with this diagnostic that indicates the location of the problem:::
+Diag#getStartPosition():::Returns the character offset from the beginning of the file associated with this diagnostic that indicates the start of the problem.:::
+Diag#getEndPosition():::Returns the character offset from the beginning of the file associated with this diagnostic that indicates the end of the problem.:::
+Diag#getCode():::Returns a diagnostic code indicating the type of diagnostic:::
+Diag#getMessage(Locale):::Returns a localized message for the given locale:::
+Diag#snippetOrNull():::Internal: If this is from a compile/analyze wrapped in an outer class, extract the snippet:::return
+Diag#isUnreachableError():::This is an unreachable-statement error:::return->getCode->equals
+Diag#isNotAStatementError():::This is a not-a-statement error:::return->getCode->equals
+Diag#isResolutionError():::This is a resolution error.:::return->getCode->startsWith->getCode->equals
+ErroneousSnippet#probableKind():::Returns what appears to be the intended Kind in this erroneous snippet.:::return
+Eval#eval(String):::Evaluates a snippet of source.:::allEvents->new->ArrayList<>->foreach->sourceToSnippets->if->snip->kind->installSnippet->allEvents->new->SnippetEvent->add->else->allEvents->snip->syntheticDiags->declare->addAll->return
+Eval#sourceToSnippetsWithWrappers(String):::Converts the user source of a snippet into a Snippet list -- Snippet will have wrappers.:::snippets->sourceToSnippets->foreach->if->snip->outerWrap->snip->snip->kind->snip->guts->wrapImport->snip->guts->wrapInTrialClass->setOuterWrap->return
+Eval#toScratchSnippets(String):::Converts the user source of a snippet into a Snippet object (or list of objects in the case of: int x, y, z;):::try->return->sourceToSnippets->catch->finally
+EvalException#getExceptionClassName():::Returns the name of the Throwable subclass which was thrown in the executing client:::return
+EvalException#getCause():::Returns the wrapped cause of the throwable in the executing client represented by this EvalException or null if the cause is nonexistent or unknown.:::return->super->getCause
+ExpressionSnippet#name():::Variable name which is the value of the expression:::return->key->name
+ExpressionSnippet#typeName():::Type of the expression:::return->key->typeName
+ExpressionToTypeInfo#expressionInfo(String, JShell):::Entry method: get expression info:::if->code->isEmpty->return->codeWrap->Wrap->methodReturnWrap->wrapInTrialClass->try->return->cu->at->firstCuTree->if->at->hasErrors->return->return->new->ExpressionToTypeInfo->typeOfExpression->analyze->catch->return->finally
+ExpressionToTypeInfo#localVariableTypeForInitializer(String, JShell, boolean):::Entry method: get expression info corresponding to a local variable declaration if its type has been inferred automatically from the given initializer.:::if->code->isEmpty->return->try->codeWrap->Wrap->methodWrap->wrapInTrialClass->return->cu->at->firstCuTree->if->at->hasErrors->return->return->new->ExpressionToTypeInfo->typeOfExpression->analyze->catch->return->finally
+ExpressionToTypeInfo#listAnonymousClassesToConvert(Tree):::List (in a stable order) all NewClassTree instances under from that should be converted to member classes:::classes->new->ListBuffer<>->new->TreeScanner<Void,Void>->scan->return->classes->toList
+ImportSnippet#name():::The identifying name of the import:::return->key->name
+ImportSnippet#fullname():::The qualified name of the import:::return
+ImportSnippet#isStatic():::Indicates whether this snippet represents a static import.:::return
+JShell.Builder#in(InputStream):::Sets the input for the running evaluation (it's System.in):::return
+JShell.Builder#out(PrintStream):::Sets the output for the running evaluation (it's System.out):::return
+JShell.Builder#err(PrintStream):::Sets the error output for the running evaluation (it's System.err):::return
+JShell.Builder#tempVariableNameGenerator(Supplier):::Sets a generator of temp variable names for jdk.jshell.VarSnippet of jdk.jshell.Snippet.SubKind#TEMP_VAR_EXPRESSION_SUBKIND:::return
+JShell.Builder#idGenerator(BiFunction):::Sets the generator of identifying names for Snippets:::return
+JShell.Builder#remoteVMOptions(String...):::Sets additional VM options for launching the VM.:::Arrays->asList->addAll->return
+JShell.Builder#compilerOptions(String...):::Adds compiler options:::Arrays->asList->addAll->return
+JShell.Builder#executionEngine(String):::Sets the custom engine for execution:::return
+JShell.Builder#executionEngine(ExecutionControlProvider, Map):::Sets the custom engine for execution:::return
+JShell.Builder#fileManager(Function):::Configure the FileManager to be used by compilation and source analysis:::return
+JShell.Builder#build():::Builds a JShell state engine:::return->new->JShell
+JShell#create():::Create a new JShell state engine:::return->builder->build
+JShell#builder():::Factory method for JShell.Builder which, in-turn, is used for creating instances of JShell:::return->new->Builder
+JShell#sourceCodeAnalysis():::Access to source code analysis functionality:::if->new->SourceCodeAnalysisImpl->return
+JShell#eval(String):::Evaluate the input String, including definition and/or execution, if applicable:::a->if->a->suspendIndexing->try->checkIfAlive->events->eval->eval->events->this->notifyKeyStatusEvent->forEach->return->Collections->unmodifiableList->catch->finally->if->a->resumeIndexing
+JShell#drop(Snippet):::Remove a declaration from the state:::checkIfAlive->checkValidSnippet->events->eval->drop->events->this->notifyKeyStatusEvent->forEach->return->Collections->unmodifiableList
+JShell#addToClasspath(String):::The specified path is added to the end of the classpath used in eval():::checkIfAlive->taskFactory->addToClasspath->try->executionControl->addToClasspath->catch->debug->finally->if->sourceCodeAnalysis->classpathChanged
+JShell#stop():::Attempt to stop currently running evaluation:::if->try->executionControl->stop->catch->debug->finally
+JShell#close():::Close this state engine:::closeDown
+JShell#snippets():::Return all snippets.:::return->maps->snippetList->stream
+JShell#variables():::Returns the active variable snippets:::return->snippets->status->isActive->sn->kind->filter->map
+JShell#methods():::Returns the active method snippets:::return->snippets->status->isActive->sn->kind->filter->map
+JShell#types():::Returns the active type declaration (class, interface, annotation type, and enum) snippets:::return->snippets->status->isActive->sn->kind->filter->map
+JShell#imports():::Returns the active import snippets:::return->snippets->status->isActive->sn->kind->filter->map
+JShell#status(Snippet):::Return the status of the snippet:::return->checkValidSnippet->status
+JShell#diagnostics(Snippet):::Return the diagnostics of the most recent evaluation of the snippet:::return->checkValidSnippet->diagnostics->stream
+JShell#unresolvedDependencies(DeclarationSnippet):::For jdk.jshell.Snippet.Status#RECOVERABLE_DEFINED RECOVERABLE_DEFINED or jdk.jshell.Snippet.Status#RECOVERABLE_NOT_DEFINED RECOVERABLE_NOT_DEFINED declarations, the names of current unresolved dependencies for the snippet:::return->checkValidSnippet->unresolved->stream
+JShell#varValue(VarSnippet):::Get the current value of a variable.:::checkIfAlive->checkValidSnippet->if->snippet->status->throw->snippet->status->messageFormat->new->IllegalArgumentException->value->try->executionControl->snippet->classFullName->snippet->name->varValue->catch->throw->ex->getMessage->new->IllegalStateException->debug->return->ex->getMessage->finally->return->expunge
+JShell#onSnippetEvent(Consumer):::Register a callback to be called when the Status of a snippet changes:::return->onX
+JShell#onShutdown(Consumer):::Register a callback to be called when this JShell instance terminates:::return->onX
+JShell#unsubscribe(Subscription):::Cancel a callback subscription.:::synchronized->accept
+JShell#nextKeyIndex():::Generate the next key index, indicating a unique snippet signature.:::return
+JShell#checkIfAlive():::Check if this JShell has been closed:::if->throw->messageFormat->new->IllegalStateException
+JShell#messageFormat(String, Object...):::Format using resource bundle look-up using MessageFormat:::if->try->ResourceBundle->getBundle->catch->throw->new->InternalError->finally->s->try->outputRB->getString->catch->throw->new->InternalError->finally->return->MessageFormat->format
+Key#index():::The unique numeric identifier for the snippet:::return
+Key#kind():::The kind for the key:::
+Key#state():::For foreign key testing.:::return
+Key.PersistentKey#name():::Name of the snippet.:::return
+Key.MethodKey#parameterTypes():::The parameter types of the method:::return
+Key.ImportKey#snippetKind():::Which kind of import.:::return
+Key.ExpressionKey#name():::Variable name which is the value of the expression:::return
+Key.ExpressionKey#typeName():::Type of the expression:::return
+MemoryFileManager.OutputMemoryJavaFileObject#openOutputStream():::Will provide the compiler with an output stream that leads to our byte array.:::return
+MemoryFileManager#getClassLoader(JavaFileManager.Location):::Returns a class loader for loading plug-ins from the given location:::proc->debug->return->stdFileManager->getClassLoader
+MemoryFileManager#list(JavaFileManager.Location, String, Set, boolean):::Lists all file objects matching the given criteria in the given location:::stdList->stdFileManager->list->if->packageName->equals->return->new->Iterator<JavaFileObject>->else->return
+MemoryFileManager#inferBinaryName(JavaFileManager.Location, JavaFileObject):::Infers a binary name of a file object based on a location:::if->ofo->proc->ofo->getName->debug->return->ofo->getName->else->return->stdFileManager->inferBinaryName
+MemoryFileManager#isSameFile(FileObject, FileObject):::Compares two file objects and return true if they represent the same underlying object.:::return->stdFileManager->isSameFile
+MemoryFileManager#isSupportedOption(String):::Determines if the given option is supported and if so, the number of arguments the option takes.:::proc->debug->return->stdFileManager->isSupportedOption
+MemoryFileManager#handleOption(String, Iterator):::Handles one option:::proc->debug->return->stdFileManager->handleOption
+MemoryFileManager#hasLocation(JavaFileManager.Location):::Determines if a location is known to this file manager.:::proc->debug->return->stdFileManager->hasLocation
+MemoryFileManager#getJavaFileForInput(JavaFileManager.Location, String, JavaFileObject.Kind):::Returns a JavaFileObject file object for input representing the specified class of the specified kind in the given location.:::return->stdFileManager->getJavaFileForInput
+MemoryFileManager#getJavaFileForOutput(JavaFileManager.Location, String, Kind, FileObject):::Returns a JavaFileObject file object for output representing the specified class of the specified kind in the given location:::fo->new->OutputMemoryJavaFileObject->classObjects->put->proc->debug->if->classListener->newClassFile->return
+MemoryFileManager#getFileForInput(JavaFileManager.Location, String, String):::Returns a FileObject file object for input representing the specified relative name in the specified package in the given location:::proc->debug->return->stdFileManager->getFileForInput
+MemoryFileManager#getFileForOutput(JavaFileManager.Location, String, String, FileObject):::Returns a FileObject file object for output representing the specified relative name in the specified package in the given location:::throw->new->UnsupportedOperationException
+MemoryFileManager#flush():::Flushes any resources opened for output by this file manager directly or indirectly:::
+MemoryFileManager#close():::Releases any resources opened by this file manager directly or indirectly:::
+MethodSnippet#parameterTypes():::A String representation of the parameter types of the method.:::return->key->parameterTypes
+MethodSnippet#signature():::The full type signature of the method, including return type.:::return
+PersistentSnippet#name():::Name of the Snippet.:::return
+ReplParser#parseCompilationUnit():::As faithful a clone of the overridden method as possible while still achieving the goal of allowing the parse of a stand-alone snippet:::firstToken->mods->seenImport->seenPackage->defs->new->ListBuffer<>->if->modifiersOpt->firstTypeDecl->while->if->skip->if->break->if->defs->importDeclaration->append->else->docComment->token->comment->if->firstToken->comment->udefs->replUnit->foreach->defs->append->break->rdefs->defs->toList->toplevel->new->ReplUnit->if->rdefs->isEmpty->S->prevToken->storeEnd->S->getLineMap->setParser->return
+Snippet#id():::The unique identifier for the snippet:::return
+Snippet#kind():::The jdk.jshell.Snippet.Kind for the snippet:::return->subkind->kind
+Snippet#subKind():::Return the SubKind of snippet:::return
+Snippet#source():::Return the source code of the snippet.:::return
+Snippet#outerWrap():::Top-level wrap:::return
+Snippet#sequenceNumber():::Basically, class version for this Key.:::return
+SnippetEvent#snippet():::The Snippet which has changed:::return
+SnippetEvent#previousStatus():::The status before the transition:::return
+SnippetEvent#status():::The after status:::return
+SnippetEvent#isSignatureChange():::Indicates whether the signature has changed:::return
+SnippetEvent#causeSnippet():::Either the snippet whose change caused this update or null:::return
+SnippetEvent#exception():::An instance of jdk.jshell.UnresolvedReferenceException, if an unresolved reference was encountered, or an instance of jdk.jshell.EvalException if an exception was thrown during execution, otherwise null.:::return
+SnippetEvent#value():::The result value of successful run:::return
+SnippetEvent#toString():::Return a string representation of the event:::return
+SourceCodeAnalysis#analyzeCompletion(String):::Given an input string, find the first snippet of code (one statement, definition, import, or expression) and evaluate if it is complete.:::
+SourceCodeAnalysis#completionSuggestions(String, int, int[]):::Compute possible follow-ups for the given input:::
+SourceCodeAnalysis#documentation(String, int, boolean):::Compute documentation for the given user's input:::
+SourceCodeAnalysis#analyzeType(String, int):::Infer the type of the given expression:::
+SourceCodeAnalysis#listQualifiedNames(String, int):::List qualified names known for the simple name in the given code immediately to the left of the given cursor position:::
+SourceCodeAnalysis#wrapper(Snippet):::Returns the wrapper information for the Snippet:::
+SourceCodeAnalysis#wrappers(String):::Returns the wrapper information for the snippet within the input source string:::
+SourceCodeAnalysis#sourceToSnippets(String):::Converts the source code of a snippet into a Snippet object (or list of Snippet objects in the case of some var declarations, e.g.: int x, y, z;):::
+SourceCodeAnalysis#dependents(Snippet):::Returns a collection of Snippets which might need updating if the given Snippet is updated:::
+SourceCodeAnalysis.CompletionInfo#completeness():::The analyzed completeness of the input.:::
+SourceCodeAnalysis.CompletionInfo#remaining():::Input remaining after the complete part of the source.:::
+SourceCodeAnalysis.CompletionInfo#source():::Source code for the first Snippet of code input:::
+SourceCodeAnalysis.Suggestion#continuation():::The candidate continuation of the given user's input.:::
+SourceCodeAnalysis.Suggestion#matchesType():::Indicates whether input continuation matches the target type and is thus more likely to be the desired continuation:::
+SourceCodeAnalysis.Documentation#signature():::The signature of the given element.:::
+SourceCodeAnalysis.Documentation#javadoc():::The javadoc of the given element.:::
+SourceCodeAnalysis.QualifiedNames#getNames():::Known qualified names for the given simple name in the original code.:::return
+SourceCodeAnalysis.QualifiedNames#getSimpleNameLength():::The length of the simple name in the original code for which the qualified names where gathered.:::return
+SourceCodeAnalysis.QualifiedNames#isUpToDate():::Indicates whether the result is based on up-to-date data:::return
+SourceCodeAnalysis.QualifiedNames#isResolvable():::Indicates whether the given simple name in the original code refers to a resolvable element.:::return
+SourceCodeAnalysis.SnippetWrapper#source():::Returns the input that is wrapped:::
+SourceCodeAnalysis.SnippetWrapper#wrapped():::Returns a Java class definition that wraps the SnippetWrapper#source() or, if an import, the import source:::
+SourceCodeAnalysis.SnippetWrapper#fullClassName():::Returns the fully qualified class name of the SnippetWrapper#wrapped()  class:::
+SourceCodeAnalysis.SnippetWrapper#kind():::Returns the Snippet.Kind of the SnippetWrapper#source().:::
+SourceCodeAnalysis.SnippetWrapper#sourceToWrappedPosition(int):::Maps character position within the source to character position within the wrapped.:::
+SourceCodeAnalysis.SnippetWrapper#wrappedToSourcePosition(int):::Maps character position within the wrapped to character position within the source.:::
+TypePrinter#className(ClassType, boolean, Locale):::Converts a class name into a (possibly localized) string:::sym->if->length->sym->flags->if->return->getExplicitComponents->stream->visit->map->Collectors->joining->collect->else->return->else->if->length->if->return->anonymousToName->apply->s->isClass->norm->if->else->if->nonEmpty->visit->else->visit->if->return->else->if->pkg->for->psym->return->fullClassNameAndPackageToClass->sym->getQualifiedName->toString->apply->else->return->toString
+Unit#corralIfNeeded(Collection):::If it meets the conditions for corralling, install the corralled wrap:::if->isRecoverable->si->corralled->si->corralled->setWrap->return->return
+Unit#classesToLoad(List):::Process the class information from the last compile:::new->ArrayList<>->toLoad->new->ArrayList<>->if->status->isDefined->isImport->foreach->ci->get->if->ci->isLoaded->if->ci->isCurrent->else->toRedefine->add->else->toLoad->ci->toClassBytecodes->add->return->toLoad->stream
+Unit#doRedefines():::Redefine classes needing redefine:::if->toRedefine->isEmpty->return->cbcs->toRedefine->stream->ClassInfo->toClassBytecodes->map->ClassBytecodes[]->new->toArray->try->state->executionControl->redefine->markLoaded->return->catch->ex->installed->markLoaded->return->state->closeDown->return->return->finally
+UnresolvedReferenceException#getSnippet():::Return the Snippet which has the unresolved reference(s).:::return
+Util#isInJShellClass(String):::Check if this is the name of something in JShell.:::m->PREFIX_PATTERN->matcher->return->m->find->m->start
+VarSnippet#typeName():::A String representation of the type of the variable.:::return
+Wrap#varWrap(String, Wrap, String, Range, Wrap, boolean, Wrap):::Create a stub of a compilable representation of a variable snippet:::wname->new->RangeWrap->components->new->ArrayList<>->components->new->VarDeclareWrap->add->wmeth->if->new->NoWrap->new->CompoundWrap->else->if->waux->semi->new->CompoundWrap->components->add->new->CompoundWrap->else->semi->new->CompoundWrap->components->new->DoitMethodWrap->add->if->components->add->return->components->toArray->new->CompoundWrap

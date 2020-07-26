@@ -1,0 +1,77 @@
+Attribute.Layout#parse(Holder, byte[], int, int, ValueStream):::Return a sequence of tokens from the given attribute bytes:::end->getEntryPoint->parseUsing->if->throw->new->InternalError
+Attribute.Layout#unparse(ValueStream, ByteArrayOutputStream):::Given a sequence of tokens, return the attribute bytes:::fixups->getEntryPoint->unparseUsing->return
+Attribute#normalizeLayoutString(String):::Remove any informal "pretty printing" from the layout string:::buf->new->StringBuilder->for->i->len->layout->length->result->buf->toString->if->result->equals->info->info->info->return
+Attribute#tokenizeLayout(Layout, int, String):::Parse the attribute layout language:::col->layout->length->new->ArrayList<>->tokenizeLayout->res->col->size->new->Layout.ElementArr->col->toArray->return
+Attribute#findCaseDash(String, int):::Find an occurrence of hyphen '-' between two numerals.:::if->lastDash->layout->length->for
+Attribute#expandCaseDashNotation(String):::For compatibility with 1.5 pack, expand 1-5 into 1,2,3,4,5.:::dash->findCaseDash->if->return->result->layout->length->new->StringBuilder->sofar->for->result->layout->length->append->return->result->toString
+BandStructure#initHighestClassVersion(Package.Version):::Call this exactly once, early, to specify the archive major version.:::if->throw->new->IOException->adjustToClassVersion
+BandStructure.Band#capacity():::Return -1 if data buffer not allocated, else max length.:::
+BandStructure.Band#setCapacity(int):::Allocate data buffer to specified length.:::
+BandStructure.Band#length():::Return current number of values in buffer, which must exist.:::
+BandStructure.Band#writeTo(OutputStream):::Write out bytes, encoding the values.:::setPhase->writeDataTo->doneWriting
+BandStructure.Band#expectLength(int):::Expect a certain number of values.:::
+BandStructure.Band#expectMoreLength(int):::Expect more values:::
+BandStructure.Band#readFrom(InputStream):::Read in bytes, decoding the values.:::valuesExpected->setCapacity->setPhase->readDataFrom->readyToDisburse
+BandStructure.ValueBand#setCapacity(int):::Declare predicted or needed capacity.:::if->return->realloc
+BandStructure.ValueBand#addValue(int):::Collect one value, or store one decoded value.:::if->setCapacity
+BandStructure.ValueBand#getValue():::Disburse one value.:::if->return->return
+BandStructure.ValueBand#resetForSecondPass():::Reset for another pass over the same value set.:::
+BandStructure.IntBand#getIntTotal():::Return the sum of all values in this band.:::total->for->k->length->resetForSecondPass->return
+BandStructure.IntBand#getIntCount(int):::Return the occurrence count of a specific value in this band.:::total->for->k->length->resetForSecondPass->return
+BandStructure.CPRefBand#putRef(Entry):::Write a constant pool reference.:::encodeRefOrNull->addValue
+BandStructure#setBandIndexes():::Given CP indexes, distribute tag-specific indexes to bands.:::foreach->b->which->b->which->byteValue->getCPIndex->setIndex->if->printCDecl
+Code#encodeBCI(int):::Encode the given BCI as an instruction boundary number:::if->getLength->return->map0->getInsnMap->i->len->if->map->Arrays->binarySearch->else->if->map->Arrays->binarySearch->else->map->Arrays->binarySearch->return
+Coding#codeMax(int, int, int, int):::Largest int representable by (B,H,S) in up to nMax bytes.:::range->codeRangeLong->if->return->if->return->saturate32->maxPos->while->isNegativeCode->if->return->smax->decodeSign32->if->return->return
+Coding#codeMin(int, int, int, int):::Smallest int representable by (B,H,S) in up to nMax bytes:::range->codeRangeLong->if->return->if->return->maxNeg->while->isNegativeCode->if->return->return->decodeSign32
+Coding#canRepresentSigned(int):::Can this coding represent a single value, possibly a delta?  This ignores the D property:::return
+Coding#canRepresentUnsigned(int):::Can this coding, apart from its S property,  represent a single value?  (Negative values  can only be represented via 32-bit overflow,  so this returns true for negative values  if isFullRange is true.):::return
+Coding#isSubrange():::Tell if the range of this coding (number of distinct  representable values) can be expressed in 32 bits.:::return
+Coding#isFullRange():::Tell if this coding can represent all 32-bit values:::return
+Coding#getRange():::Return the number of values this coding (a subrange) can represent.:::return
+Coding#getValueCoding():::Return a coding suitable for representing summed, modulo-reduced values.:::if->isDelta->return->Coding->of->else->return
+Coding#reduceToUnsignedRange(long):::Reduce the given value to be within this coding's unsigned range,  by adding or subtracting a multiple of (max-min+1).:::if->canRepresentUnsigned->return->range->getRange->if->return
+Coding#isSigned():::Does this coding support at least one negative value?         Includes codings that can do so via 32-bit wraparound.:::return
+Coding#isDelta():::Does this coding code arrays by making successive differences?:::return
+Coding#distanceFrom(Coding):::Heuristic measure of the difference between two codings.:::diffdel->if->diffS->if->diffB->if->diffHL->if->else->thisHL->this->getHL->thatHL->that->getHL->if->ceil_lg2->else->ceil_lg2->norm->return
+Coding#ceil_lg2(int):::ceiling(log[2](x)): {1->0, 2->1, 3->2, 4->2, ...}:::lg->while->return
+Coding#bitWidth(int):::Number of significant bits in i, not counting sign bits:::if->w->lo->if->return->hi->if->if->return
+Coding#makeDeltas(int[], int, int, int, int):::Create an array of successive differences:::count->deltas->new->intArr->state->if->for->i->else->for->i->return
+Coding#getLength(int):::How many bytes are in the coding of this value?  Returns Integer.MAX_VALUE if the value has no coding:::if->isDelta->isSubrange->if->canRepresentUnsigned->return->reduceToSignedRange->if->for->n->else->for->n->return
+ConstantPool#getUtf8Entry(String):::Factory for Utf8 string constants:::utf8Entries->Utils->getTLGlobals->getUtf8Entries->e->utf8Entries->get->if->new->Utf8Entry->utf8Entries->e->stringValue->put->return
+ConstantPool#getClassEntry(String):::Factory for Class constants.:::classEntries->Utils->getTLGlobals->getClassEntries->e->classEntries->get->if->getUtf8Entry->new->ClassEntry->classEntries->e->stringValue->put->return
+ConstantPool#getLiteralEntry(Comparable):::Factory for literal constants (String, Integer, etc.).:::literalEntries->Utils->getTLGlobals->getLiteralEntries->e->literalEntries->get->if->if->getUtf8Entry->new->StringEntry->else->new->NumberEntry->literalEntries->put->return
+ConstantPool#getStringEntry(String):::Factory for literal constants (String, Integer, etc.).:::return->getLiteralEntry
+ConstantPool#getSignatureEntry(String):::Factory for signature (type) constants.:::signatureEntries->Utils->getTLGlobals->getSignatureEntries->e->signatureEntries->get->if->new->SignatureEntry->signatureEntries->put->return
+ConstantPool#getDescriptorEntry(Utf8Entry, SignatureEntry):::Factory for descriptor (name-and-type) constants.:::descriptorEntries->Utils->getTLGlobals->getDescriptorEntries->key->DescriptorEntry->stringValueOf->e->descriptorEntries->get->if->new->DescriptorEntry->descriptorEntries->put->return
+ConstantPool#getMemberEntry(byte, ClassEntry, DescriptorEntry):::Factory for member reference constants.:::memberEntries->Utils->getTLGlobals->getMemberEntries->key->MemberEntry->stringValueOf->e->memberEntries->get->if->new->MemberEntry->memberEntries->put->return
+ConstantPool#getMethodHandleEntry(byte, MemberEntry):::Factory for MethodHandle constants.:::methodHandleEntries->Utils->getTLGlobals->getMethodHandleEntries->key->MethodHandleEntry->stringValueOf->e->methodHandleEntries->get->if->new->MethodHandleEntry->methodHandleEntries->put->return
+ConstantPool#getMethodTypeEntry(SignatureEntry):::Factory for MethodType constants.:::methodTypeEntries->Utils->getTLGlobals->getMethodTypeEntries->key->sigRef->stringValue->e->methodTypeEntries->get->if->new->MethodTypeEntry->methodTypeEntries->put->return
+ConstantPool#getInvokeDynamicEntry(BootstrapMethodEntry, DescriptorEntry):::Factory for InvokeDynamic constants.:::invokeDynamicEntries->Utils->getTLGlobals->getInvokeDynamicEntries->key->InvokeDynamicEntry->stringValueOf->e->invokeDynamicEntries->get->if->new->InvokeDynamicEntry->invokeDynamicEntries->put->return
+ConstantPool#getBootstrapMethodEntry(MethodHandleEntry, Entry[]):::Factory for BootstrapMethod pseudo-constants.:::bootstrapMethodEntries->Utils->getTLGlobals->getBootstrapMethodEntries->key->BootstrapMethodEntry->stringValueOf->e->bootstrapMethodEntries->get->if->new->BootstrapMethodEntry->bootstrapMethodEntries->put->return
+ConstantPool#sort(Index):::Sort this index (destructively) into canonical order.:::ix->clearIndex->Arrays->sort->if->verbose->ix->dumpString->println
+ConstantPool#partition(Index, int[]):::Return a set of indexes partitioning these entries:::parts->new->ArrayList<>->cpMap->for->i->indexes->parts->size->new->IndexArr->for->key->return
+ConstantPool.IndexGroup#getIndexByTag(byte):::Index of all CP entries of a given tag.:::if->return->getIndexByTagGroup->ix->if->tagName->new->EntryArr->new->Index->return
+ConstantPool.IndexGroup#getMemberIndex(byte, ClassEntry):::Index of all CP entries of a given tag and class.:::if->throw->tagName->new->RuntimeException->if->new->IndexArrs->allClasses->getIndexByTag->perClassIndexes->if->allMembers->getIndexByTag->whichClasses->allMembers->size->new->intArr->for->i->partition->for->i->whichClass->allClasses->indexOf->return
+ConstantPool#completeReferencesIn(Set, boolean):::Close the set cpRefs under the getRef(*) relation:::completeReferencesIn
+Histogram#getMatrix():::Histogram of int values, reported compactly as a ragged matrix,  indexed by descending frequency rank:::return
+Histogram#getAllValues():::Returns an array of all values, sorted.:::return
+Histogram#getAllFrequencies():::Returns an array parallel with #getValues,  with a frequency for each value.:::return
+Histogram#getBitLength():::bit-length is negative entropy:  -H(matrix).:::sum->for->i->return
+Histogram#getBitLength(BitMetric):::bit-length in to another coding (cross-entropy):::sum->for->i->return
+Histogram#normalizeMatrix(int[][]):::Sort rows and columns:::rowMap->new->longArr->for->i->Arrays->sort->newMatrix->new->intArrs->prevCount->fillp1->fillp2->for->i->if->new->intArrs->System->arraycopy->return
+Histogram#print(PrintStream):::Print a report of this histogram.:::print
+Histogram#print(String, PrintStream):::Print a report of this histogram.:::getRowTitles->print
+Histogram#print(String, String[], PrintStream):::Print a report of this histogram.:::totalUnique->getTotalLength->ltotalWeight->getTotalWeight->tlen->getBitLength->avgLen->avg->title->round->round->round->if->out->println->else->out->println->buf->new->StringBuffer->for->i->out->println
+Instruction#forceNextPC(int):::A fake instruction at this pc whose next() will be at nextpc.:::llength->return->new->Instruction
+Instruction#equals(Object):::Two instructions are equal if they have the same bytes.:::return->o->getClass->equals
+Package.Class#computeGloballyImpliedICs():::Given a global map of ICs (keyed by thisClass),  compute the subset of its Map.values which are  required to be present in the local InnerClasses  attribute:::cpRefs->new->HashSet<>->innerClassesSaved->visitRefs->ConstantPool->completeReferencesIn->icRefs->new->HashSet<>->foreach->if->continue->while->ic->getGlobalInnerClass->if->break->if->icRefs->add->break->impliedICs->new->ArrayList<>->foreach->if->icRefs->contains->if->fine->impliedICs->add->return
+Package.Class#minimizeLocalICs():::When packing, anticipate the effect of expandLocalICs:::diff->computeICdiff->actualICs->localICs->if->diff->isEmpty->if->actualICs->isEmpty->if->info->else->if->Collections->emptyList->else->setInnerClasses->if->fine
+Package.Class#expandLocalICs():::When unpacking, undo the effect of minimizeLocalICs:::localICs->actualICs->changed->if->impliedICs->computeGloballyImpliedICs->if->impliedICs->isEmpty->else->else->if->localICs->isEmpty->else->computeICdiff->actualICs->containsAll->setInnerClasses->return
+Package#getGlobalInnerClass(Entry):::Return a global inner class record for the given thisClass.:::return->allInnerClassesByThis->get
+PackageWriter#writeLocalInnerClasses(Class):::If there are any extra InnerClasses entries to write which are  not already implied by the global table, put them into a  local attribute:::localICs->cls->getInnerClasses->class_InnerClasses_N->localICs->size->putInt->foreach->class_InnerClasses_RC->putRef->if->ic->pkg->getGlobalInnerClass->equals->class_InnerClasses_F->putInt->else->flags->if->class_InnerClasses_F->putInt->class_InnerClasses_outer_RCN->putRef->class_InnerClasses_name_RUN->putRef
+PackerImpl#properties():::Get the set of options for the pack and unpack engines.:::return
+PackerImpl#pack(JarFile, OutputStream):::Takes a JarFile and converts into a pack-stream:::try->set->if->props->getProperty->equals->Utils->copyJarFile->else->new->DoPack->run->catch->finally->set->in->close
+PackerImpl#pack(JarInputStream, OutputStream):::Takes a JarInputStream and converts into a pack-stream:::try->set->if->props->getProperty->equals->Utils->copyJarFile->else->new->DoPack->run->catch->finally->set->in->close
+UnpackerImpl#properties():::Get the set of options for the pack and unpack engines.:::return
+UnpackerImpl#unpack(InputStream, JarOutputStream):::Takes a packed-stream InputStream, and writes to a JarOutputStream:::if->throw->new->NullPointerException->if->throw->new->NullPointerException->try->set->verbose->props->getInteger->in0->new->BufferedInputStream->if->Utils->Utils->readMagic->isJarMagic->if->info->Utils->new->JarInputStream->copyJarFile->else->if->props->getBoolean->new->DoUnpack->run->in0->close->Utils->markJarFile->else->try->new->NativeUnpack->run->catch->new->DoUnpack->run->finally->in0->close->Utils->markJarFile->catch->finally->set
+UnpackerImpl#unpack(File, JarOutputStream):::Takes an input File containing the pack file, and generates a JarOutputStream:::if->throw->new->NullPointerException->if->throw->new->NullPointerException->try->instr->new->FileInputStream->unpack->catch->finally->if->props->getBoolean->in->delete

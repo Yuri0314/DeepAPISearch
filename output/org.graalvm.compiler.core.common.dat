@@ -1,0 +1,46 @@
+CompilationIdentifier#toString():::This method is a shortcut for #toString(Verbosity) with Verbosity#DETAILED.:::
+CompilationIdentifier#toString(Verbosity):::Creates a String representation for this compilation identifier with a given Verbosity.:::
+CompilationRequestIdentifier#asCompilationRequest(CompilationIdentifier):::Returns the CompilationRequestIdentifier#getRequest() request from a CompilationRequestIdentifier:::if->return->getRequest->return
+FieldIntrospection#getData():::Gets the fields in #getClazz() that do long belong to specific category.:::return
+Fields#getCount():::Gets the number of fields represented by this object.:::return
+Fields#copy(Object, Object):::Copies fields from from to to, both of which must be of the same type.:::copy
+Fields#copy(Object, Object, ObjectTransformer):::Copies fields from from to to, both of which must be of the same type.:::for->index
+Fields#get(Object, int):::Gets the value of a field for a given object.:::offset->type->value->if->type->isPrimitive->if->UNSAFE->getInt->else->if->UNSAFE->getLong->else->if->UNSAFE->getBoolean->else->if->UNSAFE->getFloat->else->if->UNSAFE->getDouble->else->if->UNSAFE->getShort->else->if->UNSAFE->getChar->else->if->UNSAFE->getByte->else->else->UNSAFE->getObject->return
+Fields#getRawPrimitive(Object, int):::Gets the value of a field for a given object.:::offset->type->if->return->UNSAFE->getInt->else->if->return->UNSAFE->getLong->else->if->return->UNSAFE->getBoolean->else->if->return->Float->UNSAFE->getFloat->floatToRawIntBits->else->if->return->Double->UNSAFE->getDouble->doubleToRawLongBits->else->if->return->UNSAFE->getShort->else->if->return->UNSAFE->getChar->else->if->return->UNSAFE->getByte->else->throw->GraalError->shouldNotReachHere
+Fields#isSame(Fields, int):::Determines if a field in the domain of this object is the same as the field denoted by the same index in another Fields object.:::return
+Fields#getName(int):::Gets the name of a field.:::return
+Fields#getType(int):::Gets the type of a field.:::return
+FieldsScanner.FieldInfo#compareTo(FieldInfo):::Sorts fields in ascending order by their #offsets.:::return
+FieldsScanner#scan(Class, Class, boolean):::Scans the fields in a class hierarchy.:::currentClazz->while->foreach->currentClazz->getDeclaredFields->if->Modifier->field->getModifiers->isStatic->continue->if->Modifier->field->getModifiers->isTransient->continue->offset->calc->getOffset->scanField->currentClazz->getSuperclass
+LIRKind#value(PlatformKind):::Create a LIRKind of type platformKind that contains a primitive value:::return->new->LIRKind
+LIRKind#reference(PlatformKind):::Create a LIRKind of type platformKind that contains a single, tracked, uncompressed oop reference.:::return->derivedReference
+LIRKind#compressedReference(PlatformKind):::Create a LIRKind of type platformKind that contains a single, tracked, compressed oop reference.:::return->derivedReference
+LIRKind#fromJavaKind(Architecture, JavaKind):::Create the correct LIRKind for a given Architecture and JavaKind.:::platformKind->arch->getPlatformKind->if->javaKind->isObject->return->LIRKind->reference->else->return->LIRKind->value
+LIRKind#derivedReference(PlatformKind, AllocatableValue, boolean):::Create a LIRKind of type platformKind that contains a derived reference.:::length->platformKind->getVectorLength->referenceMask->referenceCompressionMask->return->new->LIRKind
+LIRKind#unknownReference(PlatformKind):::Create a LIRKind of type platformKind that contains a value that is derived from a reference in a non-linear way:::return->new->LIRKind
+LIRKind#makeDerivedReference(AllocatableValue):::Create a derived reference.:::if->equals->return->makeUnknownReference->else->if->isValue->return->getPlatformKind->derivedReference->else->return->getPlatformKind->new->LIRKind
+LIRKind#combine(Value...):::Derive a new type from inputs:::foreach->kind->input->getValueKind->if->kind->isUnknownReference->return->else->if->kind->isValue->return->kind->makeUnknownReference->return->getValueKind
+LIRKind#derivedBaseFromValue(AllocatableValue):::Helper method to construct derived reference kinds:::valueKind->value->getValueKind->if->kind->value->getValueKind->if->kind->isValue->return->else->if->kind->isDerivedReference->return->kind->getDerivedReferenceBase->else->if->kind->isUnknownReference->return->else->return->else->return
+LIRKind#combineDerived(LIRKind, AllocatableValue, AllocatableValue):::Helper method to construct derived reference kinds:::if->return->else->if->return->kind->makeDerivedReference->else->if->return->kind->makeDerivedReference->else->return->kind->makeUnknownReference
+LIRKind#mergeReferenceInformation(LIRKind, LIRKind):::Merges the reference information of the inputs:::if->mergeKind->isUnknownReference->return->if->mergeKind->isValue->if->inputKind->isValue->return->mergeKind->makeUnknownReference->return->if->return->mergeKind->makeUnknownReference->if->mergeKind->isDerivedReference->if->inputKind->isDerivedReference->mergeKind->getDerivedReferenceBase->inputKind->getDerivedReferenceBase->equals->return->return->mergeKind->makeUnknownReference->if->inputKind->isDerivedReference->return->mergeKind->makeUnknownReference->return
+LIRKind#changeType(PlatformKind):::Create a new LIRKind with the same reference information and a new #getPlatformKind platform kind:::if->getPlatformKind->return->else->if->isUnknownReference->return->unknownReference->else->if->return->LIRKind->value->else->newLength->Math->newPlatformKind->getVectorLength->min->lengthMask->newReferenceMask->newReferenceCompressionMask->return->new->LIRKind
+LIRKind#repeat(PlatformKind):::Create a new LIRKind with a new #getPlatformKind platform kind:::if->isUnknownReference->return->unknownReference->else->if->return->LIRKind->value->else->oldLength->getPlatformKind->getVectorLength->newLength->newPlatformKind->getVectorLength->newReferenceMask->newReferenceCompressionMask->for->i->getPlatformKind->getVectorLength->return->new->LIRKind
+LIRKind#makeUnknownReference():::Create a new LIRKind with the same type, but marked as containing an LIRKind#unknownReference.:::return->getPlatformKind->new->LIRKind
+LIRKind#isDerivedReference():::Check whether this value is a derived reference.:::return->getDerivedReferenceBase
+LIRKind#getDerivedReferenceBase():::Get the base value of a derived reference.:::return
+LIRKind#setDerivedReferenceBase(AllocatableValue):::Change the base value of a derived reference:::
+LIRKind#isUnknownReference():::Check whether this value is derived from a reference in a non-linear way:::return
+LIRKind#isReference(int):::Check whether the idxth part of this value is a reference that must be tracked at safepoints.:::return->isUnknownReference
+LIRKind#isCompressedReference(int):::Check whether the idxth part of this value is a compressed reference.:::return->isUnknownReference
+LIRKind#isValue():::Check whether this kind is a value type that doesn't need to be tracked at safepoints.:::return
+NumUtil#isUByte(int):::Determines if a given int value is the range of unsigned byte values.:::return
+NumUtil#isByte(int):::Determines if a given int value is the range of signed byte values.:::return
+NumUtil#isUByte(long):::Determines if a given long value is the range of unsigned byte values.:::return
+NumUtil#isByte(long):::Determines if a given long value is the range of signed byte values.:::return
+NumUtil#isUInt(long):::Determines if a given long value is the range of unsigned int values.:::return
+NumUtil#isInt(long):::Determines if a given long value is the range of signed int values.:::return
+NumUtil#isShort(int):::Determines if a given int value is the range of signed short values.:::return
+NumUtil#isShort(long):::Determines if a given long value is the range of signed short values.:::return
+NumUtil#minValue(int):::Get the minimum value representable in a bits bit signed integer.:::return->CodeUtil->minValue
+NumUtil#maxValue(int):::Get the maximum value representable in a bits bit signed integer.:::return->CodeUtil->maxValue
+NumUtil#maxValueUnsigned(int):::Get the maximum value representable in a bits bit unsigned integer.:::return->getNbitNumberLong

@@ -1,0 +1,131 @@
+AltCatalog#setCatalog(String):::Set the catalog attribute:::url->verifyURI->try->url->toURI->catch->CatalogMessages->reportRunTimeError->finally
+AltCatalog#getCatalogId():::Returns the catalog attribute as a URI String.:::return->catalogURI->toASCIIString
+AltCatalog#getCatalogURI():::Returns the catalog attribute as a URI.:::return
+AltCatalog#matchURI(String, int):::Matches the specified id with the entry:::return
+BaseEntry#getType():::Returns the type of the entry:::return
+BaseEntry#setType(CatalogEntryType):::Sets the entry type:::
+BaseEntry#getId():::Returns the id of the entry:::return
+BaseEntry#setId(String):::Set the entry Id:::
+BaseEntry#setBaseURI(String):::Sets the base URI for the entry:::verifyURI
+BaseEntry#getBaseURI():::Gets the base URI for the entry:::return
+BaseEntry#getMatchId():::Gets the attribute used for matching:::return
+BaseEntry#setMatchId(String):::Sets the matchId field:::
+BaseEntry#match(String):::Matches the specified string with the identifier attribute of the entry.:::return
+BaseEntry#match(String, int):::Try to match the specified id with the entry:::return
+BaseEntry#verifyURI(String, URL, String):::Verifies the specified URI.:::CatalogMessages->reportNPEOnNull->url->Normalizer->normalizeURI->try->if->new->URL->else->new->URL->catch->CatalogMessages->new->ObjectArr->reportIAE->finally->return
+Catalog#matchSystem(String):::Attempts to find a matching entry in the catalog by systemId:::
+Catalog#matchPublic(String):::Attempts to find a matching entry in the catalog by publicId:::
+Catalog#matchURI(String):::Attempts to find a matching entry in the catalog by the uri element:::
+Catalog#catalogs():::Returns a sequential Stream of alternative Catalogs specified using the nextCatalog entries in the current catalog, and as the input of catalog files excluding the current catalog (that is, the first in the input list) when the Catalog object is created by the CatalogManager:::
+CatalogFeatures#defaults():::Returns a CatalogFeatures instance with default settings.:::return->CatalogFeatures->builder->build
+CatalogFeatures#get(Feature):::Returns the value of the specified feature.:::return->cf->ordinal
+CatalogFeatures#builder():::Returns an instance of the builder for creating the CatalogFeatures object.:::return->new->CatalogFeatures.Builder
+CatalogFeatures.Builder#with(Feature, String):::Sets the value to a specified Feature.:::Util->validateFeatureInput->values->put->return
+CatalogFeatures.Builder#build():::Returns a CatalogFeatures object built by this builder.:::return->new->CatalogFeatures
+CatalogImpl#load():::Loads the catalog:::if->parse->setCatalog->loadedCatalogs->put->if->isDeferred->loadDelegateCatalogs->loadNextCatalogs
+CatalogImpl#reset():::Resets the Catalog instance to its initial state.:::super->reset->if->catalogsSearched->clear->entries->stream->filter->reset->forEach
+CatalogImpl#isTop():::Returns whether this Catalog instance is the top (main) Catalog.:::return
+CatalogImpl#getParent():::Gets the parent of this catalog.:::return
+CatalogImpl#setDeferred(String):::Sets the defer property:::DEFER_TRUE->equals
+CatalogImpl#isDeferred():::Queries the defer attribute:::return
+CatalogImpl#setResolve(String):::Sets the resolve property:::ResolveType->getType
+CatalogImpl#getResolve():::Gets the value of the resolve attribute:::return
+CatalogImpl#markAsSearched():::Marks the Catalog as being searched already.:::catalogsSearched->add
+CatalogImpl#isEmpty():::Indicate that the catalog is empty:::return
+CatalogImpl#addNextCatalog(NextCatalog):::Adds the catalog to the nextCatalog list:::if->return->if->new->ArrayList<>->nextCatalogs->add
+CatalogImpl#loadNextCatalogs():::Loads all alternative catalogs.:::if->nextCatalogs->stream->next->getCatalogURI->getCatalog->forEach->if->inputFiles->stream->URI->create->getCatalog->forEach
+CatalogImpl#getCatalog(CatalogImpl, URI):::Returns a Catalog object by the specified path.:::if->return->c->if->verifyCatalogFile->uri->toASCIIString->getLoadedCatalog->if->new->CatalogImpl->c->load->return
+CatalogImpl#saveLoadedCatalog(String, CatalogImpl):::Saves a loaded Catalog.:::loadedCatalogs->put
+CatalogImpl#loadedCatalogCount():::Returns a count of all loaded catalogs, including delegate catalogs.:::return->loadedCatalogs->size
+CatalogManager#catalog(CatalogFeatures, URI...):::Creates a Catalog object using the specified feature settings and uri(s) to one or more catalog files:::Util->validateUrisSyntax->catalog->new->CatalogImpl->catalog->load->return
+CatalogManager#catalogResolver(Catalog):::Creates an instance of a CatalogResolver using the specified catalog.:::if->CatalogMessages->reportNPEOnNull->return->new->CatalogResolverImpl
+CatalogManager#catalogResolver(CatalogFeatures, URI...):::Creates an instance of a CatalogResolver using the specified feature settings and uri(s) to one or more catalog files:::catalog->catalog->return->new->CatalogResolverImpl
+CatalogMessages#reportError(String):::Reports an error.:::reportError
+CatalogMessages#reportError(String, Object[]):::Reports an error.:::throw->formatMessage->new->CatalogException
+CatalogMessages#reportRunTimeError(String, Object[]):::Reports a CatalogException.:::throw->formatMessage->new->CatalogException
+CatalogMessages#reportRunTimeError(String, Throwable):::Reports a CatalogException.:::throw->formatMessage->new->CatalogException
+CatalogMessages#reportRunTimeError(String, Object[], Throwable):::Reports a CatalogException.:::throw->formatMessage->new->CatalogException
+CatalogMessages#reportIAEOnNull(String, String):::Reports IllegalArgumentException if the argument is null.:::if->throw->new->ObjectArr->formatMessage->new->IllegalArgumentException
+CatalogMessages#reportNPEOnNull(String, Object):::Reports NullPointerException if the argument is null.:::if->throw->new->ObjectArr->formatMessage->new->NullPointerException
+CatalogMessages#reportIAE(String, Object[], Throwable):::Reports IllegalArgumentException:::throw->formatMessage->new->IllegalArgumentException
+CatalogMessages#formatMessage(String, Object[]):::Format a message with the specified arguments using the default locale information.:::return->Locale->getDefault->formatMessage
+CatalogMessages#formatMessage(String, Object[], Locale):::Format a message with the specified arguments using the given locale information.:::return->SecuritySupport->getErrorMessage
+CatalogMessages#sanitize(String):::Returns sanitized URI.:::if->return->temp->p->uri->lastIndexOf->if->uri->length->return->uri->substring->return
+CatalogReader#endElement(String, String, String):::Handles endElement event:::if->return->type->CatalogEntryType->getType->if
+CatalogReader#resolveEntity(String, String):::Skips external DTD since resolving external DTD is not required by the specification.:::return->new->StringReader->new->InputSource
+CatalogReader#resolve(String, String):::Skips external references since resolution is not required by the specification.:::return->new->StringReader->new->InputSource->new->SAXSource
+CatalogResolver#resolveEntity(String, String):::Implements org.xml.sax.EntityResolver:::
+CatalogResolver#resolve(String, String):::Implements URIResolver:::
+CatalogResolver#resolveEntity(String, String, String, String):::Implements javax.xml.stream.XMLResolver:::
+CatalogResolver#resolveResource(String, String, String, String, String):::Implements org.w3c.dom.ls.LSResourceResolver:::
+DelegatePublic#setPublicIdStartString(String):::Set the publicIdStartString attribute.:::CatalogMessages->reportNPEOnNull->Normalizer->normalizePublicId->setMatchId
+DelegatePublic#getPublicIdStartString():::Get the publicIdStartString attribute.:::return
+DelegatePublic#match(String):::Try to match the specified publicId with the entry.:::return->match
+DelegatePublic#matchURI(String, int):::Try to match the specified publicId with the entry:::if->publicIdStartString->length->publicId->length->publicIdStartString->publicId->publicIdStartString->length->substring->equals->if->publicIdStartString->length->return->return
+DelegateSystem#setSystemIdStartString(String):::Set the systemIdStartString attribute.:::CatalogMessages->reportNPEOnNull->Normalizer->normalizeURI->setMatchId
+DelegateSystem#getSystemIdStartString():::Get the systemIdStartString attribute.:::return
+DelegateSystem#match(String):::Try to match the specified systemId with the entry.:::return->match
+DelegateSystem#matchURI(String, int):::Matches the specified publicId with the entry:::if->systemIdStartString->length->systemId->length->systemIdStartString->systemId->systemIdStartString->length->substring->equals->if->systemIdStartString->length->return->return
+DelegateUri#setURIStartString(String):::Set the uriStartString attribute.:::CatalogMessages->reportNPEOnNull->Normalizer->normalizeURI->setMatchId
+DelegateUri#getURIStartString():::Get the uriStartString attribute.:::return
+DelegateUri#match(String):::Try to match the specified systemId with the entry.:::return->match
+DelegateUri#matchURI(String, int):::Matches the specified systemId with the entry:::if->uriStartString->length->systemId->length->uriStartString->systemId->uriStartString->length->substring->equals->if->uriStartString->length->return->return
+GroupEntry#reset():::Resets the group entry to its initial state.:::
+GroupEntry#setCatalog(CatalogImpl):::Sets the catalog for this GroupEntry.:::
+GroupEntry#addEntry(BaseEntry):::Adds an entry.:::entries->add
+GroupEntry#setPrefer(String):::Sets the prefer property:::prefer
+GroupEntry#isPreferPublic():::Queries the prefer attribute:::return
+GroupEntry#matchSystem(String):::Attempt to find a matching entry in the catalog by systemId:::match->foreach->switch->match->if->return->break->match->if->getSystemIdStartString->length->break->match->if->getSystemIdSuffix->length->break->grpEntry->grpEntry->matchSystem->if->return->else->if->else->if->break->if->return->else->if->return->return->matchDelegate
+GroupEntry#matchPublic(String):::Attempt to find a matching entry in the catalog by publicId:::if->return->match->foreach->switch->match->break->match->break->matchPublic->break->if->return->return->matchDelegate
+GroupEntry#matchURI(String):::Attempt to find a matching entry in the catalog by the uri element:::match->foreach->switch->match->if->return->break->match->if->getURIStartString->length->break->match->if->getURISuffix->length->break->grpEntry->grpEntry->matchURI->if->return->else->if->else->if->break->if->return->else->if->return->return->matchDelegate
+GroupEntry#loadDelegateCatalogs(CatalogImpl):::Loads all delegate catalogs.:::entries->stream->filter->map->altCatalog->getCatalogURI->loadDelegateCatalog->forEach
+GroupEntry#loadDelegateCatalog(CatalogImpl, URI):::Loads a delegate catalog by the catalogId specified.:::delegateCatalog->if->catalogId->catalogURI->toASCIIString->if->verifyCatalogFile->getLoadedCatalog->if->new->CatalogImpl->delegateCatalog->load->delegateCatalogs->put->return
+GroupEntry#getLoadedCatalog(String):::Returns a previously loaded Catalog object if found.:::c->delegateCatalogs->get->if->loadedCatalogs->get->return
+GroupEntry#verifyCatalogFile(CatalogImpl, URI):::Verifies that the catalog file represented by the catalogId exists:::if->return->if->Util->isFileUri->Util->isFileUriExist->return->catalogId->catalogURI->toASCIIString->if->catalogsSearched->contains->isCircular->CatalogMessages->new->ObjectArr->CatalogMessages->sanitize->reportRunTimeError->return
+GroupEntry#isCircular(CatalogImpl, String):::Checks whether the catalog is circularly referenced:::if->return->if->equals->return->return->parent->isCircular
+Normalizer#normalizePublicId(String):::Normalize a public identifier in accordance with section 6.2 of the Catalog specification:::if->return->sb->publicId->length->new->StringBuilder->last->foreach->publicId->toCharArray->if->sb->length->continue->if->if->sb->append->else->sb->append->if->sb->sb->length->deleteCharAt->return->sb->toString
+Normalizer#encodeURN(String):::Encode a public identifier as a "publicid" URN.:::urn->normalizePublicId->try->URLEncoder->encode->urn->replace->urn->replace->catch->CatalogMessages->reportRunTimeError->finally->return
+Normalizer#decodeURN(String):::Decode a "publicid" URN into a public identifier.:::publicId->if->urn->startsWith->urn->substring->else->return->try->publicId->replace->publicId->replace->URLDecoder->decode->catch->CatalogMessages->reportRunTimeError->finally->return
+Normalizer#normalizeURI(String):::Perform character normalization on a URI reference.:::if->return->bytes->uriref->trim->try->uriref->getBytes->catch->return->finally->newRef->new->StringBuilder->for->count->return->newRef->toString->trim
+PublicEntry#setPublicId(String):::Set the publicId attribute.:::CatalogMessages->reportNPEOnNull->Normalizer->normalizePublicId
+PublicEntry#setURI(String):::Set the uri attribute:::verifyURI
+PublicEntry#getPublicId():::Get the publicId attribute.:::return
+PublicEntry#getURI():::Get the uri attribute.:::return
+RewriteSystem#setSystemIdStartString(String):::Set the systemIdStartString attribute.:::CatalogMessages->reportNPEOnNull->Normalizer->normalizeURI
+RewriteSystem#setRewritePrefix(String):::Set the rewritePrefix attribute:::verifyURI
+RewriteSystem#getSystemIdStartString():::Get the systemIdStartString attribute.:::return
+RewriteSystem#getRewritePrefix():::Get the rewritePrefix attribute.:::return
+RewriteSystem#match(String, int):::Try to match the specified systemId with the entry:::if->systemIdStartString->length->systemId->length->systemIdStartString->systemId->systemIdStartString->length->substring->equals->if->systemIdStartString->length->prefix->rewritePrefix->toExternalForm->sysId->if->systemIdStartString->endsWith->systemId->systemIdStartString->length->substring->else->systemId->systemIdStartString->length->substring->if->prefix->endsWith->return->else->return->return
+RewriteSystem#match(String):::Try to match the specified systemId with the entry.:::return->match
+RewriteUri#setURIStartString(String):::Set the uriStartString attribute.:::CatalogMessages->reportNPEOnNull->Normalizer->normalizeURI
+RewriteUri#setRewritePrefix(String):::Set the rewritePrefix attribute:::verifyURI
+RewriteUri#getURIStartString():::Get the uriStartString attribute.:::return
+RewriteUri#getRewritePrefix():::Get the rewritePrefix attribute.:::return
+RewriteUri#match(String, int):::Try to match the specified systemId with the entry:::if->uriStartString->length->systemId->length->uriStartString->systemId->uriStartString->length->substring->equals->if->uriStartString->length->prefix->rewritePrefix->toExternalForm->sysId->if->uriStartString->endsWith->systemId->uriStartString->length->substring->else->systemId->uriStartString->length->substring->if->prefix->endsWith->return->else->return->return
+SystemEntry#setSystemId(String):::Set the systemId attribute.:::CatalogMessages->reportNPEOnNull->Normalizer->normalizeURI
+SystemEntry#setURI(String):::Set the uri attribute:::verifyURI
+SystemEntry#getSystemId():::Get the systemId attribute.:::return
+SystemEntry#getURI():::Get the uri attribute.:::return
+SystemEntry#match(String):::Try to match the specified string with the entry:::if->equals->return->uri->toString->return
+SystemSuffix#setSystemIdSuffix(String):::Set the systemIdSuffix attribute.:::CatalogMessages->reportNPEOnNull->Normalizer->normalizeURI
+SystemSuffix#setURI(String):::Set the uri attribute:::verifyURI
+SystemSuffix#getSystemIdSuffix():::Get the systemIdSuffix attribute.:::return
+SystemSuffix#getURI():::Get the uri attribute.:::return
+SystemSuffix#match(String, int):::Try to match the specified systemId with the entry:::if->systemId->endsWith->if->systemIdSuffix->length->return->uri->toString->return
+SystemSuffix#match(String):::Try to match the specified systemId with the entry.:::return->match
+UriEntry#setName(String):::Set the name attribute.:::CatalogMessages->reportNPEOnNull->if->name->startsWith->name->startsWith->Normalizer->normalizePublicId->else->Normalizer->normalizeURI
+UriEntry#setURI(String):::Set the uri attribute:::verifyURI
+UriEntry#getName():::Get the name attribute.:::return
+UriEntry#getURI():::Get the uri attribute.:::return
+UriSuffix#setURISuffix(String):::Set the uriSuffix attribute.:::CatalogMessages->reportNPEOnNull->Normalizer->normalizeURI
+UriSuffix#setURI(String):::Set the uri attribute:::verifyURI
+UriSuffix#getURISuffix():::Get the uriSuffix attribute.:::return
+UriSuffix#getURI():::Get the uri attribute.:::return->uri->toString
+UriSuffix#match(String, int):::Try to match the specified systemId with the entry:::if->systemId->endsWith->if->uriSuffix->length->return->uri->toString->return
+Util#resolve(CatalogImpl, String, String):::Finds an entry in the catalog that matches with the publicId or systemId:::resolvedSystemId->catalog->reset->if->catalog->matchSystem->if->catalog->matchPublic->if->catalog->matchURI->catalog->markAsSearched->if->iter->catalog->catalogs->iterator->while->iter->hasNext->iter->next->resolve->if->break->return
+Util#validateUriSyntax(URI):::Validate that the URI must be absolute and a valid URL:::CatalogMessages->reportNPEOnNull->if->uri->isAbsolute->CatalogMessages->new->ObjectArr->reportIAE->try->uri->toURL->catch->CatalogMessages->new->ObjectArr->reportIAE->finally
+Util#isFileUri(URI):::Checks whether the URI is a file URI, including JAR file.:::if->SCHEME_FILE->uri->getScheme->equals->SCHEME_JAR->uri->getScheme->equals->return->return
+Util#isFileUriExist(URI, boolean):::Verifies whether the file resource exists.:::if->uri->isAbsolute->if->uri->getScheme->switch->uri->getScheme->path->uri->getPath->f1->new->File->if->f1->isFile->return->break->tempUri->uri->toString->pos->tempUri->indexOf->if->return->if->jarFile->tempUri->SCHEME_JARFILE->length->substring->entryName->tempUri->substring->try->jf->new->JarFile->je->jf->getJarEntry->if->return->catch->return->finally->else->return->break->return
+Util#getCatalogFiles(String):::Find catalog file paths by reading the system property, and then jaxp.properties if the system property is not specified.:::value->SecuritySupport->getJAXPSystemProperty->if->value->equals->return->value->split->return
+Util#getNotNullOrEmpty(String):::Checks whether the specified string is null or empty, returns the original string with leading and trailing spaces removed if not.:::if->return->else->temp->test->trim->if->temp->length->return->else->return
+Util#validateFeatureInput(Feature, String):::Validates the input for features.:::CatalogMessages->f->name->reportNPEOnNull->if->value->length->CatalogMessages->new->ObjectArr->f->name->reportIAE->if->if->value->equals->value->equals->CatalogMessages->new->ObjectArr->name->reportIAE->else->if->if->value->equals->value->equals->CatalogMessages->new->ObjectArr->name->reportIAE->else->if->if->value->equals->value->equals->value->equals->CatalogMessages->new->ObjectArr->name->reportIAE->else->if->Util->value->split->validateUrisSyntax

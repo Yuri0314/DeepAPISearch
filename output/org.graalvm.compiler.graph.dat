@@ -1,0 +1,100 @@
+Edges#getDirectCount():::Get the number of direct edges represented by this object:::return
+Edges#getNode(Node, long[], int):::Gets the Node at the end point of a #getDirectCount() direct edge.:::return->getNodeUnsafe
+Edges#getNodeList(Node, long[], int):::Gets the NodeList at the end point of a #getDirectCount() direct edge.:::return->getNodeListUnsafe
+Edges#clear(Node):::Clear edges in a given node:::curOffsets->curType->index->curDirectCount->getDirectCount->while->initializeNode->curCount->getCount->while->list->getNodeList->if->size->newList->new->NodeInputList<>->new->NodeSuccessorList<>->initializeList
+Edges#initializeLists(Node, Node):::Initializes the list edges in a given node based on the size of the list edges in a prototype node.:::index->getDirectCount->curOffsets->curType->while->getCount->list->getNodeList->if->size->newList->new->NodeInputList<>->new->NodeSuccessorList<>->initializeList
+Edges#copy(Node, Node):::Copies edges from fromNode to toNode:::index->curOffsets->curType->curDirectCount->getDirectCount->while->getNode->initializeNode->curCount->getCount->while->list->getNodeList->fromList->getNodeList->if->new->NodeInputList<>->new->NodeSuccessorList<>->initializeList->else->list->copy
+Edges#initializeNode(Node, int, Node):::Sets the value of a given edge without notifying the new and old nodes on the other end of the edge of the change.:::verifyUpdateValid->putNodeUnsafe
+Edges#setNode(Node, int, Node):::Sets the value of a given edge and notifies the new and old nodes on the other end of the edge of the change.:::old->getNodeUnsafe->initializeNode->update
+GraalGraphError#addContext(Graph):::Adds a graph to the context of this VerificationError:::if->addContext->if->return
+GraalGraphError#addContext(Node):::Adds a node to the context of this VerificationError:::if->addContext->if->return
+GraalGraphError#transformAndAddContext(GraalError, Graph):::Transform a GraalError into a GraalGraphInternalError and add a graph to the context.:::graphError->if->else->new->GraalGraphError->return->graphError->addContext
+GraalGraphError#transformAndAddContext(GraalError, Node):::Transform a GraalError into a GraalGraphInternalError and add a node to the context.:::graphError->if->else->new->GraalGraphError->return->graphError->addContext
+Graph#withNodeSourcePosition(Node):::Opens a scope in which the source information from node is copied into nodes created within the scope:::return->node->getNodeSourcePosition->withNodeSourcePosition
+Graph#withNodeSourcePosition(NodeSourcePosition):::Opens a scope in which sourcePosition is copied into nodes created within the scope:::return->trackNodeSourcePosition->new->NodeSourcePositionScope
+Graph#withoutNodeSourcePosition():::Opens a scope in which newly created nodes do not get any source information added.:::return->new->NodeSourcePositionScope
+Graph#isModificationCountsEnabled():::We only want the expensive modification count tracking when assertions are enabled for the Graph class.:::enabled->return
+Graph#copy(DebugContext):::Creates a copy of this graph.:::return->copy
+Graph#copy(Consumer>, DebugContext):::Creates a copy of this graph.:::return->copy
+Graph#copy(String, DebugContext):::Creates a copy of this graph.:::return->copy
+Graph#copy(String, Consumer>, DebugContext):::Creates a copy of this graph.:::copy->trackNodeSourcePosition->new->Graph->duplicates->copy->getNodes->this->getNodeCount->addDuplicates->if->duplicationMapCallback->accept->return
+Graph#resetDebug(DebugContext):::Resets the DebugContext for this graph to a new value:::
+Graph#getNodeCount():::Gets the number of live nodes in this graph:::return->getNodesDeletedSinceLastCompression
+Graph#getCompressions():::Gets the number of times this graph has been #maybeCompress() compressed:::return
+Graph#getNodesDeletedSinceLastCompression():::Gets the number of nodes which have been deleted from this graph since it was last #maybeCompress() compressed.:::return
+Graph#getTotalNodesDeleted():::Gets the total number of nodes which have been deleted from this graph.:::return
+Graph#add(T):::Adds a new node to the graph.:::if->node->getNodeClass->valueNumberable->throw->new->IllegalStateException->return->addHelper
+Graph.NodeEventListener#event(NodeEvent, Node):::A method called when a change event occurs:::switch->inputChanged->break->usagesDroppedToZero->break->nodeAdded->break->nodeRemoved->break->changed
+Graph.NodeEventListener#changed(NodeEvent, Node):::Notifies this listener about any change event in the graph.:::
+Graph.NodeEventListener#inputChanged(Node):::Notifies this listener about a change in a node's inputs.:::
+Graph.NodeEventListener#usagesDroppedToZero(Node):::Notifies this listener of a node becoming unused.:::
+Graph.NodeEventListener#nodeAdded(Node):::Notifies this listener of an added node.:::
+Graph.NodeEventListener#nodeRemoved(Node):::Notifies this listener of a removed node.:::
+Graph#trackNodeEvents(NodeEventListener):::Registers a given NodeEventListener with this graph:::return->new->NodeEventScope
+Graph#unique(T):::Looks for a node similar to node and returns it if found:::return->uniqueHelper
+Graph#findDuplicate(T):::Returns a possible duplicate for the given node in the graph or null if no such duplicate exists.:::nodeClass->node->getNodeClass->if->nodeClass->isLeafNode->cachedNode->findNodeInCache->if->return->else->return->else->earlyExitUsageCount->node->graph->minCount->minCountNode->foreach->node->inputs->usageCount->input->getUsageCount->if->return->else->if->if->foreach->minCountNode->usages->if->usage->getNodeClass->node->valueEquals->nodeClass->equalInputs->nodeClass->equalSuccessors->return->return->return
+Graph.Mark#isStart():::Determines if this mark is positioned at the first live node in the graph.:::return
+Graph.Mark#getValue():::Gets the Graph#getNodeCount() live node count of the associated graph when this object was created.:::return
+Graph.Mark#isCurrent():::Determines if this mark still represents the Graph#getNodeCount() live node count of the graph.:::return->graph->nodeIdCount
+Graph#getMark():::Gets a mark that can be used with #getNewNodes.:::return->new->Mark
+Graph#getNewNodes(Mark):::Returns an Iterable providing all nodes added since the last Graph#getMark() mark.:::index->mark->getValue->return->new->NodeIterable<Node>
+Graph#getNodes():::Returns an Iterable providing all the live nodes.:::return->new->NodeIterable<Node>
+Graph#maybeCompress():::If the Options#GraphCompressionThreshold compression threshold is met, the list of nodes is compressed such that all non-null entries precede all null entries while preserving the ordering between the nodes within the list.:::if->debug->isDumpEnabledForMethod->debug->isLogEnabledForMethod->return->liveNodeCount->getNodeCount->liveNodePercent->compressionThreshold->getValue->if->return->GraphCompressions->increment->nextId->for->i->if->isModificationCountsEnabled->Arrays->fill->Arrays->fill->return
+Graph#getNodes(NodeClass):::Returns an Iterable providing all the live nodes whose type is compatible with type.:::return->new->NodeIterable<T>
+Graph#hasNode(NodeClass):::Returns whether the graph contains at least one node of the given type.:::return->getNodes->iterator->hasNext
+Graph#nodeIdCount():::Returns the number of node ids generated so far.:::return
+Graph#addDuplicates(Iterable, Graph, int, EconomicMap):::Adds duplicates of the nodes in newNodes to this graph:::replacements->if->else->new->MapReplacement->return->addDuplicates
+Node#graph():::Gets the graph context of this node.:::return
+Node#getOptions():::Gets the option values associated with this node's graph.:::return->graph->getOptions
+Node#getDebug():::Gets the debug context associated with this node's graph.:::return->graph->getDebug
+Node#inputs():::Returns an NodeIterable iterable which can be used to traverse all non-null input edges of this node.:::return->nodeClass->getInputIterable
+Node#inputPositions():::Returns an Iterable iterable which can be used to traverse all non-null input edges of this node.:::return->nodeClass->getInputEdges->getPositionsIterable
+Node#applyInputs(EdgeVisitor):::Applies the given visitor to all inputs of this node.:::nodeClass->applyInputs
+Node#applySuccessors(EdgeVisitor):::Applies the given visitor to all successors of this node.:::nodeClass->applySuccessors
+Node#successors():::Returns an NodeIterable iterable which can be used to traverse all non-null successor edges of this node.:::return->nodeClass->getSuccessorIterable
+Node#successorPositions():::Returns an Iterable iterable which can be used to traverse all successor edge positions of this node.:::return->nodeClass->getSuccessorEdges->getPositionsIterable
+Node#getUsageCount():::Gets the maximum number of usages this node has had at any point in time.:::if->return->if->return->return
+Node#usages():::Gets the list of nodes that use this node (i.e., as an input).:::return->new->NodeUsageIterable
+Node#hasNoUsages():::Checks whether this node has no usages.:::return
+Node#hasUsages():::Checks whether this node has usages.:::return
+Node#hasMoreThanOneUsage():::Checks whether this node has more than one usages.:::return
+Node#hasExactlyOneUsage():::Checks whether this node has exactly one usgae.:::return->hasUsages->hasMoreThanOneUsage
+Node#addUsage(Node):::Adds a given node to this node's #usages() usages.:::incUsageModCount->if->else->if->else->length->if->new->NodeArr->else->if->newExtraUsages->new->NodeArr->System->arraycopy
+Node#removeUsage(Node):::Removes a given node from this node's #usages() usages.:::incUsageModCount->if->movUsageFromEndToIndexZero->return->if->movUsageFromEndToIndexOne->return->for->i->return
+Node#updateUsages(Node, Node):::Updates the usages sets of the given nodes after an input slot is changed from oldInput to newInput by removing this node from oldInput's usages and adds this node to newInput's usages.:::if->if->result->removeThisFromUsages->maybeNotifyInputChanged->if->newInput->addUsage->if->oldInput->hasNoUsages->maybeNotifyZeroUsages
+Node#updatePredecessor(Node, Node):::Updates the predecessor of the given nodes after a successor slot is changed from oldSuccessor to newSuccessor: removes this node from oldSuccessor's predecessors and adds this node to newSuccessor's predecessors.:::if->if->if->maybeNotifyInputChanged
+Node#setNodeSourcePosition(NodeSourcePosition):::Set the source position to sourcePosition:::if->return->setNodeInfo
+Node#updateNodeSourcePosition(Supplier):::Update the source position only if it is null.:::if->this->getNodeSourcePosition->sourcePositionSupp->get->setNodeSourcePosition
+Node#safeDelete():::Removes this node from its graph:::this->clearInputs->this->clearSuccessors->markDeleted
+Node#simplify(SimplifierTool):::Must be overridden by subclasses that implement Simplifiable:::throw->new->UnsupportedOperationException
+Node#clone(Graph, EnumSet):::Makes a copy of this node in(to) a given graph.:::nodeClassTmp->getNodeClass->useIntoLeafNodeCache->if->if->nodeClassTmp->valueNumberable->nodeClassTmp->isLeafNode->otherNode->into->findNodeInCache->if->return->newNode->try->UNSAFE->getClass->allocateInstance->nodeClassTmp->getData->copy->copyOrClearEdgesForClone->copyOrClearEdgesForClone->catch->throw->new->GraalGraphError->addContext->finally->if->getNodeSourcePosition->into->trackNodeSourcePosition->newNode->getNodeSourcePosition->setNodeSourcePosition->if->into->register->if->into->putNodeIntoCache->newNode->afterClone->return
+Node#verifyEdges():::Perform expensive verification of inputs, usages, predecessors and successors.:::foreach->inputs->input->usages->contains->assertTrue->foreach->successors->successor->predecessor->successor->predecessor->assertTrue->successor->graph->graph->assertTrue->foreach->usages->usage->isDeleted->assertFalse->usage->inputs->contains->assertTrue->foundThis->foreach->usage->inputPositions->if->pos->get->if->pos->getInputType->pos->getInputType->isAllowedUsageType->pos->getInputType->pos->getName->assertTrue->assertTrue->if->predecessor->isDeleted->assertFalse->predecessor->successors->contains->assertTrue->return
+Node#cfgSuccessors():::Returns an iterator that will provide all control-flow successors of this node:::return->successors
+Node#hashCode():::Nodes using their #id as the hash code:::if->this->isDeleted->return->return
+Node#getDebugProperties():::Provides a Map of properties of this node for use in debugging (e.g., to view in the ideal graph visualizer).:::return->new->HashMap<>->getDebugProperties
+Node#getDebugProperties(Map):::Fills a Map with properties of this node for use in debugging (e.g., to view in the ideal graph visualizer):::properties->getNodeClass->getData->for->i->properties->getCount->pos->getNodeSourcePosition->if->map->put->creation->getCreationPosition->if->map->creation->getStrackTraceString->put->insertion->getInsertionPosition->if->map->insertion->getStrackTraceString->put->return
+Node#toString():::This method is a shortcut for #toString(Verbosity) with Verbosity#Short.:::return->toString
+Node#toString(Verbosity):::Creates a String representation for this node with a given Verbosity.:::switch->return->Integer->toString->return->getNodeClass->shortName->return->toString->toString->return->toString->str->new->StringBuilder->str->toString->append->append->foreach->getDebugProperties->entrySet->str->entry->getKey->append->append->entry->getValue->append->append->str->append->return->str->toString->throw->new->RuntimeException
+Node#valueEquals(Node):::Determines if this node's NodeClass#getData() data fields are equal to the data fields of another node of the same type:::return->getNodeClass->dataEquals
+Node#dataFlowEquals(Node):::Determines if this node is equal to the other node while ignoring differences in Successor control-flow edges.:::return->other->getNodeClass->this->valueEquals->nodeClass->equalInputs
+NodeClass#create(Class):::Gets the NodeClass associated with a given Class.:::superclass->c->getSuperclass->nodeSuperclass->if->get->return->new->NodeClass<>
+NodeClass#isCanonicalizable():::Determines if this node type implements Canonicalizable.:::return
+NodeClass#isCommutative():::Determines if this node type implements BinaryCommutative.:::return
+NodeClass#isSimplifiable():::Determines if this node type implements Simplifiable.:::return
+NodeClass.EdgeInfo#compareTo(FieldsScanner.FieldInfo):::Sorts non-list edges before list edges.:::if->isAssignableFrom->if->isAssignableFrom->return->else->if->isAssignableFrom->return->return->super->compareTo
+NodeClass#getEdges(Edges.Type):::Gets the input or successor edges defined by this node class.:::return
+NodeClass#allocateInstance():::Returns a newly allocated node for which no subclass-specific constructor has been called.:::try->node->UNSAFE->getJavaClass->allocateInstance->node->init->return->catch->throw->shouldNotReachHere->finally
+NodeClass#getNameTemplate():::The template used to build the Verbosity#Name version:::return
+NodeIdAccessor#verifyIdsAreStable():::Verifies that node identifiers have not changed since this object was created.:::compressions->if->throw->new->VerificationError->return
+NodeIdAccessor#getNodeId(Node):::Gets the identifier for a node:::return->node->id
+NodeSourcePosition#trim():::Remove marker frames.:::lastMarker->for->current->current->getCaller->if->return->return->lastMarker->getCaller
+NodeUnionFind#union(Node, Node):::Merge the equivalence sets of two nodes:::getNodeId->getNodeId->union
+NodeUnionFind#find(Node):::Get a representative element of the equivalence set of a node:::id->getNodeId->find->return->graph->getNode
+Position#getSubIndex():::Gets the index within a NodeList if #getIndex() denotes a NodeList field otherwise Node#NOT_ITERABLE.:::return
+Position#getIndex():::Gets the index of the Node or NodeList field denoted by this position.:::return
+SourceLanguagePosition#toShortString():::Produce a compact description of this position suitable for printing.:::
+SourceLanguagePosition#getOffsetEnd():::Mimics GraphLocations operation.:::
+SourceLanguagePosition#getOffsetStart():::Mimics GraphLocations operation.:::
+SourceLanguagePosition#getLineNumber():::Mimics GraphLocations operation.:::
+SourceLanguagePosition#getURI():::Mimics GraphLocations operation.:::
+SourceLanguagePosition#getLanguage():::Mimics GraphLocations operation.:::

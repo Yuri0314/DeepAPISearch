@@ -1,0 +1,116 @@
+AnnotationElement#getValues():::Returns an immutable list of annotation values in an order that matches the value descriptors for this AnnotationElement.:::return
+AnnotationElement#getValueDescriptors():::Returns an immutable list of descriptors that describes the annotation values for this AnnotationElement.:::return->Collections->type->getFields->unmodifiableList
+AnnotationElement#getAnnotationElements():::Returns an immutable list of annotation elements for this AnnotationElement.:::return->type->getAnnotationElements
+AnnotationElement#getTypeName():::Returns the fully qualified name of the annotation type that corresponds to this AnnotationElement (for example, "jdk.jfr.Label").:::return->type->getName
+AnnotationElement#getValue(String):::Returns a value for this AnnotationElement.:::Objects->requireNonNull->index->foreach->if->name->equals->return->annotationValues->get->valueNames->new->StringJoiner->foreach->type->getFields->valueNames->v->getName->add->throw->new->IllegalArgumentException
+AnnotationElement#hasValue(String):::Returns true if an annotation value with the specified name exists in this AnnotationElement.:::Objects->requireNonNull->foreach->if->name->equals->return->return
+AnnotationElement#getAnnotation(Class):::Returns the first annotation for the specified type if an AnnotationElement with the same name exists, else null.:::Objects->requireNonNull->return->type->getAnnotation
+AnnotationElement#getTypeId():::Returns the type ID for this AnnotationElement:::return->type->getId
+Configuration#getSettings():::Returns the settings that specifies how a recording is configured:::return->new->LinkedHashMap<String,String>
+Configuration#getName():::Returns an identifying name (for example, "default" or "profile").:::return
+Configuration#getLabel():::Returns a human-readable name (for example, "Continuous" or "Profiling"}.:::return
+Configuration#getDescription():::Returns a short sentence that describes the configuration (for example "Low overhead configuration safe for continuous use in production environments"):::return
+Configuration#getProvider():::Returns who created the configuration (for example "OpenJDK").:::return
+Configuration#getContents():::Returns a textual representation of the configuration (for example, the contents of a JFC file).:::return
+Configuration#create(Path):::Reads a configuration from a file.:::Objects->requireNonNull->JVMSupport->ensureWithIOException->try->reader->Files->newBufferedReader->return->JFC->JFC->nameFromPath->create->catch->finally
+Configuration#create(Reader):::Reads a configuration from a character stream.:::Objects->requireNonNull->JVMSupport->ensureWithIOException->return->JFC->create
+Configuration#getConfiguration(String):::Returns a predefined configuration:::JVMSupport->ensureWithIOException->return->JFC->getPredefined
+Configuration#getConfigurations():::Returns an immutable list of predefined configurations for this Java Virtual Machine (JVM).:::if->JVMSupport->isNotAvailable->return->new->ArrayList<>->return->Collections->JFC->getConfigurations->unmodifiableList
+Event#begin():::Starts the timing of this event.:::
+Event#end():::Ends the timing of this event:::
+Event#commit():::Writes the field values, time stamp, and event duration to the Flight Recorder system:::
+Event#isEnabled():::Returns true if at least one recording is running, and the enabled setting for this event is set to true, otherwise false is returned.:::return
+Event#shouldCommit():::Returns true if the enabled setting for this event is set to true and if the duration is within the threshold for the event, false otherwise:::return
+Event#set(int, Object):::Sets a field value:::
+EventFactory#create(List, List):::Creates an EventFactory object:::Objects->requireNonNull->Objects->requireNonNull->JVMSupport->ensureWithInternalError->Utils->checkRegisterPermission->sanitizedAnnotation->Utils->sanitizeNullFreeList->sanitizedFields->Utils->sanitizeNullFreeList->nameSet->new->HashSet<>->foreach->name->v->getName->if->v->isArray->throw->new->IllegalArgumentException->if->Type->v->getTypeName->isValidJavaFieldType->throw->v->getTypeName->new->IllegalArgumentException->if->Type->v->getName->isValidJavaIdentifier->throw->new->IllegalArgumentException->if->nameSet->contains->throw->new->IllegalArgumentException->nameSet->add->needRegister->bootAnnotations->new->ArrayList<>->foreach->id->ae->getTypeId->if->ae->isInBoot->if->if->ae->getValue->equals->else->bootAnnotations->add->bootAnnotations->new->AnnotationElement->add->ecb->new->EventClassBuilder->eventClass->ecb->build->if->MetadataRepository->getInstance->register->try->return->new->EventFactory->catch->throw->e->getMessage->new->IllegalAccessError->throw->e->getMessage->new->InternalError->finally
+EventFactory#newEvent():::Instantiates an event, so it can be populated with data and written to the Flight Recorder system:::try->return->constructorHandle->invoke->catch->throw->eventClass->getName->e->getMessage->new->InstantiationError->finally
+EventFactory#getEventType():::Returns the event type that is associated with this event factory.:::return->EventType->getEventType
+EventFactory#register():::Registers an unregistered event:::MetadataRepository->getInstance->register
+EventFactory#unregister():::Unregisters the event that is associated with this event factory:::MetadataRepository->getInstance->unregister
+EventSettings#withStackTrace():::Enables stack traces for the event that is associated with this event setting:::return->with
+EventSettings#withoutStackTrace():::Disables stack traces for the event that is associated with this event setting:::return->with
+EventSettings#withoutThreshold():::Specifies that a threshold is not used:::return->with
+EventSettings#withPeriod(Duration):::Sets the interval for the event that is associated with this event setting.:::return->duration->toNanos->with
+EventSettings#withThreshold(Duration):::Sets the threshold for the event that is associated with this event setting.:::if->return->with->else->return->duration->toNanos->with
+EventSettings#with(String, String):::Sets a setting value for the event that is associated with this event setting.:::
+EventSettings#toMap():::Creates a settings Map for the event that is associated with this event setting.:::
+EventType#getFields():::Returns an immutable list of descriptors that describe the event fields of this event type.:::return->platformEventType->getFields
+EventType#getField(String):::Returns the field with the specified name, or null if it doesn't exist.:::Objects->requireNonNull->if->fields->getFields->newCache->fields->size->new->LinkedHashMap<String,ValueDescriptor>->foreach->newCache->v->getName->put->return->cache->get
+EventType#getName():::Returns an identifier for the event (for example, "jdk.CPULoad"):::return->platformEventType->getName
+EventType#getLabel():::Returns a human-readable name (for example, "CPU Load"):::return->platformEventType->getLabel
+EventType#getId():::Returns a unique ID for this event type in the Java Virtual Machine (JVM).:::return->platformEventType->getId
+EventType#getAnnotationElements():::Returns an immutable list of annotation elements for this event type.:::return->platformEventType->getAnnotationElements
+EventType#isEnabled():::Returns true if the event is enabled and at least one recording is running, false otherwise:::return->platformEventType->isEnabled
+EventType#getDescription():::Returns a short sentence that describes the event class:::return->platformEventType->getDescription
+EventType#getAnnotation(Class):::Returns the first annotation for the specified type if an annotation element with the same name is directly present, otherwise null.:::Objects->requireNonNull->return->platformEventType->getAnnotation
+EventType#getEventType(Class):::Returns the event type for an event class, or null if it doesn't exist.:::Objects->requireNonNull->Utils->ensureValidEventSubclass->JVMSupport->ensureWithInternalError->return->MetadataRepository->getInstance->getEventType
+EventType#getSettingDescriptors():::Returns an immutable list of the setting descriptors that describe the available event settings for this event type.:::return->Collections->platformEventType->getSettings->unmodifiableList
+EventType#getCategoryNames():::Returns the list of human-readable names that makes up the categories for this event type (for example, "Java Application", "Statistics").:::c->platformEventType->getAnnotation->if->return->return->Collections->Arrays->c->value->asList->unmodifiableList
+FlightRecorder#getRecordings():::Returns an immutable list of the available recordings:::recs->new->ArrayList<>->foreach->internal->getRecordings->recs->r->getRecording->add->return->Collections->unmodifiableList
+FlightRecorder#takeSnapshot():::Creates a snapshot of all available recorded data:::snapshot->new->Recording->snapshot->setName->internal->snapshot->getInternal->fillWithRecordedData->return
+FlightRecorder#register(Class):::Registers an event class:::Objects->requireNonNull->if->JVMSupport->isNotAvailable->return->Utils->ensureValidEventSubclass->MetadataRepository->getInstance->register
+FlightRecorder#unregister(Class):::Unregisters an event class:::Objects->requireNonNull->if->JVMSupport->isNotAvailable->return->Utils->ensureValidEventSubclass->MetadataRepository->getInstance->unregister
+FlightRecorder#getFlightRecorder():::Returns the Flight Recorder for the platform.:::synchronized->Utils->checkAccessFlightRecorder->JVMSupport->ensureWithIllegalStateException->if->try->new->PlatformRecorder->new->FlightRecorder->catch->throw->throw->e->getMessage->new->IllegalStateException->finally->Logger->log->Logger->Options->getMaxChunkSize->log->Logger->Options->getMemorySize->log->Logger->Options->getGlobalBufferSize->log->Logger->Options->getGlobalBufferCount->log->Logger->Options->getDumpPath->log->Logger->Options->getSampleThreads->log->Logger->Options->getStackDepth->log->Logger->Options->getThreadBufferSize->log->Logger->Repository->getRepository->getRepositoryPath->toString->log->PlatformRecorder->notifyRecorderInitialized->return
+FlightRecorder#addPeriodicEvent(Class, Runnable):::Adds a hook for a periodic event:::Objects->requireNonNull->Objects->requireNonNull->if->JVMSupport->isNotAvailable->return->Utils->ensureValidEventSubclass->Utils->checkRegisterPermission->acc->AccessController->getContext->RequestEngine->EventType->getEventType->getPlatformEventType->addHook
+FlightRecorder#removePeriodicEvent(Runnable):::Removes a hook for a periodic event.:::Objects->requireNonNull->Utils->checkRegisterPermission->if->JVMSupport->isNotAvailable->return->return->RequestEngine->removeHook
+FlightRecorder#getEventTypes():::Returns an immutable list that contains all currently registered events:::return->Collections->MetadataRepository->getInstance->getRegisteredEventTypes->unmodifiableList
+FlightRecorder#addListener(FlightRecorderListener):::Adds a recorder listener and captures the AccessControlContext to use when invoking the listener:::Objects->requireNonNull->Utils->checkAccessFlightRecorder->if->JVMSupport->isNotAvailable->return->PlatformRecorder->addListener
+FlightRecorder#removeListener(FlightRecorderListener):::Removes a recorder listener:::Objects->requireNonNull->Utils->checkAccessFlightRecorder->if->JVMSupport->isNotAvailable->return->return->PlatformRecorder->removeListener
+FlightRecorder#isAvailable():::Returns true if the Java Virtual Machine (JVM) has Flight Recorder capabilities:::if->JVMSupport->isNotAvailable->return->return->JVM->getJVM->isAvailable
+FlightRecorder#isInitialized():::Returns true if Flight Recorder is initialized.:::return
+FlightRecorderListener#recorderInitialized(FlightRecorder):::Receives notification when Flight Recorder is initialized:::
+FlightRecorderListener#recordingStateChanged(Recording):::Receives notification when the state of a recording changes:::
+Recording#start():::Starts this recording:::internal->start
+Recording#scheduleStart(Duration):::Starts this recording after a delay:::Objects->requireNonNull->internal->scheduleStart
+Recording#stop():::Stops this recording:::return->internal->stop
+Recording#getSettings():::Returns settings used by this recording:::return->internal->getSettings->new->HashMap<>
+Recording#getSize():::Returns the current size of this recording in the disk repository, measured in bytes:::return->internal->getSize
+Recording#getStopTime():::Returns the time when this recording was stopped.:::return->internal->getStopTime
+Recording#getStartTime():::Returns the time when this recording was started.:::return->internal->getStartTime
+Recording#getMaxSize():::Returns the maximum size, measured in bytes, at which data is no longer kept in the disk repository.:::return->internal->getMaxSize
+Recording#getMaxAge():::Returns the length of time that the data is kept in the disk repository before it is removed.:::return->internal->getMaxAge
+Recording#getName():::Returns the name of this recording:::return->internal->getName
+Recording#setSettings(Map):::Replaces all settings for this recording:::Objects->requireNonNull->sanitized->Utils->sanitizeNullFreeStringMap->internal->setSettings
+Recording#getState():::Returns the recording state that this recording is currently in.:::return->internal->getState
+Recording#close():::Releases all data that is associated with this recording:::internal->close
+Recording#copy(boolean):::Returns a clone of this recording, with a new recording ID and name:::return->internal->newCopy
+Recording#dump(Path):::Writes recording data to a file:::Objects->requireNonNull->internal->new->WriteableUserPath->dump
+Recording#isToDisk():::Returns true if this recording uses the disk repository, false otherwise:::return->internal->isToDisk
+Recording#setMaxSize(long):::Determines how much data is kept in the disk repository:::if->throw->new->IllegalArgumentException->internal->setMaxSize
+Recording#setMaxAge(Duration):::Determines how far back data is kept in the disk repository:::if->maxAge->isNegative->throw->new->IllegalArgumentException->internal->setMaxAge
+Recording#setDestination(Path):::Sets a location where data is written on recording stop, or null if data is not to be dumped:::internal->new->WriteableUserPath->setDestination
+Recording#getDestination():::Returns the destination file, where recording data is written when the recording stops, or null if no destination is set.:::usp->internal->getDestination->if->return->else->return->usp->getPotentiallyMaliciousOriginal
+Recording#getId():::Returns a unique ID for this recording.:::return->internal->getId
+Recording#setName(String):::Sets a human-readable name (for example, "My Recording").:::Objects->requireNonNull->internal->setName
+Recording#setDumpOnExit(boolean):::Sets whether this recording is dumped to disk when the JVM exits.:::internal->setDumpOnExit
+Recording#getDumpOnExit():::Returns whether this recording is dumped to disk when the JVM exits:::return->internal->getDumpOnExit
+Recording#setToDisk(boolean):::Determines whether this recording is continuously flushed to the disk repository or data is constrained to what is available in memory buffers.:::internal->setToDisk
+Recording#getStream(Instant, Instant):::Creates a data stream for a specified interval:::if->end->isBefore->throw->new->IllegalArgumentException->return->internal->open
+Recording#getDuration():::Returns the specified duration for this recording, or null if no duration is set:::return->internal->getDuration
+Recording#setDuration(Duration):::Sets a duration for how long a recording runs before it stops:::internal->setDuration
+Recording#enable(String):::Enables the event with the specified name:::Objects->requireNonNull->rs->new->RecordingSettings->rs->with->return
+Recording#disable(String):::Disables event with the specified name:::Objects->requireNonNull->rs->new->RecordingSettings->rs->with->return
+Recording#enable(Class):::Enables event.:::Objects->requireNonNull->rs->new->RecordingSettings->rs->with->return
+Recording#disable(Class):::Disables event.:::Objects->requireNonNull->rs->new->RecordingSettings->rs->with->return
+SettingControl#combine(Set):::Combines the setting values for all running recordings into one value when multiple recordings are running at the same time,  The semantics of how setting values are combined depends on the setting control that is implemented, but all recordings should get at least all the events they request:::
+SettingControl#setValue(String):::Sets the value for this setting:::
+SettingControl#getValue():::Returns the currently used value for this setting, not null:::
+SettingDescriptor#getName():::Returns the name of the setting (for example, "threshold").:::return
+SettingDescriptor#getLabel():::Returns a human-readable name that describes the setting (for example, "Threshold"):::label->annotationConstruct->getLabel->if->type->getLabel->return
+SettingDescriptor#getDescription():::Returns a sentence that describes the setting (for example "Record event with duration above or equal to threshold"):::description->annotationConstruct->getDescription->if->type->getDescription->return
+SettingDescriptor#getContentType():::Returns a textual identifier that specifies how a value that is represented by this SettingDescriptor object is interpreted or formatted:::foreach->getAnnotationElements->foreach->anno->getAnnotationElements->if->meta->getTypeName->getName->equals->return->anno->getTypeName->foreach->type->getAnnotationElements->foreach->anno->getAnnotationElements->if->meta->getTypeName->getName->equals->return->anno->getTypeName->return
+SettingDescriptor#getTypeName():::Returns the fully qualified class name of the type that is associated with this setting descriptor.:::return->type->getName
+SettingDescriptor#getTypeId():::Returns a unique ID for the type in the Java Virtual Machine (JVM):::return->type->getId
+SettingDescriptor#getAnnotation(Class):::Returns the first annotation for the specified type if an annotation element with the same name is available, null otherwise.:::Objects->requireNonNull->return->annotationConstruct->getAnnotation
+SettingDescriptor#getAnnotationElements():::Returns an immutable list of annotation elements for this value descriptor.:::return->Collections->annotationConstruct->getUnmodifiableAnnotationElements->unmodifiableList
+SettingDescriptor#getDefaultValue():::Returns the default value for this setting descriptor.:::return
+ValueDescriptor#getLabel():::Returns a human-readable name that describes the value (for example, "Maximum Throughput").:::return->annotationConstruct->getLabel
+ValueDescriptor#getName():::Returns the name of the value (for example, "maxThroughput").:::return
+ValueDescriptor#getDescription():::Returns a sentence describing the value (for example, {@code "Maximum throughput in the transaction system:::return->annotationConstruct->getDescription
+ValueDescriptor#getContentType():::Returns a textual identifier that specifies how a value represented by this ValueDescriptor is interpreted or formatted:::foreach->getAnnotationElements->foreach->anno->getAnnotationElements->if->meta->getTypeName->getName->equals->return->anno->getTypeName->return
+ValueDescriptor#getTypeName():::Returns the fully qualified class name of the type that is associated with this value descriptor.:::if->type->isSimpleType->return->type->getFields->get->getTypeName->return->type->getName
+ValueDescriptor#getTypeId():::Returns a unique ID for the type in the Java virtual Machine (JVM):::return->type->getId
+ValueDescriptor#isArray():::Returns if this value descriptor is an array type.:::return
+ValueDescriptor#getAnnotation(Class):::Returns the first annotation for the specified type if an annotation element with the same name is directly present for this value descriptor, null otherwise.:::Objects->requireNonNull->return->annotationConstruct->getAnnotation
+ValueDescriptor#getAnnotationElements():::Returns an immutable list of annotation elements for this value descriptor.:::return->annotationConstruct->getUnmodifiableAnnotationElements
+ValueDescriptor#getFields():::Returns an immutable list of value descriptors if the type is complex, else an empty list.:::if->type->isSimpleType->return->Collections->emptyList->return->type->getFields

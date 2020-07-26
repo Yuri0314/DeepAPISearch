@@ -1,0 +1,18 @@
+BootstrapLogger#getName():::The name of this logger:::return
+BootstrapLogger#checkBootstrapping():::Check whether the VM is still bootstrapping, and if not, arranges for this logger's holder to create the real logger and flush the pending event queue.:::if->isBooted->BootstrapExecutors->flush->return->return
+DefaultLoggerFinder#demandLoggerFor(String, Module):::Returns a Logger logger suitable for use within the given module.:::checkPermission->if->isSystem->return->SimpleConsoleLogger->makeSimpleLogger->get->else->return->SimpleConsoleLogger->makeSimpleLogger->get
+LazyLoggers.LoggerAccessor#getLoggerName():::The logger name.:::
+LazyLoggers.LoggerAccessor#wrapped():::Returns the wrapped logger object.:::
+LazyLoggers.LoggerAccessor#platform():::A PlatformLogger.Bridge view of the wrapped logger object.:::
+LazyLoggers.LazyLoggerAccessor#getLoggerName():::The logger name.:::return
+LazyLoggers.LazyLoggerAccessor#wrapped():::Returns the logger SPI object, creating it if 'w' is still null.:::wrapped->if->return->BootstrapLogger->getLogger->synchronized->setWrappedIfNotSet->return
+LazyLoggers.LazyLoggerAccessor#platform():::A PlatformLogger.Bridge view of the wrapped logger.:::platform->if->return->synchronized->if->if->convert->return->wrapped->BootstrapLogger->getLogger->synchronized->setWrappedIfNotSet->if->convert->return
+LazyLoggers.LazyLoggerAccessor#release(SimpleConsoleLogger, boolean):::Makes this accessor release a temporary logger:::conf->getLoggerConfiguration->level->conf->getPlatformLevel->synchronized->if->platform->this->platform->if->getLoggerConfiguration->if->conf->setPlatformLevel
+LazyLoggers.LazyLoggerAccessor#getConcreteLogger(BootstrapLogger):::Replace 'w' by the real SPI logger and flush the log messages pending in the temporary 'bootstrap' Logger:::synchronized->if->return->this->wrapped
+LazyLoggers.LazyLoggerAccessor#makeAccessor(String, LazyLoggerFactories, Module):::Creates a new lazy logger accessor for the named logger:::return->new->LazyLoggerAccessor
+LazyLoggers#getLoggerFromFinder(String, Module):::Gets a logger from the LoggerFinder:::sm->System->getSecurityManager->if->return->accessLoggerFinder->getLogger->else->return->AccessController->return->accessLoggerFinder->getLogger->doPrivileged
+LazyLoggers#getLogger(String, Module):::Returns a (possibly lazy) Logger for the caller.:::if->DefaultLoggerFinder->isSystem->return->getLazyLogger->else->return->getLoggerFromFinder
+LazyLoggers#getLazyLogger(String, Module):::Returns a (possibly lazy) Logger suitable for system classes:::useLazyLogger->BootstrapLogger->useLazyLoggers->if->return->new->JdkLazyLogger->else->return->getLoggerFromFinder
+SimpleConsoleLogger#outputStream():::Default platform logging support - output messages to System.err - equivalent to ConsoleHandler with SimpleFormatter.:::return
+SimpleConsoleLogger.CallerFinder#get():::Returns StackFrame of the caller's frame.:::return->WALKER->s->filter->findFirst->walk
+SimpleConsoleLogger.CallerFinder#test(StackWalker.StackFrame):::Returns true if we have found the caller's frame, false if the frame must be skipped.:::cname->t->getClassName->if->isLoggerImplFrame->return->return->Formatting->isFilteredFrame

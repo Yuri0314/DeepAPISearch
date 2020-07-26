@@ -1,0 +1,45 @@
+Timer#preRegister(MBeanServer, ObjectName):::Allows the timer MBean to perform any operations it needs before being registered in the MBean server:::return
+Timer#postRegister(Boolean):::Allows the timer MBean to perform any operations needed after having been registered in the MBean server or after the registration has failed:::
+Timer#preDeregister():::Allows the timer MBean to perform any operations it needs before being unregistered by the MBean server:::TIMER_LOGGER->log->stop
+Timer#postDeregister():::Allows the timer MBean to perform any operations needed after having been unregistered by the MBean server:::
+Timer#start():::Starts the timer:::TIMER_LOGGER->log->if->new->java.util.Timer->alarmClock->date->currentDate->new->Date->sendPastNotifications->foreach->timerTable->values->fixedRate->booleanValue->if->new->TimerAlarmClock->timer->schedule->else->date->getTime->currentDate->getTime->new->TimerAlarmClock->timer->schedule->TIMER_LOGGER->log->else->TIMER_LOGGER->log
+Timer#stop():::Stops the timer.:::TIMER_LOGGER->log->if->foreach->timerTable->values->alarmClock->if->alarmClock->cancel->timer->cancel->TIMER_LOGGER->log->else->TIMER_LOGGER->log
+Timer#removeNotification(Integer):::Removes the timer notification corresponding to the specified identifier from the list of notifications.:::if->timerTable->containsKey->throw->new->InstanceNotFoundException->obj->timerTable->get->alarmClock->if->alarmClock->cancel->if->TIMER_LOGGER->isLoggable->strb->new->StringBuilder->append->append->getSource->append->append->getType->append->append->getNotificationID->append->append->append->append->append->append->append->append->append->TIMER_LOGGER->strb->toString->log->timerTable->remove->TIMER_LOGGER->log
+Timer#removeNotifications(String):::Removes all the timer notifications corresponding to the specified type from the list of notifications.:::v->getNotificationIDs->if->v->isEmpty->throw->new->InstanceNotFoundException->foreach->removeNotification
+Timer#removeAllNotifications():::Removes all the timer notifications from the list of notifications and resets the counter used to update the timer notification identifiers.:::alarmClock->foreach->timerTable->values->alarmClock->cancel->TIMER_LOGGER->log->timerTable->clear->TIMER_LOGGER->log->TIMER_LOGGER->log
+Timer#getNbNotifications():::Gets the number of timer notifications registered into the list of notifications.:::return->timerTable->size
+Timer#getAllNotificationIDs():::Gets all timer notification identifiers registered into the list of notifications.:::return->timerTable->keySet->new->Vector<Integer>
+Timer#getNotificationIDs(String):::Gets all the identifiers of timer notifications corresponding to the specified type.:::s->v->new->Vector<Integer>->foreach->timerTable->entrySet->obj->entry->getValue->getType->if->type->equals->v->entry->getKey->addElement->return
+Timer#getNotificationType(Integer):::Gets the timer notification type corresponding to the specified identifier.:::obj->timerTable->get->if->return->getType->return
+Timer#getNotificationMessage(Integer):::Gets the timer notification detailed message corresponding to the specified identifier.:::obj->timerTable->get->if->return->getMessage->return
+Timer#getDate(Integer):::Gets a copy of the date associated to a timer notification.:::obj->timerTable->get->if->date->return->date->getTime->new->Date->return
+Timer#getPeriod(Integer):::Gets a copy of the period (in milliseconds) associated to a timer notification.:::obj->timerTable->get->if->return->return
+Timer#getNbOccurences(Integer):::Gets a copy of the remaining number of occurrences associated to a timer notification.:::obj->timerTable->get->if->return->return
+Timer#getFixedRate(Integer):::Gets a copy of the flag indicating whether a periodic notification is executed at fixed-delay or at fixed-rate.:::obj->timerTable->get->if->fixedRate->return->Boolean->fixedRate->booleanValue->valueOf->return
+Timer#getSendPastNotifications():::Gets the flag indicating whether or not the timer sends past notifications:::return
+Timer#setSendPastNotifications(boolean):::Sets the flag indicating whether the timer sends past notifications or not:::
+Timer#isActive():::Tests whether the timer MBean is active:::return
+Timer#isEmpty():::Tests whether the list of timer notifications is empty.:::return->timerTable->isEmpty
+Timer#notifyAlarmClock(TimerAlarmClockNotification):::This method is called by the timer each time the TimerAlarmClock has exceeded its timeout.:::timerNotification->timerDate->alarmClock->notification->getSource->synchronized->foreach->timerTable->values->if->break->sendNotification->timerNotification->getNotificationID->updateTimerTable
+Timer#sendNotification(Date, TimerNotification):::This method is used by the timer MBean to update and send a timer notification to all the listeners registered for this kind of notification.:::if->TIMER_LOGGER->isLoggable->strb->new->StringBuilder->append->append->notification->getSource->append->append->notification->getType->append->append->notification->getNotificationID->append->append->append->TIMER_LOGGER->strb->toString->log->curSeqNumber->synchronized->synchronized->notification->timeStamp->getTime->setTimeStamp->notification->setSequenceNumber->this->notification->cloneTimerNotification->sendNotification->TIMER_LOGGER->log
+TimerAlarmClock#run():::This method is called by the timer when it is started.:::try->notif->new->TimerAlarmClockNotification->listener->notifyAlarmClock->catch->TIMER_LOGGER->log->finally
+TimerMBean#start():::Starts the timer:::
+TimerMBean#stop():::Stops the timer.:::
+TimerMBean#removeNotification(Integer):::Removes the timer notification corresponding to the specified identifier from the list of notifications.:::
+TimerMBean#removeNotifications(String):::Removes all the timer notifications corresponding to the specified type from the list of notifications.:::
+TimerMBean#removeAllNotifications():::Removes all the timer notifications from the list of notifications and resets the counter used to update the timer notification identifiers.:::
+TimerMBean#getNbNotifications():::Gets the number of timer notifications registered into the list of notifications.:::
+TimerMBean#getAllNotificationIDs():::Gets all timer notification identifiers registered into the list of notifications.:::
+TimerMBean#getNotificationIDs(String):::Gets all the identifiers of timer notifications corresponding to the specified type.:::
+TimerMBean#getNotificationType(Integer):::Gets the timer notification type corresponding to the specified identifier.:::
+TimerMBean#getNotificationMessage(Integer):::Gets the timer notification detailed message corresponding to the specified identifier.:::
+TimerMBean#getDate(Integer):::Gets a copy of the date associated to a timer notification.:::
+TimerMBean#getPeriod(Integer):::Gets a copy of the period (in milliseconds) associated to a timer notification.:::
+TimerMBean#getNbOccurences(Integer):::Gets a copy of the remaining number of occurrences associated to a timer notification.:::
+TimerMBean#getFixedRate(Integer):::Gets a copy of the flag indicating whether a periodic notification is executed at fixed-delay or at fixed-rate.:::
+TimerMBean#getSendPastNotifications():::Gets the flag indicating whether or not the timer sends past notifications.:::
+TimerMBean#setSendPastNotifications(boolean):::Sets the flag indicating whether the timer sends past notifications or not.:::
+TimerMBean#isActive():::Tests whether the timer MBean is active:::
+TimerMBean#isEmpty():::Tests whether the list of timer notifications is empty.:::
+TimerNotification#getNotificationID():::Gets the identifier of this timer notification.:::return
+TimerNotification#cloneTimerNotification():::Creates and returns a copy of this object.:::clone->this->getType->this->getSource->this->getSequenceNumber->this->getTimeStamp->this->getMessage->new->TimerNotification->clone->this->getUserData->setUserData->return

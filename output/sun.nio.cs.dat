@@ -1,0 +1,17 @@
+Surrogate#isHigh(int):::Tells whether or not the given value is in the high surrogate range:::return
+Surrogate#isLow(int):::Tells whether or not the given value is in the low surrogate range:::return
+Surrogate#is(int):::Tells whether or not the given value is in the surrogate range:::return
+Surrogate#neededFor(int):::Tells whether or not the given UCS-4 character must be represented as a surrogate pair in UTF-16:::return->Character->isSupplementaryCodePoint
+Surrogate#high(int):::Returns the high UTF-16 surrogate for the given supplementary UCS-4 character:::return->Character->highSurrogate
+Surrogate#low(int):::Returns the low UTF-16 surrogate for the given supplementary UCS-4 character:::return->Character->lowSurrogate
+Surrogate#toUCS4(char, char):::Converts the given surrogate pair into a 32-bit UCS-4 character:::return->Character->toCodePoint
+Surrogate.Parser#character():::Returns the UCS-4 character previously parsed.:::return
+Surrogate.Parser#isPair():::Tells whether or not the previously-parsed UCS-4 character was originally represented by a surrogate pair.:::return
+Surrogate.Parser#increment():::Returns the number of UTF-16 characters consumed by the previous parse.:::return
+Surrogate.Parser#error():::If the previous parse operation detected an error, return the object describing that error.:::return
+Surrogate.Parser#unmappableResult():::Returns an unmappable-input result object, with the appropriate input length, for the previously-parsed character.:::return->CoderResult->unmappableForLength
+Surrogate.Parser#parse(char, CharBuffer):::Parses a UCS-4 character from the given source buffer, handling surrogates.:::if->Character->isHighSurrogate->if->in->hasRemaining->return->d->in->get->if->Character->isLowSurrogate->Character->toCodePoint->return->CoderResult->malformedForLength->return->if->Character->isLowSurrogate->CoderResult->malformedForLength->return->return
+Surrogate.Parser#parse(char, char[], int, int):::Parses a UCS-4 character from the given source buffer, handling surrogates.:::if->Character->isHighSurrogate->if->return->d->if->Character->isLowSurrogate->Character->toCodePoint->return->CoderResult->malformedForLength->return->if->Character->isLowSurrogate->CoderResult->malformedForLength->return->return
+Surrogate.Generator#error():::If the previous generation operation detected an error, return the object describing that error.:::return
+Surrogate.Generator#generate(int, int, CharBuffer):::Generates one or two UTF-16 characters to represent the given UCS-4 character.:::if->Character->isBmpCodePoint->c->if->Character->isSurrogate->CoderResult->malformedForLength->return->if->dst->remaining->return->dst->put->return->else->if->Character->isValidCodePoint->if->dst->remaining->return->dst->Character->highSurrogate->put->dst->Character->lowSurrogate->put->return->else->CoderResult->unmappableForLength->return
+Surrogate.Generator#generate(int, int, char[], int, int):::Generates one or two UTF-16 characters to represent the given UCS-4 character.:::if->Character->isBmpCodePoint->c->if->Character->isSurrogate->CoderResult->malformedForLength->return->if->return->return->else->if->Character->isValidCodePoint->if->return->Character->highSurrogate->Character->lowSurrogate->return->else->CoderResult->unmappableForLength->return

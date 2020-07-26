@@ -1,0 +1,26 @@
+BsdAddress#minus(Address):::(FIXME: any signed/unsigned issues? Should this work for       OopHandles?):::if->return->return
+BsdDebuggerLocal#hasProcessList():::From the Debugger interface via JVMDebugger:::return
+BsdDebuggerLocal#getProcessList():::From the Debugger interface via JVMDebugger:::throw->new->DebuggerException
+BsdDebuggerLocal#attach(int):::From the Debugger interface via JVMDebugger:::checkAttached->new->ArrayList->new->ArrayList->task->new->AttachTask->workerThread->execute
+BsdDebuggerLocal#attach(String, String):::From the Debugger interface via JVMDebugger:::checkAttached->new->ArrayList->new->ArrayList->attach0->findABIVersion
+BsdDebuggerLocal#detach():::From the Debugger interface via JVMDebugger:::if->return->if->detach0->return->else->task->new->DetachTask->workerThread->execute->return
+BsdDebuggerLocal#parseAddress(String):::From the Debugger interface via JVMDebugger:::addr->utils->scanAddress->if->return->return->new->BsdAddress
+BsdDebuggerLocal#getOS():::From the Debugger interface via JVMDebugger:::return->PlatformInfo->getOS
+BsdDebuggerLocal#getCPU():::From the Debugger interface via JVMDebugger:::return->PlatformInfo->getCPU
+BsdDebuggerLocal#lookup(String, String):::From the SymbolLookup interface via Debugger and JVMDebugger:::requireAttach->if->return->if->addr->lookupByName0->return->handleGCC32ABI->new->BsdAddress->else->task->new->LookupByNameTask->workerThread->execute->return
+BsdDebuggerLocal#lookupOop(String, String):::From the SymbolLookup interface via Debugger and JVMDebugger:::addr->lookup->if->return->return->addr->addOffsetToAsOopHandle
+BsdDebuggerLocal#getMachineDescription():::From the Debugger interface:::return
+BsdDebuggerLocal#getThreadForIdentifierAddress(Address, Address):::From the ThreadAccess interface via Debugger and JVMDebugger:::return->new->BsdThread
+BsdDebuggerLocal#getThreadForThreadId(long):::From the ThreadAccess interface via Debugger and JVMDebugger:::return->new->BsdThread
+BsdDebuggerLocal#addressValueToString(long):::From the BsdDebugger interface:::return->utils->addressValueToString
+BsdDebuggerLocal#readAddress(long):::From the BsdDebugger interface:::value->readAddressValue->return->new->BsdAddress
+BsdDebuggerLocal#readOopHandle(long):::From the BsdDebugger interface:::value->readAddressValue->return->new->BsdOopHandle
+BsdDebuggerLocal#readCInteger(long, long, boolean):::Need to override this to relax alignment checks on x86.:::if->utils->checkAlignment->else->utils->checkAlignment->data->readBytes->return->utils->dataToCInteger
+BsdDebuggerLocal#getAddressValue(Address):::From the BsdDebugger interface:::if->return->return->getValue
+BsdDebuggerLocal#newAddress(long):::From the BsdDebugger interface:::if->return->return->new->BsdAddress
+BsdDebuggerLocal#getThreadList():::From the BsdCDebugger interface:::requireAttach->return
+BsdDebuggerLocal#getLoadObjectList():::From the BsdCDebugger interface:::requireAttach->return
+BsdDebuggerLocal#lookup(long):::From the BsdCDebugger interface:::requireAttach->if->return->lookupByAddress0->else->task->new->LookupByAddressTask->workerThread->execute->return
+BsdDebuggerLocal#readBytesFromProcess(long, long):::This reads bytes from the remote process.:::requireAttach->if->res->readBytesFromProcess0->return->new->ReadResult->new->ReadResult->else->task->new->ReadBytesFromProcessTask->workerThread->execute->return
+BsdDebuggerLocal#getJavaThreadsInfo():::this functions used for core file reading and called from native attach0,         it returns an array of long integers as         [thread_id, stack_start, stack_end, thread_id, stack_start, stack_end, ....] for         all java threads recorded in Threads:::requireAttach->threads->VM->getVM->getThreads->len->threads->getNumberOfThreads->result->new->longArr->t->threads->first->beg->end->i->while->t->getStackBaseValue->t->getStackSize->bsdt->t->getThreadProxy->uid->bsdt->getUniqueThreadId->if->threadList->add->t->next->return
+BsdThread#getUniqueThreadId():::this is not interface function, used in core file to get unique thread id on Macosx:::return

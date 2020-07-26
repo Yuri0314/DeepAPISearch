@@ -1,0 +1,106 @@
+BasicControl#getID():::Retrieves the control's object identifier string.:::return
+BasicControl#isCritical():::Determines the control's criticality.:::return
+BasicControl#getEncodedValue():::Retrieves the control's ASN.1 BER encoded value:::return->value->clone
+BerDecoder#reset():::Resets this decode to start parsing from the initial offset (ie., same state as after calling the constructor).:::
+BerDecoder#getParsePosition():::Returns the current parse position:::return
+BerDecoder#parseLength():::Parses a possibly variable length field.:::lengthbyte->parseByte->if->if->throw->new->DecodeException->if->throw->new->DecodeException->if->throw->new->DecodeException->retval->for->i->if->throw->new->DecodeException->return->else->return
+BerDecoder#parseSeq(int[]):::Parses the next sequence in this BER buffer.:::seq->parseByte->len->parseLength->if->return
+BerDecoder#seek(int):::Used to skip bytes:::if->throw->new->DecodeException
+BerDecoder#parseByte():::Parses the next byte in this BER buffer.:::if->throw->new->DecodeException->return
+BerDecoder#peekByte():::Returns the next byte in this BER buffer without consuming it.:::if->throw->new->DecodeException->return
+BerDecoder#parseBoolean():::Parses an ASN_BOOLEAN tagged integer from this BER buffer.:::return->parseIntWithTag
+BerDecoder#parseEnumeration():::Parses an ASN_ENUMERATED tagged integer from this BER buffer.:::return->parseIntWithTag
+BerDecoder#parseInt():::Parses an ASN_INTEGER tagged integer from this BER buffer.:::return->parseIntWithTag
+BerDecoder#parseString(boolean):::Parses a string.:::return->parseStringWithTag
+BerDecoder#parseStringWithTag(int, boolean, int[]):::Parses a string of a given tag from this BER buffer:::st->origOffset->if->parseByte->throw->Integer->toString->new->DecodeException->len->parseLength->if->throw->new->DecodeException->retstr->if->else->buf2->new->byteArr->System->arraycopy->if->try->new->String->catch->throw->new->DecodeException->finally->else->try->new->String->catch->throw->new->DecodeException->finally->if->return
+BerDecoder#parseOctetString(int, int[]):::Parses an octet string of a given type(tag) from this BER buffer:::origOffset->st->if->parseByte->throw->Integer->toString->Integer->toString->new->DecodeException->len->parseLength->if->throw->new->DecodeException->retarr->new->byteArr->if->System->arraycopy->if->return
+BerDecoder#bytesLeft():::Returns the number of unparsed bytes in this BER buffer.:::return
+BerEncoder#reset():::Resets encoder to state when newly constructed:::while->while
+BerEncoder#getDataLen():::Gets the number of encoded bytes in this BER buffer.:::return
+BerEncoder#getBuf():::Gets the buffer that contains the BER encoding:::if->throw->new->IllegalStateException->return
+BerEncoder#getTrimmedBuf():::Gets the buffer that contains the BER encoding, trimming unused bytes.:::len->getDataLen->trimBuf->new->byteArr->System->getBuf->arraycopy->return
+BerEncoder#beginSeq(int):::Begin encoding a sequence with a tag.:::if->seqOffsetTmp->new->intArr->for->i->encodeByte->ensureFreeBytes
+BerEncoder#endSeq():::Terminate a BER sequence.:::if->throw->new->IllegalStateException->start->len->if->shiftSeqData->else->if->shiftSeqData->else->if->else->if->shiftSeqData->else->throw->new->EncodeException
+BerEncoder#encodeByte(int):::Encode a single byte.:::ensureFreeBytes
+BerEncoder#encodeInt(int, int):::Encodes an int and a tag:::mask->intsize->while->encodeInt
+BerEncoder#encodeBoolean(boolean):::Encodes a boolean:::encodeBoolean
+BerEncoder#encodeBoolean(boolean, int):::Encodes a boolean and a tag  BER boolean w TAG ::= tag 0x01 {0xff|0x00} :::ensureFreeBytes
+BerEncoder#encodeString(String, boolean):::Encodes a string:::encodeString
+BerEncoder#encodeString(String, int, boolean):::Encodes a string and a tag:::encodeByte->i->count->bytes->if->else->if->try->str->getBytes->catch->throw->new->EncodeException->finally->else->try->str->getBytes->catch->throw->new->EncodeException->finally->encodeLength->ensureFreeBytes->while
+BerEncoder#encodeOctetString(byte[], int, int, int):::Encodes a portion of an octet string and a tag.:::encodeByte->encodeLength->if->ensureFreeBytes->System->arraycopy
+BerEncoder#encodeOctetString(byte[], int):::Encodes an octet string and a tag.:::encodeOctetString
+BerEncoder#encodeStringArray(String[], boolean):::Encodes an array of strings.:::if->return->for->i
+Connection#readReply(LdapRequest):::Reads a reply; waits until one is ready.:::rber->synchronized->if->throw->new->ServiceUnavailableException->try->ldr->getReplyBer->catch->throw->new->InterruptedNamingException->finally->if->abandonRequest->throw->new->NamingException->return
+DefaultResponseControlFactory#getControlInstance(Control):::Creates an instance of a response control class from a more generic control class (BasicControl).:::id->ctl->getID->try->if->id->equals->return->ctl->isCritical->ctl->getEncodedValue->new->SortResponseControl->else->if->id->equals->return->ctl->isCritical->ctl->getEncodedValue->new->PagedResultsResponseControl->else->if->id->equals->return->ctl->isCritical->ctl->getEncodedValue->new->EntryChangeResponseControl->catch->ne->new->NamingException->ne->setRootCause->throw->finally->return
+EntryChangeResponseControl#getChangeType():::Retrieves the type of change that occurred.:::return
+EntryChangeResponseControl#getPreviousDN():::Retrieves the previous distinguished name of the entry before it was renamed and/or moved:::return
+EntryChangeResponseControl#getChangeNumber():::Retrieves the change number assigned by the server for this change:::return
+EventQueue#enqueue(EventObject, Vector):::Enqueue an event.:::newElt->new->QueueElement->if->else->notify
+EventQueue#run():::Pull events off the queue and dispatch them.:::qe->try->while->dequeue->e->v->for->i->v->size->catch->finally
+EventQueue#stop():::Stop the dispatcher so we can be destroyed.:::if->println->if->qThread->interrupt
+EventSupport#addNamingListener(String, String, SearchControls, NamingListener):::Adds l to list of listeners interested in nm and filter.:::if->args->new->NotifierArgs->notifier->notifiers->get->if->new->NamingEventNotifier->notifiers->put->else->notifier->addNamingListener->if->if->new->Vector<>->unsolicited->addElement
+EventSupport#removeNamingListener(NamingListener):::Removes l from all notifiers in this context.:::if->println->iterator->notifiers->values->iterator->while->iterator->hasNext->notifier->iterator->next->if->if->println->notifier->removeNamingListener->if->notifier->hasNamingListeners->if->println->notifier->stop->iterator->remove->if->println->if->unsolicited->removeElement
+EventSupport#removeDeadNotifier(NotifierArgs):::package private; Called by NamingEventNotifier to remove itself when it encounters a NamingException.:::if->println->notifiers->remove
+EventSupport#fireUnsolicited(Object):::Fire an event to unsolicited listeners:::if->println->if->unsolicited->size->return->if->evt->new->UnsolicitedNotificationEvent->queueEvent->else->if->evt->new->NamingExceptionEvent->queueEvent
+EventSupport#cleanup():::Stops notifier threads that are collecting event data and stops the event queue from dispatching events:::if->println->if->foreach->notifiers->values->notifier->stop->if->eventQueue->stop
+EventSupport#queueEvent(EventObject, Vector):::Add the event and vector of listeners to the queue to be delivered:::if->new->EventQueue->v->vector->clone->eventQueue->enqueue
+Filter#encodeFilterString(BerEncoder, String, boolean):::First convert filter string into byte[]:::if->filterStr->equals->throw->new->InvalidSearchFilterException->filter->filterLen->if->filterStr->getBytes->else->filterStr->getBytes->if->println->println->dprint->encodeFilter
+LdapAttribute#add(Object):::Adds a new value to this attribute.:::values->addElement->return
+LdapAttribute#setParent(DirContext, Name):::Sets the baseCtx and rdn used to find the attribute's schema Used by LdapCtx.setParents().:::
+LdapAttribute#getAttributeSyntaxDefinition():::Retrieves the syntax definition associated with this attribute.:::schema->getBaseCtx->getSchema->attrDef->schema->getID->lookup->syntaxAttr->attrDef->getAttributes->get->if->syntaxAttr->size->throw->getID->new->NameNotFoundException->syntaxName->syntaxAttr->get->return->schema->lookup
+LdapAttribute#getAttributeDefinition():::Retrieves this attribute's schema definition.:::schema->getBaseCtx->getSchema->return->schema->getID->lookup
+LdapClient#ldapBind(String, byte[], Control[], String, boolean):::Sends an LDAP Bind request:::ensureOpen->conn->abandonOutstandingReqs->ber->new->BerEncoder->curMsgId->conn->getMsgId->res->new->LdapResult->ber->beginSeq->ber->encodeInt->ber->beginSeq->ber->encodeInt->ber->encodeString->if->ber->beginSeq->ber->encodeString->if->ber->encodeOctetString->ber->endSeq->else->if->ber->encodeOctetString->else->ber->encodeOctetString->ber->endSeq->if->encodeControls->ber->endSeq->req->conn->writeRequest->if->ber->reset->rber->conn->readReply->rber->parseSeq->rber->parseInt->if->rber->parseByte->return->rber->parseLength->parseResult->if->rber->bytesLeft->rber->peekByte->rber->parseOctetString->parseControls->conn->removeRequest->return
+LdapClient#usingSaslStreams():::Determines whether SASL encryption/integrity is in progress:::return
+LdapClient#processConnectionClosure():::Called by Connection.cleanup():::if->unsolicited->size->msg->if->else->new->CommunicationException->notifyUnsolicited->if->pcb->removePooledConnection
+LdapCtx#p_getEnvironment():::Override with noncloning version.:::return
+LdapCtx#setProviderUrl(String):::Sets the URL that created the context in the java.naming.provider.url property.:::if->envprops->put
+LdapCtx#setDomainName(String):::Sets the domain name for the context in the com.sun.jndi.ldap.domainname property:::if->envprops->put
+LdapCtx#mapErrorCode(int, String):::Maps an LDAP error code to an appropriate NamingException:::if->return->e->message->LdapClient->getErrorMessage->switch->new->NamingException->break->new->NamingException->break->new->AttributeInUseException->break->new->AuthenticationNotSupportedException->break->new->NameAlreadyBoundException->break->new->AuthenticationException->break->new->InvalidSearchFilterException->break->new->NoPermissionException->break->new->InvalidAttributeValueException->break->new->NamingException->break->new->NoSuchAttributeException->break->new->NameNotFoundException->break->new->SchemaViolationException->break->new->ContextNotEmptyException->break->new->NamingException->break->new->NamingException->break->new->CommunicationException->break->new->SizeLimitExceededException->break->new->TimeLimitExceededException->break->new->OperationNotSupportedException->break->new->ServiceUnavailableException->break->new->InvalidAttributeIdentifierException->break->new->OperationNotSupportedException->break->new->NamingException->break->new->LimitExceededException->break->new->NamingException->break->new->NamingException->break->new->InvalidNameException->break->new->NamingException->break->return
+LdapCtx#convertControls(Vector):::Narrow controls using own default factory and ControlFactory.:::count->ctls->size->if->return->controls->new->ControlArr->for->i->return
+LdapCtx#fireUnsolicited(Object):::Uses EventSupport to fire an event related to an unsolicited notification:::if->println->synchronized->if->eventSupport->fireUnsolicited->if
+LdapCtxFactory#createTypeNameAttr(Class):::Used by Obj and obj/RemoteToAttrs too so must be public:::v->new->Vector<>->types->getTypeNames->if->tAttr->new->BasicAttribute->for->i->return->return
+LdapName#setValuesCaseSensitive(boolean):::Controls whether string-values are treated as case-sensitive when the string values within names are compared:::toString->try->parse->catch->throw->new->IllegalStateException->finally
+LdapName#escapeAttributeValue(Object):::Given the value of an attribute, returns a string suitable for inclusion in a DN:::return->TypeAndValue->escapeValue
+LdapName#unescapeAttributeValue(String):::Given an attribute value formatted according to RFC 2253, returns the unformatted value:::return->TypeAndValue->unescapeValue
+LdapPoolManager#isPoolingAllowed(String, OutputStream, String, String, Hashtable):::Determines whether pooling is allowed given information on how the connection will be used:::if->equalsIgnoreCase->d->return->COMPARATOR->foundSockCmp->if->socketFactory->equals->try->socketFactoryClass->loadClass->interfaces->socketFactoryClass->getInterfaces->for->i->catch->ce->new->CommunicationException->ce->setRootCause->throw->finally->if->return->p->findPool->if->d->return->d->switch->return->return->env->get->return
+LdapPoolManager#getLdapClient(String, int, String, int, int, OutputStream, int, String, Control[], String, String, Object, Hashtable):::Obtains a pooled connection that either already exists or is newly created using the parameters supplied:::id->pool->p->findPool->if->throw->new->IllegalArgumentException->switch->new->ClientId->break->new->SimpleClientId->break->new->DigestClientId->break->return->pool->new->LdapClientFactory->getPooledConnection
+LdapPoolManager#expire(long):::Closes idle connections idle since specified time.:::for->i
+LdapReferralException#getReferralContext():::Gets a context at which to continue processing:::return->getReferralContext
+LdapReferralException#getReferralContext(Hashtable):::Gets a context at which to continue processing:::return->getReferralContext
+LdapReferralException#getReferralContext(Hashtable, Control[]):::Gets a context at which to continue processing:::if->println->refCtx->new->LdapReferralContext->refCtx->setHopCount->if->return
+LdapReferralException#getReferralInfo():::Gets referral information.:::if->println->println->if->hasMoreReferrals->return->referrals->elementAt->else->return
+LdapReferralException#retryReferral():::Marks the current referral as one to be retried.:::if->println->if
+LdapReferralException#skipReferral():::Marks the current referral as one to be ignored:::if->println->try->getNextReferral->catch->finally->return->hasMoreReferrals->hasMoreReferralExceptions
+LdapReferralException#setReferralInfo(Vector, boolean):::Sets referral information.:::if->println->referrals->size->if->if->for->i->else->println
+LdapReferralException#getNextReferral():::Gets the next referral:::if->println->if->hasMoreReferrals->return->referrals->elementAt->else->if->hasMoreReferralExceptions->throw->else->return
+LdapReferralException#appendUnprocessedReferrals(LdapReferralException):::Appends the supplied (chain of) referral exception onto the end of the current (chain of) referral exception:::if->println->dump->if->back->dump->front->if->front->hasMoreReferrals->if->front->setNamingException->if->return->if->back->hasMoreReferrals->if->return->ptr->while->return
+LdapReferralException#hasMoreReferrals():::Tests if there are any referrals remaining to be processed:::if->println->return
+LdapReferralException#hasMoreReferralExceptions():::Tests if there are any referral exceptions remaining to be processed.:::if->println->return
+LdapReferralException#setHopCount(int):::Sets the counter which records the number of hops that result from following a sequence of referrals.:::if->println
+LdapReferralException#setNameResolved(boolean):::Sets the flag to indicate that the target name has been resolved.:::if->println
+LdapReferralException#setNamingException(NamingException):::Sets the exception generated while processing a referral:::if->println->if->e->setRootCause
+LdapReferralException#getNewRdn():::Gets the new RDN name.:::if->println->return
+LdapReferralException#setNewRdn(String):::Sets the new RDN name so that the rename operation can be completed (when a referral is being followed).:::if->println
+LdapReferralException#getNamingException():::Gets the exception generated while processing a referral.:::if->println->return
+LdapReferralException#dump():::Display the state of each element in a chain of LdapReferralException objects.:::println->println->ptr->while->ptr->dumpState
+LdapSchemaParser#stringifyObjDesc(Attributes):::Returns an attribute for updating the Object Class Definition schema attribute:::objDescAttr->new->BasicAttribute->objDescAttr->classDef2ObjectDesc->add->return
+LdapSchemaParser#stringifyAttrDesc(Attributes):::Returns an attribute for updating the Attribute Definition schema attribute:::attrDescAttr->new->BasicAttribute->attrDescAttr->attrDef2AttrDesc->add->return
+LdapSchemaParser#stringifySyntaxDesc(Attributes):::Returns an attribute for updating the Syntax schema attribute:::syntaxDescAttr->new->BasicAttribute->syntaxDescAttr->syntaxDef2SyntaxDesc->add->return
+LdapSchemaParser#stringifyMatchRuleDesc(Attributes):::Returns an attribute for updating the Matching Rule schema attribute:::matchRuleDescAttr->new->BasicAttribute->matchRuleDescAttr->matchRuleDef2MatchRuleDesc->add->return
+LdapURL#useSsl():::Returns true if the URL is an LDAPS URL.:::return
+LdapURL#getDN():::Returns the LDAP URL's distinguished name.:::return
+LdapURL#getAttributes():::Returns the LDAP URL's attributes.:::return
+LdapURL#getScope():::Returns the LDAP URL's scope.:::return
+LdapURL#getFilter():::Returns the LDAP URL's filter.:::return
+LdapURL#getExtensions():::Returns the LDAP URL's extensions.:::return
+LdapURL#fromList(String):::Given a space-separated list of LDAP URLs, returns an array of strings.:::urls->urlList->length->new->StringArr->i->st->new->StringTokenizer->while->st->hasMoreTokens->st->nextToken->trimmed->new->StringArr->System->arraycopy->return
+LdapURL#hasQueryComponents(String):::Determines whether an LDAP URL has query components.:::return->url->lastIndexOf
+NamingEventNotifier#run():::Execute "persistent search":::try->cont->new->Continuation->cont->setError->nm->equals->new->CompositeName->new->CompositeName->add->context->searchAux->setStartName->si->respctls->ec->changeNum->while->results->hasMore->results->next->getControls->if->println->println->if->for->i->catch->if->println->fireNamingException->support->removeDeadNotifier->finally->cleanup->if->println
+NamingEventNotifier#stop():::Stop the dispatcher so we can be destroyed:::if->println->if->worker->interrupt
+Obj#determineBindAttrs(char, Object, Attributes, boolean, Name, Context, Hashtable):::Returns the attributes to bind given an object and its attributes.:::res->DirectoryManager->getStateToBind->res->getObject->res->getAttributes->if->return->if->getAttributes->ocNeedsCloning->objectClass->if->attrs->size->new->BasicAttributes->new->BasicAttribute->else->attrs->get->if->attrs->isCaseIgnored->attrs->get->if->new->BasicAttribute->else->if->objectClass->clone->encodeObject->return
+ServiceLocator#mapDnToDomainName(String):::Maps a distinguished name (RFC 2253) to a fully qualified domain name:::if->return->domain->new->StringBuilder->ldapName->new->LdapName->rdnList->ldapName->getRdns->for->i->rdnList->size->return->domain->length->domain->toString
+ServiceLocator#getLdapService(String, Hashtable):::Locates the LDAP service for a given domain:::if->domainName->length->return->dnsUrl->hostports->try->ctx->NamingManager->getURLContext->if->return->attrs->getAttributes->attr->if->attrs->get->numValues->attr->size->numRecords->srvRecords->new->SrvRecordArr->i->j->while->try->attr->get->new->SrvRecord->catch->finally->if->trimmed->new->SrvRecordArr->System->arraycopy->if->Arrays->sort->extractHostports->catch->finally->return
+UnsolicitedResponseImpl#getID():::Retrieves the object identifier of the response.:::return
+UnsolicitedResponseImpl#getEncodedValue():::Retrieves the ASN.1 BER encoded value of the LDAP extended operation response:::return
+UnsolicitedResponseImpl#getReferrals():::Retrieves the referral(s) sent by the server.:::return
+UnsolicitedResponseImpl#getException():::Retrieves the exception as constructed using information sent by the server.:::return

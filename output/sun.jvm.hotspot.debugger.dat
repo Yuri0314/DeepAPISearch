@@ -1,0 +1,98 @@
+Address#equals(Object):::This is stated explicitly here because it is important for       implementations to understand that equals() and hashCode() must       absolutely, positively work properly -- i.e., two Address       objects representing the same address are both equal (via       equals()) and have the same hash code.:::
+Address#hashCode():::This is stated explicitly here because it is important for       implementations to understand that equals() and hashCode() must       absolutely, positively work properly -- i.e., two Address       objects representing the same address are both equal (via       equals()) and have the same hash code.:::
+Address#getAddressAt(long):::This returns null if the address at the given offset is NULL.:::
+Address#getCompOopAddressAt(long):::Returns the decoded address at the given offset:::
+Address#getOopHandleAt(long):::This returns null if the address at the given offset is NULL.:::
+Address#setCIntegerAt(long, long, long):::Sets a C integer numBytes in size at the specified offset:::
+Address#setAddressAt(long, Address):::Sets an Address at the specified location.:::
+Address#addOffsetTo(long):::This throws an UnsupportedOperationException if this address happens       to actually be an OopHandle, because interior object pointers       are not allowed:::
+Address#addOffsetToAsOopHandle(long):::This method had to be added in order to support heap iteration       in the debugging system, and is effectively the dangerous       operation of allowing interior object pointers:::
+Address#minus(Address):::Performs the subtraction "this - arg", returning the resulting       offset in bytes:::
+Address#lessThan(Address):::Performs unsigned comparison "this < arg":::
+Address#lessThanOrEqual(Address):::Performs unsigned comparison "this <= arg":::
+Address#greaterThan(Address):::Performs unsigned comparison "this > arg":::
+Address#greaterThanOrEqual(Address):::Performs unsigned comparison "this >= arg":::
+Address#andWithMask(long):::This throws an UnsupportedOperationException if this address happens       to actually be an OopHandle:::
+Address#orWithMask(long):::This throws an UnsupportedOperationException if this address happens       to actually be an OopHandle:::
+Address#xorWithMask(long):::This throws an UnsupportedOperationException if this address happens       to actually be an OopHandle:::
+Debugger#hasProcessList():::Indicates whether this underlying debugger can provide a list of       currently-running processes.:::
+Debugger#getProcessList():::Provide a snapshot of the list of currently-running processes in       the form of a List of ProcessInfo objects:::
+Debugger#attach(int):::If an error occurs during attachment (i.e., "no such process"),       the thrown DebuggerException will contain a description of the       error in its message string.:::
+Debugger#attach(String, String):::This attaches the debugger to the given coreFileName, which is       assumed to have been generated from the specified       executableName:::
+Debugger#detach():::Detach from the remote process:::
+Debugger#parseAddress(String):::Parse an address from a hex string in the format "0xFFFFFFFF":::
+Debugger#getAddressValue(Address):::Returns the 64-bit value of an Address:::
+Debugger#getOS():::Support for remote debugging:::
+Debugger#getCPU():::Support for remote debugging:::
+Debugger#getMachineDescription():::Retrieve the machine description for the underlying hardware for       the cases in which we need to do, for example, machine-dependent       byte swapping:::
+Debugger#hasConsole():::Find out whether this debugger has a console available on which       commands can be executed; see executeCommandOnConsole, below:::
+Debugger#consoleExecuteCommand(String):::If the underlying debugger has a console (as dbx does), this       provides access to it:::
+Debugger#getConsolePrompt():::If the underlying debugger has a console, this returns the       debugger-specific prompt which should be displayed.:::
+Debugger#getCDebugger():::If this platform supports C/C++ debugging via the CDebugger       interface, returns a CDebugger object; otherwise returns       null.:::
+Debugger#getJBooleanSize():::the following methods are intended only for RemoteDebuggerClient:::
+DebuggerBase#configureJavaPrimitiveTypeSizes(long, long, long, long, long, long, long, long):::From the JVMDebugger interface:::if->throw->new->RuntimeException->if->throw->new->RuntimeException->if->throw->new->RuntimeException->if->throw->new->RuntimeException->if->throw->new->RuntimeException->if->throw->new->RuntimeException->if->throw->new->RuntimeException->if->throw->new->RuntimeException->if->throw->new->RuntimeException->if->throw->new->RuntimeException
+DebuggerBase#initCache(long, long):::May be called by subclasses if desired to initialize the page       cache but may not be overridden:::new->Fetcher->new->PageCache->if->machDesc->isBigEndian
+DebuggerBase#setBigEndian(boolean):::May be called by subclasses if needed (if the machine       description is not available at the time of cache       initialization, as on Solaris) but may not be overridden:::
+DebuggerBase#clearCache():::May be called by subclasses to clear out the cache but may not       be overridden:::if->cache->clear
+DebuggerBase#disableCache():::May be called by subclasses to disable the cache (for example,       when the target process has been resumed) but may not be       overridden:::if->cache->disable
+DebuggerBase#enableCache():::May be called by subclasses to re-enable the cache (for example,       when the target process has been suspended) but may not be       overridden:::if->cache->enable
+DebuggerBase#readBytes(long, long):::May be called by subclasses directly but may not be overridden:::if->return->cache->getData->else->res->readBytesFromProcess->if->res->getData->return->res->getData->throw->res->getFailureAddress->new->UnmappedAddressException
+DebuggerBase#writeBytes(long, long, byte[]):::May be called by subclasses directly but may not be overridden:::if->cache->clear->writeBytesToProcess
+DebuggerBase#checkConfigured():::Can be called by subclasses but can not be overridden:::if->throw->new->RuntimeException->if->throw->new->RuntimeException
+DebuggerBase#checkJavaConfigured():::Can be called by subclasses but can not be overridden:::checkConfigured->if->throw->new->RuntimeException
+DebuggerBase#parseCacheNumPagesProperty(int):::Possibly override page cache size with user-specified property:::cacheNumPagesString->System->getProperty->if->try->return->Integer->parseInt->catch->println->e->printStackTrace->finally->return
+DebuggerBase#invalidatePageCache(long, long):::Interim solution for allowing subclasses to write bytes to       process until we make that functionality available in the basic       Address interface:::cache->clear
+InputLexer#parseBoolean():::Parses a boolean (really either a 0 or 1 integer in US-ASCII       encoding) on the input stream:::val->parseInt->return
+InputLexer#parseInt():::Parses an int in US-ASCII encoding on the input stream:::l->parseLong->mask->if->throw->new->IOException->return
+InputLexer#parseLong():::Parses a long in US-ASCII encoding on the input stream:::skipWhitespace->b->readByte->if->Character->isDigit->error->l->while->Character->isDigit->readByte->pushBack->return
+InputLexer#parseAddress():::Parses an address in the form 0x12345678 in US-ASCII encoding on       the input stream:::skipWhitespace->b->if->readByte->error->readByte->if->error->val->while->readByte->isHexDigit->Character->digit->pushBack->return
+InputLexer#readByte():::Reads binary data; one byte:::if->return->return->readByteInternal
+InputLexer#readBytes(byte[], int, int):::Reads a block of binary data in BLOCKING fashion:::startIdx->numRead->if->while->in->read
+InputLexer#readChar():::Reads binary data; one 16-bit character in big-endian format:::hi->readByte->lo->readByte->return
+InputLexer#readUnsignedInt():::Reads binary data; one 32-bit unsigned int in big-endian format:::b1->readByte->b2->readByte->b3->readByte->b4->readByte->return
+InputLexer#readByteString(int):::Reads binary data; a US-ASCII string of the specified length:::b->new->byteArr->for->i->try->return->new->String->catch->throw->e->toString->new->IOException->finally
+InputLexer#readCharString(int):::Reads binary data; a Unicode string of the specified length:::c->new->charArr->for->i->return->new->String
+JVMDebugger#configureJavaPrimitiveTypeSizes(long, long, long, long, long, long, long, long):::This intent is that this can be called late in the bootstrapping       sequence, after which the debugger can handle reading of Java       primitive types, and thereby implement the Java functionality in       class Address:::
+LongHashMap.Entry#getKey():::Returns the key corresponding to this entry.:::return
+LongHashMap.Entry#getValue():::Returns the value corresponding to this entry:::return
+LongHashMap.Entry#setValue(Object):::Replaces the value corresponding to this entry with the specified value (optional operation):::oldValue->return
+LongHashMap.Entry#equals(Object):::Compares the specified object with this entry for equality:::if->return->e->return->e->getKey->e->getValue->eq
+LongHashMap.Entry#hashCode():::Returns the hash code value for this map entry:::return->value->hashCode
+LongHashMap#size():::Returns the number of key-value mappings in this map.:::return
+LongHashMap#isEmpty():::Returns <tt>true</tt> if this map contains no key-value mappings.:::return
+LongHashMap#get(long):::Returns the value to which this map maps the specified key:::e->getEntry->return
+LongHashMap#containsKey(long):::Returns <tt>true</tt> if this map contains a mapping for the specified key.:::return->getEntry
+LongHashMap#getEntry(long):::Returns the entry associated with the specified key in the HashMap:::tab->hash->index->for->e->return
+LongHashMap#containsValue(Object):::Returns <tt>true</tt> if this map maps one or more keys to the specified value.:::tab->if->for->i->else->for->i->return
+LongHashMap#put(long, Object):::Associates the specified value with the specified key in this map:::tab->hash->index->for->e->if->rehash->newEntry->return
+LongHashMap#remove(long):::Removes the mapping for this key from this map if present.:::e->removeEntryForKey->return
+LongHashMap#removeEntryForKey(long):::Removes and returns the entry associated with the specified key in the HashMap:::tab->hash->index->for->e->prev->return
+LongHashMap#removeEntry(Entry):::Removes the specified entry from this HashMap (and increments modCount).:::tab->index->for->e->prev->throw->new->ConcurrentModificationException
+LongHashMap#clear():::Removes all mappings from this map.:::tab->for->index
+LongHashMap#rehash():::Rehashes the contents of this map into a new <tt>HashMap</tt> instance with a larger capacity:::oldTable->oldCapacity->newCapacity->newTable->new->EntryArr->for->i
+MachineDescription#getAddressSize():::Returns the size of an address in bytes:::
+MachineDescription#cIntegerTypeMaxValue(long, boolean):::Returns the maximum value of the C integer type with the given       size in bytes and signedness:::
+MachineDescription#cIntegerTypeMinValue(long, boolean):::Returns the minimum value of the C integer type with the given       size in bytes and signedness:::
+MachineDescription#isBigEndian():::Indicates whether the CPU is big- or little-endian:::
+MachineDescription#isLP64():::Indicates whether the underlying machine supports the LP64 data       model (currently only SPARC/64).:::
+Page#isMapped():::Indicates whether this page is mapped in the remote process's       address space:::return
+Page#getData(long, long, int[], long):::Throws IndexOutOfBoundsException if the number of bytes       requested is greater than the page size, or if the start address       doesn't fall within the page:::startOffset->if->throw->new->IndexOutOfBoundsException->for->i
+Page#getDataAsBytes(long, long, byte[], long):::Throws IndexOutOfBoundsException if the number of bytes       requested is greater than the page size, or if the start address       doesn't fall within the page:::startOffset->if->throw->new->RuntimeException->System->arraycopy
+PageCache#getData(long, long):::This handles fetches which span multiple pages by virtue of the       presence of the PageFetcher:::data->new->byteArr->numRead->while->pageBaseAddress->page->getPage->checkPage->pageOffset->numBytesFromPage->Math->min->page->getDataAsBytes->return
+PageCache#clear(long, long):::A mechanism for clearing cached data covering the given region:::pageBaseAddress->endAddress->while->flushPage
+PageCache#clear():::A mechanism for clearing out the cache is necessary to handle       detaching and reattaching:::addressToPageMap->clear
+PageCache#disable():::Disables the page cache; no further pages will be added to the       cache and all existing pages will be flushed:::clear
+PageCache#enable():::Enables the page cache; fetched pages will be added to the       cache:::
+SymbolLookup#lookup(String, String):::Looks up the given symbol in the context of the given object:::
+SymbolLookup#lookupOop(String, String):::Looks up the given symbol in the context of the given object,       assuming that symbol refers to a Java object:::
+ThreadAccess#getThreadForIdentifierAddress(Address):::Gets an abstract ThreadProxy object for the thread identified by       the contents of the memory location pointed to by addr:::
+ThreadAccess#getThreadForThreadId(long):::Gets an abstract ThreadProxy object for the thread identified by       id or handle that is platform dependent:::
+ThreadContext#getNumRegisters():::Number of integer registers in the context:::
+ThreadContext#getRegisterName(int):::Get the name of the specified register (0..getNumRegisters() -       1):::
+ThreadContext#getRegister(int):::Get the value of the specified register (0..getNumRegisters() -       1):::
+ThreadContext#setRegister(int, long):::Set the value of the specified register (0..getNumRegisters() -       1):::
+ThreadContext#getRegisterAsAddress(int):::Get the value of the specified register (0..getNumRegisters() -       1) as an Address:::
+ThreadContext#setRegisterAsAddress(int, Address):::Set the value of the specified register (0..getNumRegisters() -       1) as an Address:::
+ThreadProxy#getContext():::Retrieves the context for the given thread:::
+ThreadProxy#canSetContext():::Indicates whether calls to setContext() are valid.:::
+ThreadProxy#setContext(ThreadContext):::Sets the context for the given thread:::
