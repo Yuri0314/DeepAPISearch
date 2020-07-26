@@ -4,6 +4,7 @@ from torch import nn
 import torch.utils.data as Data
 import numpy as np
 import json
+from train import *
 
 
 def collection(rnn_api,data_iter,batch_size, hidden_size,dataset,device):
@@ -54,6 +55,7 @@ def caculate(vocab,rnn_q,api_output,apis,query,query_max_length,api_dict,hidden_
     w = torch.empty(3,1,hidden_size).to(device)
     init_state=torch.nn.init.orthogonal_(w, gain=1)
     query_state=init_state
+    # ！！！！注意此处模型中的bn可能形状不是特别对
     q_output=rnn_q(query_data,query_state)
     #q_output形状应为（1，output_size）
     q_output=q_output/torch.norm(q_output.unsqueeze(0),dim=1).unsqueeze(1)
@@ -69,7 +71,7 @@ def caculate(vocab,rnn_q,api_output,apis,query,query_max_length,api_dict,hidden_
 #     求出最大的那个api index
     idx=int(idx)
     #根据idx查询出apis中的index，之后通过字典查询出对应的原生字符串
-    print(api_dict[tuple(apis[idx].cpu().numpy().tolist())])
+    print(api_dict[tuple( apis[idx].cpu().numpy().tolist())])
 
 #处理query语句使其大转小写
 # if __name__=='__main__':
@@ -88,10 +90,19 @@ def caculate(vocab,rnn_q,api_output,apis,query,query_max_length,api_dict,hidden_
 # 存储与取出所有的api向量
 def jsonwrite(file_name, obj):
     with open(file_name, "w") as f:
-        json.dump(f, obj)
+        json.dump(obj, f)
 
 def jsonread(file_name):
     with open(file_name, "r") as f:
         obj = json.load(f)
     o = np.array(obj)
     return obj
+
+# if __name__=='__main__':
+#
+#     # api_output=api_output.cpu()
+#     query='See the general contract of the read method of InputStream'
+#     caculate(in_vocab,rnn_q,api_output,apis,query.lower(),query_max_length,api_dict,hidden_size,device)
+#
+#     # 对collection函数进行调用，得到api_output(特征向量)，api（api的字符串序列）
+#     print('收集结束。。。。。')
