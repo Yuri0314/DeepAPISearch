@@ -1,17 +1,17 @@
-Buffer#createSameBufferException():::Returns an IllegalArgumentException indicating that the source and target are the same Buffer:::
-Buffer#createCapacityException(int):::Verify that the capacity is nonnegative.:::
-Buffer#capacity():::Returns this buffer's capacity.:::
-Buffer#position():::Returns this buffer's position.:::
-Buffer#position(int):::Sets this buffer's position:::this.createPositionException
-Buffer#limit():::Returns this buffer's limit.:::
-Buffer#limit(int):::Sets this buffer's limit:::this.createLimitException
-Buffer#mark():::Sets this buffer's mark at its position.:::
-Buffer#reset():::Resets this buffer's position to the previously-marked position:::
-Buffer#clear():::Clears this buffer:::
-Buffer#flip():::Flips this buffer:::
-Buffer#rewind():::Rewinds this buffer:::
-Buffer#remaining():::Returns the number of elements between the current position and the limit.:::
-Buffer#hasRemaining():::Tells whether there are any elements between the current position and the limit.:::
+Buffer#createSameBufferException():::Returns an IllegalArgumentException indicating that the source and target are the same Buffer:::return->new->IllegalArgumentException
+Buffer#createCapacityException(int):::Verify that the capacity is nonnegative.:::return->new->IllegalArgumentException
+Buffer#capacity():::Returns this buffer's capacity.:::return
+Buffer#position():::Returns this buffer's position.:::return
+Buffer#position(int):::Sets this buffer's position:::if->throw->createPositionException->if->return
+Buffer#limit():::Returns this buffer's limit.:::return
+Buffer#limit(int):::Sets this buffer's limit:::if->throw->createLimitException->if->if->return
+Buffer#mark():::Sets this buffer's mark at its position.:::return
+Buffer#reset():::Resets this buffer's position to the previously-marked position:::m->if->throw->new->InvalidMarkException->return
+Buffer#clear():::Clears this buffer:::return
+Buffer#flip():::Flips this buffer:::return
+Buffer#rewind():::Rewinds this buffer:::return
+Buffer#remaining():::Returns the number of elements between the current position and the limit.:::return
+Buffer#hasRemaining():::Tells whether there are any elements between the current position and the limit.:::return
 Buffer#isReadOnly():::Tells whether or not this buffer is read-only.:::
 Buffer#hasArray():::Tells whether or not this buffer is backed by an accessible array:::
 Buffer#array():::Returns the array that backs this buffer&nbsp;&nbsp;(optional operation):::
@@ -19,13 +19,13 @@ Buffer#arrayOffset():::Returns the offset within this buffer's backing array of 
 Buffer#isDirect():::Tells whether or not this buffer is direct.:::
 Buffer#slice():::Creates a new buffer whose content is a shared subsequence of this buffer's content:::
 Buffer#duplicate():::Creates a new buffer that shares this buffer's content:::
-Buffer#nextGetIndex():::Checks the current position against the limit, throwing a BufferUnderflowException if it is not smaller than the limit, and then increments the position.:::
-Buffer#nextPutIndex():::Checks the current position against the limit, throwing a BufferOverflowException if it is not smaller than the limit, and then increments the position.:::
-Buffer#checkIndex(int):::Checks the given index against the limit, throwing an IndexOutOfBoundsException if it is not smaller than the limit or is smaller than zero.:::
-ByteBuffer#allocateDirect(int):::Allocates a new direct byte buffer:::
-ByteBuffer#allocate(int):::Allocates a new byte buffer:::this.createCapacityException
-ByteBuffer#wrap(byte[], int, int):::Wraps a byte array into a buffer:::
-ByteBuffer#wrap(byte[]):::Wraps a byte array into a buffer:::this.wrap
+Buffer#nextGetIndex():::Checks the current position against the limit, throwing a BufferUnderflowException if it is not smaller than the limit, and then increments the position.:::if->throw->new->BufferUnderflowException->return
+Buffer#nextPutIndex():::Checks the current position against the limit, throwing a BufferOverflowException if it is not smaller than the limit, and then increments the position.:::if->throw->new->BufferOverflowException->return
+Buffer#checkIndex(int):::Checks the given index against the limit, throwing an IndexOutOfBoundsException if it is not smaller than the limit or is smaller than zero.:::if->throw->new->IndexOutOfBoundsException->return
+ByteBuffer#allocateDirect(int):::Allocates a new direct byte buffer:::return->new->DirectByteBuffer
+ByteBuffer#allocate(int):::Allocates a new byte buffer:::if->throw->createCapacityException->return->new->HeapByteBuffer
+ByteBuffer#wrap(byte[], int, int):::Wraps a byte array into a buffer:::try->return->new->HeapByteBuffer->catch->throw->new->IndexOutOfBoundsException->finally
+ByteBuffer#wrap(byte[]):::Wraps a byte array into a buffer:::return->wrap
 ByteBuffer#slice():::Creates a new byte buffer whose content is a shared subsequence of this buffer's content:::
 ByteBuffer#duplicate():::Creates a new byte buffer that shares this buffer's content:::
 ByteBuffer#asReadOnlyBuffer():::Creates a new, read-only byte buffer that shares this buffer's content:::
@@ -33,25 +33,25 @@ ByteBuffer#get():::Relative get method:::
 ByteBuffer#put(byte):::Relative put method&nbsp;&nbsp;(optional operation):::
 ByteBuffer#get(int):::Absolute get method:::
 ByteBuffer#put(int, byte):::Absolute put method&nbsp;&nbsp;(optional operation):::
-ByteBuffer#get(byte[], int, int):::Relative bulk get method:::this.checkBounds->this.remaining->this.get
-ByteBuffer#get(byte[]):::Relative bulk get method:::this.get
-ByteBuffer#put(ByteBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.createSameBufferException->this.isReadOnly->src.remaining->this.remaining->src.get->this.put
-ByteBuffer#put(byte[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.checkBounds->this.remaining->this.put
-ByteBuffer#put(byte[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.put
-ByteBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible byte array:::
-ByteBuffer#array():::Returns the byte array that backs this buffer&nbsp;&nbsp;(optional operation):::
-ByteBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::
+ByteBuffer#get(byte[], int, int):::Relative bulk get method:::checkBounds->if->remaining->throw->new->BufferUnderflowException->end->for->i->return
+ByteBuffer#get(byte[]):::Relative bulk get method:::return->get
+ByteBuffer#put(ByteBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::if->throw->createSameBufferException->if->isReadOnly->throw->new->ReadOnlyBufferException->n->src->remaining->if->remaining->throw->new->BufferOverflowException->for->i->return
+ByteBuffer#put(byte[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::checkBounds->if->remaining->throw->new->BufferOverflowException->end->for->i->return
+ByteBuffer#put(byte[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::return->put
+ByteBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible byte array:::return
+ByteBuffer#array():::Returns the byte array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+ByteBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 ByteBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 ByteBuffer#isDirect():::Tells whether or not this byte buffer is direct.:::
-ByteBuffer#toString():::Returns a string summarizing the state of this buffer.:::getClass().getName->sb.append->sb.append->this.position->sb.append->sb.append->this.limit->sb.append->sb.append->this.capacity->sb.append->sb.append->sb.toString
-ByteBuffer#hashCode():::Returns the current hash code of this buffer:::this.position->this.get->this.limit
-ByteBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::this.remaining->that.remaining->this.position->that.position->this.remaining->BufferMismatch.mismatch
-ByteBuffer#compareTo(ByteBuffer):::Compares this buffer to another:::this.position->that.position->this.remaining->that.remaining->Math.min->BufferMismatch.mismatch->this.position->this.get->that.position->that.get->this.compare->this.remaining->that.remaining
-ByteBuffer#mismatch(ByteBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::this.remaining->that.remaining->Math.min->this.position->that.position->BufferMismatch.mismatch->this.remaining->that.remaining
-ByteBuffer#order():::Retrieves this buffer's byte order:::
-ByteBuffer#order(ByteOrder):::Modifies this buffer's byte order.:::ByteOrder.nativeOrder
-ByteBuffer#alignmentOffset(int, int):::Returns the memory address, pointing to the byte at the given index, modulus the given unit size:::this.isDirect
-ByteBuffer#alignedSlice(int):::Creates a new byte buffer whose content is a shared and aligned subsequence of this buffer's content:::this.position->this.limit->this.alignmentOffset->this.alignmentOffset->this.slice
+ByteBuffer#toString():::Returns a string summarizing the state of this buffer.:::sb->new->StringBuffer->sb->getClass->getName->append->sb->append->sb->position->append->sb->append->sb->limit->append->sb->append->sb->capacity->append->sb->append->return->sb->toString
+ByteBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
+ByteBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
+ByteBuffer#compareTo(ByteBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+ByteBuffer#mismatch(ByteBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
+ByteBuffer#order():::Retrieves this buffer's byte order:::return
+ByteBuffer#order(ByteOrder):::Modifies this buffer's byte order.:::ByteOrder->nativeOrder->return
+ByteBuffer#alignmentOffset(int, int):::Returns the memory address, pointing to the byte at the given index, modulus the given unit size:::if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->if->isDirect->throw->new->UnsupportedOperationException->return
+ByteBuffer#alignedSlice(int):::Creates a new byte buffer whose content is a shared and aligned subsequence of this buffer's content:::pos->position->lim->limit->pos_mod->alignmentOffset->lim_mod->alignmentOffset->aligned_pos->aligned_lim->if->return->slice
 ByteBuffer#getChar():::Relative get method for reading a char value:::
 ByteBuffer#putChar(char):::Relative put method for writing a char value&nbsp;&nbsp;(optional operation):::
 ByteBuffer#getChar(int):::Absolute get method for reading a char value:::
@@ -82,14 +82,14 @@ ByteBuffer#putDouble(double):::Relative put method for writing a double value&nb
 ByteBuffer#getDouble(int):::Absolute get method for reading a double value:::
 ByteBuffer#putDouble(int, double):::Absolute put method for writing a double value&nbsp;&nbsp;(optional operation):::
 ByteBuffer#asDoubleBuffer():::Creates a view of this byte buffer as a double buffer:::
-ByteOrder#nativeOrder():::Retrieves the native byte order of the underlying platform:::
-ByteOrder#toString():::Constructs a string describing this object:::
-CharBuffer#allocate(int):::Allocates a new char buffer:::this.createCapacityException
-CharBuffer#wrap(char[], int, int):::Wraps a char array into a buffer:::
-CharBuffer#wrap(char[]):::Wraps a char array into a buffer:::this.wrap
-CharBuffer#read(CharBuffer):::Attempts to read characters into the specified character buffer:::target.remaining->this.remaining->Math.min->this.limit->this.position->this.limit->this.limit->target.put
-CharBuffer#wrap(CharSequence, int, int):::Wraps a character sequence into a buffer:::
-CharBuffer#wrap(CharSequence):::Wraps a character sequence into a buffer:::csq.length->this.wrap
+ByteOrder#nativeOrder():::Retrieves the native byte order of the underlying platform:::return
+ByteOrder#toString():::Constructs a string describing this object:::return
+CharBuffer#allocate(int):::Allocates a new char buffer:::if->throw->createCapacityException->return->new->HeapCharBuffer
+CharBuffer#wrap(char[], int, int):::Wraps a char array into a buffer:::try->return->new->HeapCharBuffer->catch->throw->new->IndexOutOfBoundsException->finally
+CharBuffer#wrap(char[]):::Wraps a char array into a buffer:::return->wrap
+CharBuffer#read(CharBuffer):::Attempts to read characters into the specified character buffer:::targetRemaining->target->remaining->remaining->remaining->if->return->n->Math->min->limit->limit->if->position->limit->try->if->target->put->catch->finally->limit->return
+CharBuffer#wrap(CharSequence, int, int):::Wraps a character sequence into a buffer:::try->return->new->StringCharBuffer->catch->throw->new->IndexOutOfBoundsException->finally
+CharBuffer#wrap(CharSequence):::Wraps a character sequence into a buffer:::return->csq->length->wrap
 CharBuffer#slice():::Creates a new char buffer whose content is a shared subsequence of this buffer's content:::
 CharBuffer#duplicate():::Creates a new char buffer that shares this buffer's content:::
 CharBuffer#asReadOnlyBuffer():::Creates a new, read-only char buffer that shares this buffer's content:::
@@ -97,33 +97,33 @@ CharBuffer#get():::Relative get method:::
 CharBuffer#put(char):::Relative put method&nbsp;&nbsp;(optional operation):::
 CharBuffer#get(int):::Absolute get method:::
 CharBuffer#put(int, char):::Absolute put method&nbsp;&nbsp;(optional operation):::
-CharBuffer#get(char[], int, int):::Relative bulk get method:::this.checkBounds->this.remaining->this.get
-CharBuffer#get(char[]):::Relative bulk get method:::this.get
-CharBuffer#put(CharBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.createSameBufferException->this.isReadOnly->src.remaining->this.remaining->src.get->this.put
-CharBuffer#put(char[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.checkBounds->this.remaining->this.put
-CharBuffer#put(char[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.put
-CharBuffer#put(String, int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::src.length->this.checkBounds->this.isReadOnly->this.remaining->src.charAt->this.put
-CharBuffer#put(String):::Relative bulk put method&nbsp;&nbsp;(optional operation):::src.length->this.put
-CharBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible char array:::
-CharBuffer#array():::Returns the char array that backs this buffer&nbsp;&nbsp;(optional operation):::
-CharBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::
+CharBuffer#get(char[], int, int):::Relative bulk get method:::checkBounds->if->remaining->throw->new->BufferUnderflowException->end->for->i->return
+CharBuffer#get(char[]):::Relative bulk get method:::return->get
+CharBuffer#put(CharBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::if->throw->createSameBufferException->if->isReadOnly->throw->new->ReadOnlyBufferException->n->src->remaining->if->remaining->throw->new->BufferOverflowException->for->i->return
+CharBuffer#put(char[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::checkBounds->if->remaining->throw->new->BufferOverflowException->end->for->i->return
+CharBuffer#put(char[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::return->put
+CharBuffer#put(String, int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::src->length->checkBounds->if->isReadOnly->throw->new->ReadOnlyBufferException->if->remaining->throw->new->BufferOverflowException->for->i->return
+CharBuffer#put(String):::Relative bulk put method&nbsp;&nbsp;(optional operation):::return->src->length->put
+CharBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible char array:::return
+CharBuffer#array():::Returns the char array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+CharBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 CharBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 CharBuffer#isDirect():::Tells whether or not this char buffer is direct.:::
-CharBuffer#hashCode():::Returns the current hash code of this buffer:::this.position->this.get->this.limit
-CharBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::this.remaining->that.remaining->this.position->that.position->this.remaining->BufferMismatch.mismatch
-CharBuffer#compareTo(CharBuffer):::Compares this buffer to another:::this.position->that.position->this.remaining->that.remaining->Math.min->BufferMismatch.mismatch->this.position->this.get->that.position->that.get->this.compare->this.remaining->that.remaining
-CharBuffer#mismatch(CharBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::this.remaining->that.remaining->Math.min->this.position->that.position->BufferMismatch.mismatch->this.remaining->that.remaining
-CharBuffer#toString():::Returns a string containing the characters in this buffer:::this.position->this.limit->this.toString
-CharBuffer#length():::Returns the length of this character buffer:::this.remaining
-CharBuffer#charAt(int):::Reads the character at the given index relative to the current position.:::this.position->this.checkIndex->this.get
+CharBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
+CharBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
+CharBuffer#compareTo(CharBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+CharBuffer#mismatch(CharBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
+CharBuffer#toString():::Returns a string containing the characters in this buffer:::return->position->limit->toString
+CharBuffer#length():::Returns the length of this character buffer:::return->remaining
+CharBuffer#charAt(int):::Reads the character at the given index relative to the current position.:::return->position->checkIndex->get
 CharBuffer#subSequence(int, int):::Creates a new character buffer that represents the specified subsequence of this buffer, relative to the current position:::
-CharBuffer#append(CharSequence):::Appends the specified character sequence  to this buffer&nbsp;&nbsp;(optional operation):::csq.toString->this.put->this.put
-CharBuffer#append(CharSequence, int, int):::Appends a subsequence of the  specified character sequence  to this buffer&nbsp;&nbsp;(optional operation):::cs.subSequence(start, end).toString->this.put
-CharBuffer#append(char):::Appends the specified char  to this buffer&nbsp;&nbsp;(optional operation):::this.put
+CharBuffer#append(CharSequence):::Appends the specified character sequence  to this buffer&nbsp;&nbsp;(optional operation):::if->return->put->else->return->csq->toString->put
+CharBuffer#append(CharSequence, int, int):::Appends a subsequence of the  specified character sequence  to this buffer&nbsp;&nbsp;(optional operation):::cs->return->cs->subSequence->toString->put
+CharBuffer#append(char):::Appends the specified char  to this buffer&nbsp;&nbsp;(optional operation):::return->put
 CharBuffer#order():::Retrieves this buffer's byte order:::
-DoubleBuffer#allocate(int):::Allocates a new double buffer:::this.createCapacityException
-DoubleBuffer#wrap(double[], int, int):::Wraps a double array into a buffer:::
-DoubleBuffer#wrap(double[]):::Wraps a double array into a buffer:::this.wrap
+DoubleBuffer#allocate(int):::Allocates a new double buffer:::if->throw->createCapacityException->return->new->HeapDoubleBuffer
+DoubleBuffer#wrap(double[], int, int):::Wraps a double array into a buffer:::try->return->new->HeapDoubleBuffer->catch->throw->new->IndexOutOfBoundsException->finally
+DoubleBuffer#wrap(double[]):::Wraps a double array into a buffer:::return->wrap
 DoubleBuffer#slice():::Creates a new double buffer whose content is a shared subsequence of this buffer's content:::
 DoubleBuffer#duplicate():::Creates a new double buffer that shares this buffer's content:::
 DoubleBuffer#asReadOnlyBuffer():::Creates a new, read-only double buffer that shares this buffer's content:::
@@ -131,25 +131,25 @@ DoubleBuffer#get():::Relative get method:::
 DoubleBuffer#put(double):::Relative put method&nbsp;&nbsp;(optional operation):::
 DoubleBuffer#get(int):::Absolute get method:::
 DoubleBuffer#put(int, double):::Absolute put method&nbsp;&nbsp;(optional operation):::
-DoubleBuffer#get(double[], int, int):::Relative bulk get method:::this.checkBounds->this.remaining->this.get
-DoubleBuffer#get(double[]):::Relative bulk get method:::this.get
-DoubleBuffer#put(DoubleBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.createSameBufferException->this.isReadOnly->src.remaining->this.remaining->src.get->this.put
-DoubleBuffer#put(double[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.checkBounds->this.remaining->this.put
-DoubleBuffer#put(double[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.put
-DoubleBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible double array:::
-DoubleBuffer#array():::Returns the double array that backs this buffer&nbsp;&nbsp;(optional operation):::
-DoubleBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::
+DoubleBuffer#get(double[], int, int):::Relative bulk get method:::checkBounds->if->remaining->throw->new->BufferUnderflowException->end->for->i->return
+DoubleBuffer#get(double[]):::Relative bulk get method:::return->get
+DoubleBuffer#put(DoubleBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::if->throw->createSameBufferException->if->isReadOnly->throw->new->ReadOnlyBufferException->n->src->remaining->if->remaining->throw->new->BufferOverflowException->for->i->return
+DoubleBuffer#put(double[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::checkBounds->if->remaining->throw->new->BufferOverflowException->end->for->i->return
+DoubleBuffer#put(double[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::return->put
+DoubleBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible double array:::return
+DoubleBuffer#array():::Returns the double array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+DoubleBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 DoubleBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 DoubleBuffer#isDirect():::Tells whether or not this double buffer is direct.:::
-DoubleBuffer#toString():::Returns a string summarizing the state of this buffer.:::getClass().getName->sb.append->sb.append->this.position->sb.append->sb.append->this.limit->sb.append->sb.append->this.capacity->sb.append->sb.append->sb.toString
-DoubleBuffer#hashCode():::Returns the current hash code of this buffer:::this.position->this.get->this.limit
-DoubleBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::this.remaining->that.remaining->this.position->that.position->this.remaining->BufferMismatch.mismatch
-DoubleBuffer#compareTo(DoubleBuffer):::Compares this buffer to another:::this.position->that.position->this.remaining->that.remaining->Math.min->BufferMismatch.mismatch->this.position->this.get->that.position->that.get->this.compare->this.remaining->that.remaining
-DoubleBuffer#mismatch(DoubleBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::this.remaining->that.remaining->Math.min->this.position->that.position->BufferMismatch.mismatch->this.remaining->that.remaining
+DoubleBuffer#toString():::Returns a string summarizing the state of this buffer.:::sb->new->StringBuffer->sb->getClass->getName->append->sb->append->sb->position->append->sb->append->sb->limit->append->sb->append->sb->capacity->append->sb->append->return->sb->toString
+DoubleBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
+DoubleBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
+DoubleBuffer#compareTo(DoubleBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+DoubleBuffer#mismatch(DoubleBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
 DoubleBuffer#order():::Retrieves this buffer's byte order:::
-FloatBuffer#allocate(int):::Allocates a new float buffer:::this.createCapacityException
-FloatBuffer#wrap(float[], int, int):::Wraps a float array into a buffer:::
-FloatBuffer#wrap(float[]):::Wraps a float array into a buffer:::this.wrap
+FloatBuffer#allocate(int):::Allocates a new float buffer:::if->throw->createCapacityException->return->new->HeapFloatBuffer
+FloatBuffer#wrap(float[], int, int):::Wraps a float array into a buffer:::try->return->new->HeapFloatBuffer->catch->throw->new->IndexOutOfBoundsException->finally
+FloatBuffer#wrap(float[]):::Wraps a float array into a buffer:::return->wrap
 FloatBuffer#slice():::Creates a new float buffer whose content is a shared subsequence of this buffer's content:::
 FloatBuffer#duplicate():::Creates a new float buffer that shares this buffer's content:::
 FloatBuffer#asReadOnlyBuffer():::Creates a new, read-only float buffer that shares this buffer's content:::
@@ -157,25 +157,25 @@ FloatBuffer#get():::Relative get method:::
 FloatBuffer#put(float):::Relative put method&nbsp;&nbsp;(optional operation):::
 FloatBuffer#get(int):::Absolute get method:::
 FloatBuffer#put(int, float):::Absolute put method&nbsp;&nbsp;(optional operation):::
-FloatBuffer#get(float[], int, int):::Relative bulk get method:::this.checkBounds->this.remaining->this.get
-FloatBuffer#get(float[]):::Relative bulk get method:::this.get
-FloatBuffer#put(FloatBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.createSameBufferException->this.isReadOnly->src.remaining->this.remaining->src.get->this.put
-FloatBuffer#put(float[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.checkBounds->this.remaining->this.put
-FloatBuffer#put(float[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.put
-FloatBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible float array:::
-FloatBuffer#array():::Returns the float array that backs this buffer&nbsp;&nbsp;(optional operation):::
-FloatBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::
+FloatBuffer#get(float[], int, int):::Relative bulk get method:::checkBounds->if->remaining->throw->new->BufferUnderflowException->end->for->i->return
+FloatBuffer#get(float[]):::Relative bulk get method:::return->get
+FloatBuffer#put(FloatBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::if->throw->createSameBufferException->if->isReadOnly->throw->new->ReadOnlyBufferException->n->src->remaining->if->remaining->throw->new->BufferOverflowException->for->i->return
+FloatBuffer#put(float[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::checkBounds->if->remaining->throw->new->BufferOverflowException->end->for->i->return
+FloatBuffer#put(float[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::return->put
+FloatBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible float array:::return
+FloatBuffer#array():::Returns the float array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+FloatBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 FloatBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 FloatBuffer#isDirect():::Tells whether or not this float buffer is direct.:::
-FloatBuffer#toString():::Returns a string summarizing the state of this buffer.:::getClass().getName->sb.append->sb.append->this.position->sb.append->sb.append->this.limit->sb.append->sb.append->this.capacity->sb.append->sb.append->sb.toString
-FloatBuffer#hashCode():::Returns the current hash code of this buffer:::this.position->this.get->this.limit
-FloatBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::this.remaining->that.remaining->this.position->that.position->this.remaining->BufferMismatch.mismatch
-FloatBuffer#compareTo(FloatBuffer):::Compares this buffer to another:::this.position->that.position->this.remaining->that.remaining->Math.min->BufferMismatch.mismatch->this.position->this.get->that.position->that.get->this.compare->this.remaining->that.remaining
-FloatBuffer#mismatch(FloatBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::this.remaining->that.remaining->Math.min->this.position->that.position->BufferMismatch.mismatch->this.remaining->that.remaining
+FloatBuffer#toString():::Returns a string summarizing the state of this buffer.:::sb->new->StringBuffer->sb->getClass->getName->append->sb->append->sb->position->append->sb->append->sb->limit->append->sb->append->sb->capacity->append->sb->append->return->sb->toString
+FloatBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
+FloatBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
+FloatBuffer#compareTo(FloatBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+FloatBuffer#mismatch(FloatBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
 FloatBuffer#order():::Retrieves this buffer's byte order:::
-IntBuffer#allocate(int):::Allocates a new int buffer:::this.createCapacityException
-IntBuffer#wrap(int[], int, int):::Wraps an int array into a buffer:::
-IntBuffer#wrap(int[]):::Wraps an int array into a buffer:::this.wrap
+IntBuffer#allocate(int):::Allocates a new int buffer:::if->throw->createCapacityException->return->new->HeapIntBuffer
+IntBuffer#wrap(int[], int, int):::Wraps an int array into a buffer:::try->return->new->HeapIntBuffer->catch->throw->new->IndexOutOfBoundsException->finally
+IntBuffer#wrap(int[]):::Wraps an int array into a buffer:::return->wrap
 IntBuffer#slice():::Creates a new int buffer whose content is a shared subsequence of this buffer's content:::
 IntBuffer#duplicate():::Creates a new int buffer that shares this buffer's content:::
 IntBuffer#asReadOnlyBuffer():::Creates a new, read-only int buffer that shares this buffer's content:::
@@ -183,25 +183,25 @@ IntBuffer#get():::Relative get method:::
 IntBuffer#put(int):::Relative put method&nbsp;&nbsp;(optional operation):::
 IntBuffer#get(int):::Absolute get method:::
 IntBuffer#put(int, int):::Absolute put method&nbsp;&nbsp;(optional operation):::
-IntBuffer#get(int[], int, int):::Relative bulk get method:::this.checkBounds->this.remaining->this.get
-IntBuffer#get(int[]):::Relative bulk get method:::this.get
-IntBuffer#put(IntBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.createSameBufferException->this.isReadOnly->src.remaining->this.remaining->src.get->this.put
-IntBuffer#put(int[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.checkBounds->this.remaining->this.put
-IntBuffer#put(int[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.put
-IntBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible int array:::
-IntBuffer#array():::Returns the int array that backs this buffer&nbsp;&nbsp;(optional operation):::
-IntBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::
+IntBuffer#get(int[], int, int):::Relative bulk get method:::checkBounds->if->remaining->throw->new->BufferUnderflowException->end->for->i->return
+IntBuffer#get(int[]):::Relative bulk get method:::return->get
+IntBuffer#put(IntBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::if->throw->createSameBufferException->if->isReadOnly->throw->new->ReadOnlyBufferException->n->src->remaining->if->remaining->throw->new->BufferOverflowException->for->i->return
+IntBuffer#put(int[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::checkBounds->if->remaining->throw->new->BufferOverflowException->end->for->i->return
+IntBuffer#put(int[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::return->put
+IntBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible int array:::return
+IntBuffer#array():::Returns the int array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+IntBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 IntBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 IntBuffer#isDirect():::Tells whether or not this int buffer is direct.:::
-IntBuffer#toString():::Returns a string summarizing the state of this buffer.:::getClass().getName->sb.append->sb.append->this.position->sb.append->sb.append->this.limit->sb.append->sb.append->this.capacity->sb.append->sb.append->sb.toString
-IntBuffer#hashCode():::Returns the current hash code of this buffer:::this.position->this.get->this.limit
-IntBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::this.remaining->that.remaining->this.position->that.position->this.remaining->BufferMismatch.mismatch
-IntBuffer#compareTo(IntBuffer):::Compares this buffer to another:::this.position->that.position->this.remaining->that.remaining->Math.min->BufferMismatch.mismatch->this.position->this.get->that.position->that.get->this.compare->this.remaining->that.remaining
-IntBuffer#mismatch(IntBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::this.remaining->that.remaining->Math.min->this.position->that.position->BufferMismatch.mismatch->this.remaining->that.remaining
+IntBuffer#toString():::Returns a string summarizing the state of this buffer.:::sb->new->StringBuffer->sb->getClass->getName->append->sb->append->sb->position->append->sb->append->sb->limit->append->sb->append->sb->capacity->append->sb->append->return->sb->toString
+IntBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
+IntBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
+IntBuffer#compareTo(IntBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+IntBuffer#mismatch(IntBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
 IntBuffer#order():::Retrieves this buffer's byte order:::
-LongBuffer#allocate(int):::Allocates a new long buffer:::this.createCapacityException
-LongBuffer#wrap(long[], int, int):::Wraps a long array into a buffer:::
-LongBuffer#wrap(long[]):::Wraps a long array into a buffer:::this.wrap
+LongBuffer#allocate(int):::Allocates a new long buffer:::if->throw->createCapacityException->return->new->HeapLongBuffer
+LongBuffer#wrap(long[], int, int):::Wraps a long array into a buffer:::try->return->new->HeapLongBuffer->catch->throw->new->IndexOutOfBoundsException->finally
+LongBuffer#wrap(long[]):::Wraps a long array into a buffer:::return->wrap
 LongBuffer#slice():::Creates a new long buffer whose content is a shared subsequence of this buffer's content:::
 LongBuffer#duplicate():::Creates a new long buffer that shares this buffer's content:::
 LongBuffer#asReadOnlyBuffer():::Creates a new, read-only long buffer that shares this buffer's content:::
@@ -209,28 +209,28 @@ LongBuffer#get():::Relative get method:::
 LongBuffer#put(long):::Relative put method&nbsp;&nbsp;(optional operation):::
 LongBuffer#get(int):::Absolute get method:::
 LongBuffer#put(int, long):::Absolute put method&nbsp;&nbsp;(optional operation):::
-LongBuffer#get(long[], int, int):::Relative bulk get method:::this.checkBounds->this.remaining->this.get
-LongBuffer#get(long[]):::Relative bulk get method:::this.get
-LongBuffer#put(LongBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.createSameBufferException->this.isReadOnly->src.remaining->this.remaining->src.get->this.put
-LongBuffer#put(long[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.checkBounds->this.remaining->this.put
-LongBuffer#put(long[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.put
-LongBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible long array:::
-LongBuffer#array():::Returns the long array that backs this buffer&nbsp;&nbsp;(optional operation):::
-LongBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::
+LongBuffer#get(long[], int, int):::Relative bulk get method:::checkBounds->if->remaining->throw->new->BufferUnderflowException->end->for->i->return
+LongBuffer#get(long[]):::Relative bulk get method:::return->get
+LongBuffer#put(LongBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::if->throw->createSameBufferException->if->isReadOnly->throw->new->ReadOnlyBufferException->n->src->remaining->if->remaining->throw->new->BufferOverflowException->for->i->return
+LongBuffer#put(long[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::checkBounds->if->remaining->throw->new->BufferOverflowException->end->for->i->return
+LongBuffer#put(long[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::return->put
+LongBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible long array:::return
+LongBuffer#array():::Returns the long array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+LongBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 LongBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 LongBuffer#isDirect():::Tells whether or not this long buffer is direct.:::
-LongBuffer#toString():::Returns a string summarizing the state of this buffer.:::getClass().getName->sb.append->sb.append->this.position->sb.append->sb.append->this.limit->sb.append->sb.append->this.capacity->sb.append->sb.append->sb.toString
-LongBuffer#hashCode():::Returns the current hash code of this buffer:::this.position->this.get->this.limit
-LongBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::this.remaining->that.remaining->this.position->that.position->this.remaining->BufferMismatch.mismatch
-LongBuffer#compareTo(LongBuffer):::Compares this buffer to another:::this.position->that.position->this.remaining->that.remaining->Math.min->BufferMismatch.mismatch->this.position->this.get->that.position->that.get->this.compare->this.remaining->that.remaining
-LongBuffer#mismatch(LongBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::this.remaining->that.remaining->Math.min->this.position->that.position->BufferMismatch.mismatch->this.remaining->that.remaining
+LongBuffer#toString():::Returns a string summarizing the state of this buffer.:::sb->new->StringBuffer->sb->getClass->getName->append->sb->append->sb->position->append->sb->append->sb->limit->append->sb->append->sb->capacity->append->sb->append->return->sb->toString
+LongBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
+LongBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
+LongBuffer#compareTo(LongBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+LongBuffer#mismatch(LongBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
 LongBuffer#order():::Retrieves this buffer's byte order:::
-MappedByteBuffer#isLoaded():::Tells whether or not this buffer's content is resident in physical memory:::this.capacity->this.mappingOffset->this.mappingLength->this.mappingAddress->Bits.pageCount->this.isLoaded0
-MappedByteBuffer#load():::Loads this buffer's content into physical memory:::this.capacity->this.mappingOffset->this.mappingLength->this.mappingAddress->this.load0->Unsafe.getUnsafe->Bits.pageSize->Bits.pageCount->this.mappingAddress->Reference.reachabilityFence->unsafe.getByte
-MappedByteBuffer#force():::Forces any changes made to this buffer's content to be written to the storage device containing the mapped file:::this.capacity->this.mappingOffset->this.mappingAddress->this.mappingLength->this.force0
-ShortBuffer#allocate(int):::Allocates a new short buffer:::this.createCapacityException
-ShortBuffer#wrap(short[], int, int):::Wraps a short array into a buffer:::
-ShortBuffer#wrap(short[]):::Wraps a short array into a buffer:::this.wrap
+MappedByteBuffer#isLoaded():::Tells whether or not this buffer's content is resident in physical memory:::if->return->if->capacity->return->offset->mappingOffset->length->mappingLength->return->mappingAddress->Bits->pageCount->isLoaded0
+MappedByteBuffer#load():::Loads this buffer's content into physical memory:::if->return->if->capacity->return->offset->mappingOffset->length->mappingLength->mappingAddress->load0->unsafe->Unsafe->getUnsafe->ps->Bits->pageSize->count->Bits->pageCount->a->mappingAddress->x->try->for->i->catch->finally->Reference->reachabilityFence->if->return
+MappedByteBuffer#force():::Forces any changes made to this buffer's content to be written to the storage device containing the mapped file:::if->return->if->capacity->offset->mappingOffset->mappingAddress->mappingLength->force0->return
+ShortBuffer#allocate(int):::Allocates a new short buffer:::if->throw->createCapacityException->return->new->HeapShortBuffer
+ShortBuffer#wrap(short[], int, int):::Wraps a short array into a buffer:::try->return->new->HeapShortBuffer->catch->throw->new->IndexOutOfBoundsException->finally
+ShortBuffer#wrap(short[]):::Wraps a short array into a buffer:::return->wrap
 ShortBuffer#slice():::Creates a new short buffer whose content is a shared subsequence of this buffer's content:::
 ShortBuffer#duplicate():::Creates a new short buffer that shares this buffer's content:::
 ShortBuffer#asReadOnlyBuffer():::Creates a new, read-only short buffer that shares this buffer's content:::
@@ -238,19 +238,19 @@ ShortBuffer#get():::Relative get method:::
 ShortBuffer#put(short):::Relative put method&nbsp;&nbsp;(optional operation):::
 ShortBuffer#get(int):::Absolute get method:::
 ShortBuffer#put(int, short):::Absolute put method&nbsp;&nbsp;(optional operation):::
-ShortBuffer#get(short[], int, int):::Relative bulk get method:::this.checkBounds->this.remaining->this.get
-ShortBuffer#get(short[]):::Relative bulk get method:::this.get
-ShortBuffer#put(ShortBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.createSameBufferException->this.isReadOnly->src.remaining->this.remaining->src.get->this.put
-ShortBuffer#put(short[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.checkBounds->this.remaining->this.put
-ShortBuffer#put(short[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::this.put
-ShortBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible short array:::
-ShortBuffer#array():::Returns the short array that backs this buffer&nbsp;&nbsp;(optional operation):::
-ShortBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::
+ShortBuffer#get(short[], int, int):::Relative bulk get method:::checkBounds->if->remaining->throw->new->BufferUnderflowException->end->for->i->return
+ShortBuffer#get(short[]):::Relative bulk get method:::return->get
+ShortBuffer#put(ShortBuffer):::Relative bulk put method&nbsp;&nbsp;(optional operation):::if->throw->createSameBufferException->if->isReadOnly->throw->new->ReadOnlyBufferException->n->src->remaining->if->remaining->throw->new->BufferOverflowException->for->i->return
+ShortBuffer#put(short[], int, int):::Relative bulk put method&nbsp;&nbsp;(optional operation):::checkBounds->if->remaining->throw->new->BufferOverflowException->end->for->i->return
+ShortBuffer#put(short[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):::return->put
+ShortBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible short array:::return
+ShortBuffer#array():::Returns the short array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+ShortBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 ShortBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 ShortBuffer#isDirect():::Tells whether or not this short buffer is direct.:::
-ShortBuffer#toString():::Returns a string summarizing the state of this buffer.:::getClass().getName->sb.append->sb.append->this.position->sb.append->sb.append->this.limit->sb.append->sb.append->this.capacity->sb.append->sb.append->sb.toString
-ShortBuffer#hashCode():::Returns the current hash code of this buffer:::this.position->this.get->this.limit
-ShortBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::this.remaining->that.remaining->this.position->that.position->this.remaining->BufferMismatch.mismatch
-ShortBuffer#compareTo(ShortBuffer):::Compares this buffer to another:::this.position->that.position->this.remaining->that.remaining->Math.min->BufferMismatch.mismatch->this.position->this.get->that.position->that.get->this.compare->this.remaining->that.remaining
-ShortBuffer#mismatch(ShortBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::this.remaining->that.remaining->Math.min->this.position->that.position->BufferMismatch.mismatch->this.remaining->that.remaining
+ShortBuffer#toString():::Returns a string summarizing the state of this buffer.:::sb->new->StringBuffer->sb->getClass->getName->append->sb->append->sb->position->append->sb->append->sb->limit->append->sb->append->sb->capacity->append->sb->append->return->sb->toString
+ShortBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
+ShortBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
+ShortBuffer#compareTo(ShortBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+ShortBuffer#mismatch(ShortBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
 ShortBuffer#order():::Retrieves this buffer's byte order:::

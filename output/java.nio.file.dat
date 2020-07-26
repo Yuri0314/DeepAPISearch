@@ -1,83 +1,83 @@
-CopyMoveHelper#copyToForeignTarget(Path, Path, CopyOption...):::Simple copy for use when source and target are associated with different providers:::CopyOptions.parse->Files.readAttributes->attrs.isSymbolicLink->Files.exists->target.toString->Files.deleteIfExists->attrs.isDirectory->Files.newInputStream->Files.copy->Files.createDirectory->Files.getFileAttributeView->x.addSuppressed->Files.delete->attrs.lastModifiedTime->attrs.lastAccessTime->attrs.creationTime->view.setTimes
-CopyMoveHelper#moveToForeignTarget(Path, Path, CopyOption...):::Simple move implements as copy+delete for use when source and target are associated with different providers:::this.convertMoveToCopyOptions->this.copyToForeignTarget->Files.delete
-DirectoryIteratorException#getCause():::Returns the cause of this exception.:::super.getCause
+CopyMoveHelper#copyToForeignTarget(Path, Path, CopyOption...):::Simple copy for use when source and target are associated with different providers:::opts->CopyOptions->parse->linkOptions->new->LinkOptionArr->new->LinkOptionArr->attrs->Files->readAttributes->if->attrs->isSymbolicLink->throw->new->IOException->if->Files->deleteIfExists->else->if->Files->exists->throw->target->toString->new->FileAlreadyExistsException->if->attrs->isDirectory->Files->createDirectory->else->try->in->Files->newInputStream->Files->copy->catch->finally->if->view->Files->getFileAttributeView->try->view->attrs->lastModifiedTime->attrs->lastAccessTime->attrs->creationTime->setTimes->catch->try->Files->delete->catch->x->addSuppressed->finally->throw->finally
+CopyMoveHelper#moveToForeignTarget(Path, Path, CopyOption...):::Simple move implements as copy+delete for use when source and target are associated with different providers:::convertMoveToCopyOptions->copyToForeignTarget->Files->delete
+DirectoryIteratorException#getCause():::Returns the cause of this exception.:::return->super->getCause
 DirectoryStream.Filter#accept(T):::Decides if the given directory entry should be accepted or filtered.:::
 DirectoryStream#iterator():::Returns the iterator associated with this DirectoryStream.:::
-Files#newInputStream(Path, OpenOption...):::Opens a file, returning an input stream to read from the file:::provider(path).newInputStream
-Files#newOutputStream(Path, OpenOption...):::Opens or creates a file, returning an output stream that may be used to write bytes to the file:::provider(path).newOutputStream
-Files#newByteChannel(Path, Set, FileAttribute...):::Opens or creates a file, returning a seekable byte channel to access the file:::provider(path).newByteChannel
-Files#newByteChannel(Path, OpenOption...):::Opens or creates a file, returning a seekable byte channel to access the file:::Collections.addAll->Collections.emptySet->this.newByteChannel
-Files#newDirectoryStream(Path):::Opens a directory, returning a DirectoryStream to iterate over all entries in the directory:::provider(dir).newDirectoryStream
-Files#newDirectoryStream(Path, String):::Opens a directory, returning a DirectoryStream to iterate over the entries in the directory:::glob.equals->this.newDirectoryStream->dir.getFileSystem->fs.getPathMatcher->entry.getFileName->matcher.matches->fs.provider().newDirectoryStream
-Files#newDirectoryStream(Path, DirectoryStream.Filter):::Opens a directory, returning a DirectoryStream to iterate over the entries in the directory:::provider(dir).newDirectoryStream
-Files#createFile(Path, FileAttribute...):::Creates a new and empty file, failing if the file already exists:::newByteChannel(path, DEFAULT_CREATE_OPTIONS, attrs).close
-Files#createDirectory(Path, FileAttribute...):::Creates a new directory:::provider(dir).createDirectory
-Files#createDirectories(Path, FileAttribute...):::Creates a directory by creating all nonexistent parent directories first:::this.createAndCheckIsDirectory->dir.toAbsolutePath->dir.getParent->provider(parent).checkAccess->parent.getParent->dir.toString->child.resolve->this.createAndCheckIsDirectory->parent.relativize
-Files#createTempFile(Path, String, String, FileAttribute...):::Creates a new empty file in the specified directory, using the given prefix and suffix strings to generate its name:::Objects.requireNonNull->TempFileHelper.createTempFile
-Files#createTempFile(String, String, FileAttribute...):::Creates an empty file in the default temporary-file directory, using the given prefix and suffix to generate its name:::TempFileHelper.createTempFile
-Files#createTempDirectory(Path, String, FileAttribute...):::Creates a new directory in the specified directory, using the given prefix to generate its name:::Objects.requireNonNull->TempFileHelper.createTempDirectory
-Files#createTempDirectory(String, FileAttribute...):::Creates a new directory in the default temporary-file directory, using the given prefix to generate its name:::TempFileHelper.createTempDirectory
-Files#createSymbolicLink(Path, Path, FileAttribute...):::Creates a symbolic link to a target (optional operation):::provider(link).createSymbolicLink
-Files#createLink(Path, Path):::Creates a new link (directory entry) for an existing file (optional operation):::provider(link).createLink
-Files#delete(Path):::Deletes a file:::provider(path).delete
-Files#deleteIfExists(Path):::Deletes a file if it exists:::provider(path).deleteIfExists
-Files#copy(Path, Path, CopyOption...):::Copy a file to a target file:::this.provider->this.provider->CopyMoveHelper.copyToForeignTarget->provider.copy
-Files#move(Path, Path, CopyOption...):::Move or rename a file to a target file:::this.provider->this.provider->CopyMoveHelper.moveToForeignTarget->provider.move
-Files#readSymbolicLink(Path):::Reads the target of a symbolic link (optional operation):::provider(link).readSymbolicLink
-Files#getFileStore(Path):::Returns the FileStore representing the file store where a file is located:::provider(path).getFileStore
-Files#isSameFile(Path, Path):::Tests if two paths locate the same file:::provider(path).isSameFile
-Files#isHidden(Path):::Tells whether or not a file is considered hidden:::provider(path).isHidden
-Files#probeContentType(Path):::Probes the content type of a file:::detector.probeContentType->FileTypeDetectors.defaultFileTypeDetector.probeContentType
-Files#getFileAttributeView(Path, Class, LinkOption...):::Returns a file attribute view of a given type:::provider(path).getFileAttributeView
-Files#readAttributes(Path, Class, LinkOption...):::Reads a file's attributes as a bulk operation:::provider(path).readAttributes
-Files#setAttribute(Path, String, Object, LinkOption...):::Sets the value of a file attribute:::provider(path).setAttribute
-Files#getAttribute(Path, String, LinkOption...):::Reads the value of a file attribute:::attribute.indexOf->attribute.indexOf->this.readAttributes->map.size->attribute.indexOf->attribute.length->attribute.substring->map.get
-Files#readAttributes(Path, String, LinkOption...):::Reads a set of file attributes as a bulk operation:::provider(path).readAttributes
-Files#getPosixFilePermissions(Path, LinkOption...):::Returns a file's POSIX file permissions:::readAttributes(path, PosixFileAttributes.class, options).permissions
-Files#setPosixFilePermissions(Path, Set):::Sets a file's POSIX permissions:::this.getFileAttributeView->view.setPermissions
-Files#getOwner(Path, LinkOption...):::Returns the owner of a file:::this.getFileAttributeView->view.getOwner
-Files#setOwner(Path, UserPrincipal):::Updates the file owner:::this.getFileAttributeView->view.setOwner
-Files#isSymbolicLink(Path):::Tests whether a file is a symbolic link:::readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS).isSymbolicLink
-Files#isDirectory(Path, LinkOption...):::Tests whether a file is a directory:::this.provider->((AbstractFileSystemProvider) provider).isDirectory->readAttributes(path, BasicFileAttributes.class, options).isDirectory
-Files#isRegularFile(Path, LinkOption...):::Tests whether a file is a regular file with opaque content:::this.provider->((AbstractFileSystemProvider) provider).isRegularFile->readAttributes(path, BasicFileAttributes.class, options).isRegularFile
-Files#getLastModifiedTime(Path, LinkOption...):::Returns a file's last modified time:::readAttributes(path, BasicFileAttributes.class, options).lastModifiedTime
-Files#setLastModifiedTime(Path, FileTime):::Updates a file's last modified time attribute:::Objects.requireNonNull->getFileAttributeView(path, BasicFileAttributeView.class).setTimes
-Files#size(Path):::Returns the size of a file (in bytes):::readAttributes(path, BasicFileAttributes.class).size
-Files#exists(Path, LinkOption...):::Tests whether a file exists:::this.provider->((AbstractFileSystemProvider) provider).exists->this.followLinks->this.readAttributes->provider(path).checkAccess
-Files#notExists(Path, LinkOption...):::Tests whether the file located by this path does not exist:::this.followLinks->this.readAttributes->provider(path).checkAccess
-Files#isReadable(Path):::Tests whether a file is readable:::this.isAccessible
-Files#isWritable(Path):::Tests whether a file is writable:::this.isAccessible
-Files#isExecutable(Path):::Tests whether a file is executable:::this.isAccessible
-Files#walkFileTree(Path, Set, int, FileVisitor):::Walks a file tree:::walker.walk->ev.ioeException->ev.file->visitor.visitFileFailed->ev.attributes->ev.file->ev.attributes->visitor.visitFile->ev.file->ev.attributes->visitor.preVisitDirectory->walker.pop->ev.file->ev.ioeException->visitor.postVisitDirectory->ev.type->Objects.requireNonNull->walker.skipRemainingSiblings->walker.next
-Files#walkFileTree(Path, FileVisitor):::Walks a file tree:::EnumSet.noneOf->this.walkFileTree
-Files#newBufferedReader(Path, Charset):::Opens a file for reading, returning a BufferedReader that may be used to read text from the file in an efficient manner:::cs.newDecoder->this.newInputStream
-Files#newBufferedReader(Path):::Opens a file for reading, returning a BufferedReader to read text from the file in an efficient manner:::this.newBufferedReader
-Files#newBufferedWriter(Path, Charset, OpenOption...):::Opens or creates a file for writing, returning a BufferedWriter that may be used to write text to the file in an efficient manner:::cs.newEncoder->this.newOutputStream
-Files#newBufferedWriter(Path, OpenOption...):::Opens or creates a file for writing, returning a BufferedWriter to write text to the file in an efficient manner:::this.newBufferedWriter
-Files#copy(InputStream, Path, CopyOption...):::Copies all bytes from an input stream to a file:::Objects.requireNonNull->this.deleteIfExists->this.newOutputStream->in.transferTo
-Files#copy(Path, OutputStream):::Copies all bytes from a file to an output stream:::Objects.requireNonNull->this.newInputStream->in.transferTo
-Files#readAllBytes(Path):::Reads all the bytes from a file:::Files.newByteChannel->Channels.newInputStream->((FileChannelImpl) sbc).setUninterruptible->sbc.size->this.read
-Files#readString(Path):::Reads all content from a file into a string, decoding from bytes to characters using the StandardCharsets#UTF_8 UTF-8 Charset charset:::this.readString
-Files#readString(Path, Charset):::Reads all characters from a file into a string, decoding from bytes to characters using the specified Charset charset:::Objects.requireNonNull->Objects.requireNonNull->this.readAllBytes->path.getClass().getModule->Object.class.getModule->ba.clone->JLA.newStringNoRepl
-Files#readAllLines(Path, Charset):::Read all lines from a file:::this.newBufferedReader->reader.readLine->result.add
-Files#readAllLines(Path):::Read all lines from a file:::this.readAllLines
-Files#write(Path, byte[], OpenOption...):::Writes bytes to a file:::Objects.requireNonNull->Files.newOutputStream->Math.min->out.write
-Files#write(Path, Iterable, Charset, OpenOption...):::Write lines of text to a file:::Objects.requireNonNull->cs.newEncoder->this.newOutputStream->writer.append->writer.newLine
-Files#write(Path, Iterable, OpenOption...):::Write lines of text to a file:::this.write
-Files#writeString(Path, CharSequence, OpenOption...):::Write a java.lang.CharSequence CharSequence to a file:::this.writeString
-Files#writeString(Path, CharSequence, Charset, OpenOption...):::Write a java.lang.CharSequence CharSequence to a file:::Objects.requireNonNull->Objects.requireNonNull->Objects.requireNonNull->String.valueOf->JLA.getBytesNoRepl->this.write
-Files#list(Path):::Return a lazily populated Stream, the elements of which are the entries in the directory:::Files.newDirectoryStream->e.addSuppressed->ds.close->ds.iterator->e.getCause->delegate.hasNext->e.getCause->delegate.next->Spliterators.spliteratorUnknownSize->this.asUncheckedRunnable->StreamSupport.stream(spliterator, false).onClose
-Files#walk(Path, int, FileVisitOption...):::Return a Stream that is lazily populated with Path by walking the file tree rooted at a given starting file:::iterator.close->Spliterators.spliteratorUnknownSize->StreamSupport.stream(spliterator, false).onClose(iterator::close).map
-Files#walk(Path, FileVisitOption...):::Return a Stream that is lazily populated with Path by walking the file tree rooted at a given starting file:::this.walk
-Files#find(Path, int, BiPredicate, FileVisitOption...):::Return a Stream that is lazily populated with Path by searching for files in a file tree rooted at a given starting file:::iterator.close->Spliterators.spliteratorUnknownSize->StreamSupport.stream(spliterator, false).onClose(iterator::close).filter(entry -> matcher.test(entry.file(), entry.attributes())).map
-Files#lines(Path, Charset):::Read all lines from a file as a Stream:::path.getFileSystem->FileSystems.getDefault->cs.name->FileChannelLinesSpliterator.SUPPORTED_CHARSET_NAMES.contains->FileChannel.open->this.createFileChannelLinesStream->fc.close->Files.newBufferedReader->this.createBufferedReaderLinesStream
-Files#lines(Path):::Read all lines from a file as a Stream:::this.lines
+Files#newInputStream(Path, OpenOption...):::Opens a file, returning an input stream to read from the file:::return->provider->newInputStream
+Files#newOutputStream(Path, OpenOption...):::Opens or creates a file, returning an output stream that may be used to write bytes to the file:::return->provider->newOutputStream
+Files#newByteChannel(Path, Set, FileAttribute...):::Opens or creates a file, returning a seekable byte channel to access the file:::return->provider->newByteChannel
+Files#newByteChannel(Path, OpenOption...):::Opens or creates a file, returning a seekable byte channel to access the file:::set->if->Collections->emptySet->else->new->HashSet<>->Collections->addAll->return->newByteChannel
+Files#newDirectoryStream(Path):::Opens a directory, returning a DirectoryStream to iterate over all entries in the directory:::return->provider->newDirectoryStream
+Files#newDirectoryStream(Path, String):::Opens a directory, returning a DirectoryStream to iterate over the entries in the directory:::if->glob->equals->return->newDirectoryStream->fs->dir->getFileSystem->matcher->fs->getPathMatcher->filter->new->DirectoryStream.Filter<>->return->fs->provider->newDirectoryStream
+Files#newDirectoryStream(Path, DirectoryStream.Filter):::Opens a directory, returning a DirectoryStream to iterate over the entries in the directory:::return->provider->newDirectoryStream
+Files#createFile(Path, FileAttribute...):::Creates a new and empty file, failing if the file already exists:::newByteChannel->close->return
+Files#createDirectory(Path, FileAttribute...):::Creates a new directory:::provider->createDirectory->return
+Files#createDirectories(Path, FileAttribute...):::Creates a directory by creating all nonexistent parent directories first:::try->createAndCheckIsDirectory->return->catch->throw->finally->se->try->dir->toAbsolutePath->catch->finally->parent->dir->getParent->while->try->provider->checkAccess->break->catch->finally->parent->getParent->if->if->throw->dir->toString->new->FileSystemException->else->throw->child->foreach->parent->relativize->child->resolve->createAndCheckIsDirectory->return
+Files#createTempFile(Path, String, String, FileAttribute...):::Creates a new empty file in the specified directory, using the given prefix and suffix strings to generate its name:::return->TempFileHelper->Objects->requireNonNull->createTempFile
+Files#createTempFile(String, String, FileAttribute...):::Creates an empty file in the default temporary-file directory, using the given prefix and suffix to generate its name:::return->TempFileHelper->createTempFile
+Files#createTempDirectory(Path, String, FileAttribute...):::Creates a new directory in the specified directory, using the given prefix to generate its name:::return->TempFileHelper->Objects->requireNonNull->createTempDirectory
+Files#createTempDirectory(String, FileAttribute...):::Creates a new directory in the default temporary-file directory, using the given prefix to generate its name:::return->TempFileHelper->createTempDirectory
+Files#createSymbolicLink(Path, Path, FileAttribute...):::Creates a symbolic link to a target (optional operation):::provider->createSymbolicLink->return
+Files#createLink(Path, Path):::Creates a new link (directory entry) for an existing file (optional operation):::provider->createLink->return
+Files#delete(Path):::Deletes a file:::provider->delete
+Files#deleteIfExists(Path):::Deletes a file if it exists:::return->provider->deleteIfExists
+Files#copy(Path, Path, CopyOption...):::Copy a file to a target file:::provider->provider->if->provider->provider->copy->else->CopyMoveHelper->copyToForeignTarget->return
+Files#move(Path, Path, CopyOption...):::Move or rename a file to a target file:::provider->provider->if->provider->provider->move->else->CopyMoveHelper->moveToForeignTarget->return
+Files#readSymbolicLink(Path):::Reads the target of a symbolic link (optional operation):::return->provider->readSymbolicLink
+Files#getFileStore(Path):::Returns the FileStore representing the file store where a file is located:::return->provider->getFileStore
+Files#isSameFile(Path, Path):::Tests if two paths locate the same file:::return->provider->isSameFile
+Files#isHidden(Path):::Tells whether or not a file is considered hidden:::return->provider->isHidden
+Files#probeContentType(Path):::Probes the content type of a file:::foreach->result->detector->probeContentType->if->return->return->probeContentType
+Files#getFileAttributeView(Path, Class, LinkOption...):::Returns a file attribute view of a given type:::return->provider->getFileAttributeView
+Files#readAttributes(Path, Class, LinkOption...):::Reads a file's attributes as a bulk operation:::return->provider->readAttributes
+Files#setAttribute(Path, String, Object, LinkOption...):::Sets the value of a file attribute:::provider->setAttribute->return
+Files#getAttribute(Path, String, LinkOption...):::Reads the value of a file attribute:::if->attribute->indexOf->attribute->indexOf->throw->new->IllegalArgumentException->map->readAttributes->name->pos->attribute->indexOf->if->else->attribute->length->attribute->substring->return->map->get
+Files#readAttributes(Path, String, LinkOption...):::Reads a set of file attributes as a bulk operation:::return->provider->readAttributes
+Files#getPosixFilePermissions(Path, LinkOption...):::Returns a file's POSIX file permissions:::return->readAttributes->permissions
+Files#setPosixFilePermissions(Path, Set):::Sets a file's POSIX permissions:::view->getFileAttributeView->if->throw->new->UnsupportedOperationException->view->setPermissions->return
+Files#getOwner(Path, LinkOption...):::Returns the owner of a file:::view->getFileAttributeView->if->throw->new->UnsupportedOperationException->return->view->getOwner
+Files#setOwner(Path, UserPrincipal):::Updates the file owner:::view->getFileAttributeView->if->throw->new->UnsupportedOperationException->view->setOwner->return
+Files#isSymbolicLink(Path):::Tests whether a file is a symbolic link:::try->return->readAttributes->isSymbolicLink->catch->return->finally
+Files#isDirectory(Path, LinkOption...):::Tests whether a file is a directory:::if->provider->provider->if->return->isDirectory->try->return->readAttributes->isDirectory->catch->return->finally
+Files#isRegularFile(Path, LinkOption...):::Tests whether a file is a regular file with opaque content:::if->provider->provider->if->return->isRegularFile->try->return->readAttributes->isRegularFile->catch->return->finally
+Files#getLastModifiedTime(Path, LinkOption...):::Returns a file's last modified time:::return->readAttributes->lastModifiedTime
+Files#setLastModifiedTime(Path, FileTime):::Updates a file's last modified time attribute:::getFileAttributeView->Objects->requireNonNull->setTimes->return
+Files#size(Path):::Returns the size of a file (in bytes):::return->readAttributes->size
+Files#exists(Path, LinkOption...):::Tests whether a file exists:::if->provider->provider->if->return->exists->try->if->followLinks->provider->checkAccess->else->readAttributes->return->catch->return->finally
+Files#notExists(Path, LinkOption...):::Tests whether the file located by this path does not exist:::try->if->followLinks->provider->checkAccess->else->readAttributes->return->catch->return->return->finally
+Files#isReadable(Path):::Tests whether a file is readable:::return->isAccessible
+Files#isWritable(Path):::Tests whether a file is writable:::return->isAccessible
+Files#isExecutable(Path):::Tests whether a file is executable:::return->isAccessible
+Files#walkFileTree(Path, Set, int, FileVisitor):::Walks a file tree:::try->walker->new->FileTreeWalker->ev->walker->walk->do->result->switch->ev->type->ioe->ev->ioeException->if->visitor->ev->file->ev->attributes->visitFile->else->visitor->ev->file->visitFileFailed->break->visitor->ev->file->ev->attributes->preVisitDirectory->if->walker->pop->break->visitor->ev->file->ev->ioeException->postVisitDirectory->if->break->throw->new->AssertionError->if->Objects->requireNonNull->if->break->else->if->walker->skipRemainingSiblings->walker->next->while->catch->finally->return
+Files#walkFileTree(Path, FileVisitor):::Walks a file tree:::return->EnumSet->noneOf->walkFileTree
+Files#newBufferedReader(Path, Charset):::Opens a file for reading, returning a BufferedReader that may be used to read text from the file in an efficient manner:::decoder->cs->newDecoder->reader->newInputStream->new->InputStreamReader->return->new->BufferedReader
+Files#newBufferedReader(Path):::Opens a file for reading, returning a BufferedReader to read text from the file in an efficient manner:::return->newBufferedReader
+Files#newBufferedWriter(Path, Charset, OpenOption...):::Opens or creates a file for writing, returning a BufferedWriter that may be used to write text to the file in an efficient manner:::encoder->cs->newEncoder->writer->newOutputStream->new->OutputStreamWriter->return->new->BufferedWriter
+Files#newBufferedWriter(Path, OpenOption...):::Opens or creates a file for writing, returning a BufferedWriter to write text to the file in an efficient manner:::return->newBufferedWriter
+Files#copy(InputStream, Path, CopyOption...):::Copies all bytes from an input stream to a file:::Objects->requireNonNull->replaceExisting->foreach->if->else->if->throw->new->NullPointerException->else->throw->new->UnsupportedOperationException->se->if->try->deleteIfExists->catch->finally->ostream->try->newOutputStream->catch->if->throw->throw->finally->try->out->return->in->transferTo->catch->finally
+Files#copy(Path, OutputStream):::Copies all bytes from a file to an output stream:::Objects->requireNonNull->try->in->newInputStream->return->in->transferTo->catch->finally
+Files#readAllBytes(Path):::Reads all the bytes from a file:::try->sbc->Files->newByteChannel->in->Channels->newInputStream->if->setUninterruptible->size->sbc->size->if->throw->new->OutOfMemoryError->return->read->catch->finally
+Files#readString(Path):::Reads all content from a file into a string, decoding from bytes to characters using the StandardCharsets#UTF_8 UTF-8 Charset charset:::return->readString
+Files#readString(Path, Charset):::Reads all characters from a file into a string, decoding from bytes to characters using the specified Charset charset:::Objects->requireNonNull->Objects->requireNonNull->ba->readAllBytes->if->path->getClass->getModule->getModule->ba->clone->return->JLA->newStringNoRepl
+Files#readAllLines(Path, Charset):::Read all lines from a file:::try->reader->newBufferedReader->result->new->ArrayList<>->for->return->catch->finally
+Files#readAllLines(Path):::Read all lines from a file:::return->readAllLines
+Files#write(Path, byte[], OpenOption...):::Writes bytes to a file:::Objects->requireNonNull->try->out->Files->newOutputStream->len->rem->while->n->Math->min->out->write->catch->finally->return
+Files#write(Path, Iterable, Charset, OpenOption...):::Write lines of text to a file:::Objects->requireNonNull->encoder->cs->newEncoder->try->out->newOutputStream->writer->new->OutputStreamWriter->new->BufferedWriter->foreach->writer->append->writer->newLine->catch->finally->return
+Files#write(Path, Iterable, OpenOption...):::Write lines of text to a file:::return->write
+Files#writeString(Path, CharSequence, OpenOption...):::Write a java.lang.CharSequence CharSequence to a file:::return->writeString
+Files#writeString(Path, CharSequence, Charset, OpenOption...):::Write a java.lang.CharSequence CharSequence to a file:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->bytes->JLA->String->valueOf->getBytesNoRepl->write->return
+Files#list(Path):::Return a lazily populated Stream, the elements of which are the entries in the directory:::ds->Files->newDirectoryStream->try->delegate->ds->iterator->iterator->new->Iterator<>->spliterator->Spliterators->spliteratorUnknownSize->return->StreamSupport->stream->asUncheckedRunnable->onClose->catch->try->ds->close->catch->try->e->addSuppressed->catch->finally->finally->throw->finally
+Files#walk(Path, int, FileVisitOption...):::Return a Stream that is lazily populated with Path by walking the file tree rooted at a given starting file:::iterator->new->FileTreeIterator->try->spliterator->Spliterators->spliteratorUnknownSize->return->StreamSupport->stream->iterator->close->onClose->entry->file->map->catch->iterator->close->throw->finally
+Files#walk(Path, FileVisitOption...):::Return a Stream that is lazily populated with Path by walking the file tree rooted at a given starting file:::return->walk
+Files#find(Path, int, BiPredicate, FileVisitOption...):::Return a Stream that is lazily populated with Path by searching for files in a file tree rooted at a given starting file:::iterator->new->FileTreeIterator->try->spliterator->Spliterators->spliteratorUnknownSize->return->StreamSupport->stream->iterator->close->onClose->matcher->entry->file->entry->attributes->test->filter->entry->file->map->catch->iterator->close->throw->finally
+Files#lines(Path, Charset):::Read all lines from a file as a Stream:::if->path->getFileSystem->FileSystems->getDefault->cs->name->contains->fc->FileChannel->open->fcls->createFileChannelLinesStream->if->return->fc->close->return->Files->newBufferedReader->createBufferedReaderLinesStream
+Files#lines(Path):::Read all lines from a file as a Stream:::return->lines
 FileStore#name():::Returns the name of this file store:::
 FileStore#type():::Returns the type of this file store:::
 FileStore#isReadOnly():::Tells whether this file store is read-only:::
 FileStore#getTotalSpace():::Returns the size, in bytes, of the file store.:::
 FileStore#getUsableSpace():::Returns the number of bytes available to this Java virtual machine on the file store:::
-FileStore#getBlockSize():::Returns the number of bytes per block in this file store:::
+FileStore#getBlockSize():::Returns the number of bytes per block in this file store:::throw->new->UnsupportedOperationException
 FileStore#getUnallocatedSpace():::Returns the number of unallocated bytes in the file store:::
 FileStore#supportsFileAttributeView(Class):::Tells whether or not this file store supports the file attributes identified by the given file attribute view:::
 FileStore#supportsFileAttributeView(String):::Tells whether or not this file store supports the file attributes identified by the given file attribute view:::
@@ -95,31 +95,31 @@ FileSystem#getPath(String, String...):::Converts a path string, or a sequence of
 FileSystem#getPathMatcher(String):::Returns a PathMatcher that performs match operations on the String representation of Path objects by interpreting a given pattern:::
 FileSystem#getUserPrincipalLookupService():::Returns the UserPrincipalLookupService for this file system (optional operation):::
 FileSystem#newWatchService():::Constructs a new WatchService (optional operation):::
-FileSystemException#getFile():::Returns the file used to create this exception.:::
-FileSystemException#getOtherFile():::Returns the other file used to create this exception.:::
-FileSystemException#getReason():::Returns the string explaining why the file system operation failed.:::super.getMessage
-FileSystemException#getMessage():::Returns the detail message string.:::this.getReason->sb.append->sb.append->sb.append->this.getReason->sb.append->this.getReason->sb.append->sb.toString
-FileSystems#getDefault():::Returns the default FileSystem:::VM.isModuleSystemInited->DefaultFileSystemProvider.theFileSystem
-FileSystems#getFileSystem(URI):::Returns a reference to an existing FileSystem:::uri.getScheme->provider.getScheme->scheme.equalsIgnoreCase->provider.getFileSystem->FileSystemProvider.installedProviders
-FileSystems#newFileSystem(URI, Map):::Constructs a new file system that is identified by a URI   This method iterates over the FileSystemProvider#installedProviders() installed providers to locate the provider that is identified by the URI URI#getScheme scheme of the given URI:::this.newFileSystem
-FileSystems#newFileSystem(URI, Map, ClassLoader):::Constructs a new file system that is identified by a URI   This method first attempts to locate an installed provider in exactly the same manner as the #newFileSystem(URI,Map) newFileSystem(URI,Map) method:::uri.getScheme->provider.getScheme->scheme.equalsIgnoreCase->provider.newFileSystem->FileSystemProvider.installedProviders->ServiceLoader.load->provider.getScheme->scheme.equalsIgnoreCase->provider.newFileSystem
-FileSystems#newFileSystem(Path, ClassLoader):::Constructs a new FileSystem to access the contents of a file as a file system:::Collections.emptyMap->provider.newFileSystem->FileSystemProvider.installedProviders->ServiceLoader.load->provider.newFileSystem
-FileTreeWalker#walk(Path):::Start walking from the given file.:::this.visit
-FileTreeWalker#next():::Returns the next Event or null if there are no more events or the walker is closed.:::stack.peek->top.skipped->top.iterator->x.getCause->iterator.hasNext->iterator.next->ioe.addSuppressed->top.stream().close->stack.pop->top.directory->this.visit
-FileTreeWalker#pop():::Pops the directory node that is the current top of the stack so that there are no more events for the directory (including no END_DIRECTORY) event:::stack.isEmpty->stack.pop->node.stream().close
-FileTreeWalker#skipRemainingSiblings():::Skips the remaining entries in the directory at the top of the stack:::stack.isEmpty->stack.peek().skip
-FileTreeWalker#isOpen():::Returns true if the walker is open.:::
-FileTreeWalker#close():::Closes/pops all directories on the stack.:::this.pop->stack.isEmpty
+FileSystemException#getFile():::Returns the file used to create this exception.:::return
+FileSystemException#getOtherFile():::Returns the other file used to create this exception.:::return
+FileSystemException#getReason():::Returns the string explaining why the file system operation failed.:::return->super->getMessage
+FileSystemException#getMessage():::Returns the detail message string.:::if->return->getReason->sb->new->StringBuilder->if->sb->append->if->sb->append->sb->append->if->getReason->sb->append->sb->getReason->append->return->sb->toString
+FileSystems#getDefault():::Returns the default FileSystem:::if->VM->isModuleSystemInited->return->else->return->DefaultFileSystemProvider->theFileSystem
+FileSystems#getFileSystem(URI):::Returns a reference to an existing FileSystem:::scheme->uri->getScheme->foreach->FileSystemProvider->installedProviders->if->scheme->provider->getScheme->equalsIgnoreCase->return->provider->getFileSystem->throw->new->ProviderNotFoundException
+FileSystems#newFileSystem(URI, Map):::Constructs a new file system that is identified by a URI   This method iterates over the FileSystemProvider#installedProviders() installed providers to locate the provider that is identified by the URI URI#getScheme scheme of the given URI:::return->newFileSystem
+FileSystems#newFileSystem(URI, Map, ClassLoader):::Constructs a new file system that is identified by a URI   This method first attempts to locate an installed provider in exactly the same manner as the #newFileSystem(URI,Map) newFileSystem(URI,Map) method:::scheme->uri->getScheme->foreach->FileSystemProvider->installedProviders->if->scheme->provider->getScheme->equalsIgnoreCase->try->return->provider->newFileSystem->catch->finally->if->sl->ServiceLoader->load->foreach->if->scheme->provider->getScheme->equalsIgnoreCase->try->return->provider->newFileSystem->catch->finally->throw->new->ProviderNotFoundException
+FileSystems#newFileSystem(Path, ClassLoader):::Constructs a new FileSystem to access the contents of a file as a file system:::if->throw->new->NullPointerException->env->Collections->emptyMap->foreach->FileSystemProvider->installedProviders->try->return->provider->newFileSystem->catch->finally->if->sl->ServiceLoader->load->foreach->try->return->provider->newFileSystem->catch->finally->throw->new->ProviderNotFoundException
+FileTreeWalker#walk(Path):::Start walking from the given file.:::if->throw->new->IllegalStateException->ev->visit->return
+FileTreeWalker#next():::Returns the next Event or null if there are no more events or the walker is closed.:::top->stack->peek->if->return->ev->do->entry->ioe->if->top->skipped->iterator->top->iterator->try->if->iterator->hasNext->iterator->next->catch->x->getCause->finally->if->try->top->stream->close->catch->if->else->ioe->addSuppressed->finally->stack->pop->return->top->directory->new->Event->visit->while->return
+FileTreeWalker#pop():::Pops the directory node that is the current top of the stack so that there are no more events for the directory (including no END_DIRECTORY) event:::if->stack->isEmpty->node->stack->pop->try->node->stream->close->catch->finally
+FileTreeWalker#skipRemainingSiblings():::Skips the remaining entries in the directory at the top of the stack:::if->stack->isEmpty->stack->peek->skip
+FileTreeWalker#isOpen():::Returns true if the walker is open.:::return
+FileTreeWalker#close():::Closes/pops all directories on the stack.:::if->while->stack->isEmpty->pop
 FileVisitor#preVisitDirectory(T, BasicFileAttributes):::Invoked for a directory before entries in the directory are visited:::
 FileVisitor#visitFile(T, BasicFileAttributes):::Invoked for a file in a directory.:::
 FileVisitor#visitFileFailed(T, IOException):::Invoked for a file that could not be visited:::
 FileVisitor#postVisitDirectory(T, IOException):::Invoked for a directory after entries in the directory, and all of their descendants, have been visited:::
-InvalidPathException#getInput():::Returns the input string.:::
-InvalidPathException#getReason():::Returns a string explaining why the input string was rejected.:::super.getMessage
-InvalidPathException#getIndex():::Returns an index into the input string of the position at which the error occurred, or -1 if this position is not known.:::
-InvalidPathException#getMessage():::Returns a string describing the error:::this.getReason->sb.append->sb.append->sb.append->sb.append->sb.append->sb.toString
-Path#of(String, String...):::Returns a Path by converting a path string, or a sequence of strings that when joined form a path string:::FileSystems.getDefault().getPath
-Path#of(URI):::Returns a Path by converting a URI:::uri.getScheme->scheme.equalsIgnoreCase->FileSystems.getDefault().provider().getPath->provider.getScheme().equalsIgnoreCase->provider.getPath->FileSystemProvider.installedProviders
+InvalidPathException#getInput():::Returns the input string.:::return
+InvalidPathException#getReason():::Returns a string explaining why the input string was rejected.:::return->super->getMessage
+InvalidPathException#getIndex():::Returns an index into the input string of the position at which the error occurred, or -1 if this position is not known.:::return
+InvalidPathException#getMessage():::Returns a string describing the error:::sb->new->StringBuilder->sb->getReason->append->if->sb->append->sb->append->sb->append->sb->append->return->sb->toString
+Path#of(String, String...):::Returns a Path by converting a path string, or a sequence of strings that when joined form a path string:::return->FileSystems->getDefault->getPath
+Path#of(URI):::Returns a Path by converting a URI:::scheme->uri->getScheme->if->throw->new->IllegalArgumentException->if->scheme->equalsIgnoreCase->return->FileSystems->getDefault->provider->getPath->foreach->FileSystemProvider->installedProviders->if->provider->getScheme->equalsIgnoreCase->return->provider->getPath->throw->new->FileSystemNotFoundException
 Path#getFileSystem():::Returns the file system that created this object.:::
 Path#isAbsolute():::Tells whether or not this path is absolute:::
 Path#getRoot():::Returns the root component of this path as a Path object, or null if this path does not have a root component.:::
@@ -129,29 +129,29 @@ Path#getNameCount():::Returns the number of name elements in the path.:::
 Path#getName(int):::Returns a name element of this path as a Path object:::
 Path#subpath(int, int):::Returns a relative Path that is a subsequence of the name elements of this path:::
 Path#startsWith(Path):::Tests if this path starts with the given path:::
-Path#startsWith(String):::Tests if this path starts with a Path, constructed by converting the given path string, in exactly the manner specified by the #startsWith(Path) startsWith(Path) method:::getFileSystem().getPath->this.startsWith
+Path#startsWith(String):::Tests if this path starts with a Path, constructed by converting the given path string, in exactly the manner specified by the #startsWith(Path) startsWith(Path) method:::return->getFileSystem->getPath->startsWith
 Path#endsWith(Path):::Tests if this path ends with the given path:::
-Path#endsWith(String):::Tests if this path ends with a Path, constructed by converting the given path string, in exactly the manner specified by the #endsWith(Path) endsWith(Path) method:::getFileSystem().getPath->this.endsWith
+Path#endsWith(String):::Tests if this path ends with a Path, constructed by converting the given path string, in exactly the manner specified by the #endsWith(Path) endsWith(Path) method:::return->getFileSystem->getPath->endsWith
 Path#normalize():::Returns a path that is this path with redundant name elements eliminated:::
 Path#resolve(Path):::Resolve the given path against this path:::
-Path#resolve(String):::Converts a given path string to a Path and resolves it against this Path in exactly the manner specified by the #resolve(Path) resolve method:::getFileSystem().getPath->this.resolve
-Path#resolveSibling(Path):::Resolves the given path against this path's #getParent parent path:::this.getParent->parent.resolve
-Path#resolveSibling(String):::Converts a given path string to a Path and resolves it against this path's #getParent parent path in exactly the manner specified by the #resolveSibling(Path) resolveSibling method.:::getFileSystem().getPath->this.resolveSibling
+Path#resolve(String):::Converts a given path string to a Path and resolves it against this Path in exactly the manner specified by the #resolve(Path) resolve method:::return->getFileSystem->getPath->resolve
+Path#resolveSibling(Path):::Resolves the given path against this path's #getParent parent path:::if->throw->new->NullPointerException->parent->getParent->return->parent->resolve
+Path#resolveSibling(String):::Converts a given path string to a Path and resolves it against this path's #getParent parent path in exactly the manner specified by the #resolveSibling(Path) resolveSibling method.:::return->getFileSystem->getPath->resolveSibling
 Path#relativize(Path):::Constructs a relative path between this path and a given path:::
 Path#toUri():::Returns a URI to represent this path:::
 Path#toAbsolutePath():::Returns a Path object representing the absolute path of this path:::
 Path#toRealPath(LinkOption...):::Returns the real path of an existing file:::
-Path#toFile():::Returns a File object representing this path:::this.getFileSystem->FileSystems.getDefault->this.toString
+Path#toFile():::Returns a File object representing this path:::if->getFileSystem->FileSystems->getDefault->return->toString->new->File->else->throw->new->UnsupportedOperationException
 Path#register(WatchService, WatchEvent.Kind[], WatchEvent.Modifier...):::Registers the file located by this path with a watch service:::
-Path#register(WatchService, WatchEvent.Kind...):::Registers the file located by this path with a watch service:::this.register
-Path#iterator():::Returns an iterator over the name elements of this path:::this.getNameCount->this.getNameCount->this.getName
+Path#register(WatchService, WatchEvent.Kind...):::Registers the file located by this path with a watch service:::return->new->WatchEvent.ModifierArr->register
+Path#iterator():::Returns an iterator over the name elements of this path:::return->new->Iterator<>
 Path#compareTo(Path):::Compares two abstract paths lexicographically:::
 Path#equals(Object):::Tests this path for equality with the given object:::
 Path#hashCode():::Computes a hash code for this path:::
 Path#toString():::Returns the string representation of this path:::
 PathMatcher#matches(Path):::Tells if given path matches this matcher's pattern.:::
-Paths#get(String, String...):::Converts a path string, or a sequence of strings that when joined form a path string, to a Path.:::Path.of
-Paths#get(URI):::Converts the given URI to a Path object.:::Path.of
+Paths#get(String, String...):::Converts a path string, or a sequence of strings that when joined form a path string, to a Path.:::return->Path->of
+Paths#get(URI):::Converts the given URI to a Path object.:::return->Path->of
 SecureDirectoryStream#newDirectoryStream(T, LinkOption...):::Opens the directory identified by the given path, returning a SecureDirectoryStream to iterate over the entries in the directory:::
 SecureDirectoryStream#newByteChannel(T, Set, FileAttribute...):::Opens or creates a file in this directory, returning a seekable byte channel to access the file:::
 SecureDirectoryStream#deleteFile(T):::Deletes a file:::
@@ -159,12 +159,12 @@ SecureDirectoryStream#deleteDirectory(T):::Deletes a directory:::
 SecureDirectoryStream#move(T, SecureDirectoryStream, T):::Move a file from this directory to another directory:::
 SecureDirectoryStream#getFileAttributeView(Class):::Returns a new file attribute view to access the file attributes of this directory:::
 SecureDirectoryStream#getFileAttributeView(T, Class, LinkOption...):::Returns a new file attribute view to access the file attributes of a file in this directory:::
-SimpleFileVisitor#preVisitDirectory(T, BasicFileAttributes):::Invoked for a directory before entries in the directory are visited:::Objects.requireNonNull->Objects.requireNonNull
-SimpleFileVisitor#visitFile(T, BasicFileAttributes):::Invoked for a file in a directory:::Objects.requireNonNull->Objects.requireNonNull
-SimpleFileVisitor#visitFileFailed(T, IOException):::Invoked for a file that could not be visited:::Objects.requireNonNull
-SimpleFileVisitor#postVisitDirectory(T, IOException):::Invoked for a directory after entries in the directory, and all of their descendants, have been visited:::Objects.requireNonNull
-TempFileHelper#createTempFile(Path, String, String, FileAttribute[]):::Creates a temporary file in the given directory, or in the temporary directory if dir is null.:::this.create
-TempFileHelper#createTempDirectory(Path, String, FileAttribute[]):::Creates a temporary directory in the given directory, or in the temporary directory if dir is null.:::this.create
+SimpleFileVisitor#preVisitDirectory(T, BasicFileAttributes):::Invoked for a directory before entries in the directory are visited:::Objects->requireNonNull->Objects->requireNonNull->return
+SimpleFileVisitor#visitFile(T, BasicFileAttributes):::Invoked for a file in a directory:::Objects->requireNonNull->Objects->requireNonNull->return
+SimpleFileVisitor#visitFileFailed(T, IOException):::Invoked for a file that could not be visited:::Objects->requireNonNull->throw
+SimpleFileVisitor#postVisitDirectory(T, IOException):::Invoked for a directory after entries in the directory, and all of their descendants, have been visited:::Objects->requireNonNull->if->throw->return
+TempFileHelper#createTempFile(Path, String, String, FileAttribute[]):::Creates a temporary file in the given directory, or in the temporary directory if dir is null.:::return->create
+TempFileHelper#createTempDirectory(Path, String, FileAttribute[]):::Creates a temporary directory in the given directory, or in the temporary directory if dir is null.:::return->create
 Watchable#register(WatchService, WatchEvent.Kind[], WatchEvent.Modifier...):::Registers an object with a watch service:::
 Watchable#register(WatchService, WatchEvent.Kind...):::Registers an object with a watch service:::
 WatchEvent.Kind#name():::Returns the name of the event kind.:::

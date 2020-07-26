@@ -1,81 +1,81 @@
-Charset#isSupported(String):::Tells whether the named charset is supported.:::this.lookup
-Charset#forName(String):::Returns a charset object for the named charset.:::this.lookup
-Charset#availableCharsets():::Constructs a sorted map from canonical charset names to charset objects:::AccessController.doPrivileged
-Charset#defaultCharset():::Returns the default charset of this Java virtual machine:::GetPropertyAction.privilegedGetProperty->this.lookup
-Charset#name():::Returns this charset's canonical name.:::
-Charset#aliases():::Returns a set containing this charset's aliases.:::hs.add->Collections.unmodifiableSet
-Charset#displayName():::Returns this charset's human-readable name for the default locale:::
-Charset#isRegistered():::Tells whether or not this charset is registered in the IANA Charset Registry.:::name.startsWith->name.startsWith
-Charset#displayName(Locale):::Returns this charset's human-readable name for the given locale:::
+Charset#isSupported(String):::Tells whether the named charset is supported.:::return->lookup
+Charset#forName(String):::Returns a charset object for the named charset.:::cs->lookup->if->return->throw->new->UnsupportedCharsetException
+Charset#availableCharsets():::Constructs a sorted map from canonical charset names to charset objects:::return->AccessController->new->PrivilegedAction<>->doPrivileged
+Charset#defaultCharset():::Returns the default charset of this Java virtual machine:::if->synchronized->csn->GetPropertyAction->privilegedGetProperty->cs->lookup->if->else->return
+Charset#name():::Returns this charset's canonical name.:::return
+Charset#aliases():::Returns a set containing this charset's aliases.:::if->return->n->hs->new->HashSet<>->for->i->Collections->unmodifiableSet->return
+Charset#displayName():::Returns this charset's human-readable name for the default locale:::return
+Charset#isRegistered():::Tells whether or not this charset is registered in the IANA Charset Registry.:::return->name->startsWith->name->startsWith
+Charset#displayName(Locale):::Returns this charset's human-readable name for the given locale:::return
 Charset#contains(Charset):::Tells whether or not this charset contains the given charset:::
 Charset#newDecoder():::Constructs a new decoder for this charset.:::
 Charset#newEncoder():::Constructs a new encoder for this charset.:::
-Charset#canEncode():::Tells whether or not this charset supports encoding:::
-Charset#decode(ByteBuffer):::Convenience method that decodes bytes in this charset into Unicode characters:::ThreadLocalCoders.decoderFor(this).onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE).decode
-Charset#encode(CharBuffer):::Convenience method that encodes Unicode characters into bytes in this charset:::ThreadLocalCoders.encoderFor(this).onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE).encode
-Charset#encode(String):::Convenience method that encodes a string into bytes in this charset:::CharBuffer.wrap->this.encode
-Charset#compareTo(Charset):::Compares this charset to another:::that.name->name().compareToIgnoreCase
-Charset#hashCode():::Computes a hashcode for this charset.:::name().hashCode
-Charset#equals(Object):::Tells whether or not this object is equal to another:::((Charset) ob).name->name.equals
-Charset#toString():::Returns a string describing this charset.:::this.name
-CharsetDecoder#charset():::Returns the charset that created this decoder.:::
-CharsetDecoder#replacement():::Returns this decoder's replacement value.:::
-CharsetDecoder#replaceWith(String):::Changes this decoder's replacement value:::newReplacement.length->this.implReplaceWith
+Charset#canEncode():::Tells whether or not this charset supports encoding:::return
+Charset#decode(ByteBuffer):::Convenience method that decodes bytes in this charset into Unicode characters:::try->return->ThreadLocalCoders->decoderFor->onMalformedInput->onUnmappableCharacter->decode->catch->throw->new->Error->finally
+Charset#encode(CharBuffer):::Convenience method that encodes Unicode characters into bytes in this charset:::try->return->ThreadLocalCoders->encoderFor->onMalformedInput->onUnmappableCharacter->encode->catch->throw->new->Error->finally
+Charset#encode(String):::Convenience method that encodes a string into bytes in this charset:::return->CharBuffer->wrap->encode
+Charset#compareTo(Charset):::Compares this charset to another:::return->name->that->name->compareToIgnoreCase
+Charset#hashCode():::Computes a hashcode for this charset.:::return->name->hashCode
+Charset#equals(Object):::Tells whether or not this object is equal to another:::if->return->if->return->return->name->name->equals
+Charset#toString():::Returns a string describing this charset.:::return->name
+CharsetDecoder#charset():::Returns the charset that created this decoder.:::return
+CharsetDecoder#replacement():::Returns this decoder's replacement value.:::return
+CharsetDecoder#replaceWith(String):::Changes this decoder's replacement value:::if->throw->new->IllegalArgumentException->len->newReplacement->length->if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->implReplaceWith->return
 CharsetDecoder#implReplaceWith(String):::Reports a change to this decoder's replacement value:::
-CharsetDecoder#malformedInputAction():::Returns this decoder's current action for malformed-input errors.:::
-CharsetDecoder#onMalformedInput(CodingErrorAction):::Changes this decoder's action for malformed-input errors:::this.implOnMalformedInput
+CharsetDecoder#malformedInputAction():::Returns this decoder's current action for malformed-input errors.:::return
+CharsetDecoder#onMalformedInput(CodingErrorAction):::Changes this decoder's action for malformed-input errors:::if->throw->new->IllegalArgumentException->implOnMalformedInput->return
 CharsetDecoder#implOnMalformedInput(CodingErrorAction):::Reports a change to this decoder's malformed-input action:::
-CharsetDecoder#unmappableCharacterAction():::Returns this decoder's current action for unmappable-character errors.:::
-CharsetDecoder#onUnmappableCharacter(CodingErrorAction):::Changes this decoder's action for unmappable-character errors:::this.implOnUnmappableCharacter
+CharsetDecoder#unmappableCharacterAction():::Returns this decoder's current action for unmappable-character errors.:::return
+CharsetDecoder#onUnmappableCharacter(CodingErrorAction):::Changes this decoder's action for unmappable-character errors:::if->throw->new->IllegalArgumentException->implOnUnmappableCharacter->return
 CharsetDecoder#implOnUnmappableCharacter(CodingErrorAction):::Reports a change to this decoder's unmappable-character action:::
-CharsetDecoder#averageCharsPerByte():::Returns the average number of characters that will be produced for each byte of input:::
-CharsetDecoder#maxCharsPerByte():::Returns the maximum number of characters that will be produced for each byte of input:::
-CharsetDecoder#decode(ByteBuffer, CharBuffer, boolean):::Decodes as many bytes as possible from the given input buffer, writing the results to the given output buffer:::this.throwIllegalStateException->this.decodeLoop->cr.isOverflow->cr.isUnderflow->in.hasRemaining->in.remaining->CoderResult.malformedForLength->cr.isMalformed->cr.isUnmappable->cr.toString->out.remaining->replacement.length->out.put->in.position->cr.length->in.position
-CharsetDecoder#flush(CharBuffer):::Flushes this decoder:::this.implFlush->cr.isUnderflow->this.throwIllegalStateException
-CharsetDecoder#implFlush(CharBuffer):::Flushes this decoder:::
-CharsetDecoder#reset():::Resets this decoder, clearing any internal state:::this.implReset
+CharsetDecoder#averageCharsPerByte():::Returns the average number of characters that will be produced for each byte of input:::return
+CharsetDecoder#maxCharsPerByte():::Returns the maximum number of characters that will be produced for each byte of input:::return
+CharsetDecoder#decode(ByteBuffer, CharBuffer, boolean):::Decodes as many bytes as possible from the given input buffer, writing the results to the given output buffer:::newState->if->throwIllegalStateException->for
+CharsetDecoder#flush(CharBuffer):::Flushes this decoder:::if->cr->implFlush->if->cr->isUnderflow->return->if->throwIllegalStateException->return
+CharsetDecoder#implFlush(CharBuffer):::Flushes this decoder:::return
+CharsetDecoder#reset():::Resets this decoder, clearing any internal state:::implReset->return
 CharsetDecoder#implReset():::Resets this decoder, clearing any charset-specific internal state:::
 CharsetDecoder#decodeLoop(ByteBuffer, CharBuffer):::Decodes one or more bytes into one or more characters:::
-CharsetDecoder#decode(ByteBuffer):::Convenience method that decodes the remaining content of a single input byte buffer into a newly-allocated character buffer:::in.remaining->this.averageCharsPerByte->CharBuffer.allocate->in.remaining->this.reset->in.hasRemaining->this.decode->cr.isUnderflow->this.flush->cr.isUnderflow->cr.isOverflow->CharBuffer.allocate->out.flip->o.put->cr.throwException->out.flip
-CharsetDecoder#isAutoDetecting():::Tells whether or not this decoder implements an auto-detecting charset:::
-CharsetDecoder#isCharsetDetected():::Tells whether or not this decoder has yet detected a charset&nbsp;&nbsp;(optional operation):::
-CharsetDecoder#detectedCharset():::Retrieves the charset that was detected by this decoder&nbsp;&nbsp;(optional operation):::
-CharsetEncoder#charset():::Returns the charset that created this encoder.:::
-CharsetEncoder#replacement():::Returns this encoder's replacement value.:::Arrays.copyOf
-CharsetEncoder#replaceWith(byte[]):::Changes this encoder's replacement value:::this.isLegalReplacement->Arrays.copyOf->this.implReplaceWith
+CharsetDecoder#decode(ByteBuffer):::Convenience method that decodes the remaining content of a single input byte buffer into a newly-allocated character buffer:::n->in->remaining->averageCharsPerByte->out->CharBuffer->allocate->if->in->remaining->return->reset->for->out->flip->return
+CharsetDecoder#isAutoDetecting():::Tells whether or not this decoder implements an auto-detecting charset:::return
+CharsetDecoder#isCharsetDetected():::Tells whether or not this decoder has yet detected a charset&nbsp;&nbsp;(optional operation):::throw->new->UnsupportedOperationException
+CharsetDecoder#detectedCharset():::Retrieves the charset that was detected by this decoder&nbsp;&nbsp;(optional operation):::throw->new->UnsupportedOperationException
+CharsetEncoder#charset():::Returns the charset that created this encoder.:::return
+CharsetEncoder#replacement():::Returns this encoder's replacement value.:::return->Arrays->copyOf
+CharsetEncoder#replaceWith(byte[]):::Changes this encoder's replacement value:::if->throw->new->IllegalArgumentException->len->if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->if->isLegalReplacement->throw->new->IllegalArgumentException->Arrays->copyOf->implReplaceWith->return
 CharsetEncoder#implReplaceWith(byte[]):::Reports a change to this encoder's replacement value:::
-CharsetEncoder#isLegalReplacement(byte[]):::Tells whether or not the given byte array is a legal replacement value for this encoder:::wr.get->dec.reset->charset().newDecoder->dec.onMalformedInput->dec.onUnmappableCharacter->ByteBuffer.wrap->CharBuffer.allocate->dec.decode->cr.isError
-CharsetEncoder#malformedInputAction():::Returns this encoder's current action for malformed-input errors.:::
-CharsetEncoder#onMalformedInput(CodingErrorAction):::Changes this encoder's action for malformed-input errors:::this.implOnMalformedInput
+CharsetEncoder#isLegalReplacement(byte[]):::Tells whether or not the given byte array is a legal replacement value for this encoder:::wr->dec->if->wr->get->charset->newDecoder->dec->onMalformedInput->dec->onUnmappableCharacter->new->WeakReference<CharsetDecoder>->else->dec->reset->bb->ByteBuffer->wrap->cb->CharBuffer->bb->remaining->dec->maxCharsPerByte->allocate->cr->dec->decode->return->cr->isError
+CharsetEncoder#malformedInputAction():::Returns this encoder's current action for malformed-input errors.:::return
+CharsetEncoder#onMalformedInput(CodingErrorAction):::Changes this encoder's action for malformed-input errors:::if->throw->new->IllegalArgumentException->implOnMalformedInput->return
 CharsetEncoder#implOnMalformedInput(CodingErrorAction):::Reports a change to this encoder's malformed-input action:::
-CharsetEncoder#unmappableCharacterAction():::Returns this encoder's current action for unmappable-character errors.:::
-CharsetEncoder#onUnmappableCharacter(CodingErrorAction):::Changes this encoder's action for unmappable-character errors:::this.implOnUnmappableCharacter
+CharsetEncoder#unmappableCharacterAction():::Returns this encoder's current action for unmappable-character errors.:::return
+CharsetEncoder#onUnmappableCharacter(CodingErrorAction):::Changes this encoder's action for unmappable-character errors:::if->throw->new->IllegalArgumentException->implOnUnmappableCharacter->return
 CharsetEncoder#implOnUnmappableCharacter(CodingErrorAction):::Reports a change to this encoder's unmappable-character action:::
-CharsetEncoder#averageBytesPerChar():::Returns the average number of bytes that will be produced for each character of input:::
-CharsetEncoder#maxBytesPerChar():::Returns the maximum number of bytes that will be produced for each character of input:::
-CharsetEncoder#encode(CharBuffer, ByteBuffer, boolean):::Encodes as many characters as possible from the given input buffer, writing the results to the given output buffer:::this.throwIllegalStateException->this.encodeLoop->cr.isOverflow->cr.isUnderflow->in.hasRemaining->in.remaining->CoderResult.malformedForLength->cr.isMalformed->cr.isUnmappable->cr.toString->out.remaining->out.put->in.position->cr.length->in.position
-CharsetEncoder#flush(ByteBuffer):::Flushes this encoder:::this.implFlush->cr.isUnderflow->this.throwIllegalStateException
-CharsetEncoder#implFlush(ByteBuffer):::Flushes this encoder:::
-CharsetEncoder#reset():::Resets this encoder, clearing any internal state:::this.implReset
+CharsetEncoder#averageBytesPerChar():::Returns the average number of bytes that will be produced for each character of input:::return
+CharsetEncoder#maxBytesPerChar():::Returns the maximum number of bytes that will be produced for each character of input:::return
+CharsetEncoder#encode(CharBuffer, ByteBuffer, boolean):::Encodes as many characters as possible from the given input buffer, writing the results to the given output buffer:::newState->if->throwIllegalStateException->for
+CharsetEncoder#flush(ByteBuffer):::Flushes this encoder:::if->cr->implFlush->if->cr->isUnderflow->return->if->throwIllegalStateException->return
+CharsetEncoder#implFlush(ByteBuffer):::Flushes this encoder:::return
+CharsetEncoder#reset():::Resets this encoder, clearing any internal state:::implReset->return
 CharsetEncoder#implReset():::Resets this encoder, clearing any charset-specific internal state:::
 CharsetEncoder#encodeLoop(CharBuffer, ByteBuffer):::Encodes one or more characters into one or more bytes:::
-CharsetEncoder#encode(CharBuffer):::Convenience method that encodes the remaining content of a single input character buffer into a newly-allocated byte buffer:::in.remaining->this.averageBytesPerChar->ByteBuffer.allocate->in.remaining->this.reset->in.hasRemaining->this.encode->cr.isUnderflow->this.flush->cr.isUnderflow->cr.isOverflow->ByteBuffer.allocate->out.flip->o.put->cr.throwException->out.flip
-CharsetEncoder#canEncode(char):::Tells whether or not this encoder can encode the given character:::CharBuffer.allocate->cb.put->cb.flip->this.canEncode
-CharsetEncoder#canEncode(CharSequence):::Tells whether or not this encoder can encode the given character sequence:::cs.toString->CharBuffer.wrap->((CharBuffer) cs).duplicate->this.canEncode
-CoderResult#toString():::Returns a string describing this coder result.:::this.isError
-CoderResult#isUnderflow():::Tells whether or not this object describes an underflow condition.:::
-CoderResult#isOverflow():::Tells whether or not this object describes an overflow condition.:::
-CoderResult#isError():::Tells whether or not this object describes an error condition.:::
-CoderResult#isMalformed():::Tells whether or not this object describes a malformed-input error.:::
-CoderResult#isUnmappable():::Tells whether or not this object describes an unmappable-character error.:::
-CoderResult#length():::Returns the length of the erroneous input described by this object&nbsp;&nbsp;(optional operation).:::this.isError
-CoderResult#malformedForLength(int):::Static factory method that returns the unique object describing a malformed-input error of the given length.:::Cache.INSTANCE.malformed.computeIfAbsent
-CoderResult#unmappableForLength(int):::Static factory method that returns the unique result object describing an unmappable-character error of the given length.:::Cache.INSTANCE.unmappable.computeIfAbsent
-CoderResult#throwException():::Throws an exception appropriate to the result described by this object.:::
-CodingErrorAction#toString():::Returns a string describing this action.:::
-IllegalCharsetNameException#getCharsetName():::Retrieves the illegal charset name.:::
-MalformedInputException#getInputLength():::Returns the length of the input.:::
-MalformedInputException#getMessage():::Returns the message.:::
-UnmappableCharacterException#getInputLength():::Returns the length of the input.:::
-UnmappableCharacterException#getMessage():::Returns the message.:::
-UnsupportedCharsetException#getCharsetName():::Retrieves the name of the unsupported charset.:::
+CharsetEncoder#encode(CharBuffer):::Convenience method that encodes the remaining content of a single input character buffer into a newly-allocated byte buffer:::n->in->remaining->averageBytesPerChar->out->ByteBuffer->allocate->if->in->remaining->return->reset->for->out->flip->return
+CharsetEncoder#canEncode(char):::Tells whether or not this encoder can encode the given character:::cb->CharBuffer->allocate->cb->put->cb->flip->return->canEncode
+CharsetEncoder#canEncode(CharSequence):::Tells whether or not this encoder can encode the given character sequence:::cb->if->duplicate->else->CharBuffer->cs->toString->wrap->return->canEncode
+CoderResult#toString():::Returns a string describing this coder result.:::nm->return->isError
+CoderResult#isUnderflow():::Tells whether or not this object describes an underflow condition.:::return
+CoderResult#isOverflow():::Tells whether or not this object describes an overflow condition.:::return
+CoderResult#isError():::Tells whether or not this object describes an error condition.:::return
+CoderResult#isMalformed():::Tells whether or not this object describes a malformed-input error.:::return
+CoderResult#isUnmappable():::Tells whether or not this object describes an unmappable-character error.:::return
+CoderResult#length():::Returns the length of the erroneous input described by this object&nbsp;&nbsp;(optional operation).:::if->isError->throw->new->UnsupportedOperationException->return
+CoderResult#malformedForLength(int):::Static factory method that returns the unique object describing a malformed-input error of the given length.:::if->throw->new->IllegalArgumentException->if->return->return->new->CoderResult->computeIfAbsent
+CoderResult#unmappableForLength(int):::Static factory method that returns the unique result object describing an unmappable-character error of the given length.:::if->throw->new->IllegalArgumentException->if->return->return->new->CoderResult->computeIfAbsent
+CoderResult#throwException():::Throws an exception appropriate to the result described by this object.:::switch->throw->new->BufferUnderflowException->throw->new->BufferOverflowException->throw->new->MalformedInputException->throw->new->UnmappableCharacterException
+CodingErrorAction#toString():::Returns a string describing this action.:::return
+IllegalCharsetNameException#getCharsetName():::Retrieves the illegal charset name.:::return
+MalformedInputException#getInputLength():::Returns the length of the input.:::return
+MalformedInputException#getMessage():::Returns the message.:::return
+UnmappableCharacterException#getInputLength():::Returns the length of the input.:::return
+UnmappableCharacterException#getMessage():::Returns the message.:::return
+UnsupportedCharsetException#getCharsetName():::Retrieves the name of the unsupported charset.:::return

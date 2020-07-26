@@ -1,120 +1,119 @@
-Configuration#resolve(ModuleFinder, ModuleFinder, Collection):::Resolves a collection of root modules, with this configuration as its parent, to create a new configuration:::List.of->this.resolve
-Configuration#resolveAndBind(ModuleFinder, ModuleFinder, Collection):::Resolves a collection of root modules, with service binding, and with this configuration as its parent, to create a new configuration:::List.of->this.resolveAndBind
-Configuration#resolveAndBind(ModuleFinder, Collection, PrintStream):::Resolves a collection of root modules, with service binding, and with the empty configuration as its parent:::this.empty->List.of->ModuleFinder.of->resolver.resolve(roots).bind
-Configuration#resolve(ModuleFinder, List, ModuleFinder, Collection):::Resolves a collection of root modules to create a configuration:::Objects.requireNonNull->Objects.requireNonNull->Objects.requireNonNull->parentList.isEmpty->resolver.resolve
-Configuration#resolveAndBind(ModuleFinder, List, ModuleFinder, Collection):::Resolves a collection of root modules, with service binding, to create configuration:::Objects.requireNonNull->Objects.requireNonNull->Objects.requireNonNull->parentList.isEmpty->resolver.resolve(roots).bind
-Configuration#empty():::Returns the empty configuration:::
-Configuration#parents():::Returns an unmodifiable list of this configuration's parents, in search order:::
-Configuration#modules():::Returns an immutable set of the resolved modules in this configuration.:::
-Configuration#findModule(String):::Finds a resolved module in this configuration, or if not in this configuration, the #parents() parent configurations:::Objects.requireNonNull->nameToModule.get->Optional.of->parents.isEmpty->configurations().skip(// skip this configuration
-1).map(cf -> cf.nameToModule.get(name)).filter(Objects::nonNull).findFirst->Optional.empty
-Configuration#configurations():::Returns an ordered stream of configurations:::visited.add->stack.push->stack.pop->allConfigurations.add->layer.parents.get->visited.contains->visited.add->stack.push->layer.parents.size->stack.isEmpty->allConfigurations.stream
-Configuration#toString():::Returns a string describing this configuration.:::Collectors.joining->modules().stream().map(ResolvedModule::name).collect
-ModuleDescriptor.Requires#modifiers():::Returns the set of modifiers.:::
-ModuleDescriptor.Requires#name():::Return the module name.:::
-ModuleDescriptor.Requires#compiledVersion():::Returns the version of the module if recorded at compile-time.:::Optional.ofNullable
-ModuleDescriptor.Requires#rawCompiledVersion():::Returns the string with the possibly-unparseable version of the module if recorded at compile-time.:::Optional.ofNullable->compiledVersion.toString->Optional.of
-ModuleDescriptor.Requires#compareTo(Requires):::Compares this module dependence to another:::that.name->this.name().compareTo->this.modifiers->this.modsValue->that.modifiers->this.modsValue->Long.compare->this.compare->this.compare
-ModuleDescriptor.Requires#equals(Object):::Tests this module dependence for equality with the given object:::name.equals->mods.equals->Objects.equals->Objects.equals
-ModuleDescriptor.Requires#hashCode():::Computes a hash code for this module dependence:::name.hashCode->mods.hashCode->compiledVersion.hashCode->rawCompiledVersion.hashCode
-ModuleDescriptor.Requires#toString():::Returns a string describing this module dependence.:::this.name->this.name->ModuleDescriptor.toString
-ModuleDescriptor.Exports#modifiers():::Returns the set of modifiers.:::
-ModuleDescriptor.Exports#isQualified():::Returns true if this is a qualified export.:::targets.isEmpty
-ModuleDescriptor.Exports#source():::Returns the package name.:::
-ModuleDescriptor.Exports#targets():::For a qualified export, returns the non-empty and immutable set of the module names to which the package is exported:::
-ModuleDescriptor.Exports#compareTo(Exports):::Compares this module export to another:::source.compareTo->this.modifiers->this.modsValue->that.modifiers->this.modsValue->Long.compare->this.compare
-ModuleDescriptor.Exports#hashCode():::Computes a hash code for this module export:::mods.hashCode->source.hashCode->targets.hashCode
-ModuleDescriptor.Exports#equals(Object):::Tests this module export for equality with the given object:::Objects.equals->Objects.equals->Objects.equals
-ModuleDescriptor.Exports#toString():::Returns a string describing the exported package.:::ModuleDescriptor.toString->targets.isEmpty
-ModuleDescriptor.Opens#modifiers():::Returns the set of modifiers.:::
-ModuleDescriptor.Opens#isQualified():::Returns true if this is a qualified opens.:::targets.isEmpty
-ModuleDescriptor.Opens#source():::Returns the package name.:::
-ModuleDescriptor.Opens#targets():::For a qualified opens, returns the non-empty and immutable set of the module names to which the package is open:::
-ModuleDescriptor.Opens#compareTo(Opens):::Compares this module opens to another:::source.compareTo->this.modifiers->this.modsValue->that.modifiers->this.modsValue->Long.compare->this.compare
-ModuleDescriptor.Opens#hashCode():::Computes a hash code for this module opens:::mods.hashCode->source.hashCode->targets.hashCode
-ModuleDescriptor.Opens#equals(Object):::Tests this module opens for equality with the given object:::Objects.equals->Objects.equals->Objects.equals
-ModuleDescriptor.Opens#toString():::Returns a string describing the open package.:::ModuleDescriptor.toString->targets.isEmpty
-ModuleDescriptor.Provides#service():::Returns the fully qualified class name of the service type.:::
-ModuleDescriptor.Provides#providers():::Returns the list of the fully qualified class names of the providers or provider factories.:::
-ModuleDescriptor.Provides#compareTo(Provides):::Compares this provides to another:::service.compareTo->this.providers.size->that.providers.size->this.providers.get->that.providers.get->e1.compareTo->Math.min
-ModuleDescriptor.Provides#hashCode():::Computes a hash code for this provides:::service.hashCode->providers.hashCode
-ModuleDescriptor.Provides#equals(Object):::Tests this provides for equality with the given object:::Objects.equals->Objects.equals
-ModuleDescriptor.Provides#toString():::Returns a string describing this provides.:::
-ModuleDescriptor.Version#parse(String):::Parses the given string as a version string.:::
-ModuleDescriptor.Version#compareTo(Version):::Compares this module version to another module version:::this.compareTokens->this.pre.isEmpty->that.pre.isEmpty->that.pre.isEmpty->this.compareTokens->this.compareTokens
-ModuleDescriptor.Version#equals(Object):::Tests this module version for equality with the given object:::this.compareTo
-ModuleDescriptor.Version#hashCode():::Computes a hash code for this module version:::version.hashCode
-ModuleDescriptor.Version#toString():::Returns the string from which this version was parsed.:::
-ModuleDescriptor#name()::: Returns the module name:::
-ModuleDescriptor#modifiers()::: Returns the set of module modifiers:::
-ModuleDescriptor#isOpen()::: Returns true if this is an open module:::
-ModuleDescriptor#isAutomatic()::: Returns true if this is an automatic module:::
-ModuleDescriptor#requires()::: Returns the set of Requires objects representing the module dependences:::
-ModuleDescriptor#exports()::: Returns the set of Exports objects representing the exported packages:::
-ModuleDescriptor#opens()::: Returns the set of Opens objects representing the open packages:::
-ModuleDescriptor#uses()::: Returns the set of service dependences:::
-ModuleDescriptor#provides()::: Returns the set of Provides objects representing the services that the module provides:::
-ModuleDescriptor#version()::: Returns the module version:::Optional.ofNullable
-ModuleDescriptor#rawVersion()::: Returns the string with the possibly-unparseable version of the module :::Optional.ofNullable->version.toString->Optional.of
-ModuleDescriptor#toNameAndVersion()::: Returns a string containing the module name and, if present, its version:::this.name->this.name
-ModuleDescriptor#mainClass()::: Returns the module main class:::Optional.ofNullable
-ModuleDescriptor#packages():::Returns the set of packages in the module:::
-ModuleDescriptor.Builder#requires(Requires):::Adds a dependence on a module.:::req.name->name.equals->requires.containsKey->requires.put
-ModuleDescriptor.Builder#requires(Set, String, Version):::Adds a dependence on a module with the given (and possibly empty) set of modifiers:::Objects.requireNonNull->this.requireModuleName->this.requires
-ModuleDescriptor.Builder#requires(Set, String):::Adds a dependence on a module with the given (and possibly empty) set of modifiers.:::this.requireModuleName->this.requires
-ModuleDescriptor.Builder#requires(String):::Adds a dependence on a module with an empty set of modifiers.:::EnumSet.noneOf->this.requires
-ModuleDescriptor.Builder#exports(Exports):::Adds an exported package.:::e.source->exports.containsKey->exports.put->packages.add
-ModuleDescriptor.Builder#exports(Set, String, Set):::Adds an exported package with the given (and possibly empty) set of modifiers:::targets.isEmpty->this.requirePackageName->targets.forEach->this.exports
-ModuleDescriptor.Builder#exports(Set, String):::Adds an exported package with the given (and possibly empty) set of modifiers:::this.requirePackageName->Set.of->this.exports
-ModuleDescriptor.Builder#exports(String, Set):::Adds an exported package:::Set.of->this.exports
-ModuleDescriptor.Builder#exports(String):::Adds an exported package:::Set.of->this.exports
-ModuleDescriptor.Builder#opens(Opens):::Adds an open package.:::obj.source->opens.containsKey->opens.put->packages.add
-ModuleDescriptor.Builder#opens(Set, String, Set):::Adds an open package with the given (and possibly empty) set of modifiers:::targets.isEmpty->this.requirePackageName->targets.forEach->this.opens
-ModuleDescriptor.Builder#opens(Set, String):::Adds an open package with the given (and possibly empty) set of modifiers:::this.requirePackageName->Set.of->this.opens
-ModuleDescriptor.Builder#opens(String, Set):::Adds an open package:::Set.of->this.opens
-ModuleDescriptor.Builder#opens(String):::Adds an open package:::Set.of->this.opens
-ModuleDescriptor.Builder#uses(String):::Adds a service dependence.:::this.requireServiceTypeName->uses.contains->uses.add
-ModuleDescriptor.Builder#provides(Provides):::Provides a service with one or more implementations:::p.service->provides.containsKey->provides.put->p.providers().forEach
-ModuleDescriptor.Builder#provides(String, List):::Provides implementations of a service:::providers.isEmpty->this.packageName->pn.isEmpty->this.packageName->pn.isEmpty->this.requireServiceTypeName->providers.forEach->this.provides
-ModuleDescriptor.Builder#packages(Set):::Adds packages to the module:::pns.forEach->this.packages.addAll
-ModuleDescriptor.Builder#version(Version):::Sets the module version.:::this.requireNonNull
-ModuleDescriptor.Builder#version(String):::Sets the module version.:::Version.parse
-ModuleDescriptor.Builder#mainClass(String):::Sets the module main class:::this.packageName->pn.isEmpty->this.requireQualifiedClassName->this.packageName->pn.isEmpty->packages.add
-ModuleDescriptor.Builder#build():::Builds and returns a ModuleDescriptor from its components:::this.requires.values->this.exports.values->this.opens.values->name.equals->this.requires.containsKey->requires.add->this.provides.values
-ModuleDescriptor#compareTo(ModuleDescriptor):::Compares this module descriptor to another:::that.name->this.name().compareTo->this.compare->this.compare->this.modifiers->this.modsValue->that.modifiers->this.modsValue->Long.compare->this.compare->this.compare->this.compare->this.compare->this.compare->this.compare->this.compare
-ModuleDescriptor#equals(Object):::Tests this module descriptor for equality with the given object:::name.equals->modifiers.equals->requires.equals->Objects.equals->exports.equals->opens.equals->uses.equals->provides.equals->Objects.equals->Objects.equals->Objects.equals
-ModuleDescriptor#hashCode():::Computes a hash code for this module descriptor:::name.hashCode->Objects.hashCode->requires.hashCode->Objects.hashCode->exports.hashCode->opens.hashCode->uses.hashCode->provides.hashCode->Objects.hashCode->Objects.hashCode->Objects.hashCode
-ModuleDescriptor#toString()::: Returns a string describing the module:::this.isOpen->sb.append->this.toNameAndVersion->sb.append("module { name: ").append->requires.isEmpty->sb.append(", ").append->uses.isEmpty->sb.append(", uses: ").append->exports.isEmpty->sb.append(", exports: ").append->opens.isEmpty->sb.append(", opens: ").append->provides.isEmpty->sb.append(", provides: ").append->sb.append->sb.toString
-ModuleDescriptor#newModule(String, Set):::Instantiates a builder to build a module descriptor.:::mods.contains->mods.size
-ModuleDescriptor#newModule(String):::Instantiates a builder to build a module descriptor for a normal module:::Set.of
-ModuleDescriptor#newOpenModule(String):::Instantiates a builder to build a module descriptor for an open module:::Set.of
-ModuleDescriptor#newAutomaticModule(String):::Instantiates a builder to build a module descriptor for an automatic module:::Set.of
-ModuleDescriptor#read(InputStream, Supplier>):::Reads the binary form of a module declaration from an input stream as a module descriptor:::ModuleInfo.read(in, requireNonNull(packageFinder)).descriptor
-ModuleDescriptor#read(InputStream):::Reads the binary form of a module declaration from an input stream as a module descriptor:::ModuleInfo.read(in, null).descriptor
-ModuleDescriptor#read(ByteBuffer, Supplier>):::Reads the binary form of a module declaration from a byte buffer as a module descriptor:::ModuleInfo.read(bb, requireNonNull(packageFinder)).descriptor
-ModuleDescriptor#read(ByteBuffer):::Reads the binary form of a module declaration from a byte buffer as a module descriptor:::ModuleInfo.read(bb, null).descriptor
+Configuration#resolve(ModuleFinder, ModuleFinder, Collection):::Resolves a collection of root modules, with this configuration as its parent, to create a new configuration:::return->List->of->resolve
+Configuration#resolveAndBind(ModuleFinder, ModuleFinder, Collection):::Resolves a collection of root modules, with service binding, and with this configuration as its parent, to create a new configuration:::return->List->of->resolveAndBind
+Configuration#resolveAndBind(ModuleFinder, Collection, PrintStream):::Resolves a collection of root modules, with service binding, and with the empty configuration as its parent:::parents->List->empty->of->resolver->ModuleFinder->of->new->Resolver->resolver->resolve->bind->return->new->Configuration
+Configuration#resolve(ModuleFinder, List, ModuleFinder, Collection):::Resolves a collection of root modules to create a configuration:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->parentList->new->ArrayList<>->if->parentList->isEmpty->throw->new->IllegalArgumentException->resolver->new->Resolver->resolver->resolve->return->new->Configuration
+Configuration#resolveAndBind(ModuleFinder, List, ModuleFinder, Collection):::Resolves a collection of root modules, with service binding, to create configuration:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->parentList->new->ArrayList<>->if->parentList->isEmpty->throw->new->IllegalArgumentException->resolver->new->Resolver->resolver->resolve->bind->return->new->Configuration
+Configuration#empty():::Returns the empty configuration:::return
+Configuration#parents():::Returns an unmodifiable list of this configuration's parents, in search order:::return
+Configuration#modules():::Returns an immutable set of the resolved modules in this configuration.:::return
+Configuration#findModule(String):::Finds a resolved module in this configuration, or if not in this configuration, the #parents() parent configurations:::Objects->requireNonNull->m->nameToModule->get->if->return->Optional->of->if->parents->isEmpty->return->configurations->skip->get->map->Objects->nonNull->filter->findFirst->return->Optional->empty
+Configuration#configurations():::Returns an ordered stream of configurations:::allConfigurations->if->new->ArrayList<>->visited->new->HashSet<>->stack->new->ArrayDeque<>->visited->add->stack->push->while->stack->isEmpty->layer->stack->pop->allConfigurations->add->for->i->size->return->allConfigurations->stream
+Configuration#toString():::Returns a string describing this configuration.:::return->modules->stream->ResolvedModule->name->map->Collectors->joining->collect
+ModuleDescriptor.Requires#modifiers():::Returns the set of modifiers.:::return
+ModuleDescriptor.Requires#name():::Return the module name.:::return
+ModuleDescriptor.Requires#compiledVersion():::Returns the version of the module if recorded at compile-time.:::return->Optional->ofNullable
+ModuleDescriptor.Requires#rawCompiledVersion():::Returns the string with the possibly-unparseable version of the module if recorded at compile-time.:::if->return->Optional->compiledVersion->toString->of->else->return->Optional->ofNullable
+ModuleDescriptor.Requires#compareTo(Requires):::Compares this module dependence to another:::if->return->c->this->name->that->name->compareTo->if->return->v1->this->modifiers->modsValue->v2->that->modifiers->modsValue->Long->compare->if->return->compare->if->return->compare->if->return->return
+ModuleDescriptor.Requires#equals(Object):::Tests this module dependence for equality with the given object:::if->return->that->return->name->equals->mods->equals->Objects->equals->Objects->equals
+ModuleDescriptor.Requires#hashCode():::Computes a hash code for this module dependence:::hash->name->hashCode->mods->hashCode->if->compiledVersion->hashCode->if->rawCompiledVersion->hashCode->return
+ModuleDescriptor.Requires#toString():::Returns a string describing this module dependence.:::what->if->name->else->name->return->ModuleDescriptor->toString
+ModuleDescriptor.Exports#modifiers():::Returns the set of modifiers.:::return
+ModuleDescriptor.Exports#isQualified():::Returns true if this is a qualified export.:::return->targets->isEmpty
+ModuleDescriptor.Exports#source():::Returns the package name.:::return
+ModuleDescriptor.Exports#targets():::For a qualified export, returns the non-empty and immutable set of the module names to which the package is exported:::return
+ModuleDescriptor.Exports#compareTo(Exports):::Compares this module export to another:::if->return->c->source->compareTo->if->return->v1->this->modifiers->modsValue->v2->that->modifiers->modsValue->Long->compare->if->return->compare->if->return->return
+ModuleDescriptor.Exports#hashCode():::Computes a hash code for this module export:::hash->mods->hashCode->source->hashCode->return->targets->hashCode
+ModuleDescriptor.Exports#equals(Object):::Tests this module export for equality with the given object:::if->return->other->return->Objects->equals->Objects->equals->Objects->equals
+ModuleDescriptor.Exports#toString():::Returns a string describing the exported package.:::s->ModuleDescriptor->toString->if->targets->isEmpty->return->else->return
+ModuleDescriptor.Opens#modifiers():::Returns the set of modifiers.:::return
+ModuleDescriptor.Opens#isQualified():::Returns true if this is a qualified opens.:::return->targets->isEmpty
+ModuleDescriptor.Opens#source():::Returns the package name.:::return
+ModuleDescriptor.Opens#targets():::For a qualified opens, returns the non-empty and immutable set of the module names to which the package is open:::return
+ModuleDescriptor.Opens#compareTo(Opens):::Compares this module opens to another:::if->return->c->source->compareTo->if->return->v1->this->modifiers->modsValue->v2->that->modifiers->modsValue->Long->compare->if->return->compare->if->return->return
+ModuleDescriptor.Opens#hashCode():::Computes a hash code for this module opens:::hash->mods->hashCode->source->hashCode->return->targets->hashCode
+ModuleDescriptor.Opens#equals(Object):::Tests this module opens for equality with the given object:::if->return->other->return->Objects->equals->Objects->equals->Objects->equals
+ModuleDescriptor.Opens#toString():::Returns a string describing the open package.:::s->ModuleDescriptor->toString->if->targets->isEmpty->return->else->return
+ModuleDescriptor.Provides#service():::Returns the fully qualified class name of the service type.:::return
+ModuleDescriptor.Provides#providers():::Returns the list of the fully qualified class names of the providers or provider factories.:::return
+ModuleDescriptor.Provides#compareTo(Provides):::Compares this provides to another:::if->return->c->service->compareTo->if->return->size1->size->size2->size->for->index->Math->min->if->return->else->return
+ModuleDescriptor.Provides#hashCode():::Computes a hash code for this provides:::return->service->hashCode->providers->hashCode
+ModuleDescriptor.Provides#equals(Object):::Tests this provides for equality with the given object:::if->return->other->return->Objects->equals->Objects->equals
+ModuleDescriptor.Provides#toString():::Returns a string describing this provides.:::return
+ModuleDescriptor.Version#parse(String):::Parses the given string as a version string.:::return->new->Version
+ModuleDescriptor.Version#compareTo(Version):::Compares this module version to another module version:::c->compareTokens->if->return->if->isEmpty->if->isEmpty->return->else->if->isEmpty->return->compareTokens->if->return->return->compareTokens
+ModuleDescriptor.Version#equals(Object):::Tests this module version for equality with the given object:::if->return->return->compareTo
+ModuleDescriptor.Version#hashCode():::Computes a hash code for this module version:::return->version->hashCode
+ModuleDescriptor.Version#toString():::Returns the string from which this version was parsed.:::return
+ModuleDescriptor#name()::: Returns the module name:::return
+ModuleDescriptor#modifiers()::: Returns the set of module modifiers:::return
+ModuleDescriptor#isOpen()::: Returns true if this is an open module:::return
+ModuleDescriptor#isAutomatic()::: Returns true if this is an automatic module:::return
+ModuleDescriptor#requires()::: Returns the set of Requires objects representing the module dependences:::return
+ModuleDescriptor#exports()::: Returns the set of Exports objects representing the exported packages:::return
+ModuleDescriptor#opens()::: Returns the set of Opens objects representing the open packages:::return
+ModuleDescriptor#uses()::: Returns the set of service dependences:::return
+ModuleDescriptor#provides()::: Returns the set of Provides objects representing the services that the module provides:::return
+ModuleDescriptor#version()::: Returns the module version:::return->Optional->ofNullable
+ModuleDescriptor#rawVersion()::: Returns the string with the possibly-unparseable version of the module :::if->return->Optional->version->toString->of->else->return->Optional->ofNullable
+ModuleDescriptor#toNameAndVersion()::: Returns a string containing the module name and, if present, its version:::if->return->name->else->return->name
+ModuleDescriptor#mainClass()::: Returns the module main class:::return->Optional->ofNullable
+ModuleDescriptor#packages():::Returns the set of packages in the module:::return
+ModuleDescriptor.Builder#requires(Requires):::Adds a dependence on a module.:::if->throw->new->IllegalStateException->mn->req->name->if->name->equals->throw->new->IllegalArgumentException->if->requires->containsKey->throw->new->IllegalStateException->requires->put->return
+ModuleDescriptor.Builder#requires(Set, String, Version):::Adds a dependence on a module with the given (and possibly empty) set of modifiers:::Objects->requireNonNull->if->requireModuleName->return->new->Requires->requires
+ModuleDescriptor.Builder#requires(Set, String):::Adds a dependence on a module with the given (and possibly empty) set of modifiers.:::if->requireModuleName->return->new->Requires->requires
+ModuleDescriptor.Builder#requires(String):::Adds a dependence on a module with an empty set of modifiers.:::return->EnumSet->noneOf->requires
+ModuleDescriptor.Builder#exports(Exports):::Adds an exported package.:::if->throw->new->IllegalStateException->source->e->source->if->exports->containsKey->throw->new->IllegalStateException->exports->put->packages->add->return
+ModuleDescriptor.Builder#exports(Set, String, Set):::Adds an exported package with the given (and possibly empty) set of modifiers:::new->HashSet<>->if->targets->isEmpty->throw->new->IllegalArgumentException->if->requirePackageName->targets->Checks->requireModuleName->forEach->e->new->Exports->return->exports
+ModuleDescriptor.Builder#exports(Set, String):::Adds an exported package with the given (and possibly empty) set of modifiers:::if->requirePackageName->e->Set->of->new->Exports->return->exports
+ModuleDescriptor.Builder#exports(String, Set):::Adds an exported package:::return->Set->of->exports
+ModuleDescriptor.Builder#exports(String):::Adds an exported package:::return->Set->of->exports
+ModuleDescriptor.Builder#opens(Opens):::Adds an open package.:::if->throw->new->IllegalStateException->source->obj->source->if->opens->containsKey->throw->new->IllegalStateException->opens->put->packages->add->return
+ModuleDescriptor.Builder#opens(Set, String, Set):::Adds an open package with the given (and possibly empty) set of modifiers:::new->HashSet<>->if->targets->isEmpty->throw->new->IllegalArgumentException->if->requirePackageName->targets->Checks->requireModuleName->forEach->opens->new->Opens->return->opens
+ModuleDescriptor.Builder#opens(Set, String):::Adds an open package with the given (and possibly empty) set of modifiers:::if->requirePackageName->e->Set->of->new->Opens->return->opens
+ModuleDescriptor.Builder#opens(String, Set):::Adds an open package:::return->Set->of->opens
+ModuleDescriptor.Builder#opens(String):::Adds an open package:::return->Set->of->opens
+ModuleDescriptor.Builder#uses(String):::Adds a service dependence.:::if->throw->new->IllegalStateException->if->uses->requireServiceTypeName->contains->throw->new->IllegalStateException->uses->add->return
+ModuleDescriptor.Builder#provides(Provides):::Provides a service with one or more implementations:::service->p->service->if->provides->containsKey->throw->new->IllegalStateException->provides->put->p->providers->packages->packageName->add->forEach->return
+ModuleDescriptor.Builder#provides(String, List):::Provides implementations of a service:::new->ArrayList<>->if->providers->isEmpty->throw->new->IllegalArgumentException->if->requireServiceTypeName->providers->Checks->requireServiceProviderName->forEach->else->pn->packageName->if->pn->isEmpty->throw->new->IllegalArgumentException->foreach->packageName->if->pn->isEmpty->throw->new->IllegalArgumentException->p->new->Provides->return->provides
+ModuleDescriptor.Builder#packages(Set):::Adds packages to the module:::if->new->HashSet<>->pns->Checks->requirePackageName->forEach->addAll->return
+ModuleDescriptor.Builder#version(Version):::Sets the module version.:::requireNonNull->return
+ModuleDescriptor.Builder#version(String):::Sets the module version.:::try->Version->parse->catch->if->throw->finally->return
+ModuleDescriptor.Builder#mainClass(String):::Sets the module main class:::pn->if->requireQualifiedClassName->packageName->else->packageName->if->pn->isEmpty->throw->new->IllegalArgumentException->packages->add->return
+ModuleDescriptor.Builder#build():::Builds and returns a ModuleDescriptor from its components:::requires->values->new->HashSet<>->exports->values->new->HashSet<>->opens->values->new->HashSet<>->if->name->equals->containsKey->requires->Set->of->new->Requires->add->provides->values->new->HashSet<>->return->new->ModuleDescriptor
+ModuleDescriptor#compareTo(ModuleDescriptor):::Compares this module descriptor to another:::if->return->c->this->name->that->name->compareTo->if->return->compare->if->return->compare->if->return->v1->this->modifiers->modsValue->v2->that->modifiers->modsValue->Long->compare->if->return->compare->if->return->compare->if->return->compare->if->return->compare->if->return->compare->if->return->compare->if->return->compare->if->return->return
+ModuleDescriptor#equals(Object):::Tests this module descriptor for equality with the given object:::if->return->if->return->that->return->name->equals->modifiers->equals->requires->equals->Objects->equals->exports->equals->opens->equals->uses->equals->provides->equals->Objects->equals->Objects->equals->Objects->equals
+ModuleDescriptor#hashCode():::Computes a hash code for this module descriptor:::hc->if->name->hashCode->Objects->hashCode->requires->hashCode->Objects->hashCode->exports->hashCode->opens->hashCode->uses->hashCode->provides->hashCode->Objects->hashCode->Objects->hashCode->Objects->hashCode->if->return
+ModuleDescriptor#toString()::: Returns a string describing the module:::sb->new->StringBuilder->if->isOpen->sb->append->sb->append->toNameAndVersion->append->if->requires->isEmpty->sb->append->append->if->uses->isEmpty->sb->append->append->if->exports->isEmpty->sb->append->append->if->opens->isEmpty->sb->append->append->if->provides->isEmpty->sb->append->append->sb->append->return->sb->toString
+ModuleDescriptor#newModule(String, Set):::Instantiates a builder to build a module descriptor.:::mods->new->HashSet<>->if->mods->contains->mods->size->throw->new->IllegalArgumentException->return->new->Builder
+ModuleDescriptor#newModule(String):::Instantiates a builder to build a module descriptor for a normal module:::return->Set->of->new->Builder
+ModuleDescriptor#newOpenModule(String):::Instantiates a builder to build a module descriptor for an open module:::return->Set->of->new->Builder
+ModuleDescriptor#newAutomaticModule(String):::Instantiates a builder to build a module descriptor for an automatic module:::return->Set->of->new->Builder
+ModuleDescriptor#read(InputStream, Supplier>):::Reads the binary form of a module declaration from an input stream as a module descriptor:::return->ModuleInfo->requireNonNull->read->descriptor
+ModuleDescriptor#read(InputStream):::Reads the binary form of a module declaration from an input stream as a module descriptor:::return->ModuleInfo->read->descriptor
+ModuleDescriptor#read(ByteBuffer, Supplier>):::Reads the binary form of a module declaration from a byte buffer as a module descriptor:::return->ModuleInfo->requireNonNull->read->descriptor
+ModuleDescriptor#read(ByteBuffer):::Reads the binary form of a module declaration from a byte buffer as a module descriptor:::return->ModuleInfo->read->descriptor
 ModuleFinder#find(String):::Finds a reference to a module of a given name:::
 ModuleFinder#findAll():::Returns the set of all module references that this finder can locate:::
-ModuleFinder#ofSystem():::Returns a module finder that locates the system modules:::System.getSecurityManager->SystemModuleFinders.ofSystem->sm.checkPermission->AccessController.doPrivileged
-ModuleFinder#of(Path...):::Returns a module finder that locates modules on the file system by searching a sequence of directories and/or packaged modules:::Objects.requireNonNull->Optional.empty->Set.of->ModulePath.of
-ModuleFinder#compose(ModuleFinder...):::Returns a module finder that is composed from a sequence of zero or more module finders:::List.of->nameToModule.get->Optional.of->finderList.stream().map(f -> f.find(name)).flatMap(Optional::stream).findFirst->omref.ifPresent->nameToModule.values->finderList.stream().flatMap(f -> f.findAll().stream()).forEach->Collections.unmodifiableSet
+ModuleFinder#ofSystem():::Returns a module finder that locates the system modules:::sm->System->getSecurityManager->if->sm->new->RuntimePermission->checkPermission->pa->SystemModuleFinders->ofSystem->return->AccessController->doPrivileged->else->return->SystemModuleFinders->ofSystem
+ModuleFinder#of(Path...):::Returns a module finder that locates modules on the file system by searching a sequence of directories and/or packaged modules:::if->return->new->ModuleFinder->return->ModulePath->of
+ModuleFinder#compose(ModuleFinder...):::Returns a module finder that is composed from a sequence of zero or more module finders:::finderList->List->of->return->new->ModuleFinder
 ModuleReader#find(String):::Finds a resource, returning a URI to the resource in the module:::
-ModuleReader#open(String):::Opens a resource, returning an input stream to read the resource in the module:::this.find->ouri.isPresent->Optional.empty->ouri.get().toURL().openStream->Optional.of
-ModuleReader#read(String):::Reads a resource, returning a byte buffer with the contents of the resource:::this.open->oin.isPresent->Optional.empty->oin.get->in.readAllBytes->ByteBuffer.wrap->Optional.of
-ModuleReader#release(ByteBuffer):::Release a byte buffer:::Objects.requireNonNull
+ModuleReader#open(String):::Opens a resource, returning an input stream to read the resource in the module:::ouri->find->if->ouri->isPresent->return->Optional->ouri->get->toURL->openStream->of->else->return->Optional->empty
+ModuleReader#read(String):::Reads a resource, returning a byte buffer with the contents of the resource:::oin->open->if->oin->isPresent->try->in->oin->get->return->Optional->ByteBuffer->in->readAllBytes->wrap->of->catch->finally->else->return->Optional->empty
+ModuleReader#release(ByteBuffer):::Release a byte buffer:::Objects->requireNonNull
 ModuleReader#list():::Lists the contents of the module, returning a stream of elements that are the names of all resources in the module:::
 ModuleReader#close():::Closes the module reader:::
-ModuleReference#descriptor():::Returns the module descriptor.:::
-ModuleReference#location():::Returns the location of this module's content, if known:::Optional.ofNullable
+ModuleReference#descriptor():::Returns the module descriptor.:::return
+ModuleReference#location():::Returns the location of this module's content, if known:::return->Optional->ofNullable
 ModuleReference#open():::Opens the module content for reading.:::
-ResolvedModule#configuration():::Returns the configuration that this resolved module is in.:::
-ResolvedModule#reference():::Returns the reference to the module's content.:::
-ResolvedModule#descriptor():::Returns the module descriptor:::reference().descriptor
-ResolvedModule#name():::Returns the module name:::reference().descriptor().name
-ResolvedModule#reads():::Returns the set of resolved modules that this resolved module reads.:::cf.reads
-ResolvedModule#hashCode():::Computes a hash code for this resolved module:::cf.hashCode->mref.hashCode
-ResolvedModule#equals(Object):::Tests this resolved module for equality with the given object:::Objects.equals->Objects.equals
-ResolvedModule#toString():::Returns a string describing this resolved module.:::System.identityHashCode->this.name
-Resolver#resolve(Collection):::Resolves the given named modules.:::this.findWithBeforeFinder->this.findInParent->this.findWithAfterFinder->this.findFail->this.isTracing->this.nameAndInfo->this.trace->this.addFoundModule->mref.descriptor->q.push->this.resolve
-Resolver#bind():::Augments the set of resolved modules with modules induced by the service-use relation.:::mref.descriptor->descriptor.provides().isEmpty->provides.service->availableProviders.get->availableProviders.put->providers.add->descriptor.provides->this.findAll->ModuleLayer.boot->Collectors.toSet->parents.stream().flatMap(Configuration::configurations).distinct().flatMap(c -> c.descriptors().stream()).collect->mref.descriptor->initialConsumers.add->nameToReference.values->descriptor.uses().isEmpty->this.isTracing->availableProviders.get->mref.descriptor->provider.equals->this.isTracing->modulesToBind.add->descriptor.name->this.nameAndInfo->this.trace->provider.name->nameToReference.containsKey->this.addFoundModule->q.push->descriptor.uses->this.resolve->candidateConsumers.isEmpty
-Resolver#finish(Configuration):::Execute post-resolution checks and returns the module graph of resolved modules as a map.:::this.detectCycles->this.checkHashes->this.makeGraph->this.checkExportSuppliers
+ResolvedModule#configuration():::Returns the configuration that this resolved module is in.:::return
+ResolvedModule#reference():::Returns the reference to the module's content.:::return
+ResolvedModule#descriptor():::Returns the module descriptor:::return->reference->descriptor
+ResolvedModule#name():::Returns the module name:::return->reference->descriptor->name
+ResolvedModule#reads():::Returns the set of resolved modules that this resolved module reads.:::return->cf->reads
+ResolvedModule#hashCode():::Computes a hash code for this resolved module:::return->cf->hashCode->mref->hashCode
+ResolvedModule#equals(Object):::Tests this resolved module for equality with the given object:::if->return->that->return->Objects->equals->Objects->equals
+ResolvedModule#toString():::Returns a string describing this resolved module.:::return->System->identityHashCode->name
+Resolver#resolve(Collection):::Resolves the given named modules.:::q->new->ArrayDeque<>->foreach->mref->findWithBeforeFinder->if->if->findInParent->continue->findWithAfterFinder->if->findFail->if->isTracing->nameAndInfo->trace->addFoundModule->q->mref->descriptor->push->resolve->return
+Resolver#bind():::Augments the set of resolved modules with modules induced by the service-use relation.:::availableProviders->new->HashMap<>->foreach->findAll->descriptor->mref->descriptor->if->descriptor->provides->isEmpty->foreach->descriptor->provides->sn->provides->service->providers->availableProviders->get->if->new->HashSet<>->availableProviders->put->providers->add->q->new->ArrayDeque<>->initialConsumers->if->ModuleLayer->boot->new->HashSet<>->else->parents->stream->Configuration->configurations->flatMap->distinct->c->descriptors->stream->flatMap->Collectors->toSet->collect->foreach->nameToReference->values->initialConsumers->mref->descriptor->add->candidateConsumers->do->foreach->if->descriptor->uses->isEmpty->modulesToBind->if->isTracing->new->HashSet<>->foreach->descriptor->uses->mrefs->availableProviders->get->if->foreach->provider->mref->descriptor->if->provider->equals->if->isTracing->modulesToBind->add->descriptor->name->nameAndInfo->trace->pn->provider->name->if->nameToReference->containsKey->addFoundModule->q->push->resolve->while->candidateConsumers->isEmpty->return
+Resolver#finish(Configuration):::Execute post-resolution checks and returns the module graph of resolved modules as a map.:::detectCycles->checkHashes->graph->makeGraph->checkExportSuppliers->return

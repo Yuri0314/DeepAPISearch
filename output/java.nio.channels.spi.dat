@@ -1,32 +1,32 @@
-AbstractInterruptibleChannel#close():::Closes this channel:::this.implCloseChannel
+AbstractInterruptibleChannel#close():::Closes this channel:::synchronized->if->return->implCloseChannel
 AbstractInterruptibleChannel#implCloseChannel():::Closes this channel:::
-AbstractInterruptibleChannel#begin():::Marks the beginning of an I/O operation that might block indefinitely:::AbstractInterruptibleChannel.this.implCloseChannel->this.blockedOn->Thread.currentThread->me.isInterrupted->interruptor.interrupt
-AbstractInterruptibleChannel#end(boolean):::Marks the end of an I/O operation that might block indefinitely:::this.blockedOn->Thread.currentThread
-AbstractSelectableChannel#provider():::Returns the provider that created this channel.:::
-AbstractSelectableChannel#register(Selector, int, Object):::Registers this channel with the given selector, returning a selection key:::this.validOps->this.isOpen->this.isBlocking->this.isOpen->this.findKey->((AbstractSelector) sel).register->this.addKey->k.attach->k.interestOps
-AbstractSelectableChannel#implCloseChannel():::Closes this channel:::this.implCloseSelectableChannel->keys.clone->k.cancel
+AbstractInterruptibleChannel#begin():::Marks the beginning of an I/O operation that might block indefinitely:::if->new->Interruptible->blockedOn->me->Thread->currentThread->if->me->isInterrupted->interruptor->interrupt
+AbstractInterruptibleChannel#end(boolean):::Marks the end of an I/O operation that might block indefinitely:::blockedOn->interrupted->if->Thread->currentThread->throw->new->ClosedByInterruptException->if->throw->new->AsynchronousCloseException
+AbstractSelectableChannel#provider():::Returns the provider that created this channel.:::return
+AbstractSelectableChannel#register(Selector, int, Object):::Registers this channel with the given selector, returning a selection key:::if->validOps->throw->new->IllegalArgumentException->if->isOpen->throw->new->ClosedChannelException->synchronized->if->isBlocking->throw->new->IllegalBlockingModeException->synchronized->if->isOpen->throw->new->ClosedChannelException->k->findKey->if->k->attach->k->interestOps->else->register->addKey->return
+AbstractSelectableChannel#implCloseChannel():::Closes this channel:::implCloseSelectableChannel->copyOfKeys->synchronized->if->keys->clone->if->foreach->if->k->cancel
 AbstractSelectableChannel#implCloseSelectableChannel():::Closes this selectable channel:::
-AbstractSelectableChannel#configureBlocking(boolean):::Adjusts this channel's blocking mode:::this.isOpen->this.haveValidKeys->this.implConfigureBlocking
+AbstractSelectableChannel#configureBlocking(boolean):::Adjusts this channel's blocking mode:::synchronized->if->isOpen->throw->new->ClosedChannelException->blocking->if->if->haveValidKeys->throw->new->IllegalBlockingModeException->implConfigureBlocking->return
 AbstractSelectableChannel#implConfigureBlocking(boolean):::Adjusts this channel's blocking mode:::
-AbstractSelectionKey#cancel():::Cancels this key:::((AbstractSelector) selector()).cancel
-AbstractSelector#close():::Closes this selector:::selectorOpen.getAndSet->this.implCloseSelector
+AbstractSelectionKey#cancel():::Cancels this key:::synchronized->if->selector->cancel
+AbstractSelector#close():::Closes this selector:::open->selectorOpen->getAndSet->if->return->implCloseSelector
 AbstractSelector#implCloseSelector():::Closes this selector:::
-AbstractSelector#provider():::Returns the provider that created this channel.:::
-AbstractSelector#cancelledKeys():::Retrieves this selector's cancelled-key set:::
+AbstractSelector#provider():::Returns the provider that created this channel.:::return
+AbstractSelector#cancelledKeys():::Retrieves this selector's cancelled-key set:::return
 AbstractSelector#register(AbstractSelectableChannel, int, Object):::Registers the given channel with this selector:::
-AbstractSelector#deregister(AbstractSelectionKey):::Removes the given key from its channel's key set:::((AbstractSelectableChannel) key.channel()).removeKey
-AbstractSelector#begin():::Marks the beginning of an I/O operation that might block indefinitely:::AbstractSelector.this.wakeup->AbstractInterruptibleChannel.blockedOn->Thread.currentThread->me.isInterrupted->interruptor.interrupt
-AbstractSelector#end():::Marks the end of an I/O operation that might block indefinitely:::AbstractInterruptibleChannel.blockedOn
-AsynchronousChannelProvider#provider():::Returns the system-wide default asynchronous channel provider for this invocation of the Java virtual machine:::
+AbstractSelector#deregister(AbstractSelectionKey):::Removes the given key from its channel's key set:::key->channel->removeKey
+AbstractSelector#begin():::Marks the beginning of an I/O operation that might block indefinitely:::if->new->Interruptible->AbstractInterruptibleChannel->blockedOn->me->Thread->currentThread->if->me->isInterrupted->interruptor->interrupt
+AbstractSelector#end():::Marks the end of an I/O operation that might block indefinitely:::AbstractInterruptibleChannel->blockedOn
+AsynchronousChannelProvider#provider():::Returns the system-wide default asynchronous channel provider for this invocation of the Java virtual machine:::return
 AsynchronousChannelProvider#openAsynchronousChannelGroup(int, ThreadFactory):::Constructs a new asynchronous channel group with a fixed thread pool.:::
 AsynchronousChannelProvider#openAsynchronousChannelGroup(ExecutorService, int):::Constructs a new asynchronous channel group with the given thread pool.:::
 AsynchronousChannelProvider#openAsynchronousServerSocketChannel(AsynchronousChannelGroup):::Opens an asynchronous server-socket channel.:::
 AsynchronousChannelProvider#openAsynchronousSocketChannel(AsynchronousChannelGroup):::Opens an asynchronous socket channel.:::
-SelectorProvider#provider():::Returns the system-wide default selector provider for this invocation of the Java virtual machine:::AccessController.doPrivileged
+SelectorProvider#provider():::Returns the system-wide default selector provider for this invocation of the Java virtual machine:::synchronized->if->return->return->AccessController->new->PrivilegedAction<>->doPrivileged
 SelectorProvider#openDatagramChannel():::Opens a datagram channel.:::
 SelectorProvider#openDatagramChannel(ProtocolFamily):::Opens a datagram channel.:::
 SelectorProvider#openPipe():::Opens a pipe.:::
 SelectorProvider#openSelector():::Opens a selector.:::
 SelectorProvider#openServerSocketChannel():::Opens a server-socket channel.:::
 SelectorProvider#openSocketChannel():::Opens a socket channel.:::
-SelectorProvider#inheritedChannel():::Returns the channel inherited from the entity that created this Java virtual machine:::
+SelectorProvider#inheritedChannel():::Returns the channel inherited from the entity that created this Java virtual machine:::return

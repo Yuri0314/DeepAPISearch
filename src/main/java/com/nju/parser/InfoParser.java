@@ -127,6 +127,7 @@ public class InfoParser {
     }
 
     public void saveToFile(List<String> infoList, String packageName) {
+        if (infoList.isEmpty()) return;
         try {
             String path = resDataPath + File.separator + packageName + ".dat";
             BufferedWriter buffWriter = new BufferedWriter(new FileWriter(path, true));
