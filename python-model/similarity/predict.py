@@ -17,7 +17,7 @@ def collection(rnn_api,data_iter,batch_size, hidden_size,dataset,device):
         api=api.to(device)
     #初始化rnn_api的初始隐层状态
 #     !!!!注意 apis中添加的应该是一个原生的字符串序列
-        apis+=api
+        apis.append(api.cpu().detach().numpy())
 
         # 初始化网络的隐藏层
         w = torch.empty(3,query.shape[0],hidden_size).to(device)
@@ -32,6 +32,7 @@ def collection(rnn_api,data_iter,batch_size, hidden_size,dataset,device):
     #   注 意！！！
 #   需要把输出的api_output初始expand函数产生的全为零的部分清除,之后才可以保存到csv文件中(已裁剪)
     api_output=np.concatenate(api_output, axis=0)
+    apis=np.concatenate(apis,axis=0)
     # print(api_output.shape)
     # print(np.sum(api_output * api_output, axis=1).shape)
     api_output = api_output / np.sum(api_output * api_output, axis=1).reshape([-1, 1])
@@ -52,7 +53,7 @@ def caculate(vocab,rnn_q,api_output,apis,query,query_max_length,api_dict,hidden_
     query_data=build_query(vocab,query_seq).unsqueeze(0)
     query_data=query_data.to(device)
     # 初始化网络的隐藏层
-    w = torch.empty(3,1,hidden_size).to(device)
+    w = torch.empty(2,1,hidden_size).to(device)
     init_state=torch.nn.init.orthogonal_(w, gain=1)
     query_state=init_state
     # ！！！！注意此处模型中的bn可能形状不是特别对
@@ -71,26 +72,12 @@ def caculate(vocab,rnn_q,api_output,apis,query,query_max_length,api_dict,hidden_
 #     求出最大的那个api index
     idx=int(idx)
     #根据idx查询出apis中的index，之后通过字典查询出对应的原生字符串
-    print(api_dict[tuple( apis[idx].cpu().numpy().tolist())])
-
-#处理query语句使其大转小写
-# if __name__=='__main__':
-#     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-#
-#     data_iter=Data.DataLoader(dataset,batch_size,shuffle=True)
-#     # rnn_q=rnn_q.cpu()
-#     query='See the general contract of the skip method of InputStream'
-#     api_output,apis=collection(rnn_api,data_iter,device)
-#     # api_output=api_output.cpu()
-#     caculate(in_vocab,rnn_q,api_output,apis,query.lower(),query_max_length,api_dict)
-#
-#     # 对collection函数进行调用，得到api_output(特征向量)，api（api的字符串序列）
-#     print('收集结束。。。。。')
+    print(api_dict[tuple(apis[idx].cpu().numpy().tolist())])
 
 # 存储与取出所有的api向量
 def jsonwrite(file_name, obj):
     with open(file_name, "w") as f:
-        json.dump(obj, f)
+        json.dump(f, obj)
 
 def jsonread(file_name):
     with open(file_name, "r") as f:
@@ -98,11 +85,27 @@ def jsonread(file_name):
     o = np.array(obj)
     return obj
 
-# if __name__=='__main__':
-#
-#     # api_output=api_output.cpu()
-#     query='See the general contract of the read method of InputStream'
-#     caculate(in_vocab,rnn_q,api_output,apis,query.lower(),query_max_length,api_dict,hidden_size,device)
-#
-#     # 对collection函数进行调用，得到api_output(特征向量)，api（api的字符串序列）
-#     print('收集结束。。。。。')
+#处理query语句使其大转小写
+if __name__=='__main__':
+    device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # data_iter=Data.DataLoader(dataset,batch_size,shuffle=True)
+    # rnn_q=rnn_q.cpu()
+    query='See the general contract of the skip method of InputStream'
+    # api_output,apis=collection(rnn_api,data_iter,device)
+    # api_output=api_output.cpu()
+    api_dict=np.load('./api_dict.npy',encoding='bytes',allow_pickle=True)
+    api_output=np.load('./api_output.npy',encoding='bytes',allow_pickle=True)
+    apis=np.load('./apis.npy',encoding='bytes',allow_pickle=True)
+
+    #假设此时的batch_size为2，应该是一个对角矩阵（对角线均为1.0）
+    query_max_length=15
+    #需要提前计算api数据集中api序列的最大长度
+    api_max_length=8
+    path="./1.txt"
+    in_vocab,_,_=read_data(path,query_max_length,api_max_length,api_dict)
+# 还未堆模型进行保存
+    caculate(in_vocab,rnn_q,api_output,apis,query.lower(),query_max_length,api_dict)
+
+    # 对collection函数进行调用，得到api_output(特征向量)，api（api的字符串序列）
+    print('收集结束。。。。。')

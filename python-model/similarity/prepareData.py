@@ -57,7 +57,7 @@ def process_one_seq(seq_tokens, all_tokens, all_seqs, max_seq_len):
 
 # 使用所有的词来构造词典。并将所有序列中的词变换为词索引后构造Tensor
 def build_data(all_tokens, all_seqs):
-    vocab = Vocab.Vocab(collections.Counter(all_tokens),
+    vocab = Vocab.Vocab(collections.Counter(all_tokens),#vectors_cache='./hhhh',
                         specials=[PAD, EOS,UNK])
     indices = [[vocab.stoi[w] for w in seq] for seq in all_seqs]
     return vocab, torch.tensor(indices)

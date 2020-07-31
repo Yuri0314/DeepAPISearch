@@ -134,7 +134,10 @@ if __name__=='__main__':
     # data_iter=Data.DataLoader(dataset,batch_size,shuffle=True)
     # # rnn_q=rnn_q.cpu()
     # query='See the general contract of the skip method of InputStream'
-    # api_output,apis=collection(rnn_api,data_iter,batch_size, hidden_size,dataset,device)
+    api_output,apis=collection(rnn_api,data_iter,batch_size, hidden_size,dataset,device)
+    np.save('./api_dict.npy',api_dict)
+    np.save('./api_output.npy',api_output)
+    np.save('./apis.npy',apis)
     # # api_output=api_output.cpu()
     # caculate(in_vocab,rnn_q,api_output,apis,query.lower(),query_max_length,api_dict,hidden_size,device)
 
