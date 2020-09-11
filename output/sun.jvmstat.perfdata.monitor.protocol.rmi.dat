@@ -1,8 +1,25 @@
+MonitoredHostProvider#getMonitoredVm(VmIdentifier)::: monitored host provider get monitored vm:::return->getMonitoredVm
+MonitoredHostProvider#getMonitoredVm(VmIdentifier, int)::: monitored host provider get monitored vm:::nvmid->try->hostId->resolve->rvm->remoteHost->vmid->getLocalVmId->vmid->getMode->attachVm->rmvm->new->RemoteMonitoredVm->rmvm->attach->return->catch->throw->nvmid->toString->new->MonitorException->throw->vmid->toString->new->IllegalArgumentException->finally
+MonitoredHostProvider#detach(MonitoredVm)::: monitored host provider detach:::rmvm->rmvm->detach->try->remoteHost->rmvm->getRemoteVm->detachVm->catch->throw->vm->getVmIdentifier->toString->new->MonitorException->finally
+MonitoredHostProvider#addHostListener(HostListener)::: monitored host provider add host listener:::synchronized->listeners->add->if->new->NotifierTask->timer->schedule
+MonitoredHostProvider#removeHostListener(HostListener)::: monitored host provider remove host listener:::synchronized->listeners->remove->if->listeners->isEmpty->task->cancel
+MonitoredHostProvider#setInterval(int)::: monitored host provider set interval:::synchronized->if->return->oldInterval->super->setInterval->if->task->cancel->oldTask->new->NotifierTask->CountedTimerTaskUtils->reschedule
+MonitoredHostProvider#activeVms()::: monitored host provider active vms:::return->vmManager->activeVms
+MonitoredHostProvider#fireVmStatusChangedEvents(Set, Set, Set):::Fire VmStatusChangeEvent events to HostListener objects:::registered->ev->synchronized->listeners->clone->for->i->registered->iterator->i->hasNext
 MonitoredHostProvider#fireDisconnectedEvents():::Fire hostDisconnectEvent events.:::registered->ev->synchronized->listeners->clone->for->i->registered->iterator->i->hasNext
+MonitoredHostProvider.NotifierTask#run()::: notifier task run:::super->run->lastActiveVms->try->vmManager->activeVms->catch->println->e->printStackTrace->setLastException->fireDisconnectedEvents->finally->if->activeVms->isEmpty->return->startedVms->new->HashSet<>->terminatedVms->new->HashSet<>->for->i->activeVms->iterator->i->hasNext->for->i->lastActiveVms->iterator->i->hasNext->if->startedVms->isEmpty->terminatedVms->isEmpty->fireVmStatusChangedEvents
+MonitoredHostRmiService#getMonitoredHost(HostIdentifier)::: monitored host rmi service get monitored host:::return->new->MonitoredHostProvider
+MonitoredHostRmiService#getScheme()::: monitored host rmi service get scheme:::return
 PerfDataBuffer#sample(ByteBuffer):::Get a copy of the remote instrumentation buffer:::synchronized->buffer->clear->buffer->rvm->getBytes->put
 RemoteMonitoredVm#attach():::Method to attach to the remote MonitoredVm.:::pdb->getByteBuffer->duplicate->if->new->SamplerTask->timer->schedule
+RemoteMonitoredVm#detach()::: remote monitored vm detach:::try->if->if->samplerTask->cancel->if->notifierTask->cancel->sample->catch->println->e->printStackTrace->finally->super->detach
 RemoteMonitoredVm#sample():::Get a copy of the remote instrumentation buffer:::sample
 RemoteMonitoredVm#getRemoteVm():::Get the proxy to the remote MonitoredVm.:::return
+RemoteMonitoredVm#addVmListener(VmListener)::: remote monitored vm add vm listener:::synchronized->listeners->add->if->new->NotifierTask->timer->schedule
+RemoteMonitoredVm#removeVmListener(VmListener)::: remote monitored vm remove vm listener:::synchronized->listeners->remove->if->listeners->isEmpty->notifierTask->cancel
+RemoteMonitoredVm#setInterval(int)::: remote monitored vm set interval:::synchronized->if->return->oldInterval->super->setInterval->if->samplerTask->cancel->oldSamplerTask->new->SamplerTask->CountedTimerTaskUtils->reschedule->if->notifierTask->cancel->oldNotifierTask->new->NotifierTask->CountedTimerTaskUtils->reschedule
 RemoteMonitoredVm#fireMonitorStatusChangedEvents(List, List):::Fire MonitoredVmStructureChanged events.:::registered->ev->synchronized->listeners->clone->for->i->registered->iterator->i->hasNext
 RemoteMonitoredVm#fireMonitorsUpdatedEvents():::Fire MonitoredVmStructureChanged events.:::registered->ev->synchronized->listeners->clone->for->i->registered->iterator->i->hasNext
+RemoteMonitoredVm.NotifierTask#run()::: notifier task run:::super->run->try->status->getMonitorStatus->inserted->status->getInserted->removed->status->getRemoved->if->inserted->isEmpty->removed->isEmpty->fireMonitorStatusChangedEvents->catch->getVmIdentifier->println->e->printStackTrace->finally
+RemoteMonitoredVm.SamplerTask#run()::: sampler task run:::super->run->try->sample->fireMonitorsUpdatedEvents->catch->getVmIdentifier->println->e->printStackTrace->this->cancel->finally
 RemoteVmManager#activeVms():::Return the current set of monitorable Java Virtual Machines:::active->try->remoteHost->activeVms->catch->throw->e->getMessage->new->MonitorException->finally->activeSet->new->HashSet<Integer>->for->i->return

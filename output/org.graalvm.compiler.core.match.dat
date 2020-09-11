@@ -1,9 +1,51 @@
+ComplexMatchResult#evaluate(NodeLIRBuilder)::: complex match result evaluate:::
+ComplexMatchValue#evaluate(NodeLIRBuilder)::: complex match value evaluate:::return->result->evaluate
+MatchContext.ConsumedNodes#add(Node, boolean)::: consumed nodes add:::if->new->ArrayList<>->nodes->new->ConsumedNode->add
+MatchContext.ConsumedNodes#contains(Node)::: consumed nodes contains:::foreach->if->return->return
+MatchContext.ConsumedNodes#find(Node)::: consumed nodes find:::foreach->if->return->return
+MatchContext.ConsumedNodes#toString()::: consumed nodes to string:::arr->nodes->size->new->NodeArr->i->foreach->return->Arrays->toString
+MatchContext.ConsumedNodes#iterator()::: consumed nodes iterator:::return->nodes->iterator
+MatchContext#getRoot()::: match context get root:::return
+MatchContext#captureNamedValue(String, Class, Node)::: match context capture named value:::if->EconomicMap->create->current->namedNodes->get->if->new->NamedNode->namedNodes->put->return->else->if->return->Result->rule->getPattern->namedValueMismatch->return
+MatchContext#validate()::: match context validate:::result->findEarlyPosition->if->return->findLatePosition->return->verifyInputs
+MatchContext#findEarlyPosition()::: match context find early position:::startIndexSideEffect->endIndexSideEffect->nodeToBlockMap->schedule->getNodeToBlockMap->blockToNodesMap->schedule->getBlockToNodesMap->foreach->if->b->nodeToBlockMap->get->if->blockToNodesMap->get->indexOf->else->if->index->blockToNodesMap->get->indexOf->Math->min->Math->max->else->logFailedMatch->return->Result->rule->getPattern->notInBlock->if->nodes->blockToNodesMap->get->for->i->else->nodeToBlockMap->get->return
+MatchContext#sideEffectFree(Node)::: match context side effect free:::return
+MatchContext#findLatePosition()::: match context find late position:::index->if->schedule->getBlockToNodesMap->get->size->emitBlockNodes->schedule->getBlockToNodesMap->get->for->i
+MatchContext#verifyInputs()::: match context verify inputs:::debug->root->getDebug->if->result->verifyInputsDifferentBlock->if->MatchContextSuccessDifferentBlocks->increment->return->nodes->schedule->getBlockToNodesMap->get->for->i->return
+MatchContext#verifyInputsDifferentBlock(Node)::: match context verify inputs different block:::foreach->node->inputs->if->b->schedule->getNodeToBlockMap->merge->get->if->dominates->continue->else->b->schedule->getNodeToBlockMap->get->if->strictlyDominates->schedule->getBlockToNodesMap->get->indexOf->continue->cn->consumed->find->if->logFailedMatch->return->Result->rule->getPattern->tooLate->res->verifyInputsDifferentBlock->if->return->return
+MatchContext#logFailedMatch(String, Node)::: match context log failed match:::if->LogVerbose->root->getOptions->getValue->debug->root->getDebug->debug->log->startIndex->if->endIndex->schedule->getBlockToNodesMap->get->size->emitBlockNodes->schedule->getBlockToNodesMap->get->debug->log->for->j->debug->log->nodes->schedule->getBlockToNodesMap->get->for->j
 MatchContext#setResult(ComplexMatchResult):::Mark the interior nodes with INTERIOR_MATCH and set the Value of the root to be the result:::value->new->ComplexMatchValue->emitNode->schedule->getBlockToNodesMap->get->get->debug->root->getDebug->if->debug->isLogEnabled->debug->rule->getName->rule->getPattern->log->debug->rule->formatMatch->log->foreach->if->continue->builder->setMatchResult->builder->setMatchResult->if->builder->gen->operand->new->ComplexMatchValue->setMatchResult
 MatchContext#consume(Node, boolean, boolean):::Mark a node as consumed by the match:::if->consumed->add->return->if->builder->hasOperand->return->Result->rule->getPattern->alreadyUsed->consumed->add->return
 MatchContext#namedNode(String):::Return the named node:::if->value->namedNodes->get->if->return->throw->new->GraalError
+MatchContext#toString()::: match context to string:::return->String->format
+MatchGenerator#match(NodeMatchRules, Object...)::: match generator match:::
+MatchGenerator#getName()::: match generator get name:::
+MatchPattern.Result#wrongClass(Node, MatchPattern)::: result wrong class:::MatchResult_WRONG_CLASS->node->getDebug->increment->return->node->getDebug->isLogEnabled->new->Result
+MatchPattern.Result#namedValueMismatch(Node, MatchPattern)::: result named value mismatch:::MatchResult_NAMED_VALUE_MISMATCH->node->getDebug->increment->return->node->getDebug->isLogEnabled->new->Result
+MatchPattern.Result#tooManyUsers(Node, MatchPattern)::: result too many users:::MatchResult_TOO_MANY_USERS->node->getDebug->increment->return->node->getDebug->isLogEnabled->new->Result
+MatchPattern.Result#notInBlock(Node, MatchPattern)::: result not in block:::MatchResult_NOT_IN_BLOCK->node->getDebug->increment->return->node->getDebug->isLogEnabled->new->Result
+MatchPattern.Result#notSafe(Node, MatchPattern)::: result not safe:::MatchResult_NOT_SAFE->node->getDebug->increment->return->node->getDebug->isLogEnabled->new->Result
+MatchPattern.Result#alreadyUsed(Node, MatchPattern)::: result already used:::MatchResult_ALREADY_USED->node->getDebug->increment->return->node->getDebug->isLogEnabled->new->Result
+MatchPattern.Result#tooLate(Node, MatchPattern)::: result too late:::MatchResult_TOO_LATE->node->getDebug->increment->return->node->getDebug->isLogEnabled->new->Result
+MatchPattern.Result#toString()::: result to string:::if->return->if->return->code->toString->else->return->node->toString->node->getClass->getSimpleName
+MatchPattern#nodeClass()::: match pattern node class:::return
+MatchPattern#matchType(Node)::: match pattern match type:::if->node->getClass->return->Result->wrongClass->return
 MatchPattern#matchUsage(Node, MatchContext):::Match any named nodes and ensure that the consumed nodes can be safely merged.:::result->matchUsage->if->context->validate->return
+MatchPattern#matchUsage(Node, MatchContext, boolean)::: match pattern match usage:::result->matchType->if->return->if->context->consume->if->return->if->context->captureNamedValue->for->input->return
 MatchPattern#matchShape(Node, MatchStatement):::Recursively match the shape of the tree without worry about named values:::return->matchShape
+MatchPattern#matchShape(Node, MatchStatement, boolean)::: match pattern match shape:::result->matchType->if->return->if->if->isSingleValueUser->return->Result->statement->getPattern->tooManyUsers->for->input->return
+MatchPattern#isSingleValueUser(Node)::: match pattern is single value user:::valueUsage->node->getUsageCount->if->return->if->node->isAllowedUsageType->foreach->node->usages->foreach->usage->inputPositions->if->input->getInputType->input->get->if->return->return->return
 MatchPattern#formatMatch(Node):::For a node starting at root, produce a String showing the inputs that matched against this rule:::result->String->format->if->return->else->sb->new->StringBuilder->sb->append->sb->append->for->input->sb->append->return->sb->toString
+MatchPattern#getInput(int, Node)::: match pattern get input:::return->get
+MatchPattern#toString()::: match pattern to string:::if->return->else->nodeName->nodeClass->getSimpleName->if->nodeName->endsWith->nodeName->nodeName->length->substring->if->return->else->sb->new->StringBuilder->sb->append->sb->append->for->index->sb->append->return->sb->toString
 MatchRuleRegistry#findPositions(NodeClass, String[]):::Convert a list of field names into org.graalvm.compiler.graph.Position objects that can be used to read them during a match:::result->new->PositionArr->for->i->return
 MatchRuleRegistry#lookup(Class, OptionValues, DebugContext):::Collect all the MatchStatements defined by the superclass chain of theClass.:::result->registry->get->if->rules->createRules->registry->put->if->LogVerbose->getValue->try->s->debug->scope->debug->theClass->getSimpleName->log->cursor->result->getEntries->while->cursor->advance->debug->cursor->getKey->log->foreach->cursor->getValue->debug->statement->getPattern->log->catch->finally->if->result->size->return->return
+MatchRuleRegistry#createRules(Class)::: match rule registry create rules:::matchSets->EconomicMap->create->sl->GraalServices->load->foreach->matchSets->rules->forClass->put->rules->EconomicMap->create->currentClass->do->matchSet->matchSets->get->if->statements->matchSet->statements->foreach->nodeClass->statement->getPattern->nodeClass->current->rules->get->if->new->ArrayList<>->rules->put->current->add->currentClass->getSuperclass->while->return
 MatchStatement#generate(NodeLIRBuilder, int, Node, Block, StructuredGraph.ScheduleResult):::Attempt to match the current statement against a Node.:::debug->node->getDebug->result->pattern->matchShape->if->return->context->new->MatchContext->pattern->matchUsage->if->value->generatorMethod->builder->getNodeMatchRules->buildArgList->match->if->context->setResult->MatchStatementSuccess->increment->DebugContext->getName->counter->increment->return->if->LogVerbose->node->getOptions->getValue->debug->context->getRoot->toString->context->getRoot->getClass->getSimpleName->getName->generatorMethod->getName->log->debug->formatMatch->log->else->if->LogVerbose->node->getOptions->getValue->debug->context->getRoot->toString->context->getRoot->getClass->getSimpleName->getName->log->return
+MatchStatement#buildArgList(MatchContext)::: match statement build arg list:::result->new->ObjectArr->for->i->return
+MatchStatement#formatMatch(Node)::: match statement format match:::return->pattern->formatMatch
+MatchStatement#getPattern()::: match statement get pattern:::return
+MatchStatement#getName()::: match statement get name:::return
+MatchStatement#toString()::: match statement to string:::return->pattern->toString
+MatchStatementSet#forClass()::: match statement set for class:::
+MatchStatementSet#statements()::: match statement set statements:::

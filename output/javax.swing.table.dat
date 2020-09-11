@@ -14,6 +14,7 @@ AbstractTableModel#fireTableRowsDeleted(int, int):::Notifies all listeners that 
 AbstractTableModel#fireTableCellUpdated(int, int):::Notifies all listeners that the value of the cell at [row, column] has been updated.:::new->TableModelEvent->fireTableChanged
 AbstractTableModel#fireTableChanged(TableModelEvent):::Forwards the given notification event to all TableModelListeners that registered themselves as listeners for this table model.:::listeners->listenerList->getListenerList->for->i
 AbstractTableModel#getListeners(Class):::Returns an array of all the objects currently registered as FooListeners upon this AbstractTableModel:::return->listenerList->getListeners
+DefaultTableCellRenderer#getNoFocusBorder()::: default table cell renderer get no focus border:::border->DefaultLookup->getBorder->if->System->getSecurityManager->if->return->return->else->if->if->return->return
 DefaultTableCellRenderer#setForeground(Color):::Overrides JComponent.setForeground to assign the unselected-foreground color to the specified color.:::super->setForeground
 DefaultTableCellRenderer#setBackground(Color):::Overrides JComponent.setBackground to assign the unselected-background color to the specified color.:::super->setBackground
 DefaultTableCellRenderer#updateUI():::Notification from the UIManager that the look and feel [L&amp;F] has changed:::super->updateUI->setForeground->setBackground
@@ -58,10 +59,14 @@ DefaultTableColumnModel#propertyChange(PropertyChangeEvent):::Property Change Li
 DefaultTableColumnModel#valueChanged(ListSelectionEvent):::A ListSelectionListener that forwards ListSelectionEvents when there is a column selection change.:::fireColumnSelectionChanged
 DefaultTableColumnModel#createSelectionModel():::Creates a new default list selection model.:::return->new->DefaultListSelectionModel
 DefaultTableColumnModel#recalcWidthCache():::Recalculates the total combined width of all columns:::enumeration->getColumns->while->enumeration->hasMoreElements->enumeration->nextElement->getWidth
+DefaultTableColumnModel#invalidateWidthCache()::: default table column model invalidate width cache:::
+DefaultTableModel#newVector(int)::: default table model new vector:::v->new->Vector<>->v->setSize->return
 DefaultTableModel#getDataVector()::: Returns the Vector of Vectors  that contains the table's  data values:::return
+DefaultTableModel#nonNullVector(Vector)::: default table model non null vector:::return->new->Vector<>
 DefaultTableModel#setDataVector(Vector, Vector)::: Replaces the current dataVector instance variable  with the new Vector of rows, dataVector:::nonNullVector->nonNullVector->getRowCount->justifyRows->fireTableStructureChanged
 DefaultTableModel#setDataVector(Object[][], Object[])::: Replaces the value in the dataVector instance  variable with the values in the array dataVector:::convertToVector->convertToVector->setDataVector
 DefaultTableModel#newDataAvailable(TableModelEvent)::: Equivalent to fireTableChanged.:::fireTableChanged
+DefaultTableModel#justifyRows(int, int)::: default table model justify rows:::dataVector->getRowCount->setSize->for->i
 DefaultTableModel#newRowsAdded(TableModelEvent)::: Ensures that the new rows have the correct number of columns:::e->getFirstRow->e->getLastRow->justifyRows->fireTableChanged
 DefaultTableModel#rowsRemoved(TableModelEvent)::: Equivalent to fireTableChanged.:::fireTableChanged
 DefaultTableModel#setNumRows(int):::Obsolete as of Java 2 platform v1.3:::old->getRowCount->if->return->dataVector->setSize->if->fireTableRowsDeleted->else->justifyRows->fireTableRowsInserted
@@ -70,6 +75,8 @@ DefaultTableModel#addRow(Vector)::: Adds a row to the end of the model:::getRowC
 DefaultTableModel#addRow(Object[])::: Adds a row to the end of the model:::convertToVector->addRow
 DefaultTableModel#insertRow(int, Vector)::: Inserts a row at row in the model:::dataVector->insertElementAt->justifyRows->fireTableRowsInserted
 DefaultTableModel#insertRow(int, Object[])::: Inserts a row at row in the model:::convertToVector->insertRow
+DefaultTableModel#gcd(int, int)::: default table model gcd:::return->gcd
+DefaultTableModel#rotate(Vector, int, int, int)::: default table model rotate:::size->r->g->gcd->for->i
 DefaultTableModel#moveRow(int, int, int)::: Moves one or more rows from the inclusive range start to  end to the to position in the model:::shift->first->last->if->else->rotate->fireTableRowsUpdated
 DefaultTableModel#removeRow(int)::: Removes the row at row from the model:::dataVector->removeElementAt->fireTableRowsDeleted
 DefaultTableModel#setColumnIdentifiers(Vector):::Replaces the column identifiers in the model:::setDataVector
@@ -113,6 +120,7 @@ JTableHeader#columnAdded(TableColumnModelEvent):::Invoked when a column is added
 JTableHeader#columnRemoved(TableColumnModelEvent):::Invoked when a column is removed from the table column model:::resizeAndRepaint
 JTableHeader#columnMoved(TableColumnModelEvent):::Invoked when a column is repositioned:::repaint
 JTableHeader#columnMarginChanged(ChangeEvent):::Invoked when a column is moved due to a margin change:::resizeAndRepaint
+JTableHeader#columnSelectionChanged(ListSelectionEvent)::: table header column selection changed:::
 JTableHeader#createDefaultColumnModel()::: Returns the default column model object which is  a DefaultTableColumnModel:::return->new->DefaultTableColumnModel
 JTableHeader#createDefaultRenderer()::: Returns a default renderer to be used when no header renderer  is defined by a TableColumn.:::return->new->DefaultTableCellHeaderRenderer
 JTableHeader#initializeLocalVars():::Initializes the local variables and properties with default values:::setOpaque->toolTipManager->ToolTipManager->sharedInstance->toolTipManager->registerComponent->createDefaultRenderer->setDefaultRenderer
@@ -120,6 +128,8 @@ JTableHeader#resizeAndRepaint():::Sizes the header and marks it as needing displ
 JTableHeader#setDraggedColumn(TableColumn)::: Sets the header's draggedColumn to aColumn:::
 JTableHeader#setDraggedDistance(int)::: Sets the header's draggedDistance to distance.:::
 JTableHeader#setResizingColumn(TableColumn)::: Sets the header's resizingColumn to aColumn:::
+JTableHeader#writeObject(ObjectOutputStream):::See readObject and writeObject in JComponent for more information about serialization in Swing.:::s->defaultWriteObject->if->getUIClassID->equals->ui->installUI
+JTableHeader#getWidthInRightToLeft()::: table header get width in right to left:::if->table->getAutoResizeMode->return->table->getWidth->return->super->getWidth
 JTableHeader#paramString():::Returns a string representation of this JTableHeader:::reorderingAllowedString->resizingAllowedString->updateTableInRealTimeString->return->super->paramString
 JTableHeader#getAccessibleContext():::Gets the AccessibleContext associated with this JTableHeader:::if->new->AccessibleJTableHeader->return
 JTableHeader.AccessibleJTableHeader#getAccessibleRole():::Get the role of this object.:::return
@@ -127,9 +137,57 @@ JTableHeader.AccessibleJTableHeader#getAccessibleAt(Point):::Returns the Accessi
 JTableHeader.AccessibleJTableHeader#getAccessibleChildrenCount():::Returns the number of accessible children in the object:::return->getColumnCount
 JTableHeader.AccessibleJTableHeader#getAccessibleChild(int):::Return the nth Accessible child of the object.:::if->getAccessibleChildrenCount->return->else->aColumn->getColumn->renderer->aColumn->getHeaderRenderer->if->if->else->return->component->renderer->JTableHeader.this->getTable->aColumn->getHeaderValue->getTableCellRendererComponent->return->new->AccessibleJTableHeaderEntry
 JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleContext():::Get the AccessibleContext associated with this object:::return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getCurrentAccessibleContext()::: accessible table header entry get current accessible context:::tcm->table->getColumnModel->if->if->tcm->getColumnCount->return->aColumn->tcm->getColumn->renderer->aColumn->getHeaderRenderer->if->if->else->return->c->renderer->JTableHeader.this->getTable->aColumn->getHeaderValue->getTableCellRendererComponent->if->return->getAccessibleContext->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getCurrentComponent()::: accessible table header entry get current component:::tcm->table->getColumnModel->if->if->tcm->getColumnCount->return->aColumn->tcm->getColumn->renderer->aColumn->getHeaderRenderer->if->if->else->return->return->renderer->JTableHeader.this->getTable->aColumn->getHeaderValue->getTableCellRendererComponent->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleName()::: accessible table header entry get accessible name:::ac->getCurrentAccessibleContext->if->name->ac->getAccessibleName->if->return->if->return->else->name->getClientProperty->if->return->else->return->table->getColumnName
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#setAccessibleName(String)::: accessible table header entry set accessible name:::ac->getCurrentAccessibleContext->if->ac->setAccessibleName->else->super->setAccessibleName
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleDescription()::: accessible table header entry get accessible description:::ac->getCurrentAccessibleContext->if->return->ac->getAccessibleDescription->else->return->super->getAccessibleDescription
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#setAccessibleDescription(String)::: accessible table header entry set accessible description:::ac->getCurrentAccessibleContext->if->ac->setAccessibleDescription->else->super->setAccessibleDescription
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleRole()::: accessible table header entry get accessible role:::ac->getCurrentAccessibleContext->if->return->ac->getAccessibleRole->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleStateSet()::: accessible table header entry get accessible state set:::ac->getCurrentAccessibleContext->if->states->ac->getAccessibleStateSet->if->isShowing->states->add->return->else->return->new->AccessibleStateSet
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleIndexInParent()::: accessible table header entry get accessible index in parent:::return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleChildrenCount()::: accessible table header entry get accessible children count:::ac->getCurrentAccessibleContext->if->return->ac->getAccessibleChildrenCount->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleChild(int)::: accessible table header entry get accessible child:::ac->getCurrentAccessibleContext->if->accessibleChild->ac->getAccessibleChild->ac->setAccessibleParent->return->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getLocale()::: accessible table header entry get locale:::ac->getCurrentAccessibleContext->if->return->ac->getLocale->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#addPropertyChangeListener(PropertyChangeListener)::: accessible table header entry add property change listener:::ac->getCurrentAccessibleContext->if->ac->addPropertyChangeListener->else->super->addPropertyChangeListener
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#removePropertyChangeListener(PropertyChangeListener)::: accessible table header entry remove property change listener:::ac->getCurrentAccessibleContext->if->ac->removePropertyChangeListener->else->super->removePropertyChangeListener
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleAction()::: accessible table header entry get accessible action:::return->getCurrentAccessibleContext->getAccessibleAction
 JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleComponent():::Get the AccessibleComponent associated with this object:::return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleSelection()::: accessible table header entry get accessible selection:::return->getCurrentAccessibleContext->getAccessibleSelection
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleText()::: accessible table header entry get accessible text:::return->getCurrentAccessibleContext->getAccessibleText
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleValue()::: accessible table header entry get accessible value:::return->getCurrentAccessibleContext->getAccessibleValue
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getBackground()::: accessible table header entry get background:::ac->getCurrentAccessibleContext->if->return->getBackground->else->c->getCurrentComponent->if->return->c->getBackground->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#setBackground(Color)::: accessible table header entry set background:::ac->getCurrentAccessibleContext->if->setBackground->else->cp->getCurrentComponent->if->cp->setBackground
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getForeground()::: accessible table header entry get foreground:::ac->getCurrentAccessibleContext->if->return->getForeground->else->c->getCurrentComponent->if->return->c->getForeground->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#setForeground(Color)::: accessible table header entry set foreground:::ac->getCurrentAccessibleContext->if->setForeground->else->cp->getCurrentComponent->if->cp->setForeground
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getCursor()::: accessible table header entry get cursor:::ac->getCurrentAccessibleContext->if->return->getCursor->else->c->getCurrentComponent->if->return->c->getCursor->else->ap->getAccessibleParent->if->return->getCursor->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#setCursor(Cursor)::: accessible table header entry set cursor:::ac->getCurrentAccessibleContext->if->setCursor->else->cp->getCurrentComponent->if->cp->setCursor
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getFont()::: accessible table header entry get font:::ac->getCurrentAccessibleContext->if->return->getFont->else->c->getCurrentComponent->if->return->c->getFont->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#setFont(Font)::: accessible table header entry set font:::ac->getCurrentAccessibleContext->if->setFont->else->c->getCurrentComponent->if->c->setFont
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getFontMetrics(Font)::: accessible table header entry get font metrics:::ac->getCurrentAccessibleContext->if->return->getFontMetrics->else->c->getCurrentComponent->if->return->c->getFontMetrics->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#isEnabled()::: accessible table header entry is enabled:::ac->getCurrentAccessibleContext->if->return->isEnabled->else->c->getCurrentComponent->if->return->c->isEnabled->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#setEnabled(boolean)::: accessible table header entry set enabled:::ac->getCurrentAccessibleContext->if->setEnabled->else->c->getCurrentComponent->if->c->setEnabled
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#isVisible()::: accessible table header entry is visible:::ac->getCurrentAccessibleContext->if->return->isVisible->else->c->getCurrentComponent->if->return->c->isVisible->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#setVisible(boolean)::: accessible table header entry set visible:::ac->getCurrentAccessibleContext->if->setVisible->else->c->getCurrentComponent->if->c->setVisible
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#isShowing()::: accessible table header entry is showing:::if->isVisible->JTableHeader.this->isShowing->return->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#contains(Point)::: accessible table header entry contains:::ac->getCurrentAccessibleContext->if->r->getBounds->return->r->contains->else->c->getCurrentComponent->if->r->c->getBounds->return->r->contains->else->return->getBounds->contains
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getLocationOnScreen()::: accessible table header entry get location on screen:::if->parentLocation->parent->getLocationOnScreen->componentLocation->getLocation->componentLocation->translate->return->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getLocation()::: accessible table header entry get location:::ac->getCurrentAccessibleContext->if->r->getBounds->return->r->getLocation->else->c->getCurrentComponent->if->r->c->getBounds->return->r->getLocation->else->return->getBounds->getLocation
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#setLocation(Point)::: accessible table header entry set location:::
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getBounds()::: accessible table header entry get bounds:::r->table->getCellRect->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#setBounds(Rectangle)::: accessible table header entry set bounds:::ac->getCurrentAccessibleContext->if->setBounds->else->c->getCurrentComponent->if->c->setBounds
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getSize()::: accessible table header entry get size:::return->getBounds->getSize
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#setSize(Dimension)::: accessible table header entry set size:::ac->getCurrentAccessibleContext->if->setSize->else->c->getCurrentComponent->if->c->setSize
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#getAccessibleAt(Point)::: accessible table header entry get accessible at:::ac->getCurrentAccessibleContext->if->return->getAccessibleAt->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#isFocusTraversable()::: accessible table header entry is focus traversable:::ac->getCurrentAccessibleContext->if->return->isFocusTraversable->else->c->getCurrentComponent->if->return->c->isFocusTraversable->else->return
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#requestFocus()::: accessible table header entry request focus:::ac->getCurrentAccessibleContext->if->requestFocus->else->c->getCurrentComponent->if->c->requestFocus
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#addFocusListener(FocusListener)::: accessible table header entry add focus listener:::ac->getCurrentAccessibleContext->if->addFocusListener->else->c->getCurrentComponent->if->c->addFocusListener
+JTableHeader.AccessibleJTableHeader.AccessibleJTableHeaderEntry#removeFocusListener(FocusListener)::: accessible table header entry remove focus listener:::ac->getCurrentAccessibleContext->if->removeFocusListener->else->c->getCurrentComponent->if->c->removeFocusListener
 TableCellEditor#getTableCellEditorComponent(JTable, Object, boolean, int, int)::: Sets an initial value for the editor:::
 TableCellRenderer#getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int):::Returns the component used for drawing the cell:::
+TableColumn#firePropertyChange(String, Object, Object)::: table column fire property change:::if->changeSupport->firePropertyChange
+TableColumn#firePropertyChange(String, int, int)::: table column fire property change:::if->Integer->valueOf->Integer->valueOf->firePropertyChange
+TableColumn#firePropertyChange(String, boolean, boolean)::: table column fire property change:::if->Boolean->valueOf->Boolean->valueOf->firePropertyChange
 TableColumn#setModelIndex(int):::Sets the model index for this column:::old->firePropertyChange
 TableColumn#getModelIndex():::Returns the model index for this column.:::return
 TableColumn#setIdentifier(Object):::Sets the TableColumn's identifier to anIdentifier:::old->firePropertyChange
@@ -156,6 +214,7 @@ TableColumn#sizeWidthToFit():::Resizes the TableColumn to fit the width of its h
 TableColumn#disableResizedPosting():::This field was not used in previous releases and there are currently no plans to support it in the future.:::
 TableColumn#enableResizedPosting():::This field was not used in previous releases and there are currently no plans to support it in the future.:::
 TableColumn#addPropertyChangeListener(PropertyChangeListener):::Adds a PropertyChangeListener to the listener list:::if->new->SwingPropertyChangeSupport->changeSupport->addPropertyChangeListener
+TableColumn#removePropertyChangeListener(PropertyChangeListener)::: table column remove property change listener:::if->changeSupport->removePropertyChangeListener
 TableColumn#getPropertyChangeListeners():::Returns an array of all the PropertyChangeListeners added to this TableColumn with addPropertyChangeListener().:::if->return->new->PropertyChangeListenerArr->return->changeSupport->getPropertyChangeListeners
 TableColumn#createDefaultHeaderRenderer():::As of Java 2 platform v1.3, this method is not called by the TableColumn constructor:::label->new->DefaultTableCellRenderer->label->setHorizontalAlignment->return
 TableColumnModel#addColumn(TableColumn)::: Appends aColumn to the end of the  tableColumns array:::
@@ -190,4 +249,12 @@ TableRowSorter#setModel(M):::Sets the TableModel to use as the underlying model 
 TableRowSorter#setStringConverter(TableStringConverter):::Sets the object responsible for converting values from the model to strings:::
 TableRowSorter#getStringConverter():::Returns the object responsible for converting values from the model to strings.:::return
 TableRowSorter#getComparator(int):::Returns the Comparator for the specified column:::comparator->super->getComparator->if->return->columnClass->getModel->getColumnClass->if->return->Collator->getInstance->if->isAssignableFrom->return->return->Collator->getInstance
+TableRowSorter#useToString(int)::: table row sorter use to string:::comparator->super->getComparator->if->return->columnClass->getModel->getColumnClass->if->return->if->isAssignableFrom->return->return
+TableRowSorter.TableRowSorterModelWrapper#getModel()::: table row sorter model wrapper get model:::return
+TableRowSorter.TableRowSorterModelWrapper#getColumnCount()::: table row sorter model wrapper get column count:::return->tableModel->getColumnCount
+TableRowSorter.TableRowSorterModelWrapper#getRowCount()::: table row sorter model wrapper get row count:::return->tableModel->getRowCount
+TableRowSorter.TableRowSorterModelWrapper#getValueAt(int, int)::: table row sorter model wrapper get value at:::return->tableModel->getValueAt
+TableRowSorter.TableRowSorterModelWrapper#getStringValueAt(int, int)::: table row sorter model wrapper get string value at:::converter->getStringConverter->if->value->converter->toString->if->return->return->o->getValueAt->if->return->string->o->toString->if->return->return
+TableRowSorter.TableRowSorterModelWrapper#getIdentifier(int)::: table row sorter model wrapper get identifier:::return
+TableRowSorter.ComparableComparator#compare(Object, Object)::: comparable comparator compare:::return->compareTo
 TableStringConverter#toString(TableModel, int, int):::Returns the string representation of the value at the specified location.:::

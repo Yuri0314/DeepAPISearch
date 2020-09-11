@@ -1,23 +1,263 @@
+BasicArrayType#asArray()::: basic array type as array:::return
+BasicArrayType#getElementType()::: basic array type get element type:::return
+BasicArrayType#getLength()::: basic array type get length:::return
+BasicArrayType#resolveTypes(BasicCDebugInfoDataBase, ResolveListener)::: basic array type resolve types:::super->resolveTypes->db->resolveType->if->isLazy->getSize->elementType->getSize->return
+BasicArrayType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic array type iterate object:::if->v->enterType->for->i->getLength->v->exitType->else->v->doArray
+BasicArrayType#createCVVariant(int)::: basic array type create variant:::return->getName->getElementType->getSize->getLength->new->BasicArrayType
+BasicArrayType#visit(TypeVisitor)::: basic array type visit:::v->doArrayType
+BasicBaseClass#getAccessControl()::: basic base class get access control:::return
+BasicBaseClass#isVirtual()::: basic base class is virtual:::return
+BasicBaseClass#getType()::: basic base class get type:::return
+BasicBaseClass#resolveTypes(Type, BasicCDebugInfoDataBase, ResolveListener)::: basic base class resolve types:::db->resolveType
+BasicBitType#asBit()::: basic bit type as bit:::return
+BasicBitType#getSize()::: basic bit type get size:::return->underlyingType->getSize
+BasicBitType#isUnsigned()::: basic bit type is unsigned:::if->underlyingType->isInt->return->isUnsigned->return
+BasicBitType#getSizeInBits()::: basic bit type get size in bits:::return
+BasicBitType#getOffset()::: basic bit type get offset:::return
+BasicBitType#resolveTypes(BasicCDebugInfoDataBase, ResolveListener)::: basic bit type resolve types:::super->resolveTypes->db->resolveType->underlyingType->getName->setName->if->b->Assert->b->isLazy->b->isInt->that->return
+BasicBitType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic bit type iterate object:::mask->maskFor->val->a->getSize->isUnsigned->getCIntegerAt->getOffset->if->isUnsigned->if->highBit->v->doBit
+BasicBitType#createCVVariant(int)::: basic bit type create variant:::return->getSizeInBits->getOffset->new->BasicBitType
+BasicBitType#visit(TypeVisitor)::: basic bit type visit:::v->doBitType
+BasicBitType#maskFor(int)::: basic bit type mask for:::return
+BasicBitType#highBit(int)::: basic bit type high bit:::return
+BasicBlockSym#asBlock()::: basic block sym as block:::return
+BasicBlockSym#getParent()::: basic block sym get parent:::return
+BasicBlockSym#getLength()::: basic block sym get length:::return
+BasicBlockSym#getAddress()::: basic block sym get address:::return
+BasicBlockSym#getNumLocals()::: basic block sym get num locals:::if->return->return->locals->size
+BasicBlockSym#getLocal(int)::: basic block sym get local:::return->locals->get
+BasicBlockSym#addLocal(LocalSym)::: basic block sym add local:::if->new->ArrayList->locals->add
+BasicBlockSym#resolve(BasicCDebugInfoDataBase, ResolveListener)::: basic block sym resolve:::db->resolveSym->if->for->iter->locals->iterator->iter->hasNext
 BasicCDebugInfoDataBase#beginConstruction():::Supports lazy instantiation and references between types and       symbols via insertion using arbitrary Object keys that are       wrapped by LazyTypes:::if->Assert->that->new->HashMap->new->ArrayList->new->HashMap->new->ArrayList->new->HashMap->new->BasicLineNumberMapping
 BasicCDebugInfoDataBase#addType(Object, Type):::Add a type which may later in construction be referred to via a       LazyType with this key:::if->Assert->that->if->if->lazyTypeMap->put->throw->new->RuntimeException->else->types->add
+BasicCDebugInfoDataBase#resolve(ResolveListener)::: basic debug info data base resolve:::if->Assert->that->resolveLazyMap->for->iter->types->listIterator->iter->hasNext->for->iter->blocks->iterator->iter->hasNext->for->iter->nameToSymMap->values->iterator->iter->hasNext->Collections->new->Comparator->sort
+BasicCDebugInfoDataBase#endConstruction()::: basic debug info data base end construction:::if->Assert->that->for->iter->lazyTypeMap->values->iterator->iter->hasNext->new->HashMap->for->iter->types->iterator->iter->hasNext->lineNumbers->sort->lineNumbers->recomputeEndPCs
+BasicCDebugInfoDataBase#lookupType(String)::: basic debug info data base lookup type:::return->lookupType
+BasicCDebugInfoDataBase#lookupType(String, int)::: basic debug info data base lookup type:::if->Assert->that->t->nameToTypeMap->get->if->if->t->getCVVariant->return
+BasicCDebugInfoDataBase#iterate(TypeVisitor)::: basic debug info data base iterate:::if->Assert->that->for->iter->types->iterator->iter->hasNext
 BasicCDebugInfoDataBase#addBlock(Object, BlockSym):::Add a BlockSym to the debug information database:::if->Assert->that->lazySymMap->put->blocks->add
+BasicCDebugInfoDataBase#addGlobalSym(GlobalSym)::: basic debug info data base add global sym:::nameToSymMap->sym->getName->put
+BasicCDebugInfoDataBase#debugInfoForPC(Address)::: basic debug info data base debug info for c:::return->blocks->size->searchBlocks
+BasicCDebugInfoDataBase#lookupSym(String)::: basic debug info data base lookup sym:::return->nameToSymMap->get
+BasicCDebugInfoDataBase#addLineNumberInfo(BasicLineNumberInfo)::: basic debug info data base add line number info:::lineNumbers->addLineNumberInfo
+BasicCDebugInfoDataBase#lineNumberForPC(Address)::: basic debug info data base line number for c:::return->lineNumbers->lineNumberForPC
+BasicCDebugInfoDataBase#iterate(LineNumberVisitor)::: basic debug info data base iterate:::lineNumbers->iterate
 BasicCDebugInfoDataBase#resolveType(Type, Type, ResolveListener, String):::Intended only to be used by the BasicType implementation.:::basicTargetType->if->Assert->that->if->basicTargetType->isLazy->resolved->lazyTypeMap->getKey->get->if->listener->resolveFailed->return->if->resolved->isLazy->if->resolved->isConst->resolved->isVolatile->resolved->resolveTypes->if->resolved->isLazy->listener->getKey->intValue->resolved->isConst->resolved->isVolatile->resolveFailed->return->return
 BasicCDebugInfoDataBase#resolveType(Sym, Type, ResolveListener, String):::Intended only to be usd by the BasicSym implementation.:::basicTargetType->if->Assert->that->if->basicTargetType->isLazy->resolved->lazyTypeMap->getKey->get->if->listener->resolveFailed->return->if->resolved->isLazy->if->resolved->isConst->resolved->isVolatile->resolved->resolveTypes->if->resolved->isLazy->listener->resolveFailed->return->return
 BasicCDebugInfoDataBase#resolveSym(Sym, Sym, ResolveListener, String):::Intended only to be usd by the BasicSym implementation.:::if->return->basicTargetSym->if->Assert->that->if->basicTargetSym->isLazy->resolved->lazySymMap->getKey->get->if->listener->resolveFailed->return->if->resolved->isLazy->listener->resolveFailed->return->return
+BasicCDebugInfoDataBase#resolveLazyMap(ResolveListener)::: basic debug info data base resolve lazy map:::for->iter->lazyTypeMap->entrySet->iterator->iter->hasNext
+BasicCDebugInfoDataBase#searchBlocks(Address, int, int):::Find the block whose starting address is closest to but less       than the given address.:::if->return->if->lastAddr->ret->for->i->return->midIdx->block->blocks->get->if->AddressOps->block->getAddress->lte->return->searchBlocks->else->return->searchBlocks
+BasicCFrame#dbg()::: basic frame dbg:::return
+BasicCFrame#loadObjectForPC()::: basic frame load object for c:::return->dbg->pc->loadObjectContainingPC
+BasicCFrame#blockForPC()::: basic frame block for c:::lo->loadObjectForPC->if->return->return->lo->pc->debugInfoForPC
+BasicCFrame#closestSymbolToPC()::: basic frame closest symbol to c:::lo->loadObjectForPC->if->return->return->lo->pc->closestSymbolToPC
+BasicCFrame#iterateLocals(ObjectVisitor)::: basic frame iterate locals:::block->blockForPC->while->for->i->block->getNumLocals->block->getParent
+BasicCompoundType#asCompound()::: basic compound type as compound:::return
+BasicCompoundType#getNumBaseClasses()::: basic compound type get num base classes:::return->baseClasses->size
+BasicCompoundType#getBaseClass(int)::: basic compound type get base class:::return->baseClasses->get
+BasicCompoundType#addBaseClass(BaseClass)::: basic compound type add base class:::if->new->ArrayList->baseClasses->add
+BasicCompoundType#getNumFields()::: basic compound type get num fields:::return->fields->size
+BasicCompoundType#getField(int)::: basic compound type get field:::return->fields->get
+BasicCompoundType#addField(Field)::: basic compound type add field:::if->new->ArrayList->fields->add
+BasicCompoundType#isClass()::: basic compound type is class:::return
+BasicCompoundType#isStruct()::: basic compound type is struct:::return
+BasicCompoundType#isUnion()::: basic compound type is union:::return
+BasicCompoundType#resolveTypes(BasicCDebugInfoDataBase, ResolveListener)::: basic compound type resolve types:::super->resolveTypes->if->for->iter->baseClasses->iterator->iter->hasNext->if->for->iter->fields->iterator->iter->hasNext->return
+BasicCompoundType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic compound type iterate object:::if->for->i->getNumBaseClasses->v->enterType->for->i->getNumFields->v->exitType->else->v->doCompound
+BasicCompoundType#createCVVariant(int)::: basic compound type create variant:::t->getName->getSize->new->BasicCompoundType->return
+BasicCompoundType#visit(TypeVisitor)::: basic compound type visit:::v->doCompoundType
+BasicDebugEvent#getType()::: basic debug event get type:::return
+BasicDebugEvent#getThread()::: basic debug event get thread:::return
+BasicDebugEvent#getPC()::: basic debug event get c:::return
+BasicDebugEvent#getWasWrite()::: basic debug event get was write:::return
+BasicDebugEvent#getAddress()::: basic debug event get address:::return
+BasicDebugEvent#getUnknownEventDetail()::: basic debug event get unknown event detail:::return
 BasicDebugEvent#setType(DebugEvent.Type):::Mutators for convenience:::
+BasicDebugEvent#setThread(ThreadProxy)::: basic debug event set thread:::
+BasicDebugEvent#setPC(Address)::: basic debug event set c:::
+BasicDebugEvent#setWasWrite(boolean)::: basic debug event set was write:::
+BasicDebugEvent#setAddress(Address)::: basic debug event set address:::
+BasicDebugEvent#setUnknownEventDetail(String)::: basic debug event set unknown event detail:::
 BasicDebugEvent#newLoadObjectLoadEvent(ThreadProxy, Address):::Factory methods for convenience:::return->newAddressEvent
+BasicDebugEvent#newLoadObjectUnloadEvent(ThreadProxy, Address)::: basic debug event new load object unload event:::return->newAddressEvent
+BasicDebugEvent#newBreakpointEvent(ThreadProxy, Address)::: basic debug event new breakpoint event:::return->newPCEvent
+BasicDebugEvent#newSingleStepEvent(ThreadProxy, Address)::: basic debug event new single step event:::return->newPCEvent
+BasicDebugEvent#newAccessViolationEvent(ThreadProxy, Address, boolean, Address)::: basic debug event new access violation event:::ev->newPCEvent->ev->setWasWrite->ev->setAddress->return
+BasicDebugEvent#newUnknownEvent(ThreadProxy, String)::: basic debug event new unknown event:::ev->new->BasicDebugEvent->ev->setUnknownEventDetail->return
+BasicDebugEvent#newAddressEvent(DebugEvent.Type, ThreadProxy, Address)::: basic debug event new address event:::ev->new->BasicDebugEvent->ev->setAddress->return
+BasicDebugEvent#newPCEvent(DebugEvent.Type, ThreadProxy, Address)::: basic debug event new event:::ev->new->BasicDebugEvent->ev->setPC->return
+BasicDoubleType#asDouble()::: basic double type as double:::return
+BasicDoubleType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic double type iterate object:::v->a->getJDoubleAt->doDouble
+BasicDoubleType#createCVVariant(int)::: basic double type create variant:::return->getName->getSize->new->BasicDoubleType
+BasicDoubleType#visit(TypeVisitor)::: basic double type visit:::v->doDoubleType
+BasicEnumType.Enum#getName()::: enum get name:::return
+BasicEnumType.Enum#getValue()::: enum get value:::return
+BasicEnumType#asEnum()::: basic enum type as enum:::return
+BasicEnumType#getSize()::: basic enum type get size:::return->underlyingType->getSize
+BasicEnumType#isUnsigned()::: basic enum type is unsigned:::if->underlyingType->isInt->return->isUnsigned->return
+BasicEnumType#addEnum(String, long)::: basic enum type add enum:::if->new->ArrayList->enums->new->Enum->add
+BasicEnumType#getNumEnumerates()::: basic enum type get num enumerates:::return->enums->size
+BasicEnumType#getEnumName(int)::: basic enum type get enum name:::return->enums->get->getName
+BasicEnumType#getEnumValue(int)::: basic enum type get enum value:::return->enums->get->getValue
+BasicEnumType#enumNameForValue(long)::: basic enum type enum name for value:::if->return->for->iter->enums->iterator->iter->hasNext->return
+BasicEnumType#resolveTypes(BasicCDebugInfoDataBase, ResolveListener)::: basic enum type resolve types:::super->resolveTypes->db->resolveType->if->b->Assert->b->isLazy->b->isInt->that->return
+BasicEnumType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic enum type iterate object:::val->a->getSize->isUnsigned->getCIntegerAt->v->enumNameForValue->doEnum
+BasicEnumType#createCVVariant(int)::: basic enum type create variant:::t->getName->new->BasicEnumType->return
+BasicEnumType#visit(TypeVisitor)::: basic enum type visit:::v->doEnumType
+BasicField#getAccessControl()::: basic field get access control:::return
+BasicField#getName()::: basic field get name:::return
+BasicField#getType()::: basic field get type:::return
+BasicField#isStatic()::: basic field is static:::return
 BasicField#setOffset(long):::Nonstatic fields only: set offset of field:::if->throw->new->RuntimeException
 BasicField#getOffset():::Nonstatic fields only: get offset of field:::if->throw->new->RuntimeException->return
 BasicField#setAddress(Address):::Static fields only: set address of field:::if->throw->new->RuntimeException
 BasicField#getAddress():::Static fields only: get address of field:::if->throw->new->RuntimeException->return
+BasicField#resolveTypes(Type, BasicCDebugInfoDataBase, ResolveListener)::: basic field resolve types:::db->resolveType->if->if->fieldSymName->getType->getName->getName->sym->db->lookupSym->if->listener->getType->getName->resolveFailed->else->sym->getAddress
+BasicFloatType#asFloat()::: basic float type as float:::return
+BasicFloatType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic float type iterate object:::v->a->getJFloatAt->doFloat
+BasicFloatType#createCVVariant(int)::: basic float type create variant:::return->getName->getSize->new->BasicFloatType
+BasicFloatType#visit(TypeVisitor)::: basic float type visit:::v->doFloatType
+BasicFunctionSym#asFunction()::: basic function sym as function:::return
+BasicFunctionSym#getType()::: basic function sym get type:::return
+BasicFunctionSym#isModuleLocal()::: basic function sym is module local:::return
+BasicFunctionSym#resolve(BasicCDebugInfoDataBase, ResolveListener)::: basic function sym resolve:::super->resolve->db->resolveType
+BasicFunctionSym#toString()::: basic function sym to string:::if->getName->return->res->new->StringBuffer->res->getName->append->res->append->type->getType->if->nargs->type->getNumArguments->for->i->res->append->return->res->toString
+BasicFunctionType#asFunction()::: basic function type as function:::return
+BasicFunctionType#getReturnType()::: basic function type get return type:::return
+BasicFunctionType#getNumArguments()::: basic function type get num arguments:::return->argumentTypes->size
+BasicFunctionType#getArgumentType(int)::: basic function type get argument type:::return->argumentTypes->get
+BasicFunctionType#addArgumentType(Type)::: basic function type add argument type:::if->new->ArrayList->argumentTypes->add
+BasicFunctionType#resolveTypes(BasicCDebugInfoDataBase, ResolveListener)::: basic function type resolve types:::super->resolveTypes->db->resolveType->if->for->iter->argumentTypes->listIterator->iter->hasNext->return
+BasicFunctionType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic function type iterate object:::
+BasicFunctionType#createCVVariant(int)::: basic function type create variant:::t->getName->getSize->getReturnType->new->BasicFunctionType->return
+BasicFunctionType#visit(TypeVisitor)::: basic function type visit:::v->doFunctionType
+BasicGlobalSym#asGlobal()::: basic global sym as global:::return
+BasicGlobalSym#getType()::: basic global sym get type:::return
+BasicGlobalSym#getAddress()::: basic global sym get address:::return
+BasicGlobalSym#isModuleLocal()::: basic global sym is module local:::return
+BasicGlobalSym#resolve(BasicCDebugInfoDataBase, ResolveListener)::: basic global sym resolve:::db->resolveType
+BasicIndexableFieldIdentifier#getType()::: basic indexable field identifier get type:::return
+BasicIndexableFieldIdentifier#getIndex()::: basic indexable field identifier get index:::return
+BasicIndexableFieldIdentifier#toString()::: basic indexable field identifier to string:::return->Integer->getIndex->toString
+BasicIntType#asInt()::: basic int type as int:::return
+BasicIntType#getIntSize()::: basic int type get int size:::return->getSize
+BasicIntType#isUnsigned()::: basic int type is unsigned:::return
+BasicIntType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic int type iterate object:::v->a->getSize->isUnsigned->getCIntegerAt->doInt
+BasicIntType#createCVVariant(int)::: basic int type create variant:::return->getName->getSize->isUnsigned->new->BasicIntType
+BasicIntType#visit(TypeVisitor)::: basic int type visit:::v->doIntType
 BasicLineNumberInfo#getSourceFileName():::Not specified whether this is an absolute or relative path.:::return
+BasicLineNumberInfo#getLineNumber()::: basic line number info get line number:::return
+BasicLineNumberInfo#getStartPC()::: basic line number info get start c:::return
 BasicLineNumberInfo#getEndPC():::FIXME: specify whether this is inclusive or exclusive (currently       when BasicLineNumberMapping.recomputeEndPCs() is called, this is       exclusive):::return
 BasicLineNumberInfo#setEndPC(Address):::For recomputing end PCs if they are not available in the debug info:::
 BasicLineNumberMapping#addLineNumberInfo(BasicLineNumberInfo):::Add line number information for the given PC:::if->new->ArrayList->infoList->add
 BasicLineNumberMapping#sort():::Sort the line number information by increasing starting program       counter:::if->return->Collections->new->Comparator->sort
 BasicLineNumberMapping#recomputeEndPCs():::Recomputes the ending PCs of each interval based on the starting       PC of the next one:::if->return->for->i->infoList->size
+BasicLineNumberMapping#lineNumberForPC(Address)::: basic line number mapping line number for c:::if->return->return->infoList->size->searchLineNumbers
+BasicLineNumberMapping#iterate(LineNumberVisitor)::: basic line number mapping iterate:::if->return->for->i->infoList->size
+BasicLineNumberMapping#get(int)::: basic line number mapping get:::return->infoList->get
+BasicLineNumberMapping#searchLineNumbers(Address, int, int)::: basic line number mapping search line numbers:::if->return->if->if->check->return->get->else->return->else->if->if->check->return->get->else->if->check->return->get->else->return->midIdx->info->get->if->AddressOps->info->getStartPC->lt->return->searchLineNumbers->else->if->AddressOps->info->getStartPC->equal->return->else->return->searchLineNumbers
+BasicLineNumberMapping#check(Address, int)::: basic line number mapping check:::info->get->if->AddressOps->info->getStartPC->lte->return->else->return
+BasicLocalSym#asLocal()::: basic local sym as local:::return
+BasicLocalSym#getType()::: basic local sym get type:::return
+BasicLocalSym#getFrameOffset()::: basic local sym get frame offset:::return
+BasicLocalSym#resolve(BasicCDebugInfoDataBase, ResolveListener)::: basic local sym resolve:::db->resolveType
+BasicMemberFunctionType#asMemberFunction()::: basic member function type as member function:::return
+BasicMemberFunctionType#getContainingClass()::: basic member function type get containing class:::return
+BasicMemberFunctionType#getThisType()::: basic member function type get this type:::return
+BasicMemberFunctionType#getThisAdjust()::: basic member function type get this adjust:::return
+BasicMemberFunctionType#resolveTypes(BasicCDebugInfoDataBase, ResolveListener)::: basic member function type resolve types:::super->resolveTypes->db->resolveType->db->resolveType->return
+BasicMemberFunctionType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic member function type iterate object:::
+BasicMemberFunctionType#createCVVariant(int)::: basic member function type create variant:::return->getName->getSize->getReturnType->getContainingClass->getThisType->getThisAdjust->new->BasicMemberFunctionType
+BasicMemberFunctionType#visit(TypeVisitor)::: basic member function type visit:::v->doMemberFunctionType
+BasicNamedFieldIdentifier#getName()::: basic named field identifier get name:::return->field->getName
+BasicNamedFieldIdentifier#getType()::: basic named field identifier get type:::return->field->getType
+BasicNamedFieldIdentifier#toString()::: basic named field identifier to string:::return->getName
+BasicPointerType#asPointer()::: basic pointer type as pointer:::return
+BasicPointerType#getTargetType()::: basic pointer type get target type:::return
+BasicPointerType#resolveTypes(BasicCDebugInfoDataBase, ResolveListener)::: basic pointer type resolve types:::super->resolveTypes->db->resolveType->computeName->return
+BasicPointerType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic pointer type iterate object:::v->a->getAddressAt->doPointer
+BasicPointerType#createCVVariant(int)::: basic pointer type create variant:::return->getName->getSize->getTargetType->new->BasicPointerType
+BasicPointerType#visit(TypeVisitor)::: basic pointer type visit:::v->doPointerType
+BasicPointerType#computeName()::: basic pointer type compute name:::targetType->getName->setName
+BasicRefType#asRef()::: basic ref type as ref:::return
+BasicRefType#getTargetType()::: basic ref type get target type:::return
+BasicRefType#resolveTypes(BasicCDebugInfoDataBase, ResolveListener)::: basic ref type resolve types:::super->resolveTypes->db->resolveType->computeName->return
+BasicRefType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic ref type iterate object:::v->a->getAddressAt->doRef
+BasicRefType#createCVVariant(int)::: basic ref type create variant:::return->getName->getSize->getTargetType->new->BasicRefType
+BasicRefType#visit(TypeVisitor)::: basic ref type visit:::v->doRefType
+BasicRefType#computeName()::: basic ref type compute name:::targetType->getName->setName
+BasicSym#getName()::: basic sym get name:::return
+BasicSym#toString()::: basic sym to string:::return->getName
+BasicSym#asBlock()::: basic sym as block:::return
+BasicSym#asFunction()::: basic sym as function:::return
+BasicSym#asGlobal()::: basic sym as global:::return
+BasicSym#asLocal()::: basic sym as local:::return
+BasicSym#isBlock()::: basic sym is block:::return->asBlock
+BasicSym#isFunction()::: basic sym is function:::return->asFunction
+BasicSym#isGlobal()::: basic sym is global:::return->asGlobal
+BasicSym#isLocal()::: basic sym is local:::return->asLocal
+BasicSym#isLazy()::: basic sym is lazy:::return
 BasicSym#resolve(BasicCDebugInfoDataBase, ResolveListener):::Resolve type and symbol references in this symbol:::
+BasicType#getName()::: basic type get name:::return
 BasicType#setName(String):::For use during resolution only:::
+BasicType#getSize()::: basic type get size:::return
+BasicType#asBit()::: basic type as bit:::return
+BasicType#asInt()::: basic type as int:::return
+BasicType#asEnum()::: basic type as enum:::return
+BasicType#asFloat()::: basic type as float:::return
+BasicType#asDouble()::: basic type as double:::return
+BasicType#asPointer()::: basic type as pointer:::return
+BasicType#asArray()::: basic type as array:::return
+BasicType#asRef()::: basic type as ref:::return
+BasicType#asCompound()::: basic type as compound:::return
+BasicType#asFunction()::: basic type as function:::return
+BasicType#asMemberFunction()::: basic type as member function:::return
+BasicType#asVoid()::: basic type as void:::return
+BasicType#isBit()::: basic type is bit:::return->asBit
+BasicType#isInt()::: basic type is int:::return->asInt
+BasicType#isEnum()::: basic type is enum:::return->asEnum
+BasicType#isFloat()::: basic type is float:::return->asFloat
+BasicType#isDouble()::: basic type is double:::return->asDouble
+BasicType#isPointer()::: basic type is pointer:::return->asPointer
+BasicType#isArray()::: basic type is array:::return->asArray
+BasicType#isRef()::: basic type is ref:::return->asRef
+BasicType#isCompound()::: basic type is compound:::return->asCompound
+BasicType#isFunction()::: basic type is function:::return->asFunction
+BasicType#isMemberFunction()::: basic type is member function:::return->asMemberFunction
+BasicType#isVoid()::: basic type is void:::return->asVoid
+BasicType#isConst()::: basic type is const:::return
+BasicType#isVolatile()::: basic type is volatile:::return
+BasicType#resolveTypes(BasicCDebugInfoDataBase, ResolveListener)::: basic type resolve types:::if->for->iter->cvVariants->listIterator->iter->hasNext->return
+BasicType#isLazy()::: basic type is lazy:::return
+BasicType#iterateObject(Address, ObjectVisitor)::: basic type iterate object:::iterateObject
+BasicType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic type iterate object:::
+BasicType#getCVVariant(int)::: basic type get variant:::t->findCVVariant->if->return->createCVVariant->addCVVariant->return
+BasicType#toString()::: basic type to string:::return->getName
+BasicType#getCVAttributes()::: basic type get attributes:::return
+BasicType#createCVVariant(int)::: basic type create variant:::
+BasicType#findCVVariant(int)::: basic type find variant:::if->for->iter->cvVariants->iterator->iter->hasNext->return
+BasicType#addCVVariant(Type)::: basic type add variant:::if->new->ArrayList->cvVariants->add
+BasicType#visit(TypeVisitor)::: basic type visit:::
+BasicVoidType#asVoid()::: basic void type as void:::return
+BasicVoidType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: basic void type iterate object:::
+BasicVoidType#createCVVariant(int)::: basic void type create variant:::println->return
+BasicVoidType#visit(TypeVisitor)::: basic void type visit:::v->doVoidType
+LazyBlockSym#asBlock()::: lazy block sym as block:::return
+LazyBlockSym#isLazy()::: lazy block sym is lazy:::return
+LazyBlockSym#getKey()::: lazy block sym get key:::return
+LazyBlockSym#getParent()::: lazy block sym get parent:::return
+LazyBlockSym#getLength()::: lazy block sym get length:::return
+LazyBlockSym#getAddress()::: lazy block sym get address:::return
+LazyBlockSym#getNumLocals()::: lazy block sym get num locals:::return
+LazyBlockSym#getLocal(int)::: lazy block sym get local:::throw->new->RuntimeException
+LazyBlockSym#resolve(BasicCDebugInfoDataBase, ResolveListener)::: lazy block sym resolve:::
+LazyType#isLazy()::: lazy type is lazy:::return
+LazyType#getKey()::: lazy type get key:::return
+LazyType#resolveTypes(BasicCDebugInfoDataBase, ResolveListener)::: lazy type resolve types:::t->db->resolveType->if->t->isLazy->return->if->return->t->getCVVariant->return
+LazyType#iterateObject(Address, ObjectVisitor, FieldIdentifier)::: lazy type iterate object:::
+LazyType#createCVVariant(int)::: lazy type create variant:::return->new->LazyType
+LazyType#visit(TypeVisitor)::: lazy type visit:::
 ResolveListener#resolveFailed(Type, LazyType, String):::Indicates failure to resolve a type within another type:::
 ResolveListener#resolveFailed(Type, String):::Indicates failure to resolve the address of a static field in a       type:::
 ResolveListener#resolveFailed(Sym, LazyType, String):::Indicates failure to resolve reference to a type from a symbol:::

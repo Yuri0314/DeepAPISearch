@@ -1,3 +1,66 @@
+Bignum#times10()::: bignum times10:::multiplyByUInt32
+Bignum#equal(Bignum, Bignum)::: bignum equal:::return->compare
+Bignum#lessEqual(Bignum, Bignum)::: bignum less equal:::return->compare
+Bignum#less(Bignum, Bignum)::: bignum less:::return->compare
+Bignum#plusEqual(Bignum, Bignum, Bignum)::: bignum plus equal:::return->plusCompare
+Bignum#plusLessEqual(Bignum, Bignum, Bignum)::: bignum plus less equal:::return->plusCompare
+Bignum#plusLess(Bignum, Bignum, Bignum)::: bignum plus less:::return->plusCompare
+Bignum#ensureCapacity(int)::: bignum ensure capacity:::if->throw->new->RuntimeException
+Bignum#bigitLength()::: bignum bigit length:::return
+Bignum#assignUInt16(char)::: bignum assign int16:::zero->if->return->ensureCapacity
+Bignum#assignUInt64(long)::: bignum assign int64:::kUInt64Size->zero->if->return->needed_bigits->ensureCapacity->for->i->clamp
+Bignum#assignBignum(Bignum)::: bignum assign bignum:::for->i->for->i
+Bignum#readUInt64(String, int, int)::: bignum read int64:::result->for->i->return
+Bignum#assignDecimalString(String)::: bignum assign decimal string:::kMaxUint64DecimalDigits->zero->length->str->length->pos->while->digits->readUInt64->multiplyByPowerOfTen->addUInt64->digits->readUInt64->multiplyByPowerOfTen->addUInt64->clamp
+Bignum#hexCharValue(char)::: bignum hex char value:::if->return->if->return->return
+Bignum#assignHexString(String)::: bignum assign hex string:::zero->length->str->length->needed_bigits->ensureCapacity->string_index->for->i->most_significant_bigit->for->j->if->clamp
+Bignum#addUInt64(long)::: bignum add int64:::if->return->other->new->Bignum->other->assignUInt64->addBignum
+Bignum#addBignum(Bignum)::: bignum add bignum:::align->Math->bigitLength->other->bigitLength->max->ensureCapacity->carry->bigit_pos->for->i->while->sum->Math->max
+Bignum#subtractBignum(Bignum)::: bignum subtract bignum:::align->offset->borrow->i->for->while->difference->clamp
+Bignum#shiftLeft(int)::: bignum shift left:::if->return->local_shift->ensureCapacity->bigitsShiftLeft
+Bignum#multiplyByUInt32(int)::: bignum multiply by int32:::if->return->if->zero->return->if->return->carry->for->i->while->ensureCapacity
+Bignum#multiplyByUInt64(long)::: bignum multiply by int64:::if->return->if->zero->return->carry->low->high->for->i->while->ensureCapacity
+Bignum#multiplyByPowerOfTen(int)::: bignum multiply by power of ten:::kFive27->kFive1->kFive2->kFive3->kFive4->kFive5->kFive6->kFive7->kFive8->kFive9->kFive10->kFive11->kFive12->kFive13->kFive1_to_12->if->return->if->return->remaining_exponent->while->multiplyByUInt64->while->multiplyByUInt32->if->multiplyByUInt32->shiftLeft
+Bignum#square()::: bignum square:::product_length->ensureCapacity->if->throw->new->RuntimeException->accumulator->copy_offset->for->i->for->i->for->i->clamp
+Bignum#assignPowerUInt16(int, int)::: bignum assign power int16:::if->assignUInt16->return->zero->shifts->while->bit_size->tmp_base->while->final_size->ensureCapacity->mask->while->this_value->delayed_multiplication->max_32bits->while->if->base_bits_mask->high_bits_zero->if->else->assignUInt64->if->multiplyByUInt32->while->square->if->multiplyByUInt32->shiftLeft
+Bignum#divideModuloIntBignum(Bignum)::: bignum divide modulo int bignum:::if->bigitLength->other->bigitLength->return->align->result->while->bigitLength->other->bigitLength->subtractTimes->this_bigit->other_bigit->if->quotient->Integer->divideUnsigned->clamp->return->division_estimate->Integer->divideUnsigned->subtractTimes->if->return->while->lessEqual->subtractBignum->return
+Bignum#sizeInHexChars(int)::: bignum size in hex chars:::result->while->return
+Bignum#hexCharOfValue(int)::: bignum hex char of value:::if->return->return
+Bignum#toHexString()::: bignum to hex string:::kHexCharsPerBigit->if->return->needed_chars->bigitLength->sizeInHexChars->buffer->new->StringBuilder->buffer->setLength->string_index->for->i->for->i->most_significant_bigit->while->buffer->hexCharOfValue->setCharAt->return->buffer->toString
+Bignum#bigitOrZero(int)::: bignum bigit or zero:::if->bigitLength->return->if->return->return
+Bignum#compare(Bignum, Bignum)::: bignum compare:::bigit_length_a->a->bigitLength->bigit_length_b->b->bigitLength->if->return->if->return->for->i->Math->min->return
+Bignum#plusCompare(Bignum, Bignum, Bignum)::: bignum plus compare:::if->a->bigitLength->b->bigitLength->return->plusCompare->if->a->bigitLength->c->bigitLength->return->if->a->bigitLength->c->bigitLength->return->if->b->bigitLength->a->bigitLength->c->bigitLength->return->borrow->min_exponent->Math->Math->min->min->for->i->c->bigitLength->if->return->return
+Bignum#clamp()::: bignum clamp:::while->if
+Bignum#isClamped()::: bignum is clamped:::return
+Bignum#zero()::: bignum zero:::for->i
+Bignum#align(Bignum)::: bignum align:::if->zero_digits->ensureCapacity->for->i->for->i
+Bignum#bigitsShiftLeft(int)::: bignum bigits shift left:::carry->for->i->if
+Bignum#subtractTimes(Bignum, int)::: bignum subtract times:::if->for->i->return->borrow->exponent_diff->for->i->for->i->clamp
+Bignum#toString()::: bignum to string:::return->Arrays->toString
+BignumDtoa#normalizedExponent(long, int)::: bignum dtoa normalized exponent:::while->return
+BignumDtoa#bignumDtoa(double, DtoaMode, int, DtoaBuffer)::: bignum dtoa bignum dtoa:::significand->exponent->lower_boundary_is_closer->l->IeeeDouble->doubleToLong->IeeeDouble->significand->IeeeDouble->exponent->IeeeDouble->lowerBoundaryIsCloser->need_boundary_deltas->is_even->normalizedExponent->normalizedExponent->estimated_power->estimatePower->if->buffer->reset->return->numerator->new->Bignum->denominator->new->Bignum->delta_minus->new->Bignum->delta_plus->new->Bignum->initialScaledStartValues->fixupMultiply10->switch->generateShortestDigits->break->bignumToFixed->break->generateCountedDigits->break->throw->new->RuntimeException
+BignumDtoa#generateShortestDigits(Bignum, Bignum, Bignum, Bignum, boolean, DtoaBuffer)::: bignum dtoa generate shortest digits:::if->Bignum->equal->for
+BignumDtoa#generateCountedDigits(int, Bignum, Bignum, DtoaBuffer)::: bignum dtoa generate counted digits:::for->i->digit->numerator->divideModuloIntBignum->if->Bignum->plusCompare->for->i->if
+BignumDtoa#bignumToFixed(int, Bignum, Bignum, DtoaBuffer)::: bignum dtoa bignum to fixed:::if->else->if->denominator->times10->if->Bignum->plusCompare->else->else->needed_digits->generateCountedDigits
+BignumDtoa#estimatePower(int)::: bignum dtoa estimate power:::k1Log10->kSignificandSize->estimate->Math->ceil->return
+BignumDtoa#initialScaledStartValuesPositiveExponent(long, int, int, boolean, Bignum, Bignum, Bignum, Bignum)::: bignum dtoa initial scaled start values positive exponent:::numerator->assignUInt64->numerator->shiftLeft->denominator->assignPowerUInt16->if->denominator->shiftLeft->numerator->shiftLeft->delta_plus->assignUInt16->delta_plus->shiftLeft->delta_minus->assignUInt16->delta_minus->shiftLeft
+BignumDtoa#initialScaledStartValuesNegativeExponentPositivePower(long, int, int, boolean, Bignum, Bignum, Bignum, Bignum)::: bignum dtoa initial scaled start values negative exponent positive power:::numerator->assignUInt64->denominator->assignPowerUInt16->denominator->shiftLeft->if->denominator->shiftLeft->numerator->shiftLeft->delta_plus->assignUInt16->delta_minus->assignUInt16
+BignumDtoa#initialScaledStartValuesNegativeExponentNegativePower(long, int, int, boolean, Bignum, Bignum, Bignum, Bignum)::: bignum dtoa initial scaled start values negative exponent negative power:::power_ten->power_ten->assignPowerUInt16->if->delta_plus->assignBignum->delta_minus->assignBignum->numerator->multiplyByUInt64->denominator->assignUInt16->denominator->shiftLeft->if->numerator->shiftLeft->denominator->shiftLeft
+BignumDtoa#initialScaledStartValues(long, int, boolean, int, boolean, Bignum, Bignum, Bignum, Bignum)::: bignum dtoa initial scaled start values:::if->initialScaledStartValuesPositiveExponent->else->if->initialScaledStartValuesNegativeExponentPositivePower->else->initialScaledStartValuesNegativeExponentNegativePower->if->denominator->shiftLeft->numerator->shiftLeft->delta_plus->shiftLeft
+BignumDtoa#fixupMultiply10(int, boolean, Bignum, Bignum, Bignum, Bignum)::: bignum dtoa fixup multiply10:::in_range->decimal_point->if->Bignum->plusCompare->else->Bignum->plusCompare->if->else->numerator->times10->if->Bignum->equal->delta_minus->times10->delta_plus->assignBignum->else->delta_minus->times10->delta_plus->times10->return
+CachedPowers#getCachedPowerForBinaryExponentRange(int, int, DiyFp)::: cached powers get cached power for binary exponent range:::kQ->k->Math->ceil->index->cached_power->power->setF->power->setE->return
+CachedPowers#getCachedPowerForDecimalExponent(int, DiyFp)::: cached powers get cached power for decimal exponent:::index->cached_power->power->setF->power->setE->found_exponent->return
+DiyFp#subtract(DiyFp)::: diy fp subtract:::
+DiyFp#minus(DiyFp, DiyFp)::: diy fp minus:::result->new->DiyFp->result->subtract->return
+DiyFp#multiply(DiyFp)::: diy fp multiply:::kM32->a->b->c->d->ac->bc->ad->bd->tmp->result_f
+DiyFp#times(DiyFp, DiyFp)::: diy fp times:::result->new->DiyFp->result->multiply->return
+DiyFp#normalize()::: diy fp normalize:::significand->exponent->k10MSBits->while->while
+DiyFp#normalize(DiyFp)::: diy fp normalize:::result->new->DiyFp->result->normalize->return
+DiyFp#f()::: diy fp f:::return
+DiyFp#e()::: diy fp e:::return
+DiyFp#setF(long)::: diy fp set f:::
+DiyFp#setE(int)::: diy fp set e:::
+DiyFp#toString()::: diy fp to string:::return
 DoubleConversion#toShortestString(double):::Converts a double number to its shortest string representation.:::buffer->new->DtoaBuffer->absValue->Math->abs->if->if->fastDtoaShortest->buffer->reset->bignumDtoa->return->buffer->format
 DoubleConversion#toFixed(double, int):::Converts a double number to a string representation with a fixed number of digits after the decimal point.:::buffer->new->DtoaBuffer->absValue->Math->abs->if->if->buffer->append->else->if->fixedDtoa->buffer->reset->bignumDtoa->return->buffer->format
 DoubleConversion#toPrecision(double, int):::Converts a double number to a string representation with a fixed number of digits.:::buffer->new->DtoaBuffer->absValue->Math->abs->if->if->for->i->else->if->fastDtoaCounted->buffer->reset->bignumDtoa->return->buffer->format
@@ -11,3 +74,45 @@ DtoaBuffer#getRawDigits():::Get the raw digits of this buffer as string.:::retur
 DtoaBuffer#getDecimalPoint():::Get the position of the decimal point.:::return
 DtoaBuffer#getLength():::Returns the number of characters in the buffer.:::return
 DtoaBuffer#format(DtoaMode, int):::Returns the formatted buffer content as string, using the specified conversion mode and padding.:::buffer->new->StringBuilder->if->buffer->append->switch->if->toExponentialFormat->else->toFixedFormat->break->toFixedFormat->break->if->toExponentialFormat->else->toFixedFormat->break->return->buffer->toString
+DtoaBuffer#toFixedFormat(StringBuilder, int)::: dtoa buffer to fixed format:::if->buffer->append->if->buffer->append->padding->for->i->buffer->append->else->else->if->buffer->append->for->i->else->if->buffer->append->buffer->append->buffer->append->if->if->buffer->append->for->i->Math->max
+DtoaBuffer#toExponentialFormat(StringBuilder)::: dtoa buffer to exponential format:::buffer->append->if->buffer->append->buffer->append->buffer->append->exponent->if->buffer->append->buffer->append
+DtoaBuffer#toString()::: dtoa buffer to string:::return->new->String
+FastDtoa#roundWeed(DtoaBuffer, long, long, long, long, long)::: fast dtoa round weed:::small_distance->big_distance->while->Long->compareUnsigned->Long->compareUnsigned->Long->compareUnsigned->Long->compareUnsigned->if->Long->compareUnsigned->Long->compareUnsigned->Long->compareUnsigned->Long->compareUnsigned->return->return->Long->compareUnsigned->Long->compareUnsigned
+FastDtoa#roundWeedCounted(char[], int, long, long, long)::: fast dtoa round weed counted:::if->Long->compareUnsigned->return->if->Long->compareUnsigned->return->if->Long->compareUnsigned->Long->compareUnsigned->return->if->Long->compareUnsigned->Long->compareUnsigned->for->i->if->return->return->return
+FastDtoa#biggestPowerTen(int, int)::: fast dtoa biggest power ten:::power->exponent_plus_one->exponent_plus_one_guess->if->return
+FastDtoa#digitGen(DiyFp, DiyFp, DiyFp, DtoaBuffer, int)::: fast dtoa digit gen:::unit->too_low->low->f->low->e->new->DiyFp->too_high->high->f->high->e->new->DiyFp->unsafe_interval->DiyFp->minus->one->w->e->w->e->new->DiyFp->integrals->too_high->f->one->e->fractionals->too_high->f->one->f->divisor->divisor_exponent_plus_one->result->one->e->biggestPowerTen->kappa->while->digit->buffer->append->rest->one->e->if->Long->unsafe_interval->f->compareUnsigned->return->DiyFp->minus->f->unsafe_interval->f->one->e->roundWeed->for
+FastDtoa#digitGenCounted(DiyFp, int, DtoaBuffer, int)::: fast dtoa digit gen counted:::w_error->one->w->e->w->e->new->DiyFp->integrals->w->f->one->e->fractionals->w->f->one->f->divisor->divisor_exponent_plus_one->biggestPower->one->e->biggestPowerTen->kappa->while->digit->buffer->append->if->break->if->rest->one->e->result->one->e->roundWeedCounted->return->while->digit->one->e->buffer->append->one->f->if->return->result->one->f->roundWeedCounted->return
+FastDtoa#grisu3(double, DtoaBuffer)::: fast dtoa grisu3:::d64->IeeeDouble->doubleToLong->w->IeeeDouble->asNormalizedDiyFp->boundary_minus->new->DiyFp->boundary_plus->new->DiyFp->IeeeDouble->normalizedBoundaries->ten_mk->new->DiyFp->mk->ten_mk_minimal_binary_exponent->w->e->ten_mk_maximal_binary_exponent->w->e->CachedPowers->getCachedPowerForBinaryExponentRange->scaled_w->DiyFp->times->scaled_boundary_minus->DiyFp->times->scaled_boundary_plus->DiyFp->times->result->digitGen->return
+FastDtoa#grisu3Counted(double, int, DtoaBuffer)::: fast dtoa grisu3 counted:::d64->IeeeDouble->doubleToLong->w->IeeeDouble->asNormalizedDiyFp->ten_mk->new->DiyFp->mk->ten_mk_minimal_binary_exponent->w->e->ten_mk_maximal_binary_exponent->w->e->CachedPowers->getCachedPowerForBinaryExponentRange->scaled_w->DiyFp->times->result->digitGenCounted->return
+FixedDtoa.UInt128#multiply(int)::: int128 multiply:::accumulator->part
+FixedDtoa.UInt128#shift(int)::: int128 shift:::if->return->else->if->else->if->else->if->else
+FixedDtoa.UInt128#divModPowerOf2(int)::: int128 div mod power of2:::if->result->return->else->part_low->part_high->result->return
+FixedDtoa.UInt128#isZero()::: int128 is zero:::return
+FixedDtoa.UInt128#bitAt(int)::: int128 bit at:::if->return->else->return
+FixedDtoa#fillDigits32FixedLength(int, int, DtoaBuffer)::: fixed dtoa fill digits32 fixed length:::for->i
+FixedDtoa#fillDigits32(int, DtoaBuffer)::: fixed dtoa fill digits32:::number_length->while->digit->Integer->remainderUnsigned->Integer->divideUnsigned->i->j->while->tmp
+FixedDtoa#fillDigits64FixedLength(long, DtoaBuffer)::: fixed dtoa fill digits64 fixed length:::kTen7->part2->Long->remainderUnsigned->Long->divideUnsigned->part1->Long->remainderUnsigned->part0->Long->divideUnsigned->fillDigits32FixedLength->fillDigits32FixedLength->fillDigits32FixedLength
+FixedDtoa#FillDigits64(long, DtoaBuffer)::: fixed dtoa  fill digits64:::kTen7->part2->Long->remainderUnsigned->Long->divideUnsigned->part1->Long->remainderUnsigned->part0->Long->divideUnsigned->if->fillDigits32->fillDigits32FixedLength->fillDigits32FixedLength->else->if->fillDigits32->fillDigits32FixedLength->else->fillDigits32
+FixedDtoa#roundUp(DtoaBuffer)::: fixed dtoa round up:::if->return->for->i->if
+FixedDtoa#fillFractionals(long, int, int, DtoaBuffer)::: fixed dtoa fill fractionals:::if->point->for->i->if->roundUp->else->fractionals128->new->UInt128->fractionals128->shift->point->for->i->if->fractionals128->bitAt->roundUp
+FixedDtoa#trimZeros(DtoaBuffer)::: fixed dtoa trim zeros:::while->first_non_zero->while->if->for->i
+FixedDtoa#fastFixedDtoa(double, int, DtoaBuffer)::: fixed dtoa fast fixed dtoa:::kMaxUInt32->l->IeeeDouble->doubleToLong->significand->IeeeDouble->significand->exponent->IeeeDouble->exponent->if->return->if->return->if->kFive17->divisor->divisor_power->dividend->quotient->remainder->if->Long->divideUnsigned->Long->remainderUnsigned->else->Long->divideUnsigned->Long->remainderUnsigned->fillDigits32->fillDigits64FixedLength->else->if->FillDigits64->else->if->integrals->fractionals->if->Long->compareUnsigned->FillDigits64->else->fillDigits32->fillFractionals->else->if->buffer->reset->else->fillFractionals->trimZeros->if->return
+IeeeDouble#doubleToLong(double)::: ieee double double to long:::return->Double->doubleToRawLongBits
+IeeeDouble#longToDouble(long)::: ieee double long to double:::return->Double->longBitsToDouble
+IeeeDouble#asDiyFp(long)::: ieee double as diy fp:::return->significand->exponent->new->DiyFp
+IeeeDouble#asNormalizedDiyFp(long)::: ieee double as normalized diy fp:::f->significand->e->exponent->while->return->new->DiyFp
+IeeeDouble#nextDouble(long)::: ieee double next double:::if->return->longToDouble->if->sign->significand->return->if->sign->return->longToDouble->else->return->longToDouble
+IeeeDouble#previousDouble(long)::: ieee double previous double:::if->return->Infinity->if->sign->return->longToDouble->else->if->significand->return->return->longToDouble
+IeeeDouble#exponent(long)::: ieee double exponent:::if->isDenormal->return->biased_e->return
+IeeeDouble#significand(long)::: ieee double significand:::significand->if->isDenormal->return->else->return
+IeeeDouble#isDenormal(long)::: ieee double is denormal:::return
+IeeeDouble#isSpecial(long)::: ieee double is special:::return
+IeeeDouble#isNaN(long)::: ieee double is na n:::return
+IeeeDouble#isInfinite(long)::: ieee double is infinite:::return
+IeeeDouble#sign(long)::: ieee double sign:::return
+IeeeDouble#normalizedBoundaries(long, DiyFp, DiyFp)::: ieee double normalized boundaries:::v->asDiyFp->m_plus->v->f->setF->m_plus->v->e->setE->m_plus->normalize->if->lowerBoundaryIsCloser->m_minus->v->f->setF->m_minus->v->e->setE->else->m_minus->v->f->setF->m_minus->v->e->setE->m_minus->m_minus->f->m_minus->e->m_plus->e->setF->m_minus->m_plus->e->setE
+IeeeDouble#lowerBoundaryIsCloser(long)::: ieee double lower boundary is closer:::physical_significand_is_zero->return->exponent
+IeeeDouble#value(long)::: ieee double value:::return->longToDouble
+IeeeDouble#significandSizeForOrderOfMagnitude(int)::: ieee double significand size for order of magnitude:::if->return->if->return->return
+IeeeDouble#Infinity()::: ieee double  infinity:::return->longToDouble
+IeeeDouble#NaN()::: ieee double  na n:::return->longToDouble

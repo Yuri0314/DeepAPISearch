@@ -1,6 +1,42 @@
 AArch64Address#createAddress(AddressingMode, Register, Register, int, boolean, AArch64Assembler.ExtendType):::General address generation mechanism:::return->new->AArch64Address
+AArch64Address#createPostIndexedImmediateAddress(Register, int)::: arch64 address create post indexed immediate address:::return->new->AArch64Address
+AArch64Address#createPreIndexedImmediateAddress(Register, int)::: arch64 address create pre indexed immediate address:::return->new->AArch64Address
+AArch64Address#createScaledImmediateAddress(Register, int)::: arch64 address create scaled immediate address:::return->new->AArch64Address
+AArch64Address#createUnscaledImmediateAddress(Register, int)::: arch64 address create unscaled immediate address:::return->new->AArch64Address
+AArch64Address#createBaseRegisterOnlyAddress(Register)::: arch64 address create base register only address:::return->createRegisterOffsetAddress
+AArch64Address#createRegisterOffsetAddress(Register, Register, boolean)::: arch64 address create register offset address:::return->new->AArch64Address
+AArch64Address#createPairUnscaledImmediateAddress(Register, int)::: arch64 address create pair unscaled immediate address:::return->new->AArch64Address
+AArch64Address#createExtendedRegisterOffsetAddress(Register, Register, boolean, AArch64Assembler.ExtendType)::: arch64 address create extended register offset address:::return->new->AArch64Address
+AArch64Address#createPcLiteralAddress(int)::: arch64 address create pc literal address:::return->new->AArch64Address
+AArch64Address#verify()::: arch64 address verify:::switch->break->break->break->break->break->break->break->throw->GraalError->shouldNotReachHere->return
+AArch64Address#getBase()::: arch64 address get base:::return
+AArch64Address#getOffset()::: arch64 address get offset:::return
+AArch64Address#getImmediate()::: arch64 address get immediate:::switch->return->NumUtil->getNbitNumberInt->return->return->NumUtil->getNbitNumberInt->throw->GraalError->shouldNotReachHere
+AArch64Address#getImmediateRaw()::: arch64 address get immediate raw:::switch->return->throw->GraalError->shouldNotReachHere
+AArch64Address#isScaled()::: arch64 address is scaled:::return
+AArch64Address#getExtendType()::: arch64 address get extend type:::return
+AArch64Address#getAddressingMode()::: arch64 address get addressing mode:::return
+AArch64Address#toString(int)::: arch64 address to string:::shiftVal->switch->return->String->format->return->String->format->return->String->format->if->return->String->extendType->name->format->else->return->String->extendType->name->format->if->return->String->format->else->return->String->format->return->String->format->return->String->format->return->String->format->throw->GraalError->shouldNotReachHere
 AArch64Address#lea(AArch64MacroAssembler, Register):::Loads an address into Register r.:::switch->if->base->equals->break->masm->add->break->masm->add->break->masm->getImmediate->mov->break->throw->GraalError->shouldNotReachHere
 AArch64Assembler.LogicalImmediateTable#isRepresentable(boolean, long):::Tests whether an immediate can be encoded for logical instructions.:::pos->getLogicalImmTablePos->if->if->getLogicalImmTablePos->return->return->imm->return->imm->only64bit
+AArch64Assembler.LogicalImmediateTable#isRepresentable(int)::: logical immediate table is representable:::return->isRepresentable
+AArch64Assembler.LogicalImmediateTable#getLogicalImmEncoding(boolean, long)::: logical immediate table get logical imm encoding:::pos->getLogicalImmTablePos->imm->return
+AArch64Assembler.LogicalImmediateTable#getLogicalImmTablePos(boolean, long)::: logical immediate table get logical imm table pos:::imm->if->if->NumUtil->isUnsignedNbit->return->new->Immediate->else->new->Immediate->pos->Arrays->binarySearch->if->return->if->only64bit->return->return
+AArch64Assembler.LogicalImmediateTable.Immediate#only64bit():::Returns true if this pattern is only representable as 64bit.:::return
+AArch64Assembler.LogicalImmediateTable.Immediate#computeEncoding(boolean, int, int)::: immediate compute encoding:::sf->return
+AArch64Assembler.LogicalImmediateTable.Immediate#compareTo(Immediate)::: immediate compare to:::return->Long->compare
+AArch64Assembler.LogicalImmediateTable#buildImmediateTable()::: logical immediate table build immediate table:::nrImmediates->table->new->ImmediateArr->nrImms->for->logE->Arrays->sort->return
+AArch64Assembler.LogicalImmediateTable#checkDuplicates(Immediate[])::: logical immediate table check duplicates:::for->i->return
+AArch64Assembler#rd(Register)::: arch64 assembler rd:::return
+AArch64Assembler#rs1(Register)::: arch64 assembler rs1:::return
+AArch64Assembler#rs2(Register)::: arch64 assembler rs2:::return
+AArch64Assembler#rs3(Register)::: arch64 assembler rs3:::return
+AArch64Assembler#rt(Register)::: arch64 assembler rt:::return
+AArch64Assembler#rt2(Register)::: arch64 assembler rt2:::return
+AArch64Assembler#rn(Register)::: arch64 assembler rn:::return
+AArch64Assembler#maskField(int, int)::: arch64 assembler mask field:::return->NumUtil->getNbitNumberInt
+AArch64Assembler#supports(CPUFeature)::: arch64 assembler supports:::return->getFeatures->contains
+AArch64Assembler#isFlagSet(Flag)::: arch64 assembler is flag set:::return->getFlags->contains
 AArch64Assembler#b(ConditionFlag, int):::Branch conditionally.:::b
 AArch64Assembler#b(ConditionFlag, int, int):::Branch conditionally:::if->getConditionalBranchImm->emitInt->else->getConditionalBranchImm->emitInt
 AArch64Assembler#cbnz(int, Register, int):::Compare register and branch if non-zero.:::generalFromSize->conditionalBranchInstruction
@@ -11,51 +47,74 @@ AArch64Assembler#tbnz(Register, int, int):::Test a single bit and branch if the 
 AArch64Assembler#tbz(Register, int, int):::Test a single bit and branch if the bit is zero.:::tbz
 AArch64Assembler#tbnz(Register, int, int, int):::Test a single bit and branch if the bit is nonzero.:::size->uimm5->imm14->NumUtil->getNbitNumberInt->type->generalFromSize->encoding->rd->if->emitInt->else->emitInt
 AArch64Assembler#tbz(Register, int, int, int):::Test a single bit and branch if the bit is zero.:::size->uimm5->imm14->NumUtil->getNbitNumberInt->type->generalFromSize->encoding->rd->if->emitInt->else->emitInt
+AArch64Assembler#conditionalBranchInstruction(Register, int, InstructionType, Instruction, int)::: arch64 assembler conditional branch instruction:::instrEncoding->if->getConditionalBranchImm->rd->emitInt->else->getConditionalBranchImm->rd->emitInt
+AArch64Assembler#getConditionalBranchImm(int)::: arch64 assembler get conditional branch imm:::imm->NumUtil->getNbitNumberInt->return
+AArch64Assembler#b(int)::: arch64 assembler b:::unconditionalBranchImmInstruction
+AArch64Assembler#b(int, int)::: arch64 assembler b:::unconditionalBranchImmInstruction
 AArch64Assembler#bl(int):::Branch and link return address to register X30.:::unconditionalBranchImmInstruction
+AArch64Assembler#unconditionalBranchImmInstruction(int, Instruction, int)::: arch64 assembler unconditional branch imm instruction:::imm->NumUtil->getNbitNumberInt->instrEncoding->if->position->annotatePatchingImmediate->emitInt->else->annotatePatchingImmediate->emitInt
 AArch64Assembler#blr(Register):::Branches to address in register and writes return address into register X30.:::unconditionalBranchRegInstruction
 AArch64Assembler#br(Register):::Branches to address in register.:::unconditionalBranchRegInstruction
 AArch64Assembler#ret(Register):::Return to address in register.:::unconditionalBranchRegInstruction
+AArch64Assembler#unconditionalBranchRegInstruction(Instruction, Register)::: arch64 assembler unconditional branch reg instruction:::rs1->emitInt
 AArch64Assembler#ldr(int, Register, AArch64Address):::Loads a srcSize value from address into rt zero-extending it.:::transferSize->NumUtil->log2Ceil->loadStoreInstruction
 AArch64Assembler#ldrs(int, int, Register, AArch64Address):::Loads a srcSize value from address into rt sign-extending it.:::transferSize->NumUtil->log2Ceil->generalFromSize->loadStoreInstruction
+AArch64Assembler#prfm(AArch64Address, PrefetchMode)::: arch64 assembler prfm:::srcSize->transferSize->NumUtil->log2Ceil->rt->mode->toRegister->loadStoreInstruction
 AArch64Assembler#str(int, Register, AArch64Address):::Stores register rt into memory pointed by address.:::transferSize->NumUtil->log2Ceil->loadStoreInstruction
+AArch64Assembler#loadStoreInstruction(Instruction, Register, AArch64Address, InstructionType, int)::: arch64 assembler load store instruction:::transferSizeEncoding->is32Bit->isFloat->memop->rt->switch->address->getAddressingMode->position->annotatePatchingImmediate->address->getImmediate->address->getBase->rs1->emitInt->break->position->annotatePatchingImmediate->address->getImmediate->address->getBase->rs1->emitInt->break->address->getBase->rs1->emitInt->break->extendType->address->getAddressingMode->address->getExtendType->shouldScale->address->isScaled->address->getOffset->rs2->address->getBase->rs1->emitInt->break->position->annotatePatchingImmediate->rd->address->getImmediate->emitInt->break->position->annotatePatchingImmediate->address->getBase->rs1->address->getImmediate->emitInt->break->position->annotatePatchingImmediate->address->getBase->rs1->address->getImmediate->emitInt->break->throw->GraalError->address->getAddressingMode->shouldNotReachHere
 AArch64Assembler#ldp(int, Register, Register, AArch64Address):::Load Pair of Registers calculates an address from a base register value and an immediate offset, and stores two 32-bit words or two 64-bit doublewords to the calculated address, from two registers.:::generalFromSize->loadStorePairInstruction
 AArch64Assembler#stp(int, Register, Register, AArch64Address):::Store Pair of Registers calculates an address from a base register value and an immediate offset, and stores two 32-bit words or two 64-bit doublewords to the calculated address, from two registers.:::generalFromSize->loadStorePairInstruction
+AArch64Assembler#loadStorePairInstruction(Instruction, Register, Register, AArch64Address, InstructionType)::: arch64 assembler load store pair instruction:::scaledOffset->address->getImmediateRaw->maskField->memop->rt2->address->getBase->rn->rt->switch->address->getAddressingMode->emitInt->break->emitInt->break->emitInt->break->throw->GraalError->address->getAddressingMode->shouldNotReachHere
 AArch64Assembler#ldxr(int, Register, Register):::Load address exclusive:::transferSize->NumUtil->log2Ceil->exclusiveLoadInstruction
 AArch64Assembler#stxr(int, Register, Register, Register):::Store address exclusive:::transferSize->NumUtil->log2Ceil->exclusiveStoreInstruction
 AArch64Assembler#ldar(int, Register, Register):::Load acquire:::transferSize->NumUtil->log2Ceil->exclusiveLoadInstruction
 AArch64Assembler#stlr(int, Register, Register):::Store-release:::transferSize->NumUtil->log2Ceil->exclusiveStoreInstruction
 AArch64Assembler#ldaxr(int, Register, Register):::Load acquire exclusive:::transferSize->NumUtil->log2Ceil->exclusiveLoadInstruction
 AArch64Assembler#stlxr(int, Register, Register, Register):::Store-release exclusive:::transferSize->NumUtil->log2Ceil->exclusiveStoreInstruction
+AArch64Assembler#exclusiveLoadInstruction(Instruction, Register, Register, int)::: arch64 assembler exclusive load instruction:::transferSizeEncoding->rn->rt->emitInt
+AArch64Assembler#exclusiveStoreInstruction(Instruction, Register, Register, Register, int):::Stores data from rt into address and sets rs to the returned exclusive access status.:::transferSizeEncoding->rs2->rn->rt->emitInt
 AArch64Assembler#cas(int, Register, Register, Register, boolean, boolean):::Compare And Swap word or doubleword in memory:::transferSize->NumUtil->log2Ceil->compareAndSwapInstruction
+AArch64Assembler#compareAndSwapInstruction(Instruction, Register, Register, Register, int, boolean, boolean)::: arch64 assembler compare and swap instruction:::transferSizeEncoding->rs2->rn->rt->emitInt
 AArch64Assembler#ldadd(int, Register, Register, Register, boolean, boolean):::Atomic add:::transferSize->NumUtil->log2Ceil->loadAndAddInstruction
+AArch64Assembler#loadAndAddInstruction(Instruction, Register, Register, Register, int, boolean, boolean)::: arch64 assembler load and add instruction:::transferSizeEncoding->rs2->rn->rt->emitInt
 AArch64Assembler#swp(int, Register, Register, Register, boolean, boolean):::Atomic swap:::transferSize->NumUtil->log2Ceil->swapInstruction
+AArch64Assembler#swapInstruction(Instruction, Register, Register, Register, int, boolean, boolean)::: arch64 assembler swap instruction:::transferSizeEncoding->rs2->rn->rt->emitInt
 AArch64Assembler#adrp(Register):::Address of page: sign extends 21-bit offset, shifts if left by 12 and adds it to the value of the PC with its bottom 12-bits cleared, writing the result to dst:::rd->emitInt
 AArch64Assembler#adr(Register, int):::Adds a 21-bit signed offset to the program counter and writes the result to dst.:::rd->getPcRelativeImmEncoding->emitInt
 AArch64Assembler#adr(Register, int, int):::Adds a 21-bit signed offset to the program counter and writes the result to dst.:::rd->getPcRelativeImmEncoding->emitInt
+AArch64Assembler#getPcRelativeImmEncoding(int)::: arch64 assembler get pc relative imm encoding:::imm->NumUtil->getNbitNumberInt->immHi->immLo->return
 AArch64Assembler#add(int, Register, Register, int):::dst = src + aimm.:::generalFromSize->addSubImmInstruction
 AArch64Assembler#adds(int, Register, Register, int):::dst = src + aimm and sets condition flags.:::generalFromSize->addSubImmInstruction
 AArch64Assembler#sub(int, Register, Register, int):::dst = src - aimm.:::generalFromSize->addSubImmInstruction
 AArch64Assembler#subs(int, Register, Register, int):::dst = src - aimm and sets condition flags.:::generalFromSize->addSubImmInstruction
+AArch64Assembler#addSubImmInstruction(Instruction, Register, Register, int, InstructionType)::: arch64 assembler add sub imm instruction:::encodeAimm->rd->rs1->emitInt
+AArch64Assembler#ccmp(int, Register, Register, int, ConditionFlag)::: arch64 assembler ccmp:::generalFromSize->rs1->rs2->encodeAimm->emitInt
+AArch64Assembler#encodeAimm(int):::Encodes arithmetic immediate.:::if->NumUtil->isUnsignedNbit->return->else->return
 AArch64Assembler#isAimm(int):::Checks whether immediate can be encoded as an arithmetic immediate.:::return->NumUtil->isUnsignedNbit->NumUtil->isUnsignedNbit
 AArch64Assembler#and(int, Register, Register, long):::dst = src & bimm.:::generalFromSize->logicalImmInstruction
 AArch64Assembler#ands(int, Register, Register, long):::dst = src & bimm and sets condition flags.:::generalFromSize->logicalImmInstruction
 AArch64Assembler#eor(int, Register, Register, long):::dst = src ^ bimm.:::generalFromSize->logicalImmInstruction
 AArch64Assembler#orr(int, Register, Register, long):::dst = src | bimm.:::generalFromSize->logicalImmInstruction
+AArch64Assembler#logicalImmInstruction(Instruction, Register, Register, long, InstructionType)::: arch64 assembler logical imm instruction:::bimmValue->if->NumUtil->getNbitNumberLong->else->immEncoding->LogicalImmediateTable->getLogicalImmEncoding->rd->rs1->emitInt
 AArch64Assembler#movz(int, Register, int, int):::dst = uimm16 << shiftAmt.:::generalFromSize->moveWideImmInstruction
 AArch64Assembler#movn(int, Register, int, int):::dst = ~(uimm16 << shiftAmt).:::generalFromSize->moveWideImmInstruction
 AArch64Assembler#movk(int, Register, int, int):::dst<pos+15:pos> = uimm16.:::generalFromSize->moveWideImmInstruction
+AArch64Assembler#moveWideImmInstruction(Instruction, Register, int, int, InstructionType)::: arch64 assembler move wide imm instruction:::shiftValue->rd->emitInt
 AArch64Assembler#bfm(int, Register, Register, int, int):::Bitfield move.:::generalFromSize->bitfieldInstruction
 AArch64Assembler#ubfm(int, Register, Register, int, int):::Unsigned bitfield move.:::generalFromSize->bitfieldInstruction
 AArch64Assembler#sbfm(int, Register, Register, int, int):::Signed bitfield move.:::generalFromSize->bitfieldInstruction
+AArch64Assembler#bitfieldInstruction(Instruction, Register, Register, int, int, InstructionType)::: arch64 assembler bitfield instruction:::sf->rd->rs1->emitInt
 AArch64Assembler#extr(int, Register, Register, Register, int):::Extract:::type->generalFromSize->sf->rd->rs1->rs2->emitInt
 AArch64Assembler#add(int, Register, Register, Register, ShiftType, int):::dst = src1 + shiftType(src2, imm).:::generalFromSize->addSubShiftedInstruction
 AArch64Assembler#adds(int, Register, Register, Register, ShiftType, int):::dst = src1 + shiftType(src2, imm) and sets condition flags.:::generalFromSize->addSubShiftedInstruction
 AArch64Assembler#sub(int, Register, Register, Register, ShiftType, int):::dst = src1 - shiftType(src2, imm).:::generalFromSize->addSubShiftedInstruction
 AArch64Assembler#subs(int, Register, Register, Register, ShiftType, int):::dst = src1 - shiftType(src2, imm) and sets condition flags.:::generalFromSize->addSubShiftedInstruction
+AArch64Assembler#addSubShiftedInstruction(Instruction, Register, Register, Register, ShiftType, int, InstructionType)::: arch64 assembler add sub shifted instruction:::rd->rs1->rs2->emitInt
 AArch64Assembler#add(int, Register, Register, Register, ExtendType, int):::dst = src1 + extendType(src2) << imm.:::generalFromSize->addSubExtendedInstruction
 AArch64Assembler#adds(int, Register, Register, Register, ExtendType, int):::dst = src1 + extendType(src2) << imm and sets condition flags.:::generalFromSize->addSubExtendedInstruction
 AArch64Assembler#sub(int, Register, Register, Register, ExtendType, int):::dst = src1 - extendType(src2) << imm.:::generalFromSize->addSubExtendedInstruction
 AArch64Assembler#subs(int, Register, Register, Register, ExtendType, int):::dst = src1 - extendType(src2) << imm and sets flags.:::generalFromSize->addSubExtendedInstruction
+AArch64Assembler#addSubExtendedInstruction(Instruction, Register, Register, Register, ExtendType, int, InstructionType)::: arch64 assembler add sub extended instruction:::rd->rs1->rs2->emitInt
 AArch64Assembler#and(int, Register, Register, Register, ShiftType, int):::dst = src1 & shiftType(src2, imm).:::generalFromSize->logicalRegInstruction
 AArch64Assembler#ands(int, Register, Register, Register, ShiftType, int):::dst = src1 & shiftType(src2, imm) and sets condition flags.:::generalFromSize->logicalRegInstruction
 AArch64Assembler#bic(int, Register, Register, Register, ShiftType, int):::dst = src1 & ~(shiftType(src2, imm)).:::generalFromSize->logicalRegInstruction
@@ -64,6 +123,7 @@ AArch64Assembler#eon(int, Register, Register, Register, ShiftType, int):::dst = 
 AArch64Assembler#eor(int, Register, Register, Register, ShiftType, int):::dst = src1 ^ shiftType(src2, imm).:::generalFromSize->logicalRegInstruction
 AArch64Assembler#orr(int, Register, Register, Register, ShiftType, int):::dst = src1 | shiftType(src2, imm).:::generalFromSize->logicalRegInstruction
 AArch64Assembler#orn(int, Register, Register, Register, ShiftType, int):::dst = src1 | ~(shiftType(src2, imm)).:::generalFromSize->logicalRegInstruction
+AArch64Assembler#logicalRegInstruction(Instruction, Register, Register, Register, ShiftType, int, InstructionType)::: arch64 assembler logical reg instruction:::rd->rs1->rs2->emitInt
 AArch64Assembler#asr(int, Register, Register, Register):::dst = src1 >> (src2 & log2(size)).:::generalFromSize->dataProcessing2SourceOp
 AArch64Assembler#lsl(int, Register, Register, Register):::dst = src1 << (src2 & log2(size)).:::generalFromSize->dataProcessing2SourceOp
 AArch64Assembler#lsr(int, Register, Register, Register):::dst = src1 >>> (src2 & log2(size)).:::generalFromSize->dataProcessing2SourceOp
@@ -75,23 +135,33 @@ AArch64Assembler#rev(int, Register, Register):::Reverses bytes.:::if->generalFro
 AArch64Assembler#csel(int, Register, Register, Register, ConditionFlag):::Conditional select:::generalFromSize->conditionalSelectInstruction
 AArch64Assembler#csneg(int, Register, Register, Register, ConditionFlag):::Conditional select negate:::generalFromSize->conditionalSelectInstruction
 AArch64Assembler#csinc(int, Register, Register, Register, ConditionFlag):::Conditional increase:::generalFromSize->conditionalSelectInstruction
+AArch64Assembler#conditionalSelectInstruction(Instruction, Register, Register, Register, ConditionFlag, InstructionType)::: arch64 assembler conditional select instruction:::rd->rs1->rs2->emitInt
 AArch64Assembler#madd(int, Register, Register, Register, Register):::dst = src1 * src2 + src3.:::generalFromSize->mulInstruction
 AArch64Assembler#msub(int, Register, Register, Register, Register):::dst = src3 - src1 * src2.:::generalFromSize->mulInstruction
 AArch64Assembler#smulh(Register, Register, Register):::Signed multiply high:::rs1->rs2->emitInt
 AArch64Assembler#umulh(Register, Register, Register):::unsigned multiply high:::rs1->rs2->emitInt
 AArch64Assembler#umaddl(Register, Register, Register, Register):::unsigned multiply add-long:::rs1->rs2->emitInt
 AArch64Assembler#smaddl(Register, Register, Register, Register):::signed multiply add-long:::rs1->rs2->rs3->emitInt
+AArch64Assembler#mulInstruction(Instruction, Register, Register, Register, Register, InstructionType)::: arch64 assembler mul instruction:::rd->rs1->rs2->rs3->emitInt
 AArch64Assembler#sdiv(int, Register, Register, Register):::Signed divide:::generalFromSize->dataProcessing2SourceOp
 AArch64Assembler#udiv(int, Register, Register, Register):::Unsigned divide:::generalFromSize->dataProcessing2SourceOp
+AArch64Assembler#dataProcessing1SourceOp(Instruction, Register, Register, InstructionType)::: arch64 assembler data processing1 source op:::rd->rs1->emitInt
+AArch64Assembler#dataProcessing2SourceOp(Instruction, Register, Register, Register, InstructionType)::: arch64 assembler data processing2 source op:::rd->rs1->rs2->emitInt
 AArch64Assembler#fldr(int, Register, AArch64Address):::Floating point load.:::transferSize->NumUtil->log2Ceil->loadStoreInstruction
 AArch64Assembler#fstr(int, Register, AArch64Address):::Floating point store.:::transferSize->NumUtil->log2Ceil->loadStoreInstruction
 AArch64Assembler#fmov(int, Register, Register):::Floating point move.:::floatFromSize->fpDataProcessing1Source
 AArch64Assembler#fmovFpu2Cpu(int, Register, Register):::Move size bits from floating point register unchanged to general purpose register.:::fmovCpuFpuInstruction
 AArch64Assembler#fmovCpu2Fpu(int, Register, Register):::Move size bits from general purpose register unchanged to floating point register.:::fmovCpuFpuInstruction
+AArch64Assembler#fmovCpuFpuInstruction(Register, Register, boolean, Instruction)::: arch64 assembler fmov cpu fpu instruction:::sf->rd->rs1->emitInt
 AArch64Assembler#fmov(int, Register, double):::Move immediate into register.:::type->floatFromSize->immEncoding->if->getDoubleImmediate->else->getFloatImmediate->rd->emitInt
+AArch64Assembler#getDoubleImmediate(double)::: arch64 assembler get double immediate:::repr->Double->doubleToRawLongBits->a->b->cToH->return
+AArch64Assembler#isDoubleImmediate(double)::: arch64 assembler is double immediate:::bits->Double->doubleToRawLongBits->if->NumUtil->getNbitNumberLong->return->pattern->NumUtil->getNbitNumberLong->if->NumUtil->getNbitNumberLong->return->result->return
+AArch64Assembler#getFloatImmediate(float)::: arch64 assembler get float immediate:::repr->Float->floatToRawIntBits->a->b->cToH->NumUtil->getNbitNumberInt->return
+AArch64Assembler#isFloatImmediate(float)::: arch64 assembler is float immediate:::bits->Float->floatToRawIntBits->if->NumUtil->getNbitNumberInt->return->pattern->NumUtil->getNbitNumberInt->if->NumUtil->getNbitNumberInt->return->return
 AArch64Assembler#fcvt(int, Register, Register):::Convert float to double and vice-versa.:::if->floatFromSize->fpDataProcessing1Source->else->floatFromSize->fpDataProcessing1Source
 AArch64Assembler#fcvtzs(int, int, Register, Register):::Convert floating point to integer:::generalFromSize->floatFromSize->fcvtCpuFpuInstruction
 AArch64Assembler#scvtf(int, int, Register, Register):::Converts integer to floating point:::floatFromSize->generalFromSize->fcvtCpuFpuInstruction
+AArch64Assembler#fcvtCpuFpuInstruction(Instruction, Register, Register, InstructionType, InstructionType)::: arch64 assembler fcvt cpu fpu instruction:::rd->rs1->emitInt
 AArch64Assembler#frintz(int, Register, Register):::Rounds floating-point to integral:::floatFromSize->fpDataProcessing1Source
 AArch64Assembler#frintn(int, Register, Register):::Rounds floating-point to integral:::floatFromSize->fpDataProcessing1Source
 AArch64Assembler#frintm(int, Register, Register):::Rounds floating-point to integral:::floatFromSize->fpDataProcessing1Source
@@ -99,12 +169,15 @@ AArch64Assembler#frintp(int, Register, Register):::Rounds floating-point to inte
 AArch64Assembler#fabs(int, Register, Register):::dst = |src|.:::floatFromSize->fpDataProcessing1Source
 AArch64Assembler#fneg(int, Register, Register):::dst = -neg.:::floatFromSize->fpDataProcessing1Source
 AArch64Assembler#fsqrt(int, Register, Register):::dst = Sqrt(src).:::floatFromSize->fpDataProcessing1Source
+AArch64Assembler#fpDataProcessing1Source(Instruction, Register, Register, InstructionType)::: arch64 assembler fp data processing1 source:::rd->rs1->emitInt
 AArch64Assembler#fadd(int, Register, Register, Register):::dst = src1 + src2.:::floatFromSize->fpDataProcessing2Source
 AArch64Assembler#fsub(int, Register, Register, Register):::dst = src1 - src2.:::floatFromSize->fpDataProcessing2Source
 AArch64Assembler#fmul(int, Register, Register, Register):::dst = src1 * src2.:::floatFromSize->fpDataProcessing2Source
 AArch64Assembler#fdiv(int, Register, Register, Register):::dst = src1 / src2.:::floatFromSize->fpDataProcessing2Source
+AArch64Assembler#fpDataProcessing2Source(Instruction, Register, Register, Register, InstructionType)::: arch64 assembler fp data processing2 source:::rd->rs1->rs2->emitInt
 AArch64Assembler#fmadd(int, Register, Register, Register, Register):::dst = src1 * src2 + src3.:::floatFromSize->fpDataProcessing3Source
 AArch64Assembler#fmsub(int, Register, Register, Register, Register):::dst = src3 - src1 * src2.:::floatFromSize->fpDataProcessing3Source
+AArch64Assembler#fpDataProcessing3Source(Instruction, Register, Register, Register, Register, InstructionType)::: arch64 assembler fp data processing3 source:::rd->rs1->rs2->rs3->emitInt
 AArch64Assembler#fcmp(int, Register, Register):::Compares src1 to src2.:::type->floatFromSize->rs1->rs2->emitInt
 AArch64Assembler#fcmpe(int, Register, Register):::Signalling compares src1 to src2.:::type->floatFromSize->rs1->rs2->emitInt
 AArch64Assembler#fccmp(int, Register, Register, int, ConditionFlag):::Conditional compare:::type->floatFromSize->rs1->rs2->emitInt
@@ -113,23 +186,35 @@ AArch64Assembler#fcmpeZero(int, Register):::Signalling compare register to 0.0 .
 AArch64Assembler#fcsel(int, Register, Register, Register, ConditionFlag):::Conditional select:::type->floatFromSize->rd->rs1->rs2->emitInt
 AArch64Assembler#hlt(int):::Halting mode software breakpoint: Enters halting mode debug state if enabled, else treated as UNALLOCATED instruction.:::exceptionInstruction
 AArch64Assembler#brk(int):::Monitor mode software breakpoint: exception routed to a debug monitor executing in a higher exception level.:::exceptionInstruction
+AArch64Assembler#exceptionInstruction(Instruction, int)::: arch64 assembler exception instruction:::emitInt
 AArch64Assembler#hint(SystemHint):::Architectural hints.:::emitInt
 AArch64Assembler#clrex():::Clear Exclusive: clears the local record of the executing processor that an address has had a request for an exclusive access.:::emitInt
 AArch64Assembler#dmb(BarrierKind):::Data Memory Barrier.:::emitInt
+AArch64Assembler#mrs(Register, SystemRegister)::: arch64 assembler mrs:::systemRegister->encoding->rt->emitInt
+AArch64Assembler#msr(SystemRegister, Register)::: arch64 assembler msr:::systemRegister->encoding->rt->emitInt
+AArch64Assembler#annotatePatchingImmediate(int, Instruction, int, int, int)::: arch64 assembler annotate patching immediate:::if->codePatchingAnnotationConsumer->new->SingleInstructionAnnotation->accept
+AArch64Assembler#annotateImmediateMovSequence(int, int)::: arch64 assembler annotate immediate mov sequence:::if->codePatchingAnnotationConsumer->new->MovSequenceAnnotation->accept
 AArch64Assembler#cnt(int, Register, Register):::dst[0...n] = countBitCountOfEachByte(src[0...n]), n = size/8.:::rd->rs1->emitInt
 AArch64Assembler#addv(int, SIMDElementSize, Register, Register):::dst = src[0] + ....+ src[n].:::rd->rs1->emitInt
 AArch64Assembler#umov(int, Register, int, Register):::dst = src[srcIdx].:::simdDataType->simdFromSize->imm5->Integer->numberOfTrailingZeros->rd->rs1->emitInt
+AArch64MacroAssembler.ScratchRegister#getRegister()::: scratch register get register:::return
+AArch64MacroAssembler.ScratchRegister#close()::: scratch register close:::
+AArch64MacroAssembler#getScratchRegister()::: arch64 macro assembler get scratch register:::return
 AArch64MacroAssembler#generateAddressPlan(long, boolean, int):::Generates an addressplan for an address of the form base + displacement [+ index [<< log2(transferSize)]] with the index register and scaling being optional.:::indexScaled->log2Scale->NumUtil->log2Ceil->scaledDisplacement->displacementScalable->if->return->new->AddressGenerationPlan->else->if->if->needsScratch->isArithmeticImmediate->return->new->AddressGenerationPlan->else->needsScratch->isArithmeticImmediate->return->new->AddressGenerationPlan->else->if->NumUtil->isUnsignedNbit->return->new->AddressGenerationPlan->else->if->NumUtil->isSignedNbit->return->new->AddressGenerationPlan->else->needsScratch->isArithmeticImmediate->return->new->AddressGenerationPlan
 AArch64MacroAssembler#makeAddress(Register, long, Register, boolean, int, Register, boolean):::Returns an AArch64Address pointing to base + displacement + index << log2(transferSize).:::plan->index->equals->generateAddressPlan->log2Scale->NumUtil->log2Ceil->scaledDisplacement->newIndex->newBase->immediate->switch->if->else->break->if->mov->add->else->add->break->if->mov->add->else->add->break->throw->GraalError->shouldNotReachHere->addressingMode->extendType->if->if->newIndex->equals->else->if->return->AArch64Address->createAddress
 AArch64MacroAssembler#makeAddress(Register, long, Register, int, boolean):::Returns an AArch64Address pointing to base + displacement:::return->makeAddress
 AArch64MacroAssembler#makeAddress(Register, long, int):::Returns an AArch64Address pointing to base + displacement:::return->makeAddress
 AArch64MacroAssembler#loadAddress(Register, AArch64Address, int):::Loads memory address into register.:::shiftAmt->NumUtil->log2Ceil->switch->address->getAddressingMode->scaledImmediate->address->getImmediateRaw->lowerBits->NumUtil->getNbitNumberInt->higherBits->NumUtil->getNbitNumberInt->firstAdd->if->address->getBase->add->if->src->address->getBase->add->break->immediate->address->getImmediateRaw->address->getBase->add->break->address->getBase->address->getOffset->address->isScaled->add->break->address->getBase->address->getOffset->address->getExtendType->address->isScaled->add->break->addressOf->break->address->getBase->movx->break->throw->GraalError->shouldNotReachHere
+AArch64MacroAssembler#movx(Register, Register)::: arch64 macro assembler movx:::mov
+AArch64MacroAssembler#mov(int, Register, Register)::: arch64 macro assembler mov:::if->dst->equals->src->equals->add->else->or
+AArch64MacroAssembler#mov64(Register, long, boolean):::Generates a 64-bit immediate move code sequence.:::numMovs->pos->position->firstMove->for->offset->if->annotateImmediateMovSequence
 AArch64MacroAssembler#mov(Register, long):::Loads immediate into register.:::mov
 AArch64MacroAssembler#mov(Register, long, boolean):::Loads immediate into register.:::if->movx->else->if->LogicalImmediateTable->isRepresentable->or->else->if->LogicalImmediateTable->isRepresentable->mov->sxt->else->mov64
 AArch64MacroAssembler#mov(Register, int):::Loads immediate into register.:::mov
 AArch64MacroAssembler#movNativeAddress(Register, long):::Generates a 48-bit immediate move code sequence:::movNativeAddress
 AArch64MacroAssembler#movNativeAddress(Register, long, boolean):::Generates a 48-bit immediate move code sequence:::firstMove->pos->position->for->offset->if->annotateImmediateMovSequence
 AArch64MacroAssembler#movNarrowAddress(Register, long):::Generates a 32-bit immediate move code sequence:::movz->movk
+AArch64MacroAssembler#nrInstructionsToMoveImmediate(long)::: arch64 macro assembler nr instructions to move immediate:::if->LogicalImmediateTable->isRepresentable->return->if->LogicalImmediateTable->isRepresentable->return->nrInstructions->for->offset->return
 AArch64MacroAssembler#ldrs(int, int, Register, AArch64Address):::Loads a srcSize value from address into rt sign-extending it if necessary.:::if->super->ldr->else->super->ldrs
 AArch64MacroAssembler#ldr(int, Register, AArch64Address):::Loads a srcSize value from address into rt zero-extending it if necessary.:::super->ldr
 AArch64MacroAssembler#cmov(int, Register, Register, Register, ConditionFlag):::Conditional move:::super->csel
@@ -163,6 +248,7 @@ AArch64MacroAssembler#lshr(int, Register, Register, long):::dst = src >>> (shift
 AArch64MacroAssembler#lshr(int, Register, Register, Register):::dst = src1 >>> (src2 & (size - 1)).:::super->lsr
 AArch64MacroAssembler#ashr(int, Register, Register, long):::dst = src >> (shiftAmt & log2(size)).:::shift->clampShiftAmt->super->sbfm
 AArch64MacroAssembler#ashr(int, Register, Register, Register):::dst = src1 >> (src2 & log2(size)).:::super->asr
+AArch64MacroAssembler#clampShiftAmt(int, long):::Clamps shiftAmt into range 0 <= shiftamt < size according to JLS.:::return
 AArch64MacroAssembler#and(int, Register, Register, Register):::dst = src1 & src2.:::super->and
 AArch64MacroAssembler#eor(int, Register, Register, Register):::dst = src1 ^ src2.:::super->eor
 AArch64MacroAssembler#or(int, Register, Register, Register):::dst = src1 | src2.:::super->orr
@@ -176,13 +262,19 @@ AArch64MacroAssembler#eon(int, Register, Register, Register, ShiftType, int):::d
 AArch64MacroAssembler#orn(int, Register, Register, Register, ShiftType, int):::dst = src1 | ~(shiftType(src2, imm)).:::super->orn
 AArch64MacroAssembler#sxt(int, int, Register, Register):::Sign-extend value from src into dst.:::super->sbfm
 AArch64MacroAssembler#csneg(int, Register, Register, ConditionFlag):::dst = src if condition else -src.:::super->condition->negate->csneg
+AArch64MacroAssembler#isLogicalImmediate(long)::: arch64 macro assembler is logical immediate:::return->LogicalImmediateTable->isRepresentable
+AArch64MacroAssembler#isLogicalImmediate(int)::: arch64 macro assembler is logical immediate:::return->LogicalImmediateTable->isRepresentable
 AArch64MacroAssembler#fmov(int, Register, Register):::Moves integer to float, float to integer, or float to float:::if->dst->getRegisterCategory->equals->super->fmovFpu2Cpu->else->if->src->getRegisterCategory->equals->super->fmovCpu2Fpu->else->super->fmov
+AArch64MacroAssembler#fmov(int, Register, double)::: arch64 macro assembler fmov:::if->super->fmovCpu2Fpu->else->super->fmov
+AArch64MacroAssembler#isDoubleImmediate(double)::: arch64 macro assembler is double immediate:::return->Double->doubleToRawLongBits->AArch64Assembler->isDoubleImmediate
+AArch64MacroAssembler#isFloatImmediate(float)::: arch64 macro assembler is float immediate:::return->Float->floatToRawIntBits->AArch64Assembler->isFloatImmediate
 AArch64MacroAssembler#fcmov(int, Register, Register, Register, ConditionFlag):::Conditional move:::super->fcsel
 AArch64MacroAssembler#frem(int, Register, Register, Register):::dst = src1 % src2.:::super->fdiv->super->frintz->super->fmsub
 AArch64MacroAssembler#cmp(int, Register, Register):::Compares x and y and sets condition flags.:::super->subs
 AArch64MacroAssembler#cmp(int, Register, int):::Compares x to y and sets condition flags.:::if->super->adds->else->super->subs
 AArch64MacroAssembler#ands(int, Register, Register, Register):::Sets condition flags according to result of x & y.:::super->ands
 AArch64MacroAssembler#mulvs(int, Register, Register, Register):::Sets overflow flag according to result of x * y.:::try->sc1->getScratchRegister->sc2->getScratchRegister->switch->rscratch1->sc1->getRegister->rscratch2->sc2->getRegister->mul->smulh->subs->mov->mov->cmov->cmp->break->rscratch1->sc1->getRegister->smaddl->mov->subs->mov->cmov->cmp->break->catch->finally
+AArch64MacroAssembler#adr(Register, Label)::: arch64 macro assembler adr:::if->label->isBound->offset->label->position->position->super->adr->else->label->position->addPatchAt->emitInt
 AArch64MacroAssembler#cbnz(int, Register, Label):::Compare register and branch if non-zero.:::if->label->isBound->offset->label->position->position->super->cbnz->else->label->position->addPatchAt->regEncoding->sizeEncoding->emitInt
 AArch64MacroAssembler#cbz(int, Register, Label):::Compare register and branch if zero.:::if->label->isBound->offset->label->position->position->super->cbz->else->label->position->addPatchAt->regEncoding->sizeEncoding->emitInt
 AArch64MacroAssembler#tbnz(Register, int, Label):::Test a single bit and branch if the bit is nonzero.:::if->label->isBound->offset->label->position->position->super->tbnz->else->label->position->addPatchAt->indexEncoding->regEncoding->emitInt
@@ -192,14 +284,23 @@ AArch64MacroAssembler#branchConditionally(ConditionFlag):::Branches if condition
 AArch64MacroAssembler#jmp(Label):::Jumps to label:::if->label->isBound->offset->label->position->position->super->b->else->label->position->addPatchAt->emitInt
 AArch64MacroAssembler#jmp(Register):::Jump to address in dest.:::super->br
 AArch64MacroAssembler#jmp():::Immediate jump instruction fixed up by HotSpot c++ code.:::super->b
+AArch64MacroAssembler#isBranchImmediateOffset(long)::: arch64 macro assembler is branch immediate offset:::return->NumUtil->isSignedNbit
 AArch64MacroAssembler#hlt(AArch64ExceptionCode):::Halting mode software breakpoint: Enters halting mode debug state if enabled, else treated as UNALLOCATED instruction.:::super->hlt
 AArch64MacroAssembler#brk(AArch64ExceptionCode):::Monitor mode software breakpoint: exception routed to a debug monitor executing in a higher exception level.:::super->brk
+AArch64MacroAssembler#pause()::: arch64 macro assembler pause:::super->hint
 AArch64MacroAssembler#nop():::Executes no-op instruction:::super->hint
 AArch64MacroAssembler#csdb():::Consumption of Speculative Data Barrier:::super->hint
 AArch64MacroAssembler#ensureUniquePC():::Same as #nop().:::nop
 AArch64MacroAssembler#align(int):::Aligns PC.:::if->position->return->offset->position->for->i
 AArch64MacroAssembler#patchJumpTarget(int, int):::Patches jump targets when label gets bound.:::instruction->getInt->branchOffset->type->PatchLabelKind->fromEncoding->switch->cf->ConditionFlag->fromEncoding->super->b->break->super->b->break->offset->emitInt->break->information->sizeEncoding->regEncoding->reg->get->size->switch->super->cbnz->break->super->cbz->break->break->information->sizeEncoding->NumUtil->getNbitNumberInt->regEncoding->reg->get->if->NumUtil->isSignedNbit->throw->new->BranchTargetOutOfBoundsException->switch->super->tbnz->break->super->tbz->break->break->information->regEncoding->reg->get->super->adr->break->throw->GraalError->shouldNotReachHere
 AArch64MacroAssembler#makeAddress(Register, int):::Generates an address of the form base + displacement:::return->makeAddress
+AArch64MacroAssembler#getPlaceholder(int)::: arch64 macro assembler get placeholder:::return
+AArch64MacroAssembler#addressOf(Register)::: arch64 macro assembler address of:::if->codePatchingAnnotationConsumer->position->new->AdrpAddMacroInstruction->accept->super->adrp->super->add
 AArch64MacroAssembler#lea(Register, AArch64Address):::Loads an address into Register d.:::a->lea
 AArch64MacroAssembler#popcnt(int, Register, Register, Register):::Count the set bits of src register.:::fmov->fixedSize->cnt->addv->umov
+AArch64MacroAssembler.MacroInstruction#patch(int, int, byte[])::: macro instruction patch:::
 AArch64MacroAssembler#adrpLdr(int, Register, AArch64Address):::Emits elf patchable adrp ldr sequence.:::if->codePatchingAnnotationConsumer->position->new->AdrpLdrMacroInstruction->accept->super->a->getBase->adrp->this->ldr
+AArch64MacroAssembler.AdrpLdrMacroInstruction#toString()::: adrp ldr macro instruction to string:::return
+AArch64MacroAssembler.AdrpLdrMacroInstruction#patch(int, int, byte[])::: adrp ldr macro instruction patch:::throw->GraalError->unimplemented
+AArch64MacroAssembler.AdrpAddMacroInstruction#toString()::: adrp add macro instruction to string:::return
+AArch64MacroAssembler.AdrpAddMacroInstruction#patch(int, int, byte[])::: adrp add macro instruction patch:::throw->GraalError->unimplemented

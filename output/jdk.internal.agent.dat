@@ -1,8 +1,62 @@
+Agent.StatusCollector#collect()::: status collector collect:::agentProps->VMSupport->getAgentProperties->localConnAddr->agentProps->get->if->addAgentStatus->appendConnections->else->addAgentStatus->return->sb->toString
+Agent.StatusCollector#appendConnections(String)::: status collector append connections:::appendConnectionsHeader->if->try->u->new->JMXServiceURL->addConnection->catch->finally->if->jmxServer->getAddress->addConnection->appendConnectionsFooter
+Agent.StatusCollector#addConnection(boolean, JMXServiceURL)::: status collector add connection:::appendConnectionHeader->addConnectionDetails->addConfigProperties->appendConnectionFooter
+Agent.StatusCollector#addConfigProperties()::: status collector add config properties:::appendConfigPropsHeader->remoteProps->getManagementProperties->props->new->HashMap<>->if->loc_only->System->getProperty->if->equals->props->put->else->props->putAll->props->entrySet->stream->Map.Entry->getKey->StatusCollector->isManagementProp->preprocess->filter->this->addConfigProp->forEach->appendConfigPropsFooter
+Agent.StatusCollector#isManagementProp(Object)::: status collector is management prop:::return->pName->toString->startsWith
+Agent.StatusCollector#preprocess(Function, Predicate)::: status collector preprocess:::return->p->f->apply->test
+Agent.StatusCollector#addAgentStatus(boolean)::: status collector add agent status:::
+Agent.StatusCollector#appendConnectionsHeader()::: status collector append connections header:::
+Agent.StatusCollector#appendConnectionsFooter()::: status collector append connections footer:::
+Agent.StatusCollector#addConnectionDetails(JMXServiceURL)::: status collector add connection details:::
+Agent.StatusCollector#appendConnectionHeader(boolean)::: status collector append connection header:::
+Agent.StatusCollector#appendConnectionFooter(boolean)::: status collector append connection footer:::
+Agent.StatusCollector#appendConfigPropsHeader()::: status collector append config props header:::
+Agent.StatusCollector#appendConfigPropsFooter()::: status collector append config props footer:::
+Agent.StatusCollector#addConfigProp(Map.Entry)::: status collector add config prop:::
+Agent.TextStatusCollector#addAgentStatus(boolean)::: text status collector add agent status:::sb->append->append->append
+Agent.TextStatusCollector#appendConnectionsHeader()::: text status collector append connections header:::sb->append
+Agent.TextStatusCollector#addConnectionDetails(JMXServiceURL)::: text status collector add connection details:::sb->append->u->getProtocol->append->append->append->u->getHost->append->append->append->append->append
+Agent.TextStatusCollector#appendConnectionHeader(boolean)::: text status collector append connection header:::sb->append->append->append
+Agent.TextStatusCollector#appendConfigPropsHeader()::: text status collector append config props header:::sb->append
+Agent.TextStatusCollector#addConfigProp(Map.Entry)::: text status collector add config prop:::sb->append->prop->getKey->append->append->prop->getValue->append->defVal->DEFAULT_PROPS->prop->getKey->get->if->defVal->prop->getValue->equals->sb->append->sb->append
+Agent.TextStatusCollector#appendConnectionsFooter()::: text status collector append connections footer:::
+Agent.TextStatusCollector#appendConnectionFooter(boolean)::: text status collector append connection footer:::sb->append
+Agent.TextStatusCollector#appendConfigPropsFooter()::: text status collector append config props footer:::
+Agent#parseString(String)::: agent parse string:::argProps->new->Properties->if->args->trim->equals->foreach->args->split->s->option->split->name->trim->value->trim->if->name->startsWith->error->argProps->setProperty->return
+Agent#premain(String)::: agent premain:::agentmain
+Agent#agentmain(String)::: agent agentmain:::if->args->length->arg_props->parseString->config_props->new->Properties->fname->arg_props->getProperty->readConfiguration->config_props->putAll->startAgent
+Agent#startLocalManagementAgent()::: agent start local management agent:::agentProps->VMSupport->getAgentProperties->if->agentProps->get->cs->ConnectorBootstrap->startLocalConnectorServer->address->cs->getAddress->toString->agentProps->put->try->ConnectorAddressLink->export->catch->x->getMessage->warning->finally
+Agent#startRemoteManagementAgent(String)::: agent start remote management agent:::if->throw->getText->new->RuntimeException->try->argProps->parseString->new->Properties->fname->System->getProperty->readConfiguration->sysProps->System->getProperties->synchronized->configProps->putAll->fnameUser->argProps->getProperty->if->readConfiguration->configProps->putAll->enableThreadContentionMonitoring->configProps->getProperty->if->ManagementFactory->getThreadMXBean->setThreadContentionMonitoringEnabled->jmxremotePort->configProps->getProperty->if->ConnectorBootstrap->startRemoteConnectorServer->startDiscoveryService->else->throw->new->AgentConfigurationError->catch->error->error->finally
+Agent#stopRemoteManagementAgent()::: agent stop remote management agent:::JdpController->stopDiscoveryService->if->ConnectorBootstrap->unexportRegistry->ConnectorAddressLink->unexportRemote->jmxServer->stop
+Agent#getManagementAgentStatus()::: agent get management agent status:::return->new->TextStatusCollector->collect
+Agent#startAgent(Properties)::: agent start agent:::jmxremote->props->getProperty->jmxremotePort->props->getProperty->enableThreadContentionMonitoring->props->getProperty->if->ManagementFactory->getThreadMXBean->setThreadContentionMonitoringEnabled->try->if->if->ConnectorBootstrap->startRemoteConnectorServer->startDiscoveryService->startLocalManagementAgent->catch->error->error->finally
+Agent#startDiscoveryService(Properties)::: agent start discovery service:::discoveryPort->props->getProperty->discoveryAddress->props->getProperty->discoveryShouldStart->props->getProperty->shouldStart->if->else->try->Boolean->parseBoolean->catch->throw->new->AgentConfigurationError->finally->if->address->try->InetAddress->getByName->InetAddress->getByName->catch->throw->new->AgentConfigurationError->finally->port->if->try->Integer->parseInt->catch->throw->new->AgentConfigurationError->finally->remoteProps->ConnectorAddressLink->importRemoteFrom->jmxUrlStr->remoteProps->get->instanceName->props->getProperty->JdpController->startDiscoveryService
+Agent#loadManagementProperties()::: agent load management properties:::props->new->Properties->fname->System->getProperty->readConfiguration->sysProps->System->getProperties->synchronized->props->putAll->return
+Agent#getManagementProperties()::: agent get management properties:::if->configFile->System->getProperty->jmxremote->System->getProperty->jmxremotePort->System->getProperty->if->return->loadManagementProperties->return
+Agent#readConfiguration(String, Properties)::: agent read configuration:::if->home->System->getProperty->if->throw->new->Error->defaultFileName->new->StringBuilder->defaultFileName->append->append->defaultFileName->append->append->defaultFileName->append->append->defaultFileName->toString->configFile->new->File->if->configFile->exists->error->in->try->new->FileInputStream->bin->new->BufferedInputStream->p->load->catch->e->getMessage->error->e->getMessage->error->error->finally->if->try->in->close->catch->error->finally
 Agent#startAgent():::This method is invoked by the VM to start the management agent when -Dcom.sun.management.* is set during startup.:::prop->System->getProperty->if->props->getManagementProperties->if->startAgent->return->values->prop->split->if->error->cname->args->if->cname->length->error->if->try->clz->ClassLoader->getSystemClassLoader->loadClass->premain->clz->new->Class<?>Arr->getMethod->premain->new->ObjectArr->invoke->catch->error->error->error->msg->ex->getCause->ex->getMessage->ex->getCause->getMessage->error->finally
+Agent#error(String)::: agent error:::keyText->getText->getText->print->throw->new->RuntimeException
+Agent#error(String, String)::: agent error:::keyText->getText->getText->print->println->throw->new->RuntimeException
+Agent#error(Exception)::: agent error:::e->printStackTrace->getText->e->toString->println->throw->new->RuntimeException
+Agent#error(AgentConfigurationError)::: agent error:::keyText->e->getError->getText->params->e->getParams->getText->print->if->message->new->StringBuffer->for->i->println->e->printStackTrace->throw->new->RuntimeException
+Agent#warning(String, String)::: agent warning:::getText->getText->print->println
+Agent#initResource()::: agent init resource:::try->ResourceBundle->getBundle->catch->throw->new->Error->finally
+Agent#getText(String)::: agent get text:::if->initResource->try->return->messageRB->getString->catch->return->finally
+Agent#getText(String, String...)::: agent get text:::if->initResource->format->messageRB->getString->if->return->MessageFormat->format
+AgentConfigurationError#getError()::: agent configuration error get error:::return
+AgentConfigurationError#getParams()::: agent configuration error get params:::return->params->clone
+ConnectorAddressLink.PerfHandle#putLong(long)::: perf handle put long:::bb->clear->asLongBuffer->put
 ConnectorAddressLink#export(String):::Exports the specified connector address to the instrumentation buffer so that it can be read by this or other Java virtual machines running on the same system.:::if->address->length->throw->new->IllegalArgumentException->perf->Perf->getPerf->perf->intValue->createString
+ConnectorAddressLink#unexportRemote()::: connector address link unexport remote:::unexport
+ConnectorAddressLink#unexport(PerfHandle)::: connector address link unexport:::if->ph->putLong
 ConnectorAddressLink#importFrom(int):::Imports the connector address from the instrument buffer of the specified Java virtual machine.:::perf->Perf->getPerf->bb->try->perf->attach->catch->throw->iae->getMessage->new->IOException->finally->counters->new->PerfInstrumentation->findByPattern->i->counters->iterator->if->i->hasNext->c->i->next->return->c->getValue->else->return
 ConnectorAddressLink#exportRemote(Map):::Exports the specified remote connector address and associated configuration properties to the instrumentation buffer so that it can be read by this or other Java virtual machines running on the same system.:::index->counter->getAndIncrement->perf->Perf->getPerf->foreach->properties->entrySet->perf->entry->getKey->intValue->entry->getValue->createString->if->remotePerfHandle->putLong->else->perf->intValue->createLong->new->PerfHandle
 ConnectorAddressLink#importRemoteFrom(int):::Imports the remote connector address and associated configuration properties from the instrument buffer of the specified Java virtual machine.:::perf->Perf->getPerf->bb->try->perf->attach->catch->throw->iae->getMessage->new->IOException->finally->counters->new->PerfInstrumentation->getAllCounters->properties->new->HashMap<>->foreach->name->c->getName->if->name->startsWith->name->equals->properties->c->getValue->toString->put->return
 FileSystem#open():::Opens the file system:::synchronized->if->new->FileSystemImpl->return
 FileSystem#supportsFileSecurity(File):::Tells whether or not the specified file is located on a file system that supports file security or not.:::
 FileSystem#isAccessUserOnly(File):::Tell whether or not the specified file is accessible by anything other than the file owner.:::
+FileSystemImpl#supportsFileSecurity(File)::: file system impl supports file security:::return->f->getAbsolutePath->isSecuritySupported0
+FileSystemImpl#isAccessUserOnly(File)::: file system impl is access user only:::path->f->getAbsolutePath->if->isSecuritySupported0->throw->new->UnsupportedOperationException->return->isAccessUserOnly0
+FileSystemImpl#init0()::: file system impl init0:::
+FileSystemImpl#isSecuritySupported0(String)::: file system impl is security supported0:::
+FileSystemImpl#isAccessUserOnly0(String)::: file system impl is access user only0:::

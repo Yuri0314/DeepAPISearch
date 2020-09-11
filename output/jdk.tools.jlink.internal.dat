@@ -1,30 +1,282 @@
+AbstractResourcePoolEntry#moduleName()::: abstract resource pool entry module name:::return
+AbstractResourcePoolEntry#path()::: abstract resource pool entry path:::return
+AbstractResourcePoolEntry#type()::: abstract resource pool entry type:::return
+AbstractResourcePoolEntry#hashCode()::: abstract resource pool entry hash code:::return->Objects->hashCode
+AbstractResourcePoolEntry#equals(Object)::: abstract resource pool entry equals:::if->return->f->return->equals
+AbstractResourcePoolEntry#toString()::: abstract resource pool entry to string:::return->path
+Archive.Entry#archive()::: entry archive:::return
+Archive.Entry#type()::: entry type:::return
 Archive.Entry#name():::Returns the name of this entry.:::return
 Archive.Entry#getResourcePoolEntryName():::Returns the name representing a ResourcePoolEntry in the form of:    /$MODULE/$ENTRY_NAME:::return->archive->moduleName
+Archive.Entry#toString()::: entry to string:::return->type->name
+Archive.Entry#size()::: entry size:::
+Archive.Entry#stream()::: entry stream:::
+Archive#moduleName()::: archive module name:::
+Archive#getPath()::: archive get path:::
+Archive#entries()::: archive entries:::
+Archive#open()::: archive open:::
+Archive#close()::: archive close:::
+ArchiveEntryResourcePoolEntry#content()::: archive entry resource pool entry content:::try->return->entry->stream->catch->throw->new->UncheckedIOException->finally
+ArchiveEntryResourcePoolEntry#contentLength()::: archive entry resource pool entry content length:::return->entry->size
+ArchiveEntryResourcePoolEntry#getImageFileType(Archive.Entry)::: archive entry resource pool entry get image file type:::switch->entry->type->return->return->return->return->return->return->return->throw->entry->type->new->IllegalArgumentException
+BasicImageWriter#getByteOrder()::: basic image writer get byte order:::return
+BasicImageWriter#addString(String)::: basic image writer add string:::return->strings->add
+BasicImageWriter#getString(int)::: basic image writer get string:::return->strings->get
+BasicImageWriter#addLocation(String, long, long, long)::: basic image writer add location:::location->ImageLocationWriter->newLocation->input->add
+BasicImageWriter#getLocations()::: basic image writer get locations:::return
+BasicImageWriter#getLocationsCount()::: basic image writer get locations count:::return->input->size
+BasicImageWriter#generatePerfectHash()::: basic image writer generate perfect hash:::builder->new->PerfectHashBuilder<>->input->builder->location->getFullName->put->forEach->builder->generate->builder->getCount->builder->getRedirect->order->builder->getOrder->new->ImageLocationWriterArr->for->i
+BasicImageWriter#prepareStringBytes()::: basic image writer prepare string bytes:::strings->getStream->align
+BasicImageWriter#prepareRedirectBytes()::: basic image writer prepare redirect bytes:::for->i
+BasicImageWriter#prepareLocationBytes()::: basic image writer prepare location bytes:::locationStream->put->for->i->locationStream->align
+BasicImageWriter#prepareOffsetBytes()::: basic image writer prepare offset bytes:::for->i
+BasicImageWriter#prepareHeaderBytes()::: basic image writer prepare header bytes:::header->input->size->locationStream->getSize->strings->getSize->new->ImageHeader->header->writeTo
+BasicImageWriter#prepareTableBytes()::: basic image writer prepare table bytes:::allIndexStream->put->allIndexStream->put->allIndexStream->put->allIndexStream->put->allIndexStream->strings->getStream->put
+BasicImageWriter#getBytes()::: basic image writer get bytes:::if->allIndexStream->getSize->generatePerfectHash->prepareStringBytes->prepareRedirectBytes->prepareLocationBytes->prepareOffsetBytes->prepareHeaderBytes->prepareTableBytes->return->allIndexStream->toArray
+BasicImageWriter#find(String)::: basic image writer find:::index->ImageStringsReader->hashCode->if->else->ImageStringsReader->hashCode->return
+ByteArrayResourcePoolEntry#contentBytes()::: byte array resource pool entry content bytes:::return->buffer->clone
+ByteArrayResourcePoolEntry#content()::: byte array resource pool entry content:::return->new->ByteArrayInputStream
+ByteArrayResourcePoolEntry#write(OutputStream)::: byte array resource pool entry write:::try->out->write->catch->throw->new->UncheckedIOException->finally
+ByteArrayResourcePoolEntry#contentLength()::: byte array resource pool entry content length:::return
+DirArchive.FileEntry#size():::Returns the number of bytes of this file.:::return
+DirArchive.FileEntry#stream()::: file entry stream:::stream->Files->newInputStream->open->add->return
+DirArchive#moduleName()::: dir archive module name:::return
+DirArchive#getPath()::: dir archive get path:::return
+DirArchive#entries()::: dir archive entries:::try->return->Files->walk->this->toEntry->map->filter->catch->throw->new->RuntimeException->finally
+DirArchive#toEntry(Path)::: dir archive to entry:::if->Files->isDirectory->return->name->getPathName->substring->log->accept->return->new->FileEntry
+DirArchive#close()::: dir archive close:::e->foreach->try->stream->close->catch->if->else->e->addSuppressed->finally->if->throw
+DirArchive#open()::: dir archive open:::
+DirArchive#getPathName(Path)::: dir archive get path name:::return->path->toString->replace
 ExecutableImage#getHome():::Image home directory,:::
 ExecutableImage#getModules():::The names of the modules located in the image.:::
 ExecutableImage#getExecutionArgs():::The list of arguments required to execute the image.:::
 ExecutableImage#storeLaunchArgs(List):::Store new arguments required to execute the image.:::
+ImageFileCreator#create(Set, ImagePluginStack)::: image file creator create:::return->ImageFileCreator->ByteOrder->nativeOrder->create
+ImageFileCreator#create(Set, ByteOrder)::: image file creator create:::return->ImageFileCreator->new->ImagePluginStack->create
+ImageFileCreator#create(Set, ByteOrder, ImagePluginStack)::: image file creator create:::image->new->ImageFileCreator->try->image->readAllEntries->image->writeImage->catch->finally->foreach->a->close->return->plugins->getExecutableImage
+ImageFileCreator#readAllEntries(Set)::: image file creator read all entries:::archives->stream->es->try->entries->archive->entries->entries->Collectors->n->type->partitioningBy->collect->catch->finally->mn->archive->moduleName->all->new->ArrayList<>->all->es->get->addAll->all->es->get->addAll->entriesForModule->put->forEach
+ImageFileCreator#recreateJimage(Path, Set, ImagePluginStack)::: image file creator recreate jimage:::try->entriesForModule->archives->stream->Collectors->Archive->moduleName->try->entries->a->entries->return->entries->Collectors->toList->collect->catch->finally->toMap->collect->order->ByteOrder->nativeOrder->writer->new->BasicImageWriter->pool->createPoolManager->try->fos->Files->newOutputStream->bos->new->BufferedOutputStream->out->new->DataOutputStream->generateJImage->catch->finally->catch->finally->foreach->a->close
+ImageFileCreator#writeImage(Set, ByteOrder)::: image file creator write image:::writer->new->BasicImageWriter->allContent->createPoolManager->result->plugins->getJImageFileOutputStream->generateJImage->try->plugins->allContent->resourcePool->storeFiles->catch->if->ex->printStackTrace->throw->new->IOException->finally
+ImageFileCreator#generateJImage(ResourcePoolManager, BasicImageWriter, ImagePluginStack, DataOutputStream)::: image file creator generate image:::resultResources->try->pluginSupport->visitResources->catch->if->pe->printStackTrace->throw->if->ex->printStackTrace->throw->new->IOException->finally->duplicates->new->HashSet<>->offset->new->longArr->content->new->ArrayList<>->paths->new->ArrayList<>->resultResources->entries->if->res->type->equals->path->res->path->content->add->uncompressedSize->res->contentLength->compressedSize->if->comp->res->contentLength->comp->getUncompressedSize->onFileSize->res->contentLength->if->duplicates->contains->format->return->duplicates->add->writer->addLocation->paths->add->forEach->tree->new->ImageResourcesTree->bytes->writer->getBytes->out->write->content->stream->res->write->forEach->tree->addContent->out->close->return
+ImageFileCreator#createPoolManager(Set, Map>, ByteOrder, BasicImageWriter)::: image file creator create pool manager:::resources->new->StringTable->new->ResourcePoolManager->foreach->mn->archive->moduleName->entriesForModule->get->stream->e->getResourcePoolEntryName->new->ArchiveEntryResourcePoolEntry->map->resources->add->forEach->return
 ImageFileCreator#splitPath(String):::Helper method that splits a Resource path onto 3 items: module, parent and resource name.:::Objects->requireNonNull->noRoot->path->substring->pkgStart->noRoot->indexOf->module->noRoot->substring->result->new->ArrayList<>->result->add->pkg->noRoot->substring->resName->pkgEnd->pkg->lastIndexOf->if->else->pkg->substring->toPackage->result->add->result->add->array->result->size->new->StringArr->return->result->toArray
 ImageFileCreator#resourceName(String):::Returns the path of the resource.:::Objects->requireNonNull->s->path->substring->index->s->indexOf->return->s->substring
+ImageFileCreator#toPackage(String)::: image file creator to package:::return->toPackage
+ImageFileCreator#toPackage(String, boolean)::: image file creator to package:::index->name->lastIndexOf->if->return->name->substring->replace->else->if->format->return
+ImageLocationWriter#writeTo(ImageStream)::: image location writer write to:::bytes->ImageLocation->compress->stream->getPosition->stream->put
+ImageLocationWriter#addAttribute(int, long)::: image location writer add attribute:::return
+ImageLocationWriter#addAttribute(int, String)::: image location writer add attribute:::return->strings->add->addAttribute
+ImageLocationWriter#newLocation(String, ImageStringsWriter, long, long, long)::: image location writer new location:::moduleName->parentName->baseName->extensionName->if->fullName->startsWith->fullName->length->substring->else->if->fullName->startsWith->fullName->length->substring->else->offset->fullName->indexOf->if->fullName->length->fullName->charAt->fullName->substring->fullName->substring->fullName->lastIndexOf->if->fullName->substring->fullName->substring->fullName->lastIndexOf->if->fullName->substring->fullName->substring->else->return->new->ImageLocationWriter->addAttribute->addAttribute->addAttribute->addAttribute->addAttribute->addAttribute->addAttribute
+ImageLocationWriter#hashCode()::: image location writer hash code:::return->hashCode
+ImageLocationWriter#hashCode(int)::: image location writer hash code:::hash->if->getModuleOffset->ImageStringsReader->unmaskedHashCode->ImageStringsReader->getModule->unmaskedHashCode->ImageStringsReader->unmaskedHashCode->if->getParentOffset->ImageStringsReader->getParent->unmaskedHashCode->ImageStringsReader->unmaskedHashCode->ImageStringsReader->getBase->unmaskedHashCode->if->getExtensionOffset->ImageStringsReader->unmaskedHashCode->ImageStringsReader->getExtension->unmaskedHashCode->return
+ImageLocationWriter#equals(Object)::: image location writer equals:::if->return->if->return->other->return->getModuleOffset->other->getModuleOffset->getParentOffset->other->getParentOffset->getBaseOffset->other->getBaseOffset->getExtensionOffset->other->getExtensionOffset
+ImageLocationWriter#getLocationOffset()::: image location writer get location offset:::return
+ImagePluginConfiguration#parseConfiguration(Jlink.PluginsConfiguration)::: image plugin configuration parse configuration:::if->return->new->ImagePluginStack->plugins->new->LinkedHashMap<>->foreach->plugins->new->ArrayList<>->put->seen->new->ArrayList<>->foreach->pluginsConfiguration->getPlugins->if->seen->plug->getName->contains->throw->plug->getName->new->Exception->seen->plug->getName->add->category->plug->getType->if->throw->plug->getName->new->PluginException->lst->plugins->get->lst->add->orderedPlugins->new->ArrayList<>->plugins->entrySet->stream->orderedPlugins->entry->getValue->addAll->forEach->lastSorter->foreach->if->plugin->getName->pluginsConfiguration->getLastSorterPluginName->equals->break->if->pluginsConfiguration->getLastSorterPluginName->throw->pluginsConfiguration->getLastSorterPluginName->new->IOException->builder->pluginsConfiguration->getImageBuilder->if->new->ImageBuilder->return->new->ImagePluginStack
+ImagePluginStack.ImageProvider#retrieve(ImagePluginStack)::: image provider retrieve:::
+ImagePluginStack.OrderedResourcePoolManager.OrderedResourcePool#getOrderedList()::: ordered resource pool get ordered list:::return->OrderedResourcePoolManager.this->getOrderedList
+ImagePluginStack.OrderedResourcePoolManager#resourcePool()::: ordered resource pool manager resource pool:::return
 ImagePluginStack.OrderedResourcePoolManager#add(ResourcePoolEntry):::Add a resource.:::super->add->orderedList->add
+ImagePluginStack.OrderedResourcePoolManager#getOrderedList()::: ordered resource pool manager get ordered list:::return->Collections->unmodifiableList
+ImagePluginStack.CheckOrderResourcePoolManager#add(ResourcePoolEntry):::Add a resource.:::ordered->orderedList->get->if->resource->equals->throw->resource->path->new->PluginException->super->add
+ImagePluginStack.PreVisitStrings#addString(String)::: pre visit strings add string:::Objects->requireNonNull->count->stringsUsage->get->if->stringsUsage->put->id->stringsMap->get->if->stringsMap->put->reverseMap->put->return
+ImagePluginStack.PreVisitStrings#getSortedStrings()::: pre visit strings get sorted strings:::stream->stringsUsage->entrySet->stream->result->stream->Comparator->e->getValue->Comparator->reverseOrder->comparing->sorted->return->e->getValue->filter->java.util.Map.Entry->getKey->map->Collectors->toList->collect->return
+ImagePluginStack.PreVisitStrings#getString(int)::: pre visit strings get string:::return->reverseMap->get
+ImagePluginStack#operate(ImageProvider)::: image plugin stack operate:::img->provider->retrieve->arguments->new->ArrayList<>->plugins->stream->isInstance->filter->process->map->filter->arguments->addAll->forEach->img->storeLaunchArgs
+ImagePluginStack#getJImageFileOutputStream()::: image plugin stack get image file output stream:::return->imageBuilder->getJImageOutputStream
+ImagePluginStack#getImageBuilder()::: image plugin stack get image builder:::return
 ImagePluginStack#visitResources(ResourcePoolManager):::Resource Plugins stack entry point:::Objects->requireNonNull->if->resources->isEmpty->return->resources->byteOrder->resources->getStringTable->new->ResourcePoolManager->resourcePool->previsit->new->PreVisitStrings->resourcePrevisitors->stream->p->resources->resourcePool->previsit->forEach->sorted->previsit->getSortedStrings->sorted->stream->resources->getStringTable->addString->forEach->resPool->resources->resourcePool->frozenOrder->foreach->resMgr->if->if->throw->p->getName->new->Exception->resPool->byteOrder->resources->getStringTable->new->OrderedResourcePoolManager->else->if->resPool->byteOrder->resources->getStringTable->new->CheckOrderResourcePoolManager->else->resPool->byteOrder->resources->getStringTable->new->ResourcePoolManager->try->p->resMgr->resourcePoolBuilder->transform->catch->if->p->getName->println->pe->printStackTrace->throw->finally->if->resPool->isEmpty->throw->new->Exception->if->getOrderedList->return
+ImagePluginStack.LastPoolManager.LastModule#name()::: last module name:::return->module->name
+ImagePluginStack.LastPoolManager.LastModule#findEntry(String)::: last module find entry:::d->module->findEntry->return->d->isPresent->Optional->d->get->getUncompressed->of->Optional->empty
+ImagePluginStack.LastPoolManager.LastModule#descriptor()::: last module descriptor:::initModuleAttributes->return
+ImagePluginStack.LastPoolManager.LastModule#targetPlatform()::: last module target platform:::initModuleAttributes->return->target->targetPlatform
+ImagePluginStack.LastPoolManager.LastModule#initModuleAttributes()::: last module init module attributes:::if->attr->ResourcePoolManager->readModuleAttributes->attr->descriptor->attr->target
+ImagePluginStack.LastPoolManager.LastModule#packages()::: last module packages:::return->module->packages
+ImagePluginStack.LastPoolManager.LastModule#toString()::: last module to string:::return->name
+ImagePluginStack.LastPoolManager.LastModule#entries()::: last module entries:::lst->new->ArrayList<>->module->entries->lst->getUncompressed->add->forEach->return->lst->stream
+ImagePluginStack.LastPoolManager.LastModule#entryCount()::: last module entry count:::return->module->entryCount
+ImagePluginStack.LastPoolManager#add(ResourcePoolEntry)::: last pool manager add:::throw->new->PluginException
+ImagePluginStack.LastPoolManager#findModule(String)::: last pool manager find module:::module->pool->moduleView->findModule->return->module->isPresent->Optional->module->get->new->LastModule->of->Optional->empty
+ImagePluginStack.LastPoolManager#modules():::The collection of modules contained in this pool.:::modules->new->ArrayList<>->pool->moduleView->modules->modules->new->LastModule->add->forEach->return->modules->stream
+ImagePluginStack.LastPoolManager#moduleCount()::: last pool manager module count:::return->pool->moduleView->moduleCount
+ImagePluginStack.LastPoolManager#entries():::Get all resources contained in this pool instance.:::if->new->ArrayList<>->pool->entries->content->getUncompressed->add->forEach->return->content->stream
+ImagePluginStack.LastPoolManager#entryCount()::: last pool manager entry count:::return->pool->entryCount
+ImagePluginStack.LastPoolManager#findEntry(String):::Get the resource for the passed path.:::Objects->requireNonNull->res->pool->findEntry->return->res->isPresent->Optional->res->get->getUncompressed->of->Optional->empty
+ImagePluginStack.LastPoolManager#findEntryInContext(String, ResourcePoolEntry)::: last pool manager find entry in context:::Objects->requireNonNull->Objects->requireNonNull->res->pool->findEntryInContext->return->res->this->getUncompressed->map
+ImagePluginStack.LastPoolManager#contains(ResourcePoolEntry)::: last pool manager contains:::return->pool->contains
+ImagePluginStack.LastPoolManager#isEmpty()::: last pool manager is empty:::return->pool->isEmpty
+ImagePluginStack.LastPoolManager#byteOrder()::: last pool manager byte order:::return->pool->byteOrder
+ImagePluginStack.LastPoolManager#getUncompressed(ResourcePoolEntry)::: last pool manager get uncompressed:::if->if->try->bytes->decompressor->byteOrder->getStringTable->getString->res->contentBytes->decompressResource->res->copyWithContent->catch->if->res->path->println->ex->printStackTrace->throw->new->PluginException->finally->return
 ImagePluginStack#storeFiles(ResourcePool, ResourcePool, BasicImageWriter):::Make the imageBuilder to store files.:::Objects->requireNonNull->Objects->requireNonNull->lastPool->new->LastPoolManager->resourcePool->if->ResourcePoolConfiguration->validate->imageBuilder->storeFiles
+ImagePluginStack#getExecutableImage()::: image plugin stack get executable image:::return->imageBuilder->getExecutableImage
+ImageResourcesTree#isTreeInfoResource(String)::: image resources tree is tree info resource:::return->path->startsWith->path->startsWith
+ImageResourcesTree.Node#getPath()::: node get path:::if->return->return->buildPath
+ImageResourcesTree.Node#getName()::: node get name:::return
+ImageResourcesTree.Node#getChildren(String)::: node get children:::item->children->get->return
+ImageResourcesTree.Node#buildPath(Node)::: node build path:::if->return->path->buildPath->if->return->item->getName->else->return->item->getName
+ImageResourcesTree.PackageNode.PackageReference#toString()::: package reference to string:::return
+ImageResourcesTree.PackageNode#addReference(String, boolean)::: package node add reference:::ref->references->get->if->references->new->PackageReference->put
+ImageResourcesTree.PackageNode#validate()::: package node validate:::exists->foreach->references->values->if->if->throw->getName->new->RuntimeException->else
+ImageResourcesTree.Tree#buildTree()::: tree build tree:::new->Node->directAccess->modules->getPath->put->moduleToPackage->new->TreeMap<>->packageToModule->new->TreeMap<>->foreach->if->p->startsWith->continue->split->p->split->if->println->continue->current->module->for->i->new->Node->directAccess->packages->getPath->put->foreach->moduleToPackage->entrySet->foreach->entry->getValue->pkgNode->new->PackageNode->pkgNode->entry->getKey->addReference->directAccess->pkgNode->getPath->put->foreach->packageToModule->entrySet->pkgNode->packages->entry->getKey->getChildren->if->entry->getKey->new->PackageNode->foreach->entry->getValue->pkgNode->addReference->directAccess->pkgNode->getPath->put->foreach->values->validate
+ImageResourcesTree.Tree#toResourceName(Node)::: tree to resource name:::if->isEmpty->throw->new->RuntimeException->return->removeRadical
+ImageResourcesTree.Tree#getModule(Node)::: tree get module:::if->node->getName->equals->node->getName->startsWith->return->path->removeRadical->path->substring->i->path->indexOf->if->return->else->return->path->substring
+ImageResourcesTree.Tree#toPackageName(Node)::: tree to package name:::if->return->path->node->getPath->removeRadical->module->getModule->if->path->equals->return->pkg->removeRadical->return->pkg->replaceAll
+ImageResourcesTree.Tree#removeRadical(Node)::: tree remove radical:::return->node->getPath->removeRadical
+ImageResourcesTree.Tree#removeRadical(String, String)::: tree remove radical:::if->path->length->str->length->path->str->length->substring->return
+ImageResourcesTree.Tree#getRoot()::: tree get root:::return
+ImageResourcesTree.Tree#getMap()::: tree get map:::return
+ImageResourcesTree.LocationsAdder#addLocations(Node)::: locations adder add locations:::if->pkgNode->size->size->writer->current->getPath->addLocation->else->ret->size->new->intArr->i->foreach->entrySet->entry->getValue->addLocations->if->tree->getRoot->size->writer->current->getPath->addLocation->return
+ImageResourcesTree.LocationsAdder#computeContent()::: locations adder compute content:::outLocations->new->HashMap<>->foreach->writer->getLocations->outLocations->wr->getFullName->put->foreach->outLocations->entrySet->item->tree->getMap->entry->getKey->get->if->entry->getValue->tree->getRoot->computeContent->return
+ImageResourcesTree.LocationsAdder#computeContent(Node, Map)::: locations adder compute content:::if->pkgNode->size->size->buff->ByteBuffer->allocate->buff->writer->getByteOrder->order->foreach->values->buff->putInt->buff->writer->addString->putInt->arr->buff->array->content->add->outLocations->current->getPath->get->else->ret->size->new->intArr->i->foreach->entrySet->entry->getValue->computeContent->if->size->buff->ByteBuffer->allocate->buff->writer->getByteOrder->order->foreach->buff->putInt->arr->buff->array->content->add->else->if->s->tree->toResourceName->outLocations->get->else->outLocations->current->getPath->get->if->tree->getRoot->current->getPath->println->return->getLocationOffset
+ImageResourcesTree#addContent(DataOutputStream)::: image resources tree add content:::content->adder->computeContent->foreach->out->write
+ImageStringsWriter#addString(String)::: image strings writer add string:::offset->stream->getPosition->bytes->ImageStringsReader->mutf8FromString->stream->put->stream->put->stringToOffsetMap->put->return
+ImageStringsWriter#add(String)::: image strings writer add:::offset->find->return->addString
+ImageStringsWriter#find(String)::: image strings writer find:::offset->stringToOffsetMap->get->return
+ImageStringsWriter#get(int)::: image strings writer get:::buffer->stream->getBuffer->capacity->buffer->capacity->if->throw->new->InternalError->zero->for->i->if->throw->new->InternalError->length->bytes->new->byteArr->mark->buffer->position->buffer->position->buffer->get->buffer->position->return->ImageStringsReader->stringFromMUTF8
+ImageStringsWriter#getStream()::: image strings writer get stream:::return
+ImageStringsWriter#getSize()::: image strings writer get size:::return->stream->getSize
+ImageStringsWriter#getCount()::: image strings writer get count:::return->stringToOffsetMap->size
 JarArchive.JarEntry#size():::Returns the number of uncompressed bytes for this entry.:::return
+JarArchive.JarEntry#stream()::: jar entry stream:::return->file->getInputStream
+JarArchive#moduleName()::: jar archive module name:::return
+JarArchive#getPath()::: jar archive get path:::return
+JarArchive#entries()::: jar archive entries:::try->if->open->catch->throw->new->UncheckedIOException->finally->return->jarFile->versionedStream->je->isDirectory->filter->this->toEntry->map
+JarArchive#toEntryType(String)::: jar archive to entry type:::
+JarArchive#getFileName(String)::: jar archive get file name:::
+JarArchive#toEntry(ZipEntry)::: jar archive to entry:::
+JarArchive#close()::: jar archive close:::if->jarFile->close
+JarArchive#open()::: jar archive open:::if->jarFile->close->file->toFile->new->JarFile
+JarArchive#getJarFile()::: jar archive get jar file:::return
 Jlink#newPlugin(String, Map, ModuleLayer):::Create a plugin.:::Objects->requireNonNull->Objects->requireNonNull->ModuleLayer->boot->return->PluginRepository->newPlugin
+Jlink.PluginsConfiguration#getPlugins()::: plugins configuration get plugins:::return
+Jlink.PluginsConfiguration#getImageBuilder()::: plugins configuration get image builder:::return
+Jlink.PluginsConfiguration#getLastSorterPluginName()::: plugins configuration get last sorter plugin name:::return
+Jlink.PluginsConfiguration#toString()::: plugins configuration to string:::builder->new->StringBuilder->builder->append->append->append->pluginsBuilder->new->StringBuilder->foreach->pluginsBuilder->append->append->builder->append->append->append->builder->append->append->append->return->builder->toString
+Jlink.JlinkConfiguration#getByteOrder()::: jlink configuration get byte order:::return
+Jlink.JlinkConfiguration#getOutput()::: jlink configuration get output:::return
+Jlink.JlinkConfiguration#getModules()::: jlink configuration get modules:::return
 Jlink.JlinkConfiguration#finder():::Returns ModuleFinder that finds all observable modules for this jlink configuration.:::return
 Jlink.JlinkConfiguration#resolveAndBind():::Returns a Configuration of the given module path, root modules with full service binding.:::return->Configuration->empty->ModuleFinder->of->resolveAndBind
 Jlink.JlinkConfiguration#resolve():::Returns a Configuration of the given module path, root modules with no service binding.:::return->Configuration->empty->ModuleFinder->of->resolve
+Jlink.JlinkConfiguration#toString()::: jlink configuration to string:::builder->new->StringBuilder->builder->append->append->append->modsBuilder->new->StringBuilder->foreach->modsBuilder->append->append->builder->append->append->append->builder->append->append->append->return->builder->toString
 Jlink#build(JlinkConfiguration):::Build the image.:::build
 Jlink#build(JlinkConfiguration, PluginsConfiguration):::Build the image with a plugin configuration.:::Objects->requireNonNull->if->new->PluginsConfiguration->addAutoEnabledPlugins->try->JlinkTask->createImage->catch->throw->new->PluginException->finally
+Jlink#addAutoEnabledPlugins(PluginsConfiguration)::: jlink add auto enabled plugins:::plugins->pluginsConfig->getPlugins->new->ArrayList<>->bootPlugins->PluginRepository->ModuleLayer->boot->getPlugins->foreach->if->Utils->isAutoEnabled->try->bp->Collections->emptyMap->configure->catch->if->bp->getName->println->e->printStackTrace->throw->finally->plugins->add->return->pluginsConfig->getImageBuilder->pluginsConfig->getLastSorterPluginName->new->PluginsConfiguration
 Jlink#postProcess(ExecutableImage, List):::Post process the image with a plugin configuration.:::Objects->requireNonNull->Objects->requireNonNull->try->JlinkTask->postProcessImage->catch->throw->new->PluginException->finally
+JlinkTask#setLog(PrintWriter, PrintWriter)::: jlink task set log:::taskHelper->setLog
+JlinkTask#run(String[])::: jlink task run:::if->new->PrintWriter->new->PrintWriter->setLog->try->remaining->optionsHelper->handleOptions->if->remaining->size->throw->taskHelper->remaining->stream->Collectors->joining->collect->newBadArgs->showUsage->if->optionsHelper->showHelp->return->if->optionsHelper->shouldListPlugins->optionsHelper->listPlugins->return->if->taskHelper->showVersion->return->if->taskHelper->getExistingImage->taskHelper->getExistingImage->postProcessOnly->return->if->isEmpty->jmods->getDefaultModulePath->if->add->if->isEmpty->throw->taskHelper->newBadArgs->showUsage->config->initJlinkConfig->if->suggestProviders->else->createImage->if->Files->Paths->get->getSaveOpts->getBytes->write->return->catch->log->taskHelper->getMessage->e->getMessage->println->if->e->printStackTrace->return->taskHelper->reportError->if->log->taskHelper->getMessage->println->if->e->printStackTrace->return->log->taskHelper->getMessage->x->getMessage->println->x->printStackTrace->return->finally->log->flush
+JlinkTask#createImage(JlinkConfiguration, PluginsConfiguration)::: jlink task create image:::Objects->requireNonNull->Objects->config->getOutput->requireNonNull->new->PluginsConfiguration->imageProvider->createImageProvider->stack->ImagePluginConfiguration->parseConfiguration->stack->operate
+JlinkTask#postProcessImage(ExecutableImage, List)::: jlink task post process image:::Objects->requireNonNull->Objects->requireNonNull->config->new->PluginsConfiguration->stack->ImagePluginConfiguration->parseConfiguration->stack->operate
+JlinkTask#postProcessOnly(Path)::: jlink task post process only:::config->taskHelper->getPluginsConfig->img->DefaultImageBuilder->getExecutableImage->if->throw->taskHelper->newBadArgs->config->getPlugins->postProcessImage
+JlinkTask#initJlinkConfig()::: jlink task init jlink config:::roots->new->HashSet<>->foreach->if->mod->equals->finder->Set->of->newModuleFinder->finder->findAll->stream->ModuleReference->descriptor->map->ModuleDescriptor->name->map->roots->add->forEach->else->roots->add->finder->newModuleFinder->if->finder->find->isPresent->defModPath->getDefaultModulePath->if->add->newModuleFinder->return->new->JlinkConfiguration
+JlinkTask#createImage(JlinkConfiguration)::: jlink task create image:::if->throw->taskHelper->newBadArgs->showUsage->if->isEmpty->throw->taskHelper->newBadArgs->showUsage->imageProvider->createImageProvider->stack->ImagePluginConfiguration->taskHelper->getPluginsConfig->parseConfiguration->stack->operate
+JlinkTask#getDefaultModulePath()::: jlink task get default module path:::jmods->Paths->System->getProperty->get->return->Files->isDirectory
+JlinkTask#newModuleFinder(List, Set, Set)::: jlink task new module finder:::if->Objects->requireNonNull->isEmpty->throw->taskHelper->getMessage->new->IllegalArgumentException->entries->paths->new->PathArr->toArray->version->Runtime->version->finder->ModulePath->of->if->finder->find->isPresent->v->finder->find->get->descriptor->version->new->IllegalArgumentException->orElseThrow->v->toString->parse->if->Runtime->version->feature->version->feature->Runtime->version->interim->version->interim->throw->taskHelper->Runtime->version->feature->Runtime->version->interim->version->feature->version->interim->getMessage->new->IllegalArgumentException->if->limitMods->isEmpty->Objects->requireNonNull->limitFinder->return
+JlinkTask#toPathLocation(ResolvedModule)::: jlink task to path location:::ouri->m->reference->location->if->ouri->isPresent->throw->new->InternalError->uri->ouri->get->return->Paths->get
+JlinkTask#createImageProvider(JlinkConfiguration, Path, boolean, boolean, boolean, PrintWriter)::: jlink task create image provider:::cf->config->resolveAndBind->config->resolve->cf->modules->stream->ResolvedModule->reference->map->mref->descriptor->isAutomatic->filter->findAny->loc->mref->location->URI->toString->map->orElse->throw->taskHelper->mref->descriptor->name->getMessage->new->IllegalArgumentException->ifPresent->if->cf->modules->stream->Comparator->ResolvedModule->name->comparing->sorted->log->rm->name->rm->reference->location->get->format->forEach->references->cf->modules->stream->ResolvedModule->reference->map->Collectors->toSet->collect->msg->String->taskHelper->getMessage->format->printProviders->if->im->cf->modules->stream->ResolvedModule->reference->map->ModuleResolution->hasIncubatingWarning->filter->ModuleReference->descriptor->map->ModuleDescriptor->name->map->Collectors->joining->collect->if->equals->log->println->mods->cf->modules->stream->Collectors->ResolvedModule->name->JlinkTask->toPathLocation->toMap->collect->return->config->getByteOrder->new->ImageHelper
+JlinkTask#limitFinder(ModuleFinder, Set, Set)::: jlink task limit finder:::cf->Configuration->empty->ModuleFinder->of->resolve->map->new->HashMap<>->cf->modules->mref->m->reference->map->mref->descriptor->name->put->forEach->otherMods->stream->finder->find->map->Optional->stream->flatMap->map->mref->descriptor->name->putIfAbsent->forEach->mrefs->map->values->new->HashSet<>->return->new->ModuleFinder
+JlinkTask#uses(Set)::: jlink task uses:::services->new->HashMap<>->modules->stream->ModuleReference->descriptor->map->md->provides->services->p->service->new->HashSet<>->computeIfAbsent->forEach->md->uses->services->new->HashSet<>->computeIfAbsent->md->name->add->forEach->forEach->return
+JlinkTask#printProviders(PrintWriter, String, Set)::: jlink task print providers:::uses->printProviders
+JlinkTask#printProviders(PrintWriter, String, Set, Map>)::: jlink task print providers:::if->modules->isEmpty->return->providers->new->HashMap<>->modules->stream->ModuleReference->descriptor->map->md->provides->stream->serviceToUses->p->service->containsKey->filter->providers->p->service->new->HashSet<>->computeIfAbsent->add->forEach->forEach->if->providers->isEmpty->log->println->providers->entrySet->stream->comparingByKey->sorted->service->e->getKey->e->getValue->stream->Comparator->ModuleDescriptor->name->comparing->sorted->md->provides->stream->p->service->equals->filter->usedBy->if->serviceToUses->p->service->get->isEmpty->else->serviceToUses->p->service->get->stream->sorted->Collectors->joining->collect->log->md->name->p->service->format->forEach->forEach->forEach
+JlinkTask#suggestProviders(JlinkConfiguration, List)::: jlink task suggest providers:::if->args->size->arguments->args->get->startsWith->args->args->size->subList->throw->taskHelper->arguments->stream->Collectors->joining->collect->newBadArgs->if->log->taskHelper->getMessage->println->return->finder->config->finder->if->args->isEmpty->mrefs->finder->findAll->mrefs->stream->Comparator->mref->descriptor->name->comparing->sorted->md->mref->descriptor->log->md->name->mref->location->get->format->md->uses->stream->sorted->log->format->forEach->forEach->msg->String->taskHelper->getMessage->format->uses->printProviders->else->names->Stream->args->get->split->of->Collectors->toSet->collect->mrefs->finder->findAll->stream->mref->descriptor->provides->stream->ModuleDescriptor.Provides->service->map->names->contains->anyMatch->filter->Collectors->toSet->collect->uses->new->HashMap<>->names->uses->new->HashSet<>->computeIfAbsent->forEach->finder->findAll->stream->ModuleReference->descriptor->map->md->uses->stream->names->contains->filter->uses->get->md->name->add->forEach->forEach->mrefs->stream->mref->descriptor->provides->stream->ModuleDescriptor.Provides->service->map->flatMap->names->remove->forEach->if->names->isEmpty->log->taskHelper->names->stream->sorted->Collectors->joining->collect->getMessage->println->msg->String->taskHelper->getMessage->format->printProviders
+JlinkTask#getSaveOpts()::: jlink task get save opts:::sb->new->StringBuilder->sb->append->new->Date->append->append->foreach->optionsHelper->getInputCommand->sb->append->append->return->sb->toString
+JlinkTask#getBomHeader()::: jlink task get bom header:::sb->new->StringBuilder->sb->append->new->Date->append->append->sb->append->append->return->sb->toString
+JlinkTask#genBOMContent()::: jlink task gen content:::sb->new->StringBuilder->sb->getBomHeader->append->command->new->StringBuilder->foreach->optionsHelper->getInputCommand->command->append->append->sb->append->append->append->sb->append->return->sb->toString
+JlinkTask#genBOMContent(JlinkConfiguration, PluginsConfiguration)::: jlink task gen content:::sb->new->StringBuilder->sb->getBomHeader->append->sb->append->sb->append->return->sb->toString
+JlinkTask.ImageHelper#newArchive(String, Path)::: image helper new archive:::if->path->toString->endsWith->return->new->JmodArchive->else->if->path->toString->endsWith->modularJarArchive->new->ModularJarArchive->signatures->modularJarArchive->entries->name->entry->name->toUpperCase->return->name->startsWith->name->indexOf->name->endsWith->name->endsWith->name->endsWith->name->endsWith->name->startsWith->filter->if->signatures->count->if->taskHelper->getMessage->println->else->throw->taskHelper->getMessage->new->IllegalArgumentException->return->else->if->Files->isDirectory->modInfoPath->path->resolve->if->Files->isRegularFile->return->findModuleName->new->DirArchive->else->throw->taskHelper->getMessage->new->IllegalArgumentException->else->throw->taskHelper->getMessage->new->IllegalArgumentException
+JlinkTask.ImageHelper#findModuleName(Path)::: image helper find module name:::try->bis->Files->newInputStream->new->BufferedInputStream->return->ModuleDescriptor->read->name->catch->throw->taskHelper->getMessage->new->IllegalArgumentException->finally
+JlinkTask.ImageHelper#retrieve(ImagePluginStack)::: image helper retrieve:::image->ImageFileCreator->create->if->Files->createDirectories->foreach->file->a->getPath->dest->packagedModulesPath->file->getFileName->resolve->Files->copy->return
 JmodArchive.JmodEntry#size():::Returns the number of uncompressed bytes for this entry.:::return->entry->size
+JmodArchive.JmodEntry#stream()::: jmod entry stream:::return->jmodFile->entry->section->entry->name->getInputStream
+JmodArchive#moduleName()::: jmod archive module name:::return
+JmodArchive#getPath()::: jmod archive get path:::return
+JmodArchive#entries()::: jmod archive entries:::ensureOpen->return->jmodFile->stream->this->toEntry->map
+JmodArchive#open()::: jmod archive open:::if->jmodFile->close->new->JmodFile
+JmodArchive#close()::: jmod archive close:::if->jmodFile->close
+JmodArchive#ensureOpen()::: jmod archive ensure open:::if->try->open->catch->throw->new->UncheckedIOException->finally
+JmodArchive#toEntryType(JmodFile.Section)::: jmod archive to entry type:::switch->return->return->return->return->return->return->return->throw->new->InternalError
+JmodArchive#toEntry(JmodFile.Entry)::: jmod archive to entry:::type->entry->section->toEntryType->prefix->entry->section->jmodDir->name->entry->name->path->resourceName->if->else->if->return->new->JmodEntry
+Main#main(String...)::: main main:::System->new->PrintWriter->new->PrintWriter->run->exit
 Main#run(PrintWriter, PrintWriter, String...):::Entry point that does not call System.exit.:::if->System->getSecurityManager->System->getSecurityManager->new->JlinkPermission->checkPermission->t->new->JlinkTask->t->setLog->return->t->run
+Main.JlinkToolProvider#name()::: jlink tool provider name:::return
+Main.JlinkToolProvider#run(PrintWriter, PrintWriter, String...)::: jlink tool provider run:::return->Main->run
+ModularJarArchive#toEntryType(String)::: modular jar archive to entry type:::return
+ModularJarArchive#toEntry(ZipEntry)::: modular jar archive to entry:::name->ze->getName->type->toEntryType->return->ze->getName->getFileName->getJarFile->new->JarEntry
+ModularJarArchive#getFileName(String)::: modular jar archive get file name:::return
+ModuleSorter#readModuleDescriptor(ResourcePoolModule)::: module sorter read module descriptor:::p->module->name->content->module->findEntry->module->name->new->PluginException->orElseThrow->bb->ByteBuffer->content->contentBytes->wrap->return->ModuleDescriptor->read
+ModuleSorter#addModule(ResourcePoolModule)::: module sorter add module:::addNode->readModuleDescriptor->requires->stream->Comparator->Requires->name->comparing->sorted->dep->moduleView->req->name->findModule->orElse->if->addNode->graph->get->add->else->if->req->modifiers->contains->throw->req->name->new->PluginException->forEach->return
+ModuleSorter#addNode(ResourcePoolModule)::: module sorter add node:::graph->new->LinkedHashSet<>->computeIfAbsent
+ModuleSorter#build()::: module sorter build:::if->result->isEmpty->graph->isEmpty->return->visited->new->HashSet<>->done->new->HashSet<>->graph->keySet->stream->Comparator->ResourcePoolModule->name->comparing->sorted->visit->forEach
+ModuleSorter#sorted()::: module sorter sorted:::build->return->result->stream
+ModuleSorter#visit(ResourcePoolModule, Set, Set)::: module sorter visit:::if->visited->contains->if->done->contains->throw->graph->get->new->IllegalArgumentException->return->visited->add->graph->get->visit->forEach->done->add->result->add
+PathResourcePoolEntry#content()::: path resource pool entry content:::try->return->Files->newInputStream->catch->throw->new->UncheckedIOException->finally
+PathResourcePoolEntry#contentLength()::: path resource pool entry content length:::try->return->Files->size->catch->throw->new->UncheckedIOException->finally
+PerfectHashBuilder.Entry#getKey()::: entry get key:::return
+PerfectHashBuilder.Entry#getValue()::: entry get value:::return
+PerfectHashBuilder.Entry#hashCode(int)::: entry hash code:::return->ImageStringsReader->hashCode
+PerfectHashBuilder.Entry#hashCode()::: entry hash code:::return->ImageStringsReader->hashCode
+PerfectHashBuilder.Entry#equals(Object)::: entry equals:::if->return->if->return->entry->return->equals
+PerfectHashBuilder.Bucket#add(Entry)::: bucket add:::list->add
+PerfectHashBuilder.Bucket#getSize()::: bucket get size:::return->list->size
+PerfectHashBuilder.Bucket#getList()::: bucket get list:::return
+PerfectHashBuilder.Bucket#getFirst()::: bucket get first:::return->list->get
+PerfectHashBuilder.Bucket#hashCode()::: bucket hash code:::return->getFirst->hashCode
+PerfectHashBuilder.Bucket#equals(Object)::: bucket equals:::return
+PerfectHashBuilder.Bucket#compareTo(Bucket)::: bucket compare to:::return->o->getSize->getSize
+PerfectHashBuilder#getCount()::: perfect hash builder get count:::return->map->size
+PerfectHashBuilder#getRedirect()::: perfect hash builder get redirect:::return->redirect->clone
+PerfectHashBuilder#getOrder()::: perfect hash builder get order:::return->order->clone
+PerfectHashBuilder#put(String, E)::: perfect hash builder put:::return->new->Entry<>->put
+PerfectHashBuilder#put(Entry)::: perfect hash builder put:::old->map->put->if->return
+PerfectHashBuilder#generate()::: perfect hash builder generate:::redo->while->new->intArr->Array->newInstance->sorted->createBuckets->free->foreach->if->bucket->getSize->if->collidedEntries->break->else->for->if->break->bucket->getFirst->bucket->hashCode->if
+PerfectHashBuilder#createBuckets()::: perfect hash builder create buckets:::buckets->Array->newInstance->map->values->stream->index->entry->hashCode->bucket->if->new->Bucket<>->bucket->add->forEach->sorted->Arrays->asList->stream->filter->sorted->return->Array->newInstance->toArray->return
+PerfectHashBuilder#collidedEntries(Bucket, int)::: perfect hash builder collided entries:::undo->new->ArrayList<>->seed->retry->while->foreach->bucket->getList->index->entry->hashCode->if->if->return->undo->stream->forEach->undo->clear->if->continue->undo->add->bucket->hashCode->break->return
 PluginRepository#getPlugin(String, ModuleLayer):::Retrieves the plugin associated to the passed name:::return->getPlugin
 PluginRepository#newPlugin(Map, String, ModuleLayer):::Build plugin for the passed name.:::Objects->requireNonNull->Objects->requireNonNull->plugin->getPlugin->if->try->plugin->configure->catch->if->plugin->getName->println->e->printStackTrace->throw->finally->return
 PluginRepository#registerPlugin(Plugin):::Explicit registration of a plugin in the repository:::Objects->requireNonNull->registeredPlugins->plugin->getName->put
 PluginRepository#unregisterPlugin(String):::Explicit unregistration of a plugin in the repository:::Objects->requireNonNull->registeredPlugins->remove
+PluginRepository#getPlugins(ModuleLayer)::: plugin repository get plugins:::return->getPlugins
+PluginRepository#getPlugin(Class, String, ModuleLayer)::: plugin repository get plugin:::Objects->requireNonNull->Objects->requireNonNull->provider->javaProviders->getPlugins->foreach->if->factory->getName->equals->if->throw->new->PluginException->return
+PluginRepository#getPlugins(Class, ModuleLayer):::The plugins accessible in the current context.:::Objects->requireNonNull->factories->new->ArrayList<>->try->providers->ServiceLoader->load->iterator->while->providers->hasNext->factories->providers->next->add->registeredPlugins->values->stream->if->clazz->isInstance->trans->factories->add->forEach->return->catch->throw->new->PluginException->finally
 PostProcessor#process(ExecutableImage):::Post process an image.:::
+ResourcePoolConfiguration#descriptorOf(ResourcePoolModule)::: resource pool configuration descriptor of:::md->mod->descriptor->builder->ModuleDescriptor->md->name->newModule->md->requires->stream->builder->requires->forEach->md->exports->stream->builder->exports->forEach->md->opens->stream->builder->opens->forEach->md->uses->stream->builder->uses->forEach->md->provides->stream->builder->provides->forEach->builder->md->packages->packages->md->version->builder->version->ifPresent->md->mainClass->builder->mainClass->ifPresent->return->builder->build
+ResourcePoolConfiguration#moduleReference(ModuleDescriptor)::: resource pool configuration module reference:::return->new->ModuleReference
+ResourcePoolConfiguration#allModRefs(ResourcePool)::: resource pool configuration all mod refs:::return->pool->moduleView->modules->Collectors->ResourcePoolModule->name->descriptorOf->moduleReference->toMap->collect
+ResourcePoolConfiguration#checkPackages(ResourcePool)::: resource pool configuration check packages:::pool->moduleView->modules->desc->m->descriptor->if->desc->packages->m->packages->equals->throw->m->name->desc->packages->m->packages->new->RuntimeException->forEach
+ResourcePoolConfiguration#validate(ResourcePool)::: resource pool configuration validate:::checkPackages->nameToModRef->allModRefs->allRefs->nameToModRef->values->new->HashSet<>->finder->new->ModuleFinder->return->Configuration->empty->ModuleFinder->of->nameToModRef->keySet->resolve
+ResourcePoolEntryFactory#create(String, ResourcePoolEntry.Type, byte[])::: resource pool entry factory create:::return->moduleFrom->new->ByteArrayResourcePoolEntry
+ResourcePoolEntryFactory#create(String, ResourcePoolEntry.Type, Path)::: resource pool entry factory create:::return->moduleFrom->new->PathResourcePoolEntry
+ResourcePoolEntryFactory#create(ResourcePoolEntry, byte[])::: resource pool entry factory create:::return->original->moduleName->original->path->original->type->new->ByteArrayResourcePoolEntry
+ResourcePoolEntryFactory#create(ResourcePoolEntry, Path)::: resource pool entry factory create:::return->original->moduleName->original->path->original->type->new->PathResourcePoolEntry
+ResourcePoolEntryFactory#createSymbolicLink(String, ResourcePoolEntry.Type, ResourcePoolEntry)::: resource pool entry factory create symbolic link:::return->moduleFrom->new->SymLinkResourcePoolEntry
+ResourcePoolEntryFactory#moduleFrom(String)::: resource pool entry factory module from:::Objects->requireNonNull->if->path->isEmpty->path->charAt->throw->new->IllegalArgumentException->noRoot->path->substring->idx->noRoot->indexOf->if->throw->new->IllegalArgumentException->return->noRoot->substring
+ResourcePoolManager#readModuleAttributes(ResourcePoolModule)::: resource pool manager read module attributes:::p->mod->name->content->mod->findEntry->if->content->isPresent->throw->mod->name->new->PluginException->bb->ByteBuffer->content->get->contentBytes->wrap->try->return->ModuleInfo->read->catch->throw->mod->name->new->RuntimeException->finally
 ResourcePoolManager#isNamedPackageResource(String):::Returns true if a resource has an effective package.:::return->path->endsWith->path->endsWith->Resources->canEncapsulate
+ResourcePoolManager.ResourcePoolModuleImpl#name()::: resource pool module impl name:::return
+ResourcePoolManager.ResourcePoolModuleImpl#findEntry(String)::: resource pool module impl find entry:::if->path->startsWith->if->path->startsWith->return->Optional->moduleContent->get->ofNullable
+ResourcePoolManager.ResourcePoolModuleImpl#descriptor()::: resource pool module impl descriptor:::initModuleAttributes->return
+ResourcePoolManager.ResourcePoolModuleImpl#targetPlatform()::: resource pool module impl target platform:::initModuleAttributes->return->target->targetPlatform
+ResourcePoolManager.ResourcePoolModuleImpl#initModuleAttributes()::: resource pool module impl init module attributes:::if->attr->readModuleAttributes->attr->descriptor->attr->target
+ResourcePoolManager.ResourcePoolModuleImpl#packages()::: resource pool module impl packages:::pkgs->new->HashSet<>->moduleContent->values->stream->m->type->filter->name->ImageFileCreator->res->path->resourceName->if->isNamedPackageResource->pkg->ImageFileCreator->toPackage->if->pkg->isEmpty->pkgs->add->forEach->return
+ResourcePoolManager.ResourcePoolModuleImpl#toString()::: resource pool module impl to string:::return->name
+ResourcePoolManager.ResourcePoolModuleImpl#entries()::: resource pool module impl entries:::return->moduleContent->values->stream
+ResourcePoolManager.ResourcePoolModuleImpl#entryCount()::: resource pool module impl entry count:::return->moduleContent->values->size
+ResourcePoolManager.ResourcePoolImpl#moduleView()::: resource pool impl module view:::return->ResourcePoolManager.this->moduleView
+ResourcePoolManager.ResourcePoolImpl#entries()::: resource pool impl entries:::return->ResourcePoolManager.this->entries
+ResourcePoolManager.ResourcePoolImpl#entryCount()::: resource pool impl entry count:::return->ResourcePoolManager.this->entryCount
+ResourcePoolManager.ResourcePoolImpl#findEntry(String)::: resource pool impl find entry:::return->ResourcePoolManager.this->findEntry
+ResourcePoolManager.ResourcePoolImpl#findEntryInContext(String, ResourcePoolEntry)::: resource pool impl find entry in context:::return->ResourcePoolManager.this->findEntryInContext
+ResourcePoolManager.ResourcePoolImpl#contains(ResourcePoolEntry)::: resource pool impl contains:::return->ResourcePoolManager.this->contains
+ResourcePoolManager.ResourcePoolImpl#isEmpty()::: resource pool impl is empty:::return->ResourcePoolManager.this->isEmpty
+ResourcePoolManager.ResourcePoolImpl#byteOrder()::: resource pool impl byte order:::return->ResourcePoolManager.this->byteOrder
+ResourcePoolManager.ResourcePoolImpl#getStringTable()::: resource pool impl get string table:::return->ResourcePoolManager.this->getStringTable
+ResourcePoolManager.ResourcePoolBuilderImpl#add(ResourcePoolEntry)::: resource pool builder impl add:::if->throw->new->IllegalStateException->ResourcePoolManager.this->add
+ResourcePoolManager.ResourcePoolBuilderImpl#build()::: resource pool builder impl build:::return->ResourcePoolManager.this->resourcePool
+ResourcePoolManager.ResourcePoolModuleViewImpl#findModule(String)::: resource pool module view impl find module:::return->ResourcePoolManager.this->findModule
+ResourcePoolManager.ResourcePoolModuleViewImpl#modules()::: resource pool module view impl modules:::return->ResourcePoolManager.this->modules
+ResourcePoolManager.ResourcePoolModuleViewImpl#moduleCount()::: resource pool module view impl module count:::return->ResourcePoolManager.this->moduleCount
+ResourcePoolManager#resourcePool()::: resource pool manager resource pool:::return
+ResourcePoolManager#resourcePoolBuilder()::: resource pool manager resource pool builder:::return
+ResourcePoolManager#moduleView()::: resource pool manager module view:::return
 ResourcePoolManager#add(ResourcePoolEntry):::Add a ResourcePoolEntry.:::Objects->requireNonNull->if->resources->data->path->get->throw->data->path->new->PluginException->modulename->data->moduleName->m->modules->get->if->new->ResourcePoolModuleImpl->modules->put->resources->data->path->put->data->path->put
 ResourcePoolManager#findModule(String):::Retrieves the module for the provided name.:::Objects->requireNonNull->return->Optional->modules->get->ofNullable
 ResourcePoolManager#modules():::The stream of modules contained in this ResourcePool.:::return->modules->values->stream
@@ -36,7 +288,68 @@ ResourcePoolManager#findEntryInContext(String, ResourcePoolEntry):::Get the Reso
 ResourcePoolManager#contains(ResourcePoolEntry):::Check if the ResourcePool contains the given ResourcePoolEntry.:::Objects->requireNonNull->return->data->path->findEntry->isPresent
 ResourcePoolManager#isEmpty():::Check if the ResourcePool contains some content at all.:::return->resources->isEmpty
 ResourcePoolManager#byteOrder():::The ByteOrder currently in use when generating the jimage file.:::return
+ResourcePoolManager#getStringTable()::: resource pool manager get string table:::return
+ResourcePoolManager.CompressedModuleData#getUncompressedSize()::: compressed module data get uncompressed size:::return
+ResourcePoolManager.CompressedModuleData#equals(Object)::: compressed module data equals:::if->return->f->return->f->path->path->equals
+ResourcePoolManager.CompressedModuleData#hashCode()::: compressed module data hash code:::return->super->hashCode
+ResourcePoolManager#newCompressedResource(ResourcePoolEntry, ByteBuffer, String, String, StringTable, ByteOrder)::: resource pool manager new compressed resource:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->isTerminal->uncompressed_size->original->contentLength->if->comp->comp->getUncompressedSize->nameOffset->strings->addString->configOffset->if->strings->addString->rh->compressed->limit->original->contentLength->new->CompressedResourceHeader->h->rh->getBytes->bb->ByteBuffer->compressed->limit->allocate->bb->order->bb->put->bb->put->contentWithHeader->bb->array->compressedResource->original->moduleName->original->path->new->CompressedModuleData->return
 ResourcePrevisitor#previsit(ResourcePool, StringTable):::Previsit the collection of resources.:::
 StringTable#addString(String):::Add a string to the jimage strings table.:::
 StringTable#getString(int):::Retrieve a string from the passed id.:::
+SymLinkResourcePoolEntry#contentLength()::: sym link resource pool entry content length:::return->target->contentLength
+SymLinkResourcePoolEntry#content()::: sym link resource pool entry content:::return->target->content
+SymLinkResourcePoolEntry#linkedTarget()::: sym link resource pool entry linked target:::return
+TaskHelper.BadArgs#showUsage(boolean)::: bad args show usage:::return
+TaskHelper.Option.Processing#process(T, String, String)::: processing process:::
+TaskHelper.Option#isHidden()::: option is hidden:::return
+TaskHelper.Option#isTerminal()::: option is terminal:::return
+TaskHelper.Option#matches(String)::: option matches:::return->opt->equals->opt->equals->opt->equals->opt->startsWith->opt->startsWith
+TaskHelper.Option#ignoreRest()::: option ignore rest:::return
+TaskHelper.Option#process(T, String, String)::: option process:::processing->process
+TaskHelper.Option#getName()::: option get name:::return
+TaskHelper.Option#resourceName()::: option resource name:::return->resourcePrefix->name->substring
+TaskHelper.Option#getShortname()::: option get shortname:::return
+TaskHelper.Option#resourcePrefix()::: option resource prefix:::return
+TaskHelper.Option#compareTo(Object)::: option compare to:::if->throw->new->RuntimeException->option->return->name->compareTo
+TaskHelper.PluginOption#resourcePrefix()::: plugin option resource prefix:::return
+TaskHelper.PluginsHelper#argListFor(Plugin)::: plugins helper arg list for:::mapList->pluginToMaps->get->if->new->ArrayList<>->pluginToMaps->put->return
+TaskHelper.PluginsHelper#addEmptyArgumentMap(Plugin)::: plugins helper add empty argument map:::argListFor->Collections->emptyMap->add
+TaskHelper.PluginsHelper#addArgumentMap(Plugin)::: plugins helper add argument map:::map->new->HashMap<>->argListFor->add->return
+TaskHelper.PluginsHelper#addOrderedPluginOptions(Plugin, Set)::: plugins helper add ordered plugin options:::option->plugin->getOption->if->return->if->optionsSeen->contains->throw->new->BadArgs->optionsSeen->add->plugOption->plugin->hasArguments->if->Utils->isFunctional->throw->newBadArgs->if->plugin->hasArguments->addEmptyArgumentMap->return->m->addArgumentMap->if->plugin->hasRawArgument->arg->indexOf->m->put->else->args->arg->split->firstArg->if->firstArg->isEmpty->throw->newBadArgs->m->put->for->i->new->PluginOption->pluginsOptions->add->if->Utils->isFunctional->if->Utils->isAutoEnabled->addEmptyArgumentMap->if->m->addArgumentMap->m->put->new->PluginOption->mainOptions->add->else->if->addArgumentMap->new->PluginOption->mainOptions->add->else->if->m->addArgumentMap->m->put->new->PluginOption->mainOptions->add->m->addArgumentMap->m->put->new->PluginOption->mainOptions->add
+TaskHelper.PluginsHelper#getOption(String)::: plugins helper get option:::foreach->if->o->matches->return->foreach->if->o->matches->return->return
+TaskHelper.PluginsHelper#getPluginsConfig(Path, Map)::: plugins helper get plugins config:::if->if->Files->exists->throw->PluginsResourceBundle->getMessage->new->PluginException->pluginsList->new->ArrayList<>->foreach->pluginToMaps->entrySet->plugin->entry->getKey->argsMaps->entry->getValue->foreach->try->plugin->Collections->unmodifiableMap->configure->catch->if->plugin->getName->println->e->printStackTrace->throw->finally->if->Utils->isDisabled->pluginsList->add->builder->if->new->DefaultImageBuilder->return->new->Jlink.PluginsConfiguration
+TaskHelper.ResourceBundleHelper#getMessage(String, Object...)::: resource bundle helper get message:::val->try->bundle->getString->catch->pluginBundle->getString->finally->return->MessageFormat->format
+TaskHelper.OptionsHelper#hasArgument(String)::: options helper has argument:::opt->getOption->if->pluginOptions->getOption->if->throw->new->BadArgs->showUsage->return
+TaskHelper.OptionsHelper#shouldListPlugins()::: options helper should list plugins:::return
+TaskHelper.OptionsHelper#getPluginsPath(String[])::: options helper get plugins path:::return
 TaskHelper.OptionsHelper#handleOptions(T, String[]):::Handles all options:::Arrays->copyOf->new->PluginsHelper->for->i->return->Collections->emptyList
+TaskHelper.OptionsHelper#getOption(String)::: options helper get option:::foreach->if->o->matches->return->return
+TaskHelper.OptionsHelper#showHelp(String)::: options helper show help:::log->bundleHelper->getMessage->println->Stream->options->stream->stream->concat->option->isHidden->filter->sorted->log->bundleHelper->option->resourceName->getMessage->println->forEach->log->bundleHelper->getMessage->println
+TaskHelper.OptionsHelper#listPlugins()::: options helper list plugins:::log->bundleHelper->getMessage->println->pluginList->PluginRepository->getPlugins->foreach->Utils->getSortedPlugins->showPlugin->log->bundleHelper->getMessage->println
+TaskHelper.OptionsHelper#showPlugin(Plugin, PrintWriter)::: options helper show plugin:::if->showsPlugin->log->bundleHelper->getMessage->plugin->getName->println->if->Utils->isBuiltin->log->bundleHelper->getMessage->plugin->getClass->getName->println->log->bundleHelper->getMessage->plugin->getClass->getModule->getName->println->category->plugin->getType->log->bundleHelper->getMessage->category->getName->println->log->bundleHelper->getMessage->plugin->getStateDescription->println->option->plugin->getOption->if->log->bundleHelper->getMessage->plugin->getOption->plugin->hasArguments->plugin->getArgumentsDescription->println->log->bundleHelper->getMessage->plugin->getDescription->println
+TaskHelper.OptionsHelper#getInputCommand()::: options helper get input command:::return
+TaskHelper.OptionsHelper#getDefaults()::: options helper get defaults:::return
+TaskHelper.OptionsHelper#getPluginsLayer()::: options helper get plugins layer:::return
+TaskHelper#newOptionsHelper(Class, Option[])::: task helper new options helper:::optionsList->new->ArrayList<>->foreach->opt->optionsList->add->return->new->OptionsHelper<>
+TaskHelper#newBadArgs(String, Object...)::: task helper new bad args:::return->new->BadArgs
+TaskHelper#getMessage(String, Object...)::: task helper get message:::return->bundleHelper->getMessage
+TaskHelper#setLog(PrintWriter)::: task helper set log:::
+TaskHelper#reportError(String, Object...)::: task helper report error:::log->bundleHelper->getMessage->bundleHelper->getMessage->println
+TaskHelper#reportUnknownError(String)::: task helper report unknown error:::log->bundleHelper->getMessage->println
+TaskHelper#warning(String, Object...)::: task helper warning:::log->bundleHelper->getMessage->bundleHelper->getMessage->println
+TaskHelper#getPluginsConfig(Path, Map)::: task helper get plugins config:::return->pluginOptions->getPluginsConfig
+TaskHelper#getExistingImage()::: task helper get existing image:::return
+TaskHelper#showVersion(boolean)::: task helper show version:::log->version->println
+TaskHelper#version(String)::: task helper version:::return->System->getProperty
+TaskHelper#createPluginsLayer(List)::: task helper create plugins layer:::dirs->paths->new->PathArr->toArray->finder->ModulePath->Runtime->version->of->bootConfiguration->ModuleLayer->boot->configuration->try->cf->bootConfiguration->ModuleFinder->of->Collections->emptySet->resolveAndBind->scl->ClassLoader->getSystemClassLoader->return->ModuleLayer->boot->defineModulesWithOneLoader->catch->throw->new->PluginException->finally
+TaskHelper#showsPlugin(Plugin)::: task helper shows plugin:::return->Utils->isDisabled->plugin->getOption
+Utils#parseList(String)::: utils parse list:::return->Arrays->arguments->split->stream->p->trim->map->p->isEmpty->filter->Collectors->toList->collect
+Utils#getSortedPlugins(List)::: utils get sorted plugins:::res->new->ArrayList<>->res->addAll->res->new->Comparator<Plugin>->sort->return
+Utils#isFunctional(Plugin)::: utils is functional:::return->prov->getState->contains
+Utils#isAutoEnabled(Plugin)::: utils is auto enabled:::return->prov->getState->contains
+Utils#isDisabled(Plugin)::: utils is disabled:::return->prov->getState->contains
+Utils#isBuiltin(Plugin)::: utils is builtin:::return->THIS_MODULE->prov->getClass->getModule->equals
+Utils#jrtFileSystem()::: utils jrt file system:::if->FileSystems->URI->create->getFileSystem->return
+Utils#getPathMatcher(FileSystem, String)::: utils get path matcher:::if->pattern->startsWith->pattern->startsWith->return->fs->getPathMatcher
+Utils#getJRTFSPathMatcher(String)::: utils get path matcher:::return->jrtFileSystem->getPathMatcher
+Utils#getJRTFSPath(String, String...)::: utils get path:::return->jrtFileSystem->getPath

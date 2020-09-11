@@ -1,9 +1,18 @@
+KeyValueOption#getValues()::: key value option get values:::return->Collections->unmodifiableMap
 KeyValueOption#hasValue(String):::Check if the key value option has a value or if it has not been initialized:::return->map->get
+KeyValueOption#getValue(String)::: key value option get value:::if->return->val->map->get->return->equals
+KeyValueOption#initialize()::: key value option initialize:::if->getValue->return->new->LinkedHashMap<>->st->getValue->new->StringTokenizer->while->st->hasMoreElements->token->st->nextToken->keyValue->token->split->if->map->put->else->if->map->put->else->throw->new->IllegalArgumentException
 LoggingOption.LoggerInfo#getLevel():::Get the log level:::return
 LoggingOption.LoggerInfo#isQuiet():::Get the quiet flag:::return
 LoggingOption#getLoggers():::Return the logger info collected from this command line option:::return->Collections->unmodifiableMap
+LoggingOption#initialize(Map):::Initialization function that is called to instantiate the logging system:::try->foreach->logMap->entrySet->level->name->entry->getKey->lastPart->levelString->entry->getValue->toUpperCase->isQuiet->if->equals->else->if->equals->else->Level->parse->loggers->new->LoggerInfo->put->catch->throw->finally
+LoggingOption#lastPart(String)::: logging option last part:::parts->packageName->split->if->return->return
 Option#getValue():::Return the value of an option:::return
+Option#toString()::: option to string:::return->getValue->getValue->getClass
+Options#createPropertyReadAccCtxt()::: options create property read acc ctxt:::perms->new->Permissions->perms->new->PropertyPermission->add->return->new->ProtectionDomainArr->new->ProtectionDomain->new->AccessControlContext
 Options#getResource():::Get the resource for this Options set, e.g:::return
+Options#toString()::: options to string:::return->options->toString
+Options#checkPropertyName(String)::: options check property name:::if->Objects->requireNonNull->startsWith->throw->new->IllegalArgumentException
 Options#getBooleanProperty(String, Boolean):::Convenience function for getting system properties in a safe way:::checkPropertyName->return->AccessController->new->PrivilegedAction<Boolean>->doPrivileged
 Options#getBooleanProperty(String):::Convenience function for getting system properties in a safe way:::return->getBooleanProperty
 Options#getStringProperty(String, String):::Convenience function for getting system properties in a safe way:::checkPropertyName->return->AccessController->new->PrivilegedAction<String>->doPrivileged
@@ -18,10 +27,18 @@ Options#set(String, String):::Set an option as a String value, overwriting an ex
 Options#getArguments():::Return the user arguments to the program, i.e:::return->Collections->unmodifiableList
 Options#getFiles():::Return the JavaScript files passed to the program:::return->Collections->unmodifiableList
 Options#getValidOptions():::Return the option templates for all the valid option supported.:::return->Collections->unmodifiableCollection
+Options#key(String):::Make sure a key is fully qualified for table lookups:::key->while->key->startsWith->key->key->length->substring->key->replace->keyPrefix->if->key->startsWith->return->return
+Options#getMsg(String, String...)::: options get msg:::try->msg->getString->if->return->return->new->MessageFormat->format->catch->throw->new->IllegalArgumentException->finally
 Options#displayHelp(IllegalArgumentException):::Display context sensitive help:::if->template->getTemplate->if->template->isXHelp->displayHelp->else->err->getTemplate->println->return->if->e->getMessage->err->e->getMessage->helpOptionTemplate->getShortName->helpOptionTemplate->getName->getMsg->println->err->println->return->displayHelp
 Options#displayHelp(boolean):::Display full help:::foreach->if->t->isUndocumented->t->getResource->equals->err->println->err->println
 Options#process(String[]):::Processes the arguments and stores their information:::argList->new->LinkedList<>->addSystemProperties->processArgList->Collections->addAll->processArgList->addSystemProperties->processArgList
+Options#processArgList(LinkedList)::: options process arg list:::while->argList->isEmpty->arg->argList->remove->Objects->requireNonNull->if->arg->isEmpty->continue->if->equals->arguments->addAll->argList->clear->continue->if->arg->startsWith->arg->length->files->add->continue->if->arg->startsWith->value->arg->definePropPrefix->length->substring->eq->value->indexOf->if->System->value->substring->value->substring->setProperty->else->if->value->isEmpty->System->setProperty->else->throw->new->IllegalOptionException->continue->parg->new->ParsedArg->if->isValueNextArg->if->argList->isEmpty->throw->new->IllegalOptionException->argList->remove->if->isHelp->if->argList->isEmpty->try->t->argList->get->new->ParsedArg->throw->new->IllegalOptionException->catch->throw->finally->throw->new->IllegalArgumentException->if->isXHelp->throw->new->IllegalOptionException->if->isRepeated->key->getKey->key->value->options->containsKey->options->get->getValue->Objects->toString->options->new->Option<>->put->else->getKey->createOption->set->if->getDependency->argList->getDependency->addFirst
+Options#addSystemProperties(String, List)::: options add system properties:::sysArgs->getStringProperty->if->st->new->StringTokenizer->while->st->hasMoreTokens->argList->st->nextToken->add
 Options#getOptionTemplateByKey(String):::Retrieves an option template identified by key.:::fullKey->key->foreach->if->t->getKey->equals->return->throw->new->IllegalArgumentException
+Options#getOptionTemplateByName(String)::: options get option template by name:::foreach->if->t->nameMatches->return->return
+Options#createOption(OptionTemplate, String)::: options create option:::switch->t->getType->return->new->Option<>->return->TimeZone->getTimeZone->new->Option<>->return->Locale->forLanguageTag->new->Option<>->return->new->KeyValueOption->return->new->LoggingOption->return->Boolean->parseBoolean->new->Option<>->try->return->Integer->parseInt->new->Option<>->catch->throw->new->IllegalOptionException->finally->new->KeyValueOption->initProps->return->break->throw->new->IllegalArgumentException
+Options#initProps(KeyValueOption)::: options init props:::foreach->kv->getValues->entrySet->System->entry->getKey->entry->getValue->setProperty
+Options.IllegalOptionException#getTemplate()::: illegal option exception get template:::return
 OptionTemplate#isHelp():::Is this the special help option, used to generate help for all the others:::return
 OptionTemplate#isXHelp():::Is this the special extended help option, used to generate extended help for all the others:::return
 OptionTemplate#getResource():::Get the resource name used to prefix this option set, e.g:::return
@@ -36,3 +53,8 @@ OptionTemplate#getName():::Get the name of this option, e.g:::return
 OptionTemplate#getDescription():::Get the description of this option.:::return
 OptionTemplate#isValueNextArg():::Is value of this option passed as next argument?:::return
 OptionTemplate#isRepeated():::Can this option be repeated?:::return
+OptionTemplate#strip(String, char, char)::: option template strip:::len->value->length->if->value->charAt->value->charAt->return->value->substring->return
+OptionTemplate#parse(String)::: option template parse:::value->origValue->trim->try->OptionTemplate->strip->keyValuePairs->new->QuotedStringTokenizer->while->keyValuePairs->hasMoreTokens->keyValue->keyValuePairs->nextToken->st->new->QuotedStringTokenizer->keyToken->st->nextToken->arg->st->nextToken->switch->Boolean->parseBoolean->break->if->arg->startsWith->throw->new->IllegalArgumentException->break->if->arg->startsWith->throw->new->IllegalArgumentException->break->break->break->arg->toLowerCase->break->break->break->break->Boolean->parseBoolean->break->break->throw->new->IllegalArgumentException->if->if->equals->catch->throw->new->IllegalArgumentException->finally->if->throw->new->IllegalArgumentException->if->equals->throw->new->IllegalArgumentException
+OptionTemplate#nameMatches(String)::: option template name matches:::return->aName->equals->aName->equals
+OptionTemplate#toString()::: option template to string:::sb->new->StringBuilder->sb->append->if->sb->append->if->sb->append->if->sb->append->if->indent->sb->length->sb->append->sb->append->pos->foreach->description->toCharArray->sb->append->if->Character->isWhitespace->sb->append->for->i->sb->append->if->sb->append->sb->append->sb->append->sb->Options->getMsg->append->append->sb->append->sb->append->def->this->getDefaultValue->if->sb->Options->getMsg->append->append->sb->this->getDefaultValue->append->return->sb->toString
+OptionTemplate#compareTo(OptionTemplate)::: option template compare to:::return->this->getKey->o->getKey->compareTo

@@ -1,15 +1,218 @@
+DefaultLoopPolicies_OptionDescriptors#get(String)::: default loop policies_ option descriptors get:::switch->return->OptionDescriptor->create->return->OptionDescriptor->create->return->OptionDescriptor->create->return->OptionDescriptor->create->return->OptionDescriptor->create->return->OptionDescriptor->create->return->OptionDescriptor->create->return->OptionDescriptor->create->return->OptionDescriptor->create->return
+DefaultLoopPolicies_OptionDescriptors#iterator()::: default loop policies_ option descriptors iterator:::return->new->Iterator<OptionDescriptor>
+BasicInductionVariable#graph()::: basic induction variable graph:::return->phi->graph
+BasicInductionVariable#getOp()::: basic induction variable get op:::return
+BasicInductionVariable#setOP(BinaryArithmeticNode)::: basic induction variable set p:::newOp->getY
+BasicInductionVariable#direction()::: basic induction variable direction:::stamp->rawStride->stamp->if->integerStamp->dir->if->integerStamp->isStrictlyPositive->else->if->integerStamp->isStrictlyNegative->if->if->return->else->return->dir->opposite->return
+BasicInductionVariable#valueNode()::: basic induction variable value node:::return
+BasicInductionVariable#initNode()::: basic induction variable init node:::return
+BasicInductionVariable#strideNode()::: basic induction variable stride node:::if->return->if->return->graph->new->NegateNode->unique->throw->GraalError->shouldNotReachHere
+BasicInductionVariable#isConstantInit()::: basic induction variable is constant init:::return->init->isConstant
+BasicInductionVariable#isConstantStride()::: basic induction variable is constant stride:::return->rawStride->isConstant
+BasicInductionVariable#constantInit()::: basic induction variable constant init:::return->init->asJavaConstant->asLong
+BasicInductionVariable#constantStride()::: basic induction variable constant stride:::if->return->rawStride->asJavaConstant->asLong->if->return->rawStride->asJavaConstant->asLong->throw->GraalError->shouldNotReachHere
+BasicInductionVariable#extremumNode(boolean, Stamp)::: basic induction variable extremum node:::fromStamp->phi->stamp->graph->graph->stride->strideNode->initNode->this->initNode->if->fromStamp->isCompatible->IntegerConvertNode->graph->convert->IntegerConvertNode->graph->convert->maxTripCount->loop->counted->maxTripCountNode->if->maxTripCount->stamp->isCompatible->IntegerConvertNode->graph->convert->return->ConstantNode->forIntegerStamp->sub->mul->add
+BasicInductionVariable#exitValueNode()::: basic induction variable exit value node:::stamp->phi->stamp->maxTripCount->loop->counted->maxTripCountNode->if->maxTripCount->stamp->isCompatible->IntegerConvertNode->graph->convert->return->graph->graph->strideNode->mul->initNode->add
+BasicInductionVariable#isConstantExtremum()::: basic induction variable is constant extremum:::return->isConstantInit->isConstantStride->loop->counted->isConstantMaxTripCount
+BasicInductionVariable#constantExtremum()::: basic induction variable constant extremum:::tripCount->loop->counted->constantMaxTripCount->if->tripCount->isLessThan->return->constantInit->return->tripCount->minus->constantStride->wrappingTimes->constantInit->wrappingPlus->asLong
+BasicInductionVariable#deleteUnusedNodes()::: basic induction variable delete unused nodes:::
+BasicInductionVariable#toString()::: basic induction variable to string:::return->String->initNode->op->getNodeClass->shortName->strideNode->format
 CountedLoopInfo#maxTripCountNode():::Returns a node that computes the maximum trip count of this loop:::return->maxTripCountNode
 CountedLoopInfo#maxTripCountNode(boolean):::Returns a node that computes the maximum trip count of this loop:::graph->iv->valueNode->graph->stamp->iv->valueNode->stamp->max->min->absStride->if->iv->direction->iv->strideNode->iv->initNode->else->NegateNode->iv->strideNode->create->iv->initNode->range->sub->one->ConstantNode->forIntegerStamp->if->add->denominator->sub->add->div->loop->entryPoint->unsignedDivBefore->if->return->graph->addOrUniqueWithInputs->zero->ConstantNode->forIntegerStamp->noEntryCheck->IntegerLessThanNode->create->return->graph->ConditionalNode->create->addOrUniqueWithInputs
+CountedLoopInfo#isConstantMaxTripCount()::: counted loop info is constant max trip count:::return->iv->isConstantInit->iv->isConstantStride
+CountedLoopInfo#constantMaxTripCount()::: counted loop info constant max trip count:::return->rawConstantMaxTripCount->new->UnsignedLong
+CountedLoopInfo#rawConstantMaxTripCount():::Compute the raw value of the trip count for this loop:::endValue->end->asJavaConstant->asLong->initValue->iv->constantInit->range->absStride->if->iv->direction->if->return->iv->constantInit->iv->constantStride->else->if->return->iv->constantInit->iv->constantStride->if->denominator->return->Long->divideUnsigned
+CountedLoopInfo#isExactTripCount()::: counted loop info is exact trip count:::return->loop->loop->getNaturalExits->size
+CountedLoopInfo#exactTripCountNode()::: counted loop info exact trip count node:::return->maxTripCountNode
+CountedLoopInfo#isConstantExactTripCount()::: counted loop info is constant exact trip count:::return->isConstantMaxTripCount
+CountedLoopInfo#constantExactTripCount()::: counted loop info constant exact trip count:::return->constantMaxTripCount
+CountedLoopInfo#toString()::: counted loop info to string:::return->iv->direction
+CountedLoopInfo#getLimit()::: counted loop info get limit:::return
+CountedLoopInfo#getLimitTest()::: counted loop info get limit test:::return
+CountedLoopInfo#getStart()::: counted loop info get start:::return->iv->initNode
+CountedLoopInfo#isLimitIncluded()::: counted loop info is limit included:::return
+CountedLoopInfo#getBody()::: counted loop info get body:::return
+CountedLoopInfo#getCountedExit()::: counted loop info get counted exit:::if->getLimitTest->trueSuccessor->getBody->return->getLimitTest->falseSuccessor->else->return->getLimitTest->trueSuccessor
+CountedLoopInfo#getDirection()::: counted loop info get direction:::return->iv->direction
+CountedLoopInfo#getCounter()::: counted loop info get counter:::return
+CountedLoopInfo#getOverFlowGuard()::: counted loop info get over flow guard:::return->loop->loopBegin->getOverflowGuard
+CountedLoopInfo#counterNeverOverflows()::: counted loop info counter never overflows:::if->iv->isConstantStride->iv->constantStride->abs->return->endStamp->end->stamp->strideNode->iv->strideNode->strideStamp->strideNode->stamp->GraphUtil->tryKillUnused->if->getDirection->max->NumUtil->endStamp->getBits->maxValue->return->endStamp->upperBound->strideStamp->upperBound->else->if->getDirection->min->NumUtil->endStamp->getBits->minValue->return->strideStamp->lowerBound->endStamp->lowerBound->return
+CountedLoopInfo#createOverFlowGuard()::: counted loop info create over flow guard:::overflowGuard->getOverFlowGuard->if->counterNeverOverflows->return->try->position->loop->loopBegin->withNodeSourcePosition->stamp->iv->valueNode->stamp->graph->iv->valueNode->graph->cond->one->ConstantNode->forIntegerStamp->if->iv->direction->v1->ConstantNode->NumUtil->stamp->getBits->maxValue->forIntegerStamp->iv->strideNode->sub->sub->if->sub->graph->IntegerLessThanNode->create->addOrUniqueWithInputs->else->v1->ConstantNode->NumUtil->stamp->getBits->minValue->forIntegerStamp->iv->strideNode->sub->add->if->add->graph->IntegerLessThanNode->create->addOrUniqueWithInputs->graph->AbstractBeginNode->loop->entryPoint->prevBegin->new->GuardNode->unique->loop->loopBegin->setOverflowGuard->return->catch->finally
+CountedLoopInfo#getStamp()::: counted loop info get stamp:::return->iv->valueNode->stamp
+DefaultLoopPolicies#shouldPeel(LoopEx, ControlFlowGraph, MetaAccessProvider)::: default loop policies should peel:::loopBegin->loop->loopBegin->entryProbability->cfg->loopBegin->forwardEnd->blockFor->getRelativeFrequency->options->getOptions->if->MinimumPeelProbability->getValue->loop->size->loopBegin->graph->getNodeCount->MaximumDesiredSize->getValue->return->loop->canDuplicateLoop->else->return
+DefaultLoopPolicies#shouldFullUnroll(LoopEx)::: default loop policies should full unroll:::if->loop->isCounted->loop->counted->isConstantMaxTripCount->loop->counted->counterNeverOverflows->return->options->loop->entryPoint->getOptions->counted->loop->counted->maxTrips->counted->constantMaxTripCount->if->maxTrips->equals->return->loop->canDuplicateLoop->if->maxTrips->getValue->isGreaterThan->return->globalMax->MaximumDesiredSize->getValue->loop->loopBegin->graph->getNodeCount->if->return->maxNodes->counted->isExactTripCount->getValue->getValue->foreach->counted->getCounter->valueNode->usages->if->compare->if->compare->getY->isConstant->getValue->Math->min->size->loop->inside->nodes->count->loop->loopBegin->loopEnds->count->GraalError->guarantee->if->maxTrips->minus->times->isLessOrEqualTo->return->loop->canDuplicateLoop->else->return
+DefaultLoopPolicies#shouldPartiallyUnroll(LoopEx)::: default loop policies should partially unroll:::loopBegin->loop->loopBegin->if->loop->isCounted->loopBegin->getDebug->log->return->options->loop->entryPoint->getOptions->maxNodes->getValue->Math->Math->MaximumDesiredSize->getValue->loop->loopBegin->graph->getNodeCount->max->min->size->Math->loop->size->loop->loopBegin->phis->count->max->unrollFactor->loopBegin->getUnrollFactor->if->loopFrequency->loopBegin->loopFrequency->if->loopBegin->isSimpleLoop->loopBegin->getDebug->log->return->loopBegin->setLoopOrigFrequency->maxUnroll->getValue->if->loopBegin->isSimpleLoop->if->loopBegin->loopOrigFrequency->return->foreach->loop->inside->nodes->if->return->if->return->return->else->loopBegin->getDebug->log->return
+DefaultLoopPolicies#shouldTryUnswitch(LoopEx)::: default loop policies should try unswitch:::loopBegin->loop->loopBegin->loopFrequency->loopBegin->loopFrequency->if->return->options->loop->entryPoint->getOptions->return->loopBegin->unswitches->LoopMaxUnswitch->getValue
+DefaultLoopPolicies.CountingClosure#apply(VirtualState)::: counting closure apply:::
+DefaultLoopPolicies#shouldUnswitch(LoopEx, List)::: default loop policies should unswitch:::phis->graph->loop->loopBegin->graph->debug->graph->getDebug->branchNodes->graph->createNodeBitMap->foreach->foreach->controlSplit->successors->branch->loop->nodesInLoopBranch->postDomBlock->loop->loopsData->getCFG->blockFor->getPostdominator->if->increment->postDomBlock->getBeginNode->phis->count->inBranchTotal->branchNodes->count->stateNodesCount->new->CountingClosure->loopFrequency->loop->loopBegin->loopFrequency->options->loop->loopBegin->getOptions->maxDiff->getValue->getValue->Math->getValue->min->remainingGraphSpace->MaximumDesiredSize->getValue->graph->getNodeCount->Math->min->loop->loopBegin->stateAfter->applyToVirtual->loopTotal->loop->size->loop->loopBegin->phis->count->actualDiff->firstSplit->controlSplits->get->if->copies->firstSplit->successors->count->foreach->firstSplit->successors->current->while->next->if->debug->log->if->return->loop->canDuplicateLoop->else->return
+DerivedConvertedInductionVariable#valueNode()::: derived converted induction variable value node:::return
+DerivedConvertedInductionVariable#direction()::: derived converted induction variable direction:::return->base->direction
+DerivedConvertedInductionVariable#initNode()::: derived converted induction variable init node:::return->IntegerConvertNode->base->initNode->graph->convert
+DerivedConvertedInductionVariable#strideNode()::: derived converted induction variable stride node:::return->IntegerConvertNode->base->strideNode->graph->convert
+DerivedConvertedInductionVariable#isConstantInit()::: derived converted induction variable is constant init:::return->base->isConstantInit
+DerivedConvertedInductionVariable#isConstantStride()::: derived converted induction variable is constant stride:::return->base->isConstantStride
+DerivedConvertedInductionVariable#constantInit()::: derived converted induction variable constant init:::return->base->constantInit
+DerivedConvertedInductionVariable#constantStride()::: derived converted induction variable constant stride:::return->base->constantStride
+DerivedConvertedInductionVariable#extremumNode(boolean, Stamp)::: derived converted induction variable extremum node:::return->base->extremumNode
+DerivedConvertedInductionVariable#exitValueNode()::: derived converted induction variable exit value node:::return->IntegerConvertNode->base->exitValueNode->graph->convert
+DerivedConvertedInductionVariable#isConstantExtremum()::: derived converted induction variable is constant extremum:::return->base->isConstantExtremum
+DerivedConvertedInductionVariable#constantExtremum()::: derived converted induction variable constant extremum:::return->base->constantExtremum
+DerivedConvertedInductionVariable#deleteUnusedNodes()::: derived converted induction variable delete unused nodes:::
+DerivedConvertedInductionVariable#toString()::: derived converted induction variable to string:::return->String->value->getNodeClass->shortName->format
+DerivedInductionVariable#graph()::: derived induction variable graph:::return->base->graph
+DerivedInductionVariable#getBase()::: derived induction variable get base:::return
+DerivedOffsetInductionVariable#getOffset()::: derived offset induction variable get offset:::return
+DerivedOffsetInductionVariable#direction()::: derived offset induction variable direction:::return->base->direction
+DerivedOffsetInductionVariable#valueNode()::: derived offset induction variable value node:::return
+DerivedOffsetInductionVariable#isConstantInit()::: derived offset induction variable is constant init:::return->offset->isConstant->base->isConstantInit
+DerivedOffsetInductionVariable#isConstantStride()::: derived offset induction variable is constant stride:::return->base->isConstantStride
+DerivedOffsetInductionVariable#constantInit()::: derived offset induction variable constant init:::return->base->constantInit->offset->asJavaConstant->asLong->op
+DerivedOffsetInductionVariable#constantStride()::: derived offset induction variable constant stride:::if->base->valueNode->value->getY->return->base->constantStride->return->base->constantStride
+DerivedOffsetInductionVariable#initNode()::: derived offset induction variable init node:::return->base->initNode->op
+DerivedOffsetInductionVariable#strideNode()::: derived offset induction variable stride node:::if->base->valueNode->value->getY->return->graph->NegateNode->base->strideNode->create->addOrUniqueWithInputs->return->base->strideNode
+DerivedOffsetInductionVariable#extremumNode(boolean, Stamp)::: derived offset induction variable extremum node:::return->base->extremumNode->IntegerConvertNode->graph->convert->op
+DerivedOffsetInductionVariable#exitValueNode()::: derived offset induction variable exit value node:::return->base->exitValueNode->op
+DerivedOffsetInductionVariable#isConstantExtremum()::: derived offset induction variable is constant extremum:::return->offset->isConstant->base->isConstantExtremum
+DerivedOffsetInductionVariable#constantExtremum()::: derived offset induction variable constant extremum:::return->base->constantExtremum->offset->asJavaConstant->asLong->op
+DerivedOffsetInductionVariable#op(long, long)::: derived offset induction variable op:::if->return->if->if->base->valueNode->value->getX->return->else->return->throw->GraalError->shouldNotReachHere
+DerivedOffsetInductionVariable#op(ValueNode, ValueNode)::: derived offset induction variable op:::if->return->graph->add->if->if->base->valueNode->value->getX->return->graph->sub->else->return->graph->sub->throw->GraalError->shouldNotReachHere
+DerivedOffsetInductionVariable#deleteUnusedNodes()::: derived offset induction variable delete unused nodes:::
+DerivedOffsetInductionVariable#toString()::: derived offset induction variable to string:::return->String->value->getNodeClass->shortName->format
+DerivedScaledInductionVariable#getScale()::: derived scaled induction variable get scale:::return
+DerivedScaledInductionVariable#valueNode()::: derived scaled induction variable value node:::return
+DerivedScaledInductionVariable#direction()::: derived scaled induction variable direction:::baseDirection->base->direction->if->return->stamp->scale->stamp->if->integerStamp->if->integerStamp->isStrictlyPositive->return->else->if->integerStamp->isStrictlyNegative->return->baseDirection->opposite->return
+DerivedScaledInductionVariable#initNode()::: derived scaled induction variable init node:::return->graph->base->initNode->mul
+DerivedScaledInductionVariable#strideNode()::: derived scaled induction variable stride node:::return->graph->base->strideNode->mul
+DerivedScaledInductionVariable#isConstantInit()::: derived scaled induction variable is constant init:::return->scale->isConstant->base->isConstantInit
+DerivedScaledInductionVariable#isConstantStride()::: derived scaled induction variable is constant stride:::return->scale->isConstant->base->isConstantStride
+DerivedScaledInductionVariable#constantInit()::: derived scaled induction variable constant init:::return->base->constantInit->scale->asJavaConstant->asLong
+DerivedScaledInductionVariable#constantStride()::: derived scaled induction variable constant stride:::return->base->constantStride->scale->asJavaConstant->asLong
+DerivedScaledInductionVariable#extremumNode(boolean, Stamp)::: derived scaled induction variable extremum node:::return->graph->base->extremumNode->IntegerConvertNode->graph->convert->mul
+DerivedScaledInductionVariable#exitValueNode()::: derived scaled induction variable exit value node:::return->graph->base->exitValueNode->mul
+DerivedScaledInductionVariable#isConstantExtremum()::: derived scaled induction variable is constant extremum:::return->scale->isConstant->base->isConstantExtremum
+DerivedScaledInductionVariable#constantExtremum()::: derived scaled induction variable constant extremum:::return->base->constantExtremum->scale->asJavaConstant->asLong
+DerivedScaledInductionVariable#deleteUnusedNodes()::: derived scaled induction variable delete unused nodes:::GraphUtil->tryKillUnused
+DerivedScaledInductionVariable#toString()::: derived scaled induction variable to string:::return->String->value->getNodeClass->shortName->format
+InductionVariable#graph()::: induction variable graph:::
+InductionVariable#getLoop()::: induction variable get loop:::return
+InductionVariable#direction()::: induction variable direction:::
 InductionVariable#valueNode():::Returns the value node that is described by this induction variable.:::
 InductionVariable#initNode():::Returns the node that gives the initial value of this induction variable.:::
 InductionVariable#strideNode():::Returns the stride of the induction variable:::
+InductionVariable#isConstantInit()::: induction variable is constant init:::
+InductionVariable#isConstantStride()::: induction variable is constant stride:::
+InductionVariable#constantInit()::: induction variable constant init:::
+InductionVariable#constantStride()::: induction variable constant stride:::
 InductionVariable#extremumNode():::Returns the extremum value of the induction variable:::return->valueNode->stamp->extremumNode
+InductionVariable#extremumNode(boolean, Stamp)::: induction variable extremum node:::
+InductionVariable#isConstantExtremum()::: induction variable is constant extremum:::
+InductionVariable#constantExtremum()::: induction variable constant extremum:::
 InductionVariable#exitValueNode():::Returns the exit value of the induction variable:::
 InductionVariable#deleteUnusedNodes():::Deletes any nodes created within the scope of this object that have no usages.:::
+LoopEx#loop()::: loop ex loop:::return
+LoopEx#inside()::: loop ex inside:::if->new->LoopFragmentInside->return
+LoopEx#whole()::: loop ex whole:::if->new->LoopFragmentWhole->return
+LoopEx#invalidateFragments()::: loop ex invalidate fragments:::
+LoopEx#insideFrom(FixedNode)::: loop ex inside from:::return
+LoopEx#insideBefore(FixedNode)::: loop ex inside before:::return
+LoopEx#isOutsideLoop(Node)::: loop ex is outside loop:::return->whole->contains
+LoopEx#loopBegin()::: loop ex loop begin:::return->loop->getHeader->getBeginNode
+LoopEx#predecessor()::: loop ex predecessor:::return->loopBegin->forwardEnd->predecessor
+LoopEx#entryPoint()::: loop ex entry point:::return->loopBegin->forwardEnd
+LoopEx#isCounted()::: loop ex is counted:::return
+LoopEx#counted()::: loop ex counted:::return
+LoopEx#parent()::: loop ex parent:::if->loop->getParent->return->return->data->loop->getParent->loop
+LoopEx#size()::: loop ex size:::return->whole->nodes->count
+LoopEx#toString()::: loop ex to string:::return->isCounted->counted->loop->getDepth->loopBegin
+LoopEx.InvariantPredicate#apply(Node)::: invariant predicate apply:::if->loopBegin->graph->isNew->return->return->isOutsideLoop
+LoopEx#reassociateInvariants()::: loop ex reassociate invariants:::count->graph->loopBegin->graph->invariant->new->InvariantPredicate->foreach->whole->nodes->filter->if->binary->isAssociative->continue->result->BinaryArithmeticNode->binary->getX->binary->getY->reassociate->if->if->result->isAlive->graph->addOrUniqueWithInputs->debug->graph->getDebug->if->debug->isLogEnabled->debug->graph->method->format->log->binary->replaceAtUsages->GraphUtil->killWithUnusedFloatingInputs->return
+LoopEx#detectCounted()::: loop ex detect counted:::if->return->isCounted->loopBegin->loopBegin->next->loopBegin->next->while->next->if->ifNode->negated->if->ifNode->falseSuccessor->isCfgLoopExit->if->ifNode->trueSuccessor->isCfgLoopExit->return->ifTest->ifNode->condition->if->if->ifTest->getDebug->log->return->lessThan->condition->iv->limit->if->lessThan->getX->isOutsideLoop->getInductionVariables->lessThan->getY->get->if->lessThan->condition->asCondition->mirror->lessThan->getX->else->if->lessThan->getY->isOutsideLoop->getInductionVariables->lessThan->getX->get->if->lessThan->condition->asCondition->lessThan->getY->if->return->if->condition->negate->oneOff->switch->return->if->iv->isConstantStride->Math->iv->constantStride->abs->return->initStamp->iv->initNode->stamp->limitStamp->limit->stamp->if->iv->direction->if->initStamp->upperBound->limitStamp->lowerBound->return->else->if->iv->direction->if->initStamp->lowerBound->limitStamp->upperBound->return->else->return->break->if->iv->direction->return->break->if->iv->direction->return->break->if->iv->direction->return->break->if->iv->direction->return->break->throw->GraalError->condition->toString->shouldNotReachHere->ifNode->falseSuccessor->ifNode->trueSuccessor->new->CountedLoopInfo->return->return
+LoopEx#isCfgLoopExit(AbstractBeginNode)::: loop ex is cfg loop exit:::block->data->getCFG->blockFor->return->loop->getDepth->block->getLoopDepth->loop->isNaturalExit
+LoopEx#loopsData()::: loop ex loops data:::return
+LoopEx#nodesInLoopBranch(NodeBitMap, AbstractBeginNode)::: loop ex nodes in loop branch:::blocks->EconomicSet->create->exits->new->LinkedList<>->work->new->LinkedList<>->cfg->loopsData->getCFG->work->cfg->blockFor->add->while->work->isEmpty->b->work->remove->if->loop->isLoopExit->exits->b->getBeginNode->add->else->if->blocks->b->getBeginNode->add->d->b->getDominatedSibling->while->if->loop->getBlocks->contains->work->add->d->getDominatedSibling->LoopFragment->branch->graph->computeNodes
+LoopEx#getInductionVariables()::: loop ex get induction variables:::if->findInductionVariables->return
+LoopEx#findInductionVariables(LoopEx):::Collect all the basic induction variables for the loop and the find any induction variables which are derived from the basic ones.:::ivs->EconomicMap->create->scanQueue->new->LinkedList<>->loopBegin->loop->loopBegin->forwardEnd->loopBegin->forwardEnd->foreach->loopBegin->valuePhis->backValue->phi->singleBackValueOrThis->if->continue->stride->addSub->if->biv->phi->valueAt->new->BasicInductionVariable->ivs->put->scanQueue->add->while->scanQueue->isEmpty->baseIv->scanQueue->remove->baseIvNode->baseIv->valueNode->foreach->baseIvNode->usages->filter->if->loop->isOutsideLoop->continue->if->op->hasExactlyOneUsage->op->usages->first->continue->iv->offset->addSub->scale->if->new->DerivedOffsetInductionVariable->else->if->new->DerivedScaledInductionVariable->else->if->mul->new->DerivedScaledInductionVariable->else->isValidConvert->if->zeroExtendNode->zeroExtendNode->isInputAlwaysPositive->zeroExtendNode->stamp->isPositive->if->op->stamp->new->DerivedConvertedInductionVariable->if->ivs->put->scanQueue->offer->return
+LoopEx#addSub(LoopEx, ValueNode, ValueNode)::: loop ex add sub:::if->op->stamp->aritOp->if->aritOp->getX->loop->aritOp->getY->isOutsideLoop->return->aritOp->getY->else->if->aritOp->getY->loop->aritOp->getX->isOutsideLoop->return->aritOp->getX->return
+LoopEx#mul(LoopEx, ValueNode, ValueNode)::: loop ex mul:::if->mul->if->mul->getX->loop->mul->getY->isOutsideLoop->return->mul->getY->else->if->mul->getY->loop->mul->getX->isOutsideLoop->return->mul->getX->if->shift->if->shift->getX->shift->getY->isConstant->return->ConstantNode->base->stamp->shift->getY->asJavaConstant->asInt->base->graph->forIntegerStamp->return
 LoopEx#deleteUnusedNodes():::Deletes any nodes created within the scope of this object that have no usages.:::if->foreach->ivs->getValues->iv->deleteUnusedNodes
+LoopEx#canDuplicateLoop()::: loop ex can duplicate loop:::foreach->inside->nodes->if->return->if->frameState->if->frameState->isExceptionHandlingBCI->return->return
 LoopFragment#loop():::Return the original LoopEx for this fragment:::return
+LoopFragment#duplicate()::: loop fragment duplicate:::
+LoopFragment#insertBefore(LoopEx)::: loop fragment insert before:::
+LoopFragment#disconnect()::: loop fragment disconnect:::
+LoopFragment#contains(Node)::: loop fragment contains:::return->nodes->isMarkedAndGrow
+LoopFragment#getDuplicatedNode(Old)::: loop fragment get duplicated node:::return->duplicationMap->get
+LoopFragment#putDuplicatedNode(Old, New)::: loop fragment put duplicated node:::duplicationMap->put
 LoopFragment#prim(ValueNode):::Gets the corresponding value in this fragment:::
+LoopFragment#isDuplicate()::: loop fragment is duplicate:::return
+LoopFragment#original()::: loop fragment original:::return
+LoopFragment#nodes()::: loop fragment nodes:::
+LoopFragment#graph()::: loop fragment graph:::l->if->isDuplicate->original->loop->else->loop->return->l->loopBegin->graph
+LoopFragment#getDuplicationReplacement()::: loop fragment get duplication replacement:::
+LoopFragment#beforeDuplication()::: loop fragment before duplication:::
+LoopFragment#finishDuplication()::: loop fragment finish duplication:::originalLoopEx->original->loop->cfg->originalLoopEx->loopsData->getCFG->foreach->originalLoopEx->loopBegin->loopExits->snapshot->if->originalLoopEx->loop->cfg->blockFor->isLoopExit->exit->removeExit
+LoopFragment#patchNodes(DuplicationReplacement)::: loop fragment patch nodes:::if->isDuplicate->cfgFix->original->getDuplicationReplacement->dr->if->else->if->else->if->new->DuplicationReplacement->else->beforeDuplication->nodesIterable->original->nodes->graph->graph->nodesIterable->count->addDuplicates->finishDuplication->graph->new->NodeBitMap->nodes->duplicationMap->getValues->markAll->else
+LoopFragment#computeNodes(NodeBitMap, Graph, LoopEx, Iterable, Iterable)::: loop fragment compute nodes:::foreach->if->b->isDeleted->continue->foreach->b->getBlockNodes->if->nodes->callTarget->mark->if->withState->withState->states->state->nodes->mark->applyToVirtual->forEach->if->foreach->phis->nodes->mark->nodes->mark->foreach->if->earlyExit->isDeleted->continue->nodes->mark->if->loopExit->stateAfter->loopExit->stateAfter->if->stateAfter->nodes->mark->applyToVirtual->foreach->loopExit->proxies->nodes->mark->nonLoopNodes->graph->createNodeBitMap->worklist->new->ArrayDeque<>->foreach->if->b->isDeleted->continue->foreach->b->getBlockNodes->if->foreach->getVirtualObjects->markFloating->if->getMonitorId->markFloating->if->foreach->phis->foreach->phi->usages->markFloating->foreach->n->usages->markFloating
+LoopFragment.WorkListEntry#equals(Object)::: work list entry equals:::if->return->other->return
+LoopFragment.WorkListEntry#hashCode()::: work list entry hash code:::return->n->hashCode
+LoopFragment#isLoopNode(Node, NodeBitMap, NodeBitMap)::: loop fragment is loop node:::if->loopNodes->isMarked->return->if->nonLoopNodes->isMarked->return->if->return->return
+LoopFragment#pushWorkList(Deque, Node, NodeBitMap)::: loop fragment push work list:::entry->new->WorkListEntry->workList->push
+LoopFragment#markFloating(Deque, LoopEx, Node, NodeBitMap, NodeBitMap)::: loop fragment mark floating:::if->isLoopNode->isKnown->return->loopBeginNode->loop->loopBegin->cfg->loop->loopsData->getCFG->pushWorkList->while->workList->isEmpty->currentEntry->workList->peek->if->hasNext->current->next->result->isLoopNode->if->result->isKnown->if->result->toBoolean->else->pushWorkList->else->workList->pop->isLoopNode->current->if->current->hasUsages->guard->if->guard->getCondition->isLoopNode->anchor->guard->getAnchor->asNode->isAnchorInLoop->isLoopNode->if->if->loopBegin->else->if->AbstractControlFlowGraph->cfg->blockFor->cfg->blockFor->strictlyDominates->if->loopNodes->mark->foreach->else->nonLoopNodes->mark
+LoopFragment#toHirBlocks(Iterable)::: loop fragment to hir blocks:::return->new->NodeIterable<AbstractBeginNode>
 LoopFragment#mergeEarlyExits():::Merges the early exits (i.e:::graph->graph->foreach->LoopFragment->original->loop->loop->getLoopExits->toHirBlocks->next->earlyExit->next->if->earlyExit->isDeleted->this->original->contains->continue->newEarlyExit->getDuplicatedNode->if->continue->merge->graph->new->MergeNode->add->originalEnd->graph->new->EndNode->add->newEnd->graph->new->EndNode->add->merge->addForwardEnd->merge->addForwardEnd->earlyExit->setNext->newEarlyExit->setNext->merge->setNext->exitState->if->earlyLoopExit->earlyLoopExit->stateAfter->if->originalExitState->exitState->duplicateWithVirtualState->earlyLoopExit->setStateAfter->merge->setStateAfter->originalExitState->clearAndGrow->applyToVirtual->exitState->markAndGrow->applyToVirtual->foreach->earlyExit->anchored->snapshot->anchored->replaceFirstInput->if->earlyLoopExit->finalExitState->newEarlyExitIsLoopExit->foreach->earlyLoopExit->proxies->snapshot->if->vpn->hasNoUsages->continue->if->vpn->value->vpn->replaceAtUsages->continue->replaceWith->newVpn->vpn->value->prim->if->phi->vpn->createPhi->phi->addInput->phi->addInput->else->vpn->value->vpn->if->merge->isPhiAtMerge->return->if->stateUsage->if->finalExitState->isPartOfThisState->return->return->replaceAtMatchingUsages
+LoopFragmentInside#duplicate()::: loop fragment inside duplicate:::return->new->LoopFragmentInside
+LoopFragmentInside#original()::: loop fragment inside original:::return->super->original
+LoopFragmentInside#appendInside(LoopEx)::: loop fragment inside append inside:::
+LoopFragmentInside#loop()::: loop fragment inside loop:::return->super->loop
+LoopFragmentInside#insertBefore(LoopEx)::: loop fragment inside insert before:::patchNodes->end->mergeEnds->mergeEarlyExits->original->patchPeeling->entry->loop->loopBegin->getDuplicatedNode->loop->entryPoint->replaceAtPredecessor->end->loop->entryPoint->setNext
 LoopFragmentInside#insertWithinAfter(LoopEx, EconomicMap):::Duplicate the body within the loop after the current copy copy of the body, updating the iteration limit to account for the duplication.:::patchNodes->mainLoopBegin->loop->loopBegin->backedgeValues->new->ArrayList<>->foreach->mainLoopBegin->phis->originalNode->mainPhiNode->valueAt->duplicatedNode->getDuplicatedNode->if->if->mainLoopBegin->isPhiAtMerge->valueAt->else->backedgeValues->add->index->foreach->mainLoopBegin->phis->duplicatedNode->backedgeValues->get->if->mainPhiNode->setValueAt->placeNewSegmentAndCleanup->foreach->loop->whole->nodes->filter->graph->removeFixed->graph->mainLoopBegin->graph->if->opaque->opaqueUnrolledStrides->loop->loopBegin->get->counted->loop->counted->counterStride->counted->getCounter->strideNode->if->AddNode->add->new->OpaqueNode->limit->counted->getLimit->bits->limit->stamp->getBits->newLimit->SubNode->create->overflowCheck->extremum->if->counted->getDirection->ConstantNode->CodeUtil->minValue->forIntegerBits->IntegerBelowNode->SubNode->create->create->else->ConstantNode->CodeUtil->maxValue->forIntegerBits->IntegerBelowNode->SubNode->create->create->ConditionalNode->create->compareNode->counted->getLimitTest->condition->compareNode->graph->addOrUniqueWithInputs->replaceFirstInput->opaqueUnrolledStrides->loop->loopBegin->put->else->previousValue->opaque->getValue->opaque->graph->AddNode->add->addOrUniqueWithInputs->setValue->GraphUtil->tryKillUnused->mainLoopBegin->mainLoopBegin->getUnrollFactor->setUnrollFactor->mainLoopBegin->mainLoopBegin->loopFrequency->setLoopFrequency->graph->getDebug->dump->mainLoopBegin->getDebug->mainLoopBegin->graph->dump
+LoopFragmentInside#placeNewSegmentAndCleanup(LoopEx)::: loop fragment inside place new segment and cleanup:::mainCounted->loop->counted->mainLoopBegin->loop->loopBegin->graph->mainLoopBegin->graph->loopTest->mainCounted->getLimitTest->newSegmentTest->getDuplicatedNode->trueSuccessor->loopTest->trueSuccessor->falseSuccessor->loopTest->falseSuccessor->firstNode->codeInTrueSide->if->mainCounted->getBody->trueSuccessor->next->else->falseSuccessor->next->newSegmentTest->trueSuccessor->newSegmentTest->falseSuccessor->foreach->falseSuccessor->anchored->snapshot->usage->loopTest->falseSuccessor->replaceFirstInput->foreach->trueSuccessor->anchored->snapshot->usage->loopTest->trueSuccessor->replaceFirstInput->startBlockNode->if->else->graph->getDebug->mainLoopBegin->graph->dump->lastNode->getBlockEnd->loopEndNode->mainLoopBegin->getSingleLoopEnd->lastCodeNode->loopEndNode->predecessor->newSegmentFirstNode->getDuplicatedNode->newSegmentLastNode->getDuplicatedNode->graph->getDebug->loopEndNode->graph->dump->if->GraphUtil->getDuplicatedNode->killCFG->else->newSegmentLastNode->clearSuccessors->startBlockNode->setNext->lastCodeNode->replaceFirstSuccessor->newSegmentLastNode->replaceFirstSuccessor->lastCodeNode->setNext->newSegmentLastNode->setNext->startBlockNode->clearSuccessors->lastNode->safeDelete->newSegmentTestStart->newSegmentTest->predecessor->newSegmentIfTest->newSegmentTest->condition->newSegmentTestStart->clearSuccessors->newSegmentTest->safeDelete->newSegmentIfTest->safeDelete->trueSuccessor->safeDelete->falseSuccessor->safeDelete->newSegmentTestStart->safeDelete->graph->getDebug->loopEndNode->graph->dump
+LoopFragmentInside#getBlockEnd(FixedNode)::: loop fragment inside get block end:::curNode->while->next->return
+LoopFragmentInside#nodes()::: loop fragment inside nodes:::if->whole->loop->whole->whole->nodes->copy->loopBegin->loop->loopBegin->foreach->loopBegin->phis->nodes->clear->clearStateNodes->foreach->exits->clearStateNodes->foreach->exit->proxies->nodes->clear->return
+LoopFragmentInside#clearStateNodes(StateSplit)::: loop fragment inside clear state nodes:::loopState->stateSplit->stateAfter->if->loopState->if->v->usages->nodes->isMarked->filter->isEmpty->nodes->clear->applyToVirtual
+LoopFragmentInside#exits()::: loop fragment inside exits:::return->loop->loopBegin->loopExits
+LoopFragmentInside#getDuplicationReplacement()::: loop fragment inside get duplication replacement:::loopBegin->loop->loopBegin->graph->graph->return->new->DuplicationReplacement
+LoopFragmentInside#beforeDuplication()::: loop fragment inside before duplication:::
+LoopFragmentInside#patchPhi(StructuredGraph, PhiNode, AbstractMergeNode)::: loop fragment inside patch phi:::ret->if->phi->stamp->new->ValuePhiNode->else->if->new->GuardPhiNode->else->if->getLocationIdentity->new->MemoryPhiNode->else->throw->GraalError->shouldNotReachHere->return->graph->addWithoutUnique
+LoopFragmentInside#patchPeeling(LoopFragmentInside)::: loop fragment inside patch peeling:::loopBegin->loop->loopBegin->graph->loopBegin->graph->newPhis->new->LinkedList<>->usagesToPatch->nodes->copy->foreach->exits->markStateNodes->foreach->exit->proxies->usagesToPatch->markAndGrow->markStateNodes->oldPhis->loopBegin->phis->snapshot->foreach->if->phi->hasNoUsages->continue->first->if->loopBegin->loopEnds->count->b->phi->loopBegin->loopEnds->first->valueAt->peel->prim->else->get->newPhi->patchPhi->newPhi->addInput->foreach->loopBegin->orderedLoopEnds->newPhi->phi->valueAt->addInput->peel->putDuplicatedNode->newPhis->add->foreach->phi->usages->snapshot->if->usagesToPatch->isMarkedAndGrow->usage->replaceFirstInput->foreach->for->i->phi->valueCount->progress->while->i->while->oldPhis->size->oldPhi->oldPhis->get->foreach->oldPhi->usages->if->oldPhis->contains->else->oldPhis->remove->continue->foreach->deadPhi->clearInputs->foreach->if->deadPhi->isAlive->GraphUtil->killWithUnusedFloatingInputs
+LoopFragmentInside#markStateNodes(StateSplit, NodeBitMap)::: loop fragment inside mark state nodes:::exitState->stateSplit->stateAfter->if->exitState->marks->markAndGrow->applyToVirtual
 LoopFragmentInside#prim(ValueNode):::Gets the corresponding value in this fragment.:::loopBegin->original->loop->loopBegin->if->loopBegin->isPhiAtMerge->phi->return->phi->loopBegin->forwardEnd->valueAt->else->if->v->getDuplicatedNode->if->return->return->else->return
+LoopFragmentInside#primAfter(ValueNode)::: loop fragment inside prim after:::loopBegin->original->loop->loopBegin->if->loopBegin->isPhiAtMerge->phi->return->phi->valueAt->else->if->v->getDuplicatedNode->if->return->return->else->return
+LoopFragmentInside#mergeEnds()::: loop fragment inside merge ends:::endsToMerge->new->LinkedList<>->reverseEnds->EconomicMap->create->loopBegin->original->loop->loopBegin->foreach->loopBegin->loopEnds->duplicate->getDuplicatedNode->if->endsToMerge->add->reverseEnds->put->EconomicMap->create->newExit->graph->graph->if->endsToMerge->size->end->endsToMerge->get->try->position->end->withNodeSourcePosition->graph->new->BeginNode->add->end->replaceAtPredecessor->end->safeDelete->catch->finally->else->newExitMerge->graph->new->MergeNode->add->state->loopBegin->stateAfter->duplicateState->if->state->duplicateWithVirtualState->newExitMerge->setStateAfter->foreach->newExitMerge->addForwardEnd->foreach->loopBegin->phis->snapshot->if->phi->hasNoUsages->continue->firstPhi->patchPhi->foreach->newExitMerge->forwardEnds->loopEnd->reverseEnds->get->prim->phi->valueAt->prim->firstPhi->addInput->initializer->if->duplicateState->new->NodeClosure<ValueNode>->applyToNonVirtual->mergedInitializers->put->return
+LoopFragmentInsideBefore#point()::: loop fragment inside before point:::return
+LoopFragmentInsideBefore#duplicate()::: loop fragment inside before duplicate:::return->new->LoopFragmentInsideBefore
+LoopFragmentInsideBefore#nodes()::: loop fragment inside before nodes:::return
+LoopFragmentInsideFrom#point()::: loop fragment inside from point:::return
+LoopFragmentInsideFrom#duplicate()::: loop fragment inside from duplicate:::return->new->LoopFragmentInsideFrom
+LoopFragmentInsideFrom#nodes()::: loop fragment inside from nodes:::return
+LoopFragmentWhole#duplicate()::: loop fragment whole duplicate:::loopFragmentWhole->new->LoopFragmentWhole->loopFragmentWhole->reify->return
+LoopFragmentWhole#reify()::: loop fragment whole reify:::patchNodes->mergeEarlyExits
+LoopFragmentWhole#nodes()::: loop fragment whole nodes:::if->loop->loop->loop->loopNodes->graph->createNodeBitMap->LoopFragment->graph->loop->LoopFragment->loop->getBlocks->toHirBlocks->LoopFragment->loop->getLoopExits->toHirBlocks->computeNodes->return
+LoopFragmentWhole#prim(ValueNode)::: loop fragment whole prim:::return->getDuplicatedNode
+LoopFragmentWhole#getDuplicationReplacement()::: loop fragment whole get duplication replacement:::entry->loop->entryPoint->graph->this->graph->return->new->DuplicationReplacement
+LoopFragmentWhole#entryPoint()::: loop fragment whole entry point:::if->isDuplicate->newLoopBegin->original->loop->loopBegin->getDuplicatedNode->return->newLoopBegin->forwardEnd->return->loop->entryPoint
+LoopFragmentWhole#beforeDuplication()::: loop fragment whole before duplication:::
+LoopFragmentWhole#insertBefore(LoopEx)::: loop fragment whole insert before:::
+LoopPolicies#shouldPeel(LoopEx, ControlFlowGraph, MetaAccessProvider)::: loop policies should peel:::
+LoopPolicies#shouldFullUnroll(LoopEx)::: loop policies should full unroll:::
+LoopPolicies#shouldPartiallyUnroll(LoopEx)::: loop policies should partially unroll:::
+LoopPolicies#shouldTryUnswitch(LoopEx)::: loop policies should try unswitch:::
+LoopPolicies#shouldUnswitch(LoopEx, List)::: loop policies should unswitch:::
+LoopsData#checkLoopOrder(Iterable>):::Checks that loops are ordered such that outer loops appear first.:::seen->EconomicSet->create->foreach->if->loop->getParent->seen->loop->getParent->contains->return->seen->add->return
+LoopsData#loop(Loop)::: loops data loop:::return->loopBeginToEx->loop->getHeader->getBeginNode->get
+LoopsData#loop(LoopBeginNode)::: loops data loop:::return->loopBeginToEx->get
+LoopsData#loops()::: loops data loops:::return
+LoopsData#outerFirst()::: loops data outer first:::return
+LoopsData#countedLoops()::: loops data counted loops:::counted->new->LinkedList<>->foreach->loops->if->loop->isCounted->counted->add->return
+LoopsData#detectedCountedLoops()::: loops data detected counted loops:::foreach->loops->loop->detectCounted
+LoopsData#getCFG()::: loops data get g:::return
+LoopsData#getInductionVariable(ValueNode)::: loops data get induction variable:::match->foreach->loops->iv->loop->getInductionVariables->get->if->if->return->return
 LoopsData#deleteUnusedNodes():::Deletes any nodes created within the scope of this object that have no usages.:::foreach->loops->loop->deleteUnusedNodes
+MathUtil#isConstantOne(ValueNode)::: math util is constant one:::return->v1->isConstant->v1->stamp->v1->asJavaConstant->asLong
+MathUtil#isConstantZero(ValueNode)::: math util is constant zero:::return->v1->isConstant->v1->stamp->v1->asJavaConstant->asLong
+MathUtil#add(StructuredGraph, ValueNode, ValueNode)::: math util add:::if->isConstantZero->return->if->isConstantZero->return->return->BinaryArithmeticNode->add
+MathUtil#mul(StructuredGraph, ValueNode, ValueNode)::: math util mul:::if->isConstantOne->return->if->isConstantOne->return->return->BinaryArithmeticNode->mul
+MathUtil#sub(StructuredGraph, ValueNode, ValueNode)::: math util sub:::if->isConstantZero->return->return->BinaryArithmeticNode->sub
+MathUtil#divBefore(StructuredGraph, FixedNode, ValueNode, ValueNode, GuardingNode)::: math util div before:::return->SignedDivNode->create->fixedDivBefore
+MathUtil#unsignedDivBefore(StructuredGraph, FixedNode, ValueNode, ValueNode, GuardingNode)::: math util unsigned div before:::return->UnsignedDivNode->create->fixedDivBefore
+MathUtil#fixedDivBefore(StructuredGraph, FixedNode, ValueNode, ValueNode, BiFunction)::: math util fixed div before:::if->isConstantOne->return->div->createDiv->apply->if->fixedDiv->if->before->predecessor->binaryPredecessor->before->predecessor->if->fixedDiv->dataFlowEquals->fixedDiv->safeDelete->return->graph->graph->addOrUniqueWithInputs->addBeforeFixed->return

@@ -3,12 +3,50 @@ ClassFinder#addJar(String):::Adds a jar file to this finder's search path, ignor
 ClassFinder#addJrt():::Adds the JRT filesystem to this finder's search path.:::list->new->JrtPathEntry->add
 ClassFinder#find(String):::Searches the class path for a class with the given name, returning a ClassFile for it:::foreach->cf->pe->find->if->return->return
 ClassFinder.PathEntry#find(String):::Returns a ClassFile instance corresponding to this name, or null if it's not present in this entry.:::
+ClassFinder.JarPathEntry#find(String)::: jar path entry find:::entry->jarFile->getJarEntry->if->return->try->return->ClassFile->jarFile->getInputStream->read->catch->if->ex->printStackTrace->finally->return
+ClassFinder.DirPathEntry#find(String)::: dir path entry find:::classFileName->dir->resolve->try->return->ClassFile->read->catch->if->ex->printStackTrace->finally->return
+ClassFinder.JrtPathEntry#find(String)::: jrt path entry find:::end->className->lastIndexOf->if->return->pkg->className->substring->replace->try->mods->Files->fs->getPath->list->opath->mods->path->resolve->map->Files->exists->filter->findFirst->if->opath->isPresent->return->ClassFile->opath->get->read->else->return->catch->if->ex->printStackTrace->finally->return
+CPEntries#loadFrom(ClassFile)::: entries load from:::entries->new->CPEntries->foreach->entries->cpi->new->CPSelector->accept->return
+CPEntries#toString()::: entries to string:::sb->new->StringBuilder->f->Locale->getDefault->new->Formatter->f->format->f->format->f->format->f->format->f->format->f->format->f->format->f->format->f->flush->return->sb->toString
+CPSelector#visitClass(ConstantPool.CONSTANT_Class_info, CPEntries)::: selector visit class:::add->return
+CPSelector#visitDouble(ConstantPool.CONSTANT_Double_info, CPEntries)::: selector visit double:::return
+CPSelector#visitFieldref(ConstantPool.CONSTANT_Fieldref_info, CPEntries)::: selector visit fieldref:::add->return
+CPSelector#visitFloat(ConstantPool.CONSTANT_Float_info, CPEntries)::: selector visit float:::return
+CPSelector#visitInteger(ConstantPool.CONSTANT_Integer_info, CPEntries)::: selector visit integer:::return
+CPSelector#visitInterfaceMethodref(ConstantPool.CONSTANT_InterfaceMethodref_info, CPEntries)::: selector visit interface methodref:::add->return
+CPSelector#visitInvokeDynamic(ConstantPool.CONSTANT_InvokeDynamic_info, CPEntries)::: selector visit invoke dynamic:::return
+CPSelector#visitDynamicConstant(CONSTANT_Dynamic_info, CPEntries)::: selector visit dynamic constant:::return
+CPSelector#visitLong(ConstantPool.CONSTANT_Long_info, CPEntries)::: selector visit long:::return
+CPSelector#visitMethodref(ConstantPool.CONSTANT_Methodref_info, CPEntries)::: selector visit methodref:::add->return
+CPSelector#visitMethodHandle(ConstantPool.CONSTANT_MethodHandle_info, CPEntries)::: selector visit method handle:::return
+CPSelector#visitMethodType(ConstantPool.CONSTANT_MethodType_info, CPEntries)::: selector visit method type:::return
+CPSelector#visitModule(ConstantPool.CONSTANT_Module_info, CPEntries)::: selector visit module:::return
+CPSelector#visitNameAndType(ConstantPool.CONSTANT_NameAndType_info, CPEntries)::: selector visit name and type:::return
+CPSelector#visitPackage(ConstantPool.CONSTANT_Package_info, CPEntries)::: selector visit package:::return
+CPSelector#visitString(ConstantPool.CONSTANT_String_info, CPEntries)::: selector visit string:::return
+CPSelector#visitUtf8(ConstantPool.CONSTANT_Utf8_info, CPEntries)::: selector visit utf8:::return
 MethodSig#fromDesc(String):::Parses the method descriptor and returns a MethodSig instance.:::return->desc->length->parse
 MethodSig#getReturnType():::Returns this method's return type.:::return
 MethodSig#getParameters():::Returns a list of parameters of this method.:::return
 MethodSig#toString():::Returns a string describing this method.:::sb->new->StringBuilder->sb->append->if->parameters->isEmpty->sb->append->else->i->foreach->sb->String->format->append->sb->String->format->append->return->sb->toString
+MethodSig#ex(String, int)::: method sig ex:::return->String->format->new->IllegalArgumentException
+MethodSig#parse(String, int, int)::: method sig parse:::p->dims->inReturnType->returnType->parameters->new->ArrayList<>->while->type->ch->switch->desc->charAt->continue->continue->continue->Character->toString->break->sep->desc->indexOf->if->throw->ex->desc->substring->break->throw->ex->sb->new->StringBuilder->for->sb->append->if->sb->toString->else->parameters->sb->toString->add->if->throw->ex->return->new->MethodSig
 Scan#nameFromDescType(String):::Given a descriptor type, extracts and returns the class name from it, if any:::matcher->descTypePattern->matcher->if->matcher->matches->return->matcher->group->else->return
 Scan#nameFromRefType(String):::Given a ref type name, extracts and returns the class name from it, if any:::matcher->refTypePattern->matcher->if->matcher->matches->return->matcher->group->else->if->refType->startsWith->return->else->return
+Scan#typeKind(ClassFile)::: scan type kind:::flags->if->flags->is->return->else->if->flags->is->return->else->if->flags->is->return->else->return
+Scan#dep(boolean)::: scan dep:::return->Messages->get
+Scan#printType(String, ClassFile, String, boolean)::: scan print type:::out->Messages->typeKind->cf->getName->dep->get->println
+Scan#printMethod(String, ClassFile, String, String, String, boolean)::: scan print method:::out->Messages->typeKind->cf->getName->dep->get->println
+Scan#printField(String, ClassFile, String, String, boolean)::: scan print field:::out->Messages->typeKind->cf->getName->dep->get->println
+Scan#printFieldType(String, ClassFile, String, String, String, boolean)::: scan print field type:::out->Messages->typeKind->cf->getName->dep->get->println
+Scan#printHasField(ClassFile, String, String, boolean)::: scan print has field:::out->Messages->typeKind->cf->getName->dep->get->println
+Scan#printHasMethodParmType(ClassFile, String, String, boolean)::: scan print has method parm type:::out->Messages->typeKind->cf->getName->dep->get->println
+Scan#printHasMethodRetType(ClassFile, String, String, boolean)::: scan print has method ret type:::out->Messages->typeKind->cf->getName->dep->get->println
+Scan#printHasOverriddenMethod(ClassFile, String, String, String, boolean)::: scan print has overridden method:::out->Messages->typeKind->cf->getName->dep->get->println
+Scan#errorException(Exception)::: scan error exception:::err->Messages->ex->toString->get->println->if->ex->printStackTrace
+Scan#errorNoClass(String)::: scan error no class:::if->classesNotFound->add->err->Messages->get->println
+Scan#errorNoFile(String)::: scan error no file:::err->Messages->get->println
+Scan#errorNoMethod(String, String, String)::: scan error no method:::err->Messages->get->println
 Scan#isMemberPresent(ClassFile, String, String, boolean):::Checks whether a member (method or field) is present in a class:::if->foreach->mname->m->getName->mdesc->getUTF8Value->if->targetName->equals->targetDesc->equals->return->else->foreach->fname->f->getName->if->targetName->equals->return->return
 Scan#addInterfaces(Deque, ClassFile):::Adds all interfaces from this class to the deque of interfaces.:::count->for->i
 Scan#resolveMember(ClassFile, String, String, String, boolean, boolean):::Resolves a member by searching this class and all its superclasses and implemented interfaces:::startClass->if->cf->getName->equals->else->finder->find->if->errorNoClass->return->curClass->intfs->new->ArrayDeque<>->while->if->isMemberPresent->break->if->break->superName->curClass->getSuperclassName->finder->find->if->errorNoClass->break->addInterfaces->if->addInterfaces->while->intfs->size->intf->intfs->removeFirst->finder->find->if->errorNoClass->break->if->isMemberPresent->break->addInterfaces->if->if->errorNoMethod->return->else->return->else->foundClassName->curClass->getName->return

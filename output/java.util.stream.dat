@@ -1,7 +1,24 @@
 AbstractPipeline#evaluate(TerminalOp):::Evaluate the pipeline with a terminal operation to produce a result.:::if->throw->new->IllegalStateException->return->isParallel->terminalOp->terminalOp->getOpFlags->sourceSpliterator->evaluateParallel->terminalOp->terminalOp->getOpFlags->sourceSpliterator->evaluateSequential
 AbstractPipeline#evaluateToArrayNode(IntFunction):::Collect the elements output from the pipeline stage.:::if->throw->new->IllegalStateException->if->isParallel->opIsStateful->return->previousStage->sourceSpliterator->opEvaluateParallel->else->return->sourceSpliterator->evaluate
 AbstractPipeline#sourceStageSpliterator():::Gets the source stage spliterator if this pipeline stage is the source stage:::if->throw->new->IllegalStateException->if->throw->new->IllegalStateException->if->s->return->else->if->s->get->return->else->throw->new->IllegalStateException
+AbstractPipeline#sequential()::: abstract pipeline sequential:::return
+AbstractPipeline#parallel()::: abstract pipeline parallel:::return
+AbstractPipeline#close()::: abstract pipeline close:::if->closeAction->closeAction->run
+AbstractPipeline#onClose(Runnable)::: abstract pipeline on close:::if->throw->new->IllegalStateException->Objects->requireNonNull->existingHandler->Streams->composeWithExceptions->return
+AbstractPipeline#spliterator()::: abstract pipeline spliterator:::if->throw->new->IllegalStateException->if->if->s->return->else->if->s->return->lazySpliterator->else->throw->new->IllegalStateException->else->return->sourceSpliterator->isParallel->wrap
+AbstractPipeline#isParallel()::: abstract pipeline is parallel:::return
 AbstractPipeline#getStreamFlags():::Returns the composition of stream flags of the stream source and all intermediate operations.:::return->StreamOpFlag->toStreamFlags
+AbstractPipeline#sourceSpliterator(int):::Get the source spliterator for this pipeline stage:::spliterator->if->else->if->get->else->throw->new->IllegalStateException->if->isParallel->depth->for->u->p->e->if->StreamOpFlag->combineOpFlags->return
+AbstractPipeline#getSourceShape()::: abstract pipeline get source shape:::p->while->return->p->getOutputShape
+AbstractPipeline#exactOutputSizeIfKnown(Spliterator)::: abstract pipeline exact output size if known:::return->getStreamAndOpFlags->isKnown->spliterator->getExactSizeIfKnown
+AbstractPipeline#wrapAndCopyInto(S, Spliterator)::: abstract pipeline wrap and copy into:::Objects->requireNonNull->wrapSink->copyInto->return
+AbstractPipeline#copyInto(Sink, Spliterator)::: abstract pipeline copy into:::Objects->requireNonNull->if->getStreamAndOpFlags->isKnown->wrappedSink->spliterator->getExactSizeIfKnown->begin->spliterator->forEachRemaining->wrappedSink->end->else->copyIntoWithCancel
+AbstractPipeline#copyIntoWithCancel(Sink, Spliterator)::: abstract pipeline copy into with cancel:::p->while->wrappedSink->spliterator->getExactSizeIfKnown->begin->cancelled->p->forEachWithCancel->wrappedSink->end->return
+AbstractPipeline#getStreamAndOpFlags()::: abstract pipeline get stream and op flags:::return
+AbstractPipeline#isOrdered()::: abstract pipeline is ordered:::return->isKnown
+AbstractPipeline#wrapSink(Sink)::: abstract pipeline wrap sink:::Objects->requireNonNull->for->p->return
+AbstractPipeline#wrapSpliterator(Spliterator)::: abstract pipeline wrap spliterator:::if->return->else->return->isParallel->wrap
+AbstractPipeline#evaluate(Spliterator, boolean, IntFunction)::: abstract pipeline evaluate:::if->isParallel->return->evaluateToNode->else->nb->exactOutputSizeIfKnown->makeNodeBuilder->return->wrapAndCopyInto->build
 AbstractPipeline#getOutputShape():::Get the output shape of the pipeline:::
 AbstractPipeline#evaluateToNode(PipelineHelper, Spliterator, boolean, IntFunction):::Collect elements output from a pipeline into a Node that holds elements of this shape.:::
 AbstractPipeline#wrap(PipelineHelper, Supplier>, boolean):::Create a spliterator that wraps a source spliterator, compatible with this stream shape, and operations associated with a PipelineHelper.:::
@@ -38,6 +55,7 @@ AbstractTask#isLeaf():::Indicates whether this task is a leaf node:::return
 AbstractTask#isRoot():::Indicates whether this task is the root node:::return->getParent
 AbstractTask#getParent():::Returns the parent of this task, or null if this task is the root:::return->getCompleter
 AbstractTask#compute():::Decides whether or not to split a task further or compute it directly:::rs->ls->sizeEstimate->rs->estimateSize->sizeThreshold->getTargetSize->forkRight->task->while->rs->trySplit->leftChild->rightChild->taskToFork->task->makeChild->task->makeChild->task->setPendingCount->if->else->taskToFork->fork->rs->estimateSize->task->task->doLeaf->setLocalResult->task->tryComplete
+AbstractTask#onCompletion(CountedCompleter)::: abstract task on completion:::
 AbstractTask#isLeftmostNode():::Returns whether this node is a "leftmost" node -- whether the path from the root to this node involves only traversing leftmost child links:::node->while->parent->node->getParent->if->return->return
 BaseStream#iterator():::Returns an iterator for the elements of this stream:::
 BaseStream#spliterator():::Returns a spliterator for the elements of this stream:::
@@ -54,6 +72,15 @@ Collector#finisher():::Perform the final transformation from the intermediate ac
 Collector#characteristics():::Returns a Set of Collector.Characteristics indicating the characteristics of this Collector:::
 Collector#of(Supplier, BiConsumer, BinaryOperator, Characteristics...):::Returns a new Collector described by the given supplier, accumulator, and combiner functions:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->cs->Collections->EnumSet->of->unmodifiableSet->return->new->Collectors.CollectorImpl<>
 Collector#of(Supplier, BiConsumer, BinaryOperator, Function, Characteristics...):::Returns a new Collector described by the given supplier, accumulator, combiner, and finisher functions.:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->cs->if->EnumSet->noneOf->Collections->addAll->Collections->unmodifiableSet->return->new->Collectors.CollectorImpl<>
+Collectors#duplicateKeyException(Object, Object, Object):::Construct an IllegalStateException with appropriate message.:::return->String->format->new->IllegalStateException
+Collectors#uniqKeysMapMerger():::BinaryOperator<Map> that merges the contents of its right argument into its left argument, throwing IllegalStateException if duplicate keys are encountered.:::return->foreach->m2->entrySet->k->e->getKey->v->Objects->e->getValue->requireNonNull->u->m1->putIfAbsent->if->throw->duplicateKeyException->return
+Collectors#uniqKeysMapAccumulator(Function, Function):::BiConsumer<Map, T> that accumulates (key, value) pairs extracted from elements into the map, throwing IllegalStateException if duplicate keys are encountered.:::return->k->keyMapper->apply->v->Objects->valueMapper->apply->requireNonNull->u->map->putIfAbsent->if->throw->duplicateKeyException
+Collectors#castingIdentity()::: collectors casting identity:::return
+Collectors.CollectorImpl#accumulator()::: collector impl accumulator:::return
+Collectors.CollectorImpl#supplier()::: collector impl supplier:::return
+Collectors.CollectorImpl#combiner()::: collector impl combiner:::return
+Collectors.CollectorImpl#finisher()::: collector impl finisher:::return
+Collectors.CollectorImpl#characteristics()::: collector impl characteristics:::return
 Collectors#toCollection(Supplier):::Returns a Collector that accumulates the input elements into a new Collection, in encounter order:::return->Collection<T>->add->r1->addAll->return->new->CollectorImpl<>
 Collectors#toList():::Returns a Collector that accumulates the input elements into a new List:::return->ArrayList->new->List->add->left->addAll->return->new->CollectorImpl<>
 Collectors#toUnmodifiableList():::Returns a Collector that accumulates the input elements into an unmodifiable List in encounter order:::return->ArrayList->new->List->add->left->addAll->return->List->list->toArray->of->new->CollectorImpl<>
@@ -62,6 +89,7 @@ Collectors#toUnmodifiableSet():::Returns a Collector that accumulates the input 
 Collectors#joining():::Returns a Collector that concatenates the input elements into a String, in encounter order.:::return->StringBuilder->new->StringBuilder->append->r1->append->return->StringBuilder->toString->new->CollectorImpl<CharSequence,StringBuilder,String>
 Collectors#joining(CharSequence):::Returns a Collector that concatenates the input elements, separated by the specified delimiter, in encounter order.:::return->joining
 Collectors#joining(CharSequence, CharSequence, CharSequence):::Returns a Collector that concatenates the input elements, separated by the specified delimiter, with the specified prefix and suffix, in encounter order.:::return->new->StringJoiner->StringJoiner->add->StringJoiner->merge->StringJoiner->toString->new->CollectorImpl<>
+Collectors#mapMerger(BinaryOperator):::BinaryOperator<Map> that merges the contents of its right argument into its left argument, using the provided merge function to handle duplicate keys.:::return->foreach->m2->entrySet->m1->e->getKey->e->getValue->merge->return
 Collectors#mapping(Function, Collector):::Adapts a Collector accepting elements of type U to one accepting elements of type T by applying a mapping function to each input element before accumulation.:::downstreamAccumulator->downstream->accumulator->return->downstream->supplier->downstreamAccumulator->mapper->apply->accept->downstream->combiner->downstream->finisher->downstream->characteristics->new->CollectorImpl<>
 Collectors#flatMapping(Function>, Collector):::Adapts a Collector accepting elements of type U to one accepting elements of type T by applying a flat mapping function to each input element before accumulation:::downstreamAccumulator->downstream->accumulator->return->downstream->supplier->try->result->mapper->apply->if->result->sequential->downstreamAccumulator->accept->forEach->catch->finally->downstream->combiner->downstream->finisher->downstream->characteristics->new->CollectorImpl<>
 Collectors#filtering(Predicate, Collector):::Adapts a Collector to one accepting elements of the same type T by applying the predicate to each input element and only accumulating if the predicate returns true.:::downstreamAccumulator->downstream->accumulator->return->downstream->supplier->if->predicate->test->downstreamAccumulator->accept->downstream->combiner->downstream->finisher->downstream->characteristics->new->CollectorImpl<>
@@ -78,6 +106,7 @@ Collectors#averagingInt(ToIntFunction):::Returns a Collector that produces the a
 Collectors#averagingLong(ToLongFunction):::Returns a Collector that produces the arithmetic mean of a long-valued function applied to the input elements:::return->new->longArr->mapper->applyAsLong->return->new->CollectorImpl<>
 Collectors#averagingDouble(ToDoubleFunction):::Returns a Collector that produces the arithmetic mean of a double-valued function applied to the input elements:::return->new->doubleArr->val->mapper->applyAsDouble->sumWithCompensation->sumWithCompensation->sumWithCompensation->return->computeFinalSum->new->CollectorImpl<>
 Collectors#reducing(T, BinaryOperator):::Returns a Collector which performs a reduction of its input elements under a specified BinaryOperator using the provided identity.:::return->boxSupplier->op->apply->op->apply->return->new->CollectorImpl<>
+Collectors#boxSupplier(T)::: collectors box supplier:::return->new->ObjectArr
 Collectors#reducing(BinaryOperator):::Returns a Collector which performs a reduction of its input elements under a specified BinaryOperator:::return->OptionalBox->new->OptionalBox->accept->if->a->accept->return->Optional->ofNullable->new->CollectorImpl<T,OptionalBox,Optional<T>>
 Collectors#reducing(U, Function, BinaryOperator):::Returns a Collector which performs a reduction of its input elements under a specified mapping function and BinaryOperator:::return->boxSupplier->op->mapper->apply->apply->op->apply->return->new->CollectorImpl<>
 Collectors#groupingBy(Function):::Returns a Collector implementing a "group by" operation on input elements of type T, grouping elements according to a classification function, and returning the results in a Map:::return->toList->groupingBy
@@ -99,7 +128,58 @@ Collectors#toConcurrentMap(Function, Function, BinaryOperator, Supplier):::Retur
 Collectors#summarizingInt(ToIntFunction):::Returns a Collector which applies an int-producing mapping function to each input element, and returns summary statistics for the resulting values.:::return->IntSummaryStatistics->new->r->mapper->applyAsInt->accept->l->combine->return->new->CollectorImpl<T,IntSummaryStatistics,IntSummaryStatistics>
 Collectors#summarizingLong(ToLongFunction):::Returns a Collector which applies an long-producing mapping function to each input element, and returns summary statistics for the resulting values.:::return->LongSummaryStatistics->new->r->mapper->applyAsLong->accept->l->combine->return->new->CollectorImpl<T,LongSummaryStatistics,LongSummaryStatistics>
 Collectors#summarizingDouble(ToDoubleFunction):::Returns a Collector which applies an double-producing mapping function to each input element, and returns summary statistics for the resulting values.:::return->DoubleSummaryStatistics->new->r->mapper->applyAsDouble->accept->l->combine->return->new->CollectorImpl<T,DoubleSummaryStatistics,DoubleSummaryStatistics>
+Collectors.Partition#entrySet()::: partition entry set:::return->new->AbstractSet<>
 DistinctOps#makeRef(AbstractPipeline):::Appends a "distinct" operation to the provided stream, and returns the new stream.:::return->new->ReferencePipeline.StatefulOp<T,T>
+DoublePipeline#adapt(Sink):::Adapt a Sink<Double> to a {@code DoubleConsumer, ideally simply by casting.:::if->return->else->if->Tripwire->trip->return->sink->accept
+DoublePipeline#adapt(Spliterator):::Adapt a Spliterator<Double> to a Spliterator.OfDouble.:::if->return->else->if->Tripwire->trip->throw->new->UnsupportedOperationException
+DoublePipeline#getOutputShape()::: double pipeline get output shape:::return
+DoublePipeline#evaluateToNode(PipelineHelper, Spliterator, boolean, IntFunction)::: double pipeline evaluate to node:::return->Nodes->collectDouble
+DoublePipeline#wrap(PipelineHelper, Supplier>, boolean)::: double pipeline wrap:::return->new->StreamSpliterators.DoubleWrappingSpliterator<>
+DoublePipeline#lazySpliterator(Supplier>)::: double pipeline lazy spliterator:::return->new->StreamSpliterators.DelegatingSpliterator.OfDouble
+DoublePipeline#forEachWithCancel(Spliterator, Sink)::: double pipeline for each with cancel:::spl->adapt->adaptedSink->adapt->cancelled->do->while->sink->cancellationRequested->spl->tryAdvance->return
+DoublePipeline#makeNodeBuilder(long, IntFunction)::: double pipeline make node builder:::return->Nodes->doubleBuilder
+DoublePipeline#mapToObj(DoubleFunction, int)::: double pipeline map to obj:::return->new->ReferencePipeline.StatelessOp<Double,U>
+DoublePipeline#iterator()::: double pipeline iterator:::return->Spliterators->spliterator->iterator
+DoublePipeline#spliterator()::: double pipeline spliterator:::return->super->spliterator->adapt
+DoublePipeline#boxed()::: double pipeline boxed:::return->Double->valueOf->mapToObj
+DoublePipeline#map(DoubleUnaryOperator)::: double pipeline map:::Objects->requireNonNull->return->new->StatelessOp<Double>
+DoublePipeline#mapToObj(DoubleFunction)::: double pipeline map to obj:::Objects->requireNonNull->return->mapToObj
+DoublePipeline#mapToInt(DoubleToIntFunction)::: double pipeline map to int:::Objects->requireNonNull->return->new->IntPipeline.StatelessOp<Double>
+DoublePipeline#mapToLong(DoubleToLongFunction)::: double pipeline map to long:::Objects->requireNonNull->return->new->LongPipeline.StatelessOp<Double>
+DoublePipeline#flatMap(DoubleFunction)::: double pipeline flat map:::Objects->requireNonNull->return->new->StatelessOp<Double>
+DoublePipeline#unordered()::: double pipeline unordered:::if->isOrdered->return->return->new->StatelessOp<Double>
+DoublePipeline#filter(DoublePredicate)::: double pipeline filter:::Objects->requireNonNull->return->new->StatelessOp<Double>
+DoublePipeline#peek(DoubleConsumer)::: double pipeline peek:::Objects->requireNonNull->return->new->StatelessOp<Double>
+DoublePipeline#limit(long)::: double pipeline limit:::if->throw->Long->toString->new->IllegalArgumentException->return->SliceOps->makeDouble
+DoublePipeline#skip(long)::: double pipeline skip:::if->throw->Long->toString->new->IllegalArgumentException->if->return->else->limit->return->SliceOps->makeDouble
+DoublePipeline#takeWhile(DoublePredicate)::: double pipeline take while:::return->WhileOps->makeTakeWhileDouble
+DoublePipeline#dropWhile(DoublePredicate)::: double pipeline drop while:::return->WhileOps->makeDropWhileDouble
+DoublePipeline#sorted()::: double pipeline sorted:::return->SortedOps->makeDouble
+DoublePipeline#distinct()::: double pipeline distinct:::return->boxed->distinct->mapToDouble
+DoublePipeline#forEach(DoubleConsumer)::: double pipeline for each:::ForEachOps->makeDouble->evaluate
+DoublePipeline#forEachOrdered(DoubleConsumer)::: double pipeline for each ordered:::ForEachOps->makeDouble->evaluate
+DoublePipeline#sum()::: double pipeline sum:::summation->new->doubleArr->Collectors->sumWithCompensation->Collectors->sumWithCompensation->Collectors->sumWithCompensation->collect->return->Collectors->computeFinalSum
+DoublePipeline#min()::: double pipeline min:::return->Math->min->reduce
+DoublePipeline#max()::: double pipeline max:::return->Math->max->reduce
+DoublePipeline#average()::: double pipeline average:::avg->new->doubleArr->Collectors->sumWithCompensation->Collectors->sumWithCompensation->Collectors->sumWithCompensation->collect->return->OptionalDouble->Collectors->computeFinalSum->of->OptionalDouble->empty
+DoublePipeline#count()::: double pipeline count:::return->ReduceOps->makeDoubleCounting->evaluate
+DoublePipeline#summaryStatistics()::: double pipeline summary statistics:::return->DoubleSummaryStatistics->new->DoubleSummaryStatistics->accept->DoubleSummaryStatistics->combine->collect
+DoublePipeline#reduce(double, DoubleBinaryOperator)::: double pipeline reduce:::return->ReduceOps->makeDouble->evaluate
+DoublePipeline#reduce(DoubleBinaryOperator)::: double pipeline reduce:::return->ReduceOps->makeDouble->evaluate
+DoublePipeline#collect(Supplier, ObjDoubleConsumer, BiConsumer)::: double pipeline collect:::Objects->requireNonNull->operator->combiner->accept->return->return->ReduceOps->makeDouble->evaluate
+DoublePipeline#anyMatch(DoublePredicate)::: double pipeline any match:::return->MatchOps->makeDouble->evaluate
+DoublePipeline#allMatch(DoublePredicate)::: double pipeline all match:::return->MatchOps->makeDouble->evaluate
+DoublePipeline#noneMatch(DoublePredicate)::: double pipeline none match:::return->MatchOps->makeDouble->evaluate
+DoublePipeline#findFirst()::: double pipeline find first:::return->FindOps->makeDouble->evaluate
+DoublePipeline#findAny()::: double pipeline find any:::return->FindOps->makeDouble->evaluate
+DoublePipeline#toArray()::: double pipeline to array:::return->Nodes->Double[]->new->evaluateToArrayNode->flattenDouble->asPrimitiveArray
+DoublePipeline.Head#opIsStateful()::: head op is stateful:::throw->new->UnsupportedOperationException
+DoublePipeline.Head#opWrapSink(int, Sink)::: head op wrap sink:::throw->new->UnsupportedOperationException
+DoublePipeline.Head#forEach(DoubleConsumer)::: head for each:::if->isParallel->sourceStageSpliterator->adapt->forEachRemaining->else->super->forEach
+DoublePipeline.Head#forEachOrdered(DoubleConsumer)::: head for each ordered:::if->isParallel->sourceStageSpliterator->adapt->forEachRemaining->else->super->forEachOrdered
+DoublePipeline.StatelessOp#opIsStateful()::: stateless op op is stateful:::return
+DoublePipeline.StatefulOp#opIsStateful()::: stateful op op is stateful:::return
+DoublePipeline.StatefulOp#opEvaluateParallel(PipelineHelper, Spliterator, IntFunction)::: stateful op op evaluate parallel:::
 DoubleStream#filter(DoublePredicate):::Returns a stream consisting of the elements of this stream that match the given predicate:::
 DoubleStream#map(DoubleUnaryOperator):::Returns a stream consisting of the results of applying the given function to the elements of this stream:::
 DoubleStream#mapToObj(DoubleFunction):::Returns an object-valued Stream consisting of the results of applying the given function to the elements of this stream:::
@@ -131,6 +211,10 @@ DoubleStream#noneMatch(DoublePredicate):::Returns whether no elements of this st
 DoubleStream#findFirst():::Returns an OptionalDouble describing the first element of this stream, or an empty OptionalDouble if the stream is empty:::
 DoubleStream#findAny():::Returns an OptionalDouble describing some element of the stream, or an empty OptionalDouble if the stream is empty:::
 DoubleStream#boxed():::Returns a Stream consisting of the elements of this stream, boxed to Double:::
+DoubleStream#sequential()::: double stream sequential:::
+DoubleStream#parallel()::: double stream parallel:::
+DoubleStream#iterator()::: double stream iterator:::
+DoubleStream#spliterator()::: double stream spliterator:::
 DoubleStream#builder():::Returns a builder for a DoubleStream.:::return->new->Streams.DoubleStreamBuilderImpl
 DoubleStream#empty():::Returns an empty sequential DoubleStream.:::return->StreamSupport->Spliterators->emptyDoubleSpliterator->doubleStream
 DoubleStream#of(double):::Returns a sequential DoubleStream containing a single element.:::return->StreamSupport->new->Streams.DoubleStreamBuilderImpl->doubleStream
@@ -146,10 +230,95 @@ FindOps#makeRef(boolean):::Constructs a TerminalOp for streams of objects.:::ret
 FindOps#makeInt(boolean):::Constructs a TerminalOp for streams of ints.:::return
 FindOps#makeLong(boolean):::Constructs a TerminalOp for streams of longs.:::return
 FindOps#makeDouble(boolean):::Constructs a FindOp for streams of doubles.:::return
+FindOps.FindOp#getOpFlags()::: find op get op flags:::return
+FindOps.FindOp#inputShape()::: find op input shape:::return
+FindOps.FindOp#evaluateSequential(PipelineHelper, Spliterator)::: find op evaluate sequential:::result->helper->sinkSupplier->get->wrapAndCopyInto->get->return
+FindOps.FindOp#evaluateParallel(PipelineHelper, Spliterator)::: find op evaluate parallel:::mustFindFirst->helper->getStreamAndOpFlags->isKnown->return->new->FindTask<>->invoke
+FindOps.FindSink#accept(T)::: find sink accept:::if
+FindOps.FindSink#cancellationRequested()::: find sink cancellation requested:::return
+FindOps.FindSink.OfRef#get()::: of ref get:::return->Optional->of
+FindOps.FindSink.OfInt#accept(int)::: of int accept:::accept
+FindOps.FindSink.OfInt#get()::: of int get:::return->OptionalInt->of
+FindOps.FindSink.OfLong#accept(long)::: of long accept:::accept
+FindOps.FindSink.OfLong#get()::: of long get:::return->OptionalLong->of
+FindOps.FindSink.OfDouble#accept(double)::: of double accept:::accept
+FindOps.FindSink.OfDouble#get()::: of double get:::return->OptionalDouble->of
+FindOps.FindTask#makeChild(Spliterator)::: find task make child:::return->new->FindTask<>
+FindOps.FindTask#getEmptyResult()::: find task get empty result:::return
+FindOps.FindTask#foundResult(O)::: find task found result:::if->isLeftmostNode->shortCircuit->else->cancelLaterNodes
+FindOps.FindTask#doLeaf()::: find task do leaf:::result->helper->get->wrapAndCopyInto->get->if->if->shortCircuit->return->else->if->foundResult->return->else->return
+FindOps.FindTask#onCompletion(CountedCompleter)::: find task on completion:::if->for->child->p->super->onCompletion
 ForEachOps#makeRef(Consumer, boolean):::Constructs a TerminalOp that perform an action for every element of a stream.:::Objects->requireNonNull->return->new->ForEachOp.OfRef<>
 ForEachOps#makeInt(IntConsumer, boolean):::Constructs a TerminalOp that perform an action for every element of an IntStream.:::Objects->requireNonNull->return->new->ForEachOp.OfInt
 ForEachOps#makeLong(LongConsumer, boolean):::Constructs a TerminalOp that perform an action for every element of a LongStream.:::Objects->requireNonNull->return->new->ForEachOp.OfLong
 ForEachOps#makeDouble(DoubleConsumer, boolean):::Constructs a TerminalOp that perform an action for every element of a DoubleStream.:::Objects->requireNonNull->return->new->ForEachOp.OfDouble
+ForEachOps.ForEachOp#getOpFlags()::: for each op get op flags:::return
+ForEachOps.ForEachOp#evaluateSequential(PipelineHelper, Spliterator)::: for each op evaluate sequential:::return->helper->wrapAndCopyInto->get
+ForEachOps.ForEachOp#evaluateParallel(PipelineHelper, Spliterator)::: for each op evaluate parallel:::if->new->ForEachOrderedTask<>->invoke->else->helper->wrapSink->new->ForEachTask<>->invoke->return
+ForEachOps.ForEachOp#get()::: for each op get:::return
+ForEachOps.ForEachOp.OfRef#accept(T)::: of ref accept:::consumer->accept
+ForEachOps.ForEachOp.OfInt#inputShape()::: of int input shape:::return
+ForEachOps.ForEachOp.OfInt#accept(int)::: of int accept:::consumer->accept
+ForEachOps.ForEachOp.OfLong#inputShape()::: of long input shape:::return
+ForEachOps.ForEachOp.OfLong#accept(long)::: of long accept:::consumer->accept
+ForEachOps.ForEachOp.OfDouble#inputShape()::: of double input shape:::return
+ForEachOps.ForEachOp.OfDouble#accept(double)::: of double accept:::consumer->accept
+ForEachOps.ForEachTask#compute()::: for each task compute:::rightSplit->leftSplit->sizeEstimate->rightSplit->estimateSize->sizeThreshold->if->AbstractTask->suggestTargetSize->isShortCircuit->helper->getStreamAndOpFlags->isKnown->forkRight->taskSink->task->while->taskSink->cancellationRequested->if->rightSplit->trySplit->copyInto->break->leftTask->new->ForEachTask<>->task->addToPendingCount->taskToFork->if->else->taskToFork->fork->rightSplit->estimateSize->task->propagateCompletion
+ForEachOps.ForEachOrderedTask#compute()::: for each ordered task compute:::doCompute
+ForEachOps.ForEachOrderedTask#doCompute(ForEachOrderedTask)::: for each ordered task do compute:::rightSplit->leftSplit->sizeThreshold->forkRight->while->rightSplit->estimateSize->rightSplit->trySplit->leftChild->new->ForEachOrderedTask<>->rightChild->new->ForEachOrderedTask<>->task->addToPendingCount->rightChild->addToPendingCount->put->if->leftChild->addToPendingCount->if->replace->task->addToPendingCount->else->leftChild->addToPendingCount->taskToFork->if->else->taskToFork->fork->if->task->getPendingCount->generator->new->ObjectArr->nb->exactOutputSizeIfKnown->makeNodeBuilder->wrapAndCopyInto->build->task->tryComplete
+ForEachOps.ForEachOrderedTask#onCompletion(CountedCompleter)::: for each ordered task on completion:::if->node->forEach->else->if->helper->wrapAndCopyInto->leftDescendant->completionMap->remove->if->leftDescendant->tryComplete
+IntPipeline#adapt(Sink):::Adapt a Sink<Integer> to an {@code IntConsumer, ideally simply by casting.:::if->return->else->if->Tripwire->trip->return->sink->accept
+IntPipeline#adapt(Spliterator):::Adapt a Spliterator<Integer> to a Spliterator.OfInt.:::if->return->else->if->Tripwire->trip->throw->new->UnsupportedOperationException
+IntPipeline#getOutputShape()::: int pipeline get output shape:::return
+IntPipeline#evaluateToNode(PipelineHelper, Spliterator, boolean, IntFunction)::: int pipeline evaluate to node:::return->Nodes->collectInt
+IntPipeline#wrap(PipelineHelper, Supplier>, boolean)::: int pipeline wrap:::return->new->StreamSpliterators.IntWrappingSpliterator<>
+IntPipeline#lazySpliterator(Supplier>)::: int pipeline lazy spliterator:::return->new->StreamSpliterators.DelegatingSpliterator.OfInt
+IntPipeline#forEachWithCancel(Spliterator, Sink)::: int pipeline for each with cancel:::spl->adapt->adaptedSink->adapt->cancelled->do->while->sink->cancellationRequested->spl->tryAdvance->return
+IntPipeline#makeNodeBuilder(long, IntFunction)::: int pipeline make node builder:::return->Nodes->intBuilder
+IntPipeline#mapToObj(IntFunction, int)::: int pipeline map to obj:::return->new->ReferencePipeline.StatelessOp<Integer,U>
+IntPipeline#iterator()::: int pipeline iterator:::return->Spliterators->spliterator->iterator
+IntPipeline#spliterator()::: int pipeline spliterator:::return->super->spliterator->adapt
+IntPipeline#asLongStream()::: int pipeline as long stream:::return->new->LongPipeline.StatelessOp<Integer>
+IntPipeline#asDoubleStream()::: int pipeline as double stream:::return->new->DoublePipeline.StatelessOp<Integer>
+IntPipeline#boxed()::: int pipeline boxed:::return->Integer->valueOf->mapToObj
+IntPipeline#map(IntUnaryOperator)::: int pipeline map:::Objects->requireNonNull->return->new->StatelessOp<Integer>
+IntPipeline#mapToObj(IntFunction)::: int pipeline map to obj:::Objects->requireNonNull->return->mapToObj
+IntPipeline#mapToLong(IntToLongFunction)::: int pipeline map to long:::Objects->requireNonNull->return->new->LongPipeline.StatelessOp<Integer>
+IntPipeline#mapToDouble(IntToDoubleFunction)::: int pipeline map to double:::Objects->requireNonNull->return->new->DoublePipeline.StatelessOp<Integer>
+IntPipeline#flatMap(IntFunction)::: int pipeline flat map:::Objects->requireNonNull->return->new->StatelessOp<Integer>
+IntPipeline#unordered()::: int pipeline unordered:::if->isOrdered->return->return->new->StatelessOp<Integer>
+IntPipeline#filter(IntPredicate)::: int pipeline filter:::Objects->requireNonNull->return->new->StatelessOp<Integer>
+IntPipeline#peek(IntConsumer)::: int pipeline peek:::Objects->requireNonNull->return->new->StatelessOp<Integer>
+IntPipeline#limit(long)::: int pipeline limit:::if->throw->Long->toString->new->IllegalArgumentException->return->SliceOps->makeInt
+IntPipeline#skip(long)::: int pipeline skip:::if->throw->Long->toString->new->IllegalArgumentException->if->return->else->return->SliceOps->makeInt
+IntPipeline#takeWhile(IntPredicate)::: int pipeline take while:::return->WhileOps->makeTakeWhileInt
+IntPipeline#dropWhile(IntPredicate)::: int pipeline drop while:::return->WhileOps->makeDropWhileInt
+IntPipeline#sorted()::: int pipeline sorted:::return->SortedOps->makeInt
+IntPipeline#distinct()::: int pipeline distinct:::return->boxed->distinct->mapToInt
+IntPipeline#forEach(IntConsumer)::: int pipeline for each:::ForEachOps->makeInt->evaluate
+IntPipeline#forEachOrdered(IntConsumer)::: int pipeline for each ordered:::ForEachOps->makeInt->evaluate
+IntPipeline#sum()::: int pipeline sum:::return->Integer->sum->reduce
+IntPipeline#min()::: int pipeline min:::return->Math->min->reduce
+IntPipeline#max()::: int pipeline max:::return->Math->max->reduce
+IntPipeline#count()::: int pipeline count:::return->ReduceOps->makeIntCounting->evaluate
+IntPipeline#average()::: int pipeline average:::avg->new->longArr->collect->return->OptionalDouble->of->OptionalDouble->empty
+IntPipeline#summaryStatistics()::: int pipeline summary statistics:::return->IntSummaryStatistics->new->IntSummaryStatistics->accept->IntSummaryStatistics->combine->collect
+IntPipeline#reduce(int, IntBinaryOperator)::: int pipeline reduce:::return->ReduceOps->makeInt->evaluate
+IntPipeline#reduce(IntBinaryOperator)::: int pipeline reduce:::return->ReduceOps->makeInt->evaluate
+IntPipeline#collect(Supplier, ObjIntConsumer, BiConsumer)::: int pipeline collect:::Objects->requireNonNull->operator->combiner->accept->return->return->ReduceOps->makeInt->evaluate
+IntPipeline#anyMatch(IntPredicate)::: int pipeline any match:::return->MatchOps->makeInt->evaluate
+IntPipeline#allMatch(IntPredicate)::: int pipeline all match:::return->MatchOps->makeInt->evaluate
+IntPipeline#noneMatch(IntPredicate)::: int pipeline none match:::return->MatchOps->makeInt->evaluate
+IntPipeline#findFirst()::: int pipeline find first:::return->FindOps->makeInt->evaluate
+IntPipeline#findAny()::: int pipeline find any:::return->FindOps->makeInt->evaluate
+IntPipeline#toArray()::: int pipeline to array:::return->Nodes->Integer[]->new->evaluateToArrayNode->flattenInt->asPrimitiveArray
+IntPipeline.Head#opIsStateful()::: head op is stateful:::throw->new->UnsupportedOperationException
+IntPipeline.Head#opWrapSink(int, Sink)::: head op wrap sink:::throw->new->UnsupportedOperationException
+IntPipeline.Head#forEach(IntConsumer)::: head for each:::if->isParallel->sourceStageSpliterator->adapt->forEachRemaining->else->super->forEach
+IntPipeline.Head#forEachOrdered(IntConsumer)::: head for each ordered:::if->isParallel->sourceStageSpliterator->adapt->forEachRemaining->else->super->forEachOrdered
+IntPipeline.StatelessOp#opIsStateful()::: stateless op op is stateful:::return
+IntPipeline.StatefulOp#opIsStateful()::: stateful op op is stateful:::return
+IntPipeline.StatefulOp#opEvaluateParallel(PipelineHelper, Spliterator, IntFunction)::: stateful op op evaluate parallel:::
 IntStream#filter(IntPredicate):::Returns a stream consisting of the elements of this stream that match the given predicate:::
 IntStream#map(IntUnaryOperator):::Returns a stream consisting of the results of applying the given function to the elements of this stream:::
 IntStream#mapToObj(IntFunction):::Returns an object-valued Stream consisting of the results of applying the given function to the elements of this stream:::
@@ -183,6 +352,10 @@ IntStream#findAny():::Returns an OptionalInt describing some element of the stre
 IntStream#asLongStream():::Returns a LongStream consisting of the elements of this stream, converted to long:::
 IntStream#asDoubleStream():::Returns a DoubleStream consisting of the elements of this stream, converted to double:::
 IntStream#boxed():::Returns a Stream consisting of the elements of this stream, each boxed to an Integer:::
+IntStream#sequential()::: int stream sequential:::
+IntStream#parallel()::: int stream parallel:::
+IntStream#iterator()::: int stream iterator:::
+IntStream#spliterator()::: int stream spliterator:::
 IntStream#builder():::Returns a builder for an IntStream.:::return->new->Streams.IntStreamBuilderImpl
 IntStream#empty():::Returns an empty sequential IntStream.:::return->StreamSupport->Spliterators->emptyIntSpliterator->intStream
 IntStream#of(int):::Returns a sequential IntStream containing a single element.:::return->StreamSupport->new->Streams.IntStreamBuilderImpl->intStream
@@ -196,6 +369,57 @@ IntStream#concat(IntStream, IntStream):::Creates a lazily concatenated stream wh
 IntStream.Builder#accept(int):::Adds an element to the stream being built.:::
 IntStream.Builder#add(int):::Adds an element to the stream being built.:::accept->return
 IntStream.Builder#build():::Builds the stream, transitioning this builder to the built state:::
+LongPipeline#adapt(Sink):::Adapt a Sink<Long> to an {@code LongConsumer, ideally simply by casting.:::if->return->else->if->Tripwire->trip->return->sink->accept
+LongPipeline#adapt(Spliterator):::Adapt a Spliterator<Long> to a Spliterator.OfLong.:::if->return->else->if->Tripwire->trip->throw->new->UnsupportedOperationException
+LongPipeline#getOutputShape()::: long pipeline get output shape:::return
+LongPipeline#evaluateToNode(PipelineHelper, Spliterator, boolean, IntFunction)::: long pipeline evaluate to node:::return->Nodes->collectLong
+LongPipeline#wrap(PipelineHelper, Supplier>, boolean)::: long pipeline wrap:::return->new->StreamSpliterators.LongWrappingSpliterator<>
+LongPipeline#lazySpliterator(Supplier>)::: long pipeline lazy spliterator:::return->new->StreamSpliterators.DelegatingSpliterator.OfLong
+LongPipeline#forEachWithCancel(Spliterator, Sink)::: long pipeline for each with cancel:::spl->adapt->adaptedSink->adapt->cancelled->do->while->sink->cancellationRequested->spl->tryAdvance->return
+LongPipeline#makeNodeBuilder(long, IntFunction)::: long pipeline make node builder:::return->Nodes->longBuilder
+LongPipeline#mapToObj(LongFunction, int)::: long pipeline map to obj:::return->new->ReferencePipeline.StatelessOp<Long,U>
+LongPipeline#iterator()::: long pipeline iterator:::return->Spliterators->spliterator->iterator
+LongPipeline#spliterator()::: long pipeline spliterator:::return->super->spliterator->adapt
+LongPipeline#asDoubleStream()::: long pipeline as double stream:::return->new->DoublePipeline.StatelessOp<Long>
+LongPipeline#boxed()::: long pipeline boxed:::return->Long->valueOf->mapToObj
+LongPipeline#map(LongUnaryOperator)::: long pipeline map:::Objects->requireNonNull->return->new->StatelessOp<Long>
+LongPipeline#mapToObj(LongFunction)::: long pipeline map to obj:::Objects->requireNonNull->return->mapToObj
+LongPipeline#mapToInt(LongToIntFunction)::: long pipeline map to int:::Objects->requireNonNull->return->new->IntPipeline.StatelessOp<Long>
+LongPipeline#mapToDouble(LongToDoubleFunction)::: long pipeline map to double:::Objects->requireNonNull->return->new->DoublePipeline.StatelessOp<Long>
+LongPipeline#flatMap(LongFunction)::: long pipeline flat map:::Objects->requireNonNull->return->new->StatelessOp<Long>
+LongPipeline#unordered()::: long pipeline unordered:::if->isOrdered->return->return->new->StatelessOp<Long>
+LongPipeline#filter(LongPredicate)::: long pipeline filter:::Objects->requireNonNull->return->new->StatelessOp<Long>
+LongPipeline#peek(LongConsumer)::: long pipeline peek:::Objects->requireNonNull->return->new->StatelessOp<Long>
+LongPipeline#limit(long)::: long pipeline limit:::if->throw->Long->toString->new->IllegalArgumentException->return->SliceOps->makeLong
+LongPipeline#skip(long)::: long pipeline skip:::if->throw->Long->toString->new->IllegalArgumentException->if->return->else->return->SliceOps->makeLong
+LongPipeline#takeWhile(LongPredicate)::: long pipeline take while:::return->WhileOps->makeTakeWhileLong
+LongPipeline#dropWhile(LongPredicate)::: long pipeline drop while:::return->WhileOps->makeDropWhileLong
+LongPipeline#sorted()::: long pipeline sorted:::return->SortedOps->makeLong
+LongPipeline#distinct()::: long pipeline distinct:::return->boxed->distinct->mapToLong
+LongPipeline#forEach(LongConsumer)::: long pipeline for each:::ForEachOps->makeLong->evaluate
+LongPipeline#forEachOrdered(LongConsumer)::: long pipeline for each ordered:::ForEachOps->makeLong->evaluate
+LongPipeline#sum()::: long pipeline sum:::return->Long->sum->reduce
+LongPipeline#min()::: long pipeline min:::return->Math->min->reduce
+LongPipeline#max()::: long pipeline max:::return->Math->max->reduce
+LongPipeline#average()::: long pipeline average:::avg->new->longArr->collect->return->OptionalDouble->of->OptionalDouble->empty
+LongPipeline#count()::: long pipeline count:::return->ReduceOps->makeLongCounting->evaluate
+LongPipeline#summaryStatistics()::: long pipeline summary statistics:::return->LongSummaryStatistics->new->LongSummaryStatistics->accept->LongSummaryStatistics->combine->collect
+LongPipeline#reduce(long, LongBinaryOperator)::: long pipeline reduce:::return->ReduceOps->makeLong->evaluate
+LongPipeline#reduce(LongBinaryOperator)::: long pipeline reduce:::return->ReduceOps->makeLong->evaluate
+LongPipeline#collect(Supplier, ObjLongConsumer, BiConsumer)::: long pipeline collect:::Objects->requireNonNull->operator->combiner->accept->return->return->ReduceOps->makeLong->evaluate
+LongPipeline#anyMatch(LongPredicate)::: long pipeline any match:::return->MatchOps->makeLong->evaluate
+LongPipeline#allMatch(LongPredicate)::: long pipeline all match:::return->MatchOps->makeLong->evaluate
+LongPipeline#noneMatch(LongPredicate)::: long pipeline none match:::return->MatchOps->makeLong->evaluate
+LongPipeline#findFirst()::: long pipeline find first:::return->FindOps->makeLong->evaluate
+LongPipeline#findAny()::: long pipeline find any:::return->FindOps->makeLong->evaluate
+LongPipeline#toArray()::: long pipeline to array:::return->Nodes->Long[]->new->evaluateToArrayNode->flattenLong->asPrimitiveArray
+LongPipeline.Head#opIsStateful()::: head op is stateful:::throw->new->UnsupportedOperationException
+LongPipeline.Head#opWrapSink(int, Sink)::: head op wrap sink:::throw->new->UnsupportedOperationException
+LongPipeline.Head#forEach(LongConsumer)::: head for each:::if->isParallel->sourceStageSpliterator->adapt->forEachRemaining->else->super->forEach
+LongPipeline.Head#forEachOrdered(LongConsumer)::: head for each ordered:::if->isParallel->sourceStageSpliterator->adapt->forEachRemaining->else->super->forEachOrdered
+LongPipeline.StatelessOp#opIsStateful()::: stateless op op is stateful:::return
+LongPipeline.StatefulOp#opIsStateful()::: stateful op op is stateful:::return
+LongPipeline.StatefulOp#opEvaluateParallel(PipelineHelper, Spliterator, IntFunction)::: stateful op op evaluate parallel:::
 LongStream#filter(LongPredicate):::Returns a stream consisting of the elements of this stream that match the given predicate:::
 LongStream#map(LongUnaryOperator):::Returns a stream consisting of the results of applying the given function to the elements of this stream:::
 LongStream#mapToObj(LongFunction):::Returns an object-valued Stream consisting of the results of applying the given function to the elements of this stream:::
@@ -228,6 +452,10 @@ LongStream#findFirst():::Returns an OptionalLong describing the first element of
 LongStream#findAny():::Returns an OptionalLong describing some element of the stream, or an empty OptionalLong if the stream is empty:::
 LongStream#asDoubleStream():::Returns a DoubleStream consisting of the elements of this stream, converted to double:::
 LongStream#boxed():::Returns a Stream consisting of the elements of this stream, each boxed to a Long:::
+LongStream#sequential()::: long stream sequential:::
+LongStream#parallel()::: long stream parallel:::
+LongStream#iterator()::: long stream iterator:::
+LongStream#spliterator()::: long stream spliterator:::
 LongStream#builder():::Returns a builder for a LongStream.:::return->new->Streams.LongStreamBuilderImpl
 LongStream#empty():::Returns an empty sequential LongStream.:::return->StreamSupport->Spliterators->emptyLongSpliterator->longStream
 LongStream#of(long):::Returns a sequential LongStream containing a single element.:::return->StreamSupport->new->Streams.LongStreamBuilderImpl->longStream
@@ -245,6 +473,15 @@ MatchOps#makeRef(Predicate, MatchKind):::Constructs a quantified predicate match
 MatchOps#makeInt(IntPredicate, MatchKind):::Constructs a quantified predicate matcher for an IntStream.:::Objects->requireNonNull->Objects->requireNonNull->return->MatchSink->new->new->MatchOp<>
 MatchOps#makeLong(LongPredicate, MatchKind):::Constructs a quantified predicate matcher for a LongStream.:::Objects->requireNonNull->Objects->requireNonNull->return->MatchSink->new->new->MatchOp<>
 MatchOps#makeDouble(DoublePredicate, MatchKind):::Constructs a quantified predicate matcher for a DoubleStream.:::Objects->requireNonNull->Objects->requireNonNull->return->MatchSink->new->new->MatchOp<>
+MatchOps.MatchOp#getOpFlags()::: match op get op flags:::return
+MatchOps.MatchOp#inputShape()::: match op input shape:::return
+MatchOps.MatchOp#evaluateSequential(PipelineHelper, Spliterator)::: match op evaluate sequential:::return->helper->sinkSupplier->get->wrapAndCopyInto->getAndClearState
+MatchOps.MatchOp#evaluateParallel(PipelineHelper, Spliterator)::: match op evaluate parallel:::return->new->MatchTask<>->invoke
+MatchOps.BooleanTerminalSink#getAndClearState()::: boolean terminal sink get and clear state:::return
+MatchOps.BooleanTerminalSink#cancellationRequested()::: boolean terminal sink cancellation requested:::return
+MatchOps.MatchTask#makeChild(Spliterator)::: match task make child:::return->new->MatchTask<>
+MatchOps.MatchTask#doLeaf()::: match task do leaf:::b->helper->get->wrapAndCopyInto->getAndClearState->if->shortCircuit->return
+MatchOps.MatchTask#getEmptyResult()::: match task get empty result:::return
 Node#spliterator():::Returns a Spliterator describing the elements contained in this Node.:::
 Node#forEach(Consumer):::Traverses the elements of this node, and invoke the provided Consumer with each element:::
 Node#getChildCount():::Returns the number of child nodes of this node.:::return
@@ -255,10 +492,33 @@ Node#copyInto(T[], int):::Copies the content of this Node into an array, startin
 Node#getShape():::Gets the StreamShape associated with this Node.:::return
 Node#count():::Returns the number of elements contained in this node.:::
 Node.Builder#build():::Builds the node:::
+Node.Builder.OfInt#build()::: of int build:::
+Node.Builder.OfLong#build()::: of long build:::
+Node.Builder.OfDouble#build()::: of double build:::
+Node.OfPrimitive#spliterator()::: of primitive spliterator:::
 Node.OfPrimitive#forEach(T_CONS):::Traverses the elements of this node, and invoke the provided action with each element.:::
+Node.OfPrimitive#getChild(int)::: of primitive get child:::throw->new->IndexOutOfBoundsException
+Node.OfPrimitive#truncate(long, long, IntFunction)::: of primitive truncate:::
+Node.OfPrimitive#asArray(IntFunction)::: of primitive as array:::if->getClass->trip->size->count->if->throw->new->IllegalArgumentException->boxed->generator->count->apply->copyInto->return
 Node.OfPrimitive#asPrimitiveArray():::Views this node as a primitive array:::
 Node.OfPrimitive#newArray(int):::Creates a new primitive array.:::
 Node.OfPrimitive#copyInto(T_ARR, int):::Copies the content of this Node into a primitive array, starting at a given offset into the array:::
+Node.OfInt#forEach(Consumer)::: of int for each:::if->forEach->else->if->Tripwire->getClass->trip->spliterator->forEachRemaining
+Node.OfInt#copyInto(Integer[], int)::: of int copy into:::if->Tripwire->getClass->trip->array->asPrimitiveArray->for->i
+Node.OfInt#truncate(long, long, IntFunction)::: of int truncate:::if->count->return->size->spliterator->spliterator->nodeBuilder->Nodes->intBuilder->nodeBuilder->begin->for->i->spliterator->tryAdvance->if->count->spliterator->forEachRemaining->else->for->i->spliterator->tryAdvance->nodeBuilder->end->return->nodeBuilder->build
+Node.OfInt#newArray(int)::: of int new array:::return->new->intArr
+Node.OfInt#getShape()::: of int get shape:::return
+Node.OfLong#forEach(Consumer)::: of long for each:::if->forEach->else->if->Tripwire->getClass->trip->spliterator->forEachRemaining
+Node.OfLong#copyInto(Long[], int)::: of long copy into:::if->Tripwire->getClass->trip->array->asPrimitiveArray->for->i
+Node.OfLong#truncate(long, long, IntFunction)::: of long truncate:::if->count->return->size->spliterator->spliterator->nodeBuilder->Nodes->longBuilder->nodeBuilder->begin->for->i->spliterator->tryAdvance->if->count->spliterator->forEachRemaining->else->for->i->spliterator->tryAdvance->nodeBuilder->end->return->nodeBuilder->build
+Node.OfLong#newArray(int)::: of long new array:::return->new->longArr
+Node.OfLong#getShape()::: of long get shape:::return
+Node.OfDouble#forEach(Consumer)::: of double for each:::if->forEach->else->if->Tripwire->getClass->trip->spliterator->forEachRemaining
+Node.OfDouble#copyInto(Double[], int)::: of double copy into:::if->Tripwire->getClass->trip->array->asPrimitiveArray->for->i
+Node.OfDouble#truncate(long, long, IntFunction)::: of double truncate:::if->count->return->size->spliterator->spliterator->nodeBuilder->Nodes->doubleBuilder->nodeBuilder->begin->for->i->spliterator->tryAdvance->if->count->spliterator->forEachRemaining->else->for->i->spliterator->tryAdvance->nodeBuilder->end->return->nodeBuilder->build
+Node.OfDouble#newArray(int)::: of double new array:::return->new->doubleArr
+Node.OfDouble#getShape()::: of double get shape:::return
+Nodes#castingArray()::: nodes casting array:::return->new->ObjectArr
 Nodes#emptyNode(StreamShape):::Produces an empty node whose count is zero, has no children and no content.:::switch->return->return->return->return->throw->new->IllegalStateException
 Nodes#conc(StreamShape, Node, Node):::Produces a concatenated Node that has two or more children:::switch->return->new->ConcNode<>->return->new->ConcNode.OfInt->return->new->ConcNode.OfLong->return->new->ConcNode.OfDouble->throw->new->IllegalStateException
 Nodes#node(T[]):::Produces a Node describing an array:::return->new->ArrayNode<>
@@ -282,6 +542,146 @@ Nodes#flatten(Node, IntFunction):::Flatten, in parallel, a Node:::if->node->getC
 Nodes#flattenInt(Node.OfInt):::Flatten, in parallel, a Node.OfInt:::if->node->getChildCount->size->node->count->if->throw->new->IllegalArgumentException->array->new->intArr->new->ToArrayTask.OfInt->invoke->return->node->else->return
 Nodes#flattenLong(Node.OfLong):::Flatten, in parallel, a Node.OfLong:::if->node->getChildCount->size->node->count->if->throw->new->IllegalArgumentException->array->new->longArr->new->ToArrayTask.OfLong->invoke->return->node->else->return
 Nodes#flattenDouble(Node.OfDouble):::Flatten, in parallel, a Node.OfDouble:::if->node->getChildCount->size->node->count->if->throw->new->IllegalArgumentException->array->new->doubleArr->new->ToArrayTask.OfDouble->invoke->return->node->else->return
+Nodes.EmptyNode#asArray(IntFunction)::: empty node as array:::return->generator->apply
+Nodes.EmptyNode#copyInto(T_ARR, int)::: empty node copy into:::
+Nodes.EmptyNode#count()::: empty node count:::return
+Nodes.EmptyNode#forEach(T_CONS)::: empty node for each:::
+Nodes.EmptyNode.OfRef#spliterator()::: of ref spliterator:::return->Spliterators->emptySpliterator
+Nodes.EmptyNode.OfInt#spliterator()::: of int spliterator:::return->Spliterators->emptyIntSpliterator
+Nodes.EmptyNode.OfInt#asPrimitiveArray()::: of int as primitive array:::return
+Nodes.EmptyNode.OfLong#spliterator()::: of long spliterator:::return->Spliterators->emptyLongSpliterator
+Nodes.EmptyNode.OfLong#asPrimitiveArray()::: of long as primitive array:::return
+Nodes.EmptyNode.OfDouble#spliterator()::: of double spliterator:::return->Spliterators->emptyDoubleSpliterator
+Nodes.EmptyNode.OfDouble#asPrimitiveArray()::: of double as primitive array:::return
+Nodes.ArrayNode#spliterator()::: array node spliterator:::return->Arrays->spliterator
+Nodes.ArrayNode#copyInto(T[], int)::: array node copy into:::System->arraycopy
+Nodes.ArrayNode#asArray(IntFunction)::: array node as array:::if->return->else->throw->new->IllegalStateException
+Nodes.ArrayNode#count()::: array node count:::return
+Nodes.ArrayNode#forEach(Consumer)::: array node for each:::for->i
+Nodes.ArrayNode#toString()::: array node to string:::return->String->Arrays->toString->format
+Nodes.CollectionNode#spliterator()::: collection node spliterator:::return->c->stream->spliterator
+Nodes.CollectionNode#copyInto(T[], int)::: collection node copy into:::foreach
+Nodes.CollectionNode#asArray(IntFunction)::: collection node as array:::return->c->generator->c->size->apply->toArray
+Nodes.CollectionNode#count()::: collection node count:::return->c->size
+Nodes.CollectionNode#forEach(Consumer)::: collection node for each:::c->forEach
+Nodes.CollectionNode#toString()::: collection node to string:::return->String->c->size->format
+Nodes.AbstractConcNode#getChildCount()::: abstract conc node get child count:::return
+Nodes.AbstractConcNode#getChild(int)::: abstract conc node get child:::if->return->if->return->throw->new->IndexOutOfBoundsException
+Nodes.AbstractConcNode#count()::: abstract conc node count:::return
+Nodes.ConcNode#spliterator()::: conc node spliterator:::return->new->Nodes.InternalNodeSpliterator.OfRef<>
+Nodes.ConcNode#copyInto(T[], int)::: conc node copy into:::Objects->requireNonNull->left->copyInto->right->left->count->copyInto
+Nodes.ConcNode#asArray(IntFunction)::: conc node as array:::size->count->if->throw->new->IllegalArgumentException->array->generator->apply->copyInto->return
+Nodes.ConcNode#forEach(Consumer)::: conc node for each:::left->forEach->right->forEach
+Nodes.ConcNode#truncate(long, long, IntFunction)::: conc node truncate:::if->count->return->leftCount->left->count->if->return->right->truncate->else->if->return->left->truncate->else->return->Nodes->getShape->left->truncate->right->truncate->conc
+Nodes.ConcNode#toString()::: conc node to string:::if->count->return->String->format->else->return->String->count->format
+Nodes.ConcNode.OfPrimitive#forEach(T_CONS)::: of primitive for each:::left->forEach->right->forEach
+Nodes.ConcNode.OfPrimitive#copyInto(T_ARR, int)::: of primitive copy into:::left->copyInto->right->left->count->copyInto
+Nodes.ConcNode.OfPrimitive#asPrimitiveArray()::: of primitive as primitive array:::size->count->if->throw->new->IllegalArgumentException->array->newArray->copyInto->return
+Nodes.ConcNode.OfPrimitive#toString()::: of primitive to string:::if->count->return->String->this->getClass->getName->format->else->return->String->this->getClass->getName->count->format
+Nodes.ConcNode.OfInt#spliterator()::: of int spliterator:::return->new->InternalNodeSpliterator.OfInt
+Nodes.ConcNode.OfLong#spliterator()::: of long spliterator:::return->new->InternalNodeSpliterator.OfLong
+Nodes.ConcNode.OfDouble#spliterator()::: of double spliterator:::return->new->InternalNodeSpliterator.OfDouble
+Nodes.InternalNodeSpliterator#initStack():::Initiate a stack containing, in left-to-right order, the child nodes covered by this spliterator:::stack->new->ArrayDeque<>->for->i->curNode->getChildCount->return
+Nodes.InternalNodeSpliterator#findNextLeafNode(Deque):::Depth first search, in left-to-right order, of the node tree, using an explicit stack, to find the next non-empty leaf node.:::n->while->stack->pollFirst->if->n->getChildCount->if->n->count->return->else->for->i->n->getChildCount->return
+Nodes.InternalNodeSpliterator#initTryAdvance()::: internal node spliterator init try advance:::if->return->if->if->initStack->leaf->findNextLeafNode->if->leaf->spliterator->else->return->else->return
+Nodes.InternalNodeSpliterator#trySplit()::: internal node spliterator try split:::if->return->else->if->return->lastNodeSpliterator->trySplit->else->if->curNode->getChildCount->return->curNode->getChild->spliterator->else->curNode->getChild->if->curNode->getChildCount->curNode->spliterator->return->lastNodeSpliterator->trySplit->else->return->curNode->getChild->spliterator
+Nodes.InternalNodeSpliterator#estimateSize()::: internal node spliterator estimate size:::if->return->if->return->lastNodeSpliterator->estimateSize->else->size->for->i->curNode->getChildCount->return
+Nodes.InternalNodeSpliterator#characteristics()::: internal node spliterator characteristics:::return
+Nodes.InternalNodeSpliterator.OfRef#tryAdvance(Consumer)::: of ref try advance:::if->initTryAdvance->return->hasNext->tryAdvanceSpliterator->tryAdvance->if->if->leaf->findNextLeafNode->if->leaf->spliterator->return->tryAdvanceSpliterator->tryAdvance->return
+Nodes.InternalNodeSpliterator.OfRef#forEachRemaining(Consumer)::: of ref for each remaining:::if->return->if->if->stack->initStack->leaf->while->findNextLeafNode->leaf->forEach->else->lastNodeSpliterator->forEachRemaining->else->while->tryAdvance
+Nodes.InternalNodeSpliterator.OfPrimitive#tryAdvance(T_CONS)::: of primitive try advance:::if->initTryAdvance->return->hasNext->tryAdvanceSpliterator->tryAdvance->if->if->leaf->findNextLeafNode->if->leaf->spliterator->return->tryAdvanceSpliterator->tryAdvance->return
+Nodes.InternalNodeSpliterator.OfPrimitive#forEachRemaining(T_CONS)::: of primitive for each remaining:::if->return->if->if->stack->initStack->leaf->while->findNextLeafNode->leaf->forEach->else->lastNodeSpliterator->forEachRemaining->else->while->tryAdvance
+Nodes.FixedNodeBuilder#build()::: fixed node builder build:::if->throw->String->format->new->IllegalStateException->return
+Nodes.FixedNodeBuilder#begin(long)::: fixed node builder begin:::if->throw->String->format->new->IllegalStateException
+Nodes.FixedNodeBuilder#accept(T)::: fixed node builder accept:::if->else->throw->String->format->new->IllegalStateException
+Nodes.FixedNodeBuilder#end()::: fixed node builder end:::if->throw->String->format->new->IllegalStateException
+Nodes.FixedNodeBuilder#toString()::: fixed node builder to string:::return->String->Arrays->toString->format
+Nodes.SpinedNodeBuilder#spliterator()::: spined node builder spliterator:::return->super->spliterator
+Nodes.SpinedNodeBuilder#forEach(Consumer)::: spined node builder for each:::super->forEach
+Nodes.SpinedNodeBuilder#begin(long)::: spined node builder begin:::clear->ensureCapacity
+Nodes.SpinedNodeBuilder#accept(T)::: spined node builder accept:::super->accept
+Nodes.SpinedNodeBuilder#end()::: spined node builder end:::
+Nodes.SpinedNodeBuilder#copyInto(T[], int)::: spined node builder copy into:::super->copyInto
+Nodes.SpinedNodeBuilder#asArray(IntFunction)::: spined node builder as array:::return->super->asArray
+Nodes.SpinedNodeBuilder#build()::: spined node builder build:::return
+Nodes.IntArrayNode#spliterator()::: int array node spliterator:::return->Arrays->spliterator
+Nodes.IntArrayNode#asPrimitiveArray()::: int array node as primitive array:::if->return->else->return->Arrays->copyOf
+Nodes.IntArrayNode#copyInto(int[], int)::: int array node copy into:::System->arraycopy
+Nodes.IntArrayNode#count()::: int array node count:::return
+Nodes.IntArrayNode#forEach(IntConsumer)::: int array node for each:::for->i
+Nodes.IntArrayNode#toString()::: int array node to string:::return->String->Arrays->toString->format
+Nodes.LongArrayNode#spliterator()::: long array node spliterator:::return->Arrays->spliterator
+Nodes.LongArrayNode#asPrimitiveArray()::: long array node as primitive array:::if->return->else->return->Arrays->copyOf
+Nodes.LongArrayNode#copyInto(long[], int)::: long array node copy into:::System->arraycopy
+Nodes.LongArrayNode#count()::: long array node count:::return
+Nodes.LongArrayNode#forEach(LongConsumer)::: long array node for each:::for->i
+Nodes.LongArrayNode#toString()::: long array node to string:::return->String->Arrays->toString->format
+Nodes.DoubleArrayNode#spliterator()::: double array node spliterator:::return->Arrays->spliterator
+Nodes.DoubleArrayNode#asPrimitiveArray()::: double array node as primitive array:::if->return->else->return->Arrays->copyOf
+Nodes.DoubleArrayNode#copyInto(double[], int)::: double array node copy into:::System->arraycopy
+Nodes.DoubleArrayNode#count()::: double array node count:::return
+Nodes.DoubleArrayNode#forEach(DoubleConsumer)::: double array node for each:::for->i
+Nodes.DoubleArrayNode#toString()::: double array node to string:::return->String->Arrays->toString->format
+Nodes.IntFixedNodeBuilder#build()::: int fixed node builder build:::if->throw->String->format->new->IllegalStateException->return
+Nodes.IntFixedNodeBuilder#begin(long)::: int fixed node builder begin:::if->throw->String->format->new->IllegalStateException
+Nodes.IntFixedNodeBuilder#accept(int)::: int fixed node builder accept:::if->else->throw->String->format->new->IllegalStateException
+Nodes.IntFixedNodeBuilder#end()::: int fixed node builder end:::if->throw->String->format->new->IllegalStateException
+Nodes.IntFixedNodeBuilder#toString()::: int fixed node builder to string:::return->String->Arrays->toString->format
+Nodes.LongFixedNodeBuilder#build()::: long fixed node builder build:::if->throw->String->format->new->IllegalStateException->return
+Nodes.LongFixedNodeBuilder#begin(long)::: long fixed node builder begin:::if->throw->String->format->new->IllegalStateException
+Nodes.LongFixedNodeBuilder#accept(long)::: long fixed node builder accept:::if->else->throw->String->format->new->IllegalStateException
+Nodes.LongFixedNodeBuilder#end()::: long fixed node builder end:::if->throw->String->format->new->IllegalStateException
+Nodes.LongFixedNodeBuilder#toString()::: long fixed node builder to string:::return->String->Arrays->toString->format
+Nodes.DoubleFixedNodeBuilder#build()::: double fixed node builder build:::if->throw->String->format->new->IllegalStateException->return
+Nodes.DoubleFixedNodeBuilder#begin(long)::: double fixed node builder begin:::if->throw->String->format->new->IllegalStateException
+Nodes.DoubleFixedNodeBuilder#accept(double)::: double fixed node builder accept:::if->else->throw->String->format->new->IllegalStateException
+Nodes.DoubleFixedNodeBuilder#end()::: double fixed node builder end:::if->throw->String->format->new->IllegalStateException
+Nodes.DoubleFixedNodeBuilder#toString()::: double fixed node builder to string:::return->String->Arrays->toString->format
+Nodes.IntSpinedNodeBuilder#spliterator()::: int spined node builder spliterator:::return->super->spliterator
+Nodes.IntSpinedNodeBuilder#forEach(IntConsumer)::: int spined node builder for each:::super->forEach
+Nodes.IntSpinedNodeBuilder#begin(long)::: int spined node builder begin:::clear->ensureCapacity
+Nodes.IntSpinedNodeBuilder#accept(int)::: int spined node builder accept:::super->accept
+Nodes.IntSpinedNodeBuilder#end()::: int spined node builder end:::
+Nodes.IntSpinedNodeBuilder#copyInto(int[], int)::: int spined node builder copy into:::super->copyInto
+Nodes.IntSpinedNodeBuilder#asPrimitiveArray()::: int spined node builder as primitive array:::return->super->asPrimitiveArray
+Nodes.IntSpinedNodeBuilder#build()::: int spined node builder build:::return
+Nodes.LongSpinedNodeBuilder#spliterator()::: long spined node builder spliterator:::return->super->spliterator
+Nodes.LongSpinedNodeBuilder#forEach(LongConsumer)::: long spined node builder for each:::super->forEach
+Nodes.LongSpinedNodeBuilder#begin(long)::: long spined node builder begin:::clear->ensureCapacity
+Nodes.LongSpinedNodeBuilder#accept(long)::: long spined node builder accept:::super->accept
+Nodes.LongSpinedNodeBuilder#end()::: long spined node builder end:::
+Nodes.LongSpinedNodeBuilder#copyInto(long[], int)::: long spined node builder copy into:::super->copyInto
+Nodes.LongSpinedNodeBuilder#asPrimitiveArray()::: long spined node builder as primitive array:::return->super->asPrimitiveArray
+Nodes.LongSpinedNodeBuilder#build()::: long spined node builder build:::return
+Nodes.DoubleSpinedNodeBuilder#spliterator()::: double spined node builder spliterator:::return->super->spliterator
+Nodes.DoubleSpinedNodeBuilder#forEach(DoubleConsumer)::: double spined node builder for each:::super->forEach
+Nodes.DoubleSpinedNodeBuilder#begin(long)::: double spined node builder begin:::clear->ensureCapacity
+Nodes.DoubleSpinedNodeBuilder#accept(double)::: double spined node builder accept:::super->accept
+Nodes.DoubleSpinedNodeBuilder#end()::: double spined node builder end:::
+Nodes.DoubleSpinedNodeBuilder#copyInto(double[], int)::: double spined node builder copy into:::super->copyInto
+Nodes.DoubleSpinedNodeBuilder#asPrimitiveArray()::: double spined node builder as primitive array:::return->super->asPrimitiveArray
+Nodes.DoubleSpinedNodeBuilder#build()::: double spined node builder build:::return
+Nodes.SizedCollectorTask#compute()::: sized collector task compute:::task->rightSplit->leftSplit->while->rightSplit->estimateSize->rightSplit->trySplit->task->setPendingCount->leftSplitSize->leftSplit->estimateSize->task->makeChild->fork->task->makeChild->sink->wrapAndCopyInto->task->propagateCompletion
+Nodes.SizedCollectorTask#makeChild(Spliterator, long, long)::: sized collector task make child:::
+Nodes.SizedCollectorTask#begin(long)::: sized collector task begin:::if->throw->new->IllegalStateException
+Nodes.SizedCollectorTask.OfRef#makeChild(Spliterator, long, long)::: of ref make child:::return->new->OfRef<>
+Nodes.SizedCollectorTask.OfRef#accept(P_OUT)::: of ref accept:::if->throw->Integer->toString->new->IndexOutOfBoundsException
+Nodes.SizedCollectorTask.OfInt#makeChild(Spliterator, long, long)::: of int make child:::return->new->SizedCollectorTask.OfInt<>
+Nodes.SizedCollectorTask.OfInt#accept(int)::: of int accept:::if->throw->Integer->toString->new->IndexOutOfBoundsException
+Nodes.SizedCollectorTask.OfLong#makeChild(Spliterator, long, long)::: of long make child:::return->new->SizedCollectorTask.OfLong<>
+Nodes.SizedCollectorTask.OfLong#accept(long)::: of long accept:::if->throw->Integer->toString->new->IndexOutOfBoundsException
+Nodes.SizedCollectorTask.OfDouble#makeChild(Spliterator, long, long)::: of double make child:::return->new->SizedCollectorTask.OfDouble<>
+Nodes.SizedCollectorTask.OfDouble#accept(double)::: of double accept:::if->throw->Integer->toString->new->IndexOutOfBoundsException
+Nodes.ToArrayTask#copyNodeToArray()::: to array task copy node to array:::
+Nodes.ToArrayTask#makeChild(int, int)::: to array task make child:::
+Nodes.ToArrayTask#compute()::: to array task compute:::task->while->if->getChildCount->task->copyNodeToArray->task->propagateCompletion->return->else->task->getChildCount->setPendingCount->size->i->for->getChildCount->task->makeChild
+Nodes.ToArrayTask.OfRef#makeChild(int, int)::: of ref make child:::return->node->getChild->new->OfRef<>
+Nodes.ToArrayTask.OfRef#copyNodeToArray()::: of ref copy node to array:::node->copyInto
+Nodes.ToArrayTask.OfPrimitive#makeChild(int, int)::: of primitive make child:::return->node->getChild->new->OfPrimitive<>
+Nodes.ToArrayTask.OfPrimitive#copyNodeToArray()::: of primitive copy node to array:::node->copyInto
+Nodes.CollectorTask#makeChild(Spliterator)::: collector task make child:::return->new->CollectorTask<>
+Nodes.CollectorTask#doLeaf()::: collector task do leaf:::builder->builderFactory->helper->exactOutputSizeIfKnown->apply->return->helper->wrapAndCopyInto->build
+Nodes.CollectorTask#onCompletion(CountedCompleter)::: collector task on completion:::if->isLeaf->concFactory->leftChild->getLocalResult->rightChild->getLocalResult->apply->setLocalResult->super->onCompletion
 PipelineHelper#getSourceShape():::Gets the stream shape for the source of the pipeline segment.:::
 PipelineHelper#getStreamAndOpFlags():::Gets the combined stream and operation flags for the output of the described pipeline:::
 PipelineHelper#exactOutputSizeIfKnown(Spliterator):::Returns the exact output size of the portion of the output resulting from applying the pipeline stages described by this PipelineHelper to the portion of the input described by the provided Spliterator, if known:::
@@ -289,6 +689,7 @@ PipelineHelper#wrapAndCopyInto(S, Spliterator):::Applies the pipeline stages des
 PipelineHelper#copyInto(Sink, Spliterator):::Pushes elements obtained from the Spliterator into the provided Sink:::
 PipelineHelper#copyIntoWithCancel(Sink, Spliterator):::Pushes elements obtained from the Spliterator into the provided Sink, checking Sink#cancellationRequested() after each element, and stopping if cancellation is requested.:::
 PipelineHelper#wrapSink(Sink):::Takes a Sink that accepts elements of the output type of the PipelineHelper, and wrap it with a Sink that accepts elements of the input type and implements all the intermediate operations described by this PipelineHelper, delivering the result into the provided Sink.:::
+PipelineHelper#wrapSpliterator(Spliterator)::: pipeline helper wrap spliterator:::
 PipelineHelper#makeNodeBuilder(long, IntFunction):::Constructs a @{link Node.Builder} compatible with the output shape of this PipelineHelper.:::
 PipelineHelper#evaluate(Spliterator, boolean, IntFunction):::Collects all output elements resulting from applying the pipeline stages to the source Spliterator into a Node.:::
 ReduceOps#makeRef(U, BiFunction, BinaryOperator):::Constructs a TerminalOp that implements a functional reduce on reference values.:::Objects->requireNonNull->Objects->requireNonNull->return->new->ReduceOp<T,U,ReducingSink>
@@ -308,32 +709,219 @@ ReduceOps#makeDouble(double, DoubleBinaryOperator):::Constructs a TerminalOp tha
 ReduceOps#makeDouble(DoubleBinaryOperator):::Constructs a TerminalOp that implements a functional reduce on double values, producing an optional double result.:::Objects->requireNonNull->return->new->ReduceOp<Double,OptionalDouble,ReducingSink>
 ReduceOps#makeDouble(Supplier, ObjDoubleConsumer, BinaryOperator):::Constructs a TerminalOp that implements a mutable reduce on double values.:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->return->new->ReduceOp<Double,R,ReducingSink>
 ReduceOps#makeDoubleCounting():::Constructs a TerminalOp that counts the number of stream elements:::return->new->ReduceOp<Double,Long,CountingSink<Double>>
+ReduceOps.CountingSink#begin(long)::: counting sink begin:::
+ReduceOps.CountingSink#get()::: counting sink get:::return
+ReduceOps.CountingSink#combine(CountingSink)::: counting sink combine:::
+ReduceOps.CountingSink.OfRef#accept(T)::: of ref accept:::
+ReduceOps.CountingSink.OfInt#accept(int)::: of int accept:::
+ReduceOps.CountingSink.OfLong#accept(long)::: of long accept:::
+ReduceOps.CountingSink.OfDouble#accept(double)::: of double accept:::
+ReduceOps.AccumulatingSink#combine(K)::: accumulating sink combine:::
+ReduceOps.Box#get()::: box get:::return
+ReduceOps.ReduceOp#makeSink()::: reduce op make sink:::
+ReduceOps.ReduceOp#inputShape()::: reduce op input shape:::return
+ReduceOps.ReduceOp#evaluateSequential(PipelineHelper, Spliterator)::: reduce op evaluate sequential:::return->helper->makeSink->wrapAndCopyInto->get
+ReduceOps.ReduceOp#evaluateParallel(PipelineHelper, Spliterator)::: reduce op evaluate parallel:::return->new->ReduceTask<>->invoke->get
+ReduceOps.ReduceTask#makeChild(Spliterator)::: reduce task make child:::return->new->ReduceTask<>
+ReduceOps.ReduceTask#doLeaf()::: reduce task do leaf:::return->helper->op->makeSink->wrapAndCopyInto
+ReduceOps.ReduceTask#onCompletion(CountedCompleter)::: reduce task on completion:::if->isLeaf->leftResult->leftChild->getLocalResult->leftResult->rightChild->getLocalResult->combine->setLocalResult->super->onCompletion
+ReferencePipeline#getOutputShape()::: reference pipeline get output shape:::return
+ReferencePipeline#evaluateToNode(PipelineHelper, Spliterator, boolean, IntFunction)::: reference pipeline evaluate to node:::return->Nodes->collect
+ReferencePipeline#wrap(PipelineHelper, Supplier>, boolean)::: reference pipeline wrap:::return->new->StreamSpliterators.WrappingSpliterator<>
+ReferencePipeline#lazySpliterator(Supplier>)::: reference pipeline lazy spliterator:::return->new->StreamSpliterators.DelegatingSpliterator<>
+ReferencePipeline#forEachWithCancel(Spliterator, Sink)::: reference pipeline for each with cancel:::cancelled->do->while->sink->cancellationRequested->spliterator->tryAdvance->return
+ReferencePipeline#makeNodeBuilder(long, IntFunction)::: reference pipeline make node builder:::return->Nodes->builder
+ReferencePipeline#iterator()::: reference pipeline iterator:::return->Spliterators->spliterator->iterator
+ReferencePipeline#unordered()::: reference pipeline unordered:::if->isOrdered->return->return->new->StatelessOp<P_OUT,P_OUT>
+ReferencePipeline#filter(Predicate)::: reference pipeline filter:::Objects->requireNonNull->return->new->StatelessOp<P_OUT,P_OUT>
+ReferencePipeline#map(Function)::: reference pipeline map:::Objects->requireNonNull->return->new->StatelessOp<P_OUT,R>
+ReferencePipeline#mapToInt(ToIntFunction)::: reference pipeline map to int:::Objects->requireNonNull->return->new->IntPipeline.StatelessOp<P_OUT>
+ReferencePipeline#mapToLong(ToLongFunction)::: reference pipeline map to long:::Objects->requireNonNull->return->new->LongPipeline.StatelessOp<P_OUT>
+ReferencePipeline#mapToDouble(ToDoubleFunction)::: reference pipeline map to double:::Objects->requireNonNull->return->new->DoublePipeline.StatelessOp<P_OUT>
+ReferencePipeline#flatMap(Function>)::: reference pipeline flat map:::Objects->requireNonNull->return->new->StatelessOp<P_OUT,R>
+ReferencePipeline#flatMapToInt(Function)::: reference pipeline flat map to int:::Objects->requireNonNull->return->new->IntPipeline.StatelessOp<P_OUT>
+ReferencePipeline#flatMapToDouble(Function)::: reference pipeline flat map to double:::Objects->requireNonNull->return->new->DoublePipeline.StatelessOp<P_OUT>
+ReferencePipeline#flatMapToLong(Function)::: reference pipeline flat map to long:::Objects->requireNonNull->return->new->LongPipeline.StatelessOp<P_OUT>
+ReferencePipeline#peek(Consumer)::: reference pipeline peek:::Objects->requireNonNull->return->new->StatelessOp<P_OUT,P_OUT>
+ReferencePipeline#distinct()::: reference pipeline distinct:::return->DistinctOps->makeRef
+ReferencePipeline#sorted()::: reference pipeline sorted:::return->SortedOps->makeRef
+ReferencePipeline#sorted(Comparator)::: reference pipeline sorted:::return->SortedOps->makeRef
+ReferencePipeline#limit(long)::: reference pipeline limit:::if->throw->Long->toString->new->IllegalArgumentException->return->SliceOps->makeRef
+ReferencePipeline#skip(long)::: reference pipeline skip:::if->throw->Long->toString->new->IllegalArgumentException->if->return->else->return->SliceOps->makeRef
+ReferencePipeline#takeWhile(Predicate)::: reference pipeline take while:::return->WhileOps->makeTakeWhileRef
+ReferencePipeline#dropWhile(Predicate)::: reference pipeline drop while:::return->WhileOps->makeDropWhileRef
+ReferencePipeline#forEach(Consumer)::: reference pipeline for each:::ForEachOps->makeRef->evaluate
+ReferencePipeline#forEachOrdered(Consumer)::: reference pipeline for each ordered:::ForEachOps->makeRef->evaluate
+ReferencePipeline#toArray(IntFunction)::: reference pipeline to array:::rawGenerator->return->Nodes->evaluateToArrayNode->flatten->asArray
+ReferencePipeline#toArray()::: reference pipeline to array:::return->Object[]->new->toArray
+ReferencePipeline#anyMatch(Predicate)::: reference pipeline any match:::return->MatchOps->makeRef->evaluate
+ReferencePipeline#allMatch(Predicate)::: reference pipeline all match:::return->MatchOps->makeRef->evaluate
+ReferencePipeline#noneMatch(Predicate)::: reference pipeline none match:::return->MatchOps->makeRef->evaluate
+ReferencePipeline#findFirst()::: reference pipeline find first:::return->FindOps->makeRef->evaluate
+ReferencePipeline#findAny()::: reference pipeline find any:::return->FindOps->makeRef->evaluate
+ReferencePipeline#reduce(P_OUT, BinaryOperator)::: reference pipeline reduce:::return->ReduceOps->makeRef->evaluate
+ReferencePipeline#reduce(BinaryOperator)::: reference pipeline reduce:::return->ReduceOps->makeRef->evaluate
+ReferencePipeline#reduce(R, BiFunction, BinaryOperator)::: reference pipeline reduce:::return->ReduceOps->makeRef->evaluate
+ReferencePipeline#collect(Collector)::: reference pipeline collect:::container->if->isParallel->collector->characteristics->contains->isOrdered->collector->characteristics->contains->collector->supplier->get->accumulator->collector->accumulator->accumulator->accept->forEach->else->ReduceOps->makeRef->evaluate->return->collector->characteristics->contains->collector->finisher->apply
+ReferencePipeline#collect(Supplier, BiConsumer, BiConsumer)::: reference pipeline collect:::return->ReduceOps->makeRef->evaluate
+ReferencePipeline#max(Comparator)::: reference pipeline max:::return->BinaryOperator->maxBy->reduce
+ReferencePipeline#min(Comparator)::: reference pipeline min:::return->BinaryOperator->minBy->reduce
+ReferencePipeline#count()::: reference pipeline count:::return->ReduceOps->makeRefCounting->evaluate
+ReferencePipeline.Head#opIsStateful()::: head op is stateful:::throw->new->UnsupportedOperationException
+ReferencePipeline.Head#opWrapSink(int, Sink)::: head op wrap sink:::throw->new->UnsupportedOperationException
+ReferencePipeline.Head#forEach(Consumer)::: head for each:::if->isParallel->sourceStageSpliterator->forEachRemaining->else->super->forEach
+ReferencePipeline.Head#forEachOrdered(Consumer)::: head for each ordered:::if->isParallel->sourceStageSpliterator->forEachRemaining->else->super->forEachOrdered
+ReferencePipeline.StatelessOp#opIsStateful()::: stateless op op is stateful:::return
+ReferencePipeline.StatefulOp#opIsStateful()::: stateful op op is stateful:::return
+ReferencePipeline.StatefulOp#opEvaluateParallel(PipelineHelper, Spliterator, IntFunction)::: stateful op op evaluate parallel:::
 Sink#begin(long):::Resets the sink state to receive a fresh data set:::
 Sink#end():::Indicates that all elements have been pushed:::
 Sink#cancellationRequested():::Indicates that this Sink does not wish to receive any more data.:::return
 Sink#accept(int):::Accepts an int value.:::throw->new->IllegalStateException
 Sink#accept(long):::Accepts a long value.:::throw->new->IllegalStateException
 Sink#accept(double):::Accepts a double value.:::throw->new->IllegalStateException
+Sink.OfInt#accept(int)::: of int accept:::
+Sink.OfInt#accept(Integer)::: of int accept:::if->Tripwire->getClass->trip->i->intValue->accept
+Sink.OfLong#accept(long)::: of long accept:::
+Sink.OfLong#accept(Long)::: of long accept:::if->Tripwire->getClass->trip->i->longValue->accept
+Sink.OfDouble#accept(double)::: of double accept:::
+Sink.OfDouble#accept(Double)::: of double accept:::if->Tripwire->getClass->trip->i->doubleValue->accept
+Sink.ChainedReference#begin(long)::: chained reference begin:::downstream->begin
+Sink.ChainedReference#end()::: chained reference end:::downstream->end
+Sink.ChainedReference#cancellationRequested()::: chained reference cancellation requested:::return->downstream->cancellationRequested
+Sink.ChainedInt#begin(long)::: chained int begin:::downstream->begin
+Sink.ChainedInt#end()::: chained int end:::downstream->end
+Sink.ChainedInt#cancellationRequested()::: chained int cancellation requested:::return->downstream->cancellationRequested
+Sink.ChainedLong#begin(long)::: chained long begin:::downstream->begin
+Sink.ChainedLong#end()::: chained long end:::downstream->end
+Sink.ChainedLong#cancellationRequested()::: chained long cancellation requested:::return->downstream->cancellationRequested
+Sink.ChainedDouble#begin(long)::: chained double begin:::downstream->begin
+Sink.ChainedDouble#end()::: chained double end:::downstream->end
+Sink.ChainedDouble#cancellationRequested()::: chained double cancellation requested:::return->downstream->cancellationRequested
+SliceOps#calcSize(long, long, long):::Calculates the sliced size given the current size, number of elements skip, and the number of elements to limit.:::return->Math->Math->min->max
+SliceOps#calcSliceFence(long, long):::Calculates the slice fence, which is one past the index of the slice range:::sliceFence->return
+SliceOps#sliceSpliterator(StreamShape, Spliterator, long, long):::Creates a slice spliterator given a stream shape governing the spliterator type:::sliceFence->calcSliceFence->switch->return->new->StreamSpliterators.SliceSpliterator.OfRef<>->return->new->StreamSpliterators.SliceSpliterator.OfInt->return->new->StreamSpliterators.SliceSpliterator.OfLong->return->new->StreamSpliterators.SliceSpliterator.OfDouble->throw->new->IllegalStateException
 SliceOps#makeRef(AbstractPipeline, long, long):::Appends a "slice" operation to the provided stream:::if->throw->new->IllegalArgumentException->return->flags->new->ReferencePipeline.StatefulOp<T,T>
 SliceOps#makeInt(AbstractPipeline, long, long):::Appends a "slice" operation to the provided IntStream:::if->throw->new->IllegalArgumentException->return->flags->new->IntPipeline.StatefulOp<Integer>
 SliceOps#makeLong(AbstractPipeline, long, long):::Appends a "slice" operation to the provided LongStream:::if->throw->new->IllegalArgumentException->return->flags->new->LongPipeline.StatefulOp<Long>
 SliceOps#makeDouble(AbstractPipeline, long, long):::Appends a "slice" operation to the provided DoubleStream:::if->throw->new->IllegalArgumentException->return->flags->new->DoublePipeline.StatefulOp<Double>
+SliceOps#flags(long)::: slice ops flags:::return
+SliceOps.SliceTask#makeChild(Spliterator)::: slice task make child:::return->new->SliceTask<>
+SliceOps.SliceTask#getEmptyResult()::: slice task get empty result:::return->Nodes->op->getOutputShape->emptyNode
+SliceOps.SliceTask#doLeaf()::: slice task do leaf:::if->isRoot->sizeIfKnown->isPreserved->op->exactOutputSizeIfKnown->nb->op->makeNodeBuilder->opSink->op->helper->getStreamAndOpFlags->opWrapSink->helper->helper->wrapSink->copyIntoWithCancel->return->nb->build->else->nb->op->makeNodeBuilder->if->opSink->op->helper->getStreamAndOpFlags->opWrapSink->helper->helper->wrapSink->copyIntoWithCancel->else->helper->wrapAndCopyInto->node->nb->build->node->count->return
+SliceOps.SliceTask#onCompletion(CountedCompleter)::: slice task on completion:::if->isLeaf->result->if->getEmptyResult->else->if->getEmptyResult->else->if->rightChild->getLocalResult->else->Nodes->op->getOutputShape->leftChild->getLocalResult->rightChild->getLocalResult->conc->isRoot->doTruncate->setLocalResult->if->isRoot->isLeftCompleted->cancelLaterNodes->super->onCompletion
+SliceOps.SliceTask#cancel()::: slice task cancel:::super->cancel->if->getEmptyResult->setLocalResult
+SliceOps.SliceTask#doTruncate(Node)::: slice task do truncate:::to->Math->input->count->min->return->input->truncate
+SliceOps.SliceTask#isLeftCompleted(long):::Determine if the number of completed elements in this node and nodes to the left of this node is greater than or equal to the target size.:::size->completedSize->if->return->for->parent->getParent->node->parent->getParent->return
+SliceOps.SliceTask#completedSize(long):::Compute the number of completed elements in this node:::if->return->else->left->right->if->return->else->leftSize->left->completedSize->return->right->completedSize
 SortedOps#makeRef(AbstractPipeline):::Appends a "sorted" operation to the provided stream.:::return->new->OfRef<>
 SortedOps#makeRef(AbstractPipeline, Comparator):::Appends a "sorted" operation to the provided stream.:::return->new->OfRef<>
 SortedOps#makeInt(AbstractPipeline):::Appends a "sorted" operation to the provided stream.:::return->new->OfInt
 SortedOps#makeLong(AbstractPipeline):::Appends a "sorted" operation to the provided stream.:::return->new->OfLong
 SortedOps#makeDouble(AbstractPipeline):::Appends a "sorted" operation to the provided stream.:::return->new->OfDouble
+SortedOps.OfRef#opWrapSink(int, Sink)::: of ref op wrap sink:::Objects->requireNonNull->if->isKnown->return->else->if->isKnown->return->new->SizedRefSortingSink<>->else->return->new->RefSortingSink<>
+SortedOps.OfRef#opEvaluateParallel(PipelineHelper, Spliterator, IntFunction)::: of ref op evaluate parallel:::if->helper->getStreamAndOpFlags->isKnown->return->helper->evaluate->else->flattenedData->helper->evaluate->asArray->Arrays->parallelSort->return->Nodes->node
+SortedOps.OfInt#opWrapSink(int, Sink)::: of int op wrap sink:::Objects->requireNonNull->if->isKnown->return->else->if->isKnown->return->new->SizedIntSortingSink->else->return->new->IntSortingSink
+SortedOps.OfInt#opEvaluateParallel(PipelineHelper, Spliterator, IntFunction)::: of int op evaluate parallel:::if->helper->getStreamAndOpFlags->isKnown->return->helper->evaluate->else->n->helper->evaluate->content->n->asPrimitiveArray->Arrays->parallelSort->return->Nodes->node
+SortedOps.OfLong#opWrapSink(int, Sink)::: of long op wrap sink:::Objects->requireNonNull->if->isKnown->return->else->if->isKnown->return->new->SizedLongSortingSink->else->return->new->LongSortingSink
+SortedOps.OfLong#opEvaluateParallel(PipelineHelper, Spliterator, IntFunction)::: of long op evaluate parallel:::if->helper->getStreamAndOpFlags->isKnown->return->helper->evaluate->else->n->helper->evaluate->content->n->asPrimitiveArray->Arrays->parallelSort->return->Nodes->node
+SortedOps.OfDouble#opWrapSink(int, Sink)::: of double op wrap sink:::Objects->requireNonNull->if->isKnown->return->else->if->isKnown->return->new->SizedDoubleSortingSink->else->return->new->DoubleSortingSink
+SortedOps.OfDouble#opEvaluateParallel(PipelineHelper, Spliterator, IntFunction)::: of double op evaluate parallel:::if->helper->getStreamAndOpFlags->isKnown->return->helper->evaluate->else->n->helper->evaluate->content->n->asPrimitiveArray->Arrays->parallelSort->return->Nodes->node
+SortedOps.AbstractRefSortingSink#cancellationRequested():::Records is cancellation is requested so short-circuiting behaviour can be preserved when the sorted elements are pushed downstream.:::return
+SortedOps.SizedRefSortingSink#begin(long)::: sized ref sorting sink begin:::if->throw->new->IllegalArgumentException->new->ObjectArr
+SortedOps.SizedRefSortingSink#end()::: sized ref sorting sink end:::Arrays->sort->downstream->begin->if->for->i->else->for->i->downstream->cancellationRequested->downstream->end
+SortedOps.SizedRefSortingSink#accept(T)::: sized ref sorting sink accept:::
+SortedOps.RefSortingSink#begin(long)::: ref sorting sink begin:::if->throw->new->IllegalArgumentException->new->ArrayList<>->new->ArrayList<>
+SortedOps.RefSortingSink#end()::: ref sorting sink end:::list->sort->downstream->list->size->begin->if->list->downstream->accept->forEach->else->foreach->if->downstream->cancellationRequested->break->downstream->accept->downstream->end
+SortedOps.RefSortingSink#accept(T)::: ref sorting sink accept:::list->add
+SortedOps.AbstractIntSortingSink#cancellationRequested()::: abstract int sorting sink cancellation requested:::return
+SortedOps.SizedIntSortingSink#begin(long)::: sized int sorting sink begin:::if->throw->new->IllegalArgumentException->new->intArr
+SortedOps.SizedIntSortingSink#end()::: sized int sorting sink end:::Arrays->sort->downstream->begin->if->for->i->else->for->i->downstream->cancellationRequested->downstream->end
+SortedOps.SizedIntSortingSink#accept(int)::: sized int sorting sink accept:::
+SortedOps.IntSortingSink#begin(long)::: int sorting sink begin:::if->throw->new->IllegalArgumentException->new->SpinedBuffer.OfInt->new->SpinedBuffer.OfInt
+SortedOps.IntSortingSink#end()::: int sorting sink end:::ints->b->asPrimitiveArray->Arrays->sort->downstream->begin->if->foreach->downstream->accept->else->foreach->if->downstream->cancellationRequested->break->downstream->accept->downstream->end
+SortedOps.IntSortingSink#accept(int)::: int sorting sink accept:::b->accept
+SortedOps.AbstractLongSortingSink#cancellationRequested()::: abstract long sorting sink cancellation requested:::return
+SortedOps.SizedLongSortingSink#begin(long)::: sized long sorting sink begin:::if->throw->new->IllegalArgumentException->new->longArr
+SortedOps.SizedLongSortingSink#end()::: sized long sorting sink end:::Arrays->sort->downstream->begin->if->for->i->else->for->i->downstream->cancellationRequested->downstream->end
+SortedOps.SizedLongSortingSink#accept(long)::: sized long sorting sink accept:::
+SortedOps.LongSortingSink#begin(long)::: long sorting sink begin:::if->throw->new->IllegalArgumentException->new->SpinedBuffer.OfLong->new->SpinedBuffer.OfLong
+SortedOps.LongSortingSink#end()::: long sorting sink end:::longs->b->asPrimitiveArray->Arrays->sort->downstream->begin->if->foreach->downstream->accept->else->foreach->if->downstream->cancellationRequested->break->downstream->accept->downstream->end
+SortedOps.LongSortingSink#accept(long)::: long sorting sink accept:::b->accept
+SortedOps.AbstractDoubleSortingSink#cancellationRequested()::: abstract double sorting sink cancellation requested:::return
+SortedOps.SizedDoubleSortingSink#begin(long)::: sized double sorting sink begin:::if->throw->new->IllegalArgumentException->new->doubleArr
+SortedOps.SizedDoubleSortingSink#end()::: sized double sorting sink end:::Arrays->sort->downstream->begin->if->for->i->else->for->i->downstream->cancellationRequested->downstream->end
+SortedOps.SizedDoubleSortingSink#accept(double)::: sized double sorting sink accept:::
+SortedOps.DoubleSortingSink#begin(long)::: double sorting sink begin:::if->throw->new->IllegalArgumentException->new->SpinedBuffer.OfDouble->new->SpinedBuffer.OfDouble
+SortedOps.DoubleSortingSink#end()::: double sorting sink end:::doubles->b->asPrimitiveArray->Arrays->sort->downstream->begin->if->foreach->downstream->accept->else->foreach->if->downstream->cancellationRequested->break->downstream->accept->downstream->end
+SortedOps.DoubleSortingSink#accept(double)::: double sorting sink accept:::b->accept
 SpinedBuffer#capacity():::Returns the current capacity of the buffer:::return
+SpinedBuffer#inflateSpine()::: spined buffer inflate spine:::if->new->ObjectArrs->new->longArr
 SpinedBuffer#ensureCapacity(long):::Ensure that the buffer has at least capacity to hold the target size:::capacity->capacity->if->inflateSpine->for->i
 SpinedBuffer#increaseCapacity():::Force the buffer to increase its capacity.:::capacity->ensureCapacity
 SpinedBuffer#get(long):::Retrieve the element at the specified index.:::if->if->return->else->throw->Long->toString->new->IndexOutOfBoundsException->if->count->throw->Long->toString->new->IndexOutOfBoundsException->for->j->throw->Long->toString->new->IndexOutOfBoundsException
 SpinedBuffer#copyInto(E[], int):::Copy the elements, starting at the specified offset, into the specified array.:::finalOffset->count->if->throw->new->IndexOutOfBoundsException->if->System->arraycopy->else->for->i->if->System->arraycopy
 SpinedBuffer#asArray(IntFunction):::Create a new array using the specified array factory, and copy the elements into it.:::size->count->if->throw->new->IllegalArgumentException->result->arrayFactory->apply->copyInto->return
+SpinedBuffer#clear()::: spined buffer clear:::if->for->i->else->for->i
+SpinedBuffer#iterator()::: spined buffer iterator:::return->Spliterators->spliterator->iterator
+SpinedBuffer#forEach(Consumer)::: spined buffer for each:::for->j->for->i
+SpinedBuffer#accept(E)::: spined buffer accept:::if->inflateSpine->if->increaseCapacity
+SpinedBuffer#toString()::: spined buffer to string:::list->new->ArrayList<>->list->add->forEach->return->list->toString
 SpinedBuffer#spliterator():::Return a Spliterator describing the contents of the buffer.:::return->new->Splitr
+SpinedBuffer.OfPrimitive#iterator()::: of primitive iterator:::
+SpinedBuffer.OfPrimitive#forEach(Consumer)::: of primitive for each:::
 SpinedBuffer.OfPrimitive#newArrayArray(int):::Create a new array-of-array of the proper type and size:::
 SpinedBuffer.OfPrimitive#newArray(int):::Create a new array of the proper type and size:::
 SpinedBuffer.OfPrimitive#arrayLength(T_ARR):::Get the length of an array:::
 SpinedBuffer.OfPrimitive#arrayForEach(T_ARR, int, int, T_CONS):::Iterate an array with the provided consumer:::
+SpinedBuffer.OfPrimitive#capacity()::: of primitive capacity:::return->arrayLength->arrayLength
+SpinedBuffer.OfPrimitive#inflateSpine()::: of primitive inflate spine:::if->newArrayArray->new->longArr
+SpinedBuffer.OfPrimitive#ensureCapacity(long)::: of primitive ensure capacity:::capacity->capacity->if->inflateSpine->for->i
+SpinedBuffer.OfPrimitive#increaseCapacity()::: of primitive increase capacity:::capacity->ensureCapacity
+SpinedBuffer.OfPrimitive#chunkFor(long)::: of primitive chunk for:::if->if->return->else->throw->Long->toString->new->IndexOutOfBoundsException->if->count->throw->Long->toString->new->IndexOutOfBoundsException->for->j->throw->Long->toString->new->IndexOutOfBoundsException
+SpinedBuffer.OfPrimitive#copyInto(T_ARR, int)::: of primitive copy into:::finalOffset->count->if->arrayLength->throw->new->IndexOutOfBoundsException->if->System->arraycopy->else->for->i->if->System->arraycopy
+SpinedBuffer.OfPrimitive#asPrimitiveArray()::: of primitive as primitive array:::size->count->if->throw->new->IllegalArgumentException->result->newArray->copyInto->return
+SpinedBuffer.OfPrimitive#preAccept()::: of primitive pre accept:::if->arrayLength->inflateSpine->if->increaseCapacity
+SpinedBuffer.OfPrimitive#clear()::: of primitive clear:::if
+SpinedBuffer.OfPrimitive#forEach(T_CONS)::: of primitive for each:::for->j->arrayForEach
+SpinedBuffer.OfPrimitive.BaseSpliterator#newSpliterator(int, int, int, int)::: base spliterator new spliterator:::
+SpinedBuffer.OfPrimitive.BaseSpliterator#arrayForOne(T_ARR, int, T_CONS)::: base spliterator array for one:::
+SpinedBuffer.OfPrimitive.BaseSpliterator#arraySpliterator(T_ARR, int, int)::: base spliterator array spliterator:::
+SpinedBuffer.OfPrimitive.BaseSpliterator#estimateSize()::: base spliterator estimate size:::return
+SpinedBuffer.OfPrimitive.BaseSpliterator#characteristics()::: base spliterator characteristics:::return
+SpinedBuffer.OfPrimitive.BaseSpliterator#tryAdvance(T_CONS)::: base spliterator try advance:::Objects->requireNonNull->if->arrayForOne->if->arrayLength->if->return->return
+SpinedBuffer.OfPrimitive.BaseSpliterator#forEachRemaining(T_CONS)::: base spliterator for each remaining:::Objects->requireNonNull->if->i->for->sp->chunk->arrayForEach
+SpinedBuffer.OfPrimitive.BaseSpliterator#trySplit()::: base spliterator try split:::if->ret->arrayLength->newSpliterator->return->else->if->t->if->return->else->ret->arraySpliterator->return->else->return
+SpinedBuffer.OfInt#forEach(Consumer)::: of int for each:::if->forEach->else->if->Tripwire->getClass->trip->spliterator->forEachRemaining
+SpinedBuffer.OfInt#newArrayArray(int)::: of int new array array:::return->new->intArrs
+SpinedBuffer.OfInt#newArray(int)::: of int new array:::return->new->intArr
+SpinedBuffer.OfInt#arrayLength(int[])::: of int array length:::return
+SpinedBuffer.OfInt#arrayForEach(int[], int, int, IntConsumer)::: of int array for each:::for->i
+SpinedBuffer.OfInt#accept(int)::: of int accept:::preAccept
+SpinedBuffer.OfInt#get(long)::: of int get:::ch->chunkFor->if->return->else->return
+SpinedBuffer.OfInt#iterator()::: of int iterator:::return->Spliterators->spliterator->iterator
+SpinedBuffer.OfInt#spliterator()::: of int spliterator:::return->new->Splitr
+SpinedBuffer.OfInt#toString()::: of int to string:::array->asPrimitiveArray->if->return->String->getClass->getSimpleName->Arrays->toString->format->else->array2->Arrays->copyOf->return->String->getClass->getSimpleName->Arrays->toString->format
+SpinedBuffer.OfLong#forEach(Consumer)::: of long for each:::if->forEach->else->if->Tripwire->getClass->trip->spliterator->forEachRemaining
+SpinedBuffer.OfLong#newArrayArray(int)::: of long new array array:::return->new->longArrs
+SpinedBuffer.OfLong#newArray(int)::: of long new array:::return->new->longArr
+SpinedBuffer.OfLong#arrayLength(long[])::: of long array length:::return
+SpinedBuffer.OfLong#arrayForEach(long[], int, int, LongConsumer)::: of long array for each:::for->i
+SpinedBuffer.OfLong#accept(long)::: of long accept:::preAccept
+SpinedBuffer.OfLong#get(long)::: of long get:::ch->chunkFor->if->return->else->return
+SpinedBuffer.OfLong#iterator()::: of long iterator:::return->Spliterators->spliterator->iterator
+SpinedBuffer.OfLong#spliterator()::: of long spliterator:::return->new->Splitr
+SpinedBuffer.OfLong#toString()::: of long to string:::array->asPrimitiveArray->if->return->String->getClass->getSimpleName->Arrays->toString->format->else->array2->Arrays->copyOf->return->String->getClass->getSimpleName->Arrays->toString->format
+SpinedBuffer.OfDouble#forEach(Consumer)::: of double for each:::if->forEach->else->if->Tripwire->getClass->trip->spliterator->forEachRemaining
+SpinedBuffer.OfDouble#newArrayArray(int)::: of double new array array:::return->new->doubleArrs
+SpinedBuffer.OfDouble#newArray(int)::: of double new array:::return->new->doubleArr
+SpinedBuffer.OfDouble#arrayLength(double[])::: of double array length:::return
+SpinedBuffer.OfDouble#arrayForEach(double[], int, int, DoubleConsumer)::: of double array for each:::for->i
+SpinedBuffer.OfDouble#accept(double)::: of double accept:::preAccept
+SpinedBuffer.OfDouble#get(long)::: of double get:::ch->chunkFor->if->return->else->return
+SpinedBuffer.OfDouble#iterator()::: of double iterator:::return->Spliterators->spliterator->iterator
+SpinedBuffer.OfDouble#spliterator()::: of double spliterator:::return->new->Splitr
+SpinedBuffer.OfDouble#toString()::: of double to string:::array->asPrimitiveArray->if->return->String->getClass->getSimpleName->Arrays->toString->format->else->array2->Arrays->copyOf->return->String->getClass->getSimpleName->Arrays->toString->format
 Stream#filter(Predicate):::Returns a stream consisting of the elements of this stream that match the given predicate:::
 Stream#map(Function):::Returns a stream consisting of the results of applying the given function to the elements of this stream:::
 Stream#mapToInt(ToIntFunction):::Returns an IntStream consisting of the results of applying the given function to the elements of this stream:::
@@ -380,10 +968,162 @@ Stream#concat(Stream, Stream):::Creates a lazily concatenated stream whose eleme
 Stream.Builder#accept(T):::Adds an element to the stream being built.:::
 Stream.Builder#add(T):::Adds an element to the stream being built.:::accept->return
 Stream.Builder#build():::Builds the stream, transitioning this builder to the built state:::
+Streams.RangeIntSpliterator#tryAdvance(IntConsumer)::: range int spliterator try advance:::Objects->requireNonNull->i->if->consumer->accept->return->else->if->consumer->accept->return->return
+Streams.RangeIntSpliterator#forEachRemaining(IntConsumer)::: range int spliterator for each remaining:::Objects->requireNonNull->i->hUpTo->hLast->while->consumer->accept->if->consumer->accept
+Streams.RangeIntSpliterator#estimateSize()::: range int spliterator estimate size:::return
+Streams.RangeIntSpliterator#characteristics()::: range int spliterator characteristics:::return
+Streams.RangeIntSpliterator#getComparator()::: range int spliterator get comparator:::return
+Streams.RangeIntSpliterator#trySplit()::: range int spliterator try split:::size->estimateSize->return->splitPoint->new->RangeIntSpliterator
+Streams.RangeIntSpliterator#splitPoint(long)::: range int spliterator split point:::d->return
+Streams.RangeLongSpliterator#tryAdvance(LongConsumer)::: range long spliterator try advance:::Objects->requireNonNull->i->if->consumer->accept->return->else->if->consumer->accept->return->return
+Streams.RangeLongSpliterator#forEachRemaining(LongConsumer)::: range long spliterator for each remaining:::Objects->requireNonNull->i->hUpTo->hLast->while->consumer->accept->if->consumer->accept
+Streams.RangeLongSpliterator#estimateSize()::: range long spliterator estimate size:::return
+Streams.RangeLongSpliterator#characteristics()::: range long spliterator characteristics:::return
+Streams.RangeLongSpliterator#getComparator()::: range long spliterator get comparator:::return
+Streams.RangeLongSpliterator#trySplit()::: range long spliterator try split:::size->estimateSize->return->splitPoint->new->RangeLongSpliterator
+Streams.RangeLongSpliterator#splitPoint(long)::: range long spliterator split point:::d->return
+Streams.AbstractStreamBuilderImpl#trySplit()::: abstract stream builder impl try split:::return
+Streams.AbstractStreamBuilderImpl#estimateSize()::: abstract stream builder impl estimate size:::return
+Streams.AbstractStreamBuilderImpl#characteristics()::: abstract stream builder impl characteristics:::return
+Streams.StreamBuilderImpl#accept(T)::: stream builder impl accept:::if->else->if->if->new->SpinedBuffer<>->buffer->accept->buffer->accept->else->throw->new->IllegalStateException
+Streams.StreamBuilderImpl#add(T)::: stream builder impl add:::accept->return
+Streams.StreamBuilderImpl#build()::: stream builder impl build:::c->if->return->StreamSupport->stream->StreamSupport->buffer->spliterator->stream->throw->new->IllegalStateException
+Streams.StreamBuilderImpl#tryAdvance(Consumer)::: stream builder impl try advance:::Objects->requireNonNull->if->action->accept->return->else->return
+Streams.StreamBuilderImpl#forEachRemaining(Consumer)::: stream builder impl for each remaining:::Objects->requireNonNull->if->action->accept
+Streams.IntStreamBuilderImpl#accept(int)::: int stream builder impl accept:::if->else->if->if->new->SpinedBuffer.OfInt->buffer->accept->buffer->accept->else->throw->new->IllegalStateException
+Streams.IntStreamBuilderImpl#build()::: int stream builder impl build:::c->if->return->StreamSupport->intStream->StreamSupport->buffer->spliterator->intStream->throw->new->IllegalStateException
+Streams.IntStreamBuilderImpl#tryAdvance(IntConsumer)::: int stream builder impl try advance:::Objects->requireNonNull->if->action->accept->return->else->return
+Streams.IntStreamBuilderImpl#forEachRemaining(IntConsumer)::: int stream builder impl for each remaining:::Objects->requireNonNull->if->action->accept
+Streams.LongStreamBuilderImpl#accept(long)::: long stream builder impl accept:::if->else->if->if->new->SpinedBuffer.OfLong->buffer->accept->buffer->accept->else->throw->new->IllegalStateException
+Streams.LongStreamBuilderImpl#build()::: long stream builder impl build:::c->if->return->StreamSupport->longStream->StreamSupport->buffer->spliterator->longStream->throw->new->IllegalStateException
+Streams.LongStreamBuilderImpl#tryAdvance(LongConsumer)::: long stream builder impl try advance:::Objects->requireNonNull->if->action->accept->return->else->return
+Streams.LongStreamBuilderImpl#forEachRemaining(LongConsumer)::: long stream builder impl for each remaining:::Objects->requireNonNull->if->action->accept
+Streams.DoubleStreamBuilderImpl#accept(double)::: double stream builder impl accept:::if->else->if->if->new->SpinedBuffer.OfDouble->buffer->accept->buffer->accept->else->throw->new->IllegalStateException
+Streams.DoubleStreamBuilderImpl#build()::: double stream builder impl build:::c->if->return->StreamSupport->doubleStream->StreamSupport->buffer->spliterator->doubleStream->throw->new->IllegalStateException
+Streams.DoubleStreamBuilderImpl#tryAdvance(DoubleConsumer)::: double stream builder impl try advance:::Objects->requireNonNull->if->action->accept->return->else->return
+Streams.DoubleStreamBuilderImpl#forEachRemaining(DoubleConsumer)::: double stream builder impl for each remaining:::Objects->requireNonNull->if->action->accept
+Streams.ConcatSpliterator#trySplit()::: concat spliterator try split:::ret->bSpliterator->trySplit->return
+Streams.ConcatSpliterator#tryAdvance(Consumer)::: concat spliterator try advance:::hasNext->if->aSpliterator->tryAdvance->if->bSpliterator->tryAdvance->else->bSpliterator->tryAdvance->return
+Streams.ConcatSpliterator#forEachRemaining(Consumer)::: concat spliterator for each remaining:::if->aSpliterator->forEachRemaining->bSpliterator->forEachRemaining
+Streams.ConcatSpliterator#estimateSize()::: concat spliterator estimate size:::if->size->aSpliterator->estimateSize->bSpliterator->estimateSize->return->else->return->bSpliterator->estimateSize
+Streams.ConcatSpliterator#characteristics()::: concat spliterator characteristics:::if->return->aSpliterator->characteristics->bSpliterator->characteristics->else->return->bSpliterator->characteristics
+Streams.ConcatSpliterator#getComparator()::: concat spliterator get comparator:::if->throw->new->IllegalStateException->return->bSpliterator->getComparator
+Streams.ConcatSpliterator.OfPrimitive#tryAdvance(T_CONS)::: of primitive try advance:::hasNext->if->aSpliterator->tryAdvance->if->bSpliterator->tryAdvance->else->bSpliterator->tryAdvance->return
+Streams.ConcatSpliterator.OfPrimitive#forEachRemaining(T_CONS)::: of primitive for each remaining:::if->aSpliterator->forEachRemaining->bSpliterator->forEachRemaining
 Streams#composeWithExceptions(Runnable, Runnable):::Given two Runnables, return a Runnable that executes both in sequence, even if the first throws an exception, and if both throw exceptions, add any exceptions thrown by the second as suppressed exceptions of the first.:::return->new->Runnable
 Streams#composedClose(BaseStream, BaseStream):::Given two streams, return a Runnable that executes both of their BaseStream#close methods in sequence, even if the first throws an exception, and if both throw exceptions, add any exceptions thrown by the second as suppressed exceptions of the first.:::return->new->Runnable
+StreamSpliterators.AbstractWrappingSpliterator#init():::Called before advancing to set up spliterator, if needed.:::if->spliteratorSupplier->get
+StreamSpliterators.AbstractWrappingSpliterator#doAdvance():::Get an element from the source, pushing it into the sink chain, setting up the buffer if needed:::if->if->return->init->initPartialTraversalState->bufferSink->spliterator->getExactSizeIfKnown->begin->return->fillBuffer->else->hasNext->buffer->count->if->buffer->clear->fillBuffer->return
+StreamSpliterators.AbstractWrappingSpliterator#wrap(Spliterator):::Invokes the shape-specific constructor with the provided arguments and returns the result.:::
+StreamSpliterators.AbstractWrappingSpliterator#initPartialTraversalState():::Initializes buffer, sink chain, and pusher for a shape-specific implementation.:::
+StreamSpliterators.AbstractWrappingSpliterator#trySplit()::: abstract wrapping spliterator try split:::if->init->split->spliterator->trySplit->return->wrap->else->return
+StreamSpliterators.AbstractWrappingSpliterator#fillBuffer():::If the buffer is empty, push elements into the sink chain until the source is empty or cancellation is requested.:::while->buffer->count->if->bufferSink->cancellationRequested->pusher->getAsBoolean->if->return->else->bufferSink->end->return
+StreamSpliterators.AbstractWrappingSpliterator#estimateSize()::: abstract wrapping spliterator estimate size:::init->return->spliterator->estimateSize
+StreamSpliterators.AbstractWrappingSpliterator#getExactSizeIfKnown()::: abstract wrapping spliterator get exact size if known:::init->return->ph->getStreamAndOpFlags->isKnown->spliterator->getExactSizeIfKnown
+StreamSpliterators.AbstractWrappingSpliterator#characteristics()::: abstract wrapping spliterator characteristics:::init->c->StreamOpFlag->StreamOpFlag->ph->getStreamAndOpFlags->toStreamFlags->toCharacteristics->if->spliterator->characteristics->return
+StreamSpliterators.AbstractWrappingSpliterator#getComparator()::: abstract wrapping spliterator get comparator:::if->hasCharacteristics->throw->new->IllegalStateException->return
+StreamSpliterators.AbstractWrappingSpliterator#toString()::: abstract wrapping spliterator to string:::return->String->getClass->getName->format
+StreamSpliterators.WrappingSpliterator#wrap(Spliterator)::: wrapping spliterator wrap:::return->new->WrappingSpliterator<>
+StreamSpliterators.WrappingSpliterator#initPartialTraversalState()::: wrapping spliterator init partial traversal state:::b->new->SpinedBuffer<>->ph->b->accept->wrapSink->spliterator->tryAdvance
+StreamSpliterators.WrappingSpliterator#tryAdvance(Consumer)::: wrapping spliterator try advance:::Objects->requireNonNull->hasNext->doAdvance->if->consumer->buffer->get->accept->return
+StreamSpliterators.WrappingSpliterator#forEachRemaining(Consumer)::: wrapping spliterator for each remaining:::if->Objects->requireNonNull->init->ph->consumer->accept->wrapAndCopyInto->else->do->while->tryAdvance
+StreamSpliterators.IntWrappingSpliterator#wrap(Spliterator)::: int wrapping spliterator wrap:::return->new->IntWrappingSpliterator<>
+StreamSpliterators.IntWrappingSpliterator#initPartialTraversalState()::: int wrapping spliterator init partial traversal state:::b->new->SpinedBuffer.OfInt->ph->b->accept->wrapSink->spliterator->tryAdvance
+StreamSpliterators.IntWrappingSpliterator#trySplit()::: int wrapping spliterator try split:::return->super->trySplit
+StreamSpliterators.IntWrappingSpliterator#tryAdvance(IntConsumer)::: int wrapping spliterator try advance:::Objects->requireNonNull->hasNext->doAdvance->if->consumer->buffer->get->accept->return
+StreamSpliterators.IntWrappingSpliterator#forEachRemaining(IntConsumer)::: int wrapping spliterator for each remaining:::if->Objects->requireNonNull->init->ph->consumer->accept->wrapAndCopyInto->else->do->while->tryAdvance
+StreamSpliterators.LongWrappingSpliterator#wrap(Spliterator)::: long wrapping spliterator wrap:::return->new->LongWrappingSpliterator<>
+StreamSpliterators.LongWrappingSpliterator#initPartialTraversalState()::: long wrapping spliterator init partial traversal state:::b->new->SpinedBuffer.OfLong->ph->b->accept->wrapSink->spliterator->tryAdvance
+StreamSpliterators.LongWrappingSpliterator#trySplit()::: long wrapping spliterator try split:::return->super->trySplit
+StreamSpliterators.LongWrappingSpliterator#tryAdvance(LongConsumer)::: long wrapping spliterator try advance:::Objects->requireNonNull->hasNext->doAdvance->if->consumer->buffer->get->accept->return
+StreamSpliterators.LongWrappingSpliterator#forEachRemaining(LongConsumer)::: long wrapping spliterator for each remaining:::if->Objects->requireNonNull->init->ph->consumer->accept->wrapAndCopyInto->else->do->while->tryAdvance
+StreamSpliterators.DoubleWrappingSpliterator#wrap(Spliterator)::: double wrapping spliterator wrap:::return->new->DoubleWrappingSpliterator<>
+StreamSpliterators.DoubleWrappingSpliterator#initPartialTraversalState()::: double wrapping spliterator init partial traversal state:::b->new->SpinedBuffer.OfDouble->ph->b->accept->wrapSink->spliterator->tryAdvance
+StreamSpliterators.DoubleWrappingSpliterator#trySplit()::: double wrapping spliterator try split:::return->super->trySplit
+StreamSpliterators.DoubleWrappingSpliterator#tryAdvance(DoubleConsumer)::: double wrapping spliterator try advance:::Objects->requireNonNull->hasNext->doAdvance->if->consumer->buffer->get->accept->return
+StreamSpliterators.DoubleWrappingSpliterator#forEachRemaining(DoubleConsumer)::: double wrapping spliterator for each remaining:::if->Objects->requireNonNull->init->ph->consumer->accept->wrapAndCopyInto->else->do->while->tryAdvance
+StreamSpliterators.DelegatingSpliterator#get()::: delegating spliterator get:::if->supplier->get->return
+StreamSpliterators.DelegatingSpliterator#trySplit()::: delegating spliterator try split:::return->get->trySplit
+StreamSpliterators.DelegatingSpliterator#tryAdvance(Consumer)::: delegating spliterator try advance:::return->get->tryAdvance
+StreamSpliterators.DelegatingSpliterator#forEachRemaining(Consumer)::: delegating spliterator for each remaining:::get->forEachRemaining
+StreamSpliterators.DelegatingSpliterator#estimateSize()::: delegating spliterator estimate size:::return->get->estimateSize
+StreamSpliterators.DelegatingSpliterator#characteristics()::: delegating spliterator characteristics:::return->get->characteristics
+StreamSpliterators.DelegatingSpliterator#getComparator()::: delegating spliterator get comparator:::return->get->getComparator
+StreamSpliterators.DelegatingSpliterator#getExactSizeIfKnown()::: delegating spliterator get exact size if known:::return->get->getExactSizeIfKnown
+StreamSpliterators.DelegatingSpliterator#toString()::: delegating spliterator to string:::return->getClass->getName->get
+StreamSpliterators.DelegatingSpliterator.OfPrimitive#tryAdvance(T_CONS)::: of primitive try advance:::return->get->tryAdvance
+StreamSpliterators.DelegatingSpliterator.OfPrimitive#forEachRemaining(T_CONS)::: of primitive for each remaining:::get->forEachRemaining
+StreamSpliterators.SliceSpliterator#makeSpliterator(T_SPLITR, long, long, long, long)::: slice spliterator make spliterator:::
+StreamSpliterators.SliceSpliterator#trySplit()::: slice spliterator try split:::if->return->if->return->while->leftSplit->s->trySplit->if->return->leftSplitFenceUnbounded->leftSplit->estimateSize->leftSplitFence->Math->min->if->else->if->else->if->return->else->return->makeSpliterator
+StreamSpliterators.SliceSpliterator#estimateSize()::: slice spliterator estimate size:::return->Math->max
+StreamSpliterators.SliceSpliterator#characteristics()::: slice spliterator characteristics:::return->s->characteristics
+StreamSpliterators.SliceSpliterator.OfRef#makeSpliterator(Spliterator, long, long, long, long)::: of ref make spliterator:::return->new->OfRef<>
+StreamSpliterators.SliceSpliterator.OfRef#tryAdvance(Consumer)::: of ref try advance:::Objects->requireNonNull->if->return->while->s->tryAdvance->if->return->return->s->tryAdvance
+StreamSpliterators.SliceSpliterator.OfRef#forEachRemaining(Consumer)::: of ref for each remaining:::Objects->requireNonNull->if->return->if->return->if->s->estimateSize->s->forEachRemaining->else->while->s->tryAdvance->for
+StreamSpliterators.SliceSpliterator.OfPrimitive#tryAdvance(T_CONS)::: of primitive try advance:::Objects->requireNonNull->if->return->while->s->emptyConsumer->tryAdvance->if->return->return->s->tryAdvance
+StreamSpliterators.SliceSpliterator.OfPrimitive#forEachRemaining(T_CONS)::: of primitive for each remaining:::Objects->requireNonNull->if->return->if->return->if->s->estimateSize->s->forEachRemaining->else->while->s->emptyConsumer->tryAdvance->for
+StreamSpliterators.SliceSpliterator.OfPrimitive#emptyConsumer()::: of primitive empty consumer:::
+StreamSpliterators.SliceSpliterator.OfInt#makeSpliterator(Spliterator.OfInt, long, long, long, long)::: of int make spliterator:::return->new->SliceSpliterator.OfInt
+StreamSpliterators.SliceSpliterator.OfInt#emptyConsumer()::: of int empty consumer:::return
+StreamSpliterators.SliceSpliterator.OfLong#makeSpliterator(Spliterator.OfLong, long, long, long, long)::: of long make spliterator:::return->new->SliceSpliterator.OfLong
+StreamSpliterators.SliceSpliterator.OfLong#emptyConsumer()::: of long empty consumer:::return
+StreamSpliterators.SliceSpliterator.OfDouble#makeSpliterator(Spliterator.OfDouble, long, long, long, long)::: of double make spliterator:::return->new->SliceSpliterator.OfDouble
+StreamSpliterators.SliceSpliterator.OfDouble#emptyConsumer()::: of double empty consumer:::return
 StreamSpliterators.UnorderedSliceSpliterator#acquirePermits(long):::Acquire permission to skip or process elements:::remainingPermits->grabbing->do->permits->get->if->return->Math->min->while->permits->compareAndSet->if->return->Math->max->else->if->return->Math->max->else->return
 StreamSpliterators.UnorderedSliceSpliterator#permitStatus():::Call to check if permits might be available before acquiring data:::if->permits->get->return->else->return
+StreamSpliterators.UnorderedSliceSpliterator#trySplit()::: unordered slice spliterator try split:::if->permits->get->return->split->s->trySplit->return->makeSpliterator
+StreamSpliterators.UnorderedSliceSpliterator#makeSpliterator(T_SPLITR)::: unordered slice spliterator make spliterator:::
+StreamSpliterators.UnorderedSliceSpliterator#estimateSize()::: unordered slice spliterator estimate size:::return->s->estimateSize
+StreamSpliterators.UnorderedSliceSpliterator#characteristics()::: unordered slice spliterator characteristics:::return->s->characteristics
+StreamSpliterators.UnorderedSliceSpliterator.OfRef#accept(T)::: of ref accept:::
+StreamSpliterators.UnorderedSliceSpliterator.OfRef#tryAdvance(Consumer)::: of ref try advance:::Objects->requireNonNull->while->permitStatus->if->s->tryAdvance->return->else->if->acquirePermits->action->accept->return->return
+StreamSpliterators.UnorderedSliceSpliterator.OfRef#forEachRemaining(Consumer)::: of ref for each remaining:::Objects->requireNonNull->sb->permitStatus->while->permitStatus->if->if->new->ArrayBuffer.OfRef<>->else->sb->reset->permitsRequested->do->while->s->tryAdvance->if->return->sb->acquirePermits->forEach->else->s->forEachRemaining->return
+StreamSpliterators.UnorderedSliceSpliterator.OfRef#makeSpliterator(Spliterator)::: of ref make spliterator:::return->new->UnorderedSliceSpliterator.OfRef<>
+StreamSpliterators.UnorderedSliceSpliterator.OfPrimitive#tryAdvance(T_CONS)::: of primitive try advance:::Objects->requireNonNull->consumer->while->permitStatus->if->s->tryAdvance->return->else->if->acquirePermits->acceptConsumed->return->return
+StreamSpliterators.UnorderedSliceSpliterator.OfPrimitive#acceptConsumed(T_CONS)::: of primitive accept consumed:::
+StreamSpliterators.UnorderedSliceSpliterator.OfPrimitive#forEachRemaining(T_CONS)::: of primitive for each remaining:::Objects->requireNonNull->sb->permitStatus->while->permitStatus->if->if->bufferCreate->else->sb->reset->sbc->permitsRequested->do->while->s->tryAdvance->if->return->sb->acquirePermits->forEach->else->s->forEachRemaining->return
+StreamSpliterators.UnorderedSliceSpliterator.OfPrimitive#bufferCreate(int)::: of primitive buffer create:::
+StreamSpliterators.UnorderedSliceSpliterator.OfInt#accept(int)::: of int accept:::
+StreamSpliterators.UnorderedSliceSpliterator.OfInt#acceptConsumed(IntConsumer)::: of int accept consumed:::action->accept
+StreamSpliterators.UnorderedSliceSpliterator.OfInt#bufferCreate(int)::: of int buffer create:::return->new->ArrayBuffer.OfInt
+StreamSpliterators.UnorderedSliceSpliterator.OfInt#makeSpliterator(Spliterator.OfInt)::: of int make spliterator:::return->new->UnorderedSliceSpliterator.OfInt
+StreamSpliterators.UnorderedSliceSpliterator.OfLong#accept(long)::: of long accept:::
+StreamSpliterators.UnorderedSliceSpliterator.OfLong#acceptConsumed(LongConsumer)::: of long accept consumed:::action->accept
+StreamSpliterators.UnorderedSliceSpliterator.OfLong#bufferCreate(int)::: of long buffer create:::return->new->ArrayBuffer.OfLong
+StreamSpliterators.UnorderedSliceSpliterator.OfLong#makeSpliterator(Spliterator.OfLong)::: of long make spliterator:::return->new->UnorderedSliceSpliterator.OfLong
+StreamSpliterators.UnorderedSliceSpliterator.OfDouble#accept(double)::: of double accept:::
+StreamSpliterators.UnorderedSliceSpliterator.OfDouble#acceptConsumed(DoubleConsumer)::: of double accept consumed:::action->accept
+StreamSpliterators.UnorderedSliceSpliterator.OfDouble#bufferCreate(int)::: of double buffer create:::return->new->ArrayBuffer.OfDouble
+StreamSpliterators.UnorderedSliceSpliterator.OfDouble#makeSpliterator(Spliterator.OfDouble)::: of double make spliterator:::return->new->UnorderedSliceSpliterator.OfDouble
+StreamSpliterators.DistinctSpliterator#accept(T)::: distinct spliterator accept:::
+StreamSpliterators.DistinctSpliterator#mapNull(T)::: distinct spliterator map null:::return
+StreamSpliterators.DistinctSpliterator#tryAdvance(Consumer)::: distinct spliterator try advance:::while->s->tryAdvance->if->seen->mapNull->putIfAbsent->action->accept->return->return
+StreamSpliterators.DistinctSpliterator#forEachRemaining(Consumer)::: distinct spliterator for each remaining:::s->if->seen->mapNull->putIfAbsent->action->accept->forEachRemaining
+StreamSpliterators.DistinctSpliterator#trySplit()::: distinct spliterator try split:::split->s->trySplit->return->new->DistinctSpliterator<>
+StreamSpliterators.DistinctSpliterator#estimateSize()::: distinct spliterator estimate size:::return->s->estimateSize
+StreamSpliterators.DistinctSpliterator#characteristics()::: distinct spliterator characteristics:::return->s->characteristics
+StreamSpliterators.DistinctSpliterator#getComparator()::: distinct spliterator get comparator:::return->s->getComparator
+StreamSpliterators.InfiniteSupplyingSpliterator#estimateSize()::: infinite supplying spliterator estimate size:::return
+StreamSpliterators.InfiniteSupplyingSpliterator#characteristics()::: infinite supplying spliterator characteristics:::return
+StreamSpliterators.InfiniteSupplyingSpliterator.OfRef#tryAdvance(Consumer)::: of ref try advance:::Objects->requireNonNull->action->s->get->accept->return
+StreamSpliterators.InfiniteSupplyingSpliterator.OfRef#trySplit()::: of ref try split:::if->return->return->new->InfiniteSupplyingSpliterator.OfRef<>
+StreamSpliterators.InfiniteSupplyingSpliterator.OfInt#tryAdvance(IntConsumer)::: of int try advance:::Objects->requireNonNull->action->s->getAsInt->accept->return
+StreamSpliterators.InfiniteSupplyingSpliterator.OfInt#trySplit()::: of int try split:::if->return->return->new->InfiniteSupplyingSpliterator.OfInt
+StreamSpliterators.InfiniteSupplyingSpliterator.OfLong#tryAdvance(LongConsumer)::: of long try advance:::Objects->requireNonNull->action->s->getAsLong->accept->return
+StreamSpliterators.InfiniteSupplyingSpliterator.OfLong#trySplit()::: of long try split:::if->return->return->new->InfiniteSupplyingSpliterator.OfLong
+StreamSpliterators.InfiniteSupplyingSpliterator.OfDouble#tryAdvance(DoubleConsumer)::: of double try advance:::Objects->requireNonNull->action->s->getAsDouble->accept->return
+StreamSpliterators.InfiniteSupplyingSpliterator.OfDouble#trySplit()::: of double try split:::if->return->return->new->InfiniteSupplyingSpliterator.OfDouble
+StreamSpliterators.ArrayBuffer#reset()::: array buffer reset:::
+StreamSpliterators.ArrayBuffer.OfRef#accept(T)::: of ref accept:::
+StreamSpliterators.ArrayBuffer.OfRef#forEach(Consumer, long)::: of ref for each:::for->i
+StreamSpliterators.ArrayBuffer.OfPrimitive#reset()::: of primitive reset:::
+StreamSpliterators.ArrayBuffer.OfPrimitive#forEach(T_CONS, long)::: of primitive for each:::
+StreamSpliterators.ArrayBuffer.OfInt#accept(int)::: of int accept:::
+StreamSpliterators.ArrayBuffer.OfInt#forEach(IntConsumer, long)::: of int for each:::for->i
+StreamSpliterators.ArrayBuffer.OfLong#accept(long)::: of long accept:::
+StreamSpliterators.ArrayBuffer.OfLong#forEach(LongConsumer, long)::: of long for each:::for->i
+StreamSpliterators.ArrayBuffer.OfDouble#accept(double)::: of double accept:::
+StreamSpliterators.ArrayBuffer.OfDouble#forEach(DoubleConsumer, long)::: of double for each:::for->i
 StreamSupport#stream(Spliterator, boolean):::Creates a new sequential or parallel Stream from a Spliterator:::Objects->requireNonNull->return->StreamOpFlag->fromCharacteristics->new->ReferencePipeline.Head<>
 StreamSupport#stream(Supplier>, int, boolean):::Creates a new sequential or parallel Stream from a Supplier of Spliterator:::Objects->requireNonNull->return->StreamOpFlag->fromCharacteristics->new->ReferencePipeline.Head<>
 StreamSupport#intStream(Spliterator.OfInt, boolean):::Creates a new sequential or parallel IntStream from a Spliterator.OfInt:::return->StreamOpFlag->fromCharacteristics->new->IntPipeline.Head<>
@@ -402,7 +1142,50 @@ WhileOps#makeTakeWhileInt(AbstractPipeline, IntPredicate):::Appends a "takeWhile
 WhileOps#makeTakeWhileLong(AbstractPipeline, LongPredicate):::Appends a "takeWhile" operation to the provided LongStream.:::Objects->requireNonNull->return->new->LongPipeline.StatefulOp<Long>
 WhileOps#makeTakeWhileDouble(AbstractPipeline, DoublePredicate):::Appends a "takeWhile" operation to the provided DoubleStream.:::Objects->requireNonNull->return->new->DoublePipeline.StatefulOp<Double>
 WhileOps.DropWhileOp#opWrapSink(Sink, boolean):::Accepts a Sink which will receive the results of this dropWhile operation, and return a DropWhileSink which accepts elements and which performs the dropWhile operation passing the results to the provided Sink.:::
+WhileOps.DropWhileSink#getDropCount()::: drop while sink get drop count:::
 WhileOps#makeDropWhileRef(AbstractPipeline, Predicate):::Appends a "dropWhile" operation to the provided Stream.:::Objects->requireNonNull->return->new->Op
 WhileOps#makeDropWhileInt(AbstractPipeline, IntPredicate):::Appends a "dropWhile" operation to the provided IntStream.:::Objects->requireNonNull->return->new->Op
 WhileOps#makeDropWhileLong(AbstractPipeline, LongPredicate):::Appends a "dropWhile" operation to the provided LongStream.:::Objects->requireNonNull->return->new->Op
 WhileOps#makeDropWhileDouble(AbstractPipeline, DoublePredicate):::Appends a "dropWhile" operation to the provided DoubleStream.:::Objects->requireNonNull->return->new->Op
+WhileOps.UnorderedWhileSpliterator#estimateSize()::: unordered while spliterator estimate size:::return->s->estimateSize
+WhileOps.UnorderedWhileSpliterator#characteristics()::: unordered while spliterator characteristics:::return->s->characteristics
+WhileOps.UnorderedWhileSpliterator#getExactSizeIfKnown()::: unordered while spliterator get exact size if known:::return
+WhileOps.UnorderedWhileSpliterator#getComparator()::: unordered while spliterator get comparator:::return->s->getComparator
+WhileOps.UnorderedWhileSpliterator#trySplit()::: unordered while spliterator try split:::ls->s->trySplit->return->makeSpliterator
+WhileOps.UnorderedWhileSpliterator#checkCancelOnCount()::: unordered while spliterator check cancel on count:::return->cancel->get
+WhileOps.UnorderedWhileSpliterator#makeSpliterator(T_SPLITR)::: unordered while spliterator make spliterator:::
+WhileOps.UnorderedWhileSpliterator.OfRef#accept(T)::: of ref accept:::
+WhileOps.UnorderedWhileSpliterator.OfRef.Taking#tryAdvance(Consumer)::: taking try advance:::test->if->checkCancelOnCount->s->tryAdvance->p->test->action->accept->return->else->if->cancel->set->return
+WhileOps.UnorderedWhileSpliterator.OfRef.Taking#trySplit()::: taking try split:::return->cancel->get->super->trySplit
+WhileOps.UnorderedWhileSpliterator.OfRef.Taking#makeSpliterator(Spliterator)::: taking make spliterator:::return->new->Taking<>
+WhileOps.UnorderedWhileSpliterator.OfRef.Dropping#tryAdvance(Consumer)::: dropping try advance:::if->adv->dropped->while->s->tryAdvance->checkCancelOnCount->p->test->if->if->cancel->set->action->accept->return->else->return->s->tryAdvance
+WhileOps.UnorderedWhileSpliterator.OfRef.Dropping#makeSpliterator(Spliterator)::: dropping make spliterator:::return->new->Dropping<>
+WhileOps.UnorderedWhileSpliterator.OfInt#accept(int)::: of int accept:::
+WhileOps.UnorderedWhileSpliterator.OfInt.Taking#tryAdvance(IntConsumer)::: taking try advance:::test->if->checkCancelOnCount->s->tryAdvance->p->test->action->accept->return->else->if->cancel->set->return
+WhileOps.UnorderedWhileSpliterator.OfInt.Taking#trySplit()::: taking try split:::return->cancel->get->super->trySplit
+WhileOps.UnorderedWhileSpliterator.OfInt.Taking#makeSpliterator(Spliterator.OfInt)::: taking make spliterator:::return->new->Taking
+WhileOps.UnorderedWhileSpliterator.OfInt.Dropping#tryAdvance(IntConsumer)::: dropping try advance:::if->adv->dropped->while->s->tryAdvance->checkCancelOnCount->p->test->if->if->cancel->set->action->accept->return->else->return->s->tryAdvance
+WhileOps.UnorderedWhileSpliterator.OfInt.Dropping#makeSpliterator(Spliterator.OfInt)::: dropping make spliterator:::return->new->Dropping
+WhileOps.UnorderedWhileSpliterator.OfLong#accept(long)::: of long accept:::
+WhileOps.UnorderedWhileSpliterator.OfLong.Taking#tryAdvance(LongConsumer)::: taking try advance:::test->if->checkCancelOnCount->s->tryAdvance->p->test->action->accept->return->else->if->cancel->set->return
+WhileOps.UnorderedWhileSpliterator.OfLong.Taking#trySplit()::: taking try split:::return->cancel->get->super->trySplit
+WhileOps.UnorderedWhileSpliterator.OfLong.Taking#makeSpliterator(Spliterator.OfLong)::: taking make spliterator:::return->new->Taking
+WhileOps.UnorderedWhileSpliterator.OfLong.Dropping#tryAdvance(LongConsumer)::: dropping try advance:::if->adv->dropped->while->s->tryAdvance->checkCancelOnCount->p->test->if->if->cancel->set->action->accept->return->else->return->s->tryAdvance
+WhileOps.UnorderedWhileSpliterator.OfLong.Dropping#makeSpliterator(Spliterator.OfLong)::: dropping make spliterator:::return->new->Dropping
+WhileOps.UnorderedWhileSpliterator.OfDouble#accept(double)::: of double accept:::
+WhileOps.UnorderedWhileSpliterator.OfDouble.Taking#tryAdvance(DoubleConsumer)::: taking try advance:::test->if->checkCancelOnCount->s->tryAdvance->p->test->action->accept->return->else->if->cancel->set->return
+WhileOps.UnorderedWhileSpliterator.OfDouble.Taking#trySplit()::: taking try split:::return->cancel->get->super->trySplit
+WhileOps.UnorderedWhileSpliterator.OfDouble.Taking#makeSpliterator(Spliterator.OfDouble)::: taking make spliterator:::return->new->Taking
+WhileOps.UnorderedWhileSpliterator.OfDouble.Dropping#tryAdvance(DoubleConsumer)::: dropping try advance:::if->adv->dropped->while->s->tryAdvance->checkCancelOnCount->p->test->if->if->cancel->set->action->accept->return->else->return->s->tryAdvance
+WhileOps.UnorderedWhileSpliterator.OfDouble.Dropping#makeSpliterator(Spliterator.OfDouble)::: dropping make spliterator:::return->new->Dropping
+WhileOps.TakeWhileTask#makeChild(Spliterator)::: take while task make child:::return->new->TakeWhileTask<>
+WhileOps.TakeWhileTask#getEmptyResult()::: take while task get empty result:::return->Nodes->op->getOutputShape->emptyNode
+WhileOps.TakeWhileTask#doLeaf()::: take while task do leaf:::builder->helper->makeNodeBuilder->s->op->helper->getStreamAndOpFlags->opWrapSink->if->helper->helper->wrapSink->copyIntoWithCancel->cancelLaterNodes->node->builder->build->node->count->return
+WhileOps.TakeWhileTask#onCompletion(CountedCompleter)::: take while task on completion:::if->isLeaf->result->if->getEmptyResult->else->if->leftChild->getLocalResult->else->merge->setLocalResult->super->onCompletion
+WhileOps.TakeWhileTask#merge()::: take while task merge:::if->return->rightChild->getLocalResult->else->if->return->leftChild->getLocalResult->else->return->Nodes->op->getOutputShape->leftChild->getLocalResult->rightChild->getLocalResult->conc
+WhileOps.TakeWhileTask#cancel()::: take while task cancel:::super->cancel->if->getEmptyResult->setLocalResult
+WhileOps.DropWhileTask#makeChild(Spliterator)::: drop while task make child:::return->new->DropWhileTask<>
+WhileOps.DropWhileTask#doLeaf()::: drop while task do leaf:::isChild->isRoot->sizeIfKnown->isPreserved->op->exactOutputSizeIfKnown->builder->helper->makeNodeBuilder->dropOp->s->dropOp->opWrapSink->helper->wrapAndCopyInto->node->builder->build->node->count->s->getDropCount->return
+WhileOps.DropWhileTask#onCompletion(CountedCompleter)::: drop while task on completion:::if->isLeaf->if->if->result->merge->isRoot->doTruncate->setLocalResult->super->onCompletion
+WhileOps.DropWhileTask#merge()::: drop while task merge:::if->return->rightChild->getLocalResult->else->if->return->leftChild->getLocalResult->else->return->Nodes->op->getOutputShape->leftChild->getLocalResult->rightChild->getLocalResult->conc
+WhileOps.DropWhileTask#doTruncate(Node)::: drop while task do truncate:::return->input->input->count->truncate

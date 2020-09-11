@@ -1,7 +1,56 @@
+CompileTask#initialize(TypeDataBase)::: compile task initialize:::type->db->lookupType->type->getAddressField->type->getCIntegerField->new->CIntField->type->getCIntegerField->new->CIntField
+CompileTask#method()::: compile task method:::oh->methodField->getAddress->getValue->return->Metadata->instantiateWrapperFor
+CompileTask#osrBci()::: compile task osr bci:::return->osrBciField->getAddress->getValue
+CompileTask#compLevel()::: compile task comp level:::return->compLevelField->getAddress->getValue
+ImmutableOopMap#initialize(TypeDataBase)::: immutable oop map initialize:::type->db->lookupType->type->getCIntegerField->type->getSize
+ImmutableOopMap#getCount()::: immutable oop map get count:::return->countField->getValue
+ImmutableOopMap#getData()::: immutable oop map get data:::return->addr->addOffsetTo
+ImmutableOopMapPair#classSize()::: immutable oop map pair class size:::return
+ImmutableOopMapPair#getPC()::: immutable oop map pair get c:::return->pcOffsetField->getValue
+ImmutableOopMapPair#getOffset()::: immutable oop map pair get offset:::return->oopmapOffsetField->getValue
+ImmutableOopMapPair#initialize(TypeDataBase)::: immutable oop map pair initialize:::type->db->lookupType->type->getCIntegerField->type->getCIntegerField->type->getSize
+ImmutableOopMapPair#toString()::: immutable oop map pair to string:::return->getPC->getOffset
+ImmutableOopMapSet.MyVisitor#setAddressVisitor(AddressVisitor)::: my visitor set address visitor:::
+ImmutableOopMapSet.MyVisitor#visitOopLocation(Address)::: my visitor visit oop location:::addressVisitor->visitAddress
+ImmutableOopMapSet.MyVisitor#visitDerivedOopLocation(Address, Address)::: my visitor visit derived oop location:::if->VM->getVM->isClientCompiler->Assert->that->else->if->VM->getVM->isServerCompiler->VM->getVM->useDerivedPointerTable->Assert->that
+ImmutableOopMapSet.MyVisitor#visitNarrowOopLocation(Address)::: my visitor visit narrow oop location:::addressVisitor->visitCompOopAddress
+ImmutableOopMapSet#initialize(TypeDataBase)::: immutable oop map set initialize:::type->db->lookupType->type->getCIntegerField->type->getCIntegerField->type->getSize->if->VM->getVM->isCore->db->lookupIntConstant->intValue->if->VM->getVM->isServerCompiler->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue
 ImmutableOopMapSet#getCount():::Returns the number of OopMaps in this ImmutableOopMapSet:::return->countField->getValue
+ImmutableOopMapSet#dataStart()::: immutable oop map set data start:::return->pairStart->ImmutableOopMapPair->classSize->getCount->addOffsetTo
+ImmutableOopMapSet#pairStart()::: immutable oop map set pair start:::return->addr->addOffsetTo
+ImmutableOopMapSet#pairAt(int)::: immutable oop map set pair at:::Assert->getCount->that->return->pairStart->ImmutableOopMapPair->classSize->addOffsetTo->new->ImmutableOopMapPair
 ImmutableOopMapSet#getMapAt(int):::returns the OopMap at a given index:::if->Assert->getCount->that->immutableOopMapPair->pairAt->return->getMap
+ImmutableOopMapSet#findMapAtOffset(long, boolean)::: immutable oop map set find map at offset:::i->len->getCount->if->Assert->that->for->if->if->Assert->that->Assert->pairAt->getPC->that->else->if->if->println->print->for->println->return->getMapAt->m->getMapAt->return
 ImmutableOopMapSet#oopsDo(Frame, CodeBlob, RegisterMap, AddressVisitor, boolean):::Visitation -- iterates through the frame for a compiled method:::new->MyVisitor->allDo
 ImmutableOopMapSet#allDo(Frame, CodeBlob, RegisterMap, OopMapVisitor, boolean):::Note that there are 4 required AddressVisitors: one for oops, one for derived oops, one for values, and one for dead values:::if->tmpCB->VM->getVM->getCodeCache->fr->getPC->findBlob->Assert->cb->equals->that->maps->cb->getOopMaps->map->cb->fr->getPC->getOopMapForReturnAddress->if->Assert->that->omv->for->oms->new->OopMapStream->oms->isDone->oms->next->values->new->OopMapValue.OopTypesArr->for->oms->new->OopMapStream->oms->isDone->oms->next
 ImmutableOopMapSet#updateRegisterMap(Frame, CodeBlob, RegisterMap, boolean):::Update callee-saved register info for the following frame:::if->Assert->VM->getVM->isCore->that->if->VM->getVM->isDebugging->if->maps->cb->getOopMaps->Assert->maps->getCount->that->else->maps->cb->getOopMaps->if->maps->getCount->return->regMap->cb->callerMustGCArguments->setIncludeArgumentOops->nofCallee->locs->new->AddressArr->regs->new->VMRegArr->map->cb->fr->getPC->getOopMapForReturnAddress->if->Assert->that->omv->for->oms->new->OopMapStream->oms->isDone->oms->next->if->if->VM->getVM->isServerCompiler->Assert->cb->isRuntimeStub->that->for->i
+ImmutableOopMapSet#getPairAt(int)::: immutable oop map set get pair at:::return->pairAt
+ImmutableOopMapSet#getSize()::: immutable oop map set get size:::return->sizeField->getValue
+ImmutableOopMapSet#getMap(ImmutableOopMapPair)::: immutable oop map set get map:::Assert->pair->getOffset->getSize->that->return->dataStart->pair->getOffset->addOffsetTo->new->ImmutableOopMap
+ImmutableOopMapSet#toString()::: immutable oop map set to string:::builder->new->StringBuilder->builder->append->append->append->append->getCount->append->append->getSize->append->append->for->i->getCount->builder->append->return->builder->toString
+OopMapStream#isDone()::: oop map stream is done:::if->findNext->return
+OopMapStream#next()::: oop map stream next:::findNext
+OopMapStream#getCurrent()::: oop map stream get current:::return
+OopMapStream#computeMask(OopMapValue.OopTypes[])::: oop map stream compute mask:::if->for->i->return
+OopMapStream#findNext()::: oop map stream find next:::while->omv->readFrom->if->omv->getType->getValue->return
+OopMapValue#initialize(TypeDataBase)::: oop map value initialize:::db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue
+OopMapValue.OopTypes#getValue()::: oop types get value:::
+OopMapValue#readFrom(CompressedReadStream)::: oop map value read from:::stream->readInt->setValue->if->isCalleeSaved->isDerivedOop->stream->readInt->new->VMReg->setContentReg
+OopMapValue#isOop()::: oop map value is oop:::return->getValue
+OopMapValue#isNarrowOop()::: oop map value is narrow oop:::return->getValue
+OopMapValue#isCalleeSaved()::: oop map value is callee saved:::return->getValue
+OopMapValue#isDerivedOop()::: oop map value is derived oop:::return->getValue
+OopMapValue#getReg()::: oop map value get reg:::return->getValue->new->VMReg
+OopMapValue#setReg(VMReg)::: oop map value set reg:::r->getValue->getValue->setValue
+OopMapValue#getType()::: oop map value get type:::which->getValue->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->throw->new->InternalError
+OopMapValue#setType(OopTypes)::: oop map value set type:::getValue->t->getValue->setValue
+OopMapValue#getContentReg()::: oop map value get content reg:::return->new->VMReg
+OopMapValue#setContentReg(VMReg)::: oop map value set content reg:::r->getValue
 OopMapValue#isRegisterLoc():::Physical location queries:::return->getReg->VM->getVM->getVMRegImplInfo->getStack0->lessThan
+OopMapValue#isStackLoc()::: oop map value is stack loc:::return->getReg->VM->getVM->getVMRegImplInfo->getStack0->greaterThanOrEqual
 OopMapValue#getStackOffset():::Returns offset from sp.:::if->Assert->isStackLoc->that->return->getReg->VM->getVM->getVMRegImplInfo->getStack0->minus
+OopMapValue#setValue(short)::: oop map value set value:::
+OopMapValue#getValue()::: oop map value get value:::return
+OopMapVisitor#visitOopLocation(Address)::: oop map visitor visit oop location:::
+OopMapVisitor#visitDerivedOopLocation(Address, Address)::: oop map visitor visit derived oop location:::
+OopMapVisitor#visitNarrowOopLocation(Address)::: oop map visitor visit narrow oop location:::

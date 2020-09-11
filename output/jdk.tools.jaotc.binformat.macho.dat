@@ -1,1 +1,51 @@
+JMachORelocObject#createByteSection(ArrayList, ByteContainer, String, String, int)::: mach reloc object create byte section:::if->c->getByteArray->sect->c->getByteArray->c->hasRelocations->new->MachOSection->sections->add->c->sections->size->setSectionId
+JMachORelocObject#createCodeSection(ArrayList, CodeContainer)::: mach reloc object create code section:::createByteSection
+JMachORelocObject#createReadOnlySection(ArrayList, ReadOnlyDataContainer)::: mach reloc object create read only section:::c->getContainerName->createByteSection
+JMachORelocObject#createReadWriteSection(ArrayList, ByteContainer)::: mach reloc object create read write section:::c->getContainerName->createByteSection
 JMachORelocObject#createMachORelocObject(Map>, Collection):::Creates an MachO relocatable object.:::mh->new->MachOHeader->sections->new->ArrayList<>->binContainer->getCodeContainer->createCodeSection->binContainer->getMetaspaceNamesContainer->createReadOnlySection->binContainer->getKlassesOffsetsContainer->createReadOnlySection->binContainer->getMethodsOffsetsContainer->createReadOnlySection->binContainer->getKlassesDependenciesContainer->createReadOnlySection->binContainer->getMethodMetadataContainer->createReadOnlySection->binContainer->getStubsOffsetsContainer->createReadOnlySection->binContainer->getHeaderContainer->getContainer->createReadOnlySection->binContainer->getCodeSegmentsContainer->createReadOnlySection->binContainer->getConstantDataContainer->createReadOnlySection->binContainer->getConfigContainer->createReadOnlySection->binContainer->getKlassesGotContainer->createReadWriteSection->binContainer->getCountersGotContainer->createReadWriteSection->binContainer->getMetadataGotContainer->createReadWriteSection->binContainer->getMethodStateContainer->createReadWriteSection->binContainer->getOopGotContainer->createReadWriteSection->binContainer->getExtLinkageGOTContainer->createReadWriteSection->mh->sections->size->setCmdSizes->fileOffset->mh->getCmdSize->sections->get->getAlign->sections->get->getAlign->address->segmentOffset->for->i->sections->size->segSize->seg->sections->size->sections->size->new->MachOSegment->vers->new->MachOVersion->symtab->createMachOSymbolTables->dysymtab->symtab->getNumLocalSyms->symtab->getNumGlobalSyms->symtab->getNumUndefSyms->new->MachODySymtab->machORelocs->createMachORelocTable->MachORelocTable->getAlign->MachORelocTable->getAlign->for->i->sections->size->MachOSymtab->getAlign->MachOSymtab->getAlign->symtab->setOffset->machoContainer->mh->getArray->writeBytes->machoContainer->seg->getArray->writeBytes->for->i->sections->size->machoContainer->vers->getArray->writeBytes->symtab->calcSizes->machoContainer->symtab->getCmdArray->writeBytes->machoContainer->dysymtab->getArray->writeBytes->for->i->sections->size->for->i->sections->size->machoContainer->symtab->getDataArray->MachOSymtab->getAlign->writeBytes->machoContainer->close
+JMachORelocObject#createMachOSymbolTables(ArrayList, Collection):::Construct MachO symbol data from BinaryContainer object's symbol tables:::symtab->new->MachOSymtab->symtab->addSymbolEntry->foreach->sectionId->symbol->getSection->getSectionId->sectionAddr->sections->get->getAddr->machoSymbol->symtab->symbol->getName->getMachOTypeOf->symbol->getOffset->addSymbolEntry->symbol->setNativeSymbol->symtab->updateIndexes->return
+JMachORelocObject#getMachOTypeOf(Symbol)::: mach reloc object get mach type of:::kind->sym->getKind->type->if->sym->getBinding->if->return
+JMachORelocObject#createMachORelocTable(ArrayList, Map>, MachOSymtab):::Construct a MachO relocation table from BinaryContainer object's relocation tables.:::machORelocTable->sections->size->new->MachORelocTable->foreach->relocationTable->entrySet->relocs->entry->getValue->symbol->entry->getKey->foreach->createRelocation->foreach->binContainer->getUniqueRelocationTable->entrySet->entry->getKey->entry->getValue->createRelocation->return
+JMachORelocObject#createRelocation(Symbol, Relocation, MachORelocTable)::: mach reloc object create relocation:::relocType->reloc->getType->machORelocType->getMachORelocationType->sym->symbol->getNativeSymbol->symno->sym->getIndex->sectindex->reloc->getSection->getSectionId->offset->reloc->getOffset->pcrel->length->isextern->switch->addend->reloc->getSize->break->return->addend->break->break->throw->new->InternalError->machORelocTable->createRelocationEntry
+JMachORelocObject#getMachORelocationType(RelocType)::: mach reloc object get mach relocation type:::machORelocType->switch->MachOTargetInfo->getMachOArch->if->else->if->else->if->else->if->else->if->else->break->println->return
+MachOByteBuffer#allocate(int)::: mach byte buffer allocate:::buf->ByteBuffer->allocate->if->MachOTargetInfo->getMachOEndian->buf->order->else->buf->order->return
+MachOContainer#close()::: mach container close:::try->outputStream->close->catch->println->finally
+MachOContainer#writeBytes(byte[])::: mach container write bytes:::try->outputStream->write->catch->println->finally
+MachOContainer#writeBytes(byte[], int)::: mach container write bytes:::try->while->outputStream->write->outputStream->write->catch->println->finally
+MachODySymtab#getArray()::: mach dy symtab get array:::return->dysymtab->array
+MachOHeader#setCmdSizes(int, int)::: mach header set cmd sizes:::header->putInt->header->putInt
+MachOHeader#getCmdSize()::: mach header get cmd size:::return->header->getInt
+MachOHeader#getArray()::: mach header get array:::return->header->array
+MachORelocEntry#getArray()::: mach reloc entry get array:::return->entry->array
+MachORelocTable#createRelocationEntry(int, int, int, int, int, int, int)::: mach reloc table create relocation entry:::entry->new->MachORelocEntry->relocEntries->get->add
+MachORelocTable#getAlign()::: mach reloc table get align:::return
+MachORelocTable#getNumRelocs(int)::: mach reloc table get num relocs:::return->relocEntries->get->size
+MachORelocTable#getRelocData(int)::: mach reloc table get reloc data:::entryList->relocEntries->get->if->entryList->size->return->relocData->MachOByteBuffer->entryList->size->allocate->for->i->entryList->size->return->relocData->array
+MachOSection#getSize()::: mach section get size:::return->section->getLong
+MachOSection#getAlign()::: mach section get align:::return->section->getInt
+MachOSection#getArray()::: mach section get array:::return->section->array
+MachOSection#getDataArray()::: mach section get data array:::return
+MachOSection#setAddr(long)::: mach section set addr:::section->putLong
+MachOSection#getAddr()::: mach section get addr:::return->section->getLong
+MachOSection#setOffset(int)::: mach section set offset:::section->putInt
+MachOSection#getOffset()::: mach section get offset:::return->section->getInt
+MachOSection#setReloff(int)::: mach section set reloff:::section->putInt
+MachOSection#setRelcount(int)::: mach section set relcount:::section->putInt
+MachOSection#hasRelocations()::: mach section has relocations:::return
+MachOSegment#getArray()::: mach segment get array:::return->segment->array
+MachOSymbol#getArray()::: mach symbol get array:::return->sym->array
+MachOSymtab#getAlign()::: mach symtab get align:::return
+MachOSymtab#addSymbolEntry(String, byte, byte, long)::: mach symtab add symbol entry:::index->sym->if->name->isEmpty->strTabContent->append->new->MachOSymbol->localSymbols->add->else->strTabContent->append->append->append->name->getBytes->new->MachOSymbol->switch->undefSymbols->add->break->localSymbols->add->break->globalSymbols->add->break->println->break->return
+MachOSymtab#setOffset(int)::: mach symtab set offset:::symtabCmd->putInt
+MachOSymtab#updateIndexes()::: mach symtab update indexes:::index->for->i->localSymbols->size->for->i->globalSymbols->size->for->i->undefSymbols->size
+MachOSymtab#calcSizes()::: mach symtab calc sizes:::stroff->symtabCmd->getInt->symtabCmd->putInt->symtabCmd->putInt->symtabCmd->putInt->return
+MachOSymtab#getNumLocalSyms()::: mach symtab get num local syms:::return->localSymbols->size
+MachOSymtab#getNumGlobalSyms()::: mach symtab get num global syms:::return->globalSymbols->size
+MachOSymtab#getNumUndefSyms()::: mach symtab get num undef syms:::return->undefSymbols->size
+MachOSymtab#getCmdArray()::: mach symtab get cmd array:::return->symtabCmd->array
+MachOSymtab#getDataArray()::: mach symtab get data array:::symtabData->MachOByteBuffer->allocate->retarray->for->i->localSymbols->size->for->i->globalSymbols->size->for->i->undefSymbols->size->strs->strTabContent->toString->getBytes->symtabData->put->symtabData->array->return
+MachOTargetInfo#getMachOArch()::: mach target info get mach arch:::return
+MachOTargetInfo#getMachOSubArch()::: mach target info get mach sub arch:::return
+MachOTargetInfo#getMachOEndian()::: mach target info get mach endian:::return
+MachOTargetInfo#getOsName()::: mach target info get os name:::return
+MachOVersion#getArray()::: mach version get array:::return->version->array

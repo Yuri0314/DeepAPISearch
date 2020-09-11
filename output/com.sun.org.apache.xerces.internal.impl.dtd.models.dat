@@ -1,6 +1,56 @@
+CMAny#getType()::: any get type:::return
+CMAny#getURI()::: any get i:::return
+CMAny#getPosition()::: any get position:::return
+CMAny#setPosition(int)::: any set position:::
+CMAny#isNullable()::: any is nullable:::return
+CMAny#toString()::: any to string:::strRet->new->StringBuilder->strRet->append->strRet->append->strRet->append->strRet->append->if->strRet->append->return->strRet->toString
+CMAny#calcFirstPos(CMStateSet)::: any calc first pos:::if->toSet->zeroBits->else->toSet->setBit
+CMAny#calcLastPos(CMStateSet)::: any calc last pos:::if->toSet->zeroBits->else->toSet->setBit
+CMBinOp#getLeft()::: bin op get left:::return
+CMBinOp#getRight()::: bin op get right:::return
+CMBinOp#isNullable()::: bin op is nullable:::if->type->return->fLeftChild->isNullable->fRightChild->isNullable->else->if->type->return->fLeftChild->isNullable->fRightChild->isNullable->else->throw->new->RuntimeException
+CMBinOp#calcFirstPos(CMStateSet)::: bin op calc first pos:::if->type->toSet->fLeftChild->firstPos->setTo->toSet->fRightChild->firstPos->union->else->if->type->toSet->fLeftChild->firstPos->setTo->if->fLeftChild->isNullable->toSet->fRightChild->firstPos->union->else->throw->new->RuntimeException
+CMBinOp#calcLastPos(CMStateSet)::: bin op calc last pos:::if->type->toSet->fLeftChild->lastPos->setTo->toSet->fRightChild->lastPos->union->else->if->type->toSet->fRightChild->lastPos->setTo->if->fRightChild->isNullable->toSet->fLeftChild->lastPos->union->else->throw->new->RuntimeException
+CMLeaf#getElement()::: leaf get element:::return
+CMLeaf#getPosition()::: leaf get position:::return
+CMLeaf#setPosition(int)::: leaf set position:::
+CMLeaf#isNullable()::: leaf is nullable:::return
+CMLeaf#toString()::: leaf to string:::strRet->fElement->toString->new->StringBuilder->strRet->append->strRet->append->strRet->append->strRet->append->strRet->append->if->strRet->append->return->strRet->toString
+CMLeaf#calcFirstPos(CMStateSet)::: leaf calc first pos:::if->toSet->zeroBits->else->toSet->setBit
+CMLeaf#calcLastPos(CMStateSet)::: leaf calc last pos:::if->toSet->zeroBits->else->toSet->setBit
+CMNode#isNullable()::: node is nullable:::
+CMNode#type()::: node type:::return
+CMNode#firstPos()::: node first pos:::if->new->CMStateSet->calcFirstPos->return
+CMNode#lastPos()::: node last pos:::if->new->CMStateSet->calcLastPos->return
+CMNode#setFollowPos(CMStateSet)::: node set follow pos:::
+CMNode#setMaxStates(int)::: node set max states:::
+CMNode#isCompactedForUPA()::: node is compacted for a:::return
+CMNode#setIsCompactUPAModel(boolean)::: node set is compact model:::
 CMNode#setUserData(Object):::Allows the user to set arbitrary data on this content model node:::
 CMNode#getUserData():::Allows the user to get arbitrary data set on this content model node:::return
+CMNode#calcFirstPos(CMStateSet)::: node calc first pos:::
+CMNode#calcLastPos(CMStateSet)::: node calc last pos:::
+CMStateSet#toString()::: state set to string:::strRet->new->StringBuffer->try->strRet->append->for->index->strRet->append->catch->finally->return->strRet->toString
+CMStateSet#intersection(CMStateSet)::: state set intersection:::if->else->for->index
+CMStateSet#getBit(int)::: state set get bit:::if->throw->new->RuntimeException->if->mask->if->return->else->return->else->mask->ofs->return
+CMStateSet#isEmpty()::: state set is empty:::if->return->else->for->index->return
+CMStateSet#isSameSet(CMStateSet)::: state set is same set:::if->return->if->return->for->index->return
+CMStateSet#union(CMStateSet)::: state set union:::if->else->for->index
+CMStateSet#setBit(int)::: state set set bit:::if->throw->new->RuntimeException->if->mask->if->else->else->mask->ofs
+CMStateSet#setTo(CMStateSet)::: state set set to:::if->throw->new->RuntimeException->if->else->for->index
+CMStateSet#zeroBits()::: state set zero bits:::if->else->for->index
+CMStateSet#equals(Object)::: state set equals:::if->return->return->isSameSet
+CMStateSet#hashCode()::: state set hash code:::if->return->else->hash->for->index->return
+CMUniOp#getChild()::: uni op get child:::return
+CMUniOp#isNullable()::: uni op is nullable:::if->type->return->fChild->isNullable->else->return
+CMUniOp#calcFirstPos(CMStateSet)::: uni op calc first pos:::toSet->fChild->firstPos->setTo
+CMUniOp#calcLastPos(CMStateSet)::: uni op calc last pos:::toSet->fChild->lastPos->setTo
 ContentModelValidator#validate(QName[], int, int):::validate:::
 DFAContentModel#validate(QName[], int, int):::Check that the specified content is valid according to this content model:::if->println->if->if->println->println->for->i->println->return->curState->for->childIndex->if->println->if->return->return
+DFAContentModel#buildDFA(CMNode):::Builds the internal DFA transition table from the given syntax tree.:::fQName->setValues->nodeEOC->new->CMLeaf->new->CMBinOp->nodeEOC->setPosition->new->CMLeafArr->new->intArr->postTreeBuildInit->new->CMStateSetArr->for->index->calcFollowList->new->QNameArr->new->intArr->for->outIndex->fLeafSorter->new->intArr->fSortCount->for->elemIndex->curArraySize->statesToDo->new->CMStateSetArr->new->booleanArr->new->intArrs->setT->fHeadNode->firstPos->unmarkedState->curState->makeDefStateList->stateTable->new->HashMap<>->while->transEntry->setT->getBit->newSet->sorterIndex->for->elemIndex->getLeft->isNullable->if->dumpTree
+DFAContentModel#calcFollowList(CMNode):::Calculates the follow list of the current node.:::if->nodeCur->type->getLeft->calcFollowList->getRight->calcFollowList->else->if->nodeCur->type->getLeft->calcFollowList->getRight->calcFollowList->last->getLeft->lastPos->first->getRight->firstPos->for->index->else->if->nodeCur->type->nodeCur->type->getChild->calcFollowList->first->nodeCur->firstPos->last->nodeCur->lastPos->for->index->else->if->nodeCur->type->getChild->calcFollowList
+DFAContentModel#dumpTree(CMNode, int):::Dumps the tree of the current node to standard output.:::for->index->type->nodeCur->type->if->if->print->else->print->if->nodeCur->isNullable->print->print->nodeCur->firstPos->toString->print->print->nodeCur->lastPos->toString->println->getLeft->dumpTree->getRight->dumpTree->else->if->nodeCur->type->print->if->nodeCur->isNullable->print->print->nodeCur->firstPos->toString->print->print->nodeCur->lastPos->toString->println->getChild->dumpTree->else->if->nodeCur->type->getPosition->getElement->getElement->print->if->nodeCur->isNullable->print->print->nodeCur->firstPos->toString->print->print->nodeCur->lastPos->toString->println->else->throw->new->RuntimeException
+DFAContentModel#makeDefStateList():::-1 is used to represent bad transitions in the transition table entry for each state:::retArray->new->intArr->for->index->return
+DFAContentModel#postTreeBuildInit(CMNode, int):::Post tree build initialization.:::nodeCur->setMaxStates->if->nodeCur->type->nodeCur->type->nodeCur->type->qname->getURI->new->QName->getPosition->new->CMLeaf->nodeCur->type->else->if->nodeCur->type->nodeCur->type->getLeft->postTreeBuildInit->getRight->postTreeBuildInit->else->if->nodeCur->type->nodeCur->type->nodeCur->type->getChild->postTreeBuildInit->else->if->nodeCur->type->node->getElement->if->else->throw->nodeCur->type->new->RuntimeException->return
 MixedContentModel#validate(QName[], int, int):::Check that the specified content is valid according to this content model:::if->inIndex->for->outIndex->else->for->outIndex->return
 SimpleContentModel#validate(QName[], int, int):::Check that the specified content is valid according to this content model:::switch->if->return->if->return->if->return->break->if->if->return->if->return->break->if->for->index->break->if->return->for->index->break->if->return->if->return->if->return->break->if->if->return->if->return->else->if->return->return->break->throw->new->RuntimeException->return

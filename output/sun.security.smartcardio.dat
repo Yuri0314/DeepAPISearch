@@ -1,1 +1,63 @@
+CardImpl#checkState()::: card impl check state:::s->if->throw->new->IllegalStateException->else->if->throw->new->IllegalStateException
+CardImpl#isValid()::: card impl is valid:::if->return->try->new->byteArr->SCardStatus->return->catch->return->finally
+CardImpl#checkSecurity(String)::: card impl check security:::sm->System->getSecurityManager->if->sm->new->CardPermission->checkPermission
+CardImpl#handleError(PCSCException)::: card impl handle error:::if
+CardImpl#getATR()::: card impl get r:::return
+CardImpl#getProtocol()::: card impl get protocol:::switch->return->return->return
+CardImpl#getBasicChannel()::: card impl get basic channel:::checkSecurity->checkState->return
+CardImpl#getSW(byte[])::: card impl get w:::if->return->sw1->sw2->return
+CardImpl#openLogicalChannel()::: card impl open logical channel:::checkSecurity->checkState->checkExclusive->try->response->SCardTransmit->if->getSW->throw->PCSC->toString->new->CardException->return->new->ChannelImpl->catch->handleError->throw->new->CardException->finally
+CardImpl#checkExclusive()::: card impl check exclusive:::t->if->return->if->Thread->currentThread->throw->new->CardException
+CardImpl#beginExclusive()::: card impl begin exclusive:::checkSecurity->checkState->if->throw->exclusiveThread->getName->new->CardException->try->SCardBeginTransaction->catch->handleError->throw->new->CardException->finally->Thread->currentThread
+CardImpl#endExclusive()::: card impl end exclusive:::checkState->if->Thread->currentThread->throw->new->IllegalStateException->try->SCardEndTransaction->catch->handleError->throw->new->CardException->finally
+CardImpl#transmitControlCommand(int, byte[])::: card impl transmit control command:::checkSecurity->checkState->checkExclusive->if->throw->new->NullPointerException->try->r->SCardControl->return->catch->handleError->throw->new->CardException->finally
+CardImpl#disconnect(boolean)::: card impl disconnect:::if->checkSecurity->if->return->checkExclusive->try->SCardDisconnect->catch->throw->new->CardException->finally
+CardImpl#toString()::: card impl to string:::return->getProtocol
+CardImpl#finalize()::: card impl finalize:::try->if->SCardDisconnect->catch->finally->super->finalize
+ChannelImpl#checkClosed()::: channel impl check closed:::card->checkState->if->throw->new->IllegalStateException
+ChannelImpl#getCard()::: channel impl get card:::return
+ChannelImpl#getChannelNumber()::: channel impl get channel number:::checkClosed->return
+ChannelImpl#checkManageChannel(byte[])::: channel impl check manage channel:::if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException
+ChannelImpl#transmit(CommandAPDU)::: channel impl transmit:::checkClosed->card->checkExclusive->commandBytes->command->getBytes->responseBytes->doTransmit->return->new->ResponseAPDU
+ChannelImpl#transmit(ByteBuffer, ByteBuffer)::: channel impl transmit:::checkClosed->card->checkExclusive->if->throw->new->NullPointerException->if->response->isReadOnly->throw->new->ReadOnlyBufferException->if->throw->new->IllegalArgumentException->if->response->remaining->throw->new->IllegalArgumentException->commandBytes->command->remaining->new->byteArr->command->get->responseBytes->doTransmit->response->put->return
+ChannelImpl#getBooleanProperty(String, boolean)::: channel impl get boolean property:::val->AccessController->System->getProperty->doPrivileged->if->return->if->val->equalsIgnoreCase->return->else->if->val->equalsIgnoreCase->return->else->throw->new->IllegalArgumentException
+ChannelImpl#concat(byte[], byte[], int)::: channel impl concat:::n1->if->return->res->new->byteArr->System->arraycopy->System->arraycopy->return
+ChannelImpl#doTransmit(byte[])::: channel impl do transmit:::try->checkManageChannel->setChannel->n->t0->t1->if->throw->new->CardException->if->lc->if->if->else->if->getresponse->k->result->while->if->throw->new->CardException->response->SCardTransmit->rn->if->if->continue->if->if->concat->continue->concat->break->return->catch->card->handleError->throw->new->CardException->finally
+ChannelImpl#getSW(byte[])::: channel impl get w:::if->throw->new->CardException->sw1->sw2->return
+ChannelImpl#isOK(byte[])::: channel impl is k:::return->getSW
+ChannelImpl#setChannel(byte[])::: channel impl set channel:::cla->if->return->if->return->if->else->if->else->throw->new->RuntimeException
+ChannelImpl#close()::: channel impl close:::if->getChannelNumber->throw->new->IllegalStateException->if->return->card->checkExclusive->try->com->new->byteArr->getChannelNumber->setChannel->res->SCardTransmit->if->isOK->throw->PCSC->toString->new->CardException->catch->card->handleError->throw->new->CardException->finally
+ChannelImpl#toString()::: channel impl to string:::return
+PCSC#checkAvailable()::: c check available:::if->throw->new->UnsupportedOperationException
+PCSC#SCardEstablishContext(int)::: c  card establish context:::
+PCSC#SCardListReaders(long)::: c  card list readers:::
+PCSC#SCardConnect(long, String, int, int)::: c  card connect:::
+PCSC#SCardTransmit(long, int, byte[], int, int)::: c  card transmit:::
+PCSC#SCardStatus(long, byte[])::: c  card status:::
+PCSC#SCardDisconnect(long, int)::: c  card disconnect:::
+PCSC#SCardGetStatusChange(long, long, int[], String[])::: c  card get status change:::
+PCSC#SCardBeginTransaction(long)::: c  card begin transaction:::
+PCSC#SCardEndTransaction(long, int)::: c  card end transaction:::
+PCSC#SCardControl(long, int, byte[])::: c  card control:::
+PCSC#toString(byte[])::: c to string:::sb->new->StringBuilder->for->i->return->sb->toString
+PCSCException#toErrorString(int)::: exception to error string:::switch->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->Integer->toHexString
+PCSCTerminals#initContext()::: terminals init context:::if->SCardEstablishContext
+PCSCTerminals#implGetTerminal(String)::: terminals impl get terminal:::ref->terminals->get->terminal->ref->get->if->return->new->TerminalImpl->terminals->new->WeakReference<TerminalImpl>->put->return
+PCSCTerminals#list(State)::: terminals list:::if->throw->new->NullPointerException->try->readerNames->SCardListReaders->list->new->ArrayList<CardTerminal>->if->if->else->if->foreach->terminal->implGetTerminal->readerState->switch->list->add->break->if->terminal->isCardPresent->list->add->break->if->terminal->isCardPresent->list->add->break->stateMap->get->if->readerState->isInsertion->list->add->break->stateMap->get->if->readerState->isRemoval->list->add->break->throw->new->CardException->return->Collections->unmodifiableList->catch->throw->new->CardException->finally
+PCSCTerminals.ReaderState#get()::: reader state get:::return
+PCSCTerminals.ReaderState#update(int)::: reader state update:::
+PCSCTerminals.ReaderState#isInsertion()::: reader state is insertion:::return->present->present
+PCSCTerminals.ReaderState#isRemoval()::: reader state is removal:::return->present->present
+PCSCTerminals.ReaderState#present(int)::: reader state present:::return
+PCSCTerminals#waitForChange(long)::: terminals wait for change:::if->throw->new->IllegalArgumentException->if->new->HashMap<String,ReaderState>->waitForChange->if->try->readerNames->SCardListReaders->n->if->throw->new->IllegalStateException->status->new->intArr->readerStates->new->ReaderStateArr->for->i->SCardGetStatusChange->stateMap->clear->for->i->return->catch->if->return->else->throw->new->CardException->finally
+PCSCTerminals#waitForCards(List, long, boolean)::: terminals wait for cards:::thisTimeout->if->else->names->terminals->size->new->StringArr->i->foreach->if->throw->terminal->getClass->getName->new->IllegalArgumentException->impl->status->new->intArr->Arrays->fill->try->while->SCardGetStatusChange->results->for->if->return->Collections->unmodifiableList->catch->if->return->Collections->emptyList->else->throw->new->CardException->finally
+PlatformPCSC#loadLibrary()::: platform c load library:::try->AccessController->new->PrivilegedAction<Void>->doPrivileged->return->catch->return->finally
+SunPCSC.ProviderService#newInstance(Object)::: provider service new instance:::type->getType->algo->getAlgorithm->try->if->type->equals->algo->equals->return->new->SunPCSC.Factory->catch->throw->new->NoSuchAlgorithmException->finally->throw->new->ProviderException
 SunPCSC.Factory#engineTerminals():::Returns the available readers:::return->new->PCSCTerminals
+TerminalImpl#getName()::: terminal impl get name:::return
+TerminalImpl#connect(String)::: terminal impl connect:::sm->System->getSecurityManager->if->sm->new->CardPermission->checkPermission->if->if->card->isValid->cardProto->card->getProtocol->if->protocol->equals->protocol->equalsIgnoreCase->return->else->throw->new->CardException->else->try->new->CardImpl->return->catch->if->throw->new->CardNotPresentException->else->throw->new->CardException->finally
+TerminalImpl#isCardPresent()::: terminal impl is card present:::try->status->new->intArr->new->StringArr->SCardGetStatusChange->return->catch->throw->new->CardException->finally
+TerminalImpl#waitForCard(boolean, long)::: terminal impl wait for card:::if->throw->new->IllegalArgumentException->if->status->new->intArr->readers->new->StringArr->try->SCardGetStatusChange->present->if->return->end->System->currentTimeMillis->while->if->Math->System->currentTimeMillis->max->SCardGetStatusChange->return->catch->if->return->else->throw->new->CardException->finally
+TerminalImpl#waitForCardPresent(long)::: terminal impl wait for card present:::return->waitForCard
+TerminalImpl#waitForCardAbsent(long)::: terminal impl wait for card absent:::return->waitForCard
+TerminalImpl#toString()::: terminal impl to string:::return

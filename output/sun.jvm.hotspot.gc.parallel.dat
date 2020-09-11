@@ -1,7 +1,38 @@
+ImmutableSpace#initialize(TypeDataBase)::: immutable space initialize:::type->db->lookupType->type->getAddressField->type->getAddressField
+ImmutableSpace#bottom()::: immutable space bottom:::return->bottomField->getValue
+ImmutableSpace#end()::: immutable space end:::return->endField->getValue
 ImmutableSpace#usedRegion():::Returns a subregion of the space containing all the objects in       the space.:::return->bottom->end->new->MemRegion
 ImmutableSpace#bottomAsOopHandle():::Support for iteration over heap -- not sure how this will       interact with GC in reflective system, but necessary for the       debugging mechanism:::return->bottomField->getOopHandle
 ImmutableSpace#getLiveRegions():::returns all MemRegions where live objects are:::
 ImmutableSpace#capacity():::Returned value is in bytes:::return->end->bottom->minus
+ImmutableSpace#used()::: immutable space used:::
 ImmutableSpace#contains(Address):::Testers:::return->bottom->lessThanOrEqual->end->greaterThan
+ImmutableSpace#print()::: immutable space print:::printOn
+ImmutableSpace#printOn(PrintStream)::: immutable space print on:::
+MutableSpace#initialize(TypeDataBase)::: mutable space initialize:::type->db->lookupType->type->getAddressField
+MutableSpace#top()::: mutable space top:::return->topField->getValue
 MutableSpace#used():::In bytes:::return->top->bottom->minus
 MutableSpace#getLiveRegions():::returns all MemRegions where live objects are:::res->new->ArrayList->res->bottom->top->new->MemRegion->add->return
+MutableSpace#printOn(PrintStream)::: mutable space print on:::tty->bottom->top->end->print
+ParallelScavengeHeap#initialize(TypeDataBase)::: parallel scavenge heap initialize:::type->db->lookupType->type->getAddressField->type->getAddressField
+ParallelScavengeHeap#youngGen()::: parallel scavenge heap young gen:::return->VMObjectFactory->youngGenField->getValue->newObject
+ParallelScavengeHeap#oldGen()::: parallel scavenge heap old gen:::return->VMObjectFactory->oldGenField->getValue->newObject
+ParallelScavengeHeap#capacity()::: parallel scavenge heap capacity:::return->youngGen->capacity->oldGen->capacity
+ParallelScavengeHeap#used()::: parallel scavenge heap used:::return->youngGen->used->oldGen->used
+ParallelScavengeHeap#isIn(Address)::: parallel scavenge heap is in:::if->youngGen->isIn->return->if->oldGen->isIn->return->return
+ParallelScavengeHeap#kind()::: parallel scavenge heap kind:::return
+ParallelScavengeHeap#printOn(PrintStream)::: parallel scavenge heap print on:::tty->print->youngGen->printOn->oldGen->printOn->tty->print
+PSOldGen#initialize(TypeDataBase)::: old gen initialize:::type->db->lookupType->type->getAddressField
+PSOldGen#objectSpace()::: old gen object space:::return->VMObjectFactory->objectSpaceField->getValue->newObject
+PSOldGen#capacity()::: old gen capacity:::return->objectSpace->capacity
+PSOldGen#used()::: old gen used:::return->objectSpace->used
+PSOldGen#isIn(Address)::: old gen is in:::return->objectSpace->contains
+PSOldGen#printOn(PrintStream)::: old gen print on:::tty->print->objectSpace->printOn->tty->print
+PSYoungGen#initialize(TypeDataBase)::: young gen initialize:::type->db->lookupType->type->getAddressField->type->getAddressField->type->getAddressField
+PSYoungGen#edenSpace()::: young gen eden space:::return->VMObjectFactory->edenSpaceField->getValue->newObject
+PSYoungGen#fromSpace()::: young gen from space:::return->VMObjectFactory->fromSpaceField->getValue->newObject
+PSYoungGen#toSpace()::: young gen to space:::return->VMObjectFactory->toSpaceField->getValue->newObject
+PSYoungGen#capacity()::: young gen capacity:::return->edenSpace->capacity->fromSpace->capacity
+PSYoungGen#used()::: young gen used:::return->edenSpace->used->fromSpace->used
+PSYoungGen#isIn(Address)::: young gen is in:::if->edenSpace->contains->return->if->fromSpace->contains->return->return
+PSYoungGen#printOn(PrintStream)::: young gen print on:::tty->print->tty->print->edenSpace->printOn->tty->print->fromSpace->printOn->tty->print->toSpace->printOn->tty->print

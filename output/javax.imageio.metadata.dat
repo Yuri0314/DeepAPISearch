@@ -5,6 +5,7 @@ IIOMetadata#getNativeMetadataFormatName():::Returns the name of the "native" met
 IIOMetadata#getExtraMetadataFormatNames():::Returns an array of Strings containing the names of additional metadata formats, other than the native and standard formats, recognized by this plug-in's getAsTree, setFromTree, and mergeTree methods:::if->return->return->extraMetadataFormatNames->clone
 IIOMetadata#getMetadataFormatNames():::Returns an array of Strings containing the names of all metadata formats, including the native and standard formats, recognized by this plug-in's getAsTree, setFromTree, and mergeTree methods:::nativeName->getNativeMetadataFormatName->standardName->isStandardMetadataFormatSupported->extraNames->getExtraMetadataFormatNames->numFormats->if->if->if->if->return->formats->new->StringArr->index->if->if->if->for->i->return
 IIOMetadata#getMetadataFormat(String):::Returns an IIOMetadataFormat object describing the given metadata format, or null if no description is available:::if->throw->new->IllegalArgumentException->if->formatName->equals->return->IIOMetadataFormatImpl->getStandardFormatInstance->formatClassName->if->formatName->equals->else->if->for->i->if->throw->new->IllegalArgumentException->try->className->pa->return->getMetadataFormatClass->cls->AccessController->doPrivileged->meth->cls->getMethod->return->meth->invoke->catch->ex->new->IllegalStateException->ex->initCause->throw->finally
+IIOMetadata#getMetadataFormatClass(String)::: metadata get metadata format class:::thisModule->getModule->targetModule->this->getClass->getModule->c->try->cl->this->getClass->getClassLoader->Class->forName->if->isAssignableFrom->return->catch->finally->if->thisModule->equals->return->if->targetModule->isNamed->i->formatClassName->lastIndexOf->pn->formatClassName->substring->if->targetModule->isExported->throw->new->IllegalStateException->return
 IIOMetadata#getAsTree(String):::Returns an XML DOM Node object that represents the root of a tree of metadata contained within this object according to the conventions defined by a given metadata format:::
 IIOMetadata#mergeTree(String, Node):::Alters the internal state of this IIOMetadata object from a tree of XML DOM Nodes whose syntax is defined by the given metadata format:::
 IIOMetadata#getStandardChromaNode():::Returns an IIOMetadataNode representing the chroma information of the standard javax_imageio_1.0 metadata format, or null if no such information is available:::return
@@ -15,6 +16,7 @@ IIOMetadata#getStandardDocumentNode():::Returns an IIOMetadataNode representing 
 IIOMetadata#getStandardTextNode():::Returns an IIOMetadataNode representing the textual information of the standard javax_imageio_1.0 metadata format, or null if no such information is available:::return
 IIOMetadata#getStandardTileNode():::Returns an IIOMetadataNode representing the tiling information of the standard javax_imageio_1.0 metadata format, or null if no such information is available:::return
 IIOMetadata#getStandardTransparencyNode():::Returns an IIOMetadataNode representing the transparency information of the standard javax_imageio_1.0 metadata format, or null if no such information is available:::return
+IIOMetadata#append(IIOMetadataNode, IIOMetadataNode):::Appends a new node to an existing node, if the new node is non-null.:::if->root->appendChild
 IIOMetadata#getStandardTree():::A utility method to return a tree of IIOMetadataNodes representing the metadata contained within this object according to the conventions of the standard javax_imageio_1.0 metadata format:::root->new->IIOMetadataNode->getStandardChromaNode->append->getStandardCompressionNode->append->getStandardDataNode->append->getStandardDimensionNode->append->getStandardDocumentNode->append->getStandardTextNode->append->getStandardTileNode->append->getStandardTransparencyNode->append->return
 IIOMetadata#setFromTree(String, Node):::Sets the internal state of this IIOMetadata object from a tree of XML DOM Nodes whose syntax is defined by the given metadata format:::reset->mergeTree
 IIOMetadata#reset():::Resets all the data stored in this object to default values, usually to the state this object was in immediately after construction, though the precise semantics are plug-in specific:::
@@ -52,6 +54,9 @@ IIOMetadataFormat#getObjectArrayMinLength(String):::Returns the minimum number o
 IIOMetadataFormat#getObjectArrayMaxLength(String):::Returns the maximum number of array elements that may be used to define the Object reference within the named element:::
 IIOMetadataFormatImpl#setResourceBaseName(String):::Sets a new base name for locating ResourceBundles containing descriptions of elements and attributes for this format:::if->throw->new->IllegalArgumentException
 IIOMetadataFormatImpl#getResourceBaseName():::Returns the currently set base name for locating ResourceBundles.:::return
+IIOMetadataFormatImpl#getElement(String, boolean):::Utility method for locating an element.:::if->throw->new->IllegalArgumentException->element->elementMap->get->if->throw->new->IllegalArgumentException->return
+IIOMetadataFormatImpl#getElement(String)::: metadata format impl get element:::return->getElement
+IIOMetadataFormatImpl#getAttribute(String, String)::: metadata format impl get attribute:::element->getElement->attr->get->if->throw->new->IllegalArgumentException->return
 IIOMetadataFormatImpl#addElement(String, String, int):::Adds a new element type to this metadata document format with a child policy other than CHILD_POLICY_REPEAT.:::parent->getElement->if->throw->new->IllegalArgumentException->element->new->Element->add->add->elementMap->put
 IIOMetadataFormatImpl#addElement(String, String, int, int):::Adds a new element type to this metadata document format with a child policy of CHILD_POLICY_REPEAT.:::parent->getElement->if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->element->new->Element->add->add->elementMap->put
 IIOMetadataFormatImpl#addChildElement(String, String):::Adds an existing element to the list of legal children for a given parent node type.:::parent->getElement->element->getElement->add->add
@@ -67,13 +72,58 @@ IIOMetadataFormatImpl#addObjectValue(String, Class, boolean, T, List):::Allows a
 IIOMetadataFormatImpl#addObjectValue(String, Class, T, Comparable, Comparable, boolean, boolean):::Allows an Object reference of a given class type to be stored in nodes implementing the named element:::element->getElement->obj->new->ObjectValue<>->if->if
 IIOMetadataFormatImpl#addObjectValue(String, Class, int, int):::Allows an Object reference of a given class type to be stored in nodes implementing the named element:::element->getElement->obj->new->ObjectValue<>
 IIOMetadataFormatImpl#removeObjectValue(String):::Disallows an Object reference from being stored in nodes implementing the named element.:::element->getElement
+IIOMetadataFormatImpl#getRootName()::: metadata format impl get root name:::return
+IIOMetadataFormatImpl#canNodeAppear(String, ImageTypeSpecifier)::: metadata format impl can node appear:::
+IIOMetadataFormatImpl#getElementMinChildren(String)::: metadata format impl get element min children:::element->getElement->if->throw->new->IllegalArgumentException->return
+IIOMetadataFormatImpl#getElementMaxChildren(String)::: metadata format impl get element max children:::element->getElement->if->throw->new->IllegalArgumentException->return
+IIOMetadataFormatImpl#getResource(String, Locale)::: metadata format impl get resource:::if->Locale->getDefault->try->bundle->ResourceBundle->this->getClass->getModule->getBundle->return->bundle->getString->catch->return->finally
 IIOMetadataFormatImpl#getElementDescription(String, Locale):::Returns a String containing a description of the named element, or null:::element->getElement->return->getResource
+IIOMetadataFormatImpl#getChildPolicy(String)::: metadata format impl get child policy:::element->getElement->return
+IIOMetadataFormatImpl#getChildNames(String)::: metadata format impl get child names:::element->getElement->if->return->return->new->StringArr->toArray
+IIOMetadataFormatImpl#getAttributeNames(String)::: metadata format impl get attribute names:::element->getElement->names->result->names->size->new->StringArr->return->names->toArray
+IIOMetadataFormatImpl#getAttributeValueType(String, String)::: metadata format impl get attribute value type:::attr->getAttribute->return
+IIOMetadataFormatImpl#getAttributeDataType(String, String)::: metadata format impl get attribute data type:::attr->getAttribute->return
+IIOMetadataFormatImpl#isAttributeRequired(String, String)::: metadata format impl is attribute required:::attr->getAttribute->return
+IIOMetadataFormatImpl#getAttributeDefaultValue(String, String)::: metadata format impl get attribute default value:::attr->getAttribute->return
+IIOMetadataFormatImpl#getAttributeEnumerations(String, String)::: metadata format impl get attribute enumerations:::attr->getAttribute->if->throw->new->IllegalArgumentException->values->result->values->size->new->StringArr->return->values->toArray
+IIOMetadataFormatImpl#getAttributeMinValue(String, String)::: metadata format impl get attribute min value:::attr->getAttribute->if->throw->new->IllegalArgumentException->return
+IIOMetadataFormatImpl#getAttributeMaxValue(String, String)::: metadata format impl get attribute max value:::attr->getAttribute->if->throw->new->IllegalArgumentException->return
+IIOMetadataFormatImpl#getAttributeListMinLength(String, String)::: metadata format impl get attribute list min length:::attr->getAttribute->if->throw->new->IllegalArgumentException->return
+IIOMetadataFormatImpl#getAttributeListMaxLength(String, String)::: metadata format impl get attribute list max length:::attr->getAttribute->if->throw->new->IllegalArgumentException->return
 IIOMetadataFormatImpl#getAttributeDescription(String, String, Locale):::Returns a String containing a description of the named attribute, or null:::element->getElement->if->throw->new->IllegalArgumentException->attr->get->if->throw->new->IllegalArgumentException->key->return->getResource
+IIOMetadataFormatImpl#getObjectValue(String)::: metadata format impl get object value:::element->getElement->objv->if->throw->new->IllegalArgumentException->return
+IIOMetadataFormatImpl#getObjectValueType(String)::: metadata format impl get object value type:::element->getElement->objv->if->return->return
+IIOMetadataFormatImpl#getObjectClass(String)::: metadata format impl get object class:::objv->getObjectValue->return
+IIOMetadataFormatImpl#getObjectDefaultValue(String)::: metadata format impl get object default value:::objv->getObjectValue->return
+IIOMetadataFormatImpl#getObjectEnumerations(String)::: metadata format impl get object enumerations:::objv->getObjectValue->if->throw->new->IllegalArgumentException->vlist->values->vlist->size->new->ObjectArr->return->vlist->toArray
+IIOMetadataFormatImpl#getObjectMinValue(String)::: metadata format impl get object min value:::objv->getObjectValue->if->throw->new->IllegalArgumentException->return
+IIOMetadataFormatImpl#getObjectMaxValue(String)::: metadata format impl get object max value:::objv->getObjectValue->if->throw->new->IllegalArgumentException->return
+IIOMetadataFormatImpl#getObjectArrayMinLength(String)::: metadata format impl get object array min length:::objv->getObjectValue->if->throw->new->IllegalArgumentException->return
+IIOMetadataFormatImpl#getObjectArrayMaxLength(String)::: metadata format impl get object array max length:::objv->getObjectValue->if->throw->new->IllegalArgumentException->return
+IIOMetadataFormatImpl#createStandardFormat()::: metadata format impl create standard format:::if->new->StandardMetadataFormat
 IIOMetadataFormatImpl#getStandardFormatInstance():::Returns an IIOMetadataFormat object describing the standard, plug-in neutral javax.imageio_1.0 metadata document format described in the comment of the javax.imageio.metadata package.:::createStandardFormat->return
+IIONamedNodeMap#getLength()::: named node map get length:::return->nodes->size
+IIONamedNodeMap#getNamedItem(String)::: named node map get named item:::iter->nodes->iterator->while->iter->hasNext->node->iter->next->if->name->node->getNodeName->equals->return->return
+IIONamedNodeMap#item(int)::: named node map item:::node->nodes->get->return
+IIONamedNodeMap#removeNamedItem(java.lang.String)::: named node map remove named item:::throw->new->DOMException
+IIONamedNodeMap#setNamedItem(Node)::: named node map set named item:::throw->new->DOMException
 IIONamedNodeMap#getNamedItemNS(String, String):::Equivalent to getNamedItem(localName).:::return->getNamedItem
 IIONamedNodeMap#setNamedItemNS(Node):::Equivalent to setNamedItem(arg).:::return->setNamedItem
 IIONamedNodeMap#removeNamedItemNS(String, String):::Equivalent to removeNamedItem(localName).:::return->removeNamedItem
+IIONodeList#getLength()::: node list get length:::return->nodes->size
+IIONodeList#item(int)::: node list item:::if->nodes->size->return->return->nodes->get
+IIOAttr#getName()::: attr get name:::return
+IIOAttr#getNodeName()::: attr get node name:::return
+IIOAttr#getNodeType()::: attr get node type:::return
+IIOAttr#getSpecified()::: attr get specified:::return
+IIOAttr#getValue()::: attr get value:::return
+IIOAttr#getNodeValue()::: attr get node value:::return
+IIOAttr#setValue(String)::: attr set value:::
+IIOAttr#setNodeValue(String)::: attr set node value:::
+IIOAttr#getOwnerElement()::: attr get owner element:::return
+IIOAttr#setOwnerElement(Element)::: attr set owner element:::
 IIOAttr#isId():::This method is new in the DOM L3 for Attr interface:::return
+IIOMetadataNode#checkNode(Node):::Check that the node is either null or an IIOMetadataNode.:::if->return->if->throw->new->IIODOMException
 IIOMetadataNode#getNodeName():::Returns the node name associated with this node.:::return
 IIOMetadataNode#getNodeValue():::Returns the value associated with this node.:::return
 IIOMetadataNode#setNodeValue(String):::Sets the String value associated with this node.:::
@@ -101,12 +151,24 @@ IIOMetadataNode#getLocalName():::Equivalent to getNodeName.:::return
 IIOMetadataNode#getTagName():::Equivalent to getNodeName.:::return
 IIOMetadataNode#getAttribute(String):::Retrieves an attribute value by name.:::attr->getAttributeNode->if->return->return->attr->getValue
 IIOMetadataNode#getAttributeNS(String, String):::Equivalent to getAttribute(localName).:::return->getAttribute
+IIOMetadataNode#setAttribute(String, String)::: metadata node set attribute:::valid->chs->name->toCharArray->for->i->if->throw->new->IIODOMException->removeAttribute->attributes->new->IIOAttr->add
 IIOMetadataNode#setAttributeNS(String, String, String):::Equivalent to setAttribute(qualifiedName, value).:::setAttribute
+IIOMetadataNode#removeAttribute(String)::: metadata node remove attribute:::removeAttribute
+IIOMetadataNode#removeAttribute(String, boolean)::: metadata node remove attribute:::numAttributes->attributes->size->for->i->if->throw->new->IIODOMException
 IIOMetadataNode#removeAttributeNS(String, String):::Equivalent to removeAttribute(localName).:::removeAttribute
+IIOMetadataNode#getAttributeNode(String)::: metadata node get attribute node:::node->getAttributes->getNamedItem->return
 IIOMetadataNode#getAttributeNodeNS(String, String):::Equivalent to getAttributeNode(localName).:::return->getAttributeNode
+IIOMetadataNode#setAttributeNode(Attr)::: metadata node set attribute node:::owner->newAttr->getOwnerElement->if->if->return->else->throw->new->DOMException->attr->if->attr->setOwnerElement->else->newAttr->getName->newAttr->getValue->new->IIOAttr->oldAttr->attr->getName->getAttributeNode->if->removeAttributeNode->attributes->add->return
 IIOMetadataNode#setAttributeNodeNS(Attr):::Equivalent to setAttributeNode(newAttr).:::return->setAttributeNode
+IIOMetadataNode#removeAttributeNode(Attr)::: metadata node remove attribute node:::oldAttr->getName->removeAttribute->return
+IIOMetadataNode#getElementsByTagName(String)::: metadata node get elements by tag name:::l->new->ArrayList<>->getElementsByTagName->return->new->IIONodeList
+IIOMetadataNode#getElementsByTagName(String, List)::: metadata node get elements by tag name:::if->nodeName->equals->equals->l->add->child->getFirstChild->while->getElementsByTagName->child->getNextSibling
 IIOMetadataNode#getElementsByTagNameNS(String, String):::Equivalent to getElementsByTagName(localName).:::return->getElementsByTagName
+IIOMetadataNode#hasAttributes()::: metadata node has attributes:::return->attributes->size
+IIOMetadataNode#hasAttribute(String)::: metadata node has attribute:::return->getAttributeNode
 IIOMetadataNode#hasAttributeNS(String, String):::Equivalent to hasAttribute(localName).:::return->hasAttribute
+IIOMetadataNode#getLength()::: metadata node get length:::return
+IIOMetadataNode#item(int)::: metadata node item:::if->return->child->getFirstChild->while->child->getNextSibling->return
 IIOMetadataNode#getUserObject():::Returns the Object value associated with this node.:::return
 IIOMetadataNode#setUserObject(Object):::Sets the value associated with this node.:::
 IIOMetadataNode#setIdAttribute(String, boolean):::This DOM Level 3 method is not supported for IIOMetadataNode and will throw a DOMException.:::throw->new->DOMException

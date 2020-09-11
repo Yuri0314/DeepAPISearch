@@ -1,17 +1,283 @@
+AdapterBlob#initialize(TypeDataBase)::: adapter blob initialize:::
+AdapterBlob#isAdapterBlob()::: adapter blob is adapter blob:::return
+AdapterBlob#getName()::: adapter blob get name:::return->super->getName
+BufferBlob#initialize(TypeDataBase)::: buffer blob initialize:::type->db->lookupType
+BufferBlob#isBufferBlob()::: buffer blob is buffer blob:::return
+CodeBlob#initialize(TypeDataBase)::: code blob initialize:::type->db->lookupType->type->getAddressField->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField->type->getAddressField->type->getAddressField->type->getAddressField->type->getAddressField->type->getCIntegerField->type->getCIntegerField->type->getAddressField->if->VM->getVM->isServerCompiler->db->lookupIntConstant->intValue
+CodeBlob#headerBegin()::: code blob header begin:::return->getAddress
+CodeBlob#headerEnd()::: code blob header end:::return->getAddress->getHeaderSize->addOffsetTo
+CodeBlob#contentBegin()::: code blob content begin:::return->contentBeginField->getValue
+CodeBlob#contentEnd()::: code blob content end:::return->headerBegin->getDataOffset->addOffsetTo
+CodeBlob#codeBegin()::: code blob code begin:::return->codeBeginField->getValue
+CodeBlob#codeEnd()::: code blob code end:::return->codeEndField->getValue
+CodeBlob#dataBegin()::: code blob data begin:::return->headerBegin->getDataOffset->addOffsetTo
+CodeBlob#dataEnd()::: code blob data end:::return->dataEndField->getValue
+CodeBlob#getFrameCompleteOffset()::: code blob get frame complete offset:::return->frameCompleteOffsetField->getValue
+CodeBlob#getDataOffset()::: code blob get data offset:::return->dataOffsetField->getValue
+CodeBlob#getSize()::: code blob get size:::return->sizeField->getValue
+CodeBlob#getHeaderSize()::: code blob get header size:::return->headerSizeField->getValue
+CodeBlob#getFrameSizeWords()::: code blob get frame size words:::return->frameSizeField->getValue
+CodeBlob#getName()::: code blob get name:::return->CStringUtilities->nameField->getValue->getString
+CodeBlob#getOopMaps()::: code blob get oop maps:::value->oopMapsField->getValue->if->return->return->new->ImmutableOopMapSet
+CodeBlob#isBufferBlob()::: code blob is buffer blob:::return
+CodeBlob#isAOT()::: code blob is t:::return
+CodeBlob#isCompiled()::: code blob is compiled:::return
+CodeBlob#isNMethod()::: code blob is method:::return
+CodeBlob#isRuntimeStub()::: code blob is runtime stub:::return
+CodeBlob#isDeoptimizationStub()::: code blob is deoptimization stub:::return
+CodeBlob#isUncommonTrapStub()::: code blob is uncommon trap stub:::return
+CodeBlob#isExceptionStub()::: code blob is exception stub:::return
+CodeBlob#isSafepointStub()::: code blob is safepoint stub:::return
+CodeBlob#isAdapterBlob()::: code blob is adapter blob:::return
+CodeBlob#isJavaMethod()::: code blob is java method:::return
+CodeBlob#isNativeMethod()::: code blob is native method:::return
 CodeBlob#isOSRMethod():::On-Stack Replacement method:::return
+CodeBlob#asNMethodOrNull()::: code blob as method or null:::if->isNMethod->return->return
+CodeBlob#getContentSize()::: code blob get content size:::return->contentEnd->contentBegin->minus
+CodeBlob#getCodeSize()::: code blob get code size:::return->codeEnd->codeBegin->minus
+CodeBlob#getDataSize()::: code blob get data size:::return->dataEnd->dataBegin->minus
+CodeBlob#blobContains(Address)::: code blob blob contains:::return->headerBegin->lessThanOrEqual->dataEnd->greaterThan
+CodeBlob#contentContains(Address)::: code blob content contains:::return->contentBegin->lessThanOrEqual->contentEnd->greaterThan
+CodeBlob#codeContains(Address)::: code blob code contains:::return->codeBegin->lessThanOrEqual->codeEnd->greaterThan
+CodeBlob#dataContains(Address)::: code blob data contains:::return->dataBegin->lessThanOrEqual->dataEnd->greaterThan
+CodeBlob#contains(Address)::: code blob contains:::return->contentContains
+CodeBlob#isFrameCompleteAt(Address)::: code blob is frame complete at:::return->codeContains->a->codeBegin->minus->getFrameCompleteOffset
+CodeBlob#isZombie()::: code blob is zombie:::return
+CodeBlob#isLockedByVM()::: code blob is locked by m:::return
+CodeBlob#getOopMapForReturnAddress(Address, boolean)::: code blob get oop map for return address:::pc->if->Assert->getOopMaps->that->return->getOopMaps->pc->codeBegin->minus->findMapAtOffset
 CodeBlob#getFrameSize():::NOTE: this returns a size in BYTES in this system!:::return->VM->getVM->getAddressSize->getFrameSizeWords
+CodeBlob#callerMustGCArguments()::: code blob caller must arguments:::return
+CodeBlob#print()::: code blob print:::printOn
+CodeBlob#printOn(PrintStream)::: code blob print on:::tty->getName->print->printComponentsOn
+CodeBlob#printComponentsOn(PrintStream)::: code blob print components on:::tty->contentBegin->contentEnd->codeBegin->codeEnd->dataBegin->dataEnd->getFrameSize->println
+CodeCache#initialize(TypeDataBase)::: code cache initialize:::type->db->lookupType->codeHeapType->db->lookupType->heapConstructor->new->VirtualBaseConstructor->heapsField->type->getAddressField->GrowableArray->heapsField->getValue->create->type->getAddressField->new->VirtualConstructor->virtualConstructor->addMapping->virtualConstructor->addMapping->virtualConstructor->addMapping->virtualConstructor->addMapping->virtualConstructor->addMapping->virtualConstructor->addMapping->virtualConstructor->addMapping->if->VM->getVM->isServerCompiler->virtualConstructor->addMapping->virtualConstructor->addMapping
+CodeCache#scavengeRootMethods()::: code cache scavenge root methods:::return->VMObjectFactory->scavengeRootNMethodsField->getValue->newObject
+CodeCache#contains(Address)::: code cache contains:::for->i->heapArray->length->return
 CodeCache#findBlob(Address):::When VM.getVM().isDebugging() returns true, this behaves like       findBlobUnsafe:::result->findBlobUnsafe->if->return->if->VM->getVM->isDebugging->return->if->Assert->result->isZombie->result->isLockedByVM->that->return
+CodeCache#findBlobUnsafe(Address)::: code cache find blob unsafe:::result->containing_heap->for->i->heapArray->length->if->return->try->virtualConstructor->containing_heap->findStart->instantiateWrapperFor->catch->cbAddr->try->containing_heap->findStart->catch->findEx->printStackTrace->finally->message->if->throw->new->RuntimeException->finally->if->return->if->Assert->result->blobContains->result->start->addOffsetTo->blobContains->that->return
+CodeCache#findNMethod(Address)::: code cache find method:::cb->findBlob->if->Assert->cb->isNMethod->that->return
+CodeCache#findNMethodUnsafe(Address)::: code cache find method unsafe:::cb->findBlobUnsafe->if->Assert->cb->isNMethod->that->return
 CodeCache#createCodeBlobWrapper(Address):::Routine for instantiating appropriately-typed wrapper for a       CodeBlob:::try->return->virtualConstructor->instantiateWrapperFor->catch->message->if->VM->getVM->isClientCompiler->if->VM->getVM->isServerCompiler->throw->new->RuntimeException->finally
+CodeCache#iterate(CodeCacheVisitor)::: code cache iterate:::visitor->lowBound->highBound->prologue->for->i->heapArray->length->visitor->epilogue
+CodeCache#lowBound()::: code cache low bound:::low->heapArray->at->begin->for->i->heapArray->length->return
+CodeCache#highBound()::: code cache high bound:::high->heapArray->at->end->for->i->heapArray->length->return
+CodeCacheVisitor#prologue(Address, Address)::: code cache visitor prologue:::
+CodeCacheVisitor#visit(CodeBlob)::: code cache visitor visit:::
+CodeCacheVisitor#epilogue()::: code cache visitor epilogue:::
+CompiledMethod#initialize(TypeDataBase)::: compiled method initialize:::type->db->lookupType->type->getAddressField->type->getAddressField->type->getAddressField->type->getAddressField
+CompiledMethod#getMethod()::: compiled method get method:::return->Metadata->methodField->getValue->instantiateWrapperFor
+CompiledMethod#deoptHandlerBegin()::: compiled method deopt handler begin:::return->deoptHandlerBeginField->getValue
+CompiledMethod#deoptMhHandlerBegin()::: compiled method deopt mh handler begin:::return->deoptMhHandlerBeginField->getValue
+CompiledMethod#scopesDataBegin()::: compiled method scopes data begin:::return->scopesDataBeginField->getValue
+CompiledMethod#getMethodOffset()::: compiled method get method offset:::return->methodField->getOffset
+CompiledMethod#isCompiled()::: compiled method is compiled:::return
+CompressedReadStream#readBoolean()::: compressed read stream read boolean:::return->read
+CompressedReadStream#readByte()::: compressed read stream read byte:::return->read
+CompressedReadStream#readChar()::: compressed read stream read char:::return->readInt
+CompressedReadStream#readShort()::: compressed read stream read short:::return->readSignedInt
+CompressedReadStream#readSignedInt()::: compressed read stream read signed int:::return->readInt->decodeSign
+CompressedReadStream#readInt()::: compressed read stream read int:::b0->read->if->return->else->return->readIntMb
+CompressedReadStream#readFloat()::: compressed read stream read float:::return->Float->readInt->reverseInt->intBitsToFloat
+CompressedReadStream#readDouble()::: compressed read stream read double:::rh->readInt->rl->readInt->h->reverseInt->l->reverseInt->return->Double->longBitsToDouble
+CompressedReadStream#readLong()::: compressed read stream read long:::low->readSignedInt->high->readSignedInt->return
+CompressedReadStream#readIntMb(int)::: compressed read stream read int mb:::pos->sum->lg_H_i->for->i
+CompressedReadStream#read(int)::: compressed read stream read:::return->buffer->getCIntegerAt
+CompressedReadStream#read():::Reads an unsigned byte, but returns it as a short:::retval->buffer->getCIntegerAt->return
+CompressedStream#getBuffer()::: compressed stream get buffer:::return
+CompressedStream#getPosition()::: compressed stream get position:::return
+CompressedStream#setPosition(int)::: compressed stream set position:::
+CompressedStream#encodeSign(int)::: compressed stream encode sign:::return
+CompressedStream#decodeSign(int)::: compressed stream decode sign:::return
+CompressedStream#reverseInt(int)::: compressed stream reverse int:::return
+ConstantDoubleValue#isConstantDouble()::: constant double value is constant double:::return
+ConstantDoubleValue#getValue()::: constant double value get value:::return
+ConstantDoubleValue#print()::: constant double value print:::printOn
+ConstantDoubleValue#printOn(PrintStream)::: constant double value print on:::tty->print
+ConstantIntValue#isConstantInt()::: constant int value is constant int:::return
+ConstantIntValue#getValue()::: constant int value get value:::return
+ConstantIntValue#print()::: constant int value print:::printOn
+ConstantIntValue#printOn(PrintStream)::: constant int value print on:::tty->print
+ConstantLongValue#isConstantLong()::: constant long value is constant long:::return
+ConstantLongValue#getValue()::: constant long value get value:::return
+ConstantLongValue#print()::: constant long value print:::printOn
+ConstantLongValue#printOn(PrintStream)::: constant long value print on:::tty->print
+ConstantOopReadValue#isConstantOop()::: constant oop read value is constant oop:::return
+ConstantOopReadValue#getValue()::: constant oop read value get value:::return
+ConstantOopReadValue#print()::: constant oop read value print:::printOn
+ConstantOopReadValue#printOn(PrintStream)::: constant oop read value print on:::tty->print
+DebugInfoReadStream#readOopHandle()::: debug info read stream read oop handle:::return->code->readInt->getOopAt
+DebugInfoReadStream#readMethod()::: debug info read stream read method:::return->code->readInt->getMethodAt
+DebugInfoReadStream#readObjectValue()::: debug info read stream read object value:::id->readInt->if->Assert->that->for->itr->objectPool->iterator->itr->hasNext->result->new->ObjectValue->objectPool->add->result->readObject->return
+DebugInfoReadStream#getCachedObject()::: debug info read stream get cached object:::id->readInt->Assert->that->for->itr->objectPool->iterator->itr->hasNext->Assert->that->return
+DebugInfoReadStream#readBCI()::: debug info read stream read i:::return->readInt
+DeoptimizationBlob#initialize(TypeDataBase)::: deoptimization blob initialize:::type->db->lookupType
+DeoptimizationBlob#isDeoptimizationStub()::: deoptimization blob is deoptimization stub:::return
+ExceptionBlob#initialize(TypeDataBase)::: exception blob initialize:::type->db->lookupType
+ExceptionBlob#isExceptionStub()::: exception blob is exception stub:::return
+Location#initialize(TypeDataBase)::: location initialize:::if->Assert->VM->getVM->isCore->that->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue
+Location.Where#toString()::: where to string:::return
+Location.Where#getValue()::: where get value:::if->return->else->if->return->else->throw->new->RuntimeException
+Location.Type#toString()::: type to string:::return
+Location.Type#getValue()::: type get value:::if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->throw->new->RuntimeException
+Location#getWhere()::: location get where:::where->if->return->else->if->return->else->throw->new->RuntimeException
+Location#getType()::: location get type:::type->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->throw->new->RuntimeException
+Location#getOffset()::: location get offset:::return
+Location#isRegister()::: location is register:::return->getWhere
+Location#isStack()::: location is stack:::return->getWhere
+Location#holdsOop()::: location holds oop:::return->getType
+Location#holdsNarrowOop()::: location holds narrow oop:::return->getType
+Location#holdsInt()::: location holds int:::return->getType
+Location#holdsLong()::: location holds long:::return->getType
+Location#holdsFloat()::: location holds float:::return->getType
+Location#holdsDouble()::: location holds double:::return->getType
+Location#holdsAddr()::: location holds addr:::return->getType
+Location#isIllegal()::: location is illegal:::return->getType
+Location#getStackOffset()::: location get stack offset:::if->Assert->getWhere->that->return->getOffset->VM->getVM->getIntSize
+Location#getRegisterNumber()::: location get register number:::if->Assert->getWhere->that->return->getOffset
+Location#print()::: location print:::printOn
+Location#printOn(PrintStream)::: location print on:::tty->print->if->isIllegal->tty->print->else->w->getWhere->if->tty->getStackOffset->print->else->if->tty->getRegisterNumber->print->type->getType->if->else->if->tty->print->else->if->tty->print->else->if->tty->print->else->if->tty->print->else->if->tty->print->else->if->tty->print->else->if->tty->print->else->if->tty->print
+Location#setWhere(Where)::: location set where:::where->getValue
+Location#setType(Type)::: location set type:::type->getValue
+Location#setOffset(int)::: location set offset:::
+LocationValue#isLocation()::: location value is location:::return
+LocationValue#getLocation()::: location value get location:::return
+LocationValue#print()::: location value print:::printOn
+LocationValue#printOn(PrintStream)::: location value print on:::getLocation->printOn
+MethodHandlesAdapterBlob#initialize(TypeDataBase)::: method handles adapter blob initialize:::type->db->lookupType
+MethodHandlesAdapterBlob#isMethodHandlesAdapterBlob()::: method handles adapter blob is method handles adapter blob:::return
+MethodHandlesAdapterBlob#getName()::: method handles adapter blob get name:::return->super->getName
+MonitorValue#owner()::: monitor value owner:::return
+MonitorValue#basicLock()::: monitor value basic lock:::return
+MonitorValue#eliminated()::: monitor value eliminated:::return
+MonitorValue#printOn(PrintStream)::: monitor value print on:::tty->print->owner->printOn->tty->print->basicLock->printOn->tty->print->if->tty->print
+NMethod#initialize(TypeDataBase)::: method initialize:::type->db->lookupType->type->getCIntegerField->type->getAddressField->type->getAddressField->type->getJByteField->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField->type->getAddressField->type->getAddressField->type->getAddressField->type->getJIntField->type->getCIntegerField->type->getCIntegerField->db->lookupType->getSize
+NMethod#getAddress()::: method get address:::return
+NMethod#isNMethod()::: method is method:::return
+NMethod#isJavaMethod()::: method is java method:::return->getMethod->isNative
+NMethod#isNativeMethod()::: method is native method:::return->getMethod->isNative
+NMethod#isOSRMethod()::: method is method:::return->getEntryBCI->VM->getVM->getInvocationEntryBCI
 NMethod#constantsBegin():::Boundaries for different parts:::return->contentBegin
+NMethod#constantsEnd()::: method constants end:::return->getEntryPoint
+NMethod#instsBegin()::: method insts begin:::return->codeBegin
+NMethod#instsEnd()::: method insts end:::return->headerBegin->getStubOffset->addOffsetTo
+NMethod#exceptionBegin()::: method exception begin:::return->headerBegin->getExceptionOffset->addOffsetTo
+NMethod#stubBegin()::: method stub begin:::return->headerBegin->getStubOffset->addOffsetTo
+NMethod#stubEnd()::: method stub end:::return->headerBegin->getOopsOffset->addOffsetTo
+NMethod#oopsBegin()::: method oops begin:::return->headerBegin->getOopsOffset->addOffsetTo
+NMethod#oopsEnd()::: method oops end:::return->headerBegin->getMetadataOffset->addOffsetTo
+NMethod#metadataBegin()::: method metadata begin:::return->headerBegin->getMetadataOffset->addOffsetTo
+NMethod#metadataEnd()::: method metadata end:::return->scopesDataBegin
+NMethod#scopesDataEnd()::: method scopes data end:::return->headerBegin->getScopesPCsOffset->addOffsetTo
+NMethod#scopesPCsBegin()::: method scopes cs begin:::return->headerBegin->getScopesPCsOffset->addOffsetTo
+NMethod#scopesPCsEnd()::: method scopes cs end:::return->headerBegin->getDependenciesOffset->addOffsetTo
+NMethod#dependenciesBegin()::: method dependencies begin:::return->headerBegin->getDependenciesOffset->addOffsetTo
+NMethod#dependenciesEnd()::: method dependencies end:::return->headerBegin->getHandlerTableOffset->addOffsetTo
+NMethod#handlerTableBegin()::: method handler table begin:::return->headerBegin->getHandlerTableOffset->addOffsetTo
+NMethod#handlerTableEnd()::: method handler table end:::return->headerBegin->getNulChkTableOffset->addOffsetTo
+NMethod#nulChkTableBegin()::: method nul chk table begin:::return->headerBegin->getNulChkTableOffset->addOffsetTo
+NMethod#nulChkTableEnd()::: method nul chk table end:::return->headerBegin->getNMethodEndOffset->addOffsetTo
+NMethod#constantsSize()::: method constants size:::return->constantsEnd->constantsBegin->minus
+NMethod#instsSize()::: method insts size:::return->instsEnd->instsBegin->minus
+NMethod#stubSize()::: method stub size:::return->stubEnd->stubBegin->minus
+NMethod#oopsSize()::: method oops size:::return->oopsEnd->oopsBegin->minus
+NMethod#metadataSize()::: method metadata size:::return->metadataEnd->metadataBegin->minus
+NMethod#scopesDataSize()::: method scopes data size:::return->scopesDataEnd->scopesDataBegin->minus
+NMethod#scopesPCsSize()::: method scopes cs size:::return->scopesPCsEnd->scopesPCsBegin->minus
+NMethod#dependenciesSize()::: method dependencies size:::return->dependenciesEnd->dependenciesBegin->minus
+NMethod#handlerTableSize()::: method handler table size:::return->handlerTableEnd->handlerTableBegin->minus
+NMethod#nulChkTableSize()::: method nul chk table size:::return->nulChkTableEnd->nulChkTableBegin->minus
+NMethod#origPCOffset()::: method orig offset:::return->origPCOffsetField->getValue
+NMethod#totalSize()::: method total size:::return->constantsSize->instsSize->stubSize->scopesDataSize->scopesPCsSize->dependenciesSize->handlerTableSize->nulChkTableSize
+NMethod#constantsContains(Address)::: method constants contains:::return->constantsBegin->lessThanOrEqual->constantsEnd->greaterThan
+NMethod#instsContains(Address)::: method insts contains:::return->instsBegin->lessThanOrEqual->instsEnd->greaterThan
+NMethod#stubContains(Address)::: method stub contains:::return->stubBegin->lessThanOrEqual->stubEnd->greaterThan
+NMethod#oopsContains(Address)::: method oops contains:::return->oopsBegin->lessThanOrEqual->oopsEnd->greaterThan
+NMethod#metadataContains(Address)::: method metadata contains:::return->metadataBegin->lessThanOrEqual->metadataEnd->greaterThan
+NMethod#scopesDataContains(Address)::: method scopes data contains:::return->scopesDataBegin->lessThanOrEqual->scopesDataEnd->greaterThan
+NMethod#scopesPCsContains(Address)::: method scopes cs contains:::return->scopesPCsBegin->lessThanOrEqual->scopesPCsEnd->greaterThan
+NMethod#handlerTableContains(Address)::: method handler table contains:::return->handlerTableBegin->lessThanOrEqual->handlerTableEnd->greaterThan
+NMethod#nulChkTableContains(Address)::: method nul chk table contains:::return->nulChkTableBegin->lessThanOrEqual->nulChkTableEnd->greaterThan
+NMethod#getOopsLength()::: method get oops length:::return->oopsSize->VM->getVM->getOopSize
+NMethod#getMetadataLength()::: method get metadata length:::return->metadataSize->VM->getVM->getOopSize
 NMethod#getEntryPoint():::Entry points:::return->entryPointField->getValue
+NMethod#getVerifiedEntryPoint()::: method get verified entry point:::return->verifiedEntryPointField->getValue
 NMethod#getOopAt(int):::Support for oops in scopes and relocs:::if->return->if->Assert->getOopsLength->that->return->oopsBegin->VM->getVM->getOopSize->getOopHandleAt
 NMethod#getMetadataAt(int):::Support for metadata in scopes and relocs:::if->return->if->Assert->getMetadataLength->that->return->metadataBegin->VM->getVM->getOopSize->getAddressAt
+NMethod#getMethodAt(int)::: method get method at:::return->Metadata->getMetadataAt->instantiateWrapperFor
+NMethod#isZombie()::: method is zombie:::return
+NMethod#getOSREntryBCI()::: method get entry i:::if->Assert->getEntryBCI->VM->getVM->getInvocationEntryBCI->that->return->getEntryBCI
+NMethod#getOSRLink()::: method get link:::return->VMObjectFactory->osrLinkField->getValue->newObject
+NMethod#getScavengeRootLink()::: method get scavenge root link:::return->VMObjectFactory->scavengeRootLinkField->getValue->newObject
+NMethod#getScavengeRootState()::: method get scavenge root state:::return->scavengeRootStateField->getValue
+NMethod#isMethodHandleReturn(Address)::: method is method handle return:::pd->getPCDescAt->if->return->return->pd->isMethodHandleInvoke
+NMethod#isDeoptPc(Address)::: method is deopt pc:::return->isDeoptEntry->isDeoptMhEntry
+NMethod#isDeoptEntry(Address)::: method is deopt entry:::return->deoptHandlerBegin
+NMethod#isDeoptMhEntry(Address)::: method is deopt mh entry:::return->deoptMhHandlerBegin
 NMethod#canBeDeoptimized():::Tells whether frames described by this nmethod can be       deoptimized:::return->isJavaMethod
+NMethod#isLockedByVM()::: method is locked by m:::return->lockCountField->getValue
 NMethod#getPCDescAt(Address):::Finds a PCDesc with real-pc equal to "pc":::for->p->scopesPCsBegin->p->scopesPCsEnd->lessThan->p->addOffsetTo->return
 NMethod#getScopeDescAt(Address):::ScopeDesc for an instruction:::pd->getPCDescAt->if->Assert->that->return->pd->getScopeDecodeOffset->pd->getObjDecodeOffset->pd->getReexecute->new->ScopeDesc
 NMethod#getPCDescNearDbg(Address):::This is only for use by the debugging system, and is only       intended for use in the topmost frame, where we are not       guaranteed to be at a PC for which we have a PCDesc:::bestGuessPCDesc->bestDistance->for->p->scopesPCsBegin->p->scopesPCsEnd->lessThan->p->addOffsetTo->return
+NMethod#find_pc_desc(long, boolean)::: method find_pc_desc:::return->find_pc_desc_internal
+NMethod#find_pc_desc_internal(long, boolean)::: method find_pc_desc_internal:::base_address->VM->codeBegin->getAddressValue->pc_offset->lower->scopesPCsBegin->upper->scopesPCsEnd->upper->addOffsetTo->if->lower->greaterThan->return->LOG2_RADIX->RADIX->mid->for->step->while->lower->addOffsetTo->m->new->PCDesc->if->m->getPCOffset->else->break->u->new->PCDesc->if->match_desc->return->else->return
+NMethod#pc_desc_at(long)::: method pc_desc_at:::return->find_pc_desc
+NMethod#pc_desc_near(long)::: method pc_desc_near:::return->find_pc_desc
+NMethod#scope_desc_in(long, long)::: method scope_desc_in:::p->pc_desc_near->if->VM->p->getRealPC->getAddressValue->return->p->getScopeDecodeOffset->p->getObjDecodeOffset->p->getReexecute->new->ScopeDesc->return
+NMethod#match_desc(PCDesc, int, boolean)::: method match_desc:::if->return->pc->getPCOffset->else->prev->pc->getAddress->addOffsetTo->new->PCDesc->return->prev->getPCOffset->pc->getPCOffset
 NMethod#getScopeDescNearDbg(Address):::This is only for use by the debugging system, and is only       intended for use in the topmost frame, where we are not       guaranteed to be at a PC for which we have a PCDesc:::pd->getPCDescNearDbg->if->return->return->pd->getScopeDecodeOffset->pd->getObjDecodeOffset->pd->getReexecute->new->ScopeDesc
+NMethod#getSafepoints()::: method get safepoints:::safepoints->new->HashMap->p->for->scopesPCsBegin->p->scopesPCsEnd->lessThan->p->addOffsetTo->return
 NMethod#getEntryPointOffset():::Support for code generation:::return->entryPointField->getOffset
+NMethod#getVerifiedEntryPointOffset()::: method get verified entry point offset:::return->verifiedEntryPointField->getOffset
+NMethod#getOSREntryPointOffset()::: method get entry point offset:::return->osrEntryPointField->getOffset
+NMethod#getEntryBCIOffset()::: method get entry offset:::return->entryBCIField->getOffset
+NMethod#print()::: method print:::printOn
+NMethod#printComponentsOn(PrintStream)::: method print components on:::tty->contentBegin->contentEnd->codeBegin->codeEnd->dataBegin->dataEnd->oopsBegin->oopsEnd->getFrameSize->println
+NMethod#toString()::: method to string:::method->getMethod->return->method->getMethodHolder->getName->asString->method->getName->asString->method->getSignature->asString->super->toString
+NMethod#flagsToString()::: method flags to string:::return
+NMethod#getName()::: method get name:::method->getMethod->return->method->getMethodHolder->getName->asString->method->getName->asString->method->getSignature->asString
+NMethod#dumpReplayData(PrintStream)::: method dump replay data:::h->new->HashMap->for->i->getMetadataLength->method->getMethod->if->h->get->method->dumpReplayData->mdo->method->getMethodData->if->mdo->dumpReplayData->if->h->method->getMethodHolder->get->method->getMethodHolder->dumpReplayData->holder->method->getMethodHolder->out->holder->getName->asString->OopUtilities->method->getName->asString->escapeString->method->getSignature->asString->getEntryBCI->getCompLevel->println
+NMethod#getEntryBCI()::: method get entry i:::return->entryBCIField->getValue
+NMethod#getExceptionOffset()::: method get exception offset:::return->exceptionOffsetField->getValue
+NMethod#getStubOffset()::: method get stub offset:::return->stubOffsetField->getValue
+NMethod#getOopsOffset()::: method get oops offset:::return->oopsOffsetField->getValue
+NMethod#getMetadataOffset()::: method get metadata offset:::return->metadataOffsetField->getValue
+NMethod#getScopesPCsOffset()::: method get scopes cs offset:::return->scopesPCsOffsetField->getValue
+NMethod#getDependenciesOffset()::: method get dependencies offset:::return->dependenciesOffsetField->getValue
+NMethod#getHandlerTableOffset()::: method get handler table offset:::return->handlerTableOffsetField->getValue
+NMethod#getNulChkTableOffset()::: method get nul chk table offset:::return->nulChkTableOffsetField->getValue
+NMethod#getNMethodEndOffset()::: method get method end offset:::return->nmethodEndOffsetField->getValue
+NMethod#getCompLevel()::: method get comp level:::return->compLevelField->getValue
+ObjectValue#isObject()::: object value is object:::return
+ObjectValue#id()::: object value id:::return
+ObjectValue#getKlass()::: object value get klass:::return
+ObjectValue#getFieldsValue()::: object value get fields value:::return
+ObjectValue#getFieldAt(int)::: object value get field at:::return->fieldsValue->get
+ObjectValue#fieldsSize()::: object value fields size:::return->fieldsValue->size
+ObjectValue#getValue()::: object value get value:::return
+ObjectValue#readObject(DebugInfoReadStream)::: object value read object:::readFrom->Assert->klass->isConstantOop->that->length->stream->readInt->for->i
+ObjectValue#print()::: object value print:::printOn
+ObjectValue#printOn(PrintStream)::: object value print on:::tty->print
+ObjectValue#printFieldsOn(PrintStream)::: object value print fields on:::if->fieldsValue->size->fieldsValue->get->printOn->for->i->fieldsValue->size
+PCDesc#initialize(TypeDataBase)::: desc initialize:::type->db->lookupType->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField->db->lookupIntConstant->db->lookupIntConstant->db->lookupIntConstant
+PCDesc#getPCOffset()::: desc get offset:::return->pcOffsetField->getValue
+PCDesc#getScopeDecodeOffset()::: desc get scope decode offset:::return->scopeDecodeOffsetField->getValue
+PCDesc#getObjDecodeOffset()::: desc get obj decode offset:::return->objDecodeOffsetField->getValue
+PCDesc#getRealPC(NMethod)::: desc get real c:::return->code->codeBegin->getPCOffset->addOffsetTo
+PCDesc#getReexecute()::: desc get reexecute:::flags->pcFlagsField->getValue->return
+PCDesc#isMethodHandleInvoke()::: desc is method handle invoke:::flags->pcFlagsField->getValue->return
+PCDesc#print(NMethod)::: desc print:::printOn
+PCDesc#printOn(PrintStream, NMethod)::: desc print on:::tty->getRealPC->println->for->sd->code->getRealPC->getScopeDescAt->sd->sender
+RuntimeBlob#initialize(TypeDataBase)::: runtime blob initialize:::type->db->lookupType
+RuntimeStub#initialize(TypeDataBase)::: runtime stub initialize:::type->db->lookupType->type->getCIntegerField
+RuntimeStub#isRuntimeStub()::: runtime stub is runtime stub:::return
+RuntimeStub#callerMustGCArguments()::: runtime stub caller must arguments:::return->callerMustGCArgumentsField->getValue
+RuntimeStub#getName()::: runtime stub get name:::return->super->getName
+SafepointBlob#initialize(TypeDataBase)::: safepoint blob initialize:::type->db->lookupType
+SafepointBlob#isSafepointStub()::: safepoint blob is safepoint stub:::return
+ScopeDesc#getNMethod()::: scope desc get method:::return
+ScopeDesc#getMethod()::: scope desc get method:::return
+ScopeDesc#getBCI()::: scope desc get i:::return
+ScopeDesc#getReexecute()::: scope desc get reexecute:::return
 ScopeDesc#getLocals():::Returns a List&lt;ScopeValue&gt;:::return->decodeScopeValues
 ScopeDesc#getExpressions():::Returns a List&lt;ScopeValue&gt;:::return->decodeScopeValues
 ScopeDesc#getMonitors():::Returns a List&lt;MonitorValue&gt;:::return->decodeMonitorValues
@@ -19,9 +285,48 @@ ScopeDesc#getObjects():::Returns a List&lt;ObjectValue&gt;:::return
 ScopeDesc#sender():::Stack walking:::if->isTop->return->return->new->ScopeDesc
 ScopeDesc#getDecodeOffset():::Returns where the scope was decoded:::return
 ScopeDesc#isTop():::Tells whether sender() returns null:::return
+ScopeDesc#equals(Object)::: scope desc equals:::if->return->if->return->sd->return->equals
+ScopeDesc#printValue()::: scope desc print value:::printValueOn
+ScopeDesc#printValueOn(PrintStream)::: scope desc print value on:::tty->print->method->printValueOn->tty->print->tty->println
+ScopeDesc#streamAt(int)::: scope desc stream at:::return->new->DebugInfoReadStream
+ScopeDesc#decodeScopeValues(int):::Returns a List&lt;ScopeValue&gt; or null if no values were present:::if->return->stream->streamAt->length->stream->readInt->res->new->ArrayList->for->i->return
+ScopeDesc#decodeMonitorValues(int):::Returns a List&lt;MonitorValue&gt; or null if no values were present:::if->return->stream->streamAt->length->stream->readInt->res->new->ArrayList->for->i->return
+ScopeDesc#decodeObjectValues(int):::Returns a List&lt;ObjectValue&gt; or null if no values were present:::if->return->res->new->ArrayList->stream->new->DebugInfoReadStream->length->stream->readInt->for->i->Assert->res->size->that->return
+ScopeValue#isLocation()::: scope value is location:::return
+ScopeValue#isConstantInt()::: scope value is constant int:::return
+ScopeValue#isConstantDouble()::: scope value is constant double:::return
+ScopeValue#isConstantLong()::: scope value is constant long:::return
+ScopeValue#isConstantOop()::: scope value is constant oop:::return
+ScopeValue#isObject()::: scope value is object:::return
+ScopeValue#readFrom(DebugInfoReadStream)::: scope value read from:::switch->stream->readInt->return->new->LocationValue->return->new->ConstantIntValue->return->new->ConstantOopReadValue->return->new->ConstantLongValue->return->new->ConstantDoubleValue->return->stream->readObjectValue->return->stream->getCachedObject->Assert->that->return
+ScopeValue#printOn(PrintStream)::: scope value print on:::
+SingletonBlob#initialize(TypeDataBase)::: singleton blob initialize:::type->db->lookupType
+SingletonBlob#isSingletonBlob()::: singleton blob is singleton blob:::return
 Stub#getSize():::Must return the size provided by initialize:::Assert->that->return
 Stub#getAddress():::Needed to add this for iteration:::return
 Stub#codeBegin():::Points to the first byte of the code:::Assert->that->return
 Stub#codeEnd():::Points to the first byte after the code:::Assert->that->return
 Stub#verify():::Verifies the Stub:::Assert->that
 Stub#printOn(PrintStream):::Prints some information about the stub:::Assert->that
+StubQueue#initialize(TypeDataBase)::: stub queue initialize:::type->db->lookupType->type->getAddressField->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField
+StubQueue#contains(Address)::: stub queue contains:::if->return->offset->pc->getStubBuffer->minus->return->getBufferLimit
+StubQueue#getStubContaining(Address)::: stub queue get stub containing:::if->contains->i->for->s->getFirst->getNext->return
+StubQueue#stubContains(Stub, Address)::: stub queue stub contains:::return->s->codeBegin->lessThanOrEqual->s->codeEnd->greaterThan
+StubQueue#getNumberOfStubs()::: stub queue get number of stubs:::return->numberOfStubsField->getValue
+StubQueue#getFirst()::: stub queue get first:::return->getNumberOfStubs->getQueueBegin->getStubAt
+StubQueue#getNext(Stub)::: stub queue get next:::i->getIndexOf->getStubSize->if->getBufferLimit->return->getQueueEnd->getStubAt
+StubQueue#getPrev(Stub)::: stub queue get prev:::if->getIndexOf->getQueueBegin->return->temp->getFirst->prev->while->getIndexOf->getIndexOf->getNext->return
+StubQueue#getQueueBegin()::: stub queue get queue begin:::return->queueBeginField->getValue
+StubQueue#getQueueEnd()::: stub queue get queue end:::return->queueEndField->getValue
+StubQueue#getBufferLimit()::: stub queue get buffer limit:::return->bufferLimitField->getValue
+StubQueue#getStubBuffer()::: stub queue get stub buffer:::return->stubBufferField->getValue
+StubQueue#getStubAt(long)::: stub queue get stub at:::checkIndex->return->VMObjectFactory->getStubBuffer->addOffsetTo->newObject
+StubQueue#getIndexOf(Stub)::: stub queue get index of:::i->s->getAddress->getStubBuffer->minus->checkIndex->return
+StubQueue#getStubSize(Stub)::: stub queue get stub size:::return->s->getSize
+StubQueue#checkIndex(long)::: stub queue check index:::if->Assert->getBufferLimit->VM->getVM->getAddressSize->that
+UncommonTrapBlob#initialize(TypeDataBase)::: uncommon trap blob initialize:::type->db->lookupType
+UncommonTrapBlob#isUncommonTrapStub()::: uncommon trap blob is uncommon trap stub:::return
+VMRegImpl#initialize(TypeDataBase)::: reg impl initialize:::type->db->lookupType->stack0Field->type->getAddressField->stack0Field->getValue->stack0Addr->hashCode->new->VMReg->type->getAddressField->db->lookupIntConstant
+VMRegImpl#getStack0()::: reg impl get stack0:::return
+VMRegImpl#getRegisterName(int)::: reg impl get register name:::if->Assert->that->regName->regNameField->getStaticFieldAddress->addrSize->VM->getVM->getAddressSize->return->CStringUtilities->regName->getAddressAt->getString
+VMRegImpl#getStackSlotSize()::: reg impl get stack slot size:::return

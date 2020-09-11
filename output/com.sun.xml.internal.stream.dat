@@ -21,14 +21,33 @@ Entity.ScannedEntity#getEntityInputStream():::if entity was opened using the str
 Entity.ScannedEntity#close():::Release any resources associated with this entity.:::ba->ThreadLocalBufferAllocator->getBufferAllocator->ba->returnCharBuffer->reader->close
 Entity.ScannedEntity#isEncodingExternallySpecified():::Returns whether the encoding of this entity was externally specified:::return
 Entity.ScannedEntity#setEncodingExternallySpecified(boolean):::Sets whether the encoding of this entity was externally specified:::
+Entity.ScannedEntity#isDeclaredEncoding()::: scanned entity is declared encoding:::return
+Entity.ScannedEntity#setDeclaredEncoding(boolean)::: scanned entity set declared encoding:::
 Entity.ScannedEntity#isExternal():::Returns true if this is an external entity.:::return
 Entity.ScannedEntity#isUnparsed():::Returns true if this is an unparsed entity.:::return
 Entity.ScannedEntity#toString():::Returns a string representation of this object.:::str->new->StringBuffer->str->append->str->new->String->append->str->append->str->append->return->str->toString
+EventFilterSupport#next()::: event filter support next:::try->return->nextEvent->catch->throw->new->NoSuchElementException->finally
+EventFilterSupport#hasNext()::: event filter support has next:::try->return->peek->catch->return->finally
+EventFilterSupport#nextEvent()::: event filter support next event:::while->super->hasNext->event->super->nextEvent->if->fEventFilter->accept->return->throw->new->NoSuchElementException
+EventFilterSupport#nextTag()::: event filter support next tag:::while->super->hasNext->event->super->nextTag->if->fEventFilter->accept->return->throw->new->NoSuchElementException
+EventFilterSupport#peek()::: event filter support peek:::while->event->super->peek->if->return->if->fEventFilter->accept->return->super->next
+StaxEntityResolverWrapper#setStaxEntityResolver(XMLResolver)::: stax entity resolver wrapper set stax entity resolver:::
+StaxEntityResolverWrapper#getStaxEntityResolver()::: stax entity resolver wrapper get stax entity resolver:::return
+StaxEntityResolverWrapper#resolveEntity(XMLResourceIdentifier)::: stax entity resolver wrapper resolve entity:::object->try->fStaxResolver->resourceIdentifier->getPublicId->resourceIdentifier->getLiteralSystemId->resourceIdentifier->getBaseSystemId->resolveEntity->return->getStaxInputSource->catch->throw->new->XNIException->finally
+StaxEntityResolverWrapper#getStaxInputSource(Object)::: stax entity resolver wrapper get stax input source:::if->return->if->return->new->XMLInputSource->new->StaxXMLInputSource->else->if->return->new->StaxXMLInputSource->else->if->return->new->StaxXMLInputSource->return
 StaxErrorReporter#reset(PropertyManager):::One must call reset before using any of the function.:::propertyManager->getProperty
 StaxErrorReporter#reportError(XMLLocator, String, String, Object[], short):::Reports an error at a specific location.:::messageFormatter->getMessageFormatter->message->if->messageFormatter->formatMessage->else->str->new->StringBuffer->str->append->str->append->str->append->argCount->if->str->append->for->i->str->toString->switch->try->if->fXMLReporter->convertToStaxLocation->report->catch->throw->new->XNIException->finally->break->try->if->fXMLReporter->convertToStaxLocation->report->catch->throw->new->XNIException->finally->break->if->throw->new->XNIException->break->return
+StaxErrorReporter#convertToStaxLocation(XMLLocator)::: stax error reporter convert to stax location:::return->new->Location
+StaxXMLInputSource#getXMLStreamReader()::: stax input source get stream reader:::return
+StaxXMLInputSource#getXMLEventReader()::: stax input source get event reader:::return
+StaxXMLInputSource#getXMLInputSource()::: stax input source get input source:::return
+StaxXMLInputSource#hasXMLStreamOrXMLEventReader()::: stax input source has stream or event reader:::return
+StaxXMLInputSource#isCreatedByResolver()::: stax input source is created by resolver:::return
 XMLBufferListener#refresh():::Will be invoked by XMLEntityReader before it tries to resize,load new data into current ScannedEntities buffer.:::
 XMLBufferListener#refresh(int):::receives callbacks from XMLEntityReader  when buffer is being changed.:::
 XMLEntityReader#setEncoding(String):::Sets the encoding of the scanner:::
+XMLEntityReader#getEncoding()::: entity reader get encoding:::
+XMLEntityReader#getCharacterOffset()::: entity reader get character offset:::
 XMLEntityReader#setVersion(String):::the version of the current entity being scanned or the version of the entity on which reader is operating:::
 XMLEntityReader#getVersion():::get the version of the entity on which reader is operating:::
 XMLEntityReader#isExternal():::Returns true if the current entity being scanned is external.:::
@@ -43,8 +62,12 @@ XMLEntityReader#scanData(String, XMLStringBuffer):::Scans a range of character d
 XMLEntityReader#skipChar(int):::Skips a character appearing immediately on the input:::
 XMLEntityReader#skipSpaces():::Skips space characters appearing immediately on the input:::
 XMLEntityReader#skipString(String):::Skips the specified string appearing immediately on the input:::
+XMLEntityReader#registerListener(XMLBufferListener)::: entity reader register listener:::
+XMLEntityStorage#reset(PropertyManager)::: entity storage reset:::propertyManager->getProperty->fEntities->clear
+XMLEntityStorage#reset()::: entity storage reset:::fEntities->clear
 XMLEntityStorage#reset(XMLComponentManager):::Resets the component:::componentManager->getFeature->componentManager->getProperty->fEntities->clear
 XMLEntityStorage#getEntity(String):::Returns entity declaration.:::return->fEntities->get
+XMLEntityStorage#getEntities()::: entity storage get entities:::return
 XMLEntityStorage#addInternalEntity(String, String):::Adds an internal entity declaration:::if->fEntities->containsKey->entity->new->Entity.InternalEntity->fEntities->put->else->if->fErrorReporter->new->ObjectArr->reportError
 XMLEntityStorage#addExternalEntity(String, String, String, String):::Adds an external entity declaration:::if->fEntities->containsKey->if->if->getExpandedSystemId->fEntityManager->getCurrentEntity->entity->expandSystemId->new->XMLResourceIdentifierImpl->new->Entity.ExternalEntity->fEntities->put->else->if->fErrorReporter->new->ObjectArr->reportError
 XMLEntityStorage#isExternalEntity(String):::Checks whether an entity given by name is external.:::entity->fEntities->get->if->return->return->entity->isExternal
@@ -53,16 +76,57 @@ XMLEntityStorage#addUnparsedEntity(String, String, String, String, String):::Add
 XMLEntityStorage#isUnparsedEntity(String):::Checks whether an entity given by name is unparsed.:::entity->fEntities->get->if->return->return->entity->isUnparsed
 XMLEntityStorage#isDeclaredEntity(String):::Checks whether an entity given by name is declared.:::entity->fEntities->get->return
 XMLEntityStorage#expandSystemId(String):::Expands a system id and returns the system id as a URI, if it can be expanded:::return->expandSystemId
+XMLEntityStorage#getUserDir()::: entity storage get user dir:::userDir->try->SecuritySupport->getSystemProperty->catch->finally->if->userDir->length->return->if->userDir->equals->return->separator->userDir->replace->len->userDir->length->ch->buffer->new->StringBuilder->if->userDir->charAt->Character->userDir->charAt->toUpperCase->if->buffer->append->i->for->if->bytes->b->try->userDir->substring->getBytes->catch->return->finally->for->if->userDir->endsWith->buffer->append->buffer->toString->return
 XMLEntityStorage#expandSystemId(String, String):::Expands a system id and returns the system id as a URI, if it can be expanded:::if->systemId->length->return->try->new->URI->return->catch->finally->id->fixURI->base->uri->try->if->baseSystemId->length->baseSystemId->equals->dir->getUserDir->new->URI->else->try->fixURI->new->URI->catch->if->baseSystemId->indexOf->fixURI->new->URI->else->dir->getUserDir->fixURI->new->URI->finally->new->URI->catch->finally->if->return->return->uri->toString
 XMLEntityStorage#fixURI(String):::Fixes a platform dependent filename to standard URI form.:::str->replace->if->str->length->ch1->str->charAt->if->ch0->Character->str->charAt->toUpperCase->if->else->if->str->charAt->return
+XMLEntityStorage#startExternalSubset()::: entity storage start external subset:::
+XMLEntityStorage#endExternalSubset()::: entity storage end external subset:::
+XMLEventReaderImpl#hasNext()::: event reader impl has next:::if->return->next->try->fXMLReader->hasNext->catch->return->finally->return
+XMLEventReaderImpl#nextEvent()::: event reader impl next event:::if->return->else->if->fXMLReader->hasNext->fXMLReader->next->return->fXMLEventAllocator->allocate->else->throw->new->NoSuchElementException
+XMLEventReaderImpl#remove()::: event reader impl remove:::throw->new->java.lang.UnsupportedOperationException
+XMLEventReaderImpl#close()::: event reader impl close:::fXMLReader->close
 XMLEventReaderImpl#getElementText():::Reads the content of a text-only element:::if->fLastEvent->getEventType->throw->fLastEvent->getLocation->new->XMLStreamException->data->if->event->type->event->getEventType->if->event->asCharacters->getData->else->if->getDeclaration->getReplacementText->else->if->else->if->throw->event->getLocation->new->XMLStreamException->else->if->return->buffer->new->StringBuffer->if->data->length->buffer->append->nextEvent->while->event->getEventType->if->event->asCharacters->getData->else->if->getDeclaration->getReplacementText->else->if->else->if->throw->new->XMLStreamException->else->if->throw->event->getLocation->new->XMLStreamException->else->throw->event->getLocation->new->XMLStreamException->if->data->length->buffer->append->nextEvent->return->buffer->toString->fXMLReader->getElementText->fXMLEventAllocator->allocate->return
 XMLEventReaderImpl#getProperty(java.lang.String):::Get the value of a feature/property from the underlying implementation:::return->fXMLReader->getProperty
 XMLEventReaderImpl#nextTag():::Skips any insignificant space events until a START_ELEMENT or END_ELEMENT is reached:::if->event->eventType->event->getEventType->if->event->isCharacters->event->asCharacters->isWhiteSpace->nextEvent->event->getEventType->while->event->isCharacters->event->asCharacters->isWhiteSpace->nextEvent->event->getEventType->if->throw->event->getLocation->new->XMLStreamException->return->fXMLReader->nextTag->return->fXMLEventAllocator->allocate
+XMLEventReaderImpl#next()::: event reader impl next:::object->try->nextEvent->catch->e->streamException->getMessage->new->NoSuchElementException->e->streamException->getCause->initCause->throw->finally->return
+XMLEventReaderImpl#peek()::: event reader impl peek:::if->return->if->hasNext->fXMLReader->next->fXMLEventAllocator->allocate->return->else->return
+XMLInputFactoryImpl#initEventReader()::: input factory impl init event reader:::
+XMLInputFactoryImpl#createXMLEventReader(InputStream)::: input factory impl create event reader:::initEventReader->return->createXMLStreamReader->new->XMLEventReaderImpl
+XMLInputFactoryImpl#createXMLEventReader(Reader)::: input factory impl create event reader:::initEventReader->return->createXMLStreamReader->new->XMLEventReaderImpl
+XMLInputFactoryImpl#createXMLEventReader(Source)::: input factory impl create event reader:::initEventReader->return->createXMLStreamReader->new->XMLEventReaderImpl
+XMLInputFactoryImpl#createXMLEventReader(String, InputStream)::: input factory impl create event reader:::initEventReader->return->createXMLStreamReader->new->XMLEventReaderImpl
+XMLInputFactoryImpl#createXMLEventReader(java.io.InputStream, String)::: input factory impl create event reader:::initEventReader->return->createXMLStreamReader->new->XMLEventReaderImpl
+XMLInputFactoryImpl#createXMLEventReader(String, Reader)::: input factory impl create event reader:::initEventReader->return->createXMLStreamReader->new->XMLEventReaderImpl
 XMLInputFactoryImpl#createXMLEventReader(XMLStreamReader):::Create a new XMLEventReader from an XMLStreamReader:::return->new->XMLEventReaderImpl
+XMLInputFactoryImpl#createXMLStreamReader(InputStream)::: input factory impl create stream reader:::inputSource->new->XMLInputSource->return->getXMLStreamReaderImpl
+XMLInputFactoryImpl#createXMLStreamReader(Reader)::: input factory impl create stream reader:::inputSource->new->XMLInputSource->return->getXMLStreamReaderImpl
+XMLInputFactoryImpl#createXMLStreamReader(String, Reader)::: input factory impl create stream reader:::inputSource->new->XMLInputSource->return->getXMLStreamReaderImpl
+XMLInputFactoryImpl#createXMLStreamReader(Source)::: input factory impl create stream reader:::return->jaxpSourcetoXMLInputSource->new->PropertyManager->new->XMLStreamReaderImpl
+XMLInputFactoryImpl#createXMLStreamReader(String, InputStream)::: input factory impl create stream reader:::inputSource->new->XMLInputSource->return->getXMLStreamReaderImpl
+XMLInputFactoryImpl#createXMLStreamReader(InputStream, String)::: input factory impl create stream reader:::inputSource->new->XMLInputSource->return->getXMLStreamReaderImpl
+XMLInputFactoryImpl#getEventAllocator()::: input factory impl get event allocator:::return->getProperty
+XMLInputFactoryImpl#getXMLReporter()::: input factory impl get reporter:::return->fPropertyManager->getProperty
+XMLInputFactoryImpl#getXMLResolver()::: input factory impl get resolver:::object->fPropertyManager->getProperty->return
+XMLInputFactoryImpl#setXMLReporter(XMLReporter)::: input factory impl set reporter:::fPropertyManager->setProperty
+XMLInputFactoryImpl#setXMLResolver(XMLResolver)::: input factory impl set resolver:::fPropertyManager->setProperty
 XMLInputFactoryImpl#createFilteredReader(XMLEventReader, EventFilter):::Create a filtered event reader that wraps the filter around the event reader:::return->new->EventFilterSupport
 XMLInputFactoryImpl#createFilteredReader(XMLStreamReader, StreamFilter):::Create a filtered reader that wraps the filter around the reader:::if->return->new->XMLStreamFilterImpl->return
 XMLInputFactoryImpl#getProperty(java.lang.String):::Get the value of a feature/property from the underlying implementation:::if->throw->new->IllegalArgumentException->if->fPropertyManager->containsProperty->return->fPropertyManager->getProperty->throw->new->IllegalArgumentException
 XMLInputFactoryImpl#isPropertySupported(String):::Query the set of fProperties that this factory supports.:::if->return->else->return->fPropertyManager->containsProperty
 XMLInputFactoryImpl#setEventAllocator(XMLEventAllocator):::Set a user defined event allocator for events:::fPropertyManager->setProperty
 XMLInputFactoryImpl#setProperty(java.lang.String, Object):::Allows the user to set specific feature/property on the underlying implementation:::if->fPropertyManager->containsProperty->throw->new->IllegalArgumentException->if->name->equals->booleanValue->if->println->else->fPropertyManager->setProperty
+XMLInputFactoryImpl#getXMLStreamReaderImpl(XMLInputSource)::: input factory impl get stream reader impl:::if->return->new->PropertyManager->new->XMLStreamReaderImpl->if->fTempReader->canReuse->if->println->fTempReader->reset->fTempReader->setInputSource->return->else->return->new->PropertyManager->new->XMLStreamReaderImpl
+XMLInputFactoryImpl#jaxpSourcetoXMLInputSource(Source)::: input factory impl jaxp sourceto input source:::if->stSource->systemId->stSource->getSystemId->publicId->stSource->getPublicId->istream->stSource->getInputStream->reader->stSource->getReader->if->return->new->XMLInputSource->else->if->return->new->XMLInputSource->else->return->new->XMLInputSource->throw->source->getClass->getName->new->UnsupportedOperationException
+XMLOutputFactoryImpl#createXMLEventWriter(java.io.OutputStream)::: output factory impl create event writer:::return->createXMLEventWriter
+XMLOutputFactoryImpl#createXMLEventWriter(java.io.OutputStream, String)::: output factory impl create event writer:::return->createXMLStreamWriter->new->XMLEventWriterImpl
+XMLOutputFactoryImpl#createXMLEventWriter(javax.xml.transform.Result)::: output factory impl create event writer:::if->getXMLEventWriter->return->getXMLEventWriter->return->createXMLStreamWriter->new->XMLEventWriterImpl
+XMLOutputFactoryImpl#createXMLEventWriter(java.io.Writer)::: output factory impl create event writer:::return->createXMLStreamWriter->new->XMLEventWriterImpl
+XMLOutputFactoryImpl#createXMLStreamWriter(javax.xml.transform.Result)::: output factory impl create stream writer:::if->return->createXMLStreamWriter->else->if->return->new->XMLDOMWriterImpl->else->if->if->getXMLStreamWriter->return->getXMLStreamWriter->else->throw->new->java.lang.UnsupportedOperationException->else->if->result->getSystemId->return->result->getSystemId->new->StreamResult->createXMLStreamWriter->else->throw->new->java.lang.UnsupportedOperationException
+XMLOutputFactoryImpl#createXMLStreamWriter(java.io.Writer)::: output factory impl create stream writer:::return->toStreamResult->createXMLStreamWriter
+XMLOutputFactoryImpl#createXMLStreamWriter(java.io.OutputStream)::: output factory impl create stream writer:::return->createXMLStreamWriter
+XMLOutputFactoryImpl#createXMLStreamWriter(java.io.OutputStream, String)::: output factory impl create stream writer:::return->toStreamResult->createXMLStreamWriter
+XMLOutputFactoryImpl#getProperty(String)::: output factory impl get property:::if->throw->new->IllegalArgumentException->if->fPropertyManager->containsProperty->return->fPropertyManager->getProperty->throw->new->IllegalArgumentException
+XMLOutputFactoryImpl#isPropertySupported(String)::: output factory impl is property supported:::if->return->else->return->fPropertyManager->containsProperty
+XMLOutputFactoryImpl#setProperty(String, Object)::: output factory impl set property:::if->fPropertyManager->containsProperty->throw->new->IllegalArgumentException->if->name->equals->booleanValue->if->println->if->throw->new->IllegalArgumentException->else->fPropertyManager->setProperty
 XMLOutputFactoryImpl#toStreamResult(OutputStream, Writer, String):::StreamResult object is re-used and the values are set appropriately.:::sr->new->StreamResult->sr->setOutputStream->sr->setWriter->sr->setSystemId->return
+XMLOutputFactoryImpl#createXMLStreamWriter(javax.xml.transform.stream.StreamResult, String)::: output factory impl create stream writer:::try->if->fStreamWriter->canReuse->fStreamWriter->reset->fStreamWriter->setOutput->if->println->return->return->new->PropertyManager->new->XMLStreamWriterImpl->catch->throw->new->XMLStreamException->finally

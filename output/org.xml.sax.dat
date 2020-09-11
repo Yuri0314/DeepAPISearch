@@ -66,6 +66,7 @@ InputSource#getEncoding():::Get the character encoding for a byte stream or URI:
 InputSource#setCharacterStream(Reader):::Set the character stream for this input source:::
 InputSource#getCharacterStream():::Get the character stream for this input source.:::return
 InputSource#isEmpty():::Indicates whether the InputSource object is empty:::return->isStreamEmpty
+InputSource#isStreamEmpty()::: input source is stream empty:::empty->try->if->byteStream->reset->bytesRead->byteStream->available->if->return->if->characterStream->reset->c->characterStream->read->characterStream->reset->if->return->catch->return->finally->return
 Locator#getPublicId():::Return the public identifier for the current document event:::
 Locator#getSystemId():::Return the system identifier for the current document event:::
 Locator#getLineNumber():::Return the line number where the current document event ends:::
@@ -81,6 +82,10 @@ SAXException#getMessage():::Return a detail message for this exception:::message
 SAXException#getException():::Return the embedded exception, if any.:::return->getExceptionInternal
 SAXException#getCause():::Return the cause of the exception:::return->super->getCause
 SAXException#toString():::Override toString to pick up any embedded exception.:::exception->super->getCause->if->return->super->toString->exception->toString->else->return->super->toString
+SAXException#writeObject(ObjectOutputStream):::Writes "exception" field to the stream.:::fields->out->putFields->fields->getExceptionInternal->put->out->writeFields
+SAXException#readObject(ObjectInputStream):::Reads the "exception" field from the stream:::fields->in->readFields->exception->fields->get->superCause->super->getCause->if->try->super->initCause->catch->throw->new->InvalidClassException->finally
+SAXException#getExceptionInternal()::: exception get exception internal:::cause->super->getCause->if->return->else->return
+SAXParseException#init(String, String, int, int):::Internal initialization method.:::
 SAXParseException#getPublicId():::Get the public identifier of the entity where the exception occurred.:::return
 SAXParseException#getSystemId():::Get the system identifier of the entity where the exception occurred:::return
 SAXParseException#getLineNumber():::The line number of the end of the text where the exception occurred:::return

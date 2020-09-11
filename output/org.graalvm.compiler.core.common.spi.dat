@@ -1,10 +1,25 @@
+JavaConstantFieldProvider_OptionDescriptors#get(String)::: java constant field provider_ option descriptors get:::switch->return->OptionDescriptor->create->return
+JavaConstantFieldProvider_OptionDescriptors#iterator()::: java constant field provider_ option descriptors iterator:::return->new->Iterator<OptionDescriptor>
+CodeGenProviders#getMetaAccess()::: code gen providers get meta access:::
+CodeGenProviders#getCodeCache()::: code gen providers get code cache:::
+CodeGenProviders#getForeignCalls()::: code gen providers get foreign calls:::
+CodeGenProviders#getConstantReflection()::: code gen providers get constant reflection:::
+ConstantFieldProvider.ConstantFieldTool#getOptions()::: constant field tool get options:::
+ConstantFieldProvider.ConstantFieldTool#readValue()::: constant field tool read value:::
+ConstantFieldProvider.ConstantFieldTool#getReceiver()::: constant field tool get receiver:::
+ConstantFieldProvider.ConstantFieldTool#foldConstant(JavaConstant)::: constant field tool fold constant:::
+ConstantFieldProvider.ConstantFieldTool#foldStableArray(JavaConstant, int, boolean)::: constant field tool fold stable array:::
 ConstantFieldProvider#readConstantField(ResolvedJavaField, ConstantFieldTool):::Decide whether a read from the field should be constant folded:::
 ForeignCallDescriptor#getName():::Gets the name of this foreign call.:::return
 ForeignCallDescriptor#getResultType():::Gets the return type of this foreign call.:::return
 ForeignCallDescriptor#getArgumentTypes():::Gets the argument types of this foreign call.:::return->argumentTypes->clone
+ForeignCallDescriptor#hashCode()::: foreign call descriptor hash code:::return->name->hashCode
+ForeignCallDescriptor#equals(Object)::: foreign call descriptor equals:::if->other->return->equals->equals->Arrays->equals->return
+ForeignCallDescriptor#toString()::: foreign call descriptor to string:::sb->new->StringBuilder->append->sep->foreach->sb->append->arg->getSimpleName->append->return->sb->append->resultType->getSimpleName->append->toString
 ForeignCallLinkage#getOutgoingCallingConvention():::Gets the details of where parameters are passed and value(s) are returned from the caller's perspective.:::
 ForeignCallLinkage#getIncomingCallingConvention():::Gets the details of where parameters are passed and value(s) are returned from the callee's perspective.:::
 ForeignCallLinkage#getMaxCallTargetOffset():::Returns the maximum absolute offset of a PC relative call to this stub from any position in the code cache or -1 when not applicable:::
+ForeignCallLinkage#getDescriptor()::: foreign call linkage get descriptor:::
 ForeignCallLinkage#getTemporaries():::Gets the values used/killed by this foreign call.:::
 ForeignCallLinkage#destroysRegisters():::Determines if the foreign call target destroys all registers.:::
 ForeignCallLinkage#needsDebugInfo():::Determines if debug info needs to be associated with this call:::
@@ -14,6 +29,17 @@ ForeignCallsProvider#canDeoptimize(ForeignCallDescriptor):::Determines if deopti
 ForeignCallsProvider#isGuaranteedSafepoint(ForeignCallDescriptor):::Identifies foreign calls which are guaranteed to include a safepoint check.:::
 ForeignCallsProvider#lookupForeignCall(ForeignCallDescriptor):::Gets the linkage for a foreign call.:::
 ForeignCallsProvider#isAvailable(ForeignCallDescriptor):::Return true if the foreign call has a binding.:::
+JavaConstantFieldProvider#readConstantField(ResolvedJavaField, ConstantFieldTool)::: java constant field provider read constant field:::if->isStableField->value->tool->readValue->if->isStableFieldValueConstant->return->foldStableArray->if->isFinalField->value->tool->readValue->if->isFinalFieldValueConstant->return->tool->foldConstant->return
+JavaConstantFieldProvider#foldStableArray(JavaConstant, ResolvedJavaField, ConstantFieldTool)::: java constant field provider fold stable array:::return->tool->field->getType->getArrayDimension->isDefaultStableField->foldStableArray
+JavaConstantFieldProvider#getArrayDimension(JavaType)::: java constant field provider get array dimension:::dimensions->componentType->while->componentType->getComponentType->return
+JavaConstantFieldProvider#isArray(ResolvedJavaField)::: java constant field provider is array:::fieldType->field->getType->return->isArray
+JavaConstantFieldProvider#isStableFieldValueConstant(ResolvedJavaField, JavaConstant, ConstantFieldTool)::: java constant field provider is stable field value constant:::return->value->isDefaultForKind
+JavaConstantFieldProvider#isFinalFieldValueConstant(ResolvedJavaField, JavaConstant, ConstantFieldTool)::: java constant field provider is final field value constant:::return->value->isDefaultForKind->tool->getOptions->getValue
+JavaConstantFieldProvider#isStableField(ResolvedJavaField, ConstantFieldTool)::: java constant field provider is stable field:::if->isSyntheticEnumSwitchMap->return->if->isWellKnownImplicitStableField->return->if->field->equals->return->return
+JavaConstantFieldProvider#isDefaultStableField(ResolvedJavaField, ConstantFieldTool)::: java constant field provider is default stable field:::if->isSyntheticEnumSwitchMap->return->return
+JavaConstantFieldProvider#isFinalField(ResolvedJavaField, ConstantFieldTool)::: java constant field provider is final field:::return->field->isFinal
+JavaConstantFieldProvider#isSyntheticEnumSwitchMap(ResolvedJavaField)::: java constant field provider is synthetic enum switch map:::if->field->isSynthetic->field->isStatic->isArray->name->field->getName->if->field->isFinal->name->equals->name->equals->return->else->if->name->startsWith->name->startsWith->return->return
+JavaConstantFieldProvider#isWellKnownImplicitStableField(ResolvedJavaField)::: java constant field provider is well known implicit stable field:::return->field->equals
 LIRKindTool#getIntegerKind(int):::Get an architecture specific integer kind of a certain size.:::
 LIRKindTool#getFloatingKind(int):::Get an architecture specific floating point kind of a certain size.:::
 LIRKindTool#getObjectKind():::Get the architecture specific kind used to represent Java objects.:::

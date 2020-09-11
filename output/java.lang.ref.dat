@@ -2,13 +2,33 @@ Cleaner#create():::Returns a new Cleaner:::cleaner->new->Cleaner->start->return
 Cleaner#create(ThreadFactory):::Returns a new Cleaner using a Thread from the ThreadFactory:::Objects->requireNonNull->cleaner->new->Cleaner->start->return
 Cleaner#register(Object, Runnable):::Registers an object and a cleaning action to run when the object becomes phantom reachable:::Objects->requireNonNull->Objects->requireNonNull->return->new->CleanerImpl.PhantomCleanableRef
 Cleaner.Cleanable#clean():::Unregisters the cleanable and invokes the cleaning action:::
+Finalizer#getQueue()::: finalizer get queue:::return
+Finalizer#register(Object)::: finalizer register:::new->Finalizer
+Finalizer#runFinalizer(JavaLangAccess)::: finalizer run finalizer:::synchronized->if->return->if->else->if->try->finalizee->this->get->if->jla->invokeFinalize->catch->finally->super->clear
+Finalizer#forkSecondaryFinalizer(Runnable)::: finalizer fork secondary finalizer:::AccessController->new->PrivilegedAction<>->doPrivileged
+Finalizer#runFinalization()::: finalizer run finalization:::if->VM->initLevel->return->new->Runnable->forkSecondaryFinalizer
+Finalizer.FinalizerThread#run()::: finalizer thread run:::if->return->while->VM->initLevel->try->VM->awaitInitLevel->catch->finally->jla->SharedSecrets->getJavaLangAccess->for
+FinalizerHistogram.Entry#getInstanceCount()::: entry get instance count:::return
+FinalizerHistogram.Entry#increment()::: entry increment:::
+FinalizerHistogram#getFinalizerHistogram()::: finalizer histogram get finalizer histogram:::countMap->new->HashMap<>->queue->Finalizer->getQueue->queue->referent->r->get->if->countMap->referent->getClass->getName->Entry->new->computeIfAbsent->increment->forEach->fhe->countMap->values->countMap->size->new->EntryArr->toArray->Arrays->Comparator->Entry->getInstanceCount->comparingInt->reversed->sort->return
+FinalReference#enqueue()::: final reference enqueue:::throw->new->InternalError
 PhantomReference#get():::Returns this reference object's referent:::return
+Reference.ReferenceHandler#ensureClassInitialized(Class)::: reference handler ensure class initialized:::try->Class->clazz->getName->clazz->getClassLoader->forName->catch->throw->e->getMessage->new->NoClassDefFoundError->initCause->finally
+Reference.ReferenceHandler#run()::: reference handler run:::while->processPendingReferences
+Reference#getAndClearReferencePendingList()::: reference get and clear reference pending list:::
+Reference#hasReferencePendingList()::: reference has reference pending list:::
+Reference#waitForReferencePendingList()::: reference wait for reference pending list:::
+Reference#processPendingReferences()::: reference process pending references:::waitForReferencePendingList->pendingList->synchronized->getAndClearReferencePendingList->while->ref->if->clean->synchronized->processPendingLock->notifyAll->else->q->if->q->enqueue->synchronized->processPendingLock->notifyAll
+Reference#waitForReferenceProcessing()::: reference wait for reference processing:::synchronized->if->hasReferencePendingList->processPendingLock->wait->return->else->return
 Reference#get():::Returns this reference object's referent:::return
 Reference#clear():::Clears this reference object:::
 Reference#isEnqueued():::Tells whether or not this reference object has been enqueued, either by the program or by the garbage collector:::return
 Reference#enqueue():::Clears this reference object and adds it to the queue with which it is registered, if any:::return->enqueue
 Reference#clone():::Throws CloneNotSupportedException:::throw->new->CloneNotSupportedException
 Reference#reachabilityFence(Object):::Ensures that the object referenced by the given reference remains strongly reachable, regardless of any prior actions of the program that might otherwise cause the object to become unreachable; thus, the referenced object is not reclaimable by garbage collection at least until after the invocation of this method:::
+ReferenceQueue.Null#enqueue(Reference)::: null enqueue:::return
+ReferenceQueue#enqueue(Reference)::: reference queue enqueue:::synchronized->queue->if->return->if->VM->addFinalRefCount->lock->notifyAll->return
+ReferenceQueue#reallyPoll()::: reference queue really poll:::r->if->rn->if->VM->addFinalRefCount->return->return
 ReferenceQueue#poll():::Polls this queue to see if a reference object is available:::if->return->synchronized->return->reallyPoll
 ReferenceQueue#remove(long):::Removes the next reference object in this queue, blocking until either one becomes available or the given timeout period expires:::if->throw->new->IllegalArgumentException->synchronized->r->reallyPoll->if->return->start->System->nanoTime->for
 ReferenceQueue#remove():::Removes the next reference object in this queue, blocking until one becomes available.:::return->remove

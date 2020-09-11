@@ -12,6 +12,14 @@ ExtendedRequest#createExtendedResponse(String, byte[], int, int):::Creates the r
 ExtendedResponse#getID():::Retrieves the object identifier of the response:::
 ExtendedResponse#getEncodedValue():::Retrieves the ASN.1 BER encoded value of the LDAP extended operation response:::
 HasControls#getControls():::Retrieves an array of Controls from the object that implements this interface:::
+InitialLdapContext#getDefaultLdapInitCtx():::Retrieves the initial LDAP context.:::answer->getDefaultInitCtx->if->if->throw->new->NoInitialContextException->else->throw->new->NotContextException->return
+InitialLdapContext#extendedOperation(ExtendedRequest)::: initial ldap context extended operation:::return->getDefaultLdapInitCtx->extendedOperation
+InitialLdapContext#newInstance(Control[])::: initial ldap context new instance:::return->getDefaultLdapInitCtx->newInstance
+InitialLdapContext#reconnect(Control[])::: initial ldap context reconnect:::getDefaultLdapInitCtx->reconnect
+InitialLdapContext#getConnectControls()::: initial ldap context get connect controls:::return->getDefaultLdapInitCtx->getConnectControls
+InitialLdapContext#setRequestControls(Control[])::: initial ldap context set request controls:::getDefaultLdapInitCtx->setRequestControls
+InitialLdapContext#getRequestControls()::: initial ldap context get request controls:::return->getDefaultLdapInitCtx->getRequestControls
+InitialLdapContext#getResponseControls()::: initial ldap context get response controls:::return->getDefaultLdapInitCtx->getResponseControls
 LdapContext#extendedOperation(ExtendedRequest):::Performs an extended operation:::
 LdapContext#newInstance(Control[]):::Creates a new instance of this context initialized using request controls:::
 LdapContext#reconnect(Control[]):::Reconnects to the LDAP server using the supplied controls and this context's environment:::
@@ -30,6 +38,8 @@ LdapName#startsWith(Name):::Determines whether this LDAP name starts with a spec
 LdapName#startsWith(List):::Determines whether the specified RDN sequence forms a prefix of this LDAP name:::if->return->len1->size->len2->rdns->size->return->doesListMatch
 LdapName#endsWith(Name):::Determines whether this LDAP name ends with a specified LDAP name suffix:::if->return->len1->rdns->size->len2->n->size->return->matches
 LdapName#endsWith(List):::Determines whether the specified RDN sequence forms a suffix of this LDAP name:::if->return->len1->size->len2->rdns->size->return->doesListMatch
+LdapName#doesListMatch(int, int, List)::: ldap name does list match:::for->i->return
+LdapName#matches(int, int, Name)::: ldap name matches:::if->ln->return->doesListMatch->else->for->i->return
 LdapName#addAll(Name):::Adds the components of a name -- in order -- to the end of this name.:::return->size->addAll
 LdapName#addAll(List):::Adds the RDNs of a name -- in order -- to the end of this name.:::return->size->addAll
 LdapName#addAll(int, Name):::Adds the components of a name -- in order -- at a specified position within this name:::if->s->rdns->addAll->else->comps->suffix->getAll->while->comps->hasMoreElements->rdns->comps->nextElement->new->Rfc2253Parser->parseRdn->add->return
@@ -45,11 +55,18 @@ LdapName#toString():::Returns a string representation of this LDAP name in a for
 LdapName#equals(Object):::Determines whether two LDAP names are equal:::if->return->if->return->that->if->rdns->size->size->return->if->unparsed->equalsIgnoreCase->return->for->i->rdns->size->return
 LdapName#compareTo(Object):::Compares this LdapName with the specified Object for order:::if->throw->new->ClassCastException->if->return->that->if->unparsed->equalsIgnoreCase->return->minSize->Math->rdns->size->size->min->for->i->return->rdns->size->size
 LdapName#hashCode():::Computes the hash code of this LDAP name:::hash->for->i->rdns->size->return
+LdapName#writeObject(ObjectOutputStream):::Serializes only the unparsed DN, for compactness and to avoid any implementation dependency.:::s->defaultWriteObject->s->toString->writeObject
+LdapName#readObject(ObjectInputStream)::: ldap name read object:::s->defaultReadObject->s->readObject->try->parse->catch->throw->new->java.io.StreamCorruptedException->finally
+LdapName#parse()::: ldap name parse:::new->Rfc2253Parser->parseDn
 LdapReferralException#getReferralContext():::Retrieves the context at which to continue the method using the context's environment and no controls:::
 LdapReferralException#getReferralContext(Hashtable):::Retrieves the context at which to continue the method using environment properties and no controls:::
 LdapReferralException#getReferralContext(Hashtable, Control[]):::Retrieves the context at which to continue the method using request controls and environment properties:::
+PagedResultsControl#setEncodedValue(int, byte[])::: paged results control set encoded value:::ber->new->BerEncoder->ber->beginSeq->ber->encodeInt->ber->encodeOctetString->ber->endSeq->return->ber->getTrimmedBuf
 PagedResultsResponseControl#getResultSize():::Retrieves (an estimate of) the number of entries in the search result.:::return
 PagedResultsResponseControl#getCookie():::Retrieves the server-generated cookie:::if->return->else->return
+Rdn#isEmptyValue(Object)::: rdn is empty value:::return->val->equals
+Rdn#put(String, Object)::: rdn put:::newEntry->new->RdnEntry->if->clone->else->entries->add->return
+Rdn#sort()::: rdn sort:::if->entries->size->Collections->sort
 Rdn#getValue():::Retrieves one of this Rdn's value:::return->entries->get->getValue
 Rdn#getType():::Retrieves one of this Rdn's type:::return->entries->get->getType
 Rdn#toString():::Returns this Rdn as a string represented in a format defined by RFC 2253 and described in the class description for javax.naming.ldap.LdapName LdapName.:::builder->new->StringBuilder->size->entries->size->if->builder->entries->get->append->for->next->return->builder->toString
@@ -57,9 +74,36 @@ Rdn#compareTo(Object):::Compares this Rdn with the specified Object for order:::
 Rdn#equals(Object):::Compares the specified Object with this Rdn for equality:::if->return->if->return->that->if->entries->size->that->size->return->for->i->entries->size->return
 Rdn#hashCode():::Returns the hash code of this RDN:::hash->for->i->entries->size->return
 Rdn#toAttributes():::Retrieves the javax.naming.directory.Attributes Attributes view of the type/value mappings contained in this Rdn.:::attrs->new->BasicAttributes->for->i->entries->size->return
+Rdn.RdnEntry#getType()::: rdn entry get type:::return
+Rdn.RdnEntry#getValue()::: rdn entry get value:::return
+Rdn.RdnEntry#compareTo(RdnEntry)::: rdn entry compare to:::diff->type->compareToIgnoreCase->if->return->if->value->equals->return->return->getValueComparable->that->getValueComparable->compareTo
+Rdn.RdnEntry#equals(Object)::: rdn entry equals:::if->return->if->return->that->return->type->equalsIgnoreCase->getValueComparable->that->getValueComparable->equals
+Rdn.RdnEntry#hashCode()::: rdn entry hash code:::return->type->toUpperCase->hashCode->getValueComparable->hashCode
+Rdn.RdnEntry#toString()::: rdn entry to string:::return->escapeValue
+Rdn.RdnEntry#getValueComparable()::: rdn entry get value comparable:::if->return->if->escapeBinaryValue->else->toUpperCase->return
 Rdn#size():::Retrieves the number of attribute type/value pairs in this Rdn.:::return->entries->size
 Rdn#escapeValue(Object):::Given the value of an attribute, returns a string escaped according to the rules specified in RFC 2253:::return->escapeBinaryValue->escapeStringValue
+Rdn#escapeStringValue(String)::: rdn escape string value:::chars->val->toCharArray->builder->val->length->new->StringBuilder->lead->for->trail->for->for->i->return->builder->toString
+Rdn#escapeBinaryValue(byte[])::: rdn escape binary value:::builder->new->StringBuilder->builder->append->for->i->return->builder->toString
 Rdn#unescapeValue(String):::Given an attribute value string formatted according to the rules specified in RFC 2253, returns the unformatted value:::chars->val->toCharArray->beg->end->while->isWhitespace->while->isWhitespace->if->if->return->if->return->decodeHexPairs->if->builder->new->StringBuilder->esc->for->i->len->builder->length->if->builder->charAt->isWhitespace->builder->setLength->return->builder->toString
+Rdn#decodeHexPairs(char[], int, int)::: rdn decode hex pairs:::bytes->new->byteArr->for->i->if->throw->new->String->new->IllegalArgumentException->return
+Rdn#getUtf8Octets(char[], int, int)::: rdn get utf8 octets:::utf8->new->byteArr->len->while->hi->Character->digit->lo->Character->digit->if->break->if->return->else->res->new->byteArr->System->arraycopy->return
+Rdn#isWhitespace(char)::: rdn is whitespace:::return
+Rdn#writeObject(ObjectOutputStream):::Serializes only the unparsed RDN, for compactness and to avoid any implementation dependency.:::s->defaultWriteObject->s->toString->writeObject
+Rdn#readObject(ObjectInputStream)::: rdn read object:::s->defaultReadObject->new->ArrayList<>->unparsed->s->readObject->try->new->Rfc2253Parser->parseRdn->catch->throw->new->java.io.StreamCorruptedException->finally
+Rfc2253Parser#parseDn()::: rfc2253 parser parse dn:::rdns->new->ArrayList<>->if->return->rdns->new->Rdn->doParse->add->while->if->rdns->new->Rdn->doParse->add->else->throw->new->InvalidNameException->return
+Rfc2253Parser#parseRdn()::: rfc2253 parser parse rdn:::return->new->Rdn->parseRdn
+Rfc2253Parser#parseRdn(Rdn)::: rfc2253 parser parse rdn:::doParse->if->throw->new->InvalidNameException->return
+Rfc2253Parser#doParse(Rdn)::: rfc2253 parser do parse:::while->consumeWhitespace->attrType->parseAttrType->consumeWhitespace->if->throw->new->InvalidNameException->consumeWhitespace->value->parseAttrValue->consumeWhitespace->rdn->Rdn->unescapeValue->put->if->break->rdn->sort->return
+Rfc2253Parser#parseAttrType()::: rfc2253 parser parse attr type:::beg->while->c->if->Character->isLetterOrDigit->else->break->while->if->throw->new->InvalidNameException->return->new->String
+Rfc2253Parser#parseAttrValue()::: rfc2253 parser parse attr value:::if->return->parseBinaryAttrValue->else->if->return->parseQuotedAttrValue->else->return->parseStringAttrValue
+Rfc2253Parser#parseBinaryAttrValue()::: rfc2253 parser parse binary attr value:::beg->while->Character->isLetterOrDigit->return->new->String
+Rfc2253Parser#parseQuotedAttrValue()::: rfc2253 parser parse quoted attr value:::beg->while->if->if->throw->new->InvalidNameException->return->new->String
+Rfc2253Parser#parseStringAttrValue()::: rfc2253 parser parse string attr value:::beg->esc->while->atTerminator->if->if->throw->new->InvalidNameException->end->for->return->new->String
+Rfc2253Parser#consumeWhitespace()::: rfc2253 parser consume whitespace:::while->isWhitespace
+Rfc2253Parser#atTerminator()::: rfc2253 parser at terminator:::return
+Rfc2253Parser#isWhitespace(char)::: rfc2253 parser is whitespace:::return
+SortControl#setEncodedValue(SortKey[])::: sort control set encoded value:::ber->new->BerEncoder->matchingRule->ber->beginSeq->for->i->ber->endSeq->return->ber->getTrimmedBuf
 SortKey#getAttributeID():::Retrieves the attribute ID of the sort key.:::return
 SortKey#isAscending():::Determines the sort order.:::return
 SortKey#getMatchingRuleID():::Retrieves the matching rule ID used to order the attribute values.:::return
@@ -70,6 +114,9 @@ SortResponseControl#getException():::Retrieves the NamingException appropriate f
 StartTlsRequest#getID():::Retrieves the StartTLS request's object identifier string.:::return
 StartTlsRequest#getEncodedValue():::Retrieves the StartTLS request's ASN.1 BER encoded value:::return
 StartTlsRequest#createExtendedResponse(String, byte[], int, int):::Creates an extended response object that corresponds to the LDAP StartTLS extended request:::if->id->equals->throw->new->ConfigurationException->resp->sl->ServiceLoader->getContextClassLoader->load->iter->sl->iterator->while->privilegedHasNext->iter->next->if->return->try->helper->VersionHelper->getVersionHelper->o->helper->loadClass->newInstance->catch->throw->wrapException->finally->return
+StartTlsRequest#wrapException(Exception)::: start tls request wrap exception:::ce->new->ConfigurationException->ce->setRootCause->return
+StartTlsRequest#getContextClassLoader()::: start tls request get context class loader:::return->AccessController->new->PrivilegedAction<ClassLoader>->doPrivileged
+StartTlsRequest#privilegedHasNext(Iterator)::: start tls request privileged has next:::answer->AccessController->new->PrivilegedAction<Boolean>->doPrivileged->return->answer->booleanValue
 StartTlsResponse#getID():::Retrieves the StartTLS response's object identifier string.:::return
 StartTlsResponse#getEncodedValue():::Retrieves the StartTLS response's ASN.1 BER encoded value:::return
 StartTlsResponse#setEnabledCipherSuites(String[]):::Overrides the default list of cipher suites enabled for use on the TLS connection:::

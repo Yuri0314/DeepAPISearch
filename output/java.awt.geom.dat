@@ -8,8 +8,10 @@ AffineTransform#getQuadrantRotateInstance(int, double, double):::Returns a trans
 AffineTransform#getScaleInstance(double, double):::Returns a transform representing a scaling transformation:::Tx->new->AffineTransform->Tx->setToScale->return
 AffineTransform#getShearInstance(double, double):::Returns a transform representing a shearing transformation:::Tx->new->AffineTransform->Tx->setToShear->return
 AffineTransform#getType():::Retrieves the flag bits describing the conversion properties of this transform:::if->calculateType->return
+AffineTransform#calculateType():::This is the utility function to calculate the flag bits when they have not been cached.:::ret->sgn0->sgn1->M0->M1->M2->M3->updateState->switch->stateError->if->return->if->if->else->if->else->else->if->else->if->else->break->if->if->else->if->else->else->if->else->break->if->if->if->else->else->if->else->if->else->else->if->if->else->else->break->break->break
 AffineTransform#getDeterminant():::Returns the determinant of the matrix representation of the transform:::switch->stateError->return->return->return->return
 AffineTransform#updateState():::Manually recalculates the state of the transform when the matrix changes too much to predict the effects on the state:::if->if->if->else->else->if->else->else->if->if->else->else->if->else
+AffineTransform#stateError()::: affine transform state error:::throw->new->InternalError
 AffineTransform#getMatrix(double[]):::Retrieves the 6 specifiable values in the 3x3 affine transformation matrix and places them into an array of double precisions values:::if
 AffineTransform#getScaleX():::Returns the m00 element of the 3x3 affine transformation matrix:::return
 AffineTransform#getScaleY():::Returns the m11 element of the 3x3 affine transformation matrix:::return
@@ -18,6 +20,9 @@ AffineTransform#getShearY():::Returns the Y coordinate shearing element (m10) of
 AffineTransform#getTranslateX():::Returns the X coordinate of the translation element (m02) of the 3x3 affine transformation matrix.:::return
 AffineTransform#getTranslateY():::Returns the Y coordinate of the translation element (m12) of the 3x3 affine transformation matrix.:::return
 AffineTransform#translate(double, double):::Concatenates this transform with a translation transformation:::switch->stateError->return->if->if->return->if->return->if->if->return->if->return->if->if->return->if->return->if->return->if->return
+AffineTransform#rotate90()::: affine transform rotate90:::M0->state->if
+AffineTransform#rotate180()::: affine transform rotate180:::state->if->else->if->else
+AffineTransform#rotate270()::: affine transform rotate270:::M0->state->if
 AffineTransform#rotate(double):::Concatenates this transform with a rotation transformation:::sin->Math->sin->if->rotate90->else->if->rotate270->else->cos->Math->cos->if->rotate180->else->if->M0->M1->updateState
 AffineTransform#rotate(double, double, double):::Concatenates this transform with a transform that rotates coordinates around an anchor point:::translate->rotate->translate
 AffineTransform#rotate(double, double):::Concatenates this transform with a transform that rotates coordinates according to a rotation vector:::if->if->rotate180->else->if->if->rotate90->else->rotate270->else->len->Math->sqrt->sin->cos->M0->M1->updateState
@@ -53,19 +58,40 @@ AffineTransform#inverseTransform(double[], int, double[], int, int):::Inverse tr
 AffineTransform#deltaTransform(Point2D, Point2D):::Transforms the relative distance vector specified by ptSrc and stores the result in ptDst:::if->if->new->Point2D.Double->else->new->Point2D.Float->x->ptSrc->getX->y->ptSrc->getY->switch->stateError->return->ptDst->setLocation->return->ptDst->setLocation->return->ptDst->setLocation->return->ptDst->setLocation->return
 AffineTransform#deltaTransform(double[], int, double[], int, int):::Transforms an array of relative distance vectors by this transform:::M00->M01->M10->M11->if->System->arraycopy->switch->stateError->return->while->x->y->return->while->x->return->while->return->if->System->arraycopy->return
 AffineTransform#createTransformedShape(Shape):::Returns a new Shape object defined by the geometry of the specified Shape after it has been transformed by this transform.:::if->return->return->new->Path2D.Double
+AffineTransform#_matround(double)::: affine transform _matround:::return->Math->rint
 AffineTransform#toString():::Returns a String that represents the value of this Object.:::return->_matround->_matround->_matround->_matround->_matround->_matround
 AffineTransform#isIdentity():::Returns true if this AffineTransform is an identity transform.:::return->getType
 AffineTransform#clone():::Returns a copy of this AffineTransform object.:::try->return->super->clone->catch->throw->new->InternalError->finally
 AffineTransform#hashCode():::Returns the hashcode for this transform.:::bits->Double->doubleToLongBits->Double->doubleToLongBits->Double->doubleToLongBits->Double->doubleToLongBits->Double->doubleToLongBits->Double->doubleToLongBits->return
 AffineTransform#equals(Object):::Returns true if this AffineTransform represents the same affine coordinate transform as the specified argument.:::if->return->a->return
+AffineTransform#writeObject(java.io.ObjectOutputStream)::: affine transform write object:::s->defaultWriteObject
+AffineTransform#readObject(java.io.ObjectInputStream)::: affine transform read object:::s->defaultReadObject->updateState
 Arc2D.Float#getX():::Note that the arc partially inscribes the framing rectangle of this {@code RectangularShape.:::return
 Arc2D.Float#getY():::Note that the arc partially inscribes the framing rectangle of this {@code RectangularShape.:::return
 Arc2D.Float#getWidth():::Note that the arc partially inscribes the framing rectangle of this {@code RectangularShape.:::return
 Arc2D.Float#getHeight():::Note that the arc partially inscribes the framing rectangle of this {@code RectangularShape.:::return
+Arc2D.Float#getAngleStart()::: float get angle start:::return
+Arc2D.Float#getAngleExtent()::: float get angle extent:::return
+Arc2D.Float#isEmpty()::: float is empty:::return
+Arc2D.Float#setArc(double, double, double, double, double, double, int)::: float set arc:::this->setArcType
+Arc2D.Float#setAngleStart(double)::: float set angle start:::
+Arc2D.Float#setAngleExtent(double)::: float set angle extent:::
+Arc2D.Float#makeBounds(double, double, double, double)::: float make bounds:::return->new->Rectangle2D.Float
+Arc2D.Float#writeObject(java.io.ObjectOutputStream):::Writes the default serializable fields to the ObjectOutputStream followed by a byte indicating the arc type of this Arc2D instance.:::s->defaultWriteObject->s->getArcType->writeByte
+Arc2D.Float#readObject(java.io.ObjectInputStream):::Reads the default serializable fields from the ObjectInputStream followed by a byte indicating the arc type of this Arc2D instance.:::s->defaultReadObject->try->s->readByte->setArcType->catch->throw->iae->getMessage->new->java.io.InvalidObjectException->finally
 Arc2D.Double#getX():::Note that the arc partially inscribes the framing rectangle of this {@code RectangularShape.:::return
 Arc2D.Double#getY():::Note that the arc partially inscribes the framing rectangle of this {@code RectangularShape.:::return
 Arc2D.Double#getWidth():::Note that the arc partially inscribes the framing rectangle of this {@code RectangularShape.:::return
 Arc2D.Double#getHeight():::Note that the arc partially inscribes the framing rectangle of this {@code RectangularShape.:::return
+Arc2D.Double#getAngleStart()::: double get angle start:::return
+Arc2D.Double#getAngleExtent()::: double get angle extent:::return
+Arc2D.Double#isEmpty()::: double is empty:::return
+Arc2D.Double#setArc(double, double, double, double, double, double, int)::: double set arc:::this->setArcType
+Arc2D.Double#setAngleStart(double)::: double set angle start:::
+Arc2D.Double#setAngleExtent(double)::: double set angle extent:::
+Arc2D.Double#makeBounds(double, double, double, double)::: double make bounds:::return->new->Rectangle2D.Double
+Arc2D.Double#writeObject(java.io.ObjectOutputStream):::Writes the default serializable fields to the ObjectOutputStream followed by a byte indicating the arc type of this Arc2D instance.:::s->defaultWriteObject->s->getArcType->writeByte
+Arc2D.Double#readObject(java.io.ObjectInputStream):::Reads the default serializable fields from the ObjectInputStream followed by a byte indicating the arc type of this Arc2D instance.:::s->defaultReadObject->try->s->readByte->setArcType->catch->throw->iae->getMessage->new->java.io.InvalidObjectException->finally
 Arc2D#getAngleStart():::Returns the starting angle of the arc.:::
 Arc2D#getAngleExtent():::Returns the angular extent of the arc.:::
 Arc2D#getArcType():::Returns the arc closure type of the arc: #OPEN, #CHORD, or #PIE.:::return
@@ -86,19 +112,23 @@ Arc2D#setArcType(int):::Sets the closure type of this arc to the specified value
 Arc2D#setFrame(double, double, double, double):::Note that the arc partially inscribes the framing rectangle of this {@code RectangularShape.:::getAngleStart->getAngleExtent->setArc
 Arc2D#getBounds2D():::Returns the high-precision framing rectangle of the arc:::if->isEmpty->return->getX->getY->getWidth->getHeight->makeBounds->x1->y1->x2->y2->if->getArcType->else->angle->for->i->w->getWidth->h->getHeight->getX->getY->return->makeBounds
 Arc2D#makeBounds(double, double, double, double):::Constructs a Rectangle2D of the appropriate precision to hold the parameters calculated to be the framing rectangle of this arc.:::
+Arc2D#normalizeDegrees(double)::: arc2 d normalize degrees:::if->if->else->Math->IEEEremainder->if->else->if->if->else->Math->IEEEremainder->if->return
 Arc2D#containsAngle(double):::Determines whether or not the specified angle is within the angular extents of the arc.:::angExt->getAngleExtent->backwards->if->if->return->normalizeDegrees->getAngleStart->normalizeDegrees->if->if->return
 Arc2D#contains(double, double):::Determines whether or not the specified point is inside the boundary of the arc.:::ellw->getWidth->if->return->normx->getX->ellh->getHeight->if->return->normy->getY->distSq->if->return->angExt->Math->getAngleExtent->abs->if->return->inarc->Math->Math->atan2->toDegrees->containsAngle->if->return->if->if->return->else->if->return->angle->Math->getAngleStart->toRadians->x1->Math->cos->y1->Math->sin->Math->getAngleExtent->toRadians->x2->Math->cos->y2->Math->sin->inside->Line2D->relativeCCW->Line2D->relativeCCW->return
 Arc2D#intersects(double, double, double, double):::Determines whether or not the interior of the arc intersects the interior of the specified rectangle.:::aw->getWidth->ah->getHeight->if->return->ext->getAngleExtent->if->return->ax->getX->ay->getY->axw->ayh->xw->yh->if->return->axc->getCenterX->ayc->getCenterY->sp->getStartPoint->ep->getEndPoint->sx->sp->getX->sy->sp->getY->ex->ep->getX->ey->ep->getY->if->if->containsAngle->containsAngle->return->if->if->containsAngle->containsAngle->return->rect->new->Rectangle2D.Double->if->Math->abs->if->rect->intersectsLine->rect->intersectsLine->return->else->if->rect->intersectsLine->return->if->contains->contains->contains->contains->return->return
 Arc2D#contains(double, double, double, double):::Determines whether or not the interior of the arc entirely contains the specified rectangle.:::return->contains
 Arc2D#contains(Rectangle2D):::Determines whether or not the interior of the arc entirely contains the specified rectangle.:::return->r->getX->r->getY->r->getWidth->r->getHeight->contains
+Arc2D#contains(double, double, double, double, Rectangle2D)::: arc2 d contains:::if->contains->contains->contains->contains->return->if->Math->getAngleExtent->abs->return->if->new->Rectangle2D.Double->halfW->getWidth->halfH->getHeight->xc->getX->yc->getY->angle->Math->getAngleStart->toRadians->xe->Math->cos->ye->Math->sin->if->origrect->intersectsLine->return->Math->getAngleExtent->toRadians->Math->cos->Math->sin->return->origrect->intersectsLine
 Arc2D#getPathIterator(AffineTransform):::Returns an iteration object that defines the boundary of the arc:::return->new->ArcIterator
 Arc2D#hashCode():::Returns the hashcode for this Arc2D.:::bits->getX->doubleToLongBits->getY->doubleToLongBits->getWidth->doubleToLongBits->getHeight->doubleToLongBits->getAngleStart->doubleToLongBits->getAngleExtent->doubleToLongBits->getArcType->return
 Arc2D#equals(Object):::Determines whether or not the specified Object is equal to this Arc2D:::if->return->if->a2d->return->getX->a2d->getX->getY->a2d->getY->getWidth->a2d->getWidth->getHeight->a2d->getHeight->getAngleStart->a2d->getAngleStart->getAngleExtent->a2d->getAngleExtent->getArcType->a2d->getArcType->return
 ArcIterator#getWindingRule():::Return the winding rule for determining the insideness of the path.:::return
 ArcIterator#isDone():::Tests if there are more points to read.:::return
 ArcIterator#next():::Moves the iterator to the next segment of the path forwards along the primary direction of traversal as long as there are more points in that direction.:::
+ArcIterator#btan(double)::: arc iterator btan:::return->Math->sin->Math->cos
 ArcIterator#currentSegment(float[]):::Returns the coordinates and type of the current path segment in the iteration:::if->isDone->throw->new->NoSuchElementException->angle->if->Math->cos->Math->sin->if->affine->transform->return->if->if->return->if->affine->transform->return->relx->Math->cos->rely->Math->sin->Math->cos->Math->sin->if->affine->transform->return
 ArcIterator#currentSegment(double[]):::Returns the coordinates and type of the current path segment in the iteration:::if->isDone->throw->new->NoSuchElementException->angle->if->Math->cos->Math->sin->if->affine->transform->return->if->if->return->if->affine->transform->return->relx->Math->cos->rely->Math->sin->Math->cos->Math->sin->if->affine->transform->return
+Area#pathToCurves(PathIterator)::: area path to curves:::curves->new->Vector<>->windingRule->pi->getWindingRule->coords->new->doubleArr->movx->movy->curx->cury->newx->newy->while->pi->isDone->switch->pi->currentSegment->Curve->insertLine->Curve->insertMove->break->Curve->insertLine->break->Curve->insertQuad->break->Curve->insertCubic->break->Curve->insertLine->break->pi->next->Curve->insertLine->operator->if->new->AreaOp.EOWindOp->else->new->AreaOp.NZWindOp->return->operator->calculate
 Area#add(Area):::Adds the shape of the specified Area to the shape of this Area:::new->AreaOp.AddOp->calculate->invalidateBounds
 Area#subtract(Area):::Subtracts the shape of the specified Area from the shape of this Area:::new->AreaOp.SubOp->calculate->invalidateBounds
 Area#intersect(Area):::Sets the shape of this Area to the intersection of its current shape and the shape of the specified Area:::new->AreaOp.IntOp->calculate->invalidateBounds
@@ -108,15 +138,56 @@ Area#isEmpty():::Tests whether this Area object encloses any area.:::return->cur
 Area#isPolygonal():::Tests whether this Area consists entirely of straight edged polygonal geometry.:::enum_->curves->elements->while->enum_->hasMoreElements->if->enum_->nextElement->getOrder->return->return
 Area#isRectangular():::Tests whether this Area is rectangular in shape.:::size->curves->size->if->return->if->return->c1->curves->get->c2->curves->get->if->c1->getOrder->c2->getOrder->return->if->c1->getXTop->c1->getXBot->c2->getXTop->c2->getXBot->return->if->c1->getYTop->c2->getYTop->c1->getYBot->c2->getYBot->return->return
 Area#isSingular():::Tests whether this Area is comprised of a single closed subpath:::if->curves->size->return->enum_->curves->elements->enum_->nextElement->while->enum_->hasMoreElements->if->enum_->nextElement->getOrder->return->return
+Area#invalidateBounds()::: area invalidate bounds:::
+Area#getCachedBounds()::: area get cached bounds:::if->return->r->new->Rectangle2D.Double->if->curves->size->c->curves->get->r->c->getX0->c->getY0->setRect->for->i->curves->size->return
 Area#getBounds2D():::Returns a high precision bounding Rectangle2D that completely encloses this Area:::return->getCachedBounds->getBounds2D
 Area#getBounds():::Returns a bounding Rectangle that completely encloses this Area:::return->getCachedBounds->getBounds
 Area#clone():::Returns an exact copy of this Area object.:::return->new->Area
 Area#equals(Area):::Tests whether the geometries of the two Area objects are equal:::if->return->if->return->c->new->AreaOp.XorOp->calculate->return->c->isEmpty
 Area#transform(AffineTransform):::Transforms the geometry of this Area using the specified AffineTransform:::if->throw->new->NullPointerException->getPathIterator->pathToCurves->invalidateBounds
 Area#createTransformedArea(AffineTransform):::Creates a new Area object that contains the same geometry as this Area transformed by the specified AffineTransform:::a->new->Area->a->transform->return
+Area#contains(double, double)::: area contains:::if->getCachedBounds->contains->return->enum_->curves->elements->crossings->while->enum_->hasMoreElements->c->enum_->nextElement->c->crossingsFor->return
+Area#contains(Point2D)::: area contains:::return->p->getX->p->getY->contains
+Area#contains(double, double, double, double)::: area contains:::if->return->if->getCachedBounds->contains->return->c->Crossings->findCrossings->return->c->covers
+Area#contains(Rectangle2D)::: area contains:::return->r->getX->r->getY->r->getWidth->r->getHeight->contains
+Area#intersects(double, double, double, double)::: area intersects:::if->return->if->getCachedBounds->intersects->return->c->Crossings->findCrossings->return->c->isEmpty
+Area#intersects(Rectangle2D)::: area intersects:::return->r->getX->r->getY->r->getWidth->r->getHeight->intersects
 Area#getPathIterator(AffineTransform):::Creates a PathIterator for the outline of this Area object:::return->new->AreaIterator
 Area#getPathIterator(AffineTransform, double):::Creates a PathIterator for the flattened outline of this Area object:::return->getPathIterator->new->FlatteningPathIterator
+AreaIterator#getWindingRule()::: area iterator get winding rule:::return
+AreaIterator#isDone()::: area iterator is done:::return
+AreaIterator#next()::: area iterator next:::if->else->if->curves->size->curves->get->if->thiscurve->getOrder->prevcurve->getX1->thiscurve->getX0->prevcurve->getY1->thiscurve->getY0->else
+AreaIterator#currentSegment(float[])::: area iterator current segment:::dcoords->new->doubleArr->segtype->currentSegment->numpoints->for->i->return
+AreaIterator#currentSegment(double[])::: area iterator current segment:::segtype->numpoints->if->if->thiscurve->getOrder->return->thiscurve->getX0->thiscurve->getY0->else->if->throw->new->NoSuchElementException->else->thiscurve->getSegment->thiscurve->getOrder->if->if->transform->transform->return
+CubicCurve2D.Float#getX1()::: float get x1:::return
+CubicCurve2D.Float#getY1()::: float get y1:::return
+CubicCurve2D.Float#getP1()::: float get p1:::return->new->Point2D.Float
+CubicCurve2D.Float#getCtrlX1()::: float get ctrl x1:::return
+CubicCurve2D.Float#getCtrlY1()::: float get ctrl y1:::return
+CubicCurve2D.Float#getCtrlP1()::: float get ctrl p1:::return->new->Point2D.Float
+CubicCurve2D.Float#getCtrlX2()::: float get ctrl x2:::return
+CubicCurve2D.Float#getCtrlY2()::: float get ctrl y2:::return
+CubicCurve2D.Float#getCtrlP2()::: float get ctrl p2:::return->new->Point2D.Float
+CubicCurve2D.Float#getX2()::: float get x2:::return
+CubicCurve2D.Float#getY2()::: float get y2:::return
+CubicCurve2D.Float#getP2()::: float get p2:::return->new->Point2D.Float
+CubicCurve2D.Float#setCurve(double, double, double, double, double, double, double, double)::: float set curve:::
 CubicCurve2D.Float#setCurve(float, float, float, float, float, float, float, float):::Sets the location of the end points and control points of this curve to the specified float coordinates.:::
+CubicCurve2D.Float#getBounds2D()::: float get bounds2 d:::left->Math->Math->min->Math->min->min->top->Math->Math->min->Math->min->min->right->Math->Math->max->Math->max->max->bottom->Math->Math->max->Math->max->max->return->new->Rectangle2D.Float
+CubicCurve2D.Double#getX1()::: double get x1:::return
+CubicCurve2D.Double#getY1()::: double get y1:::return
+CubicCurve2D.Double#getP1()::: double get p1:::return->new->Point2D.Double
+CubicCurve2D.Double#getCtrlX1()::: double get ctrl x1:::return
+CubicCurve2D.Double#getCtrlY1()::: double get ctrl y1:::return
+CubicCurve2D.Double#getCtrlP1()::: double get ctrl p1:::return->new->Point2D.Double
+CubicCurve2D.Double#getCtrlX2()::: double get ctrl x2:::return
+CubicCurve2D.Double#getCtrlY2()::: double get ctrl y2:::return
+CubicCurve2D.Double#getCtrlP2()::: double get ctrl p2:::return->new->Point2D.Double
+CubicCurve2D.Double#getX2()::: double get x2:::return
+CubicCurve2D.Double#getY2()::: double get y2:::return
+CubicCurve2D.Double#getP2()::: double get p2:::return->new->Point2D.Double
+CubicCurve2D.Double#setCurve(double, double, double, double, double, double, double, double)::: double set curve:::
+CubicCurve2D.Double#getBounds2D()::: double get bounds2 d:::left->Math->Math->min->Math->min->min->top->Math->Math->min->Math->min->min->right->Math->Math->max->Math->max->max->bottom->Math->Math->max->Math->max->max->return->new->Rectangle2D.Double
 CubicCurve2D#getX1():::Returns the X coordinate of the start point in double precision.:::
 CubicCurve2D#getY1():::Returns the Y coordinate of the start point in double precision.:::
 CubicCurve2D#getP1():::Returns the start point.:::
@@ -145,6 +216,24 @@ CubicCurve2D#subdivide(CubicCurve2D, CubicCurve2D, CubicCurve2D):::Subdivides th
 CubicCurve2D#subdivide(double[], int, double[], int, double[], int):::Subdivides the cubic curve specified by the coordinates stored in the src array at indices srcoff through (srcoff&nbsp;+&nbsp;7) and stores the resulting two subdivided curves into the two result arrays at the corresponding indices:::x1->y1->ctrlx1->ctrly1->ctrlx2->ctrly2->x2->y2->if->if->centerx->centery->if->if
 CubicCurve2D#solveCubic(double[]):::Solves the cubic whose coefficients are in the eqn array and places the non-complex roots back into the same array, returning the number of roots:::return->solveCubic
 CubicCurve2D#solveCubic(double[], double[]):::Solve the cubic whose coefficients are in the eqn array and place the non-complex roots into the res array, returning the number of roots:::d->if->return->QuadCurve2D->solveQuadratic->A->B->C->sq_A->p->q->cb_p->D->sub->num->if->phi->Math->Math->sqrt->acos->t->Math->sqrt->if->Arrays->copyOf->Math->cos->Math->cos->Math->cos->for->i->else->sqrt_D->Math->sqrt->u->Math->cbrt->v->Math->cbrt->uv->err->abs->abs->ulp->if->iszero->within->if->Arrays->copyOf->if->fixRoots->if->if->return
+CubicCurve2D#fixRoots(double[], double[], int)::: cubic curve2 d fix roots:::intervals->critCount->QuadCurve2D->solveQuadratic->if->if->tmp->if->xe->getRootUpperBound->x0->Arrays->sort->if->refineRootWithHint->refineRootWithHint->refineRootWithHint->return->else->if->fxe->fx0->x1->fx1->solveEqn->if->oppositeSigns->bisectRootWithHint->else->if->oppositeSigns->bisectRootWithHint->else->else->if->bisectRootWithHint->else->if->goodRoot->badRoot->x1->x2->x->abs->abs->fx->solveEqn->if->ulp->iszero->badRootVal->solveEqn->abs->abs->return->return
+CubicCurve2D#refineRootWithHint(double[], double, double, double)::: cubic curve2 d refine root with hint:::if->inInterval->return->deriv->origt->for->i->if->ulp->within->inInterval->return->return
+CubicCurve2D#bisectRootWithHint(double[], double, double, double)::: cubic curve2 d bisect root with hint:::delta1->Math->abs->min->delta2->Math->abs->min->x02->xe2->fx02->solveEqn->fxe2->solveEqn->while->oppositeSigns->if->return->solveEqn->solveEqn->if->return->if->return->return->bisectRoot
+CubicCurve2D#bisectRoot(double[], double, double)::: cubic curve2 d bisect root:::fx0->solveEqn->m->while->fm->solveEqn->if->return->if->oppositeSigns->else->return
+CubicCurve2D#inInterval(double, double, double)::: cubic curve2 d in interval:::return
+CubicCurve2D#within(double, double, double)::: cubic curve2 d within:::d->return
+CubicCurve2D#iszero(double, double)::: cubic curve2 d iszero:::return->within
+CubicCurve2D#oppositeSigns(double, double)::: cubic curve2 d opposite signs:::return
+CubicCurve2D#solveEqn(double[], int, double)::: cubic curve2 d solve eqn:::v->while->return
+CubicCurve2D#getRootUpperBound(double[])::: cubic curve2 d get root upper bound:::d->a->b->c->M->abs->abs->max->abs->max->abs->ulp->return
+CubicCurve2D#contains(double, double)::: cubic curve2 d contains:::if->return->x1->getX1->y1->getY1->x2->getX2->y2->getY2->crossings->Curve->pointCrossingsForLine->Curve->getCtrlX1->getCtrlY1->getCtrlX2->getCtrlY2->pointCrossingsForCubic->return
+CubicCurve2D#contains(Point2D)::: cubic curve2 d contains:::return->p->getX->p->getY->contains
+CubicCurve2D#intersects(double, double, double, double)::: cubic curve2 d intersects:::if->return->numCrossings->rectCrossings->return
+CubicCurve2D#intersects(Rectangle2D)::: cubic curve2 d intersects:::return->r->getX->r->getY->r->getWidth->r->getHeight->intersects
+CubicCurve2D#contains(double, double, double, double)::: cubic curve2 d contains:::if->return->numCrossings->rectCrossings->return
+CubicCurve2D#rectCrossings(double, double, double, double)::: cubic curve2 d rect crossings:::crossings->if->getX1->getX2->getY1->getY2->Curve->getX1->getY1->getX2->getY2->rectCrossingsForLine->if->return->return->Curve->getX2->getY2->getCtrlX2->getCtrlY2->getCtrlX1->getCtrlY1->getX1->getY1->rectCrossingsForCubic
+CubicCurve2D#contains(Rectangle2D)::: cubic curve2 d contains:::return->r->getX->r->getY->r->getWidth->r->getHeight->contains
+CubicCurve2D#getBounds()::: cubic curve2 d get bounds:::return->getBounds2D->getBounds
 CubicCurve2D#getPathIterator(AffineTransform):::Returns an iteration object that defines the boundary of the shape:::return->new->CubicIterator
 CubicCurve2D#getPathIterator(AffineTransform, double):::Return an iteration object that defines the boundary of the flattened shape:::return->getPathIterator->new->FlatteningPathIterator
 CubicCurve2D#clone():::Creates a new object of the same class as this object.:::try->return->super->clone->catch->throw->new->InternalError->finally
@@ -158,7 +247,24 @@ Dimension2D#getHeight():::Returns the height of this Dimension in double precisi
 Dimension2D#setSize(double, double):::Sets the size of this Dimension object to the specified width and height:::
 Dimension2D#setSize(Dimension2D):::Sets the size of this Dimension2D object to match the specified size:::d->getWidth->d->getHeight->setSize
 Dimension2D#clone():::Creates a new object of the same class as this object.:::try->return->super->clone->catch->throw->new->InternalError->finally
+Ellipse2D.Float#getX()::: float get x:::return
+Ellipse2D.Float#getY()::: float get y:::return
+Ellipse2D.Float#getWidth()::: float get width:::return
+Ellipse2D.Float#getHeight()::: float get height:::return
+Ellipse2D.Float#isEmpty()::: float is empty:::return
 Ellipse2D.Float#setFrame(float, float, float, float):::Sets the location and size of the framing rectangle of this Shape to the specified rectangular values.:::
+Ellipse2D.Float#setFrame(double, double, double, double)::: float set frame:::
+Ellipse2D.Float#getBounds2D()::: float get bounds2 d:::return->new->Rectangle2D.Float
+Ellipse2D.Double#getX()::: double get x:::return
+Ellipse2D.Double#getY()::: double get y:::return
+Ellipse2D.Double#getWidth()::: double get width:::return
+Ellipse2D.Double#getHeight()::: double get height:::return
+Ellipse2D.Double#isEmpty()::: double is empty:::return
+Ellipse2D.Double#setFrame(double, double, double, double)::: double set frame:::
+Ellipse2D.Double#getBounds2D()::: double get bounds2 d:::return->new->Rectangle2D.Double
+Ellipse2D#contains(double, double)::: ellipse2 d contains:::ellw->getWidth->if->return->normx->getX->ellh->getHeight->if->return->normy->getY->return
+Ellipse2D#intersects(double, double, double, double)::: ellipse2 d intersects:::if->return->ellw->getWidth->if->return->normx0->getX->normx1->ellh->getHeight->if->return->normy0->getY->normy1->nearx->neary->if->else->if->else->if->else->if->else->return
+Ellipse2D#contains(double, double, double, double)::: ellipse2 d contains:::return->contains->contains->contains->contains
 Ellipse2D#getPathIterator(AffineTransform):::Returns an iteration object that defines the boundary of this Ellipse2D:::return->new->EllipseIterator
 Ellipse2D#hashCode():::Returns the hashcode for this Ellipse2D.:::bits->getX->doubleToLongBits->getY->doubleToLongBits->getWidth->doubleToLongBits->getHeight->doubleToLongBits->return
 Ellipse2D#equals(Object):::Determines whether or not the specified Object is equal to this Ellipse2D:::if->return->if->e2d->return->getX->e2d->getX->getY->e2d->getY->getWidth->e2d->getWidth->getHeight->e2d->getHeight->return
@@ -171,10 +277,28 @@ FlatteningPathIterator#getFlatness():::Returns the flatness of this iterator.:::
 FlatteningPathIterator#getRecursionLimit():::Returns the recursion limit of this iterator.:::return
 FlatteningPathIterator#getWindingRule():::Returns the winding rule for determining the interior of the path.:::return->src->getWindingRule
 FlatteningPathIterator#isDone():::Tests if the iteration is complete.:::return
+FlatteningPathIterator#ensureHoldCapacity(int)::: flattening path iterator ensure hold capacity:::if->have->newsize->newhold->new->doubleArr->System->arraycopy
 FlatteningPathIterator#next():::Moves the iterator to the next segment of the path forwards along the primary direction of traversal as long as there are more points in that direction.:::next
+FlatteningPathIterator#next(boolean)::: flattening path iterator next:::level->if->if->src->next->if->src->isDone->return->src->currentSegment->switch->if->break->break->if->while->if->QuadCurve2D->getFlatnessSq->break->ensureHoldCapacity->QuadCurve2D->subdivide->break->if->while->if->CubicCurve2D->getFlatnessSq->break->ensureHoldCapacity->CubicCurve2D->subdivide->break
 FlatteningPathIterator#currentSegment(float[]):::Returns the coordinates and type of the current path segment in the iteration:::if->isDone->throw->new->NoSuchElementException->type->if->if->return
 FlatteningPathIterator#currentSegment(double[]):::Returns the coordinates and type of the current path segment in the iteration:::if->isDone->throw->new->NoSuchElementException->type->if->if->return
+Line2D.Float#getX1()::: float get x1:::return
+Line2D.Float#getY1()::: float get y1:::return
+Line2D.Float#getP1()::: float get p1:::return->new->Point2D.Float
+Line2D.Float#getX2()::: float get x2:::return
+Line2D.Float#getY2()::: float get y2:::return
+Line2D.Float#getP2()::: float get p2:::return->new->Point2D.Float
+Line2D.Float#setLine(double, double, double, double)::: float set line:::
 Line2D.Float#setLine(float, float, float, float):::Sets the location of the end points of this Line2D to the specified float coordinates.:::
+Line2D.Float#getBounds2D()::: float get bounds2 d:::x->y->w->h->if->else->if->else->return->new->Rectangle2D.Float
+Line2D.Double#getX1()::: double get x1:::return
+Line2D.Double#getY1()::: double get y1:::return
+Line2D.Double#getP1()::: double get p1:::return->new->Point2D.Double
+Line2D.Double#getX2()::: double get x2:::return
+Line2D.Double#getY2()::: double get y2:::return
+Line2D.Double#getP2()::: double get p2:::return->new->Point2D.Double
+Line2D.Double#setLine(double, double, double, double)::: double set line:::
+Line2D.Double#getBounds2D()::: double get bounds2 d:::x->y->w->h->if->else->if->else->return->new->Rectangle2D.Double
 Line2D#getX1():::Returns the X coordinate of the start point in double precision.:::
 Line2D#getY1():::Returns the Y coordinate of the start point in double precision.:::
 Line2D#getP1():::Returns the start Point2D of this Line2D.:::
@@ -204,8 +328,11 @@ Line2D#ptLineDist(double, double):::Returns the distance from a point to this li
 Line2D#ptLineDist(Point2D):::Returns the distance from a Point2D to this line:::return->getX1->getY1->getX2->getY2->pt->getX->pt->getY->ptLineDist
 Line2D#contains(double, double):::Tests if a specified coordinate is inside the boundary of this Line2D:::return
 Line2D#contains(Point2D):::Tests if a given Point2D is inside the boundary of this Line2D:::return
+Line2D#intersects(double, double, double, double)::: line2 d intersects:::return->new->Rectangle2D.Double->intersects
+Line2D#intersects(Rectangle2D)::: line2 d intersects:::return->r->getX1->getY1->getX2->getY2->intersectsLine
 Line2D#contains(double, double, double, double):::Tests if the interior of this Line2D entirely contains the specified set of rectangular coordinates:::return
 Line2D#contains(Rectangle2D):::Tests if the interior of this Line2D entirely contains the specified Rectangle2D:::return
+Line2D#getBounds()::: line2 d get bounds:::return->getBounds2D->getBounds
 Line2D#getPathIterator(AffineTransform):::Returns an iteration object that defines the boundary of this Line2D:::return->new->LineIterator
 Line2D#getPathIterator(AffineTransform, double):::Returns an iteration object that defines the boundary of this flattened Line2D:::return->new->LineIterator
 Line2D#clone():::Creates a new object of the same class as this object.:::try->return->super->clone->catch->throw->new->InternalError->finally
@@ -214,14 +341,69 @@ LineIterator#isDone():::Tests if there are more points to read.:::return
 LineIterator#next():::Moves the iterator to the next segment of the path forwards along the primary direction of traversal as long as there are more points in that direction.:::
 LineIterator#currentSegment(float[]):::Returns the coordinates and type of the current path segment in the iteration:::if->isDone->throw->new->NoSuchElementException->type->if->line->getX1->line->getY1->else->line->getX2->line->getY2->if->affine->transform->return
 LineIterator#currentSegment(double[]):::Returns the coordinates and type of the current path segment in the iteration:::if->isDone->throw->new->NoSuchElementException->type->if->line->getX1->line->getY1->else->line->getX2->line->getY2->if->affine->transform->return
+Path2D#cloneCoordsFloat(AffineTransform)::: path2 d clone coords float:::
+Path2D#cloneCoordsDouble(AffineTransform)::: path2 d clone coords double:::
+Path2D#append(float, float)::: path2 d append:::
+Path2D#append(double, double)::: path2 d append:::
+Path2D#getPoint(int)::: path2 d get point:::
+Path2D#needRoom(boolean, int)::: path2 d need room:::
+Path2D#pointCrossings(double, double)::: path2 d point crossings:::
+Path2D#rectCrossings(double, double, double, double)::: path2 d rect crossings:::
+Path2D#expandPointTypes(byte[], int)::: path2 d expand point types:::oldSize->newSizeMin->if->throw->new->ArrayIndexOutOfBoundsException->grow->if->Math->max->else->if->newSize->if->while->try->return->Arrays->copyOf->catch->if->throw->finally
+Path2D.Float#trimToSize()::: float trim to size:::if->Arrays->copyOf->if->Arrays->copyOf
+Path2D.Float#cloneCoordsFloat(AffineTransform)::: float clone coords float:::ret->if->Arrays->copyOf->else->new->floatArr->at->transform->return
+Path2D.Float#cloneCoordsDouble(AffineTransform)::: float clone coords double:::ret->new->doubleArr->if->for->i->else->at->transform->return
+Path2D.Float#append(float, float)::: float append:::
+Path2D.Float#append(double, double)::: float append:::
+Path2D.Float#getPoint(int)::: float get point:::return->new->Point2D.Float
+Path2D.Float#needRoom(boolean, int)::: float need room:::if->throw->new->IllegalPathStateException->if->expandPointTypes->if->expandCoords
+Path2D.Float#expandCoords(float[], int)::: float expand coords:::oldSize->newSizeMin->if->throw->new->ArrayIndexOutOfBoundsException->grow->if->Math->max->else->if->newSize->if->while->try->return->Arrays->copyOf->catch->if->throw->finally
+Path2D.Float#moveTo(double, double)::: float move to:::if->else->needRoom
 Path2D.Float#moveTo(float, float):::Adds a point to the path by moving to the specified coordinates specified in float precision:::if->else->needRoom
+Path2D.Float#lineTo(double, double)::: float line to:::needRoom
 Path2D.Float#lineTo(float, float):::Adds a point to the path by drawing a straight line from the current coordinates to the new specified coordinates specified in float precision:::needRoom
+Path2D.Float#quadTo(double, double, double, double)::: float quad to:::needRoom
 Path2D.Float#quadTo(float, float, float, float):::Adds a curved segment, defined by two new points, to the path by drawing a Quadratic curve that intersects both the current coordinates and the specified coordinates (x2,y2), using the specified point (x1,y1) as a quadratic parametric control point:::needRoom
+Path2D.Float#curveTo(double, double, double, double, double, double)::: float curve to:::needRoom
 Path2D.Float#curveTo(float, float, float, float, float, float):::Adds a curved segment, defined by three new points, to the path by drawing a B&eacute;zier curve that intersects both the current coordinates and the specified coordinates (x3,y3), using the specified points (x1,y1) and (x2,y2) as B&eacute;zier control points:::needRoom
+Path2D.Float#pointCrossings(double, double)::: float point crossings:::if->return->movx->movy->curx->cury->endx->endy->coords->crossings->ci->for->i->if->Curve->pointCrossingsForLine->return
+Path2D.Float#rectCrossings(double, double, double, double)::: float rect crossings:::if->return->coords->curx->cury->movx->movy->endx->endy->crossings->ci->for->i->if->Curve->rectCrossingsForLine->return
+Path2D.Float#append(PathIterator, boolean)::: float append:::coords->new->floatArr->while->pi->isDone->switch->pi->currentSegment->if->moveTo->break->if->break->lineTo->break->lineTo->break->quadTo->break->curveTo->break->closePath->break->pi->next
+Path2D.Float#transform(AffineTransform)::: float transform:::at->transform
+Path2D.Float#getBounds2D()::: float get bounds2 d:::x1->y1->x2->y2->i->if->while->y->x->if->if->if->if->else->return->new->Rectangle2D.Float
 Path2D.Float#getPathIterator(AffineTransform):::The iterator for this class is not multi-threaded safe, which means that the {@code Path2D class does not guarantee that modifications to the geometry of this Path2D object do not affect any iterations of that geometry that are already in process.:::if->return->new->CopyIterator->else->return->new->TxIterator
 Path2D.Float#clone():::Creates a new object of the same class as this object.:::if->return->new->GeneralPath->else->return->new->Path2D.Float
+Path2D.Float#writeObject(java.io.ObjectOutputStream):::Writes the default serializable fields to the ObjectOutputStream followed by an explicit serialization of the path segments stored in this path.:::super->writeObject
+Path2D.Float#readObject(java.io.ObjectInputStream):::Reads the default serializable fields from the ObjectInputStream followed by an explicit serialization of the path segments stored in this path:::super->readObject
+Path2D.Float.CopyIterator#currentSegment(float[])::: copy iterator current segment:::type->numCoords->if->System->arraycopy->return
+Path2D.Float.CopyIterator#currentSegment(double[])::: copy iterator current segment:::type->numCoords->if->for->i->return
+Path2D.Float.TxIterator#currentSegment(float[])::: tx iterator current segment:::type->numCoords->if->affine->transform->return
+Path2D.Float.TxIterator#currentSegment(double[])::: tx iterator current segment:::type->numCoords->if->affine->transform->return
+Path2D.Double#trimToSize()::: double trim to size:::if->Arrays->copyOf->if->Arrays->copyOf
+Path2D.Double#cloneCoordsFloat(AffineTransform)::: double clone coords float:::ret->new->floatArr->if->for->i->else->at->transform->return
+Path2D.Double#cloneCoordsDouble(AffineTransform)::: double clone coords double:::ret->if->Arrays->copyOf->else->new->doubleArr->at->transform->return
+Path2D.Double#append(float, float)::: double append:::
+Path2D.Double#append(double, double)::: double append:::
+Path2D.Double#getPoint(int)::: double get point:::return->new->Point2D.Double
+Path2D.Double#needRoom(boolean, int)::: double need room:::if->throw->new->IllegalPathStateException->if->expandPointTypes->if->expandCoords
+Path2D.Double#expandCoords(double[], int)::: double expand coords:::oldSize->newSizeMin->if->throw->new->ArrayIndexOutOfBoundsException->grow->if->Math->max->else->if->newSize->if->while->try->return->Arrays->copyOf->catch->if->throw->finally
+Path2D.Double#moveTo(double, double)::: double move to:::if->else->needRoom
+Path2D.Double#lineTo(double, double)::: double line to:::needRoom
+Path2D.Double#quadTo(double, double, double, double)::: double quad to:::needRoom
+Path2D.Double#curveTo(double, double, double, double, double, double)::: double curve to:::needRoom
+Path2D.Double#pointCrossings(double, double)::: double point crossings:::if->return->movx->movy->curx->cury->endx->endy->coords->crossings->ci->for->i->if->Curve->pointCrossingsForLine->return
+Path2D.Double#rectCrossings(double, double, double, double)::: double rect crossings:::if->return->coords->curx->cury->movx->movy->endx->endy->crossings->ci->for->i->if->Curve->rectCrossingsForLine->return
+Path2D.Double#append(PathIterator, boolean)::: double append:::coords->new->doubleArr->while->pi->isDone->switch->pi->currentSegment->if->moveTo->break->if->break->lineTo->break->lineTo->break->quadTo->break->curveTo->break->closePath->break->pi->next
+Path2D.Double#transform(AffineTransform)::: double transform:::at->transform
+Path2D.Double#getBounds2D()::: double get bounds2 d:::x1->y1->x2->y2->i->if->while->y->x->if->if->if->if->else->return->new->Rectangle2D.Double
 Path2D.Double#getPathIterator(AffineTransform):::The iterator for this class is not multi-threaded safe, which means that the {@code Path2D class does not guarantee that modifications to the geometry of this Path2D object do not affect any iterations of that geometry that are already in process.:::if->return->new->CopyIterator->else->return->new->TxIterator
 Path2D.Double#clone():::Creates a new object of the same class as this object.:::return->new->Path2D.Double
+Path2D.Double#writeObject(java.io.ObjectOutputStream):::Writes the default serializable fields to the ObjectOutputStream followed by an explicit serialization of the path segments stored in this path.:::super->writeObject
+Path2D.Double#readObject(java.io.ObjectInputStream):::Reads the default serializable fields from the ObjectInputStream followed by an explicit serialization of the path segments stored in this path:::super->readObject
+Path2D.Double.CopyIterator#currentSegment(float[])::: copy iterator current segment:::type->numCoords->if->for->i->return
+Path2D.Double.CopyIterator#currentSegment(double[])::: copy iterator current segment:::type->numCoords->if->System->arraycopy->return
+Path2D.Double.TxIterator#currentSegment(float[])::: tx iterator current segment:::type->numCoords->if->affine->transform->return
+Path2D.Double.TxIterator#currentSegment(double[])::: tx iterator current segment:::type->numCoords->if->affine->transform->return
 Path2D#moveTo(double, double):::Adds a point to the path by moving to the specified coordinates specified in double precision.:::
 Path2D#lineTo(double, double):::Adds a point to the path by drawing a straight line from the current coordinates to the new specified coordinates specified in double precision.:::
 Path2D#quadTo(double, double, double, double):::Adds a curved segment, defined by two new points, to the path by drawing a Quadratic curve that intersects both the current coordinates and the specified coordinates (x2,y2), using the specified point (x1,y1) as a quadratic parametric control point:::
@@ -235,8 +417,11 @@ Path2D#getCurrentPoint():::Returns the coordinates most recently added to the en
 Path2D#reset():::Resets the path to empty:::
 Path2D#transform(AffineTransform):::Transforms the geometry of this path using the specified AffineTransform:::
 Path2D#createTransformedShape(AffineTransform):::Returns a new Shape representing a transformed version of this Path2D:::p2d->clone->if->p2d->transform->return
+Path2D#getBounds()::: path2 d get bounds:::return->getBounds2D->getBounds
 Path2D#contains(PathIterator, double, double):::Tests if the specified coordinates are inside the closed boundary of the specified PathIterator:::if->mask->pi->getWindingRule->cross->Curve->pointCrossingsForPath->return->else->return
 Path2D#contains(PathIterator, Point2D):::Tests if the specified Point2D is inside the closed boundary of the specified PathIterator:::return->p->getX->p->getY->contains
+Path2D#contains(double, double)::: path2 d contains:::if->if->return->mask->return->pointCrossings->else->return
+Path2D#contains(Point2D)::: path2 d contains:::return->p->getX->p->getY->contains
 Path2D#contains(PathIterator, double, double, double, double):::Tests if the specified rectangular area is entirely inside the closed boundary of the specified PathIterator:::if->isNaN->isNaN->return->if->return->mask->pi->getWindingRule->crossings->Curve->rectCrossingsForPath->return
 Path2D#contains(PathIterator, Rectangle2D):::Tests if the specified Rectangle2D is entirely inside the closed boundary of the specified PathIterator:::return->r->getX->r->getY->r->getWidth->r->getHeight->contains
 Path2D#contains(double, double, double, double):::  This method object may conservatively return false in cases where the specified rectangular area intersects a segment of the path, but that segment does not represent a boundary between the interior and exterior of the path:::if->isNaN->isNaN->return->if->return->mask->crossings->rectCrossings->return
@@ -248,13 +433,24 @@ Path2D#intersects(Rectangle2D):::  This method object may conservatively return 
 Path2D#getPathIterator(AffineTransform, double):::The iterator for this class is not multi-threaded safe, which means that this {@code Path2D class does not guarantee that modifications to the geometry of this Path2D object do not affect any iterations of that geometry that are already in process.:::return->getPathIterator->new->FlatteningPathIterator
 Path2D#clone():::Creates a new object of the same class as this object.:::
 Path2D#trimToSize():::Trims the capacity of this Path2D instance to its current size:::
+Path2D#writeObject(java.io.ObjectOutputStream, boolean)::: path2 d write object:::s->defaultWriteObject->fCoords->dCoords->if->else->numTypes->s->writeByte->s->writeInt->s->writeInt->s->writeByte->cindex->for->i->s->writeByte
+Path2D#readObject(java.io.ObjectInputStream, boolean)::: path2 d read object:::s->defaultReadObject->s->readByte->nT->s->readInt->nC->s->readInt->try->s->readByte->setWindingRule->catch->throw->iae->getMessage->new->java.io.InvalidObjectException->finally->new->byteArr->initX2->if->if->new->doubleArr->else->new->floatArr->for->i->if->s->readByte->throw->new->StreamCorruptedException
+Path2D.Iterator#getWindingRule()::: iterator get winding rule:::return->path->getWindingRule
+Path2D.Iterator#isDone()::: iterator is done:::return
+Path2D.Iterator#next()::: iterator next:::type
 PathIterator#getWindingRule():::Returns the winding rule for determining the interior of the path.:::
 PathIterator#isDone():::Tests if the iteration is complete.:::
 PathIterator#next():::Moves the iterator to the next segment of the path forwards along the primary direction of traversal as long as there are more points in that direction.:::
 PathIterator#currentSegment(float[]):::Returns the coordinates and type of the current path segment in the iteration:::
 PathIterator#currentSegment(double[]):::Returns the coordinates and type of the current path segment in the iteration:::
+Point2D.Float#getX()::: float get x:::return
+Point2D.Float#getY()::: float get y:::return
+Point2D.Float#setLocation(double, double)::: float set location:::
 Point2D.Float#setLocation(float, float):::Sets the location of this Point2D to the specified float coordinates.:::
 Point2D.Float#toString():::Returns a String that represents the value of this Point2D.:::return
+Point2D.Double#getX()::: double get x:::return
+Point2D.Double#getY()::: double get y:::return
+Point2D.Double#setLocation(double, double)::: double set location:::
 Point2D.Double#toString():::Returns a String that represents the value of this Point2D.:::return
 Point2D#getX():::Returns the X coordinate of this Point2D in double precision.:::
 Point2D#getY():::Returns the Y coordinate of this Point2D in double precision.:::
@@ -269,7 +465,29 @@ Point2D#distance(Point2D):::Returns the distance from this Point2D to a specifie
 Point2D#clone():::Creates a new object of the same class and with the same contents as this object.:::try->return->super->clone->catch->throw->new->InternalError->finally
 Point2D#hashCode():::Returns the hashcode for this Point2D.:::bits->getX->doubleToLongBits->getY->doubleToLongBits->return
 Point2D#equals(Object):::Determines whether or not two points are equal:::if->p2d->return->getX->p2d->getX->getY->p2d->getY->return->super->equals
+QuadCurve2D.Float#getX1()::: float get x1:::return
+QuadCurve2D.Float#getY1()::: float get y1:::return
+QuadCurve2D.Float#getP1()::: float get p1:::return->new->Point2D.Float
+QuadCurve2D.Float#getCtrlX()::: float get ctrl x:::return
+QuadCurve2D.Float#getCtrlY()::: float get ctrl y:::return
+QuadCurve2D.Float#getCtrlPt()::: float get ctrl pt:::return->new->Point2D.Float
+QuadCurve2D.Float#getX2()::: float get x2:::return
+QuadCurve2D.Float#getY2()::: float get y2:::return
+QuadCurve2D.Float#getP2()::: float get p2:::return->new->Point2D.Float
+QuadCurve2D.Float#setCurve(double, double, double, double, double, double)::: float set curve:::
 QuadCurve2D.Float#setCurve(float, float, float, float, float, float):::Sets the location of the end points and control point of this curve to the specified float coordinates.:::
+QuadCurve2D.Float#getBounds2D()::: float get bounds2 d:::left->Math->Math->min->min->top->Math->Math->min->min->right->Math->Math->max->max->bottom->Math->Math->max->max->return->new->Rectangle2D.Float
+QuadCurve2D.Double#getX1()::: double get x1:::return
+QuadCurve2D.Double#getY1()::: double get y1:::return
+QuadCurve2D.Double#getP1()::: double get p1:::return->new->Point2D.Double
+QuadCurve2D.Double#getCtrlX()::: double get ctrl x:::return
+QuadCurve2D.Double#getCtrlY()::: double get ctrl y:::return
+QuadCurve2D.Double#getCtrlPt()::: double get ctrl pt:::return->new->Point2D.Double
+QuadCurve2D.Double#getX2()::: double get x2:::return
+QuadCurve2D.Double#getY2()::: double get y2:::return
+QuadCurve2D.Double#getP2()::: double get p2:::return->new->Point2D.Double
+QuadCurve2D.Double#setCurve(double, double, double, double, double, double)::: double set curve:::
+QuadCurve2D.Double#getBounds2D()::: double get bounds2 d:::left->Math->Math->min->min->top->Math->Math->min->min->right->Math->Math->max->max->bottom->Math->Math->max->max->return->new->Rectangle2D.Double
 QuadCurve2D#getX1():::Returns the X coordinate of the start point in double in precision.:::
 QuadCurve2D#getY1():::Returns the Y coordinate of the start point in double precision.:::
 QuadCurve2D#getP1():::Returns the start point.:::
@@ -295,6 +513,17 @@ QuadCurve2D#subdivide(QuadCurve2D, QuadCurve2D, QuadCurve2D):::Subdivides the qu
 QuadCurve2D#subdivide(double[], int, double[], int, double[], int):::Subdivides the quadratic curve specified by the coordinates stored in the src array at indices srcoff through srcoff&nbsp;+&nbsp;5 and stores the resulting two subdivided curves into the two result arrays at the corresponding indices:::x1->y1->ctrlx->ctrly->x2->y2->if->if->if->if
 QuadCurve2D#solveQuadratic(double[]):::Solves the quadratic whose coefficients are in the eqn array and places the non-complex roots back into the same array, returning the number of roots:::return->solveQuadratic
 QuadCurve2D#solveQuadratic(double[], double[]):::Solves the quadratic whose coefficients are in the eqn array and places the non-complex roots into the res array, returning the number of roots:::a->b->c->roots->if->if->return->else->d->if->return->Math->sqrt->if->q->if->return
+QuadCurve2D#contains(double, double)::: quad curve2 d contains:::x1->getX1->y1->getY1->xc->getCtrlX->yc->getCtrlY->x2->getX2->y2->getY2->kx->ky->dx->dy->dxl->dyl->t0->if->return->xb->yb->xl->yl->return
+QuadCurve2D#contains(Point2D)::: quad curve2 d contains:::return->p->getX->p->getY->contains
+QuadCurve2D#fillEqn(double[], double, double, double, double):::Fill an array with the coefficients of the parametric equation in t, ready for solving against val with solveQuadratic:::return
+QuadCurve2D#evalQuadratic(double[], int, boolean, boolean, double[], double, double, double):::Evaluate the t values in the first num slots of the vals[] array and place the evaluated values back into the same array:::j->for->i->return
+QuadCurve2D#getTag(double, double, double):::Determine where coord lies with respect to the range from low to high:::if->return->if->return->return
+QuadCurve2D#inwards(int, int, int):::Determine if the pttag represents a coordinate that is already in its test range, or is on the border with either of the two opttags representing another coordinate that is "towards the inside" of that test range:::switch->return->return->return->return
+QuadCurve2D#intersects(double, double, double, double)::: quad curve2 d intersects:::if->return->x1->getX1->y1->getY1->x1tag->getTag->y1tag->getTag->if->return->x2->getX2->y2->getY2->x2tag->getTag->y2tag->getTag->if->return->ctrlx->getCtrlX->ctrly->getCtrlY->ctrlxtag->getTag->ctrlytag->getTag->if->return->if->return->if->return->if->return->if->inwards->inwards->return->if->inwards->inwards->return->xoverlap->yoverlap->if->return->if->return->eqn->new->doubleArr->res->new->doubleArr->if->fillEqn->return->solveQuadratic->evalQuadratic->getTag->getTag->if->fillEqn->return->solveQuadratic->evalQuadratic->getTag->getTag->dx->dy->k->c1tag->c2tag->if->else->getTag->if->else->getTag->if->return->fillEqn->num->solveQuadratic->evalQuadratic->getTag->return
+QuadCurve2D#intersects(Rectangle2D)::: quad curve2 d intersects:::return->r->getX->r->getY->r->getWidth->r->getHeight->intersects
+QuadCurve2D#contains(double, double, double, double)::: quad curve2 d contains:::if->return->return->contains->contains->contains->contains
+QuadCurve2D#contains(Rectangle2D)::: quad curve2 d contains:::return->r->getX->r->getY->r->getWidth->r->getHeight->contains
+QuadCurve2D#getBounds()::: quad curve2 d get bounds:::return->getBounds2D->getBounds
 QuadCurve2D#getPathIterator(AffineTransform):::Returns an iteration object that defines the boundary of the shape of this QuadCurve2D:::return->new->QuadIterator
 QuadCurve2D#getPathIterator(AffineTransform, double):::Returns an iteration object that defines the boundary of the flattened shape of this QuadCurve2D:::return->getPathIterator->new->FlatteningPathIterator
 QuadCurve2D#clone():::Creates a new object of the same class and with the same contents as this object.:::try->return->super->clone->catch->throw->new->InternalError->finally
@@ -303,8 +532,30 @@ QuadIterator#isDone():::Tests if there are more points to read.:::return
 QuadIterator#next():::Moves the iterator to the next segment of the path forwards along the primary direction of traversal as long as there are more points in that direction.:::
 QuadIterator#currentSegment(float[]):::Returns the coordinates and type of the current path segment in the iteration:::if->isDone->throw->new->NoSuchElementException->type->if->quad->getX1->quad->getY1->else->quad->getCtrlX->quad->getCtrlY->quad->getX2->quad->getY2->if->affine->transform->return
 QuadIterator#currentSegment(double[]):::Returns the coordinates and type of the current path segment in the iteration:::if->isDone->throw->new->NoSuchElementException->type->if->quad->getX1->quad->getY1->else->quad->getCtrlX->quad->getCtrlY->quad->getX2->quad->getY2->if->affine->transform->return
+Rectangle2D.Float#getX()::: float get x:::return
+Rectangle2D.Float#getY()::: float get y:::return
+Rectangle2D.Float#getWidth()::: float get width:::return
+Rectangle2D.Float#getHeight()::: float get height:::return
+Rectangle2D.Float#isEmpty()::: float is empty:::return
 Rectangle2D.Float#setRect(float, float, float, float):::Sets the location and size of this Rectangle2D to the specified float values.:::
+Rectangle2D.Float#setRect(double, double, double, double)::: float set rect:::
+Rectangle2D.Float#setRect(Rectangle2D)::: float set rect:::r->getX->r->getY->r->getWidth->r->getHeight
+Rectangle2D.Float#outcode(double, double)::: float outcode:::out->if->else->if->else->if->if->else->if->else->if->return
+Rectangle2D.Float#getBounds2D()::: float get bounds2 d:::return->new->Float
+Rectangle2D.Float#createIntersection(Rectangle2D)::: float create intersection:::dest->if->new->Rectangle2D.Float->else->new->Rectangle2D.Double->Rectangle2D->intersect->return
+Rectangle2D.Float#createUnion(Rectangle2D)::: float create union:::dest->if->new->Rectangle2D.Float->else->new->Rectangle2D.Double->Rectangle2D->union->return
 Rectangle2D.Float#toString():::Returns the String representation of this Rectangle2D.:::return->getClass->getName
+Rectangle2D.Double#getX()::: double get x:::return
+Rectangle2D.Double#getY()::: double get y:::return
+Rectangle2D.Double#getWidth()::: double get width:::return
+Rectangle2D.Double#getHeight()::: double get height:::return
+Rectangle2D.Double#isEmpty()::: double is empty:::return
+Rectangle2D.Double#setRect(double, double, double, double)::: double set rect:::
+Rectangle2D.Double#setRect(Rectangle2D)::: double set rect:::r->getX->r->getY->r->getWidth->r->getHeight
+Rectangle2D.Double#outcode(double, double)::: double outcode:::out->if->else->if->else->if->if->else->if->else->if->return
+Rectangle2D.Double#getBounds2D()::: double get bounds2 d:::return->new->Double
+Rectangle2D.Double#createIntersection(Rectangle2D)::: double create intersection:::dest->new->Rectangle2D.Double->Rectangle2D->intersect->return
+Rectangle2D.Double#createUnion(Rectangle2D)::: double create union:::dest->new->Rectangle2D.Double->Rectangle2D->union->return
 Rectangle2D.Double#toString():::Returns the String representation of this Rectangle2D.:::return->getClass->getName
 Rectangle2D#setRect(double, double, double, double):::Sets the location and size of this Rectangle2D to the specified double values.:::
 Rectangle2D#setRect(Rectangle2D):::Sets this Rectangle2D to be the same as the specified Rectangle2D.:::r->getX->r->getY->r->getWidth->r->getHeight->setRect
@@ -313,6 +564,10 @@ Rectangle2D#intersectsLine(Line2D):::Tests if the specified line segment interse
 Rectangle2D#outcode(double, double):::Determines where the specified coordinates lie with respect to this Rectangle2D:::
 Rectangle2D#outcode(Point2D):::Determines where the specified Point2D lies with respect to this Rectangle2D:::return->p->getX->p->getY->outcode
 Rectangle2D#setFrame(double, double, double, double):::Sets the location and size of the outer bounds of this Rectangle2D to the specified rectangular values.:::setRect
+Rectangle2D#getBounds2D()::: rectangle2 d get bounds2 d:::return->clone
+Rectangle2D#contains(double, double)::: rectangle2 d contains:::x0->getX->y0->getY->return->getWidth->getHeight
+Rectangle2D#intersects(double, double, double, double)::: rectangle2 d intersects:::if->isEmpty->return->x0->getX->y0->getY->return->getWidth->getHeight
+Rectangle2D#contains(double, double, double, double)::: rectangle2 d contains:::if->isEmpty->return->x0->getX->y0->getY->return->getWidth->getHeight
 Rectangle2D#createIntersection(Rectangle2D):::Returns a new Rectangle2D object representing the intersection of this Rectangle2D with the specified Rectangle2D.:::
 Rectangle2D#intersect(Rectangle2D, Rectangle2D, Rectangle2D):::Intersects the pair of specified source Rectangle2D objects and puts the result into the specified destination Rectangle2D object:::x1->Math->src1->getMinX->src2->getMinX->max->y1->Math->src1->getMinY->src2->getMinY->max->x2->Math->src1->getMaxX->src2->getMaxX->min->y2->Math->src1->getMaxY->src2->getMaxY->min->dest->setFrame
 Rectangle2D#createUnion(Rectangle2D):::Returns a new Rectangle2D object representing the union of this Rectangle2D with the specified Rectangle2D.:::
@@ -343,6 +598,10 @@ RectangularShape#setFrameFromDiagonal(double, double, double, double):::Sets the
 RectangularShape#setFrameFromDiagonal(Point2D, Point2D):::Sets the diagonal of the framing rectangle of this Shape based on two specified Point2D objects:::p1->getX->p1->getY->p2->getX->p2->getY->setFrameFromDiagonal
 RectangularShape#setFrameFromCenter(double, double, double, double):::Sets the framing rectangle of this Shape based on the specified center point coordinates and corner point coordinates:::halfW->Math->abs->halfH->Math->abs->setFrame
 RectangularShape#setFrameFromCenter(Point2D, Point2D):::Sets the framing rectangle of this Shape based on a specified center Point2D and corner Point2D:::center->getX->center->getY->corner->getX->corner->getY->setFrameFromCenter
+RectangularShape#contains(Point2D)::: rectangular shape contains:::return->p->getX->p->getY->contains
+RectangularShape#intersects(Rectangle2D)::: rectangular shape intersects:::return->r->getX->r->getY->r->getWidth->r->getHeight->intersects
+RectangularShape#contains(Rectangle2D)::: rectangular shape contains:::return->r->getX->r->getY->r->getWidth->r->getHeight->contains
+RectangularShape#getBounds()::: rectangular shape get bounds:::width->getWidth->height->getHeight->if->return->new->Rectangle->x->getX->y->getY->x1->Math->floor->y1->Math->floor->x2->Math->ceil->y2->Math->ceil->return->new->Rectangle
 RectangularShape#getPathIterator(AffineTransform, double):::Returns an iterator object that iterates along the Shape object's boundary and provides access to a flattened view of the outline of the Shape object's geometry:::return->getPathIterator->new->FlatteningPathIterator
 RectangularShape#clone():::Creates a new object of the same class and with the same contents as this object.:::try->return->super->clone->catch->throw->new->InternalError->finally
 RectIterator#getWindingRule():::Return the winding rule for determining the insideness of the path.:::return
@@ -350,11 +609,36 @@ RectIterator#isDone():::Tests if there are more points to read.:::return
 RectIterator#next():::Moves the iterator to the next segment of the path forwards along the primary direction of traversal as long as there are more points in that direction.:::
 RectIterator#currentSegment(float[]):::Returns the coordinates and type of the current path segment in the iteration:::if->isDone->throw->new->NoSuchElementException->if->return->if->if->if->affine->transform->return
 RectIterator#currentSegment(double[]):::Returns the coordinates and type of the current path segment in the iteration:::if->isDone->throw->new->NoSuchElementException->if->return->if->if->if->affine->transform->return
+RoundRectangle2D.Float#getX()::: float get x:::return
+RoundRectangle2D.Float#getY()::: float get y:::return
+RoundRectangle2D.Float#getWidth()::: float get width:::return
+RoundRectangle2D.Float#getHeight()::: float get height:::return
+RoundRectangle2D.Float#getArcWidth()::: float get arc width:::return
+RoundRectangle2D.Float#getArcHeight()::: float get arc height:::return
+RoundRectangle2D.Float#isEmpty()::: float is empty:::return
 RoundRectangle2D.Float#setRoundRect(float, float, float, float, float, float):::Sets the location, size, and corner radii of this RoundRectangle2D to the specified float values.:::
+RoundRectangle2D.Float#setRoundRect(double, double, double, double, double, double)::: float set round rect:::
+RoundRectangle2D.Float#setRoundRect(RoundRectangle2D)::: float set round rect:::rr->getX->rr->getY->rr->getWidth->rr->getHeight->rr->getArcWidth->rr->getArcHeight
+RoundRectangle2D.Float#getBounds2D()::: float get bounds2 d:::return->new->Rectangle2D.Float
+RoundRectangle2D.Double#getX()::: double get x:::return
+RoundRectangle2D.Double#getY()::: double get y:::return
+RoundRectangle2D.Double#getWidth()::: double get width:::return
+RoundRectangle2D.Double#getHeight()::: double get height:::return
+RoundRectangle2D.Double#getArcWidth()::: double get arc width:::return
+RoundRectangle2D.Double#getArcHeight()::: double get arc height:::return
+RoundRectangle2D.Double#isEmpty()::: double is empty:::return
+RoundRectangle2D.Double#setRoundRect(double, double, double, double, double, double)::: double set round rect:::
+RoundRectangle2D.Double#setRoundRect(RoundRectangle2D)::: double set round rect:::rr->getX->rr->getY->rr->getWidth->rr->getHeight->rr->getArcWidth->rr->getArcHeight
+RoundRectangle2D.Double#getBounds2D()::: double get bounds2 d:::return->new->Rectangle2D.Double
 RoundRectangle2D#getArcWidth():::Gets the width of the arc that rounds off the corners.:::
 RoundRectangle2D#getArcHeight():::Gets the height of the arc that rounds off the corners.:::
 RoundRectangle2D#setRoundRect(double, double, double, double, double, double):::Sets the location, size, and corner radii of this RoundRectangle2D to the specified double values.:::
 RoundRectangle2D#setRoundRect(RoundRectangle2D):::Sets this RoundRectangle2D to be the same as the specified RoundRectangle2D.:::rr->getX->rr->getY->rr->getWidth->rr->getHeight->rr->getArcWidth->rr->getArcHeight->setRoundRect
+RoundRectangle2D#setFrame(double, double, double, double)::: round rectangle2 d set frame:::getArcWidth->getArcHeight->setRoundRect
+RoundRectangle2D#contains(double, double)::: round rectangle2 d contains:::if->isEmpty->return->rrx0->getX->rry0->getY->rrx1->getWidth->rry1->getHeight->if->return->aw->Math->getWidth->Math->getArcWidth->abs->min->ah->Math->getHeight->Math->getArcHeight->abs->min->if->return->if->return->return
+RoundRectangle2D#classify(double, double, double, double)::: round rectangle2 d classify:::if->return->else->if->return->else->if->return->else->if->return->else->return
+RoundRectangle2D#intersects(double, double, double, double)::: round rectangle2 d intersects:::if->isEmpty->return->rrx0->getX->rry0->getY->rrx1->getWidth->rry1->getHeight->if->return->aw->Math->getWidth->Math->getArcWidth->abs->min->ah->Math->getHeight->Math->getArcHeight->abs->min->x0class->classify->x1class->classify->y0class->classify->y1class->classify->if->return->if->return->return
+RoundRectangle2D#contains(double, double, double, double)::: round rectangle2 d contains:::if->isEmpty->return->return->contains->contains->contains->contains
 RoundRectangle2D#getPathIterator(AffineTransform):::Returns an iteration object that defines the boundary of this RoundRectangle2D:::return->new->RoundRectIterator
 RoundRectangle2D#hashCode():::Returns the hashcode for this RoundRectangle2D.:::bits->getX->doubleToLongBits->getY->doubleToLongBits->getWidth->doubleToLongBits->getHeight->doubleToLongBits->getArcWidth->doubleToLongBits->getArcHeight->doubleToLongBits->return
 RoundRectangle2D#equals(Object):::Determines whether or not the specified Object is equal to this RoundRectangle2D:::if->return->if->rr2d->return->getX->rr2d->getX->getY->rr2d->getY->getWidth->rr2d->getWidth->getHeight->rr2d->getHeight->getArcWidth->rr2d->getArcWidth->getArcHeight->rr2d->getArcHeight->return

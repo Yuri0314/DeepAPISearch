@@ -1,28 +1,42 @@
 ChunkedIntArray#appendSlot(int, int, int, int):::Append a 4-integer record to the CIA, starting with record 1:::slotsize->newoffset->chunkpos->slotpos->if->chunks->size->chunks->new->intArr->addElement->chunk->chunks->elementAt->return
 ChunkedIntArray#readEntry(int, int):::Retrieve an integer from the CIA by record number and column within the record, both 0-based (though position 0 is reserved for special purposes).:::if->throw->XMLMessages->createXMLMessage->new->ArrayIndexOutOfBoundsException->chunkpos->slotpos->chunk->chunks->elementAt->return
+ChunkedIntArray#specialFind(int, int)::: chunked int array special find:::ancestor->while->chunkpos->slotpos->chunk->chunks->elementAt->if->break->if->return->return
+ChunkedIntArray#slotsUsed()::: chunked int array slots used:::return
 ChunkedIntArray#discardLast():::Disard the highest-numbered record:::
 ChunkedIntArray#writeEntry(int, int, int):::Overwrite the integer found at a specific record and column:::if->throw->XMLMessages->createXMLMessage->new->ArrayIndexOutOfBoundsException->chunkpos->slotpos->chunk->chunks->elementAt
 ChunkedIntArray#writeSlot(int, int, int, int, int):::Overwrite an entire (4-integer) record at the specified index:::chunkpos->slotpos->if->chunks->size->chunks->new->intArr->addElement->chunk->chunks->elementAt
 ChunkedIntArray#readSlot(int, int[]):::Retrieve the contents of a record into a user-supplied buffer array:::chunkpos->slotpos->if->chunks->size->chunks->new->intArr->addElement->chunk->chunks->elementAt->System->arraycopy
+ChunkedIntArray.ChunksVector#size()::: chunks vector size:::return
+ChunkedIntArray.ChunksVector#addElement(int[])::: chunks vector add element:::if->orgMapSize->while->newMap->new->intArrs->System->arraycopy
+ChunkedIntArray.ChunksVector#elementAt(int)::: chunks vector element at:::return
 CoroutineManager#co_joinCoroutineSet(int):::Each coroutine in the set managed by a single CoroutineManager is identified by a small positive integer:::if->if->m_activeIDs->get->return->else->while->if->m_activeIDs->get->else->break->if->return->m_activeIDs->set->return
 CoroutineManager#co_entry_pause(int):::In the standard coroutine architecture, coroutines are identified by their method names and are launched and run up to their first yield by simply resuming them; its's presumed that this recognizes the not-already-running case and does the right thing:::if->m_activeIDs->get->throw->new->java.lang.NoSuchMethodException->while->try->wait->catch->finally->return
 CoroutineManager#co_resume(Object, int, int):::Transfer control to another coroutine which has already been started and is waiting on this CoroutineManager:::if->m_activeIDs->get->throw->XMLMessages->new->ObjectArr->Integer->toString->createXMLMessage->new->java.lang.NoSuchMethodException->notify->while->try->wait->catch->finally->if->co_exit->throw->XMLMessages->createXMLMessage->new->java.lang.NoSuchMethodException->return
 CoroutineManager#co_exit(int):::Terminate this entire set of coroutines:::m_activeIDs->clear->notify
 CoroutineManager#co_exit_to(Object, int, int):::Make the ID available for reuse and terminate this coroutine, transferring control to the specified coroutine:::if->m_activeIDs->get->throw->XMLMessages->new->ObjectArr->Integer->toString->createXMLMessage->new->java.lang.NoSuchMethodException->m_activeIDs->clear->notify
+CoroutineParser#getParserCoroutineID()::: coroutine parser get parser coroutine d:::
+CoroutineParser#getCoroutineManager()::: coroutine parser get coroutine manager:::
 CoroutineParser#setContentHandler(ContentHandler):::Register a SAX-style content handler for us to output to:::
 CoroutineParser#setLexHandler(org.xml.sax.ext.LexicalHandler)::: Register a SAX-style lexical handler for us to output to  Not all parsers support this..:::
 CoroutineParser#doParse(InputSource, int):::doParse() is a simple API which tells the coroutine parser to begin reading from a file:::
 CoroutineParser#doMore(boolean, int):::doMore() is a simple API which tells the coroutine parser that we need more nodes:::
 CoroutineParser#doTerminate(int):::doTerminate() is a simple API which tells the coroutine parser to terminate itself:::
 CoroutineParser#init(CoroutineManager, int, XMLReader):::Initialize the coroutine parser:::
+CustomStringPool#removeAllElements()::: custom string pool remove all elements:::m_intToString->clear->if->m_stringToInt->clear
+CustomStringPool#indexToString(int)::: custom string pool index to string:::return->m_intToString->get
+CustomStringPool#stringToIndex(String)::: custom string pool string to index:::if->return->iobj->m_stringToInt->get->if->m_intToString->add->m_intToString->size->m_stringToInt->put->return
 DTMAxisIteratorBase#getStartNode():::Get start to END should 'close' the iterator, i.e:::return
+DTMAxisIteratorBase#reset()::: axis iterator base reset:::temp->setStartNode->return
 DTMAxisIteratorBase#includeSelf():::Set the flag to include the start node in the iteration.:::return
 DTMAxisIteratorBase#getLast():::Returns the position of the last node within the iteration, as defined by XPath:::if->temp->setMark->reset->do->while->next->gotoMark->return
+DTMAxisIteratorBase#getPosition()::: axis iterator base get position:::return
+DTMAxisIteratorBase#isReverse()::: axis iterator base is reverse:::return
 DTMAxisIteratorBase#cloneIterator():::Returns a deep copy of this iterator:::try->clone->super->clone->return->catch->throw->new->com.sun.org.apache.xml.internal.utils.WrappedRuntimeException->finally
 DTMAxisIteratorBase#returnNode(int):::Do any final cleanup that is required before returning the node that was passed in, and then return it:::return
 DTMAxisIteratorBase#resetPosition():::Reset the position to zero:::return
 DTMAxisIteratorBase#isDocOrdered():::Returns true if all the nodes in the iteration well be returned in document order.:::return
 DTMAxisIteratorBase#getAxis():::Returns the axis being iterated, if it is known.:::return
+DTMAxisIteratorBase#setRestartable(boolean)::: axis iterator base set restartable:::
 DTMAxisIteratorBase#getNodeByPosition(int):::Return the node at the given position.:::if->pos->isReverse->getLast->node->while->next->if->getPosition->return->return
 DTMAxisIterNodeList#getDTMAxisIterator():::Access the wrapped DTMIterator:::return
 DTMAxisIterNodeList#item(int):::Returns the indexth item in the collection:::if->node->count->m_cachedNodes->size->if->m_cachedNodes->elementAt->return->m_dtm->getNode->else->if->while->m_iter->next->m_cachedNodes->addElement->if->else->return->m_dtm->getNode->return
@@ -157,6 +171,8 @@ DTMDefaultBaseIterators.PrecedingIterator#cloneIterator():::Returns a deep copy 
 DTMDefaultBaseIterators.PrecedingIterator#setStartNode(int):::Set start to END should 'close' the iterator, i.e:::if->getDocument->if->makeNodeIdentity->parent->index->if->_type->_parent->while->_parent->if->stack->new->intArr->System->arraycopy->if->return->resetPosition->return
 DTMDefaultBaseIterators.PrecedingIterator#next():::Get the next node in the iteration.:::for->return
 DTMDefaultBaseIterators.PrecedingIterator#reset():::Resets the iterator to the last start node.:::return->resetPosition
+DTMDefaultBaseIterators.PrecedingIterator#setMark()::: preceding iterator set mark:::
+DTMDefaultBaseIterators.PrecedingIterator#gotoMark()::: preceding iterator goto mark:::
 DTMDefaultBaseIterators.TypedPrecedingIterator#next():::Get the next node in the iteration.:::node->nodeType->if->while->if->break->else->if->if->break->else->if->_exptype->break->else->expType->while->if->break->else->if->if->break->else->_exptype->if->if->break->else->if->m_expandedNameTable->getType->break->return->makeNodeHandle->returnNode
 DTMDefaultBaseIterators.FollowingIterator#setStartNode(int):::Set start to END should 'close' the iterator, i.e:::if->getDocument->if->m_traverser->first->return->resetPosition->return
 DTMDefaultBaseIterators.FollowingIterator#next():::Get the next node in the iteration.:::node->m_traverser->next->return->returnNode
@@ -167,6 +183,8 @@ DTMDefaultBaseIterators.AncestorIterator#cloneIterator():::Returns a deep copy o
 DTMDefaultBaseIterators.AncestorIterator#setStartNode(int):::Set start to END should 'close' the iterator, i.e:::if->getDocument->if->nodeID->makeNodeIdentity->if->_parent->makeNodeHandle->while->m_ancestors->addElement->_parent->makeNodeHandle->m_ancestors->size->m_ancestors->elementAt->return->resetPosition->return
 DTMDefaultBaseIterators.AncestorIterator#reset():::Resets the iterator to the last start node.:::m_ancestors->size->m_ancestors->elementAt->return->resetPosition
 DTMDefaultBaseIterators.AncestorIterator#next():::Get the next node in the iteration.:::next->pos->m_ancestors->elementAt->return->returnNode
+DTMDefaultBaseIterators.AncestorIterator#setMark()::: ancestor iterator set mark:::
+DTMDefaultBaseIterators.AncestorIterator#gotoMark()::: ancestor iterator goto mark:::m_ancestors->elementAt
 DTMDefaultBaseIterators.TypedAncestorIterator#setStartNode(int):::Set start to END should 'close' the iterator, i.e:::if->getDocument->if->nodeID->makeNodeIdentity->nodeType->if->_parent->if->while->eType->_exptype->if->m_ancestors->makeNodeHandle->addElement->_parent->else->while->eType->_exptype->if->m_expandedNameTable->getType->m_ancestors->makeNodeHandle->addElement->_parent->m_ancestors->size->m_ancestors->elementAt->return->resetPosition->return
 DTMDefaultBaseIterators.DescendantIterator#setStartNode(int):::Set start to END should 'close' the iterator, i.e:::if->getDocument->if->makeNodeIdentity->if->return->resetPosition->return
 DTMDefaultBaseIterators.DescendantIterator#isDescendant(int):::Tell if this node identity is a descendant:::return->_parent
@@ -179,7 +197,74 @@ DTMDefaultBaseIterators.SingletonIterator#reset():::Resets the iterator to the l
 DTMDefaultBaseIterators.SingletonIterator#next():::Get the next node in the iteration.:::result->return->returnNode
 DTMDefaultBaseIterators.TypedSingletonIterator#next():::Get the next node in the iteration.:::result->nodeType->if->if->getExpandedTypeID->return->returnNode->else->if->getNodeType->return->returnNode->return
 DTMDefaultBaseTraversers#getAxisTraverser(int):::This returns a stateless "traverser", that can navigate over an XPath axis, though perhaps not in document order.:::traverser->if->Axis->getNamesLength->new->DTMAxisTraverserArr->else->if->return->switch->new->AncestorTraverser->break->new->AncestorOrSelfTraverser->break->new->AttributeTraverser->break->new->ChildTraverser->break->new->DescendantTraverser->break->new->DescendantOrSelfTraverser->break->new->FollowingTraverser->break->new->FollowingSiblingTraverser->break->new->NamespaceTraverser->break->new->NamespaceDeclsTraverser->break->new->ParentTraverser->break->new->PrecedingTraverser->break->new->PrecedingSiblingTraverser->break->new->SelfTraverser->break->new->AllFromRootTraverser->break->new->AllFromNodeTraverser->break->new->PrecedingAndAncestorTraverser->break->new->DescendantFromRootTraverser->break->new->DescendantOrSelfFromRootTraverser->break->new->RootTraverser->break->return->throw->XMLMessages->new->ObjectArr->Integer->toString->createXMLMessage->new->DTMException->if->throw->XMLMessages->new->ObjectArr->Axis->getNames->createXMLMessage->new->DTMException->return
+DTMDefaultBaseTraversers.AncestorTraverser#next(int, int):::Traverse to the next node after the current node.:::return->getParent
+DTMDefaultBaseTraversers.AncestorTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::makeNodeIdentity->while->m_parent->elementAt->if->m_exptype->elementAt->return->makeNodeHandle->return
+DTMDefaultBaseTraversers.AncestorOrSelfTraverser#first(int):::By the nature of the stateless traversal, the context node can not be returned or the iteration will go into an infinate loop:::return
+DTMDefaultBaseTraversers.AncestorOrSelfTraverser#first(int, int):::By the nature of the stateless traversal, the context node can not be returned or the iteration will go into an infinate loop:::return->getExpandedTypeID->next
+DTMDefaultBaseTraversers.AttributeTraverser#next(int, int):::Traverse to the next node after the current node.:::return->getFirstAttribute->getNextAttribute
+DTMDefaultBaseTraversers.AttributeTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::getFirstAttribute->getNextAttribute->do->if->getExpandedTypeID->return->while->getNextAttribute->return
+DTMDefaultBaseTraversers.ChildTraverser#getNextIndexed(int, int, int):::Get the next indexed node that matches the expanded type ID:::nsIndex->m_expandedNameTable->getNamespaceID->lnIndex->m_expandedNameTable->getLocalNameID->for->return
+DTMDefaultBaseTraversers.ChildTraverser#first(int):::By the nature of the stateless traversal, the context node can not be returned or the iteration will go into an infinate loop:::return->getFirstChild
+DTMDefaultBaseTraversers.ChildTraverser#first(int, int):::By the nature of the stateless traversal, the context node can not be returned or the iteration will go into an infinate loop:::if->identity->makeNodeIdentity->firstMatch->_firstch->getNextIndexed->return->makeNodeHandle->else->for->current->makeNodeIdentity->_firstch->_nextsib->return
+DTMDefaultBaseTraversers.ChildTraverser#next(int, int):::Traverse to the next node after the current node.:::return->getNextSibling
+DTMDefaultBaseTraversers.ChildTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::for->makeNodeIdentity->_nextsib->_nextsib->return
+DTMDefaultBaseTraversers.IndexedDTMAxisTraverser#isIndexed(int):::Tell if the indexing is on and the given expanded type ID matches what is in the indexes:::return->m_expandedNameTable->getType
+DTMDefaultBaseTraversers.IndexedDTMAxisTraverser#isAfterAxis(int, int):::Tell if a node is outside the axis being traversed:::
+DTMDefaultBaseTraversers.IndexedDTMAxisTraverser#axisHasBeenProcessed(int):::Tell if the axis has been fully processed to tell if a the wait for an arriving node should terminate:::
+DTMDefaultBaseTraversers.IndexedDTMAxisTraverser#getNextIndexed(int, int, int):::Get the next indexed node that matches the expanded type ID:::nsIndex->m_expandedNameTable->getNamespaceID->lnIndex->m_expandedNameTable->getLocalNameID->while->next->findElementFromIndex->if->if->isAfterAxis->return->return->else->if->axisHasBeenProcessed->break->nextNode->return
+DTMDefaultBaseTraversers.DescendantTraverser#getFirstPotential(int):::Get the first potential identity that can be returned:::return
+DTMDefaultBaseTraversers.DescendantTraverser#axisHasBeenProcessed(int):::Tell if the axis has been fully processed to tell if a the wait for an arriving node should terminate.:::return->m_nextsib->elementAt
+DTMDefaultBaseTraversers.DescendantTraverser#getSubtreeRoot(int):::Get the subtree root identity from the handle that was passed in by the caller:::return->makeNodeIdentity
+DTMDefaultBaseTraversers.DescendantTraverser#isDescendant(int, int):::Tell if this node identity is a descendant:::return->_parent
+DTMDefaultBaseTraversers.DescendantTraverser#isAfterAxis(int, int):::Tell if a node is outside the axis being traversed:::do->if->return->m_parent->elementAt->while->return
+DTMDefaultBaseTraversers.DescendantTraverser#first(int, int):::By the nature of the stateless traversal, the context node can not be returned or the iteration will go into an infinate loop:::if->isIndexed->identity->getSubtreeRoot->firstPotential->getFirstPotential->return->getNextIndexed->makeNodeHandle->return->next
+DTMDefaultBaseTraversers.DescendantTraverser#next(int, int):::Traverse to the next node after the current node.:::subtreeRootIdent->getSubtreeRoot->for->makeNodeIdentity
+DTMDefaultBaseTraversers.DescendantTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::subtreeRootIdent->getSubtreeRoot->makeNodeIdentity->if->isIndexed->return->getNextIndexed->makeNodeHandle->for
+DTMDefaultBaseTraversers.DescendantOrSelfTraverser#getFirstPotential(int):::Get the first potential identity that can be returned, which is the axis context, in this case.:::return
+DTMDefaultBaseTraversers.DescendantOrSelfTraverser#first(int):::By the nature of the stateless traversal, the context node can not be returned or the iteration will go into an infinate loop:::return
+DTMDefaultBaseTraversers.AllFromNodeTraverser#next(int, int):::Traverse to the next node after the current node.:::subtreeRootIdent->makeNodeIdentity->for->makeNodeIdentity
+DTMDefaultBaseTraversers.FollowingTraverser#first(int):::Get the first of the following.:::makeNodeIdentity->first->type->_type->if->_parent->_firstch->if->return->makeNodeHandle->do->_nextsib->if->_parent->while->return->makeNodeHandle
+DTMDefaultBaseTraversers.FollowingTraverser#first(int, int):::Get the first of the following.:::first->type->getNodeType->if->getParent->getFirstChild->if->if->getExpandedTypeID->return->else->return->next->do->getNextSibling->if->getParent->else->if->getExpandedTypeID->return->else->return->next->while->return
+DTMDefaultBaseTraversers.FollowingTraverser#next(int, int):::Traverse to the next node after the current node.:::makeNodeIdentity->while->type->_type->if->return->if->continue->return->makeNodeHandle
+DTMDefaultBaseTraversers.FollowingTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::makeNodeIdentity->while->etype->_exptype->if->return->if->continue->return->makeNodeHandle
+DTMDefaultBaseTraversers.FollowingSiblingTraverser#next(int, int):::Traverse to the next node after the current node.:::return->getNextSibling
+DTMDefaultBaseTraversers.FollowingSiblingTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::while->getNextSibling->if->getExpandedTypeID->return->return
+DTMDefaultBaseTraversers.NamespaceDeclsTraverser#next(int, int):::Traverse to the next node after the current node.:::return->getFirstNamespaceNode->getNextNamespaceNode
+DTMDefaultBaseTraversers.NamespaceDeclsTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::getFirstNamespaceNode->getNextNamespaceNode->do->if->getExpandedTypeID->return->while->getNextNamespaceNode->return
+DTMDefaultBaseTraversers.NamespaceTraverser#next(int, int):::Traverse to the next node after the current node.:::return->getFirstNamespaceNode->getNextNamespaceNode
+DTMDefaultBaseTraversers.NamespaceTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::getFirstNamespaceNode->getNextNamespaceNode->do->if->getExpandedTypeID->return->while->getNextNamespaceNode->return
+DTMDefaultBaseTraversers.ParentTraverser#first(int):::By the nature of the stateless traversal, the context node can not be returned or the iteration will go into an infinate loop:::return->getParent
+DTMDefaultBaseTraversers.ParentTraverser#first(int, int):::By the nature of the stateless traversal, the context node can not be returned or the iteration will go into an infinate loop:::makeNodeIdentity->while->m_parent->elementAt->if->m_exptype->elementAt->return->makeNodeHandle->return
+DTMDefaultBaseTraversers.ParentTraverser#next(int, int):::Traverse to the next node after the current node.:::return
+DTMDefaultBaseTraversers.ParentTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::return
+DTMDefaultBaseTraversers.PrecedingTraverser#isAncestor(int, int):::Tell if the current identity is an ancestor of the context identity:::for->m_parent->elementAt->m_parent->elementAt->return
+DTMDefaultBaseTraversers.PrecedingTraverser#next(int, int):::Traverse to the next node after the current node.:::subtreeRootIdent->makeNodeIdentity->for->makeNodeIdentity->return
+DTMDefaultBaseTraversers.PrecedingTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::subtreeRootIdent->makeNodeIdentity->for->makeNodeIdentity->return
+DTMDefaultBaseTraversers.PrecedingAndAncestorTraverser#next(int, int):::Traverse to the next node after the current node.:::subtreeRootIdent->makeNodeIdentity->for->makeNodeIdentity->return
+DTMDefaultBaseTraversers.PrecedingAndAncestorTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::subtreeRootIdent->makeNodeIdentity->for->makeNodeIdentity->return
+DTMDefaultBaseTraversers.PrecedingSiblingTraverser#next(int, int):::Traverse to the next node after the current node.:::return->getPreviousSibling
+DTMDefaultBaseTraversers.PrecedingSiblingTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::while->getPreviousSibling->if->getExpandedTypeID->return->return
+DTMDefaultBaseTraversers.SelfTraverser#first(int):::By the nature of the stateless traversal, the context node can not be returned or the iteration will go into an infinate loop:::return
+DTMDefaultBaseTraversers.SelfTraverser#first(int, int):::By the nature of the stateless traversal, the context node can not be returned or the iteration will go into an infinate loop:::return->getExpandedTypeID
+DTMDefaultBaseTraversers.SelfTraverser#next(int, int):::Traverse to the next node after the current node.:::return
+DTMDefaultBaseTraversers.SelfTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::return
+DTMDefaultBaseTraversers.AllFromRootTraverser#first(int):::Return the root.:::return->getDocumentRoot
+DTMDefaultBaseTraversers.AllFromRootTraverser#first(int, int):::Return the root if it matches the expanded type ID.:::return->getDocumentRoot->getExpandedTypeID->next
+DTMDefaultBaseTraversers.AllFromRootTraverser#next(int, int):::Traverse to the next node after the current node.:::subtreeRootIdent->makeNodeIdentity->for->makeNodeIdentity
+DTMDefaultBaseTraversers.AllFromRootTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::subtreeRootIdent->makeNodeIdentity->for->makeNodeIdentity
+DTMDefaultBaseTraversers.RootTraverser#first(int, int):::Return the root if it matches the expanded type ID, else return null (nothing found):::root->getDocumentRoot->return->getExpandedTypeID
+DTMDefaultBaseTraversers.RootTraverser#next(int, int):::Traverse to the next node after the current node.:::return
+DTMDefaultBaseTraversers.RootTraverser#next(int, int, int):::Traverse to the next node after the current node that is matched by the expanded type ID.:::return
+DTMDefaultBaseTraversers.DescendantOrSelfFromRootTraverser#getFirstPotential(int):::Get the first potential identity that can be returned, which is the axis root context in this case.:::return
+DTMDefaultBaseTraversers.DescendantOrSelfFromRootTraverser#getSubtreeRoot(int):::Get the first potential identity that can be returned.:::return->getDocument->makeNodeIdentity
+DTMDefaultBaseTraversers.DescendantOrSelfFromRootTraverser#first(int):::Return the root.:::return->getDocumentRoot
+DTMDefaultBaseTraversers.DescendantOrSelfFromRootTraverser#first(int, int):::By the nature of the stateless traversal, the context node can not be returned or the iteration will go into an infinate loop:::if->isIndexed->identity->firstPotential->getFirstPotential->return->getNextIndexed->makeNodeHandle->root->first->return->next
+DTMDefaultBaseTraversers.DescendantFromRootTraverser#getFirstPotential(int):::Get the first potential identity that can be returned, which is the axis root context in this case.:::return->_firstch
+DTMDefaultBaseTraversers.DescendantFromRootTraverser#getSubtreeRoot(int):::Get the first potential identity that can be returned.:::return
+DTMDefaultBaseTraversers.DescendantFromRootTraverser#first(int):::Return the root.:::return->_firstch->makeNodeHandle
+DTMDefaultBaseTraversers.DescendantFromRootTraverser#first(int, int):::By the nature of the stateless traversal, the context node can not be returned or the iteration will go into an infinate loop:::if->isIndexed->identity->firstPotential->getFirstPotential->return->getNextIndexed->makeNodeHandle->root->getDocumentRoot->return->next
 DTMDocumentImpl#setIncrementalSAXSource(IncrementalSAXSource):::Bind a IncrementalSAXSource to this DTM:::source->setContentHandler->source->setLexicalHandler
+DTMDocumentImpl#appendNode(int, int, int, int):::Wrapper for ChunkedIntArray.append, to automatically update the previous sibling's "next" reference (if necessary) and periodically wake a reader who may have encountered incomplete data and entered a wait state.:::slotnumber->nodes->appendSlot->if->println->if->nodes->writeEntry->return
 DTMDocumentImpl#setFeature(String, boolean):::Set an implementation dependent feature:::
 DTMDocumentImpl#setLocalNameTable(DTMStringPool):::Set a reference pointer to the element name symbol table:::
 DTMDocumentImpl#getLocalNameTable():::Get a reference pointer to the element name symbol table.:::return
@@ -195,6 +280,26 @@ DTMDocumentImpl#getEntityResolver():::Return this DTM's EntityResolver.:::return
 DTMDocumentImpl#getDTDHandler():::Return this DTM's DTDHandler.:::return
 DTMDocumentImpl#getErrorHandler():::Return this DTM's ErrorHandler.:::return
 DTMDocumentImpl#getDeclHandler():::Return this DTM's DeclHandler.:::return
+DTMDocumentImpl#needsTwoThreads()::: document impl needs two threads:::return
+DTMDocumentImpl#characters(char[], int, int)::: document impl characters:::m_char->append
+DTMDocumentImpl#processAccumulatedText()::: document impl process accumulated text:::len->m_char->length->if->appendTextChild
+DTMDocumentImpl#endDocument()::: document impl end document:::appendEndDocument
+DTMDocumentImpl#endElement(java.lang.String, java.lang.String, java.lang.String)::: document impl end element:::processAccumulatedText->appendEndElement
+DTMDocumentImpl#endPrefixMapping(java.lang.String)::: document impl end prefix mapping:::
+DTMDocumentImpl#ignorableWhitespace(char[], int, int)::: document impl ignorable whitespace:::
+DTMDocumentImpl#processingInstruction(java.lang.String, java.lang.String)::: document impl processing instruction:::processAccumulatedText
+DTMDocumentImpl#setDocumentLocator(Locator)::: document impl set document locator:::
+DTMDocumentImpl#skippedEntity(java.lang.String)::: document impl skipped entity:::processAccumulatedText
+DTMDocumentImpl#startDocument()::: document impl start document:::appendStartDocument
+DTMDocumentImpl#startElement(java.lang.String, java.lang.String, java.lang.String, Attributes)::: document impl start element:::processAccumulatedText->prefix->colon->qName->indexOf->if->qName->substring->m_prefixNames->stringToIndex->println->m_nsNames->stringToIndex->m_localNames->stringToIndex->m_prefixNames->stringToIndex->appendStartElement->nAtts->atts->getLength->for->i->for->i
+DTMDocumentImpl#startPrefixMapping(java.lang.String, java.lang.String)::: document impl start prefix mapping:::
+DTMDocumentImpl#comment(char[], int, int)::: document impl comment:::processAccumulatedText->m_char->append->appendComment
+DTMDocumentImpl#endCDATA()::: document impl end a:::
+DTMDocumentImpl#endDTD()::: document impl end d:::
+DTMDocumentImpl#endEntity(java.lang.String)::: document impl end entity:::
+DTMDocumentImpl#startCDATA()::: document impl start a:::
+DTMDocumentImpl#startDTD(java.lang.String, java.lang.String, java.lang.String)::: document impl start d:::
+DTMDocumentImpl#startEntity(java.lang.String)::: document impl start entity:::
 DTMDocumentImpl#initDocument(int):::Reset a dtm document to its initial (empty) state:::nodes->writeSlot
 DTMDocumentImpl#hasChildNodes(int):::Given a node handle, test if it has child nodes:::return->getFirstChild
 DTMDocumentImpl#getFirstChild(int):::Given a node handle, get the handle of the node's first child:::nodes->readSlot->type->if->kid->nodes->readSlot->while->if->return->nodes->readSlot->if->firstChild->return->return
@@ -215,6 +320,8 @@ DTMDocumentImpl#getDocument():::Given a node handle, find the owning document no
 DTMDocumentImpl#getOwnerDocument(int):::Given a node handle, find the owning document node:::if->return->return
 DTMDocumentImpl#getDocumentRoot(int):::Given a node handle, find the owning document node:::if->return->return
 DTMDocumentImpl#getStringValue(int):::Get the string-value of a node as a String object (see http://www.w3.org/TR/xpath#data-model for the definition of a node's string-value).:::nodes->readSlot->nodetype->value->switch->m_char->getString->break->break->return->m_xsf->newstr
+DTMDocumentImpl#getStringValueChunkCount(int)::: document impl get string value chunk count:::return
+DTMDocumentImpl#getStringValueChunk(int, int, int[])::: document impl get string value chunk:::return->new->charArr
 DTMDocumentImpl#getExpandedTypeID(int):::Given a node handle, return an ID that represents the node's expanded name.:::nodes->readSlot->qName->m_localNames->indexToString->colonpos->qName->indexOf->localName->qName->substring->namespace->m_nsNames->indexToString->expandedName->expandedNameID->m_nsNames->stringToIndex->return
 DTMDocumentImpl#getExpandedTypeID(String, String, int):::Given an expanded name, return an ID:::expandedName->expandedNameID->m_nsNames->stringToIndex->return
 DTMDocumentImpl#getLocalNameFromExpandedNameID(int):::Given an expanded-name ID, return the local name part.:::expandedName->m_localNames->indexToString->colonpos->expandedName->indexOf->localName->expandedName->substring->return
@@ -245,6 +352,7 @@ DTMDocumentImpl#isCharacterElementContentWhitespace(int):::    2:::return
 DTMDocumentImpl#isDocumentAllDeclarationsProcessed(int):::   10:::return
 DTMDocumentImpl#isAttributeSpecified(int):::    5:::return
 DTMDocumentImpl#dispatchCharactersEvents(int, org.xml.sax.ContentHandler, boolean):::Directly call the characters method on the passed ContentHandler for the string-value of the given node (see http://www.w3.org/TR/xpath#data-model for the definition of a node's string-value):::
+DTMDocumentImpl#dispatchToEvents(int, org.xml.sax.ContentHandler)::: document impl dispatch to events:::
 DTMDocumentImpl#getNode(int):::Return an DOM node for the given node.:::return
 DTMDocumentImpl#appendChild(int, boolean, boolean):::Append a child to the end of the child list of the current node:::sameDoc->if->else
 DTMDocumentImpl#appendTextChild(String):::Append a text node child that will be constructed from a string, to the end of the document:::
@@ -292,7 +400,10 @@ DTMNodeIterator#getDTMIterator():::Access the wrapped DTMIterator:::return
 DTMNodeIterator#detach():::Detaches the NodeIterator from the set which it iterated over, releasing any computational resources and placing the iterator in the INVALID state.:::
 DTMNodeIterator#getExpandEntityReferences():::The value of this flag determines whether the children of entity reference nodes are visible to the iterator.:::return
 DTMNodeIterator#getFilter():::Return a handle to the filter used to screen nodes:::throw->new->DTMDOMException
+DTMNodeIterator#getRoot()::: node iterator get root:::handle->dtm_iter->getRoot->return->dtm_iter->getDTM->getNode
 DTMNodeIterator#getWhatToShow():::Return a mask describing which node types are presented via the iterator.:::return->dtm_iter->getWhatToShow
+DTMNodeIterator#nextNode()::: node iterator next node:::if->throw->new->DTMDOMException->handle->dtm_iter->nextNode->if->return->return->dtm_iter->getDTM->getNode
+DTMNodeIterator#previousNode()::: node iterator previous node:::if->throw->new->DTMDOMException->handle->dtm_iter->previousNode->if->return->return->dtm_iter->getDTM->getNode
 DTMNodeList#getDTMIterator():::Access the wrapped DTMIterator:::return
 DTMNodeList#item(int):::Returns the indexth item in the collection:::if->handle->m_iter->item->if->return->return->m_iter->getDTM->getNode->else->return
 DTMNodeList#getLength():::The number of nodes in the list:::return->m_iter->getLength
@@ -302,14 +413,83 @@ DTMNodeProxy#getDTM():::NON-DOM: Return the DTM model:::return
 DTMNodeProxy#getDTMNodeNumber():::NON-DOM: Return the DTM node number:::return
 DTMNodeProxy#equals(Node):::Test for equality based on node number.:::try->dtmp->return->catch->return->finally
 DTMNodeProxy#equals(Object):::Test for equality based on node number.:::return->equals
+DTMNodeProxy#hashCode()::: node proxy hash code:::hash->Objects->hashCode->return
 DTMNodeProxy#sameNodeAs(Node):::FUTURE DOM: Test node identity, in lieu of Node==Node:::if->return->that->return
+DTMNodeProxy#getNodeName()::: node proxy get node name:::return->dtm->getNodeName
 DTMNodeProxy#getTarget():::A PI's "target" states what processor channel the PI's data should be directed to:::return->dtm->getNodeName
+DTMNodeProxy#getLocalName()::: node proxy get local name:::return->dtm->getLocalName
+DTMNodeProxy#getPrefix()::: node proxy get prefix:::return->dtm->getPrefix
+DTMNodeProxy#setPrefix(String)::: node proxy set prefix:::throw->new->DTMDOMException
+DTMNodeProxy#getNamespaceURI()::: node proxy get namespace i:::return->dtm->getNamespaceURI
 DTMNodeProxy#supports(String, String):::Ask whether we support a given DOM feature:::return->implementation->hasFeature
 DTMNodeProxy#isSupported(String, String):::Ask whether we support a given DOM feature:::return->implementation->hasFeature
+DTMNodeProxy#getNodeValue()::: node proxy get node value:::return->dtm->getNodeValue
+DTMNodeProxy#getStringValue()::: node proxy get string value:::return->dtm->getStringValue->toString
+DTMNodeProxy#setNodeValue(String)::: node proxy set node value:::throw->new->DTMDOMException
+DTMNodeProxy#getNodeType()::: node proxy get node type:::return->dtm->getNodeType
+DTMNodeProxy#getParentNode()::: node proxy get parent node:::if->getNodeType->return->newnode->dtm->getParent->return->dtm->getNode
+DTMNodeProxy#getOwnerNode()::: node proxy get owner node:::newnode->dtm->getParent->return->dtm->getNode
+DTMNodeProxy#getChildNodes()::: node proxy get child nodes:::return->new->DTMChildIterNodeList
+DTMNodeProxy#getFirstChild()::: node proxy get first child:::newnode->dtm->getFirstChild->return->dtm->getNode
+DTMNodeProxy#getLastChild()::: node proxy get last child:::newnode->dtm->getLastChild->return->dtm->getNode
+DTMNodeProxy#getPreviousSibling()::: node proxy get previous sibling:::newnode->dtm->getPreviousSibling->return->dtm->getNode
+DTMNodeProxy#getNextSibling()::: node proxy get next sibling:::if->dtm->getNodeType->return->newnode->dtm->getNextSibling->return->dtm->getNode
+DTMNodeProxy#getAttributes()::: node proxy get attributes:::return->new->DTMNamedNodeMap
 DTMNodeProxy#hasAttribute(String):::Method hasAttribute:::return->dtm->getAttributeNode
 DTMNodeProxy#hasAttributeNS(String, String):::Method hasAttributeNS:::return->dtm->getAttributeNode
+DTMNodeProxy#getOwnerDocument()::: node proxy get owner document:::return->dtm->dtm->getOwnerDocument->getNode
+DTMNodeProxy#insertBefore(Node, Node)::: node proxy insert before:::throw->new->DTMDOMException
+DTMNodeProxy#replaceChild(Node, Node)::: node proxy replace child:::throw->new->DTMDOMException
+DTMNodeProxy#removeChild(Node)::: node proxy remove child:::throw->new->DTMDOMException
+DTMNodeProxy#appendChild(Node)::: node proxy append child:::throw->new->DTMDOMException
+DTMNodeProxy#hasChildNodes()::: node proxy has child nodes:::return->dtm->getFirstChild
+DTMNodeProxy#cloneNode(boolean)::: node proxy clone node:::throw->new->DTMDOMException
+DTMNodeProxy#getDoctype()::: node proxy get doctype:::return
+DTMNodeProxy#getImplementation()::: node proxy get implementation:::return
 DTMNodeProxy#getDocumentElement():::This is a bit of a problem in DTM, since a DTM may be a Document Fragment and hence not have a clear-cut Document Element:::dochandle->dtm->getDocument->elementhandle->for->kidhandle->dtm->getFirstChild->dtm->getNextSibling->if->throw->new->DTMDOMException->else->return->dtm->getNode
+DTMNodeProxy#createElement(String)::: node proxy create element:::throw->new->DTMDOMException
+DTMNodeProxy#createDocumentFragment()::: node proxy create document fragment:::throw->new->DTMDOMException
+DTMNodeProxy#createTextNode(String)::: node proxy create text node:::throw->new->DTMDOMException
+DTMNodeProxy#createComment(String)::: node proxy create comment:::throw->new->DTMDOMException
+DTMNodeProxy#createCDATASection(String)::: node proxy create section:::throw->new->DTMDOMException
+DTMNodeProxy#createProcessingInstruction(String, String)::: node proxy create processing instruction:::throw->new->DTMDOMException
+DTMNodeProxy#createAttribute(String)::: node proxy create attribute:::throw->new->DTMDOMException
+DTMNodeProxy#createEntityReference(String)::: node proxy create entity reference:::throw->new->DTMDOMException
+DTMNodeProxy#getElementsByTagName(String)::: node proxy get elements by tag name:::listVector->new->ArrayList<>->retNode->dtm->getNode->if->isTagNameWildCard->equals->if->retNode->getNodeType->nodeList->retNode->getChildNodes->for->i->nodeList->getLength->else->if->retNode->getNodeType->dtm->getNode->traverseChildren->size->listVector->size->nodeSet->new->NodeSet->for->i->return
+DTMNodeProxy#traverseChildren(List, Node, String, boolean)::: node proxy traverse children:::if->return->else->if->tempNode->getNodeType->tempNode->getNodeName->equals->listVector->add->if->tempNode->hasChildNodes->nodeList->tempNode->getChildNodes->for->i->nodeList->getLength
+DTMNodeProxy#importNode(Node, boolean)::: node proxy import node:::throw->new->DTMDOMException
+DTMNodeProxy#createElementNS(String, String)::: node proxy create element s:::throw->new->DTMDOMException
+DTMNodeProxy#createAttributeNS(String, String)::: node proxy create attribute s:::throw->new->DTMDOMException
+DTMNodeProxy#getElementsByTagNameNS(String, String)::: node proxy get elements by tag name s:::listVector->new->ArrayList<>->retNode->dtm->getNode->if->isNamespaceURIWildCard->equals->isLocalNameWildCard->equals->if->retNode->getNodeType->nodeList->retNode->getChildNodes->for->i->nodeList->getLength->else->if->retNode->getNodeType->dtm->getNode->traverseChildren->size->listVector->size->nodeSet->new->NodeSet->for->i->return
+DTMNodeProxy#traverseChildren(List, Node, String, String, boolean, boolean)::: node proxy traverse children:::if->return->else->if->tempNode->getNodeType->tempNode->getLocalName->equals->nsURI->tempNode->getNamespaceURI->if->namespaceURI->equals->listVector->add->if->tempNode->hasChildNodes->nl->tempNode->getChildNodes->for->i->nl->getLength
+DTMNodeProxy#getElementById(String)::: node proxy get element by id:::return->dtm->dtm->getElementById->getNode
+DTMNodeProxy#splitText(int)::: node proxy split text:::throw->new->DTMDOMException
+DTMNodeProxy#getData()::: node proxy get data:::return->dtm->getNodeValue
+DTMNodeProxy#setData(String)::: node proxy set data:::throw->new->DTMDOMException
+DTMNodeProxy#getLength()::: node proxy get length:::return->dtm->getNodeValue->length
+DTMNodeProxy#substringData(int, int)::: node proxy substring data:::return->getData->substring
+DTMNodeProxy#appendData(String)::: node proxy append data:::throw->new->DTMDOMException
+DTMNodeProxy#insertData(int, String)::: node proxy insert data:::throw->new->DTMDOMException
+DTMNodeProxy#deleteData(int, int)::: node proxy delete data:::throw->new->DTMDOMException
+DTMNodeProxy#replaceData(int, int, String)::: node proxy replace data:::throw->new->DTMDOMException
+DTMNodeProxy#getTagName()::: node proxy get tag name:::return->dtm->getNodeName
+DTMNodeProxy#getAttribute(String)::: node proxy get attribute:::map->new->DTMNamedNodeMap->n->map->getNamedItem->return->n->getNodeValue
+DTMNodeProxy#setAttribute(String, String)::: node proxy set attribute:::throw->new->DTMDOMException
+DTMNodeProxy#removeAttribute(String)::: node proxy remove attribute:::throw->new->DTMDOMException
+DTMNodeProxy#getAttributeNode(String)::: node proxy get attribute node:::map->new->DTMNamedNodeMap->return->map->getNamedItem
+DTMNodeProxy#setAttributeNode(Attr)::: node proxy set attribute node:::throw->new->DTMDOMException
+DTMNodeProxy#removeAttributeNode(Attr)::: node proxy remove attribute node:::throw->new->DTMDOMException
 DTMNodeProxy#hasAttributes():::Introduced in DOM Level 2.:::return->dtm->getFirstAttribute
+DTMNodeProxy#normalize()::: node proxy normalize:::throw->new->DTMDOMException
+DTMNodeProxy#getAttributeNS(String, String)::: node proxy get attribute s:::retNode->n->dtm->getAttributeNode->if->dtm->getNode->return->retNode->getNodeValue
+DTMNodeProxy#setAttributeNS(String, String, String)::: node proxy set attribute s:::throw->new->DTMDOMException
+DTMNodeProxy#removeAttributeNS(String, String)::: node proxy remove attribute s:::throw->new->DTMDOMException
+DTMNodeProxy#getAttributeNodeNS(String, String)::: node proxy get attribute node s:::retAttr->n->dtm->getAttributeNode->if->dtm->getNode->return
+DTMNodeProxy#setAttributeNodeNS(Attr)::: node proxy set attribute node s:::throw->new->DTMDOMException
+DTMNodeProxy#getName()::: node proxy get name:::return->dtm->getNodeName
+DTMNodeProxy#getSpecified()::: node proxy get specified:::return
+DTMNodeProxy#getValue()::: node proxy get value:::return->dtm->getNodeValue
+DTMNodeProxy#setValue(String)::: node proxy set value:::throw->new->DTMDOMException
 DTMNodeProxy#getOwnerElement():::Get the owner element of an attribute.:::if->getNodeType->return->newnode->dtm->getParent->return->dtm->getNode
 DTMNodeProxy#adoptNode(Node):::NEEDSDOC Method adoptNode   NEEDSDOC @param source  NEEDSDOC (adoptNode) @return:::throw->new->DTMDOMException
 DTMNodeProxy#getInputEncoding():::EXPERIMENTAL! Based on the Document Object Model (DOM) Level 3 Core Working Draft of 5 June 2001.:::throw->new->DTMDOMException
@@ -320,8 +500,11 @@ DTMNodeProxy#getStrictErrorChecking():::EXPERIMENTAL! Based on the Document Obje
 DTMNodeProxy#setStrictErrorChecking(boolean):::EXPERIMENTAL! Based on the Document Object Model (DOM) Level 3 Core Working Draft of 5 June 2001.:::throw->new->DTMDOMException
 DTMNodeProxy#getVersion():::EXPERIMENTAL! Based on the Document Object Model (DOM) Level 3 Core Working Draft of 5 June 2001.:::throw->new->DTMDOMException
 DTMNodeProxy#setVersion(String):::EXPERIMENTAL! Based on the Document Object Model (DOM) Level 3 Core Working Draft of 5 June 2001.:::throw->new->DTMDOMException
+DTMNodeProxy.DTMNodeProxyImplementation#createDocumentType(String, String, String)::: node proxy implementation create document type:::throw->new->DTMDOMException
+DTMNodeProxy.DTMNodeProxyImplementation#createDocument(String, String, DocumentType)::: node proxy implementation create document:::throw->new->DTMDOMException
 DTMNodeProxy.DTMNodeProxyImplementation#hasFeature(String, String):::Ask whether we support a given DOM feature:::if->feature->toUpperCase->equals->feature->toUpperCase->equals->equals->equals->return->return
 DTMNodeProxy.DTMNodeProxyImplementation#getFeature(String, String)::: This method returns a specialized object which implements the specialized APIs of the specified feature and version:::return
+DTMNodeProxy#setUserData(String, Object, UserDataHandler)::: node proxy set user data:::return->getOwnerDocument->setUserData
 DTMNodeProxy#getUserData(String):::Retrieves the object associated to a key on a this node:::return->getOwnerDocument->getUserData
 DTMNodeProxy#getFeature(String, String)::: This method returns a specialized object which implements the specialized APIs of the specified feature and version:::return->isSupported
 DTMNodeProxy#isEqualNode(Node):::Tests whether two nodes are equal:::if->return->if->arg->getNodeType->getNodeType->return->if->getNodeName->if->arg->getNodeName->return->else->if->getNodeName->arg->getNodeName->equals->return->if->getLocalName->if->arg->getLocalName->return->else->if->getLocalName->arg->getLocalName->equals->return->if->getNamespaceURI->if->arg->getNamespaceURI->return->else->if->getNamespaceURI->arg->getNamespaceURI->equals->return->if->getPrefix->if->arg->getPrefix->return->else->if->getPrefix->arg->getPrefix->equals->return->if->getNodeValue->if->arg->getNodeValue->return->else->if->getNodeValue->arg->getNodeValue->equals->return->return
@@ -348,17 +531,46 @@ DTMNodeProxy#setIdAttribute(String, boolean):::DOM Level 3: register the given a
 DTMNodeProxy#setIdAttributeNode(Attr, boolean):::DOM Level 3: register the given attribute node as an ID attribute:::
 DTMNodeProxy#setIdAttributeNS(String, String, boolean):::DOM Level 3: register the given attribute node as an ID attribute:::
 DTMNodeProxy#getSchemaTypeInfo():::Method getSchemaTypeInfo.:::return
+DTMNodeProxy#isId()::: node proxy is id:::return
+DTMNodeProxy#getXmlEncoding()::: node proxy get xml encoding:::return
+DTMNodeProxy#setXmlEncoding(String)::: node proxy set xml encoding:::
+DTMNodeProxy#getXmlStandalone()::: node proxy get xml standalone:::return
+DTMNodeProxy#setXmlStandalone(boolean)::: node proxy set xml standalone:::
+DTMNodeProxy#getXmlVersion()::: node proxy get xml version:::return
+DTMNodeProxy#setXmlVersion(String)::: node proxy set xml version:::
+DTMSafeStringPool#removeAllElements()::: safe string pool remove all elements:::super->removeAllElements
+DTMSafeStringPool#indexToString(int)::: safe string pool index to string:::return->super->indexToString
+DTMSafeStringPool#stringToIndex(String)::: safe string pool string to index:::return->super->stringToIndex
 DTMSafeStringPool#_main(String[]):::Command-line unit test driver:::word->pool->new->DTMSafeStringPool->println->for->pass
+DTMStringPool#removeAllElements()::: string pool remove all elements:::m_intToString->clear->for->i->m_hashChain->removeAllElements
+DTMStringPool#indexToString(int)::: string pool index to string:::if->return->return->m_intToString->get
+DTMStringPool#stringToIndex(String)::: string pool string to index:::if->return->hashslot->s->hashCode->if->hashlast->hashcandidate->while->if->m_intToString->get->equals->return->m_hashChain->elementAt->newIndex->m_intToString->size->m_intToString->add->m_hashChain->addElement->if->else->m_hashChain->setElementAt->return
 DTMStringPool#_main(String[]):::Command-line unit test driver:::word->pool->new->DTMStringPool->println->for->pass
 DTMTreeWalker#setDTM(DTM):::Set the DTM to be traversed.:::
 DTMTreeWalker#getcontentHandler():::Get the ContentHandler used for the tree walk.:::return
 DTMTreeWalker#setcontentHandler(ContentHandler):::Set the ContentHandler used for the tree walk.:::
 DTMTreeWalker#traverse(int):::Perform a non-recursive pre-order/post-order traversal, operating as a Visitor:::top->while->startNode->nextNode->m_dtm->getFirstChild->while->endNode->if->break->m_dtm->getNextSibling->if->m_dtm->getParent->if->if->endNode->break
 DTMTreeWalker#traverse(int, int):::Perform a non-recursive pre-order/post-order traversal, operating as a Visitor:::while->startNode->nextNode->m_dtm->getFirstChild->while->endNode->if->break->m_dtm->getNextSibling->if->m_dtm->getParent->if->break
+DTMTreeWalker#dispatachChars(int):::Optimized dispatch of characters.:::m_dtm->dispatchCharactersEvents
 DTMTreeWalker#startNode(int):::Start processing given node:::if->switch->m_dtm->getNodeType->data->m_dtm->getStringValue->if->lh->data->dispatchAsComment->break->break->startDocument->break->dtm->for->nsn->dtm->getFirstNamespaceNode->dtm->getNextNamespaceNode->ns->dtm->getNamespaceURI->if->attrs->new->org.xml.sax.helpers.AttributesImpl->for->i->dtm->getFirstAttribute->dtm->getNextAttribute->m_dtm->getLocalName->m_dtm->getNodeName->startElement->break->name->m_dtm->getNodeName->if->name->equals->else->m_dtm->getNodeValue->processingInstruction->break->isLexH->lh->if->lh->startCDATA->dispatachChars->if->lh->endCDATA->break->if->m_contentHandler->processingInstruction->dispatachChars->m_contentHandler->processingInstruction->else->dispatachChars->break->if->m_dtm->getNodeName->startEntity->else->break
 DTMTreeWalker#endNode(int):::End processing of given node:::switch->m_dtm->getNodeType->endDocument->break->ns->m_dtm->getNamespaceURI->if->m_dtm->getLocalName->m_dtm->getNodeName->endElement->for->nsn->m_dtm->getFirstNamespaceNode->m_dtm->getNextNamespaceNode->break->break->if->lh->lh->m_dtm->getNodeName->endEntity->break
+EmptyIterator#getInstance()::: empty iterator get instance:::return
+EmptyIterator#next()::: empty iterator next:::return
+EmptyIterator#reset()::: empty iterator reset:::return
+EmptyIterator#getLast()::: empty iterator get last:::return
+EmptyIterator#getPosition()::: empty iterator get position:::return
+EmptyIterator#setMark()::: empty iterator set mark:::
+EmptyIterator#gotoMark()::: empty iterator goto mark:::
+EmptyIterator#setStartNode(int)::: empty iterator set start node:::return
+EmptyIterator#getStartNode()::: empty iterator get start node:::return
+EmptyIterator#isReverse()::: empty iterator is reverse:::return
+EmptyIterator#cloneIterator()::: empty iterator clone iterator:::return
+EmptyIterator#setRestartable(boolean)::: empty iterator set restartable:::
+EmptyIterator#getNodeByPosition(int)::: empty iterator get node by position:::return
+ExpandedNameTable#initExtendedTypes()::: Initialize the vector of extended types with the  basic DOM node types.:::new->ExtendedTypeArr->for->i
 ExpandedNameTable#getExpandedTypeID(String, String, int):::Given an expanded name represented by namespace, local name and node type, return an ID:::return->getExpandedTypeID
 ExpandedNameTable#getExpandedTypeID(String, String, int, boolean):::Given an expanded name represented by namespace, local name and node type, return an ID:::if->if->hash->namespace->hashCode->localName->hashCode->hashET->redefine->index->if->for->e->if->return->if->rehash->if->newET->new->ExtendedType->if->newArray->new->ExtendedTypeArr->System->arraycopy->entry->new->HashEntry->return
+ExpandedNameTable#rehash():::Increases the capacity of and internally reorganizes the hashtable, in order to accommodate and access its entries more efficiently:::oldCapacity->oldTable->newCapacity->new->HashEntryArr->for->i
 ExpandedNameTable#getExpandedTypeID(int):::Given a type, return an expanded name ID.Any additional nodes that are created that have this expanded name will use this ID.:::return
 ExpandedNameTable#getLocalName(int):::Given an expanded-name ID, return the local name part.:::return->getLocalName
 ExpandedNameTable#getLocalNameID(int):::Given an expanded-name ID, return the local name ID.:::if->getLocalName->equals->return->else->return
@@ -379,12 +591,55 @@ IncrementalSAXSource#setLexicalHandler(org.xml.sax.ext.LexicalHandler)::: Regist
 IncrementalSAXSource#setDTDHandler(org.xml.sax.DTDHandler)::: Register a SAX-style DTD handler for us to output to:::
 IncrementalSAXSource#deliverMoreNodes(boolean):::deliverMoreNodes() is a simple API which tells the thread in which the IncrementalSAXSource is running to deliver more events (true), or stop delivering events and close out its input (false):::
 IncrementalSAXSource#startParse(InputSource):::Launch an XMLReader's parsing operation, feeding events to this IncrementalSAXSource:::
+IncrementalSAXSource_Filter#createIncrementalSAXSource(CoroutineManager, int)::: incremental source_ filter create incremental source:::return->new->IncrementalSAXSource_Filter
+IncrementalSAXSource_Filter#init(CoroutineManager, int, int)::: incremental source_ filter init:::if->new->CoroutineManager->co->co_joinCoroutineSet->co->co_joinCoroutineSet->if->throw->XMLMessages->createXMLMessage->new->RuntimeException
 IncrementalSAXSource_Filter#setXMLReader(XMLReader):::Bind our input streams to an XMLReader:::eventsource->setContentHandler->eventsource->setDTDHandler->eventsource->setErrorHandler->try->eventsource->setProperty->catch->finally
+IncrementalSAXSource_Filter#setContentHandler(ContentHandler)::: incremental source_ filter set content handler:::
+IncrementalSAXSource_Filter#setDTDHandler(DTDHandler)::: incremental source_ filter set handler:::
+IncrementalSAXSource_Filter#setLexicalHandler(LexicalHandler)::: incremental source_ filter set lexical handler:::
+IncrementalSAXSource_Filter#setErrHandler(ErrorHandler)::: incremental source_ filter set err handler:::
+IncrementalSAXSource_Filter#setReturnFrequency(int)::: incremental source_ filter set return frequency:::if
+IncrementalSAXSource_Filter#characters(char[], int, int)::: incremental source_ filter characters:::if->co_yield->if->clientContentHandler->characters
+IncrementalSAXSource_Filter#endDocument()::: incremental source_ filter end document:::if->clientContentHandler->endDocument->co_yield
+IncrementalSAXSource_Filter#endElement(java.lang.String, java.lang.String, java.lang.String)::: incremental source_ filter end element:::if->co_yield->if->clientContentHandler->endElement
+IncrementalSAXSource_Filter#endPrefixMapping(java.lang.String)::: incremental source_ filter end prefix mapping:::if->co_yield->if->clientContentHandler->endPrefixMapping
+IncrementalSAXSource_Filter#ignorableWhitespace(char[], int, int)::: incremental source_ filter ignorable whitespace:::if->co_yield->if->clientContentHandler->ignorableWhitespace
+IncrementalSAXSource_Filter#processingInstruction(java.lang.String, java.lang.String)::: incremental source_ filter processing instruction:::if->co_yield->if->clientContentHandler->processingInstruction
+IncrementalSAXSource_Filter#setDocumentLocator(Locator)::: incremental source_ filter set document locator:::if->if->clientContentHandler->setDocumentLocator
+IncrementalSAXSource_Filter#skippedEntity(java.lang.String)::: incremental source_ filter skipped entity:::if->co_yield->if->clientContentHandler->skippedEntity
+IncrementalSAXSource_Filter#startDocument()::: incremental source_ filter start document:::co_entry_pause->if->co_yield->if->clientContentHandler->startDocument
+IncrementalSAXSource_Filter#startElement(java.lang.String, java.lang.String, java.lang.String, Attributes)::: incremental source_ filter start element:::if->co_yield->if->clientContentHandler->startElement
+IncrementalSAXSource_Filter#startPrefixMapping(java.lang.String, java.lang.String)::: incremental source_ filter start prefix mapping:::if->co_yield->if->clientContentHandler->startPrefixMapping
+IncrementalSAXSource_Filter#comment(char[], int, int)::: incremental source_ filter comment:::if->clientLexicalHandler->comment
+IncrementalSAXSource_Filter#endCDATA()::: incremental source_ filter end a:::if->clientLexicalHandler->endCDATA
+IncrementalSAXSource_Filter#endDTD()::: incremental source_ filter end d:::if->clientLexicalHandler->endDTD
+IncrementalSAXSource_Filter#endEntity(java.lang.String)::: incremental source_ filter end entity:::if->clientLexicalHandler->endEntity
+IncrementalSAXSource_Filter#startCDATA()::: incremental source_ filter start a:::if->clientLexicalHandler->startCDATA
+IncrementalSAXSource_Filter#startDTD(java.lang.String, java.lang.String, java.lang.String)::: incremental source_ filter start d:::if->clientLexicalHandler->startDTD
+IncrementalSAXSource_Filter#startEntity(java.lang.String)::: incremental source_ filter start entity:::if->clientLexicalHandler->startEntity
+IncrementalSAXSource_Filter#notationDecl(String, String, String)::: incremental source_ filter notation decl:::if->clientDTDHandler->notationDecl
+IncrementalSAXSource_Filter#unparsedEntityDecl(String, String, String, String)::: incremental source_ filter unparsed entity decl:::if->clientDTDHandler->unparsedEntityDecl
+IncrementalSAXSource_Filter#error(SAXParseException)::: incremental source_ filter error:::if->clientErrorHandler->error
+IncrementalSAXSource_Filter#fatalError(SAXParseException)::: incremental source_ filter fatal error:::if->clientErrorHandler->error->co_yield
+IncrementalSAXSource_Filter#warning(SAXParseException)::: incremental source_ filter warning:::if->clientErrorHandler->error
+IncrementalSAXSource_Filter#getSourceCoroutineID()::: incremental source_ filter get source coroutine d:::return
+IncrementalSAXSource_Filter#getControllerCoroutineID()::: incremental source_ filter get controller coroutine d:::return
+IncrementalSAXSource_Filter#getCoroutineManager()::: incremental source_ filter get coroutine manager:::return
 IncrementalSAXSource_Filter#count_and_yield(boolean):::In the SAX delegation code, I've inlined the count-down in the hope of encouraging compilers to deliver better performance:::if->if->co_yield
+IncrementalSAXSource_Filter#co_entry_pause():::co_entry_pause is called in startDocument() before anything else happens:::if->init->try->arg->fCoroutineManager->co_entry_pause->if->co_yield->catch->if->e->printStackTrace->throw->new->SAXException->finally
+IncrementalSAXSource_Filter#co_yield(boolean):::Co_Yield handles coroutine interactions while a parse is in progress:::if->return->try->arg->if->fCoroutineManager->co_resume->if->if->throw->new->StopException->fCoroutineManager->co_exit_to->catch->fCoroutineManager->co_exit->throw->new->SAXException->finally
 IncrementalSAXSource_Filter#startParse(InputSource):::Launch a thread that will run an XMLReader's parse() operation within  a thread, feeding events to this IncrementalSAXSource_Filter:::if->throw->XMLMessages->createXMLMessage->new->SAXException->if->throw->XMLMessages->createXMLMessage->new->SAXException->ThreadControllerWrapper->runThread
+IncrementalSAXSource_Filter#run()::: incremental source_ filter run:::if->return->if->println->arg->try->fXMLReader->parse->catch->if->println->inner->ex->getException->if->if->println->else->if->println->inner->printStackTrace->finally->try->fCoroutineManager->co_exit_to->catch->e->printStackTrace->fCoroutineManager->co_exit->finally
 IncrementalSAXSource_Filter#deliverMoreNodes(boolean):::deliverMoreNodes() is a simple API which tells the coroutine parser that we need more nodes:::if->return->try->result->fCoroutineManager->co_resume->if->fCoroutineManager->co_exit->return->catch->return->finally
+IncrementalSAXSource_Xerces#createIncrementalSAXSource()::: incremental source_ xerces create incremental source:::try->return->new->IncrementalSAXSource_Xerces->catch->iss->new->IncrementalSAXSource_Filter->iss->new->SAXParser->setXMLReader->return->finally
+IncrementalSAXSource_Xerces#createIncrementalSAXSource(SAXParser)::: incremental source_ xerces create incremental source:::try->return->new->IncrementalSAXSource_Xerces->catch->iss->new->IncrementalSAXSource_Filter->iss->setXMLReader->return->finally
+IncrementalSAXSource_Xerces#setContentHandler(org.xml.sax.ContentHandler)::: incremental source_ xerces set content handler:::setContentHandler
+IncrementalSAXSource_Xerces#setLexicalHandler(org.xml.sax.ext.LexicalHandler)::: incremental source_ xerces set lexical handler:::try->setProperty->catch->finally
+IncrementalSAXSource_Xerces#setDTDHandler(org.xml.sax.DTDHandler)::: incremental source_ xerces set handler:::setDTDHandler
 IncrementalSAXSource_Xerces#startParse(InputSource):::startParse() is a simple API which tells the IncrementalSAXSource to begin reading a document.:::if->throw->XMLMessages->createXMLMessage->new->SAXException->if->throw->XMLMessages->createXMLMessage->new->SAXException->ok->try->parseSomeSetup->catch->throw->new->SAXException->finally->if->throw->XMLMessages->createXMLMessage->new->SAXException
 IncrementalSAXSource_Xerces#deliverMoreNodes(boolean):::deliverMoreNodes() is a simple API which tells the coroutine parser that we need more nodes:::if->return->arg->try->keepgoing->parseSome->catch->new->SAXException->finally->return
+IncrementalSAXSource_Xerces#parseSomeSetup(InputSource)::: incremental source_ xerces parse some setup:::if->parms1->source->getPublicId->source->getSystemId->xmlsource->fConfigInputSourceCtor->newInstance->parmsa->source->getByteStream->fConfigSetByteStream->invoke->source->getCharacterStream->fConfigSetCharStream->invoke->source->getEncoding->fConfigSetEncoding->invoke->noparms->new->ObjectArr->fReset->invoke->fConfigSetInput->invoke->return->parseSome->else->parm->ret->fParseSomeSetup->invoke->return->booleanValue
+IncrementalSAXSource_Xerces#parseSome()::: incremental source_ xerces parse some:::if->ret->fConfigParse->invoke->return->booleanValue->else->ret->fParseSome->invoke->return->booleanValue
 IncrementalSAXSource_Xerces#_main(String[]):::Simple unit test:::println->co->new->CoroutineManager->appCoroutineID->co->co_joinCoroutineSet->if->println->return->parser->createIncrementalSAXSource->trace->new->com.sun.org.apache.xml.internal.serialize.XMLSerializer->parser->setContentHandler->parser->setLexicalHandler->for->arg
 NodeLocator#getPublicId():::getPublicId returns the public ID of the node.:::return
 NodeLocator#getSystemId():::getSystemId returns the system ID of the node.:::return

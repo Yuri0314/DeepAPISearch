@@ -1,11 +1,28 @@
+AccessibleObject#checkPermission()::: accessible object check permission:::sm->System->getSecurityManager->if->sm->checkPermission
 AccessibleObject#setAccessible(AccessibleObject[], boolean):::Convenience method to set the accessible flag for an array of reflected objects with a single security check (for efficiency):::checkPermission->if->caller->Reflection->getCallerClass->array->clone->foreach->ao->checkCanSetAccessible->foreach->ao->setAccessible0
 AccessibleObject#setAccessible(boolean):::Set the accessible flag for this reflected object to the indicated boolean value:::AccessibleObject->checkPermission->setAccessible0
 AccessibleObject#setAccessible0(boolean):::Sets the accessible flag and returns the new value:::return
 AccessibleObject#trySetAccessible():::Set the accessible flag for this reflected object to true if possible:::AccessibleObject->checkPermission->if->return->if->isInstance->return->setAccessible0->declaringClass->getDeclaringClass->if->return->if->Reflection->getCallerClass->checkCanSetAccessible->return->setAccessible0->else->return
 AccessibleObject#checkCanSetAccessible(Class):::If the given AccessibleObject is a Constructor, Method or Field then checks that its declaring class is in a package that can be accessed by the given caller of setAccessible.:::
+AccessibleObject#checkCanSetAccessible(Class, Class)::: accessible object check can set accessible:::checkCanSetAccessible
+AccessibleObject#checkCanSetAccessible(Class, Class, boolean)::: accessible object check can set accessible:::if->throw->new->IllegalCallerException->callerModule->caller->getModule->declaringModule->declaringClass->getModule->if->return->if->getModule->return->if->declaringModule->isNamed->return->pn->declaringClass->getPackageName->modifiers->if->getModifiers->else->getModifiers->isClassPublic->Modifier->declaringClass->getModifiers->isPublic->if->declaringModule->isExported->if->Modifier->isPublic->logIfExportedForIllegalAccess->return->if->Modifier->isProtected->Modifier->isStatic->isSubclassOf->logIfExportedForIllegalAccess->return->if->declaringModule->isOpen->logIfOpenedForIllegalAccess->return->if->msg->if->if->Modifier->isPublic->else->e->new->InaccessibleObjectException->if->printStackTraceWhenAccessFails->e->printStackTrace->throw->return
+AccessibleObject#isSubclassOf(Class, Class)::: accessible object is subclass of:::while->if->return->queryClass->getSuperclass->return
+AccessibleObject#logIfOpenedForIllegalAccess(Class, Class)::: accessible object log if opened for illegal access:::callerModule->caller->getModule->targetModule->declaringClass->getModule->if->callerModule->isNamed->targetModule->isNamed->logger->IllegalAccessLogger->illegalAccessLogger->if->logger->this->toShortString->logIfOpenedForIllegalAccess
+AccessibleObject#logIfExportedForIllegalAccess(Class, Class)::: accessible object log if exported for illegal access:::callerModule->caller->getModule->targetModule->declaringClass->getModule->if->callerModule->isNamed->targetModule->isNamed->logger->IllegalAccessLogger->illegalAccessLogger->if->logger->this->toShortString->logIfExportedForIllegalAccess
 AccessibleObject#toShortString():::Returns a short descriptive string to describe this object in log messages.:::return->toString
 AccessibleObject#isAccessible():::Get the value of the accessible flag for this reflected object.:::return
 AccessibleObject#canAccess(Object):::Test if the caller can access this reflected object:::if->isInstance->return->declaringClass->getDeclaringClass->modifiers->getModifiers->if->Modifier->isStatic->if->throw->new->IllegalArgumentException->if->declaringClass->obj->getClass->isAssignableFrom->throw->declaringClass->getName->new->IllegalArgumentException->else->if->throw->new->IllegalArgumentException->if->return->caller->Reflection->getCallerClass->targetClass->if->else->Modifier->isStatic->obj->getClass->return->verifyAccess
+AccessibleObject#getAnnotation(Class)::: accessible object get annotation:::throw->new->AssertionError
+AccessibleObject#isAnnotationPresent(Class)::: accessible object is annotation present:::return->AnnotatedElement.super->isAnnotationPresent
+AccessibleObject#getAnnotationsByType(Class)::: accessible object get annotations by type:::throw->new->AssertionError
+AccessibleObject#getAnnotations()::: accessible object get annotations:::return->getDeclaredAnnotations
+AccessibleObject#getDeclaredAnnotation(Class)::: accessible object get declared annotation:::return->getAnnotation
+AccessibleObject#getDeclaredAnnotationsByType(Class)::: accessible object get declared annotations by type:::return->getAnnotationsByType
+AccessibleObject#getDeclaredAnnotations()::: accessible object get declared annotations:::throw->new->AssertionError
+AccessibleObject#checkAccess(Class, Class, Class, int)::: accessible object check access:::if->verifyAccess->e->Reflection->newIllegalAccessException->if->printStackTraceWhenAccessFails->e->printStackTrace->throw
+AccessibleObject#verifyAccess(Class, Class, Class, int)::: accessible object verify access:::if->return->cache->if->Modifier->isProtected->if->cache2->if->return->else->if->return->return->slowVerifyAccess
+AccessibleObject#slowVerifyAccess(Class, Class, Class, int)::: accessible object slow verify access:::if->Reflection->verifyMemberAccess->return->logIfExportedForIllegalAccess->cache->Modifier->isProtected->new->Class<?>Arr->return
+AccessibleObject#printStackTraceWhenAccessFails():::Returns true if a stack trace should be printed when access fails.:::if->VM->initLevel->s->GetPropertyAction->privilegedGetProperty->if->s->equalsIgnoreCase->return
 AccessibleObject#getRoot():::Returns the root AccessibleObject; or null if this object is the root:::throw->new->InternalError
 AnnotatedArrayType#getAnnotatedGenericComponentType():::Returns the potentially annotated generic component type of this array type.:::
 AnnotatedArrayType#getAnnotatedOwnerType():::Returns the potentially annotated type that this type is a member of, if this type represents a nested type:::
@@ -46,39 +63,101 @@ Array#setInt(Object, int, int):::Sets the value of the indexed component of the 
 Array#setLong(Object, int, long):::Sets the value of the indexed component of the specified array object to the specified long value.:::
 Array#setFloat(Object, int, float):::Sets the value of the indexed component of the specified array object to the specified float value.:::
 Array#setDouble(Object, int, double):::Sets the value of the indexed component of the specified array object to the specified double value.:::
+Array#newArray(Class, int)::: array new array:::
+Array#multiNewArray(Class, int[])::: array multi new array:::
+Constructor#getFactory()::: constructor get factory:::return->CoreReflectionFactory->ConstructorScope->make->make
+Constructor#getGenericInfo()::: constructor get generic info:::if->ConstructorRepository->getSignature->getFactory->make->return
+Constructor#getRoot()::: constructor get root:::return
 Constructor#copy():::Package-private routine (exposed to java.lang.Class via ReflectAccess) which returns a copy of this Constructor:::if->throw->new->IllegalArgumentException->res->new->Constructor<>->return
 Constructor#setAccessible(boolean):::A {@code SecurityException is also thrown if this object is a Constructor object for the class Class and flag is true:::AccessibleObject->checkPermission->if->Reflection->getCallerClass->checkCanSetAccessible->setAccessible0
+Constructor#checkCanSetAccessible(Class)::: constructor check can set accessible:::checkCanSetAccessible->if->throw->new->SecurityException
+Constructor#hasGenericInformation()::: constructor has generic information:::return->getSignature
+Constructor#getAnnotationBytes()::: constructor get annotation bytes:::return
 Constructor#getDeclaringClass():::Returns the Class object representing the class that declares the constructor represented by this object.:::return
 Constructor#getName():::Returns the name of this constructor, as a string:::return->getDeclaringClass->getName
+Constructor#getModifiers()::: constructor get modifiers:::return
+Constructor#getTypeParameters()::: constructor get type parameters:::if->getSignature->return->getGenericInfo->getTypeParameters->else->return->new->TypeVariableArr
+Constructor#getSharedParameterTypes()::: constructor get shared parameter types:::return
+Constructor#getSharedExceptionTypes()::: constructor get shared exception types:::return
+Constructor#getParameterTypes()::: constructor get parameter types:::return->parameterTypes->clone
+Constructor#getParameterCount()::: constructor get parameter count:::return
+Constructor#getGenericParameterTypes()::: constructor get generic parameter types:::return->super->getGenericParameterTypes
+Constructor#getExceptionTypes()::: constructor get exception types:::return->exceptionTypes->clone
+Constructor#getGenericExceptionTypes()::: constructor get generic exception types:::return->super->getGenericExceptionTypes
 Constructor#equals(Object):::Compares this Constructor against the specified object:::if->other->if->getDeclaringClass->other->getDeclaringClass->return->equalParamTypes->return
 Constructor#hashCode():::Returns a hashcode for this Constructor:::return->getDeclaringClass->getName->hashCode
 Constructor#toString():::Returns a string describing this Constructor:::return->Modifier->constructorModifiers->sharedToString
+Constructor#specificToStringHeader(StringBuilder)::: constructor specific to string header:::sb->getDeclaringClass->getTypeName->append
+Constructor#toShortString()::: constructor to short string:::sb->new->StringBuilder->sb->getDeclaringClass->getTypeName->append->sb->append->sj->new->StringJoiner->foreach->getParameterTypes->sj->parameterType->getTypeName->add->sb->append->sb->append->return->sb->toString
 Constructor#toGenericString():::Returns a string describing this Constructor, including type parameters:::return->Modifier->constructorModifiers->sharedToGenericString
+Constructor#specificToGenericStringHeader(StringBuilder)::: constructor specific to generic string header:::specificToStringHeader
 Constructor#newInstance(Object...):::Uses the constructor represented by this Constructor object to create and initialize a new instance of the constructor's declaring class, with the specified initialization parameters:::if->caller->Reflection->getCallerClass->checkAccess->if->clazz->getModifiers->throw->new->IllegalArgumentException->ca->if->acquireConstructorAccessor->inst->ca->newInstance->return
+Constructor#isVarArgs()::: constructor is var args:::return->super->isVarArgs
+Constructor#isSynthetic()::: constructor is synthetic:::return->super->isSynthetic
+Constructor#acquireConstructorAccessor()::: constructor acquire constructor accessor:::tmp->if->root->getConstructorAccessor->if->else->reflectionFactory->newConstructorAccessor->setConstructorAccessor->return
+Constructor#getConstructorAccessor()::: constructor get constructor accessor:::return
+Constructor#setConstructorAccessor(ConstructorAccessor)::: constructor set constructor accessor:::if->root->setConstructorAccessor
+Constructor#getSlot()::: constructor get slot:::return
+Constructor#getSignature()::: constructor get signature:::return
+Constructor#getRawAnnotations()::: constructor get raw annotations:::return
+Constructor#getRawParameterAnnotations()::: constructor get raw parameter annotations:::return
+Constructor#getAnnotation(Class)::: constructor get annotation:::return->super->getAnnotation
+Constructor#getDeclaredAnnotations()::: constructor get declared annotations:::return->super->getDeclaredAnnotations
+Constructor#getParameterAnnotations()::: constructor get parameter annotations:::return->sharedGetParameterAnnotations
+Constructor#handleParameterNumberMismatch(int, int)::: constructor handle parameter number mismatch:::declaringClass->getDeclaringClass->if->declaringClass->isEnum->declaringClass->isAnonymousClass->declaringClass->isLocalClass->return->else->if->declaringClass->isMemberClass->declaringClass->getModifiers->return->else->throw->new->AnnotationFormatError
+Constructor#getAnnotatedReturnType()::: constructor get annotated return type:::return->getDeclaringClass->getAnnotatedReturnType0
+Constructor#getAnnotatedReceiverType()::: constructor get annotated receiver type:::thisDeclClass->getDeclaringClass->enclosingClass->thisDeclClass->getEnclosingClass->if->return->outerDeclaringClass->thisDeclClass->getDeclaringClass->if->return->if->Modifier->thisDeclClass->getModifiers->isStatic->return->return->TypeAnnotationParser->getTypeAnnotationBytes0->SharedSecrets->getJavaLangAccess->getConstantPool->buildAnnotatedType
 Executable#getAnnotationBytes():::Accessor method to allow code sharing:::
 Executable#hasGenericInformation():::Does the Executable have generic information.:::
+Executable#getGenericInfo()::: executable get generic info:::
+Executable#equalParamTypes(Class[], Class[])::: executable equal param types:::if->for->i->return->return
+Executable#parseParameterAnnotations(byte[])::: executable parse parameter annotations:::return->AnnotationParser->SharedSecrets->getJavaLangAccess->getDeclaringClass->getConstantPool->getDeclaringClass->parseParameterAnnotations
+Executable#printModifiersIfNonzero(StringBuilder, int, boolean)::: executable print modifiers if nonzero:::mod->getModifiers->if->sb->Modifier->toString->append->append->else->access_mod->if->sb->Modifier->toString->append->append->if->sb->append->if->sb->Modifier->toString->append->append
+Executable#sharedToString(int, boolean, Class[], Class[])::: executable shared to string:::try->sb->new->StringBuilder->printModifiersIfNonzero->specificToStringHeader->sb->append->sj->new->StringJoiner->foreach->sj->parameterType->getTypeName->add->sb->sj->toString->append->sb->append->if->joiner->new->StringJoiner->foreach->joiner->exceptionType->getTypeName->add->sb->joiner->toString->append->return->sb->toString->catch->return->finally
 Executable#specificToStringHeader(StringBuilder):::Generate toString header information specific to a method or constructor.:::
+Executable#sharedToGenericString(int, boolean)::: executable shared to generic string:::try->sb->new->StringBuilder->printModifiersIfNonzero->typeparms->getTypeParameters->if->sj->new->StringJoiner->foreach->sj->typeparm->getTypeName->add->sb->sj->toString->append->specificToGenericStringHeader->sb->append->sj->new->StringJoiner->params->getGenericParameterTypes->for->j->sb->sj->toString->append->sb->append->exceptionTypes->getGenericExceptionTypes->if->joiner->new->StringJoiner->foreach->joiner->exceptionType->getTypeName->add->sb->joiner->toString->append->return->sb->toString->catch->return->finally
 Executable#specificToGenericStringHeader(StringBuilder):::Generate toGenericString header information specific to a method or constructor.:::
 Executable#getDeclaringClass():::Returns the Class object representing the class or interface that declares the executable represented by this object.:::
 Executable#getName():::Returns the name of the executable represented by this object.:::
 Executable#getModifiers():::Returns the Java language Modifier modifiers for the executable represented by this object.:::
 Executable#getTypeParameters():::Returns an array of TypeVariable objects that represent the type variables declared by the generic declaration represented by this GenericDeclaration object, in declaration order:::
+Executable#getSharedParameterTypes()::: executable get shared parameter types:::
+Executable#getSharedExceptionTypes()::: executable get shared exception types:::
 Executable#getParameterTypes():::Returns an array of Class objects that represent the formal parameter types, in declaration order, of the executable represented by this object:::
 Executable#getParameterCount():::Returns the number of formal parameters (whether explicitly declared or implicitly declared or neither) for the executable represented by this object.:::throw->new->AbstractMethodError
 Executable#getGenericParameterTypes():::Returns an array of Type objects that represent the formal parameter types, in declaration order, of the executable represented by this object:::if->hasGenericInformation->return->getGenericInfo->getParameterTypes->else->return->getParameterTypes
 Executable#getAllGenericParameterTypes():::Behaves like getGenericParameterTypes, but returns type information for all parameters, including synthetic parameters.:::genericInfo->hasGenericInformation->if->return->getParameterTypes->else->realParamData->hasRealParameterData->genericParamTypes->getGenericParameterTypes->nonGenericParamTypes->getParameterTypes->out->new->TypeArr->params->getParameters->fromidx->if->for->i->else->return->return
 Executable#getParameters():::Returns an array of Parameter objects that represent all the parameters to the underlying executable represented by this object:::return->privateGetParameters->clone
+Executable#synthesizeAllParams()::: executable synthesize all params:::realparams->getParameterCount->out->new->ParameterArr->for->i->return
+Executable#verifyParameters(Parameter[])::: executable verify parameters:::mask->if->getParameterTypes->throw->new->MalformedParametersException->foreach->name->parameter->getRealName->mods->parameter->getModifiers->if->if->name->isEmpty->name->indexOf->name->indexOf->name->indexOf->name->indexOf->throw->new->MalformedParametersException->if->throw->new->MalformedParametersException
+Executable#privateGetParameters()::: executable private get parameters:::tmp->if->try->getParameters0->catch->throw->new->MalformedParametersException->finally->if->synthesizeAllParams->else->verifyParameters->return
+Executable#hasRealParameterData()::: executable has real parameter data:::if->privateGetParameters->return
+Executable#getParameters0()::: executable get parameters0:::
+Executable#getTypeAnnotationBytes0()::: executable get type annotation bytes0:::
+Executable#getTypeAnnotationBytes()::: executable get type annotation bytes:::return->getTypeAnnotationBytes0
 Executable#getExceptionTypes():::Returns an array of Class objects that represent the types of exceptions declared to be thrown by the underlying executable represented by this object:::
 Executable#getGenericExceptionTypes():::Returns an array of Type objects that represent the exceptions declared to be thrown by this executable object:::result->if->hasGenericInformation->getGenericInfo->getExceptionTypes->return->else->return->getExceptionTypes
 Executable#toGenericString():::Returns a string describing this Executable, including any type parameters.:::
 Executable#isVarArgs():::Returns true if this executable was declared to take a variable number of arguments; returns false otherwise.:::return->getModifiers
 Executable#isSynthetic():::Returns true if this executable is a synthetic construct; returns false otherwise.:::return->Modifier->getModifiers->isSynthetic
 Executable#getParameterAnnotations():::Returns an array of arrays of Annotations that represent the annotations on the formal parameters, in declaration order, of the Executable represented by this object:::
+Executable#sharedGetParameterAnnotations(Class[], byte[])::: executable shared get parameter annotations:::numParameters->if->return->new->AnnotationArrs->result->parseParameterAnnotations->if->handleParameterNumberMismatch->tmp->new->AnnotationArrs->System->arraycopy->new->AnnotationArr->return
+Executable#handleParameterNumberMismatch(int, int)::: executable handle parameter number mismatch:::
+Executable#getAnnotation(Class)::: executable get annotation:::Objects->requireNonNull->return->annotationClass->declaredAnnotations->get->cast
+Executable#getAnnotationsByType(Class)::: executable get annotations by type:::Objects->requireNonNull->return->AnnotationSupport->declaredAnnotations->getDirectlyAndIndirectlyPresent
+Executable#getDeclaredAnnotations()::: executable get declared annotations:::return->AnnotationParser->declaredAnnotations->toArray
+Executable#declaredAnnotations()::: executable declared annotations:::declAnnos->if->synchronized->if->root->getRoot->if->root->declaredAnnotations->else->AnnotationParser->getAnnotationBytes->SharedSecrets->getJavaLangAccess->getDeclaringClass->getConstantPool->getDeclaringClass->parseAnnotations->return
 Executable#getAnnotatedReturnType():::Returns an AnnotatedType object that represents the use of a type to specify the return type of the method/constructor represented by this Executable:::
+Executable#getAnnotatedReturnType0(Type)::: executable get annotated return type0:::return->TypeAnnotationParser->getTypeAnnotationBytes0->SharedSecrets->getJavaLangAccess->getDeclaringClass->getConstantPool->getDeclaringClass->buildAnnotatedType
 Executable#getAnnotatedReceiverType():::Returns an AnnotatedType object that represents the use of a type to specify the receiver type of the method/constructor represented by this Executable object:::if->Modifier->this->getModifiers->isStatic->return->return->TypeAnnotationParser->getTypeAnnotationBytes0->SharedSecrets->getJavaLangAccess->getDeclaringClass->getConstantPool->getDeclaringClass->getDeclaringClass->buildAnnotatedType
 Executable#getAnnotatedParameterTypes():::Returns an array of AnnotatedType objects that represent the use of types to specify formal parameter types of the method/constructor represented by this Executable:::return->TypeAnnotationParser->getTypeAnnotationBytes0->SharedSecrets->getJavaLangAccess->getDeclaringClass->getConstantPool->getDeclaringClass->getAllGenericParameterTypes->buildAnnotatedTypes
 Executable#getAnnotatedExceptionTypes():::Returns an array of AnnotatedType objects that represent the use of types to specify the declared exceptions of the method/constructor represented by this Executable:::return->TypeAnnotationParser->getTypeAnnotationBytes0->SharedSecrets->getJavaLangAccess->getDeclaringClass->getConstantPool->getDeclaringClass->getGenericExceptionTypes->buildAnnotatedTypes
+Field#getGenericSignature()::: field get generic signature:::return
+Field#getFactory()::: field get factory:::c->getDeclaringClass->return->CoreReflectionFactory->ClassScope->make->make
+Field#getGenericInfo()::: field get generic info:::if->FieldRepository->getGenericSignature->getFactory->make->return
 Field#copy():::Package-private routine (exposed to java.lang.Class via ReflectAccess) which returns a copy of this Field:::if->throw->new->IllegalArgumentException->res->new->Field->return
+Field#setAccessible(boolean)::: field set accessible:::AccessibleObject->checkPermission->if->Reflection->getCallerClass->checkCanSetAccessible->setAccessible0
+Field#checkCanSetAccessible(Class)::: field check can set accessible:::checkCanSetAccessible
 Field#getDeclaringClass():::Returns the Class object representing the class or interface that declares the field represented by this Field object.:::return
 Field#getName():::Returns the name of the field represented by this Field object.:::return
 Field#getModifiers():::Returns the Java language modifiers for the field represented by this Field object, as an integer:::return
@@ -89,6 +168,7 @@ Field#getGenericType():::Returns a Type object that represents the declared type
 Field#equals(Object):::Compares this Field against the specified object:::if->other->return->getDeclaringClass->other->getDeclaringClass->getName->other->getName->getType->other->getType->return
 Field#hashCode():::Returns a hashcode for this Field:::return->getDeclaringClass->getName->hashCode->getName->hashCode
 Field#toString():::Returns a string describing this Field:::mod->getModifiers->return->Modifier->toString->getType->getTypeName->getDeclaringClass->getTypeName->getName
+Field#toShortString()::: field to short string:::return->getDeclaringClass->getTypeName->getName
 Field#toGenericString():::Returns a string describing this Field, including its generic type:::mod->getModifiers->fieldType->getGenericType->return->Modifier->toString->fieldType->getTypeName->getDeclaringClass->getTypeName->getName
 Field#get(Object):::Returns the value of the field represented by this Field, on the specified object:::if->caller->Reflection->getCallerClass->checkAccess->return->getFieldAccessor->get
 Field#getBoolean(Object):::Gets the value of a static or instance boolean field.:::if->caller->Reflection->getCallerClass->checkAccess->return->getFieldAccessor->getBoolean
@@ -108,6 +188,17 @@ Field#setInt(Object, int):::Sets the value of a field as an int on the specified
 Field#setLong(Object, long):::Sets the value of a field as a long on the specified object:::if->caller->Reflection->getCallerClass->checkAccess->getFieldAccessor->setLong
 Field#setFloat(Object, float):::Sets the value of a field as a float on the specified object:::if->caller->Reflection->getCallerClass->checkAccess->getFieldAccessor->setFloat
 Field#setDouble(Object, double):::Sets the value of a field as a double on the specified object:::if->caller->Reflection->getCallerClass->checkAccess->getFieldAccessor->setDouble
+Field#checkAccess(Class, Object)::: field check access:::Modifier->isStatic->obj->getClass->checkAccess
+Field#getFieldAccessor(Object)::: field get field accessor:::ov->a->return->acquireFieldAccessor
+Field#acquireFieldAccessor(boolean)::: field acquire field accessor:::tmp->if->root->getFieldAccessor->if->if->else->else->reflectionFactory->newFieldAccessor->setFieldAccessor->return
+Field#getFieldAccessor(boolean)::: field get field accessor:::return
+Field#setFieldAccessor(FieldAccessor, boolean)::: field set field accessor:::if->else->if->root->setFieldAccessor
+Field#getRoot()::: field get root:::return
+Field#getAnnotation(Class)::: field get annotation:::Objects->requireNonNull->return->annotationClass->declaredAnnotations->get->cast
+Field#getAnnotationsByType(Class)::: field get annotations by type:::Objects->requireNonNull->return->AnnotationSupport->declaredAnnotations->getDirectlyAndIndirectlyPresent
+Field#getDeclaredAnnotations()::: field get declared annotations:::return->AnnotationParser->declaredAnnotations->toArray
+Field#declaredAnnotations()::: field declared annotations:::declAnnos->if->synchronized->if->root->if->root->declaredAnnotations->else->AnnotationParser->SharedSecrets->getJavaLangAccess->getDeclaringClass->getConstantPool->getDeclaringClass->parseAnnotations->return
+Field#getTypeAnnotationBytes0()::: field get type annotation bytes0:::
 Field#getAnnotatedType():::Returns an AnnotatedType object that represents the use of a type to specify the declared type of the field represented by this Field.:::return->TypeAnnotationParser->getTypeAnnotationBytes0->SharedSecrets->getJavaLangAccess->getDeclaringClass->getConstantPool->getDeclaringClass->getGenericType->buildAnnotatedType
 GenericArrayType#getGenericComponentType():::Returns a Type object representing the component type of this array:::
 GenericDeclaration#getTypeParameters():::Returns an array of TypeVariable objects that represent the type variables declared by the generic declaration represented by this GenericDeclaration object, in declaration order:::
@@ -118,20 +209,50 @@ Member#getDeclaringClass():::Returns the Class object representing the class or 
 Member#getName():::Returns the simple name of the underlying member or constructor represented by this Member.:::
 Member#getModifiers():::Returns the Java language modifiers for the member or constructor represented by this Member, as an integer:::
 Member#isSynthetic():::Returns true if this member was introduced by the compiler; returns false otherwise.:::
+Method#getGenericSignature()::: method get generic signature:::return
+Method#getFactory()::: method get factory:::return->CoreReflectionFactory->MethodScope->make->make
+Method#getGenericInfo()::: method get generic info:::if->MethodRepository->getGenericSignature->getFactory->make->return
 Method#copy():::Package-private routine (exposed to java.lang.Class via ReflectAccess) which returns a copy of this Method:::if->throw->new->IllegalArgumentException->res->new->Method->return
 Method#leafCopy():::Make a copy of a leaf method.:::if->throw->new->IllegalArgumentException->res->new->Method->return
+Method#setAccessible(boolean)::: method set accessible:::AccessibleObject->checkPermission->if->Reflection->getCallerClass->checkCanSetAccessible->setAccessible0
+Method#checkCanSetAccessible(Class)::: method check can set accessible:::checkCanSetAccessible
+Method#getRoot()::: method get root:::return
+Method#hasGenericInformation()::: method has generic information:::return->getGenericSignature
+Method#getAnnotationBytes()::: method get annotation bytes:::return
 Method#getDeclaringClass():::Returns the Class object representing the class or interface that declares the method represented by this object.:::return
 Method#getName():::Returns the name of the method represented by this Method object, as a String.:::return
+Method#getModifiers()::: method get modifiers:::return
+Method#getTypeParameters()::: method get type parameters:::if->getGenericSignature->return->getGenericInfo->getTypeParameters->else->return->new->TypeVariableArr
 Method#getReturnType():::Returns a Class object that represents the formal return type of the method represented by this Method object.:::return
 Method#getGenericReturnType():::Returns a Type object that represents the formal return type of the method represented by this Method object:::if->getGenericSignature->return->getGenericInfo->getReturnType->else->return->getReturnType
+Method#getSharedParameterTypes()::: method get shared parameter types:::return
+Method#getSharedExceptionTypes()::: method get shared exception types:::return
+Method#getParameterTypes()::: method get parameter types:::return->parameterTypes->clone
+Method#getParameterCount()::: method get parameter count:::return
+Method#getGenericParameterTypes()::: method get generic parameter types:::return->super->getGenericParameterTypes
+Method#getExceptionTypes()::: method get exception types:::return->exceptionTypes->clone
+Method#getGenericExceptionTypes()::: method get generic exception types:::return->super->getGenericExceptionTypes
 Method#equals(Object):::Compares this Method against the specified object:::if->other->if->getDeclaringClass->other->getDeclaringClass->getName->other->getName->if->returnType->other->getReturnType->equals->return->return->equalParamTypes->return
 Method#hashCode():::Returns a hashcode for this Method:::return->getDeclaringClass->getName->hashCode->getName->hashCode
 Method#toString():::Returns a string describing this Method:::return->Modifier->methodModifiers->isDefault->sharedToString
+Method#specificToStringHeader(StringBuilder)::: method specific to string header:::sb->getReturnType->getTypeName->append->append->sb->getDeclaringClass->getTypeName->append->append->sb->getName->append
+Method#toShortString()::: method to short string:::sb->new->StringBuilder->sb->getDeclaringClass->getTypeName->append->append->sb->getName->append->sb->append->sj->new->StringJoiner->foreach->getParameterTypes->sj->parameterType->getTypeName->add->sb->append->sb->append->return->sb->toString
 Method#toGenericString():::Returns a string describing this Method, including type parameters:::return->Modifier->methodModifiers->isDefault->sharedToGenericString
+Method#specificToGenericStringHeader(StringBuilder)::: method specific to generic string header:::genRetType->getGenericReturnType->sb->genRetType->getTypeName->append->append->sb->getDeclaringClass->getTypeName->append->append->sb->getName->append
 Method#invoke(Object, Object...):::Invokes the underlying method represented by this Method object, on the specified object with the specified parameters:::if->caller->Reflection->getCallerClass->Modifier->isStatic->obj->getClass->checkAccess->ma->if->acquireMethodAccessor->return->ma->invoke
 Method#isBridge():::Returns true if this method is a bridge method; returns false otherwise.:::return->getModifiers
+Method#isVarArgs()::: method is var args:::return->super->isVarArgs
+Method#isSynthetic()::: method is synthetic:::return->super->isSynthetic
 Method#isDefault():::Returns true if this method is a default method; returns false otherwise:::return->getModifiers->getDeclaringClass->isInterface
+Method#acquireMethodAccessor()::: method acquire method accessor:::tmp->if->root->getMethodAccessor->if->else->reflectionFactory->newMethodAccessor->setMethodAccessor->return
+Method#getMethodAccessor()::: method get method accessor:::return
+Method#setMethodAccessor(MethodAccessor)::: method set method accessor:::if->root->setMethodAccessor
 Method#getDefaultValue():::Returns the default value for the annotation member represented by this Method instance:::if->return->memberType->AnnotationType->getReturnType->invocationHandlerReturnType->result->AnnotationParser->ByteBuffer->wrap->SharedSecrets->getJavaLangAccess->getDeclaringClass->getConstantPool->getDeclaringClass->parseMemberValue->if->if->proxy->throw->proxy->typeName->proxy->getCause->new->TypeNotPresentException->throw->new->AnnotationFormatError->return
+Method#getAnnotation(Class)::: method get annotation:::return->super->getAnnotation
+Method#getDeclaredAnnotations()::: method get declared annotations:::return->super->getDeclaredAnnotations
+Method#getParameterAnnotations()::: method get parameter annotations:::return->sharedGetParameterAnnotations
+Method#getAnnotatedReturnType()::: method get annotated return type:::return->getGenericReturnType->getAnnotatedReturnType0
+Method#handleParameterNumberMismatch(int, int)::: method handle parameter number mismatch:::throw->new->AnnotationFormatError
 Modifier#isPublic(int):::Return true if the integer argument includes the public modifier, false otherwise.:::return
 Modifier#isPrivate(int):::Return true if the integer argument includes the private modifier, false otherwise.:::return
 Modifier#isProtected(int):::Return true if the integer argument includes the protected modifier, false otherwise.:::return
@@ -145,6 +266,8 @@ Modifier#isInterface(int):::Return true if the integer argument includes the int
 Modifier#isAbstract(int):::Return true if the integer argument includes the abstract modifier, false otherwise.:::return
 Modifier#isStrict(int):::Return true if the integer argument includes the strictfp modifier, false otherwise.:::return
 Modifier#toString(int):::Return a string describing the access modifier flags in the specified modifier:::sj->new->StringJoiner->if->sj->add->if->sj->add->if->sj->add->if->sj->add->if->sj->add->if->sj->add->if->sj->add->if->sj->add->if->sj->add->if->sj->add->if->sj->add->if->sj->add->return->sj->toString
+Modifier#isSynthetic(int)::: modifier is synthetic:::return
+Modifier#isMandated(int)::: modifier is mandated:::return
 Modifier#classModifiers():::Return an int value OR-ing together the source language modifiers that can be applied to a class.:::return
 Modifier#interfaceModifiers():::Return an int value OR-ing together the source language modifiers that can be applied to an interface.:::return
 Modifier#constructorModifiers():::Return an int value OR-ing together the source language modifiers that can be applied to a constructor.:::return
@@ -158,21 +281,120 @@ Parameter#toString():::Returns a string describing this parameter:::sb->new->Str
 Parameter#getDeclaringExecutable():::Return the Executable which declares this parameter.:::return
 Parameter#getModifiers():::Get the modifier flags for this the parameter represented by this Parameter object.:::return
 Parameter#getName():::Returns the name of the parameter:::if->name->equals->return->else->return
+Parameter#getRealName()::: parameter get real name:::return
 Parameter#getParameterizedType():::Returns a Type object that identifies the parameterized type for the parameter represented by this Parameter object.:::tmp->if->executable->getAllGenericParameterTypes->return
 Parameter#getType():::Returns a Class object that identifies the declared type for the parameter represented by this Parameter object.:::tmp->if->executable->getParameterTypes->return
 Parameter#getAnnotatedType():::Returns an AnnotatedType object that represents the use of a type to specify the type of the formal parameter represented by this Parameter.:::return->executable->getAnnotatedParameterTypes
 Parameter#isImplicit():::Returns true if this parameter is implicitly declared in source code; returns false otherwise.:::return->Modifier->getModifiers->isMandated
 Parameter#isSynthetic():::Returns true if this parameter is neither implicitly nor explicitly declared in source code; returns false otherwise.:::return->Modifier->getModifiers->isSynthetic
 Parameter#isVarArgs():::Returns true if this parameter represents a variable argument list; returns false otherwise.:::return->executable->isVarArgs->executable->getParameterCount
+Parameter#getAnnotation(Class)::: parameter get annotation:::Objects->requireNonNull->return->annotationClass->declaredAnnotations->get->cast
+Parameter#getAnnotationsByType(Class)::: parameter get annotations by type:::Objects->requireNonNull->return->AnnotationSupport->declaredAnnotations->getDirectlyAndIndirectlyPresent
+Parameter#getDeclaredAnnotations()::: parameter get declared annotations:::return->executable->getParameterAnnotations
+Parameter#getDeclaredAnnotation(Class)::: parameter get declared annotation:::return->getAnnotation
+Parameter#getDeclaredAnnotationsByType(Class)::: parameter get declared annotations by type:::return->getAnnotationsByType
+Parameter#getAnnotations()::: parameter get annotations:::return->getDeclaredAnnotations
+Parameter#declaredAnnotations()::: parameter declared annotations:::if->new->HashMap<>->foreach->getDeclaredAnnotations->declaredAnnotations->a->annotationType->put->return
 ParameterizedType#getActualTypeArguments():::Returns an array of Type objects representing the actual type arguments to this type:::
 ParameterizedType#getRawType():::Returns the Type object representing the class or interface that declared this type.:::
 ParameterizedType#getOwnerType():::Returns a Type object representing the type that this type is a member of:::
 Proxy#getProxyClass(ClassLoader, Class...):::Returns the java.lang.Class object for a proxy class given a class loader and an array of interfaces:::caller->System->getSecurityManager->Reflection->getCallerClass->return->getProxyConstructor->getDeclaringClass
+Proxy#getProxyConstructor(Class, ClassLoader, Class...):::Returns the Constructor object of a proxy class that takes a single argument of type InvocationHandler, given a class loader and an array of interfaces:::if->intf->if->checkProxyAccess->return->proxyCache->sub->clv->key->new->ProxyBuilder->build->computeIfAbsent->else->intfsArray->interfaces->clone->if->checkProxyAccess->intfs->Arrays->asList->return->proxyCache->sub->clv->key->new->ProxyBuilder->build->computeIfAbsent
+Proxy#checkProxyAccess(Class, ClassLoader, Class...)::: proxy check proxy access:::sm->System->getSecurityManager->if->ccl->caller->getClassLoader->if->sm->checkPermission->ReflectUtil->checkProxyPackageAccess
+Proxy.ProxyBuilder#defineProxyClass(Module, List>)::: proxy builder define proxy class:::proxyPkg->accessFlags->foreach->flags->intf->getModifiers->if->Modifier->isPublic->pkg->intf->getPackageName->if->else->if->pkg->equals->throw->new->IllegalArgumentException->if->m->isNamed->m->getName->else->if->proxyPkg->isEmpty->m->isNamed->throw->new->IllegalArgumentException->if->m->isNamed->if->m->getDescriptor->packages->contains->throw->m->getName->new->InternalError->num->nextUniqueNumber->getAndIncrement->proxyName->proxyPkg->isEmpty->loader->getLoader->trace->proxyClassFile->ProxyGenerator->interfaces->toArray->generateProxyClass->try->pc->UNSAFE->defineClass->reverseProxyCache->sub->putIfAbsent->return->catch->throw->e->toString->new->IllegalArgumentException->finally
+Proxy.ProxyBuilder#isProxyClass(Class):::Test if given class is a class defined by #defineProxyClass(Module, List):::return->Objects->reverseProxyCache->sub->c->getClassLoader->get->equals
+Proxy.ProxyBuilder#isExportedType(Class)::: proxy builder is exported type:::pn->c->getPackageName->return->Modifier->c->getModifiers->isPublic->c->getModule->isExported
+Proxy.ProxyBuilder#isPackagePrivateType(Class)::: proxy builder is package private type:::return->Modifier->c->getModifiers->isPublic
+Proxy.ProxyBuilder#toDetails(Class)::: proxy builder to details:::access->if->isExportedType->else->if->isPackagePrivateType->else->ld->c->getClassLoader->return->String->c->getModule->getName->c->getName->format
+Proxy.ProxyBuilder#trace(String, Module, ClassLoader, List>)::: proxy builder trace:::if->isDebug->module->getName->format->if->isDebug->interfaces->toDetails->println->forEach
+Proxy.ProxyBuilder#isDebug()::: proxy builder is debug:::return->DEBUG->isEmpty
+Proxy.ProxyBuilder#isDebug(String)::: proxy builder is debug:::return->DEBUG->equals
+Proxy.ProxyBuilder#build():::Generate a proxy class and return its proxy Constructor with accessible flag already set:::proxyClass->defineProxyClass->cons->try->proxyClass->getConstructor->catch->throw->e->toString->new->InternalError->finally->AccessController->new->PrivilegedAction<Void>->doPrivileged->return
+Proxy.ProxyBuilder#validateProxyInterfaces(ClassLoader, List>, Set>):::Validate the given proxy interfaces and the given referenced types are visible to the defining loader.:::interfaceSet->interfaces->size->new->IdentityHashMap<>->foreach->ensureVisible->if->intf->isInterface->throw->intf->getName->new->IllegalArgumentException->if->interfaceSet->put->throw->intf->getName->new->IllegalArgumentException->foreach->ensureVisible
+Proxy.ProxyBuilder#referencedTypes(ClassLoader, List>)::: proxy builder referenced types:::types->new->HashSet<Class<?>>->foreach->foreach->intf->getMethods->if->Modifier->m->getModifiers->isStatic->m->getReturnType->addElementType->m->getSharedParameterTypes->addElementTypes->m->getSharedExceptionTypes->addElementTypes->return
+Proxy.ProxyBuilder#addElementTypes(HashSet>, Class...)::: proxy builder add element types:::foreach->addElementType
+Proxy.ProxyBuilder#addElementType(HashSet>, Class)::: proxy builder add element type:::type->getElementType->if->type->isPrimitive->types->add
+Proxy.ProxyBuilder#mapToModule(ClassLoader, List>, Set>):::Returns the module that the generated proxy class belongs to:::modulePrivateTypes->new->HashMap<>->packagePrivateTypes->new->HashMap<>->foreach->m->intf->getModule->if->Modifier->intf->getModifiers->isPublic->if->m->intf->getPackageName->isExported->modulePrivateTypes->put->else->packagePrivateTypes->put->if->packagePrivateTypes->isEmpty->modulePrivateTypes->isEmpty->return->loader->getUnnamedModule->BootLoader->getUnnamedModule->if->packagePrivateTypes->size->if->packagePrivateTypes->size->packagePrivateTypes->keySet->stream->Class->getPackageName->map->distinct->count->packagePrivateTypes->values->stream->distinct->count->throw->new->IllegalArgumentException->target->foreach->packagePrivateTypes->values->if->getLoader->throw->new->IllegalArgumentException->foreach->m->intf->getModule->if->continue->if->target->canRead->m->intf->getPackageName->isExported->throw->intf->getName->new->IllegalArgumentException->return->target->getDynamicModule->types->new->HashSet<>->types->addAll->foreach->ensureAccess->return
+Proxy.ProxyBuilder#ensureAccess(Module, Class)::: proxy builder ensure access:::m->c->getModule->if->target->canRead->Modules->addReads->pn->c->getPackageName->if->m->isExported->Modules->addExports
+Proxy.ProxyBuilder#ensureVisible(ClassLoader, Class)::: proxy builder ensure visible:::type->try->Class->c->getName->forName->catch->finally->if->throw->c->getName->new->IllegalArgumentException
+Proxy.ProxyBuilder#getElementType(Class)::: proxy builder get element type:::e->while->e->isArray->e->getComponentType->return
+Proxy.ProxyBuilder#getDynamicModule(ClassLoader)::: proxy builder get dynamic module:::return->dynProxyModules->mn->counter->incrementAndGet->pn->descriptor->ModuleDescriptor->Set->of->newModule->Set->of->packages->build->m->Modules->defineModule->Modules->getModule->addReads->Modules->getModule->addExports->return->computeIfAbsent
 Proxy#newProxyInstance(ClassLoader, Class[], InvocationHandler):::Returns a proxy instance for the specified interfaces that dispatches method invocations to the specified invocation handler:::Objects->requireNonNull->caller->System->getSecurityManager->Reflection->getCallerClass->cons->getProxyConstructor->return->newProxyInstance
+Proxy#newProxyInstance(Class, Constructor, InvocationHandler)::: proxy new proxy instance:::try->if->cons->getDeclaringClass->checkNewProxyPermission->return->cons->new->ObjectArr->newInstance->catch->throw->e->toString->new->InternalError->t->e->getCause->if->throw->else->throw->t->toString->new->InternalError->finally
+Proxy#checkNewProxyPermission(Class, Class)::: proxy check new proxy permission:::sm->System->getSecurityManager->if->if->ReflectUtil->isNonPublicProxyClass->ccl->caller->getClassLoader->pcl->proxyClass->getClassLoader->pkg->proxyClass->getPackageName->callerPkg->caller->getPackageName->if->pkg->equals->sm->new->ReflectPermission->checkPermission
+Proxy#getLoader(Module):::Returns the class loader for the given module.:::pa->m->getClassLoader->return->AccessController->doPrivileged
 Proxy#isProxyClass(Class):::Returns true if the given class is a proxy class.:::return->isAssignableFrom->ProxyBuilder->isProxyClass
 Proxy#getInvocationHandler(Object):::Returns the invocation handler for the specified proxy instance.:::if->proxy->getClass->isProxyClass->throw->new->IllegalArgumentException->p->ih->if->System->getSecurityManager->ihClass->ih->getClass->caller->Reflection->getCallerClass->if->ReflectUtil->caller->getClassLoader->ihClass->getClassLoader->needsPackageAccessCheck->ReflectUtil->checkPackageAccess->return
 ProxyGenerator#generateProxyClass(String, Class[]):::Generate a public proxy class given a name and a list of proxy interfaces.:::return->generateProxyClass
 ProxyGenerator#generateProxyClass(String, Class[], int):::Generate a proxy class given a name and a list of proxy interfaces.:::gen->new->ProxyGenerator->classFile->gen->generateClassFile->if->new->java.security.PrivilegedAction<Void>->doPrivileged->return
+ProxyGenerator#generateClassFile():::Generate a class file for the proxy class:::addProxyMethod->addProxyMethod->addProxyMethod->foreach->foreach->intf->getMethods->if->Modifier->m->getModifiers->isStatic->addProxyMethod->foreach->proxyMethods->values->checkReturnTypes->try->methods->generateConstructor->add->foreach->proxyMethods->values->foreach->fields->new->FieldInfo->add->methods->pm->generateMethod->add->methods->generateStaticInitializer->add->catch->throw->new->InternalError->finally->if->methods->size->throw->new->IllegalArgumentException->if->fields->size->throw->new->IllegalArgumentException->cp->dotToSlash->getClass->cp->getClass->foreach->cp->intf->getName->dotToSlash->getClass->cp->setReadOnly->bout->new->ByteArrayOutputStream->dout->new->DataOutputStream->try->dout->writeInt->dout->writeShort->dout->writeShort->cp->write->dout->writeShort->dout->cp->dotToSlash->getClass->writeShort->dout->cp->getClass->writeShort->dout->writeShort->foreach->dout->cp->intf->getName->dotToSlash->getClass->writeShort->dout->fields->size->writeShort->foreach->f->write->dout->methods->size->writeShort->foreach->m->write->dout->writeShort->catch->throw->new->InternalError->finally->return->bout->toByteArray
+ProxyGenerator#addProxyMethod(Method, Class):::Add another method to be proxied, either by creating a new ProxyMethod object or augmenting an old one for a duplicate method:::name->m->getName->parameterTypes->m->getParameterTypes->returnType->m->getReturnType->exceptionTypes->m->getExceptionTypes->sig->getParameterDescriptors->sigmethods->proxyMethods->get->if->foreach->if->legalExceptions->new->ArrayList<>->collectCompatibleTypes->collectCompatibleTypes->legalExceptions->size->new->Class<?>Arr->legalExceptions->toArray->return->else->new->ArrayList<>->proxyMethods->put->sigmethods->new->ProxyMethod->add
+ProxyGenerator#checkReturnTypes(List):::For a given set of proxy methods with the same signature, check that their return types are compatible according to the Proxy specification:::if->methods->size->return->uncoveredReturnTypes->new->LinkedList<>->foreach->newReturnType->if->newReturnType->isPrimitive->throw->getFriendlyMethodSignature->newReturnType->getName->new->IllegalArgumentException->added->liter->uncoveredReturnTypes->listIterator->while->liter->hasNext->uncoveredReturnType->liter->next->if->newReturnType->isAssignableFrom->continue->if->uncoveredReturnType->isAssignableFrom->if->liter->set->else->liter->remove->if->uncoveredReturnTypes->add->if->uncoveredReturnTypes->size->pm->methods->get->throw->getFriendlyMethodSignature->new->IllegalArgumentException
+ProxyGenerator.FieldInfo#write(DataOutputStream)::: field info write:::out->writeShort->out->cp->getUtf8->writeShort->out->cp->getUtf8->writeShort->out->writeShort
+ProxyGenerator.MethodInfo#write(DataOutputStream)::: method info write:::out->writeShort->out->cp->getUtf8->writeShort->out->cp->getUtf8->writeShort->out->writeShort->out->cp->getUtf8->writeShort->out->code->size->exceptionTable->size->writeInt->out->writeShort->out->writeShort->out->code->size->writeInt->code->writeTo->out->exceptionTable->size->writeShort->foreach->out->writeShort->out->writeShort->out->writeShort->out->writeShort->out->writeShort->out->cp->getUtf8->writeShort->out->writeInt->out->writeShort->foreach->out->writeShort
+ProxyGenerator.ProxyMethod#generateMethod():::Return a MethodInfo object for this method, including generating the code and exception table entry.:::desc->getMethodDescriptor->minfo->new->MethodInfo->parameterSlot->new->intArr->nextSlot->for->i->localSlot0->pc->tryBegin->tryEnd->out->new->DataOutputStream->code_aload->out->writeByte->out->cp->getFieldRef->writeShort->code_aload->out->writeByte->out->cp->dotToSlash->getFieldRef->writeShort->if->code_ipush->out->writeByte->out->cp->getClass->writeShort->for->i->else->out->writeByte->out->writeByte->out->cp->getInterfaceMethodRef->writeShort->out->writeByte->out->writeByte->if->out->writeByte->out->writeByte->else->codeUnwrapReturnValue->size->catchList->computeUniqueCatchList->if->catchList->size->foreach->cp->ex->getName->dotToSlash->getClass->new->ExceptionTableEntry->add->out->writeByte->size->cp->getClass->new->ExceptionTableEntry->add->code_astore->out->writeByte->out->cp->getClass->writeShort->out->writeByte->code_aload->out->writeByte->out->cp->getMethodRef->writeShort->out->writeByte->if->size->throw->new->IllegalArgumentException->new->shortArr->for->i->return
+ProxyGenerator.ProxyMethod#codeWrapArgument(Class, int, DataOutputStream):::Generate code for wrapping an argument of the given type whose value can be found at the specified local variable index, in order for it to be passed (as an Object) to the invocation handler's "invoke" method:::if->type->isPrimitive->prim->PrimitiveTypeInfo->get->if->code_iload->else->if->code_lload->else->if->code_fload->else->if->code_dload->else->throw->new->AssertionError->out->writeByte->out->cp->getMethodRef->writeShort->else->code_aload
+ProxyGenerator.ProxyMethod#codeUnwrapReturnValue(Class, DataOutputStream):::Generate code for unwrapping a return value of the given type from the invocation handler's "invoke" method (as type Object) to its correct type:::if->type->isPrimitive->prim->PrimitiveTypeInfo->get->out->writeByte->out->cp->getClass->writeShort->out->writeByte->out->cp->getMethodRef->writeShort->if->out->writeByte->else->if->out->writeByte->else->if->out->writeByte->else->if->out->writeByte->else->throw->new->AssertionError->else->out->writeByte->out->cp->type->getName->dotToSlash->getClass->writeShort->out->writeByte
+ProxyGenerator.ProxyMethod#codeFieldInitialization(DataOutputStream):::Generate code for initializing the static field that stores the Method object for this proxy method:::codeClassForName->cp->getString->code_ldc->code_ipush->out->writeByte->out->cp->getClass->writeShort->for->i->out->writeByte->out->cp->getMethodRef->writeShort->out->writeByte->out->cp->dotToSlash->getFieldRef->writeShort
+ProxyGenerator#generateConstructor():::Generate the constructor method for the proxy class.:::minfo->new->MethodInfo->out->new->DataOutputStream->code_aload->code_aload->out->writeByte->out->cp->getMethodRef->writeShort->out->writeByte->new->shortArr->return
+ProxyGenerator#generateStaticInitializer():::Generate the static initializer method for the proxy class.:::minfo->new->MethodInfo->localSlot0->pc->tryBegin->tryEnd->out->new->DataOutputStream->foreach->proxyMethods->values->foreach->pm->codeFieldInitialization->out->writeByte->size->cp->getClass->new->ExceptionTableEntry->add->code_astore->out->writeByte->out->cp->getClass->writeShort->out->writeByte->code_aload->out->writeByte->out->cp->getMethodRef->writeShort->out->writeByte->out->cp->getMethodRef->writeShort->out->writeByte->size->cp->getClass->new->ExceptionTableEntry->add->code_astore->out->writeByte->out->cp->getClass->writeShort->out->writeByte->code_aload->out->writeByte->out->cp->getMethodRef->writeShort->out->writeByte->out->cp->getMethodRef->writeShort->out->writeByte->if->size->throw->new->IllegalArgumentException->new->shortArr->return
+ProxyGenerator#code_iload(int, DataOutputStream)::: proxy generator code_iload:::codeLocalLoadStore
+ProxyGenerator#code_lload(int, DataOutputStream)::: proxy generator code_lload:::codeLocalLoadStore
+ProxyGenerator#code_fload(int, DataOutputStream)::: proxy generator code_fload:::codeLocalLoadStore
+ProxyGenerator#code_dload(int, DataOutputStream)::: proxy generator code_dload:::codeLocalLoadStore
+ProxyGenerator#code_aload(int, DataOutputStream)::: proxy generator code_aload:::codeLocalLoadStore
+ProxyGenerator#code_astore(int, DataOutputStream)::: proxy generator code_astore:::codeLocalLoadStore
+ProxyGenerator#codeLocalLoadStore(int, int, int, DataOutputStream):::Generate code for a load or store instruction for the given local variable:::if->out->writeByte->else->if->out->writeByte->out->writeByte->else->out->writeByte->out->writeByte->out->writeShort
+ProxyGenerator#code_ldc(int, DataOutputStream):::Generate code for an "ldc" instruction for the given constant pool index (the "ldc_w" instruction is used if the index does not fit into an unsigned byte):::if->out->writeByte->out->writeByte->else->out->writeByte->out->writeShort
+ProxyGenerator#code_ipush(int, DataOutputStream):::Generate code to push a constant integer value on to the operand stack, using the "iconst_", "bipush", or "sipush" instructions depending on the size of the value:::if->out->writeByte->else->if->out->writeByte->out->writeByte->else->if->out->writeByte->out->writeShort->else->throw->new->AssertionError
+ProxyGenerator#codeClassForName(Class, DataOutputStream):::Generate code to invoke the Class.forName with the name of the given class to get its Class object at runtime:::cp->cl->getName->getString->code_ldc->out->writeByte->out->cp->getMethodRef->writeShort
+ProxyGenerator#dotToSlash(String):::Convert a fully qualified class name that uses '.' as the package separator, the external representation used by the Java language and APIs, to a fully qualified class name that uses '/' as the package separator, the representation used in the class file format (see JVMS section 4.2).:::return->name->replace
+ProxyGenerator#getMethodDescriptor(Class[], Class):::Return the "method descriptor" string for a method with the given parameter types and return type:::return->getParameterDescriptors->getFieldType
+ProxyGenerator#getParameterDescriptors(Class[]):::Return the list of "parameter descriptor" strings enclosed in parentheses corresponding to the given parameter types (in other words, a method descriptor without a return descriptor):::desc->new->StringBuilder->for->i->desc->append->return->desc->toString
+ProxyGenerator#getFieldType(Class):::Return the "field type" string for the given type, appropriate for a field descriptor, a parameter descriptor, or a return descriptor other than "void":::if->type->isPrimitive->return->PrimitiveTypeInfo->get->else->if->type->isArray->return->type->getName->replace->else->return->type->getName->dotToSlash
+ProxyGenerator#getFriendlyMethodSignature(String, Class[]):::Returns a human-readable string representing the signature of a method with the given name and parameter types.:::sig->new->StringBuilder->sig->append->for->i->sig->append->return->sig->toString
+ProxyGenerator#getWordsPerType(Class):::Return the number of abstract "words", or consecutive local variable indexes, required to contain a value of the given type:::if->return->else->return
+ProxyGenerator#collectCompatibleTypes(Class[], Class[], List>):::Add to the given list all of the types in the "from" array that are not already contained in the list and are assignable to at least one of the types in the "with" array:::foreach->if->list->contains->foreach->if->wc->isAssignableFrom->list->add->break
+ProxyGenerator#computeUniqueCatchList(Class[]):::Given the exceptions declared in the throws clause of a proxy method, compute the exceptions that need to be caught from the invocation handler's invoke method and rethrown intact in the method's implementation before catching other Throwables and wrapping them in UndeclaredThrowableExceptions:::uniqueList->new->ArrayList<>->uniqueList->add->uniqueList->add->foreach->if->ex->isAssignableFrom->uniqueList->clear->break->else->if->isAssignableFrom->continue->for->j->uniqueList->size->uniqueList->add->return
+ProxyGenerator.PrimitiveTypeInfo#add(Class, Class)::: primitive type info add:::table->new->PrimitiveTypeInfo->put
+ProxyGenerator.PrimitiveTypeInfo#get(Class)::: primitive type info get:::return->table->get
+ProxyGenerator.ConstantPool#getUtf8(String):::Get or assign the index for a CONSTANT_Utf8 entry.:::if->throw->new->NullPointerException->return->getValue
+ProxyGenerator.ConstantPool#getInteger(int):::Get or assign the index for a CONSTANT_Integer entry.:::return->getValue
+ProxyGenerator.ConstantPool#getFloat(float):::Get or assign the index for a CONSTANT_Float entry.:::return->getValue
+ProxyGenerator.ConstantPool#getClass(String):::Get or assign the index for a CONSTANT_Class entry.:::utf8Index->getUtf8->return->new->IndirectEntry->getIndirect
+ProxyGenerator.ConstantPool#getString(String):::Get or assign the index for a CONSTANT_String entry.:::utf8Index->getUtf8->return->new->IndirectEntry->getIndirect
+ProxyGenerator.ConstantPool#getFieldRef(String, String, String):::Get or assign the index for a CONSTANT_FieldRef entry.:::classIndex->getClass->nameAndTypeIndex->getNameAndType->return->new->IndirectEntry->getIndirect
+ProxyGenerator.ConstantPool#getMethodRef(String, String, String):::Get or assign the index for a CONSTANT_MethodRef entry.:::classIndex->getClass->nameAndTypeIndex->getNameAndType->return->new->IndirectEntry->getIndirect
+ProxyGenerator.ConstantPool#getInterfaceMethodRef(String, String, String):::Get or assign the index for a CONSTANT_InterfaceMethodRef entry.:::classIndex->getClass->nameAndTypeIndex->getNameAndType->return->new->IndirectEntry->getIndirect
+ProxyGenerator.ConstantPool#getNameAndType(String, String):::Get or assign the index for a CONSTANT_NameAndType entry.:::nameIndex->getUtf8->descriptorIndex->getUtf8->return->new->IndirectEntry->getIndirect
+ProxyGenerator.ConstantPool#setReadOnly():::Set this ConstantPool instance to be "read only":::
+ProxyGenerator.ConstantPool#write(OutputStream):::Write this constant pool to a stream as part of the class file format:::dataOut->new->DataOutputStream->dataOut->pool->size->writeShort->foreach->e->write
+ProxyGenerator.ConstantPool#addEntry(Entry):::Add a new constant pool entry and return its index.:::pool->add->if->pool->size->throw->new->IllegalArgumentException->return->pool->size
+ProxyGenerator.ConstantPool#getValue(Object):::Get or assign the index for an entry of a type that contains a direct value:::index->map->get->if->return->index->shortValue->else->if->throw->new->InternalError->i->new->ValueEntry->addEntry->map->put->return
+ProxyGenerator.ConstantPool#getIndirect(IndirectEntry):::Get or assign the index for an entry of a type that contains references to other constant pool entries.:::index->map->get->if->return->index->shortValue->else->if->throw->new->InternalError->i->addEntry->map->put->return
+ProxyGenerator.ConstantPool.Entry#write(DataOutputStream)::: entry write:::
+ProxyGenerator.ConstantPool.ValueEntry#write(DataOutputStream)::: value entry write:::if->out->writeByte->out->writeUTF->else->if->out->writeByte->out->intValue->writeInt->else->if->out->writeByte->out->floatValue->writeFloat->else->if->out->writeByte->out->longValue->writeLong->else->if->out->writeDouble->out->doubleValue->writeDouble->else->throw->new->InternalError
+ProxyGenerator.ConstantPool.IndirectEntry#write(DataOutputStream)::: indirect entry write:::out->writeByte->out->writeShort->if->out->writeShort
+ProxyGenerator.ConstantPool.IndirectEntry#hashCode()::: indirect entry hash code:::return
+ProxyGenerator.ConstantPool.IndirectEntry#equals(Object)::: indirect entry equals:::if->other->if->return->return
+ReflectAccess#newField(Class, String, Class, int, int, String, byte[])::: reflect access new field:::return->new->Field
+ReflectAccess#newMethod(Class, String, Class[], Class, Class[], int, int, String, byte[], byte[], byte[])::: reflect access new method:::return->new->Method
+ReflectAccess#newConstructor(Class, Class[], Class[], int, int, String, byte[], byte[])::: reflect access new constructor:::return->new->Constructor<>
+ReflectAccess#getMethodAccessor(Method)::: reflect access get method accessor:::return->m->getMethodAccessor
+ReflectAccess#setMethodAccessor(Method, MethodAccessor)::: reflect access set method accessor:::m->setMethodAccessor
+ReflectAccess#getConstructorAccessor(Constructor)::: reflect access get constructor accessor:::return->c->getConstructorAccessor
+ReflectAccess#setConstructorAccessor(Constructor, ConstructorAccessor)::: reflect access set constructor accessor:::c->setConstructorAccessor
+ReflectAccess#getConstructorSlot(Constructor)::: reflect access get constructor slot:::return->c->getSlot
+ReflectAccess#getConstructorSignature(Constructor)::: reflect access get constructor signature:::return->c->getSignature
+ReflectAccess#getConstructorAnnotations(Constructor)::: reflect access get constructor annotations:::return->c->getRawAnnotations
+ReflectAccess#getConstructorParameterAnnotations(Constructor)::: reflect access get constructor parameter annotations:::return->c->getRawParameterAnnotations
+ReflectAccess#getExecutableTypeAnnotationBytes(Executable)::: reflect access get executable type annotation bytes:::return->ex->getTypeAnnotationBytes
+ReflectAccess#getExecutableSharedParameterTypes(Executable)::: reflect access get executable shared parameter types:::return->ex->getSharedParameterTypes
+ReflectAccess#copyMethod(Method)::: reflect access copy method:::return->arg->copy
+ReflectAccess#leafCopyMethod(Method)::: reflect access leaf copy method:::return->arg->leafCopy
+ReflectAccess#copyField(Field)::: reflect access copy field:::return->arg->copy
+ReflectAccess#copyConstructor(Constructor)::: reflect access copy constructor:::return->arg->copy
+ReflectAccess#getRoot(T)::: reflect access get root:::return->obj->getRoot
 Type#getTypeName():::Returns a string describing this type, including information about any type parameters.:::return->toString
 TypeVariable#getBounds():::Returns an array of Type objects representing the upper bound(s) of this type variable:::
 TypeVariable#getGenericDeclaration():::Returns the GenericDeclaration object representing the generic declaration declared this type variable.:::

@@ -1,6 +1,7 @@
 AclEntry.Builder#build():::Constructs an AclEntry from the components of this builder:::if->throw->new->IllegalStateException->if->throw->new->IllegalStateException->return->new->AclEntry
 AclEntry.Builder#setType(AclEntryType):::Sets the type component of this builder.:::if->throw->new->NullPointerException->return
 AclEntry.Builder#setPrincipal(UserPrincipal):::Sets the principal component of this builder.:::if->throw->new->NullPointerException->return
+AclEntry.Builder#checkSet(Set, Class)::: builder check set:::foreach->if->throw->new->NullPointerException->type->cast
 AclEntry.Builder#setPermissions(Set):::Sets the permissions component of this builder:::if->perms->isEmpty->Collections->emptySet->else->EnumSet->copyOf->checkSet->return
 AclEntry.Builder#setPermissions(AclEntryPermission...):::Sets the permissions component of this builder:::set->EnumSet->noneOf->foreach->if->throw->new->NullPointerException->set->add->return
 AclEntry.Builder#setFlags(Set):::Sets the flags component of this builder:::if->flags->isEmpty->Collections->emptySet->else->EnumSet->copyOf->checkSet->return
@@ -12,6 +13,7 @@ AclEntry#principal():::Returns the principal component.:::return
 AclEntry#permissions():::Returns a copy of the permissions component:::return->new->HashSet<>
 AclEntry#flags():::Returns a copy of the flags component:::return->new->HashSet<>
 AclEntry#equals(Object):::Compares the specified object with this ACL entry for equality:::if->return->if->return->other->if->return->if->equals->return->if->equals->return->if->equals->return->return
+AclEntry#hash(int, Object)::: acl entry hash:::return->o->hashCode
 AclEntry#hashCode():::Returns the hash-code value for this ACL entry:::if->return->h->type->hashCode->hash->hash->hash->return
 AclEntry#toString():::Returns the string representation of this ACL entry.:::sb->new->StringBuilder->sb->who->getName->append->sb->append->foreach->sb->perm->name->append->sb->append->sb->sb->length->setLength->sb->append->if->flags->isEmpty->foreach->sb->flag->name->append->sb->append->sb->sb->length->setLength->sb->append->sb->type->name->append->return->sb->toString
 AclFileAttributeView#name():::Returns the name of the attribute view:::
@@ -35,6 +37,7 @@ DosFileAttributes#isHidden():::Returns the value of the hidden attribute:::
 DosFileAttributes#isArchive():::Returns the value of the archive attribute:::
 DosFileAttributes#isSystem():::Returns the value of the system attribute:::
 DosFileAttributeView#name():::Returns the name of the attribute view:::
+DosFileAttributeView#readAttributes()::: dos file attribute view read attributes:::
 DosFileAttributeView#setReadOnly(boolean):::Updates the value of the read-only attribute:::
 DosFileAttributeView#setHidden(boolean):::Updates the value of the hidden attribute:::
 DosFileAttributeView#setSystem(boolean):::Updates the value of the system attribute:::
@@ -49,18 +52,28 @@ FileTime#fromMillis(long):::Returns a FileTime representing the given value in m
 FileTime#from(Instant):::Returns a FileTime representing the same point of time value on the time-line as the provided Instant object.:::Objects->requireNonNull->return->new->FileTime
 FileTime#to(TimeUnit):::Returns the value at the given unit of granularity:::Objects->requireNonNull->if->return->unit->convert->else->secs->unit->instant->getEpochSecond->convert->if->return->nanos->unit->instant->getNano->convert->r->if->return->return
 FileTime#toMillis():::Returns the value in milliseconds:::if->return->unit->toMillis->else->secs->instant->getEpochSecond->nanos->instant->getNano->r->ax->Math->abs->if->if->return->return
+FileTime#scale(long, long, long)::: file time scale:::if->return->if->return->return
 FileTime#toInstant():::Converts this FileTime object to an Instant:::if->secs->nanos->switch->scale->break->scale->break->scale->break->break->Math->floorDiv->Math->floorMod->break->Math->floorDiv->Math->floorMod->break->Math->floorDiv->Math->floorMod->break->throw->new->AssertionError->if->else->if->else->Instant->ofEpochSecond->return
 FileTime#equals(Object):::Tests this FileTime for equality with the given object:::return->compareTo
 FileTime#hashCode():::Computes a hash code for this file time:::return->toInstant->hashCode
+FileTime#toDays()::: file time to days:::if->return->unit->toDays->else->return->toInstant->getEpochSecond->toDays
+FileTime#toExcessNanos(long)::: file time to excess nanos:::if->return->unit->unit->convert->toNanos->else->return->toInstant->getEpochSecond->toSeconds->toNanos
 FileTime#compareTo(FileTime):::Compares the value of two FileTime objects for order.:::if->return->Long->compare->else->secs->toInstant->getEpochSecond->secsOther->other->toInstant->getEpochSecond->cmp->Long->compare->if->return->Long->toInstant->getNano->other->toInstant->getNano->compare->if->return->if->return->days->toDays->daysOther->other->toDays->if->return->Long->toExcessNanos->other->toExcessNanos->compare->return->Long->compare
+FileTime#append(StringBuilder, int, int)::: file time append:::while->sb->append->return
 FileTime#toString():::Returns the string representation of this FileTime:::if->secs->nanos->if->unit->compareTo->unit->toSeconds->else->toInstant->getEpochSecond->toInstant->getNano->ldt->year->if->zeroSecs->hi->Math->floorDiv->lo->Math->floorMod->LocalDateTime->ofEpochSecond->ldt->getYear->else->zeroSecs->hi->lo->LocalDateTime->ofEpochSecond->ldt->getYear->if->fraction->ldt->getNano->sb->new->StringBuilder->sb->append->Math->abs->if->Math->abs->append->else->sb->String->valueOf->append->sb->append->ldt->getMonthValue->append->sb->append->ldt->getDayOfMonth->append->sb->append->ldt->getHour->append->sb->append->ldt->getMinute->append->sb->append->ldt->getSecond->append->if->sb->append->w->while->append->sb->append->sb->toString->return
 PosixFileAttributes#owner():::Returns the owner of the file.:::
 PosixFileAttributes#group():::Returns the group owner of the file.:::
 PosixFileAttributes#permissions():::Returns the permissions of the file:::
 PosixFileAttributeView#name():::Returns the name of the attribute view:::
+PosixFileAttributeView#readAttributes()::: posix file attribute view read attributes:::
 PosixFileAttributeView#setPermissions(Set):::Updates the file permissions.:::
 PosixFileAttributeView#setGroup(GroupPrincipal):::Updates the file group-owner.:::
+PosixFilePermissions#writeBits(StringBuilder, boolean, boolean, boolean)::: posix file permissions write bits:::if->sb->append->else->sb->append->if->sb->append->else->sb->append->if->sb->append->else->sb->append
 PosixFilePermissions#toString(Set):::Returns the String representation of a set of permissions:::sb->new->StringBuilder->perms->contains->perms->contains->perms->contains->writeBits->perms->contains->perms->contains->perms->contains->writeBits->perms->contains->perms->contains->perms->contains->writeBits->return->sb->toString
+PosixFilePermissions#isSet(char, char)::: posix file permissions is set:::if->return->if->return->throw->new->IllegalArgumentException
+PosixFilePermissions#isR(char)::: posix file permissions is r:::return->isSet
+PosixFilePermissions#isW(char)::: posix file permissions is w:::return->isSet
+PosixFilePermissions#isX(char)::: posix file permissions is x:::return->isSet
 PosixFilePermissions#fromString(String):::Returns the set of permissions corresponding to a given String representation:::if->perms->length->throw->new->IllegalArgumentException->result->EnumSet->noneOf->if->perms->charAt->isR->result->add->if->perms->charAt->isW->result->add->if->perms->charAt->isX->result->add->if->perms->charAt->isR->result->add->if->perms->charAt->isW->result->add->if->perms->charAt->isX->result->add->if->perms->charAt->isR->result->add->if->perms->charAt->isW->result->add->if->perms->charAt->isX->result->add->return
 PosixFilePermissions#asFileAttribute(Set):::Creates a FileAttribute, encapsulating a copy of the given file permissions, suitable for passing to the java.nio.file.Files#createFile createFile or java.nio.file.Files#createDirectory createDirectory methods.:::new->HashSet<>->foreach->if->throw->new->NullPointerException->value->return->new->FileAttribute<>
 UserDefinedFileAttributeView#name():::Returns the name of this attribute view:::

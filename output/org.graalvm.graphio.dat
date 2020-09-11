@@ -1,5 +1,16 @@
+DefaultGraphBlocks#empty()::: default graph blocks empty:::return
+DefaultGraphBlocks#blocks(Object)::: default graph blocks blocks:::return->Collections->emptyList
+DefaultGraphBlocks#blockId(Object)::: default graph blocks block id:::return
+DefaultGraphBlocks#blockNodes(Object, Object)::: default graph blocks block nodes:::return->Collections->emptyList
+DefaultGraphBlocks#blockSuccessors(Object)::: default graph blocks block successors:::return->Collections->emptyList
+DefaultGraphTypes#enumClass(Object)::: default graph types enum class:::if->return->enumValue->getClass->return
+DefaultGraphTypes#enumOrdinal(Object)::: default graph types enum ordinal:::if->return->ordinal->return
+DefaultGraphTypes#enumTypeValues(Object)::: default graph types enum type values:::if->enumClass->constants->enumClass->getEnumConstants->if->names->new->StringArr->for->i->return->return
+DefaultGraphTypes#typeName(Object)::: default graph types type name:::if->return->getName->return
 GraphBlocks#blocks(G):::All blocks in the graph.:::
 GraphBlocks#blockId(B):::Unique id of a block.:::
+GraphBlocks#blockNodes(G, B)::: graph blocks block nodes:::
+GraphBlocks#blockSuccessors(B)::: graph blocks block successors:::
 GraphElements#method(Object):::Recognize method:::
 GraphElements#methodCode(M):::Bytecode for a method.:::
 GraphElements#methodModifiers(M):::Method modifiers.:::
@@ -20,6 +31,16 @@ GraphElements#nodeSourcePositionMethod(P):::Method for a position.:::
 GraphElements#nodeSourcePositionCaller(P):::Caller of a position.:::
 GraphElements#nodeSourcePositionBCI(P):::Byte code index of a position.:::
 GraphElements#methodStackTraceElement(M, int, P):::Stack trace element for a method, index and position:::
+GraphJavadocSnippets#acmeGraphStructure()::: graph javadoc snippets acme graph structure:::return->new->AcmeGraphStructure
+GraphJavadocSnippets#buildOutput(WritableByteChannel)::: graph javadoc snippets build output:::return->GraphOutput->acmeGraphStructure->newBuilder->protocolVersion->build
+GraphJavadocSnippets#buildAll(WritableByteChannel)::: graph javadoc snippets build all:::graphBlocks->acmeBlocks->graphElements->acmeElements->graphTypes->acmeTypes->return->GraphOutput->acmeGraphStructure->newBuilder->protocolVersion->blocks->elements->types->build
+GraphJavadocSnippets#acmeTypes()::: graph javadoc snippets acme types:::graphTypes->return
+GraphJavadocSnippets#acmeElements()::: graph javadoc snippets acme elements:::graphElements->return
+GraphJavadocSnippets#acmeBlocks()::: graph javadoc snippets acme blocks:::graphBlocks->return
+GraphJavadocSnippets.AcmeGraph#allNodes()::: acme graph all nodes:::return->new->LinkedHashSet<>->allNodes
+GraphJavadocSnippets.AcmeGraph#allNodes(AcmeNode, Set)::: acme graph all nodes:::if->collectTo->add->foreach->allNodes->return
+GraphJavadocSnippets.AcmeNode#linkTo(AcmeNode)::: acme node link to:::add
+GraphJavadocSnippets#dump(File)::: graph javadoc snippets dump:::try->ch->new->FileOutputStream->getChannel->output->buildOutput->root->new->AcmeNode->n1->new->AcmeNode->n2->new->AcmeNode->n3->new->AcmeNode->root->linkTo->root->linkTo->n1->linkTo->n2->linkTo->diamondGraph->new->AcmeGraph->output->beginGroup->output->print->output->endGroup->catch->finally
 GraphLocations#methodLocation(M, int, P):::Stack trace element for a method, index and position:::
 GraphLocations#locationLanguage(L):::Identification of the language:::
 GraphLocations#locationURI(L):::The universal resource identification that contains the location.If the location can be found in an assummably accessible resource, then use such resource identification:::
@@ -41,10 +62,107 @@ GraphOutput.Builder#elements(GraphElements):::Associates implementation of graph
 GraphOutput.Builder#elementsAndLocations(GraphElements, GraphLocations):::Associates implementation of graph elements and an advanced way to interpret their locations.:::both->new->ElementsAndLocations<>->return
 GraphOutput.Builder#build(WritableByteChannel):::Creates new GraphOutput to output to provided channel:::return->buildImpl
 GraphOutput.Builder#build(GraphOutput):::Support for nesting heterogenous graphs:::return->buildImpl
+GraphOutput.Builder#buildImpl(ElementsAndLocations, WritableByteChannel)::: builder build impl:::p->new->ProtocolImpl<>->return->new->GraphOutput<>
+GraphOutput.Builder#buildImpl(ElementsAndLocations, GraphOutput)::: builder build impl:::p->new->ProtocolImpl<>->return->new->GraphOutput<>
+GraphOutput.StackLocations#methodLocation(M, int, P)::: stack locations method location:::ste->methodStackTraceElement->return->Collections->singleton
+GraphOutput.StackLocations#locationURI(StackTraceElement)::: stack locations location i:::path->location->getFileName->try->return->new->URI->catch->throw->new->IllegalArgumentException->finally
+GraphOutput.StackLocations#locationLineNumber(StackTraceElement)::: stack locations location line number:::return->location->getLineNumber
+GraphOutput.StackLocations#locationLanguage(StackTraceElement)::: stack locations location language:::return
+GraphOutput.StackLocations#locationOffsetStart(StackTraceElement)::: stack locations location offset start:::return
+GraphOutput.StackLocations#locationOffsetEnd(StackTraceElement)::: stack locations location offset end:::return
+GraphProtocol#asBaseBuffer(Buffer):::See org.graalvm.compiler.serviceprovider.BufferUtil.:::return
+GraphProtocol#print(Graph, Map, int, String, Object...)::: graph protocol print:::try->writeByte->if->writeInt->writeString->writeInt->foreach->writePropertyObject->else->formatTitle->writePoolObject->writeGraph->flushEmbedded->flush->catch->finally
+GraphProtocol#beginGroup(Graph, String, String, ResolvedJavaMethod, int, Map)::: graph protocol begin group:::try->writeByte->writePoolObject->writePoolObject->writePoolObject->writeInt->writeProperties->flushEmbedded->catch->finally
+GraphProtocol#endGroup()::: graph protocol end group:::try->writeByte->flushEmbedded->catch->finally
+GraphProtocol#write(ByteBuffer)::: graph protocol write:::if->throw->new->IllegalStateException->constantPool->reset->return->writeBytesRaw
+GraphProtocol#isOpen()::: graph protocol is open:::return->channel->isOpen
+GraphProtocol#close()::: graph protocol close:::try->flush->channel->close->catch->throw->new->Error->finally
+GraphProtocol#findGraph(Graph, Object)::: graph protocol find graph:::
+GraphProtocol#findMethod(Object)::: graph protocol find method:::
 GraphProtocol#findNode(Object):::Attempts to recognize the provided object as a node:::
 GraphProtocol#findNodeClass(Object):::Determines whether the provided object is node class or not.:::
 GraphProtocol#findClassForNode(Node):::Returns the NodeClass for a given Node obj.:::
 GraphProtocol#findJavaClass(NodeClass):::Find a Java class:::
+GraphProtocol#findEnumClass(Object)::: graph protocol find enum class:::
+GraphProtocol#findNameTemplate(NodeClass)::: graph protocol find name template:::
+GraphProtocol#findClassEdges(NodeClass, boolean)::: graph protocol find class edges:::
+GraphProtocol#findNodeId(Node)::: graph protocol find node id:::
+GraphProtocol#findExtraNodes(Node, Collection)::: graph protocol find extra nodes:::
+GraphProtocol#hasPredecessor(Node)::: graph protocol has predecessor:::
+GraphProtocol#findNodesCount(Graph)::: graph protocol find nodes count:::
+GraphProtocol#findNodes(Graph)::: graph protocol find nodes:::
+GraphProtocol#findNodeProperties(Node, Map, Graph)::: graph protocol find node properties:::
+GraphProtocol#findBlockNodes(Graph, Block)::: graph protocol find block nodes:::
+GraphProtocol#findBlockId(Block)::: graph protocol find block id:::
+GraphProtocol#findBlocks(Graph)::: graph protocol find blocks:::
+GraphProtocol#findBlockSuccessors(Block)::: graph protocol find block successors:::
+GraphProtocol#formatTitle(Graph, int, String, Object...)::: graph protocol format title:::
+GraphProtocol#findSize(Edges)::: graph protocol find size:::
+GraphProtocol#isDirect(Edges, int)::: graph protocol is direct:::
+GraphProtocol#findName(Edges, int)::: graph protocol find name:::
+GraphProtocol#findType(Edges, int)::: graph protocol find type:::
+GraphProtocol#findNodes(Graph, Node, Edges, int)::: graph protocol find nodes:::
+GraphProtocol#findEnumOrdinal(Object)::: graph protocol find enum ordinal:::
+GraphProtocol#findEnumTypeValues(Object)::: graph protocol find enum type values:::
+GraphProtocol#findJavaTypeName(Object)::: graph protocol find java type name:::
+GraphProtocol#findMethodCode(ResolvedJavaMethod)::: graph protocol find method code:::
+GraphProtocol#findMethodModifiers(ResolvedJavaMethod)::: graph protocol find method modifiers:::
+GraphProtocol#findMethodSignature(ResolvedJavaMethod)::: graph protocol find method signature:::
+GraphProtocol#findMethodName(ResolvedJavaMethod)::: graph protocol find method name:::
+GraphProtocol#findMethodDeclaringClass(ResolvedJavaMethod)::: graph protocol find method declaring class:::
+GraphProtocol#findFieldModifiers(ResolvedJavaField)::: graph protocol find field modifiers:::
+GraphProtocol#findFieldTypeName(ResolvedJavaField)::: graph protocol find field type name:::
+GraphProtocol#findFieldName(ResolvedJavaField)::: graph protocol find field name:::
+GraphProtocol#findFieldDeclaringClass(ResolvedJavaField)::: graph protocol find field declaring class:::
+GraphProtocol#findJavaField(Object)::: graph protocol find java field:::
+GraphProtocol#findSignature(Object)::: graph protocol find signature:::
+GraphProtocol#findSignatureParameterCount(Signature)::: graph protocol find signature parameter count:::
+GraphProtocol#findSignatureParameterTypeName(Signature, int)::: graph protocol find signature parameter type name:::
+GraphProtocol#findSignatureReturnTypeName(Signature)::: graph protocol find signature return type name:::
+GraphProtocol#findNodeSourcePosition(Object)::: graph protocol find node source position:::
+GraphProtocol#findNodeSourcePositionMethod(NodeSourcePosition)::: graph protocol find node source position method:::
+GraphProtocol#findNodeSourcePositionCaller(NodeSourcePosition)::: graph protocol find node source position caller:::
+GraphProtocol#findNodeSourcePositionBCI(NodeSourcePosition)::: graph protocol find node source position i:::
+GraphProtocol#findLocation(ResolvedJavaMethod, int, NodeSourcePosition)::: graph protocol find location:::
+GraphProtocol#findLocationFile(Location)::: graph protocol find location file:::
+GraphProtocol#findLocationLine(Location)::: graph protocol find location line:::
+GraphProtocol#findLocationURI(Location)::: graph protocol find location i:::
+GraphProtocol#findLocationLanguage(Location)::: graph protocol find location language:::
+GraphProtocol#findLocationStart(Location)::: graph protocol find location start:::
+GraphProtocol#findLocationEnd(Location)::: graph protocol find location end:::
+GraphProtocol#writeVersion()::: graph protocol write version:::writeBytesRaw->writeByte->writeByte
+GraphProtocol#flushEmbedded()::: graph protocol flush embedded:::if->flush->constantPool->reset
+GraphProtocol#flush()::: graph protocol flush:::asBaseBuffer->flip->interrupted->Thread->interrupted->try->channel->write->catch->finally->if->Thread->currentThread->interrupt->buffer->compact
+GraphProtocol#ensureAvailable(int)::: graph protocol ensure available:::while->buffer->remaining->flush
+GraphProtocol#writeByte(int)::: graph protocol write byte:::ensureAvailable->buffer->put
+GraphProtocol#writeInt(int)::: graph protocol write int:::ensureAvailable->buffer->putInt
+GraphProtocol#writeLong(long)::: graph protocol write long:::ensureAvailable->buffer->putLong
+GraphProtocol#writeDouble(double)::: graph protocol write double:::ensureAvailable->buffer->putDouble
+GraphProtocol#writeFloat(float)::: graph protocol write float:::ensureAvailable->buffer->putFloat
+GraphProtocol#writeShort(char)::: graph protocol write short:::ensureAvailable->buffer->putChar
+GraphProtocol#writeString(String)::: graph protocol write string:::bytes->str->getBytes->writeBytes
+GraphProtocol#writeBytes(byte[])::: graph protocol write bytes:::if->writeInt->else->writeInt->writeBytesRaw
+GraphProtocol#writeBytesRaw(byte[])::: graph protocol write bytes raw:::bytesWritten->while->toWrite->Math->buffer->capacity->min->ensureAvailable->buffer->put
+GraphProtocol#writeBytesRaw(ByteBuffer)::: graph protocol write bytes raw:::limit->b->limit->written->while->b->position->toWrite->Math->b->position->buffer->capacity->min->ensureAvailable->asBaseBuffer->b->position->limit->try->buffer->put->catch->finally->asBaseBuffer->limit->return
+GraphProtocol#writeInts(int[])::: graph protocol write ints:::if->writeInt->else->writeInt->sizeInBytes->ensureAvailable->buffer->asIntBuffer->put->asBaseBuffer->buffer->position->position
+GraphProtocol#writeDoubles(double[])::: graph protocol write doubles:::if->writeInt->else->writeInt->sizeInBytes->ensureAvailable->buffer->asDoubleBuffer->put->asBaseBuffer->buffer->position->position
+GraphProtocol#writePoolObject(Object)::: graph protocol write pool object:::object->if->writeByte->return->id->constantPool->get->if->addPoolEntry->else->type->findPoolType->writeByte->id->charValue->writeShort
+GraphProtocol#findPoolType(Object, Object[])::: graph protocol find pool type:::object->if->return->if->findJavaField->isFound->return->else->if->findSignature->isFound->return->else->if->findNodeSourcePosition->isFound->return->else->node->findNode->if->classForNode->if->findNodeClass->isFound->return->else->if->isFound->return->else->if->findMethod->isFound->return->else->if->if->ordinal->return->else->val->findEnumOrdinal->if->if->return->else->if->if->getName->return->else->if->findJavaTypeName->isFound->return->else->return
+GraphProtocol#writeGraph(Graph, Map)::: graph protocol write graph:::writeProperties->writeNodes->findBlocks->writeBlocks
+GraphProtocol#writeNodes(Graph)::: graph protocol write nodes:::props->new->HashMap<>->size->findNodesCount->writeInt->cnt->foreach->findNodes->nodeClass->classForNode->findNodeProperties->findNodeId->writeInt->writePoolObject->hasPredecessor->writeByte->writeProperties->writeEdges->writeEdges->props->clear->if->throw->new->IOException
+GraphProtocol#writeEdges(Graph, Node, boolean)::: graph protocol write edges:::clazz->classForNode->edges->findClassEdges->size->findSize->for->i
+GraphProtocol#classForNode(Node)::: graph protocol class for node:::clazz->findClassForNode->if->throw->new->IOException->return
+GraphProtocol#writeNodeRef(Node)::: graph protocol write node ref:::findNodeId->writeInt
+GraphProtocol#writeBlocks(Collection, Graph)::: graph protocol write blocks:::if->foreach->nodes->findBlockNodes->if->writeInt->return->blocks->size->writeInt->foreach->nodes->findBlockNodes->findBlockId->writeInt->nodes->size->writeInt->foreach->findNodeId->writeInt->successors->findBlockSuccessors->successors->size->writeInt->foreach->findBlockId->writeInt->else->writeInt
+GraphProtocol#writeEdgesInfo(NodeClass, boolean)::: graph protocol write edges info:::edges->findClassEdges->size->findSize->writeShort->for->i
+GraphProtocol#addPoolEntry(Object)::: graph protocol add pool entry:::object->index->constantPool->add->writeByte->writeShort->found->type->findPoolType->writeByte->switch->field->Objects->requireNonNull->findFieldDeclaringClass->writePoolObject->findFieldName->writePoolObject->findFieldTypeName->writePoolObject->findFieldModifiers->writeInt->break->signature->args->findSignatureParameterCount->writeShort->for->i->findSignatureReturnTypeName->writePoolObject->break->pos->Objects->requireNonNull->method->findNodeSourcePositionMethod->writePoolObject->bci->findNodeSourcePositionBCI->writeInt->ste->findLocation->iterator->if->while->ste->hasNext->loc->ste->next->uri->try->findLocationURI->catch->throw->new->IOException->finally->if->continue->l->findLocationLanguage->if->continue->uri->toString->writePoolObject->writeString->findLocationLine->writeInt->findLocationStart->writeInt->findLocationEnd->writeInt->writePoolObject->else->first->ste->hasNext->ste->next->fileName->findLocationFile->if->writePoolObject->findLocationLine->writeInt->else->writePoolObject->findNodeSourcePositionCaller->writePoolObject->break->node->Objects->requireNonNull->findNodeId->writeInt->classForNode->writePoolObject->break->nodeClass->clazz->findJavaClass->if->writePoolObject->findNameTemplate->writeString->else->getSimpleName->writeString->nameTemplate->findNameTemplate->writeString->writeEdgesInfo->writeEdgesInfo->break->typeName->Objects->requireNonNull->writeString->enumValueNames->findEnumTypeValues->if->writeByte->writeInt->foreach->writePoolObject->else->writeByte->break->method->Objects->requireNonNull->findMethodDeclaringClass->writePoolObject->findMethodName->writePoolObject->methodSignature->findMethodSignature->if->findSignature->throw->new->IOException->writePoolObject->findMethodModifiers->writeInt->findMethodCode->writeBytes->break->enumOrdinal->findEnumClass->writePoolObject->writeInt->break->object->toString->writeString->break->throw->new->IllegalStateException
+GraphProtocol#writePropertyObject(Graph, Object)::: graph protocol write property object:::if->writeByte->intValue->writeInt->else->if->writeByte->longValue->writeLong->else->if->writeByte->doubleValue->writeDouble->else->if->writeByte->floatValue->writeFloat->else->if->if->booleanValue->writeByte->else->writeByte->else->if->obj->getClass->isArray->componentType->obj->getClass->getComponentType->if->componentType->isPrimitive->if->writeByte->writeByte->writeDoubles->else->if->writeByte->writeByte->writeInts->else->writeByte->writePoolObject->else->writeByte->writeByte->array->writeInt->foreach->writePoolObject->else->g->findGraph->if->writeByte->writePoolObject->else->writeByte->writeGraph
+GraphProtocol#writeProperties(Graph, Map)::: graph protocol write properties:::if->writeShort->return->size->props->size->writeShort->cnt->foreach->props->entrySet->key->entry->getKey->toString->writePoolObject->entry->getValue->writePropertyObject->if->throw->new->IOException
+GraphProtocol#isFound(Object, Object[])::: graph protocol is found:::if->return->if->return
+GraphProtocol.ConstantPool#removeEldestEntry(java.util.Map.Entry)::: constant pool remove eldest entry:::if->size->availableIds->eldest->getValue->addFirst->return->return
+GraphProtocol.ConstantPool#nextAvailableId()::: constant pool next available id:::if->availableIds->isEmpty->return->availableIds->removeFirst->return
+GraphProtocol.ConstantPool#add(Object)::: constant pool add:::id->nextAvailableId->put->return
+GraphProtocol.ConstantPool#reset()::: constant pool reset:::clear->availableIds->clear
 GraphStructure#graph(G, Object):::Casts obj to graph, if possible:::
 GraphStructure#nodes(G):::Nodes of a graph:::
 GraphStructure#nodesCount(G):::Number of nodes in a graph:::
@@ -67,3 +185,56 @@ GraphTypes#enumClass(Object):::Recognizes an <q>enum</q> object:::
 GraphTypes#enumOrdinal(Object):::Ordinal of an enum:::
 GraphTypes#enumTypeValues(Object):::All possible values of an enum:::
 GraphTypes#typeName(Object):::Finds Java type name for a given class.:::
+ProtocolImpl#findGraph(Graph, Object)::: protocol impl find graph:::return->structure->graph
+ProtocolImpl#findNode(Object)::: protocol impl find node:::return->structure->node
+ProtocolImpl#findNodeClass(Object)::: protocol impl find node class:::return->structure->nodeClass
+ProtocolImpl#findClassForNode(Node)::: protocol impl find class for node:::clazz->structure->classForNode->if->findNodeClass->findNode->throw->new->IllegalStateException->return
+ProtocolImpl#findNameTemplate(NodeClass)::: protocol impl find name template:::return->structure->nameTemplate
+ProtocolImpl#findNodeId(Node)::: protocol impl find node id:::return->structure->nodeId
+ProtocolImpl#hasPredecessor(Node)::: protocol impl has predecessor:::return->structure->nodeHasPredecessor
+ProtocolImpl#findNodesCount(Graph)::: protocol impl find nodes count:::return->structure->nodesCount
+ProtocolImpl#findNodes(Graph)::: protocol impl find nodes:::return->structure->nodes
+ProtocolImpl#findNodeProperties(Node, Map, Graph)::: protocol impl find node properties:::structure->nodeProperties
+ProtocolImpl#findClassEdges(NodeClass, boolean)::: protocol impl find class edges:::if->return->structure->portInputs->else->return->structure->portOutputs
+ProtocolImpl#findSize(Port)::: protocol impl find size:::return->structure->portSize
+ProtocolImpl#isDirect(Port, int)::: protocol impl is direct:::return->structure->edgeDirect
+ProtocolImpl#findName(Port, int)::: protocol impl find name:::return->structure->edgeName
+ProtocolImpl#findType(Port, int)::: protocol impl find type:::type->structure->edgeType->if->findEnumOrdinal->throw->new->IllegalStateException->return
+ProtocolImpl#findNodes(Graph, Node, Port, int)::: protocol impl find nodes:::return->structure->edgeNodes
+ProtocolImpl#findJavaClass(NodeClass)::: protocol impl find java class:::type->structure->nodeClassType->if->findJavaTypeName->throw->new->IllegalStateException->return
+ProtocolImpl#findEnumClass(Object)::: protocol impl find enum class:::return->types->enumClass
+ProtocolImpl#findEnumOrdinal(Object)::: protocol impl find enum ordinal:::return->types->enumOrdinal
+ProtocolImpl#findEnumTypeValues(Object)::: protocol impl find enum type values:::return->types->enumTypeValues
+ProtocolImpl#findJavaTypeName(Object)::: protocol impl find java type name:::return->types->typeName
+ProtocolImpl#findBlockNodes(Graph, Block)::: protocol impl find block nodes:::return->blocks->blockNodes
+ProtocolImpl#findBlockId(Block)::: protocol impl find block id:::return->blocks->blockId
+ProtocolImpl#findBlocks(Graph)::: protocol impl find blocks:::return->blocks->blocks
+ProtocolImpl#findBlockSuccessors(Block)::: protocol impl find block successors:::return->blocks->blockSuccessors
+ProtocolImpl#findMethod(Object)::: protocol impl find method:::return->elements->method
+ProtocolImpl#findMethodCode(ResolvedJavaMethod)::: protocol impl find method code:::return->elements->methodCode
+ProtocolImpl#findMethodModifiers(ResolvedJavaMethod)::: protocol impl find method modifiers:::return->elements->methodModifiers
+ProtocolImpl#findMethodSignature(ResolvedJavaMethod)::: protocol impl find method signature:::return->elements->methodSignature
+ProtocolImpl#findMethodName(ResolvedJavaMethod)::: protocol impl find method name:::return->elements->methodName
+ProtocolImpl#findMethodDeclaringClass(ResolvedJavaMethod)::: protocol impl find method declaring class:::return->elements->methodDeclaringClass
+ProtocolImpl#findFieldModifiers(ResolvedJavaField)::: protocol impl find field modifiers:::return->elements->fieldModifiers
+ProtocolImpl#findFieldTypeName(ResolvedJavaField)::: protocol impl find field type name:::return->elements->fieldTypeName
+ProtocolImpl#findFieldName(ResolvedJavaField)::: protocol impl find field name:::return->elements->fieldName
+ProtocolImpl#findFieldDeclaringClass(ResolvedJavaField)::: protocol impl find field declaring class:::return->elements->fieldDeclaringClass
+ProtocolImpl#findJavaField(Object)::: protocol impl find java field:::return->elements->field
+ProtocolImpl#findSignature(Object)::: protocol impl find signature:::return->elements->signature
+ProtocolImpl#findSignatureParameterCount(Signature)::: protocol impl find signature parameter count:::return->elements->signatureParameterCount
+ProtocolImpl#findSignatureParameterTypeName(Signature, int)::: protocol impl find signature parameter type name:::return->elements->signatureParameterTypeName
+ProtocolImpl#findSignatureReturnTypeName(Signature)::: protocol impl find signature return type name:::return->elements->signatureReturnTypeName
+ProtocolImpl#findNodeSourcePosition(Object)::: protocol impl find node source position:::return->elements->nodeSourcePosition
+ProtocolImpl#findNodeSourcePositionMethod(NodeSourcePosition)::: protocol impl find node source position method:::return->elements->nodeSourcePositionMethod
+ProtocolImpl#findNodeSourcePositionCaller(NodeSourcePosition)::: protocol impl find node source position caller:::return->elements->nodeSourcePositionCaller
+ProtocolImpl#findNodeSourcePositionBCI(NodeSourcePosition)::: protocol impl find node source position i:::return->elements->nodeSourcePositionBCI
+ProtocolImpl#findLocation(ResolvedJavaMethod, int, NodeSourcePosition)::: protocol impl find location:::return->locations->methodLocation
+ProtocolImpl#findLocationFile(Location)::: protocol impl find location file:::if->return->u->try->locations->locationURI->catch->throw->new->IOException->finally->if->return->if->u->getScheme->return->u->getPath->if->u->getScheme->equals->return->new->File->getPath->return
+ProtocolImpl#findLocationLine(Location)::: protocol impl find location line:::return->locations->locationLineNumber
+ProtocolImpl#findLocationURI(Location)::: protocol impl find location i:::return->locations->locationURI
+ProtocolImpl#findLocationLanguage(Location)::: protocol impl find location language:::return->locations->locationLanguage
+ProtocolImpl#findLocationStart(Location)::: protocol impl find location start:::return->locations->locationOffsetStart
+ProtocolImpl#findLocationEnd(Location)::: protocol impl find location end:::return->locations->locationOffsetEnd
+ProtocolImpl#findExtraNodes(Node, Collection)::: protocol impl find extra nodes:::
+ProtocolImpl#formatTitle(Graph, int, String, Object...)::: protocol impl format title:::return->String->format

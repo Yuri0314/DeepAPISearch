@@ -1,4 +1,5 @@
 ClassLoaderUtils#loadClass(String, Class):::Load a class with a given name:::try->cl->Thread->currentThread->getContextClassLoader->if->return->cl->loadClass->catch->LOG->e->getMessage->debug->finally->return->loadClass2
+ClassLoaderUtils#loadClass2(String, Class)::: class loader utils load class2:::try->return->Class->forName->catch->try->if->getClassLoader->return->getClassLoader->loadClass->catch->if->callingClass->getClassLoader->return->callingClass->getClassLoader->loadClass->finally->LOG->ex->getMessage->debug->throw->finally
 KeyResolver#length():::Method length:::return->resolverVector->size
 KeyResolver#getX509Certificate(Element, String, StorageResolver):::Method getX509Certificate:::foreach->if->exArgs->element->getNodeType->element->getTagName->throw->new->KeyResolverException->LOG->resolver->getClass->debug->cert->resolver->resolveX509Certificate->if->return->exArgs->element->getNodeType->element->getTagName->throw->new->KeyResolverException
 KeyResolver#getPublicKey(Element, String, StorageResolver):::Method getPublicKey:::foreach->if->exArgs->element->getNodeType->element->getTagName->throw->new->KeyResolverException->LOG->resolver->getClass->debug->cert->resolver->resolvePublicKey->if->return->exArgs->element->getNodeType->element->getTagName->throw->new->KeyResolverException
@@ -9,14 +10,20 @@ KeyResolver#registerClassNames(List):::This method is used for registering KeyRe
 KeyResolver#registerDefaultResolvers():::This method registers the default resolvers.:::keyResolverList->new->ArrayList<>->keyResolverList->new->RSAKeyValueResolver->new->KeyResolver->add->keyResolverList->new->DSAKeyValueResolver->new->KeyResolver->add->keyResolverList->new->X509CertificateResolver->new->KeyResolver->add->keyResolverList->new->X509SKIResolver->new->KeyResolver->add->keyResolverList->new->RetrievalMethodResolver->new->KeyResolver->add->keyResolverList->new->X509SubjectNameResolver->new->KeyResolver->add->keyResolverList->new->X509IssuerSerialResolver->new->KeyResolver->add->keyResolverList->new->DEREncodedKeyValueResolver->new->KeyResolver->add->keyResolverList->new->KeyInfoReferenceResolver->new->KeyResolver->add->keyResolverList->new->X509DigestResolver->new->KeyResolver->add->keyResolverList->new->ECKeyValueResolver->new->KeyResolver->add->resolverVector->addAll
 KeyResolver#resolvePublicKey(Element, String, StorageResolver):::Method resolvePublicKey:::return->resolverSpi->engineLookupAndResolvePublicKey
 KeyResolver#resolveX509Certificate(Element, String, StorageResolver):::Method resolveX509Certificate:::return->resolverSpi->engineLookupResolveX509Certificate
+KeyResolver#resolveSecretKey(Element, String, StorageResolver)::: key resolver resolve secret key:::return->resolverSpi->engineLookupAndResolveSecretKey
 KeyResolver#setProperty(String, String):::Method setProperty:::resolverSpi->engineSetProperty
 KeyResolver#getProperty(String):::Method getProperty:::return->resolverSpi->engineGetProperty
 KeyResolver#understandsProperty(String):::Method understandsProperty:::return->resolverSpi->understandsProperty
 KeyResolver#resolverClassName():::Method resolverClassName:::return->resolverSpi->getClass->getName
+KeyResolver.ResolverIterator#hasNext()::: resolver iterator has next:::return->it->hasNext
+KeyResolver.ResolverIterator#next()::: resolver iterator next:::resolver->it->next->if->throw->new->RuntimeException->return
+KeyResolver.ResolverIterator#remove()::: resolver iterator remove:::throw->new->UnsupportedOperationException
+KeyResolver#iterator()::: key resolver iterator:::return->new->ResolverIterator
 KeyResolverSpi#setSecureValidation(boolean):::Set whether secure validation is enabled or not:::
 KeyResolverSpi#engineCanResolve(Element, String, StorageResolver):::This method returns whether the KeyResolverSpi is able to perform the requested action.:::throw->new->UnsupportedOperationException
 KeyResolverSpi#engineResolvePublicKey(Element, String, StorageResolver):::Method engineResolvePublicKey:::throw->new->UnsupportedOperationException
 KeyResolverSpi#engineLookupAndResolvePublicKey(Element, String, StorageResolver):::Method engineLookupAndResolvePublicKey:::tmp->cloneIfNeeded->if->tmp->engineCanResolve->return->return->tmp->engineResolvePublicKey
+KeyResolverSpi#cloneIfNeeded()::: key resolver spi clone if needed:::if->try->tmp->getClass->newInstance->return->catch->throw->new->KeyResolverException->throw->new->KeyResolverException->finally->return
 KeyResolverSpi#engineResolveX509Certificate(Element, String, StorageResolver):::Method engineResolveCertificate:::throw->new->UnsupportedOperationException
 KeyResolverSpi#engineLookupResolveX509Certificate(Element, String, StorageResolver):::Method engineLookupResolveX509Certificate:::tmp->cloneIfNeeded->if->tmp->engineCanResolve->return->return->tmp->engineResolveX509Certificate
 KeyResolverSpi#engineResolveSecretKey(Element, String, StorageResolver):::Method engineResolveSecretKey:::throw->new->UnsupportedOperationException
@@ -25,4 +32,5 @@ KeyResolverSpi#engineLookupAndResolvePrivateKey(Element, String, StorageResolver
 KeyResolverSpi#engineSetProperty(String, String):::Method engineSetProperty:::if->new->HashMap<>->properties->put
 KeyResolverSpi#engineGetProperty(String):::Method engineGetProperty:::if->return->return->properties->get
 KeyResolverSpi#understandsProperty(String):::Method understandsProperty:::if->return->return->properties->get
+KeyResolverSpi#setGlobalResolver(boolean)::: key resolver spi set global resolver:::
 KeyResolverSpi#getDocFromBytes(byte[], boolean):::Parses a byte array and returns the parsed Element.:::db->try->is->new->ByteArrayInputStream->XMLUtils->createDocumentBuilder->doc->db->parse->return->doc->getDocumentElement->catch->throw->new->KeyResolverException->throw->new->KeyResolverException->throw->new->KeyResolverException->finally

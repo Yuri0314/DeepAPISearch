@@ -1,8 +1,10 @@
+ATR#parse()::: r parse:::if->return->if->return->t0->n->i->while->if->if->if->if->if->return->else->k->if
 ATR#getBytes():::Returns a copy of the bytes in this ATR.:::return->atr->clone
 ATR#getHistoricalBytes():::Returns a copy of the historical bytes in this ATR:::b->new->byteArr->System->arraycopy->return
 ATR#toString():::Returns a string representation of this ATR.:::return
 ATR#equals(Object):::Compares the specified object with this ATR for equality:::if->return->if->return->other->return->Arrays->equals
 ATR#hashCode():::Returns the hash code value for this ATR.:::return->Arrays->hashCode
+ATR#readObject(java.io.ObjectInputStream)::: r read object:::in->readUnshared->parse
 Card#getATR():::Returns the ATR of this card.:::
 Card#getProtocol():::Returns the protocol in use for this card.:::
 Card#getBasicChannel():::Returns the CardChannel for the basic logical channel:::
@@ -16,10 +18,14 @@ CardChannel#getChannelNumber():::Returns the channel number of this CardChannel:
 CardChannel#transmit(CommandAPDU):::Transmits the specified command APDU to the Smart Card and returns the response APDU:::
 CardChannel#transmit(ByteBuffer, ByteBuffer):::Transmits the command APDU stored in the command ByteBuffer and receives the response APDU in the response ByteBuffer:::
 CardChannel#close():::Closes this CardChannel:::
+CardPermission#getMask(String)::: card permission get mask:::if->return->if->actions->length->throw->new->IllegalArgumentException->for->i->if->actions->endsWith->throw->new->IllegalArgumentException->mask->split->actions->split->foreach->for->i->throw->new->IllegalArgumentException->return
+CardPermission#getActions(int)::: card permission get actions:::if->return->if->return->sj->new->StringJoiner->for->i->return->sj->toString
 CardPermission#getActions():::Returns the canonical string representation of the actions:::return
 CardPermission#implies(Permission):::Checks if this CardPermission object implies the specified permission:::if->return->other->if->return->thisName->getName->if->thisName->equals->return->if->thisName->other->getName->equals->return->return
 CardPermission#equals(Object):::Compares the specified object with this CardPermission for equality:::if->return->if->return->other->return->this->getName->other->getName->equals
 CardPermission#hashCode():::Returns the hash code value for this CardPermission object.:::return->getName->hashCode
+CardPermission#writeObject(ObjectOutputStream)::: card permission write object:::s->defaultWriteObject
+CardPermission#readObject(ObjectInputStream)::: card permission read object:::s->defaultReadObject->getMask
 CardTerminal#getName():::Returns the unique name of this terminal.:::
 CardTerminal#connect(String):::Establishes a connection to the card:::
 CardTerminal#isCardPresent():::Returns whether a card is present in this terminal.:::
@@ -30,6 +36,10 @@ CardTerminals#list(State):::Returns an unmodifiable list of all terminals matchi
 CardTerminals#getTerminal(String):::Returns the terminal with the specified name or null if no such terminal exists.:::if->throw->new->NullPointerException->try->foreach->list->if->terminal->getName->equals->return->return->catch->return->finally
 CardTerminals#waitForChange():::Waits for card insertion or removal in any of the terminals of this object:::waitForChange
 CardTerminals#waitForChange(long):::Waits for card insertion or removal in any of the terminals of this object or until the timeout expires:::
+CommandAPDU#checkArrayBounds(byte[], int, int)::: command u check array bounds:::if->throw->new->IllegalArgumentException->if->if->throw->new->IllegalArgumentException->else->if->throw->new->IllegalArgumentException
+CommandAPDU#arrayLength(byte[])::: command u array length:::return
+CommandAPDU#parse():::Command APDU encoding options:  case 1:  |CLA|INS|P1 |P2 |                                 len = 4 case 2s: |CLA|INS|P1 |P2 |LE |                             len = 5 case 3s: |CLA|INS|P1 |P2 |LC |...BODY...|                  len = 6..260 case 4s: |CLA|INS|P1 |P2 |LC |...BODY...|LE |              len = 7..261 case 2e: |CLA|INS|P1 |P2 |00 |LE1|LE2|                     len = 7 case 3e: |CLA|INS|P1 |P2 |00 |LC1|LC2|...BODY...|          len = 8..65542 case 4e: |CLA|INS|P1 |P2 |00 |LC1|LC2|...BODY...|LE1|LE2|  len =10..65544  LE, LE1, LE2 may be 0x00:::if->throw->new->IllegalArgumentException->if->return->l1->if->return->if->if->return->else->if->l2->return->else->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->l2->if->return->if->throw->new->IllegalArgumentException->if->return->else->if->leOfs->l3->else->throw->new->IllegalArgumentException
+CommandAPDU#setHeader(int, int, int, int)::: command u set header:::
 CommandAPDU#getCLA():::Returns the value of the class byte CLA.:::return
 CommandAPDU#getINS():::Returns the value of the instruction byte INS.:::return
 CommandAPDU#getP1():::Returns the value of the parameter byte P1.:::return
@@ -41,6 +51,8 @@ CommandAPDU#getBytes():::Returns a copy of the bytes in this APDU.:::return->apd
 CommandAPDU#toString():::Returns a string representation of this command APDU.:::return
 CommandAPDU#equals(Object):::Compares the specified object with this command APDU for equality:::if->return->if->return->other->return->Arrays->equals
 CommandAPDU#hashCode():::Returns the hash code value for this command APDU.:::return->Arrays->hashCode
+CommandAPDU#readObject(java.io.ObjectInputStream)::: command u read object:::in->readUnshared->parse
+ResponseAPDU#check(byte[])::: response u check:::if->throw->new->IllegalArgumentException
 ResponseAPDU#getNr():::Returns the number of data bytes in the response body (Nr) or 0 if this APDU has no body:::return
 ResponseAPDU#getData():::Returns a copy of the data bytes in the response body:::data->new->byteArr->System->arraycopy->return
 ResponseAPDU#getSW1():::Returns the value of the status byte SW1 as a value between 0 and 255.:::return
@@ -50,6 +62,10 @@ ResponseAPDU#getBytes():::Returns a copy of the bytes in this APDU.:::return->ap
 ResponseAPDU#toString():::Returns a string representation of this response APDU.:::return->Integer->getSW->toHexString
 ResponseAPDU#equals(Object):::Compares the specified object with this response APDU for equality:::if->return->if->return->other->return->Arrays->equals
 ResponseAPDU#hashCode():::Returns the hash code value for this response APDU.:::return->Arrays->hashCode
+ResponseAPDU#readObject(java.io.ObjectInputStream)::: response u read object:::in->readUnshared->check
+TerminalFactory.NoneFactorySpi#engineTerminals()::: none factory spi engine terminals:::return
+TerminalFactory.NoneCardTerminals#list(State)::: none card terminals list:::if->throw->new->NullPointerException->return->Collections->emptyList
+TerminalFactory.NoneCardTerminals#waitForChange(long)::: none card terminals wait for change:::throw->new->IllegalStateException
 TerminalFactory#getDefaultType():::Get the default TerminalFactory type:::return
 TerminalFactory#getDefault():::Returns the default TerminalFactory instance:::return
 TerminalFactory#getInstance(String, Object):::Returns a TerminalFactory of the specified type that is initialized with the specified parameters:::instance->GetInstance->getInstance->return->new->TerminalFactory

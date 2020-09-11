@@ -2,40 +2,100 @@ FileSystemOption#register(OpenOption):::Register this internal option as an Open
 FileSystemOption#register(CopyOption):::Register this internal option as a CopyOption.:::internalOption->register
 FileSystemOption#register(WatchEvent.Modifier):::Register this internal option as a WatchEvent.Modifier.:::internalOption->register
 FileSystemOption#register(WatchEvent.Modifier, T):::Register this internal option as a WatchEvent.Modifier with the given parameter.:::internalOption->register
+InnocuousThread#newName()::: innocuous thread new name:::return->threadNumber->getAndIncrement
 InnocuousThread#newThread(Runnable):::Returns a new InnocuousThread with an auto-generated thread name and its context class loader is set to the system class loader.:::return->newName->newThread
 InnocuousThread#newThread(String, Runnable):::Returns a new InnocuousThread with its context class loader set to the system class loader.:::return->AccessController->new->PrivilegedAction<Thread>->doPrivileged
 InnocuousThread#newSystemThread(Runnable):::Returns a new InnocuousThread with an auto-generated thread name:::return->newName->newSystemThread
 InnocuousThread#newSystemThread(String, Runnable):::Returns a new InnocuousThread with null context class loader.:::return->AccessController->new->PrivilegedAction<Thread>->doPrivileged
+InnocuousThread#setUncaughtExceptionHandler(UncaughtExceptionHandler)::: innocuous thread set uncaught exception handler:::
+InnocuousThread#setContextClassLoader(ClassLoader)::: innocuous thread set context class loader:::if->super->setContextClassLoader->else->throw->new->SecurityException
 InnocuousThread#eraseThreadLocals():::Drops all thread locals (and inherited thread locals).:::UNSAFE->putObject->UNSAFE->putObject
+InnocuousThread#run()::: innocuous thread run:::if->Thread->currentThread->super->run
+OSEnvironment#initialize()::: environment initialize:::Win32ErrorMode->initialize
+Signal#getNumber()::: signal get number:::return
 Signal#getName():::Returns the signal name.:::return
 Signal#equals(Object):::Compares the equality of two Signal objects.:::if->return->if->return->other1->return->name->equals
 Signal#hashCode():::Returns a hashcode for this Signal.:::return
 Signal#toString():::Returns a string representation of this signal:::return
 Signal#handle(Signal, Signal.Handler):::Registers a signal handler.:::Objects->requireNonNull->Objects->requireNonNull->newH->getHandler->oldH->handle0->if->throw->new->IllegalArgumentException->signals->put->synchronized->oldHandler->handlers->get->handlers->remove->if->handlers->put->if->return->else->if->return->else->if->return->else->return->new->NativeHandler
 Signal#raise(Signal):::Raises a signal in the current process.:::Objects->requireNonNull->if->handlers->get->throw->new->IllegalArgumentException->raise0
+Signal#dispatch(int)::: signal dispatch:::sig->signals->get->handler->handlers->get->runnable->new->Runnable->if->new->Thread->start
+Signal#findSignal0(String)::: signal find signal0:::
+Signal#handle0(int, long)::: signal handle0:::
+Signal#raise0(int)::: signal raise0:::
 Signal.Handler#handle(Signal):::Handle the given signal:::
+Signal.NativeHandler#getHandler()::: native handler get handler:::return
+Signal.NativeHandler#handle(Signal)::: native handler handle:::throw->new->UnsupportedOperationException
+Signal.NativeHandler#toString()::: native handler to string:::return->super->toString
+TerminatingThreadLocal#set(T)::: terminating thread local set:::super->set->register
+TerminatingThreadLocal#remove()::: terminating thread local remove:::super->remove->unregister
 TerminatingThreadLocal#threadTerminated(T):::Invoked by a thread when terminating and this thread-local has an associated value for the terminating thread (even if that value is null), so that any native resources maintained by the value can be released.:::
 TerminatingThreadLocal#threadTerminated():::Invokes the TerminatingThreadLocal's #threadTerminated() method on all instances registered in current thread.:::foreach->REGISTRY->get->ttl->_threadTerminated
+TerminatingThreadLocal#_threadTerminated()::: terminating thread local _thread terminated:::get->threadTerminated
 TerminatingThreadLocal#register(TerminatingThreadLocal):::Register given TerminatingThreadLocal:::REGISTRY->get->add
+TerminatingThreadLocal#unregister(TerminatingThreadLocal):::Unregister given TerminatingThreadLocal:::REGISTRY->get->remove
+Unsafe#registerNatives()::: unsafe register natives:::
 Unsafe#getUnsafe():::Provides the caller with the capability of performing unsafe operations:::return
 Unsafe#getInt(Object, long):::Fetches a value from a given Java variable:::
 Unsafe#putInt(Object, long, int):::Stores a value into a given Java variable:::
 Unsafe#getObject(Object, long):::Fetches a reference value from a given Java variable.:::
 Unsafe#putObject(Object, long, Object):::Stores a reference value into a given Java variable:::
+Unsafe#getBoolean(Object, long)::: unsafe get boolean:::
+Unsafe#putBoolean(Object, long, boolean)::: unsafe put boolean:::
+Unsafe#getByte(Object, long)::: unsafe get byte:::
+Unsafe#putByte(Object, long, byte)::: unsafe put byte:::
+Unsafe#getShort(Object, long)::: unsafe get short:::
+Unsafe#putShort(Object, long, short)::: unsafe put short:::
+Unsafe#getChar(Object, long)::: unsafe get char:::
+Unsafe#putChar(Object, long, char)::: unsafe put char:::
+Unsafe#getLong(Object, long)::: unsafe get long:::
+Unsafe#putLong(Object, long, long)::: unsafe put long:::
+Unsafe#getFloat(Object, long)::: unsafe get float:::
+Unsafe#putFloat(Object, long, float)::: unsafe put float:::
+Unsafe#getDouble(Object, long)::: unsafe get double:::
+Unsafe#putDouble(Object, long, double)::: unsafe put double:::
 Unsafe#getAddress(Object, long):::Fetches a native pointer from a given memory address:::if->return->Integer->getInt->toUnsignedLong->else->return->getLong
 Unsafe#putAddress(Object, long, long):::Stores a native pointer into a given memory address:::if->putInt->else->putLong
 Unsafe#getUncompressedObject(long):::Fetches an uncompressed reference value from a given native variable ignoring the VM's compressed references mode.:::
 Unsafe#getByte(long):::Fetches a value from a given memory address:::return->getByte
 Unsafe#putByte(long, byte):::Stores a value into a given memory address:::putByte
+Unsafe#getShort(long)::: unsafe get short:::return->getShort
+Unsafe#putShort(long, short)::: unsafe put short:::putShort
+Unsafe#getChar(long)::: unsafe get char:::return->getChar
+Unsafe#putChar(long, char)::: unsafe put char:::putChar
+Unsafe#getInt(long)::: unsafe get int:::return->getInt
+Unsafe#putInt(long, int)::: unsafe put int:::putInt
+Unsafe#getLong(long)::: unsafe get long:::return->getLong
+Unsafe#putLong(long, long)::: unsafe put long:::putLong
+Unsafe#getFloat(long)::: unsafe get float:::return->getFloat
+Unsafe#putFloat(long, float)::: unsafe put float:::putFloat
+Unsafe#getDouble(long)::: unsafe get double:::return->getDouble
+Unsafe#putDouble(long, double)::: unsafe put double:::putDouble
+Unsafe#getAddress(long)::: unsafe get address:::return->getAddress
+Unsafe#putAddress(long, long)::: unsafe put address:::putAddress
+Unsafe#invalidInput():::Create an exception reflecting that some of the input was invalid  Note: It is the resposibility of the caller to make sure arguments are checked before the methods are called:::return->new->IllegalArgumentException
+Unsafe#is32BitClean(long):::Check if a value is 32-bit clean (32 MSB are all zero):::return
+Unsafe#checkSize(long):::Check the validity of a size (the equivalent of a size_t):::if->if->is32BitClean->throw->invalidInput->else->if->throw->invalidInput
+Unsafe#checkNativeAddress(long):::Check the validity of a native address (the equivalent of void*):::if->if->throw->invalidInput
+Unsafe#checkOffset(Object, long):::Check the validity of an offset, relative to a base object:::if->if->is32BitClean->throw->invalidInput->else->if->throw->invalidInput
+Unsafe#checkPointer(Object, long):::Check the validity of a double-register pointer  Note: This code deliberately does *not* check for NPE for (at least) three reasons:  1) NPE is not just NULL/0 - there is a range of values all resulting in an NPE, which is not trivial to check for  2) It is the responsibility of the callers of Unsafe methods to verify the input, so throwing an exception here is not really useful - passing in a NULL pointer is a critical error and the must not expect an exception to be thrown anyway:::if->checkNativeAddress->else->checkOffset
+Unsafe#checkPrimitiveArray(Class):::Check if a type is a primitive array type:::componentType->c->getComponentType->if->componentType->isPrimitive->throw->invalidInput
+Unsafe#checkPrimitivePointer(Object, long):::Check that a pointer is a valid primitive array type pointer  Note: pointers off-heap are considered to be primitive arrays:::checkPointer->if->o->getClass->checkPrimitiveArray
 Unsafe#allocateMemory(long):::Allocates a new block of native memory, of the given size in bytes:::allocateMemoryChecks->if->return->p->allocateMemory0->if->throw->new->OutOfMemoryError->return
+Unsafe#allocateMemoryChecks(long):::Validate the arguments to allocateMemory:::checkSize
 Unsafe#reallocateMemory(long, long):::Resizes a new block of native memory, to the given size in bytes:::reallocateMemoryChecks->if->freeMemory->return->p->allocateMemory0->reallocateMemory0->if->throw->new->OutOfMemoryError->return
+Unsafe#reallocateMemoryChecks(long, long):::Validate the arguments to reallocateMemory:::checkPointer->checkSize
 Unsafe#setMemory(Object, long, long, byte):::Sets all bytes in a given block of memory to a fixed value (usually zero):::setMemoryChecks->if->return->setMemory0
 Unsafe#setMemory(long, long, byte):::Sets all bytes in a given block of memory to a fixed value (usually zero):::setMemory
+Unsafe#setMemoryChecks(Object, long, long, byte):::Validate the arguments to setMemory:::checkPrimitivePointer->checkSize
 Unsafe#copyMemory(Object, long, Object, long, long):::Sets all bytes in a given block of memory to a copy of another block:::copyMemoryChecks->if->return->copyMemory0
 Unsafe#copyMemory(long, long, long):::Sets all bytes in a given block of memory to a copy of another block:::copyMemory
+Unsafe#copyMemoryChecks(Object, long, Object, long, long):::Validate the arguments to copyMemory:::checkSize->checkPrimitivePointer->checkPrimitivePointer
 Unsafe#copySwapMemory(Object, long, Object, long, long, long):::Copies all elements from one block of memory to another block, *unconditionally* byte swapping the elements on the fly:::copySwapMemoryChecks->if->return->copySwapMemory0
+Unsafe#copySwapMemoryChecks(Object, long, Object, long, long, long)::: unsafe copy swap memory checks:::checkSize->if->throw->invalidInput->if->throw->invalidInput->checkPrimitivePointer->checkPrimitivePointer
 Unsafe#copySwapMemory(long, long, long, long):::Copies all elements from one block of memory to another block, byte swapping the elements on the fly:::copySwapMemory
 Unsafe#freeMemory(long):::Disposes of a block of native memory, as obtained from #allocateMemory or #reallocateMemory:::freeMemoryChecks->if->return->freeMemory0
+Unsafe#freeMemoryChecks(long):::Validate the arguments to freeMemory:::checkPointer
 Unsafe#objectFieldOffset(Field):::Reports the location of a given field in the storage allocation of its class:::if->throw->new->NullPointerException->return->objectFieldOffset0
 Unsafe#objectFieldOffset(Class, String):::Reports the location of the field with a given name in the storage allocation of its class.:::if->throw->new->NullPointerException->return->objectFieldOffset1
 Unsafe#staticFieldOffset(Field):::Reports the location of a given static field, in conjunction with #staticFieldBase:::if->throw->new->NullPointerException->return->staticFieldOffset0
@@ -47,15 +107,88 @@ Unsafe#arrayIndexScale(Class):::Reports the scale factor for addressing elements
 Unsafe#addressSize():::Reports the size in bytes of a native pointer, as stored via #putAddress:::return
 Unsafe#pageSize():::Reports the size in bytes of a native memory page (whatever that is):::
 Unsafe#defineClass(String, byte[], int, int, ClassLoader, ProtectionDomain):::Tells the VM to define a class, without security checks:::if->throw->new->NullPointerException->if->throw->new->ArrayIndexOutOfBoundsException->return->defineClass0
+Unsafe#defineClass0(String, byte[], int, int, ClassLoader, ProtectionDomain)::: unsafe define class0:::
 Unsafe#defineAnonymousClass(Class, byte[], Object[]):::Defines a class but does not make it known to the class loader or system dictionary:::if->throw->new->NullPointerException->if->hostClass->isArray->hostClass->isPrimitive->throw->new->IllegalArgumentException->return->defineAnonymousClass0
 Unsafe#allocateInstance(Class):::Allocates an instance but does not run any constructor:::
 Unsafe#allocateUninitializedArray(Class, int):::Allocates an array of a given type, but does not do zeroing:::if->throw->new->IllegalArgumentException->if->componentType->isPrimitive->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->return->allocateUninitializedArray0
+Unsafe#allocateUninitializedArray0(Class, int)::: unsafe allocate uninitialized array0:::if->return->new->byteArr->if->return->new->booleanArr->if->return->new->shortArr->if->return->new->charArr->if->return->new->intArr->if->return->new->floatArr->if->return->new->longArr->if->return->new->doubleArr->return
 Unsafe#throwException(Throwable):::Throws the exception without telling the verifier.:::
 Unsafe#compareAndSetObject(Object, long, Object, Object):::Atomically updates Java variable to x if it is currently holding expected:::
+Unsafe#compareAndExchangeObject(Object, long, Object, Object)::: unsafe compare and exchange object:::
+Unsafe#compareAndExchangeObjectAcquire(Object, long, Object, Object)::: unsafe compare and exchange object acquire:::return->compareAndExchangeObject
+Unsafe#compareAndExchangeObjectRelease(Object, long, Object, Object)::: unsafe compare and exchange object release:::return->compareAndExchangeObject
+Unsafe#weakCompareAndSetObjectPlain(Object, long, Object, Object)::: unsafe weak compare and set object plain:::return->compareAndSetObject
+Unsafe#weakCompareAndSetObjectAcquire(Object, long, Object, Object)::: unsafe weak compare and set object acquire:::return->compareAndSetObject
+Unsafe#weakCompareAndSetObjectRelease(Object, long, Object, Object)::: unsafe weak compare and set object release:::return->compareAndSetObject
+Unsafe#weakCompareAndSetObject(Object, long, Object, Object)::: unsafe weak compare and set object:::return->compareAndSetObject
 Unsafe#compareAndSetInt(Object, long, int, int):::Atomically updates Java variable to x if it is currently holding expected:::
+Unsafe#compareAndExchangeInt(Object, long, int, int)::: unsafe compare and exchange int:::
+Unsafe#compareAndExchangeIntAcquire(Object, long, int, int)::: unsafe compare and exchange int acquire:::return->compareAndExchangeInt
+Unsafe#compareAndExchangeIntRelease(Object, long, int, int)::: unsafe compare and exchange int release:::return->compareAndExchangeInt
+Unsafe#weakCompareAndSetIntPlain(Object, long, int, int)::: unsafe weak compare and set int plain:::return->compareAndSetInt
+Unsafe#weakCompareAndSetIntAcquire(Object, long, int, int)::: unsafe weak compare and set int acquire:::return->compareAndSetInt
+Unsafe#weakCompareAndSetIntRelease(Object, long, int, int)::: unsafe weak compare and set int release:::return->compareAndSetInt
+Unsafe#weakCompareAndSetInt(Object, long, int, int)::: unsafe weak compare and set int:::return->compareAndSetInt
+Unsafe#compareAndExchangeByte(Object, long, byte, byte)::: unsafe compare and exchange byte:::wordOffset->shift->if->mask->maskedExpected->maskedX->fullWord->do->getIntVolatile->if->return->while->weakCompareAndSetInt->return
+Unsafe#compareAndSetByte(Object, long, byte, byte)::: unsafe compare and set byte:::return->compareAndExchangeByte
+Unsafe#weakCompareAndSetByte(Object, long, byte, byte)::: unsafe weak compare and set byte:::return->compareAndSetByte
+Unsafe#weakCompareAndSetByteAcquire(Object, long, byte, byte)::: unsafe weak compare and set byte acquire:::return->weakCompareAndSetByte
+Unsafe#weakCompareAndSetByteRelease(Object, long, byte, byte)::: unsafe weak compare and set byte release:::return->weakCompareAndSetByte
+Unsafe#weakCompareAndSetBytePlain(Object, long, byte, byte)::: unsafe weak compare and set byte plain:::return->weakCompareAndSetByte
+Unsafe#compareAndExchangeByteAcquire(Object, long, byte, byte)::: unsafe compare and exchange byte acquire:::return->compareAndExchangeByte
+Unsafe#compareAndExchangeByteRelease(Object, long, byte, byte)::: unsafe compare and exchange byte release:::return->compareAndExchangeByte
+Unsafe#compareAndExchangeShort(Object, long, short, short)::: unsafe compare and exchange short:::if->throw->new->IllegalArgumentException->wordOffset->shift->if->mask->maskedExpected->maskedX->fullWord->do->getIntVolatile->if->return->while->weakCompareAndSetInt->return
+Unsafe#compareAndSetShort(Object, long, short, short)::: unsafe compare and set short:::return->compareAndExchangeShort
+Unsafe#weakCompareAndSetShort(Object, long, short, short)::: unsafe weak compare and set short:::return->compareAndSetShort
+Unsafe#weakCompareAndSetShortAcquire(Object, long, short, short)::: unsafe weak compare and set short acquire:::return->weakCompareAndSetShort
+Unsafe#weakCompareAndSetShortRelease(Object, long, short, short)::: unsafe weak compare and set short release:::return->weakCompareAndSetShort
+Unsafe#weakCompareAndSetShortPlain(Object, long, short, short)::: unsafe weak compare and set short plain:::return->weakCompareAndSetShort
+Unsafe#compareAndExchangeShortAcquire(Object, long, short, short)::: unsafe compare and exchange short acquire:::return->compareAndExchangeShort
+Unsafe#compareAndExchangeShortRelease(Object, long, short, short)::: unsafe compare and exchange short release:::return->compareAndExchangeShort
+Unsafe#s2c(short)::: unsafe s2c:::return
+Unsafe#c2s(char)::: unsafe c2s:::return
+Unsafe#compareAndSetChar(Object, long, char, char)::: unsafe compare and set char:::return->c2s->c2s->compareAndSetShort
+Unsafe#compareAndExchangeChar(Object, long, char, char)::: unsafe compare and exchange char:::return->c2s->c2s->compareAndExchangeShort->s2c
+Unsafe#compareAndExchangeCharAcquire(Object, long, char, char)::: unsafe compare and exchange char acquire:::return->c2s->c2s->compareAndExchangeShortAcquire->s2c
+Unsafe#compareAndExchangeCharRelease(Object, long, char, char)::: unsafe compare and exchange char release:::return->c2s->c2s->compareAndExchangeShortRelease->s2c
+Unsafe#weakCompareAndSetChar(Object, long, char, char)::: unsafe weak compare and set char:::return->c2s->c2s->weakCompareAndSetShort
+Unsafe#weakCompareAndSetCharAcquire(Object, long, char, char)::: unsafe weak compare and set char acquire:::return->c2s->c2s->weakCompareAndSetShortAcquire
+Unsafe#weakCompareAndSetCharRelease(Object, long, char, char)::: unsafe weak compare and set char release:::return->c2s->c2s->weakCompareAndSetShortRelease
+Unsafe#weakCompareAndSetCharPlain(Object, long, char, char)::: unsafe weak compare and set char plain:::return->c2s->c2s->weakCompareAndSetShortPlain
+Unsafe#byte2bool(byte):::The JVM converts integral values to boolean values using two different conventions, byte testing against zero and truncation to least-significant bit:::return
+Unsafe#bool2byte(boolean):::Convert a boolean value to a byte:::return
+Unsafe#compareAndSetBoolean(Object, long, boolean, boolean)::: unsafe compare and set boolean:::return->bool2byte->bool2byte->compareAndSetByte
+Unsafe#compareAndExchangeBoolean(Object, long, boolean, boolean)::: unsafe compare and exchange boolean:::return->bool2byte->bool2byte->compareAndExchangeByte->byte2bool
+Unsafe#compareAndExchangeBooleanAcquire(Object, long, boolean, boolean)::: unsafe compare and exchange boolean acquire:::return->bool2byte->bool2byte->compareAndExchangeByteAcquire->byte2bool
+Unsafe#compareAndExchangeBooleanRelease(Object, long, boolean, boolean)::: unsafe compare and exchange boolean release:::return->bool2byte->bool2byte->compareAndExchangeByteRelease->byte2bool
+Unsafe#weakCompareAndSetBoolean(Object, long, boolean, boolean)::: unsafe weak compare and set boolean:::return->bool2byte->bool2byte->weakCompareAndSetByte
+Unsafe#weakCompareAndSetBooleanAcquire(Object, long, boolean, boolean)::: unsafe weak compare and set boolean acquire:::return->bool2byte->bool2byte->weakCompareAndSetByteAcquire
+Unsafe#weakCompareAndSetBooleanRelease(Object, long, boolean, boolean)::: unsafe weak compare and set boolean release:::return->bool2byte->bool2byte->weakCompareAndSetByteRelease
+Unsafe#weakCompareAndSetBooleanPlain(Object, long, boolean, boolean)::: unsafe weak compare and set boolean plain:::return->bool2byte->bool2byte->weakCompareAndSetBytePlain
 Unsafe#compareAndSetFloat(Object, long, float, float):::Atomically updates Java variable to x if it is currently holding expected:::return->Float->floatToRawIntBits->Float->floatToRawIntBits->compareAndSetInt
+Unsafe#compareAndExchangeFloat(Object, long, float, float)::: unsafe compare and exchange float:::w->Float->floatToRawIntBits->Float->floatToRawIntBits->compareAndExchangeInt->return->Float->intBitsToFloat
+Unsafe#compareAndExchangeFloatAcquire(Object, long, float, float)::: unsafe compare and exchange float acquire:::w->Float->floatToRawIntBits->Float->floatToRawIntBits->compareAndExchangeIntAcquire->return->Float->intBitsToFloat
+Unsafe#compareAndExchangeFloatRelease(Object, long, float, float)::: unsafe compare and exchange float release:::w->Float->floatToRawIntBits->Float->floatToRawIntBits->compareAndExchangeIntRelease->return->Float->intBitsToFloat
+Unsafe#weakCompareAndSetFloatPlain(Object, long, float, float)::: unsafe weak compare and set float plain:::return->Float->floatToRawIntBits->Float->floatToRawIntBits->weakCompareAndSetIntPlain
+Unsafe#weakCompareAndSetFloatAcquire(Object, long, float, float)::: unsafe weak compare and set float acquire:::return->Float->floatToRawIntBits->Float->floatToRawIntBits->weakCompareAndSetIntAcquire
+Unsafe#weakCompareAndSetFloatRelease(Object, long, float, float)::: unsafe weak compare and set float release:::return->Float->floatToRawIntBits->Float->floatToRawIntBits->weakCompareAndSetIntRelease
+Unsafe#weakCompareAndSetFloat(Object, long, float, float)::: unsafe weak compare and set float:::return->Float->floatToRawIntBits->Float->floatToRawIntBits->weakCompareAndSetInt
 Unsafe#compareAndSetDouble(Object, long, double, double):::Atomically updates Java variable to x if it is currently holding expected:::return->Double->doubleToRawLongBits->Double->doubleToRawLongBits->compareAndSetLong
+Unsafe#compareAndExchangeDouble(Object, long, double, double)::: unsafe compare and exchange double:::w->Double->doubleToRawLongBits->Double->doubleToRawLongBits->compareAndExchangeLong->return->Double->longBitsToDouble
+Unsafe#compareAndExchangeDoubleAcquire(Object, long, double, double)::: unsafe compare and exchange double acquire:::w->Double->doubleToRawLongBits->Double->doubleToRawLongBits->compareAndExchangeLongAcquire->return->Double->longBitsToDouble
+Unsafe#compareAndExchangeDoubleRelease(Object, long, double, double)::: unsafe compare and exchange double release:::w->Double->doubleToRawLongBits->Double->doubleToRawLongBits->compareAndExchangeLongRelease->return->Double->longBitsToDouble
+Unsafe#weakCompareAndSetDoublePlain(Object, long, double, double)::: unsafe weak compare and set double plain:::return->Double->doubleToRawLongBits->Double->doubleToRawLongBits->weakCompareAndSetLongPlain
+Unsafe#weakCompareAndSetDoubleAcquire(Object, long, double, double)::: unsafe weak compare and set double acquire:::return->Double->doubleToRawLongBits->Double->doubleToRawLongBits->weakCompareAndSetLongAcquire
+Unsafe#weakCompareAndSetDoubleRelease(Object, long, double, double)::: unsafe weak compare and set double release:::return->Double->doubleToRawLongBits->Double->doubleToRawLongBits->weakCompareAndSetLongRelease
+Unsafe#weakCompareAndSetDouble(Object, long, double, double)::: unsafe weak compare and set double:::return->Double->doubleToRawLongBits->Double->doubleToRawLongBits->weakCompareAndSetLong
 Unsafe#compareAndSetLong(Object, long, long, long):::Atomically updates Java variable to x if it is currently holding expected:::
+Unsafe#compareAndExchangeLong(Object, long, long, long)::: unsafe compare and exchange long:::
+Unsafe#compareAndExchangeLongAcquire(Object, long, long, long)::: unsafe compare and exchange long acquire:::return->compareAndExchangeLong
+Unsafe#compareAndExchangeLongRelease(Object, long, long, long)::: unsafe compare and exchange long release:::return->compareAndExchangeLong
+Unsafe#weakCompareAndSetLongPlain(Object, long, long, long)::: unsafe weak compare and set long plain:::return->compareAndSetLong
+Unsafe#weakCompareAndSetLongAcquire(Object, long, long, long)::: unsafe weak compare and set long acquire:::return->compareAndSetLong
+Unsafe#weakCompareAndSetLongRelease(Object, long, long, long)::: unsafe weak compare and set long release:::return->compareAndSetLong
+Unsafe#weakCompareAndSetLong(Object, long, long, long)::: unsafe weak compare and set long:::return->compareAndSetLong
 Unsafe#getObjectVolatile(Object, long):::Fetches a reference value from a given Java variable, with volatile load semantics:::
 Unsafe#putObjectVolatile(Object, long, Object):::Stores a reference value into a given Java variable, with volatile store semantics:::
 Unsafe#getIntVolatile(Object, long):::Volatile version of #getInt(Object, long):::
@@ -114,20 +247,176 @@ Unsafe#unpark(Object):::Unblocks the given thread blocked on park, or, if it is 
 Unsafe#park(boolean, long):::Blocks current thread, returning when a balancing unpark occurs, or a balancing unpark has already occurred, or the thread is interrupted, or, if not absolute and time is not zero, the given time nanoseconds have elapsed, or if absolute, the given deadline in milliseconds since Epoch has passed, or spuriously (i.e., returning for no "reason"):::
 Unsafe#getLoadAverage(double[], int):::Gets the load average in the system run queue assigned to the available processors averaged over various periods of time:::if->throw->new->ArrayIndexOutOfBoundsException->return->getLoadAverage0
 Unsafe#getAndAddInt(Object, long, int):::Atomically adds the given value to the current value of a field or array element within the given object o at the given offset.:::v->do->getIntVolatile->while->weakCompareAndSetInt->return
+Unsafe#getAndAddIntRelease(Object, long, int)::: unsafe get and add int release:::v->do->getInt->while->weakCompareAndSetIntRelease->return
+Unsafe#getAndAddIntAcquire(Object, long, int)::: unsafe get and add int acquire:::v->do->getIntAcquire->while->weakCompareAndSetIntAcquire->return
 Unsafe#getAndAddLong(Object, long, long):::Atomically adds the given value to the current value of a field or array element within the given object o at the given offset.:::v->do->getLongVolatile->while->weakCompareAndSetLong->return
+Unsafe#getAndAddLongRelease(Object, long, long)::: unsafe get and add long release:::v->do->getLong->while->weakCompareAndSetLongRelease->return
+Unsafe#getAndAddLongAcquire(Object, long, long)::: unsafe get and add long acquire:::v->do->getLongAcquire->while->weakCompareAndSetLongAcquire->return
+Unsafe#getAndAddByte(Object, long, byte)::: unsafe get and add byte:::v->do->getByteVolatile->while->weakCompareAndSetByte->return
+Unsafe#getAndAddByteRelease(Object, long, byte)::: unsafe get and add byte release:::v->do->getByte->while->weakCompareAndSetByteRelease->return
+Unsafe#getAndAddByteAcquire(Object, long, byte)::: unsafe get and add byte acquire:::v->do->getByteAcquire->while->weakCompareAndSetByteAcquire->return
+Unsafe#getAndAddShort(Object, long, short)::: unsafe get and add short:::v->do->getShortVolatile->while->weakCompareAndSetShort->return
+Unsafe#getAndAddShortRelease(Object, long, short)::: unsafe get and add short release:::v->do->getShort->while->weakCompareAndSetShortRelease->return
+Unsafe#getAndAddShortAcquire(Object, long, short)::: unsafe get and add short acquire:::v->do->getShortAcquire->while->weakCompareAndSetShortAcquire->return
+Unsafe#getAndAddChar(Object, long, char)::: unsafe get and add char:::return->getAndAddShort
+Unsafe#getAndAddCharRelease(Object, long, char)::: unsafe get and add char release:::return->getAndAddShortRelease
+Unsafe#getAndAddCharAcquire(Object, long, char)::: unsafe get and add char acquire:::return->getAndAddShortAcquire
+Unsafe#getAndAddFloat(Object, long, float)::: unsafe get and add float:::expectedBits->v->do->getIntVolatile->Float->intBitsToFloat->while->Float->floatToRawIntBits->weakCompareAndSetInt->return
+Unsafe#getAndAddFloatRelease(Object, long, float)::: unsafe get and add float release:::expectedBits->v->do->getInt->Float->intBitsToFloat->while->Float->floatToRawIntBits->weakCompareAndSetIntRelease->return
+Unsafe#getAndAddFloatAcquire(Object, long, float)::: unsafe get and add float acquire:::expectedBits->v->do->getIntAcquire->Float->intBitsToFloat->while->Float->floatToRawIntBits->weakCompareAndSetIntAcquire->return
+Unsafe#getAndAddDouble(Object, long, double)::: unsafe get and add double:::expectedBits->v->do->getLongVolatile->Double->longBitsToDouble->while->Double->doubleToRawLongBits->weakCompareAndSetLong->return
+Unsafe#getAndAddDoubleRelease(Object, long, double)::: unsafe get and add double release:::expectedBits->v->do->getLong->Double->longBitsToDouble->while->Double->doubleToRawLongBits->weakCompareAndSetLongRelease->return
+Unsafe#getAndAddDoubleAcquire(Object, long, double)::: unsafe get and add double acquire:::expectedBits->v->do->getLongAcquire->Double->longBitsToDouble->while->Double->doubleToRawLongBits->weakCompareAndSetLongAcquire->return
 Unsafe#getAndSetInt(Object, long, int):::Atomically exchanges the given value with the current value of a field or array element within the given object o at the given offset.:::v->do->getIntVolatile->while->weakCompareAndSetInt->return
+Unsafe#getAndSetIntRelease(Object, long, int)::: unsafe get and set int release:::v->do->getInt->while->weakCompareAndSetIntRelease->return
+Unsafe#getAndSetIntAcquire(Object, long, int)::: unsafe get and set int acquire:::v->do->getIntAcquire->while->weakCompareAndSetIntAcquire->return
 Unsafe#getAndSetLong(Object, long, long):::Atomically exchanges the given value with the current value of a field or array element within the given object o at the given offset.:::v->do->getLongVolatile->while->weakCompareAndSetLong->return
+Unsafe#getAndSetLongRelease(Object, long, long)::: unsafe get and set long release:::v->do->getLong->while->weakCompareAndSetLongRelease->return
+Unsafe#getAndSetLongAcquire(Object, long, long)::: unsafe get and set long acquire:::v->do->getLongAcquire->while->weakCompareAndSetLongAcquire->return
 Unsafe#getAndSetObject(Object, long, Object):::Atomically exchanges the given reference value with the current reference value of a field or array element within the given object o at the given offset.:::v->do->getObjectVolatile->while->weakCompareAndSetObject->return
+Unsafe#getAndSetObjectRelease(Object, long, Object)::: unsafe get and set object release:::v->do->getObject->while->weakCompareAndSetObjectRelease->return
+Unsafe#getAndSetObjectAcquire(Object, long, Object)::: unsafe get and set object acquire:::v->do->getObjectAcquire->while->weakCompareAndSetObjectAcquire->return
+Unsafe#getAndSetByte(Object, long, byte)::: unsafe get and set byte:::v->do->getByteVolatile->while->weakCompareAndSetByte->return
+Unsafe#getAndSetByteRelease(Object, long, byte)::: unsafe get and set byte release:::v->do->getByte->while->weakCompareAndSetByteRelease->return
+Unsafe#getAndSetByteAcquire(Object, long, byte)::: unsafe get and set byte acquire:::v->do->getByteAcquire->while->weakCompareAndSetByteAcquire->return
+Unsafe#getAndSetBoolean(Object, long, boolean)::: unsafe get and set boolean:::return->bool2byte->getAndSetByte->byte2bool
+Unsafe#getAndSetBooleanRelease(Object, long, boolean)::: unsafe get and set boolean release:::return->bool2byte->getAndSetByteRelease->byte2bool
+Unsafe#getAndSetBooleanAcquire(Object, long, boolean)::: unsafe get and set boolean acquire:::return->bool2byte->getAndSetByteAcquire->byte2bool
+Unsafe#getAndSetShort(Object, long, short)::: unsafe get and set short:::v->do->getShortVolatile->while->weakCompareAndSetShort->return
+Unsafe#getAndSetShortRelease(Object, long, short)::: unsafe get and set short release:::v->do->getShort->while->weakCompareAndSetShortRelease->return
+Unsafe#getAndSetShortAcquire(Object, long, short)::: unsafe get and set short acquire:::v->do->getShortAcquire->while->weakCompareAndSetShortAcquire->return
+Unsafe#getAndSetChar(Object, long, char)::: unsafe get and set char:::return->c2s->getAndSetShort->s2c
+Unsafe#getAndSetCharRelease(Object, long, char)::: unsafe get and set char release:::return->c2s->getAndSetShortRelease->s2c
+Unsafe#getAndSetCharAcquire(Object, long, char)::: unsafe get and set char acquire:::return->c2s->getAndSetShortAcquire->s2c
+Unsafe#getAndSetFloat(Object, long, float)::: unsafe get and set float:::v->Float->floatToRawIntBits->getAndSetInt->return->Float->intBitsToFloat
+Unsafe#getAndSetFloatRelease(Object, long, float)::: unsafe get and set float release:::v->Float->floatToRawIntBits->getAndSetIntRelease->return->Float->intBitsToFloat
+Unsafe#getAndSetFloatAcquire(Object, long, float)::: unsafe get and set float acquire:::v->Float->floatToRawIntBits->getAndSetIntAcquire->return->Float->intBitsToFloat
+Unsafe#getAndSetDouble(Object, long, double)::: unsafe get and set double:::v->Double->doubleToRawLongBits->getAndSetLong->return->Double->longBitsToDouble
+Unsafe#getAndSetDoubleRelease(Object, long, double)::: unsafe get and set double release:::v->Double->doubleToRawLongBits->getAndSetLongRelease->return->Double->longBitsToDouble
+Unsafe#getAndSetDoubleAcquire(Object, long, double)::: unsafe get and set double acquire:::v->Double->doubleToRawLongBits->getAndSetLongAcquire->return->Double->longBitsToDouble
+Unsafe#getAndBitwiseOrBoolean(Object, long, boolean)::: unsafe get and bitwise or boolean:::return->bool2byte->getAndBitwiseOrByte->byte2bool
+Unsafe#getAndBitwiseOrBooleanRelease(Object, long, boolean)::: unsafe get and bitwise or boolean release:::return->bool2byte->getAndBitwiseOrByteRelease->byte2bool
+Unsafe#getAndBitwiseOrBooleanAcquire(Object, long, boolean)::: unsafe get and bitwise or boolean acquire:::return->bool2byte->getAndBitwiseOrByteAcquire->byte2bool
+Unsafe#getAndBitwiseAndBoolean(Object, long, boolean)::: unsafe get and bitwise and boolean:::return->bool2byte->getAndBitwiseAndByte->byte2bool
+Unsafe#getAndBitwiseAndBooleanRelease(Object, long, boolean)::: unsafe get and bitwise and boolean release:::return->bool2byte->getAndBitwiseAndByteRelease->byte2bool
+Unsafe#getAndBitwiseAndBooleanAcquire(Object, long, boolean)::: unsafe get and bitwise and boolean acquire:::return->bool2byte->getAndBitwiseAndByteAcquire->byte2bool
+Unsafe#getAndBitwiseXorBoolean(Object, long, boolean)::: unsafe get and bitwise xor boolean:::return->bool2byte->getAndBitwiseXorByte->byte2bool
+Unsafe#getAndBitwiseXorBooleanRelease(Object, long, boolean)::: unsafe get and bitwise xor boolean release:::return->bool2byte->getAndBitwiseXorByteRelease->byte2bool
+Unsafe#getAndBitwiseXorBooleanAcquire(Object, long, boolean)::: unsafe get and bitwise xor boolean acquire:::return->bool2byte->getAndBitwiseXorByteAcquire->byte2bool
+Unsafe#getAndBitwiseOrByte(Object, long, byte)::: unsafe get and bitwise or byte:::current->do->getByteVolatile->while->weakCompareAndSetByte->return
+Unsafe#getAndBitwiseOrByteRelease(Object, long, byte)::: unsafe get and bitwise or byte release:::current->do->getByte->while->weakCompareAndSetByteRelease->return
+Unsafe#getAndBitwiseOrByteAcquire(Object, long, byte)::: unsafe get and bitwise or byte acquire:::current->do->getByte->while->weakCompareAndSetByteAcquire->return
+Unsafe#getAndBitwiseAndByte(Object, long, byte)::: unsafe get and bitwise and byte:::current->do->getByteVolatile->while->weakCompareAndSetByte->return
+Unsafe#getAndBitwiseAndByteRelease(Object, long, byte)::: unsafe get and bitwise and byte release:::current->do->getByte->while->weakCompareAndSetByteRelease->return
+Unsafe#getAndBitwiseAndByteAcquire(Object, long, byte)::: unsafe get and bitwise and byte acquire:::current->do->getByte->while->weakCompareAndSetByteAcquire->return
+Unsafe#getAndBitwiseXorByte(Object, long, byte)::: unsafe get and bitwise xor byte:::current->do->getByteVolatile->while->weakCompareAndSetByte->return
+Unsafe#getAndBitwiseXorByteRelease(Object, long, byte)::: unsafe get and bitwise xor byte release:::current->do->getByte->while->weakCompareAndSetByteRelease->return
+Unsafe#getAndBitwiseXorByteAcquire(Object, long, byte)::: unsafe get and bitwise xor byte acquire:::current->do->getByte->while->weakCompareAndSetByteAcquire->return
+Unsafe#getAndBitwiseOrChar(Object, long, char)::: unsafe get and bitwise or char:::return->c2s->getAndBitwiseOrShort->s2c
+Unsafe#getAndBitwiseOrCharRelease(Object, long, char)::: unsafe get and bitwise or char release:::return->c2s->getAndBitwiseOrShortRelease->s2c
+Unsafe#getAndBitwiseOrCharAcquire(Object, long, char)::: unsafe get and bitwise or char acquire:::return->c2s->getAndBitwiseOrShortAcquire->s2c
+Unsafe#getAndBitwiseAndChar(Object, long, char)::: unsafe get and bitwise and char:::return->c2s->getAndBitwiseAndShort->s2c
+Unsafe#getAndBitwiseAndCharRelease(Object, long, char)::: unsafe get and bitwise and char release:::return->c2s->getAndBitwiseAndShortRelease->s2c
+Unsafe#getAndBitwiseAndCharAcquire(Object, long, char)::: unsafe get and bitwise and char acquire:::return->c2s->getAndBitwiseAndShortAcquire->s2c
+Unsafe#getAndBitwiseXorChar(Object, long, char)::: unsafe get and bitwise xor char:::return->c2s->getAndBitwiseXorShort->s2c
+Unsafe#getAndBitwiseXorCharRelease(Object, long, char)::: unsafe get and bitwise xor char release:::return->c2s->getAndBitwiseXorShortRelease->s2c
+Unsafe#getAndBitwiseXorCharAcquire(Object, long, char)::: unsafe get and bitwise xor char acquire:::return->c2s->getAndBitwiseXorShortAcquire->s2c
+Unsafe#getAndBitwiseOrShort(Object, long, short)::: unsafe get and bitwise or short:::current->do->getShortVolatile->while->weakCompareAndSetShort->return
+Unsafe#getAndBitwiseOrShortRelease(Object, long, short)::: unsafe get and bitwise or short release:::current->do->getShort->while->weakCompareAndSetShortRelease->return
+Unsafe#getAndBitwiseOrShortAcquire(Object, long, short)::: unsafe get and bitwise or short acquire:::current->do->getShort->while->weakCompareAndSetShortAcquire->return
+Unsafe#getAndBitwiseAndShort(Object, long, short)::: unsafe get and bitwise and short:::current->do->getShortVolatile->while->weakCompareAndSetShort->return
+Unsafe#getAndBitwiseAndShortRelease(Object, long, short)::: unsafe get and bitwise and short release:::current->do->getShort->while->weakCompareAndSetShortRelease->return
+Unsafe#getAndBitwiseAndShortAcquire(Object, long, short)::: unsafe get and bitwise and short acquire:::current->do->getShort->while->weakCompareAndSetShortAcquire->return
+Unsafe#getAndBitwiseXorShort(Object, long, short)::: unsafe get and bitwise xor short:::current->do->getShortVolatile->while->weakCompareAndSetShort->return
+Unsafe#getAndBitwiseXorShortRelease(Object, long, short)::: unsafe get and bitwise xor short release:::current->do->getShort->while->weakCompareAndSetShortRelease->return
+Unsafe#getAndBitwiseXorShortAcquire(Object, long, short)::: unsafe get and bitwise xor short acquire:::current->do->getShort->while->weakCompareAndSetShortAcquire->return
+Unsafe#getAndBitwiseOrInt(Object, long, int)::: unsafe get and bitwise or int:::current->do->getIntVolatile->while->weakCompareAndSetInt->return
+Unsafe#getAndBitwiseOrIntRelease(Object, long, int)::: unsafe get and bitwise or int release:::current->do->getInt->while->weakCompareAndSetIntRelease->return
+Unsafe#getAndBitwiseOrIntAcquire(Object, long, int)::: unsafe get and bitwise or int acquire:::current->do->getInt->while->weakCompareAndSetIntAcquire->return
 Unsafe#getAndBitwiseAndInt(Object, long, int):::Atomically replaces the current value of a field or array element within the given object with the result of bitwise AND between the current value and mask.:::current->do->getIntVolatile->while->weakCompareAndSetInt->return
+Unsafe#getAndBitwiseAndIntRelease(Object, long, int)::: unsafe get and bitwise and int release:::current->do->getInt->while->weakCompareAndSetIntRelease->return
+Unsafe#getAndBitwiseAndIntAcquire(Object, long, int)::: unsafe get and bitwise and int acquire:::current->do->getInt->while->weakCompareAndSetIntAcquire->return
+Unsafe#getAndBitwiseXorInt(Object, long, int)::: unsafe get and bitwise xor int:::current->do->getIntVolatile->while->weakCompareAndSetInt->return
+Unsafe#getAndBitwiseXorIntRelease(Object, long, int)::: unsafe get and bitwise xor int release:::current->do->getInt->while->weakCompareAndSetIntRelease->return
+Unsafe#getAndBitwiseXorIntAcquire(Object, long, int)::: unsafe get and bitwise xor int acquire:::current->do->getInt->while->weakCompareAndSetIntAcquire->return
+Unsafe#getAndBitwiseOrLong(Object, long, long)::: unsafe get and bitwise or long:::current->do->getLongVolatile->while->weakCompareAndSetLong->return
+Unsafe#getAndBitwiseOrLongRelease(Object, long, long)::: unsafe get and bitwise or long release:::current->do->getLong->while->weakCompareAndSetLongRelease->return
+Unsafe#getAndBitwiseOrLongAcquire(Object, long, long)::: unsafe get and bitwise or long acquire:::current->do->getLong->while->weakCompareAndSetLongAcquire->return
+Unsafe#getAndBitwiseAndLong(Object, long, long)::: unsafe get and bitwise and long:::current->do->getLongVolatile->while->weakCompareAndSetLong->return
+Unsafe#getAndBitwiseAndLongRelease(Object, long, long)::: unsafe get and bitwise and long release:::current->do->getLong->while->weakCompareAndSetLongRelease->return
+Unsafe#getAndBitwiseAndLongAcquire(Object, long, long)::: unsafe get and bitwise and long acquire:::current->do->getLong->while->weakCompareAndSetLongAcquire->return
+Unsafe#getAndBitwiseXorLong(Object, long, long)::: unsafe get and bitwise xor long:::current->do->getLongVolatile->while->weakCompareAndSetLong->return
+Unsafe#getAndBitwiseXorLongRelease(Object, long, long)::: unsafe get and bitwise xor long release:::current->do->getLong->while->weakCompareAndSetLongRelease->return
+Unsafe#getAndBitwiseXorLongAcquire(Object, long, long)::: unsafe get and bitwise xor long acquire:::current->do->getLong->while->weakCompareAndSetLongAcquire->return
 Unsafe#loadFence():::Ensures that loads before the fence will not be reordered with loads and stores after the fence; a "LoadLoad plus LoadStore barrier":::
 Unsafe#storeFence():::Ensures that loads and stores before the fence will not be reordered with stores after the fence; a "StoreStore plus LoadStore barrier":::
 Unsafe#fullFence():::Ensures that loads and stores before the fence will not be reordered with loads and stores after the fence:::
 Unsafe#loadLoadFence():::Ensures that loads before the fence will not be reordered with loads after the fence.:::loadFence
 Unsafe#storeStoreFence():::Ensures that stores before the fence will not be reordered with stores after the fence.:::storeFence
+Unsafe#throwIllegalAccessError():::Throws IllegalAccessError; for use by the VM for access control error support.:::throw->new->IllegalAccessError
+Unsafe#throwNoSuchMethodError():::Throws NoSuchMethodError; for use by the VM for redefinition support.:::throw->new->NoSuchMethodError
+Unsafe#isBigEndian()::: unsafe is big endian:::return
+Unsafe#unalignedAccess()::: unsafe unaligned access:::return
 Unsafe#getLongUnaligned(Object, long):::Fetches a value at some byte offset into a given Java object:::if->return->getLong->else->if->return->getInt->getInt->makeLong->else->if->return->getShort->getShort->getShort->getShort->makeLong->else->return->getByte->getByte->getByte->getByte->getByte->getByte->getByte->getByte->makeLong
 Unsafe#getLongUnaligned(Object, long, boolean):::As #getLongUnaligned(Object, long) but with an additional argument which specifies the endianness of the value as stored in memory.:::return->getLongUnaligned->convEndian
+Unsafe#getIntUnaligned(Object, long)::: unsafe get int unaligned:::if->return->getInt->else->if->return->getShort->getShort->makeInt->else->return->getByte->getByte->getByte->getByte->makeInt
+Unsafe#getIntUnaligned(Object, long, boolean)::: unsafe get int unaligned:::return->getIntUnaligned->convEndian
+Unsafe#getShortUnaligned(Object, long)::: unsafe get short unaligned:::if->return->getShort->else->return->getByte->getByte->makeShort
+Unsafe#getShortUnaligned(Object, long, boolean)::: unsafe get short unaligned:::return->getShortUnaligned->convEndian
+Unsafe#getCharUnaligned(Object, long)::: unsafe get char unaligned:::if->return->getChar->else->return->getByte->getByte->makeShort
+Unsafe#getCharUnaligned(Object, long, boolean)::: unsafe get char unaligned:::return->getCharUnaligned->convEndian
 Unsafe#putLongUnaligned(Object, long, long):::Stores a value at some byte offset into a given Java object:::if->putLong->else->if->putLongParts->else->if->putLongParts->else->putLongParts
 Unsafe#putLongUnaligned(Object, long, long, boolean):::As #putLongUnaligned(Object, long, long) but with an additional argument which specifies the endianness of the value as stored in memory.:::convEndian->putLongUnaligned
+Unsafe#putIntUnaligned(Object, long, int)::: unsafe put int unaligned:::if->putInt->else->if->putIntParts->else->putIntParts
+Unsafe#putIntUnaligned(Object, long, int, boolean)::: unsafe put int unaligned:::convEndian->putIntUnaligned
+Unsafe#putShortUnaligned(Object, long, short)::: unsafe put short unaligned:::if->putShort->else->putShortParts
+Unsafe#putShortUnaligned(Object, long, short, boolean)::: unsafe put short unaligned:::convEndian->putShortUnaligned
+Unsafe#putCharUnaligned(Object, long, char)::: unsafe put char unaligned:::putShortUnaligned
+Unsafe#putCharUnaligned(Object, long, char, boolean)::: unsafe put char unaligned:::convEndian->putCharUnaligned
+Unsafe#pickPos(int, int)::: unsafe pick pos:::return
+Unsafe#makeLong(byte, byte, byte, byte, byte, byte, byte, byte)::: unsafe make long:::return->toUnsignedLong->pickPos->toUnsignedLong->pickPos->toUnsignedLong->pickPos->toUnsignedLong->pickPos->toUnsignedLong->pickPos->toUnsignedLong->pickPos->toUnsignedLong->pickPos->toUnsignedLong->pickPos
+Unsafe#makeLong(short, short, short, short)::: unsafe make long:::return->toUnsignedLong->pickPos->toUnsignedLong->pickPos->toUnsignedLong->pickPos->toUnsignedLong->pickPos
+Unsafe#makeLong(int, int)::: unsafe make long:::return->toUnsignedLong->pickPos->toUnsignedLong->pickPos
+Unsafe#makeInt(short, short)::: unsafe make int:::return->toUnsignedInt->pickPos->toUnsignedInt->pickPos
+Unsafe#makeInt(byte, byte, byte, byte)::: unsafe make int:::return->toUnsignedInt->pickPos->toUnsignedInt->pickPos->toUnsignedInt->pickPos->toUnsignedInt->pickPos
+Unsafe#makeShort(byte, byte)::: unsafe make short:::return->toUnsignedInt->pickPos->toUnsignedInt->pickPos
+Unsafe#pick(byte, byte)::: unsafe pick:::return
+Unsafe#pick(short, short)::: unsafe pick:::return
+Unsafe#pick(int, int)::: unsafe pick:::return
+Unsafe#putLongParts(Object, long, byte, byte, byte, byte, byte, byte, byte, byte)::: unsafe put long parts:::pick->putByte->pick->putByte->pick->putByte->pick->putByte->pick->putByte->pick->putByte->pick->putByte->pick->putByte
+Unsafe#putLongParts(Object, long, short, short, short, short)::: unsafe put long parts:::pick->putShort->pick->putShort->pick->putShort->pick->putShort
+Unsafe#putLongParts(Object, long, int, int)::: unsafe put long parts:::pick->putInt->pick->putInt
+Unsafe#putIntParts(Object, long, short, short)::: unsafe put int parts:::pick->putShort->pick->putShort
+Unsafe#putIntParts(Object, long, byte, byte, byte, byte)::: unsafe put int parts:::pick->putByte->pick->putByte->pick->putByte->pick->putByte
+Unsafe#putShortParts(Object, long, byte, byte)::: unsafe put short parts:::pick->putByte->pick->putByte
+Unsafe#toUnsignedInt(byte)::: unsafe to unsigned int:::return
+Unsafe#toUnsignedInt(short)::: unsafe to unsigned int:::return
+Unsafe#toUnsignedLong(byte)::: unsafe to unsigned long:::return
+Unsafe#toUnsignedLong(short)::: unsafe to unsigned long:::return
+Unsafe#toUnsignedLong(int)::: unsafe to unsigned long:::return
+Unsafe#convEndian(boolean, char)::: unsafe conv endian:::return->Character->reverseBytes
+Unsafe#convEndian(boolean, short)::: unsafe conv endian:::return->Short->reverseBytes
+Unsafe#convEndian(boolean, int)::: unsafe conv endian:::return->Integer->reverseBytes
+Unsafe#convEndian(boolean, long)::: unsafe conv endian:::return->Long->reverseBytes
+Unsafe#allocateMemory0(long)::: unsafe allocate memory0:::
+Unsafe#reallocateMemory0(long, long)::: unsafe reallocate memory0:::
+Unsafe#freeMemory0(long)::: unsafe free memory0:::
+Unsafe#setMemory0(Object, long, long, byte)::: unsafe set memory0:::
+Unsafe#copyMemory0(Object, long, Object, long, long)::: unsafe copy memory0:::
+Unsafe#copySwapMemory0(Object, long, Object, long, long, long)::: unsafe copy swap memory0:::
+Unsafe#objectFieldOffset0(Field)::: unsafe object field offset0:::
+Unsafe#objectFieldOffset1(Class, String)::: unsafe object field offset1:::
+Unsafe#staticFieldOffset0(Field)::: unsafe static field offset0:::
+Unsafe#staticFieldBase0(Field)::: unsafe static field base0:::
+Unsafe#shouldBeInitialized0(Class)::: unsafe should be initialized0:::
+Unsafe#ensureClassInitialized0(Class)::: unsafe ensure class initialized0:::
+Unsafe#arrayBaseOffset0(Class)::: unsafe array base offset0:::
+Unsafe#arrayIndexScale0(Class)::: unsafe array index scale0:::
+Unsafe#addressSize0()::: unsafe address size0:::
+Unsafe#defineAnonymousClass0(Class, byte[], Object[])::: unsafe define anonymous class0:::
+Unsafe#getLoadAverage0(double[], int)::: unsafe get load average0:::
+Unsafe#unalignedAccess0()::: unsafe unaligned access0:::
+Unsafe#isBigEndian0()::: unsafe is big endian0:::
 Unsafe#invokeCleaner(java.nio.ByteBuffer):::Invokes the given direct byte buffer's cleaner, if any.:::if->directBuffer->isDirect->throw->new->IllegalArgumentException->db->if->db->attachment->throw->new->IllegalArgumentException->cleaner->db->cleaner->if->cleaner->clean
 VM#initLevel(int):::Sets the init level.:::synchronized->if->throw->new->InternalError->lock->notifyAll
 VM#initLevel():::Returns the current init level.:::return
@@ -136,10 +425,19 @@ VM#isModuleSystemInited():::Returns true if the module system has been initializ
 VM#isBooted():::Returns true if the VM is fully initialized.:::return
 VM#shutdown():::Set shutdown state:::initLevel
 VM#isShutdown():::Returns true if the VM has been shutdown:::return
+VM#maxDirectMemory()::: m max direct memory:::return
+VM#isDirectMemoryPageAligned()::: m is direct memory page aligned:::return
 VM#isSystemDomainLoader(ClassLoader):::Returns true if the given class loader is the bootstrap class loader or the platform class loader.:::return->ClassLoader->getPlatformClassLoader
 VM#getSavedProperty(String):::Returns the system property of the specified key saved at system initialization time:::if->throw->new->IllegalStateException->return->savedProps->get
 VM#getSavedProperties():::Gets an unmodifiable view of the system properties saved at system initialization time:::if->throw->new->IllegalStateException->return
+VM#saveAndRemoveProperties(Properties)::: m save and remove properties:::if->initLevel->throw->new->IllegalStateException->sp->Map->props->entrySet->new->Map.EntryArr->toArray->ofEntries->s->props->remove->if->if->s->equals->Runtime->getRuntime->maxMemory->else->l->Long->parseLong->if->props->remove->if->equals->props->remove->props->remove->props->remove
+VM#initializeOSEnvironment()::: m initialize environment:::if->initLevel->OSEnvironment->initialize
+VM#getFinalRefCount()::: m get final ref count:::return
+VM#getPeakFinalRefCount()::: m get peak final ref count:::return
+VM#addFinalRefCount(int)::: m add final ref count:::if
 VM#toThreadState(int):::Returns Thread.State for the given threadStatus:::if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->return
+VM#latestUserDefinedLoader()::: m latest user defined loader:::loader->latestUserDefinedLoader0->return->ClassLoader->getPlatformClassLoader
+VM#latestUserDefinedLoader0()::: m latest user defined loader0:::
 VM#isSetUID():::Returns true if we are in a set UID program.:::uid->getuid->euid->geteuid->gid->getgid->egid->getegid->return
 VM#getuid():::Returns the real user ID of the calling process, or -1 if the value is not available.:::
 VM#geteuid():::Returns the effective user ID of the calling process, or -1 if the value is not available.:::
@@ -147,3 +445,5 @@ VM#getgid():::Returns the real group ID of the calling process, or -1 if the val
 VM#getegid():::Returns the effective group ID of the calling process, or -1 if the value is not available.:::
 VM#getNanoTimeAdjustment(long):::Get a nanosecond time stamp adjustment in the form of a single long:::
 VM#getRuntimeArguments():::Returns the VM arguments for this runtime environment.:::
+VM#initialize()::: m initialize:::
+VMNotification#newAllocState(int, int, boolean)::: notification new alloc state:::

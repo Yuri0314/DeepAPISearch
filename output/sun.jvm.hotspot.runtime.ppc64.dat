@@ -1,3 +1,53 @@
 PPC64CurrentFrameGuess#run(long):::Returns false if not able to find a frame within a reasonable range.:::sp->context->getRegisterAsAddress->pc->context->getRegisterAsAddress->if->if->thread->getLastJavaSP->javaSP->thread->getLastJavaSP->javaFP->javaSP->getAddressAt->setValues->return->return->fp->sp->getAddressAt->setValues->vm->VM->getVM->if->vm->isJavaPCDbg->if->vm->isClientCompiler->if->println->setValues->return->else->if->vm->getInterpreter->contains->if->println->setValues->return->for->offset->vm->getAddressSize->return->else->if->thread->getLastJavaSP->if->println->return->javaSP->thread->getLastJavaSP->javaFP->javaSP->getAddressAt->javaPC->thread->getLastJavaPC->if->println->setValues->return
+PPC64CurrentFrameGuess#getSP()::: c64 current frame guess get p:::return
+PPC64CurrentFrameGuess#getFP()::: c64 current frame guess get p:::return
 PPC64CurrentFrameGuess#getPC():::May be null if getting values from thread-local storage; take       care to call the correct PPC64Frame constructor to recover this if       necessary:::return
+PPC64CurrentFrameGuess#setValues(Address, Address, Address)::: c64 current frame guess set values:::
+PPC64Frame#initialize(TypeDataBase)::: c64 frame initialize:::entry_frame_locals_size->db->lookupIntConstant->intValue->wordLength->VM->getVM->getAddressSize
+PPC64Frame#adjustForDeopt()::: c64 frame adjust for deopt:::if->cb->VM->getVM->getCodeCache->findBlob->if->cb->isJavaMethod->nm->if->pc->nm->deoptHandlerBegin->equals->if->Assert->this->getUnextendedSP->that->this->getUnextendedSP->nm->origPCOffset->getAddressAt
+PPC64Frame#clone()::: c64 frame clone:::frame->new->PPC64Frame->return
+PPC64Frame#equals(Object)::: c64 frame equals:::if->return->if->return->other->return->AddressOps->getSP->other->getSP->equal->AddressOps->getUnextendedSP->other->getUnextendedSP->equal->AddressOps->getFP->other->getFP->equal->AddressOps->getPC->other->getPC->equal
+PPC64Frame#hashCode()::: c64 frame hash code:::if->return->return->raw_sp->hashCode
+PPC64Frame#toString()::: c64 frame to string:::return->getSP->getSP->toString->getUnextendedSP->getUnextendedSP->toString->getFP->getFP->toString->pc->toString
+PPC64Frame#getFP()::: c64 frame get p:::return
+PPC64Frame#getSP()::: c64 frame get p:::return
+PPC64Frame#getID()::: c64 frame get d:::return
+PPC64Frame#isSignalHandlerFrameDbg()::: c64 frame is signal handler frame dbg:::return
+PPC64Frame#getSignalNumberDbg()::: c64 frame get signal number dbg:::return
+PPC64Frame#getSignalNameDbg()::: c64 frame get signal name dbg:::return
+PPC64Frame#isInterpretedFrameValid()::: c64 frame is interpreted frame valid:::if->Assert->isInterpretedFrame->that->if->getFP->getFP->andWithMask->return->if->getSP->getSP->andWithMask->return->if->getFP->getSP->lessThanOrEqual->return->if->getFP->getSP->minus->VM->getVM->getAddressSize->return->return
+PPC64Frame#sender(RegisterMap, CodeBlob)::: c64 frame sender:::map->if->Assert->that->map->setIncludeArgumentOops->if->isEntryFrame->return->senderForEntryFrame->if->isInterpretedFrame->return->senderForInterpreterFrame->if->VM->getVM->getCodeCache->getPC->findBlob->else->if->Assert->cb->VM->getVM->getCodeCache->getPC->findBlob->equals->that->if->return->senderForCompiledFrame->return->getSenderSP->getLink->getSenderPC->new->PPC64Frame
+PPC64Frame#senderForEntryFrame(PPC64RegisterMap)::: c64 frame sender for entry frame:::if->println->if->Assert->that->jcw->getEntryFrameCallWrapper->if->Assert->entryFrameIsFirst->that->Assert->jcw->getLastJavaSP->getSP->greaterThan->that->fr->if->jcw->getLastJavaPC->jcw->getLastJavaSP->jcw->getLastJavaFP->jcw->getLastJavaPC->new->PPC64Frame->else->jcw->getLastJavaSP->jcw->getLastJavaFP->new->PPC64Frame->map->clear->if->Assert->map->getIncludeArgumentOops->that->return
+PPC64Frame#adjustUnextendedSP()::: c64 frame adjust unextended p:::getFP
+PPC64Frame#senderForInterpreterFrame(PPC64RegisterMap)::: c64 frame sender for interpreter frame:::if->println->unextendedSP->addressOfStackSlot->getAddressAt->sp->getSenderSP->return->getLink->getSenderPC->new->PPC64Frame
+PPC64Frame#senderForCompiledFrame(PPC64RegisterMap, CodeBlob)::: c64 frame sender for compiled frame:::if->println->if->Assert->that->if->Assert->cb->getFrameSize->that->senderSP->getSenderSP->senderPC->getSenderPC->if->map->getUpdateMap->map->cb->callerMustGCArguments->setIncludeArgumentOops->if->cb->getOopMaps->ImmutableOopMapSet->updateRegisterMap->return->getLink->new->PPC64Frame
+PPC64Frame#hasSenderPD()::: c64 frame has sender d:::return
+PPC64Frame#frameSize()::: c64 frame frame size:::return->getSenderSP->getSP->minus->VM->getVM->getAddressSize
+PPC64Frame#getLink()::: c64 frame get link:::return->getSenderSP->getAddressAt
+PPC64Frame#getUnextendedSP()::: c64 frame get unextended p:::return
+PPC64Frame#getSenderPC()::: c64 frame get sender c:::return->getSenderSP->VM->getVM->getAddressSize->getAddressAt
+PPC64Frame#getSenderSP()::: c64 frame get sender p:::return->getFP
+PPC64Frame#addressOfInterpreterFrameLocals()::: c64 frame address of interpreter frame locals:::return->addressOfStackSlot
+PPC64Frame#addressOfInterpreterFrameBCX()::: c64 frame address of interpreter frame x:::return->addressOfStackSlot
+PPC64Frame#getInterpreterFrameBCI()::: c64 frame get interpreter frame i:::bcp->addressOfInterpreterFrameBCX->getAddressAt->methodHandle->addressOfInterpreterFrameMethod->getAddressAt->method->Metadata->instantiateWrapperFor->return->bcpToBci
+PPC64Frame#addressOfInterpreterFrameMDX()::: c64 frame address of interpreter frame x:::return->addressOfStackSlot
+PPC64Frame#addressOfInterpreterFrameExpressionStack()::: c64 frame address of interpreter frame expression stack:::monitorEnd->interpreterFrameMonitorEnd->address->return->monitorEnd->VM->getVM->getAddressSize->addOffsetTo
+PPC64Frame#getInterpreterFrameExpressionStackDirection()::: c64 frame get interpreter frame expression stack direction:::return
+PPC64Frame#addressOfInterpreterFrameTOS()::: c64 frame address of interpreter frame s:::return->getSP
 PPC64Frame#addressOfInterpreterFrameTOSAt(int):::Expression stack from top down:::return->addressOfInterpreterFrameTOS->VM->getVM->getAddressSize->addOffsetTo
+PPC64Frame#getInterpreterFrameSenderSP()::: c64 frame get interpreter frame sender p:::if->Assert->isInterpretedFrame->that->return->addressOfStackSlot->getAddressAt
+PPC64Frame#interpreterFrameMonitorBegin()::: c64 frame interpreter frame monitor begin:::return->addressOfStackSlot->new->BasicObjectLock
+PPC64Frame#interpreterFrameMonitorEnd()::: c64 frame interpreter frame monitor end:::result->addressOfStackSlot->getAddressAt->if->Assert->AddressOps->getFP->gt->that->Assert->AddressOps->getSP->lte->that->return->new->BasicObjectLock
+PPC64Frame#interpreterFrameMonitorSize()::: c64 frame interpreter frame monitor size:::return->BasicObjectLock->size
+PPC64Frame#addressOfInterpreterFrameMethod()::: c64 frame address of interpreter frame method:::return->addressOfStackSlot
+PPC64Frame#addressOfInterpreterFrameCPCache()::: c64 frame address of interpreter frame cache:::return->addressOfStackSlot
+PPC64Frame#getEntryFrameCallWrapper()::: c64 frame get entry frame call wrapper:::return->addressOfStackSlot->getAddressAt->new->PPC64JavaCallWrapper
+PPC64Frame#addressOfSavedOopResult()::: c64 frame address of saved oop result:::return->getSP->VM->getVM->isClientCompiler->VM->getVM->getAddressSize->addOffsetTo
+PPC64Frame#addressOfSavedReceiver()::: c64 frame address of saved receiver:::return->getSP->VM->getVM->getAddressSize->addOffsetTo
+PPC64Frame#dumpStack()::: c64 frame dump stack:::if->getFP->for->addr->getSP->VM->getVM->getAddressSize->addOffsetTo->AddressOps->getFP->VM->getVM->getAddressSize->addOffsetTo->lte->addr->VM->getVM->getAddressSize->addOffsetTo->else->for->addr->getSP->VM->getVM->getAddressSize->addOffsetTo->AddressOps->getSP->VM->getVM->getAddressSize->addOffsetTo->lte->addr->VM->getVM->getAddressSize->addOffsetTo
+PPC64JavaCallWrapper#getLastJavaFP()::: c64 java call wrapper get last java p:::return
+PPC64RegisterMap#clone()::: c64 register map clone:::retval->new->PPC64RegisterMap->return
+PPC64RegisterMap#clearPD()::: c64 register map clear d:::
+PPC64RegisterMap#initializePD()::: c64 register map initialize d:::
+PPC64RegisterMap#initializeFromPD(RegisterMap)::: c64 register map initialize from d:::
+PPC64RegisterMap#getLocationPD(VMReg)::: c64 register map get location d:::return

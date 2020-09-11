@@ -46,6 +46,7 @@ DocTreePath#getTreePath():::Returns the TreePath associated with this path.:::re
 DocTreePath#getDocComment():::Returns the DocCommentTree associated with this path.:::return
 DocTreePath#getLeaf():::Returns the leaf node for this path.:::return
 DocTreePath#getParentPath():::Returns the path for the enclosing node, or null if there is no enclosing node.:::return
+DocTreePath#iterator()::: doc tree path iterator:::return->new->Iterator<DocTree>
 DocTreePathScanner#scan(DocTreePath, P):::Scans a tree from a position identified by a tree path.:::try->return->path->getLeaf->accept->catch->finally
 DocTreePathScanner#scan(DocTree, P):::Scans a single node:::if->return->prev->new->DocTreePath->try->return->tree->accept->catch->finally
 DocTreePathScanner#getCurrentPath():::Returns the current path for the node, as built up by the currently active set of scan calls.:::return
@@ -64,7 +65,9 @@ DocTrees#printMessage(Diagnostic.Kind, CharSequence, com.sun.source.doctree.DocT
 DocTrees#setBreakIterator(BreakIterator):::Sets the break iterator to compute the first sentence of documentation comments.:::
 DocTrees#getDocTreeFactory():::Returns a utility object for creating DocTree objects.:::
 DocTreeScanner#scan(DocTree, P):::Scans a single node.:::return->node->accept
+DocTreeScanner#scanAndReduce(DocTree, P, R)::: doc tree scanner scan and reduce:::return->scan->reduce
 DocTreeScanner#scan(Iterable, P):::Scans a sequence of nodes.:::r->if->first->foreach->scan->scanAndReduce->return
+DocTreeScanner#scanAndReduce(Iterable, P, R)::: doc tree scanner scan and reduce:::return->scan->reduce
 DocTreeScanner#reduce(R, R):::Reduces two results into a combined result:::return
 DocTreeScanner#visitAttribute(AttributeTree, P):::This implementation returns {@code null.:::return
 DocTreeScanner#visitAuthor(AuthorTree, P)::: This implementation scans the children in left to right order.:::return->node->getName->scan
@@ -122,6 +125,7 @@ SimpleDocTreeVisitor#visitComment(CommentTree, P):::This implementation calls {@
 SimpleDocTreeVisitor#visitDeprecated(DeprecatedTree, P):::This implementation calls {@code defaultAction.:::return->defaultAction
 SimpleDocTreeVisitor#visitDocComment(DocCommentTree, P):::This implementation calls {@code defaultAction.:::return->defaultAction
 SimpleDocTreeVisitor#visitDocRoot(DocRootTree, P):::This implementation calls {@code defaultAction.:::return->defaultAction
+SimpleDocTreeVisitor#visitDocType(DocTypeTree, P)::: simple doc tree visitor visit doc type:::return->defaultAction
 SimpleDocTreeVisitor#visitEndElement(EndElementTree, P):::This implementation calls {@code defaultAction.:::return->defaultAction
 SimpleDocTreeVisitor#visitEntity(EntityTree, P):::This implementation calls {@code defaultAction.:::return->defaultAction
 SimpleDocTreeVisitor#visitErroneous(ErroneousTree, P):::This implementation calls {@code defaultAction.:::return->defaultAction
@@ -205,6 +209,13 @@ SimpleTreeVisitor#visitWildcard(WildcardTree, P):::This implementation calls {@c
 SimpleTreeVisitor#visitModifiers(ModifiersTree, P):::This implementation calls {@code defaultAction.:::return->defaultAction
 SimpleTreeVisitor#visitAnnotation(AnnotationTree, P):::This implementation calls {@code defaultAction.:::return->defaultAction
 SimpleTreeVisitor#visitAnnotatedType(AnnotatedTypeTree, P):::This implementation calls {@code defaultAction.:::return->defaultAction
+SimpleTreeVisitor#visitModule(ModuleTree, P)::: simple tree visitor visit module:::return->defaultAction
+SimpleTreeVisitor#visitExports(ExportsTree, P)::: simple tree visitor visit exports:::return->defaultAction
+SimpleTreeVisitor#visitOpens(OpensTree, P)::: simple tree visitor visit opens:::return->defaultAction
+SimpleTreeVisitor#visitProvides(ProvidesTree, P)::: simple tree visitor visit provides:::return->defaultAction
+SimpleTreeVisitor#visitRequires(RequiresTree, P)::: simple tree visitor visit requires:::return->defaultAction
+SimpleTreeVisitor#visitUses(UsesTree, P)::: simple tree visitor visit uses:::return->defaultAction
+SimpleTreeVisitor#visitErroneous(ErroneousTree, P)::: simple tree visitor visit erroneous:::return->defaultAction
 SimpleTreeVisitor#visitOther(Tree, P):::This implementation calls {@code defaultAction.:::return->defaultAction
 SourcePositions#getStartPosition(CompilationUnitTree, Tree):::Returns the starting position of tree within file:::
 SourcePositions#getEndPosition(CompilationUnitTree, Tree):::Returns the ending position of tree within file:::
@@ -212,6 +223,7 @@ TaskEvent#getKind():::Returns the kind for this event.:::return
 TaskEvent#getSourceFile():::Returns the source file for this event:::return
 TaskEvent#getCompilationUnit():::Returns the compilation unit for this event:::return
 TaskEvent#getTypeElement():::Returns the type element for this event:::return
+TaskEvent#toString()::: task event to string:::return
 TaskListener#started(TaskEvent):::Invoked when an event has begun.:::
 TaskListener#finished(TaskEvent):::Invoked when an event has been completed.:::
 TreePath#getPath(CompilationUnitTree, Tree):::Returns a tree path for a tree node within a compilation unit, or null if the node is not found.:::return->new->TreePath->getPath
@@ -225,6 +237,7 @@ TreePathScanner#scan(Tree, P):::Scans a single node:::if->return->prev->new->Tre
 TreePathScanner#getCurrentPath():::Returns the current path for the node, as built up by the currently active set of scan calls.:::return
 Trees#instance(CompilationTask):::Returns a Trees object for a given CompilationTask.:::taskClassName->task->getClass->getName->if->taskClassName->equals->taskClassName->equals->throw->new->IllegalArgumentException->return->getJavacTrees
 Trees#instance(ProcessingEnvironment):::Returns a Trees object for a given ProcessingEnvironment.:::if->env->getClass->getName->equals->throw->new->IllegalArgumentException->return->getJavacTrees
+Trees#getJavacTrees(Class, Object)::: trees get javac trees:::try->cl->arg->getClass->getClassLoader->c->Class->forName->Class->argType->getName->forName->m->c->getMethod->return->m->invoke->catch->throw->new->AssertionError->finally
 Trees#getSourcePositions():::Returns a utility object for obtaining source positions.:::
 Trees#getTree(Element):::Returns the Tree node for a given Element:::
 Trees#getTree(TypeElement):::Returns the ClassTree node for a given TypeElement:::
@@ -245,7 +258,9 @@ Trees#getOriginalType(ErrorType):::Returns the original type from the ErrorType 
 Trees#printMessage(Diagnostic.Kind, CharSequence, com.sun.source.tree.Tree, com.sun.source.tree.CompilationUnitTree):::Prints a message of the specified kind at the location of the tree within the provided compilation unit:::
 Trees#getLub(CatchTree):::Returns the lub of an exception parameter declared in a catch clause.:::
 TreeScanner#scan(Tree, P):::Scans a single node.:::return->tree->accept
+TreeScanner#scanAndReduce(Tree, P, R)::: tree scanner scan and reduce:::return->scan->reduce
 TreeScanner#scan(Iterable, P):::Scans a sequence of nodes.:::r->if->first->foreach->scan->scanAndReduce->return
+TreeScanner#scanAndReduce(Iterable, P, R)::: tree scanner scan and reduce:::return->scan->reduce
 TreeScanner#reduce(R, R):::Reduces two results into a combined result:::return
 TreeScanner#visitCompilationUnit(CompilationUnitTree, P)::: This implementation scans the children in left to right order.:::r->node->getPackage->scan->node->getImports->scanAndReduce->node->getTypeDecls->scanAndReduce->return
 TreeScanner#visitPackage(PackageTree, P)::: This implementation scans the children in left to right order.:::r->node->getAnnotations->scan->node->getPackageName->scanAndReduce->return
@@ -299,5 +314,11 @@ TreeScanner#visitWildcard(WildcardTree, P)::: This implementation scans the chil
 TreeScanner#visitModifiers(ModifiersTree, P)::: This implementation scans the children in left to right order.:::return->node->getAnnotations->scan
 TreeScanner#visitAnnotation(AnnotationTree, P)::: This implementation scans the children in left to right order.:::r->node->getAnnotationType->scan->node->getArguments->scanAndReduce->return
 TreeScanner#visitAnnotatedType(AnnotatedTypeTree, P)::: This implementation scans the children in left to right order.:::r->node->getAnnotations->scan->node->getUnderlyingType->scanAndReduce->return
+TreeScanner#visitModule(ModuleTree, P)::: tree scanner visit module:::r->node->getAnnotations->scan->node->getName->scanAndReduce->node->getDirectives->scanAndReduce->return
+TreeScanner#visitExports(ExportsTree, P)::: tree scanner visit exports:::r->node->getPackageName->scan->node->getModuleNames->scanAndReduce->return
+TreeScanner#visitOpens(OpensTree, P)::: tree scanner visit opens:::r->node->getPackageName->scan->node->getModuleNames->scanAndReduce->return
+TreeScanner#visitProvides(ProvidesTree, P)::: tree scanner visit provides:::r->node->getServiceName->scan->node->getImplementationNames->scanAndReduce->return
+TreeScanner#visitRequires(RequiresTree, P)::: tree scanner visit requires:::return->node->getModuleName->scan
+TreeScanner#visitUses(UsesTree, P)::: tree scanner visit uses:::return->node->getServiceName->scan
 TreeScanner#visitOther(Tree, P):::This implementation returns {@code null.:::return
 TreeScanner#visitErroneous(ErroneousTree, P):::This implementation returns {@code null.:::return

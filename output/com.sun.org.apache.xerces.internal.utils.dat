@@ -1,4 +1,6 @@
 ConfigurationError#getException():::Returns the exception associated to this error.:::return
+ObjectFactory#isDebugEnabled():::Returns true if debug has been enabled.:::try->val->SecuritySupport->getSystemProperty->return->equals->catch->finally->return
+ObjectFactory#debugPrintln(Supplier):::Prints a message to standard error if debugging is enabled.:::if->msgGen->get->println
 ObjectFactory#findClassLoader():::Figure out which ClassLoader to use:::if->System->getSecurityManager->return->context->SecuritySupport->getContextClassLoader->system->SecuritySupport->getSystemClassLoader->chain->while->if->current->getClassLoader->while->if->return->if->break->SecuritySupport->getParentClassLoader->return->if->break->SecuritySupport->getParentClassLoader->return
 ObjectFactory#newInstance(String, boolean):::Create an instance of a class using the same classloader for the ObjectFactory by default or bootclassloader when Security Manager is in place:::if->System->getSecurityManager->return->newInstance->else->return->findClassLoader->newInstance
 ObjectFactory#newInstance(String, ClassLoader, boolean):::Create an instance of a class using the specified ClassLoader:::try->providerClass->findProviderClass->instance->providerClass->getConstructor->newInstance->debugPrintln->return->catch->throw->new->ConfigurationError->throw->new->ConfigurationError->finally
@@ -7,10 +9,15 @@ ObjectFactory#findProviderClass(String, ClassLoader, boolean):::Find a Class usi
 XMLLimitAnalyzer#addValue(Limit, String, int):::Add the value to the current max count for the specified property To find the max value of all entities, set no limit:::limit->ordinal->addValue
 XMLLimitAnalyzer#addValue(int, String, int):::Add the value to the current count by the index of the property:::if->ordinal->ordinal->ordinal->ordinal->ordinal->return->if->ordinal->ordinal->return->cache->if->new->HashMap<>->else->accumulatedValue->if->cache->containsKey->cache->get->cache->put->else->cache->put->if->if->ordinal->ordinal->ordinal
 XMLLimitAnalyzer#getValue(Limit):::Return the value of the current max count for the specified property:::return->limit->ordinal->getValue
+XMLLimitAnalyzer#getValue(int)::: limit analyzer get value:::if->ordinal->return->return
 XMLLimitAnalyzer#getTotalValue(Limit):::Return the total value accumulated so far:::return->limit->ordinal
+XMLLimitAnalyzer#getTotalValue(int)::: limit analyzer get total value:::return
 XMLLimitAnalyzer#getValueByIndex(int):::Return the current max value (count or length) by the index of a property:::return
+XMLLimitAnalyzer#startEntity(String)::: limit analyzer start entity:::
+XMLLimitAnalyzer#isTracking(String)::: limit analyzer is tracking:::if->return->return->entityStart->equals
 XMLLimitAnalyzer#endEntity(Limit, String):::Stop tracking the entity:::cache->limit->ordinal->if->cache->remove
 XMLLimitAnalyzer#reset(Limit):::Resets the current value of the specified limit.:::if->limit->ordinal->ordinal->limit->ordinal->else->if->limit->ordinal->ordinal->limit->ordinal->limit->ordinal->limit->ordinal->limit->ordinal
+XMLLimitAnalyzer#debugPrint(XMLSecurityManager)::: limit analyzer debug print:::formatter->new->Formatter->formatter->format->println->foreach->Limit->values->new->Formatter->formatter->limit->name->securityManager->getLimit->limit->ordinal->limit->ordinal->limit->ordinal->format->println
 XMLSecurityManager#setSecureProcessing(boolean):::Setting FEATURE_SECURE_PROCESSING explicitly:::foreach->Limit->values->if->limit->ordinal->limit->secureValue->setLimit->else->limit->ordinal->limit->defaultValue->setLimit
 XMLSecurityManager#isSecureProcessing():::Return the state of secure processing:::return
 XMLSecurityManager#setLimit(String, State, Object):::Set limit by property name and state:::index->getIndex->if->setLimit->return->return
@@ -28,8 +35,13 @@ XMLSecurityManager#isNoLimit(int):::Check if there's no limit defined by the Sec
 XMLSecurityManager#isOverLimit(Limit, String, int, XMLLimitAnalyzer):::Check if the size (length or count) of the specified limit property is over the limit:::return->limit->ordinal->isOverLimit
 XMLSecurityManager#isOverLimit(int, String, int, XMLLimitAnalyzer):::Check if the value (length or count) of the specified limit property is over the limit:::if->return->if->limitAnalyzer->addValue->return->return
 XMLSecurityManager#isOverLimit(Limit, XMLLimitAnalyzer):::Check against cumulated value:::return->limit->ordinal->isOverLimit
+XMLSecurityManager#isOverLimit(int, XMLLimitAnalyzer)::: security manager is over limit:::if->return->if->ordinal->ordinal->ordinal->ordinal->ordinal->ordinal->return->limitAnalyzer->getTotalValue->else->return->limitAnalyzer->getValue
+XMLSecurityManager#debugPrint(XMLLimitAnalyzer)::: security manager debug print:::if->printEntityCountInfo->equals->limitAnalyzer->debugPrint
 XMLSecurityManager#isSet(int):::Indicate if a property is set explicitly:::return
+XMLSecurityManager#printEntityCountInfo()::: security manager print entity count info:::return->printEntityCountInfo->equals
+XMLSecurityManager#readSystemProperties():::Read from system properties, or those in jaxp.properties:::foreach->Limit->values->if->limit->systemProperty->getSystemProperty->foreach->NameMap->values->oldName->nameMap->limit->systemProperty->getOldName->if->getSystemProperty
 XMLSecurityManager#printWarning(String, String, SAXException):::Prints out warnings if a parser does not support the specified feature/property.:::key->if->printedWarnings->addIfAbsent->exception->getMessage->println
+XMLSecurityManager#getSystemProperty(Limit, String):::Read from system properties, or those in jaxp.properties:::try->value->SecuritySupport->getSystemProperty->if->value->equals->Integer->parseInt->limit->ordinal->limit->ordinal->return->SecuritySupport->readJAXPProperty->if->value->equals->Integer->parseInt->limit->ordinal->limit->ordinal->return->catch->throw->limit->systemProperty->new->NumberFormatException->finally->return
 XMLSecurityManager#convert(Object, XMLSecurityManager):::Convert a value set through setProperty to XMLSecurityManager:::if->if->new->XMLSecurityManager->return->if->value->getClass->isAssignableFrom->return->else->if->new->XMLSecurityManager->if->value->getClass->isAssignableFrom->origSM->securityManager->origSM->getMaxOccurNodeLimit->setLimit->securityManager->origSM->getEntityExpansionLimit->setLimit->securityManager->origSM->getElementAttrLimit->setLimit->return
 XMLSecurityPropertyManager#setValue(String, State, Object):::Set limit by property name and state:::index->getIndex->if->setValue->return->return
 XMLSecurityPropertyManager#setValue(Property, State, String):::Set the value for a specific property.:::if->state->property->ordinal->compareTo->property->ordinal->property->ordinal
@@ -38,3 +50,5 @@ XMLSecurityPropertyManager#getValue(String):::Return the value of the specified 
 XMLSecurityPropertyManager#getValue(Property):::Return the value of the specified property:::return->property->ordinal
 XMLSecurityPropertyManager#getValueByIndex(int):::Return the value of a property by its ordinal:::return
 XMLSecurityPropertyManager#getIndex(String):::Get the index by property name:::foreach->Property->values->if->property->equalsName->return->property->ordinal->return
+XMLSecurityPropertyManager#readSystemProperties():::Read from system properties, or those in jaxp.properties:::getSystemProperty->getSystemProperty
+XMLSecurityPropertyManager#getSystemProperty(Property, String):::Read from system properties, or those in jaxp.properties:::try->value->SecuritySupport->getSystemProperty->if->property->ordinal->property->ordinal->return->SecuritySupport->readJAXPProperty->if->property->ordinal->property->ordinal->catch->finally

@@ -1,5 +1,6 @@
 JMXAddressable#getAddress():::The address of this object.:::
 JMXAuthenticator#authenticate(Object):::Authenticates the MBeanServerConnection client with the given client credentials.:::
+JMXConnectionNotification#nonNull(Object)::: connection notification non null:::if->return->else->return
 JMXConnectionNotification#getConnectionId():::The connection ID to which this notification pertains.:::return
 JMXConnector#connect():::Establishes the connection to the connector server:::
 JMXConnector#connect(Map):::Establishes the connection to the connector server.  If connect has already been called successfully on this object, calling it again has no effect:::
@@ -12,18 +13,38 @@ JMXConnector#removeConnectionNotificationListener(NotificationListener, Notifica
 JMXConnector#getConnectionId():::Gets this connection's ID from the connector server:::
 JMXConnectorFactory#connect(JMXServiceURL):::Creates a connection to the connector server at the given address.  This method is equivalent to #connect(JMXServiceURL,Map) connect(serviceURL, null).:::return->connect
 JMXConnectorFactory#connect(JMXServiceURL, Map):::Creates a connection to the connector server at the given address.  This method is equivalent to:   JMXConnector conn = JMXConnectorFactory.newJMXConnector(serviceURL,                                                         environment); conn.connect(environment); :::if->throw->new->NullPointerException->conn->newJMXConnector->conn->connect->return
+JMXConnectorFactory#newHashMap()::: connector factory new hash map:::return->new->HashMap<K,V>
+JMXConnectorFactory#newHashMap(Map)::: connector factory new hash map:::return->new->HashMap<K,Object>
 JMXConnectorFactory#newJMXConnector(JMXServiceURL, Map):::Creates a connector client for the connector server at the given address:::envcopy->if->newHashMap->else->EnvHelp->checkAttributes->newHashMap->loader->resolveClassLoader->targetInterface->protocol->serviceURL->getProtocol->providerClassName->providerURL->provider->getProvider->exception->if->systemProvider->JMXConnectorFactory->isSystemProvider->connection->if->try->systemProvider->negate->getConnectorAsService->if->return->catch->throw->finally->getClassLoader->Collections->unmodifiableMap->getConnectorAsService->if->return->if->e->new->MalformedURLException->if->throw->else->throw->EnvHelp->initCause->fixedenv->Collections->unmodifiableMap->return->provider->newJMXConnector
+JMXConnectorFactory#resolvePkgs(Map)::: connector factory resolve pkgs:::pkgsObject->if->env->get->if->AccessController->new->PrivilegedAction<String>->doPrivileged->if->return->if->msg->pkgsObject->getClass->getName->throw->new->JMXProviderException->pkgs->if->pkgs->trim->equals->return->if->pkgs->startsWith->pkgs->endsWith->pkgs->indexOf->msg->throw->new->JMXProviderException->return
+JMXConnectorFactory#getProvider(JMXServiceURL, Map, String, Class, ClassLoader)::: connector factory get provider:::protocol->serviceURL->getProtocol->pkgs->resolvePkgs->instance->if->getProvider->if->needsWrap->instance->getClass->getClassLoader->environment->wrap->put->return
+JMXConnectorFactory#wrap(ClassLoader)::: connector factory wrap:::return->AccessController->new->PrivilegedAction<ClassLoader>->doPrivileged
 JMXConnectorFactory#isSystemProvider(Provider):::Checks whether the given provider is our system provider for the RMI connector:::providerModule->provider->type->getModule->return->providerModule->isNamed->providerModule->getName->equals
+JMXConnectorFactory#getConnectorAsService(ClassLoader, JMXServiceURL, Map, Predicate>):::Creates a JMXConnector from the first JMXConnectorProvider service supporting the given url that can be loaded from the given loader:::factory->p->newJMXConnector->return->getConnectorAsService
+JMXConnectorFactory.ConnectorFactory#apply(P)::: connector factory apply:::
+JMXConnectorFactory.ProviderFinder#test(Provider):::Returns true for the first provider sp that can be used to obtain an instance of C from the given factory.:::if->provider->sp->get->try->factory->apply->return->catch->throw->new->UncheckedIOException->if->logger->traceOn->logger->trace->if->if->if->else->EnvHelp->e->getMessage->new->IOException->initCause->finally->return
+JMXConnectorFactory.ProviderFinder#get():::Returns an instance of C if a provider was found from which C could be instantiated.:::if->return->else->if->throw->else->return
 JMXConnectorFactory#getConnectorAsService(Class, ClassLoader, JMXServiceURL, Predicate>, ConnectorFactory):::Creates a connector from a provider loaded from the ServiceLoader:::if->throw->providerClass->getName->new->InternalError->serviceLoader->ServiceLoader->loadInstalled->ServiceLoader->load->stream->serviceLoader->stream->filter->finder->new->ProviderFinder<>->try->stream->filter->findFirst->return->finder->get->catch->if->e->getCause->throw->e->getCause->else->throw->finally
+JMXConnectorFactory#getProvider(String, String, ClassLoader, String, Class)::: connector factory get provider:::tokenizer->new->StringTokenizer->while->tokenizer->hasMoreTokens->pkg->tokenizer->nextToken->className->protocol2package->providerClass->try->Class->forName->catch->continue->finally->if->targetInterface->isAssignableFrom->msg->targetInterface->getName->providerClass->getName->throw->new->JMXProviderException->providerClassT->Util->cast->try->result->providerClassT->newInstance->return->catch->msg->throw->new->JMXProviderException->finally->return
+JMXConnectorFactory#resolveClassLoader(Map)::: connector factory resolve class loader:::loader->if->try->environment->get->catch->msg->throw->new->IllegalArgumentException->finally->if->Thread->currentThread->getContextClassLoader->return
+JMXConnectorFactory#protocol2package(String)::: connector factory protocol2package:::return->protocol->replace->replace
 JMXConnectorProvider#newJMXConnector(JMXServiceURL, Map):::Creates a new connector client that is ready to connect to the connector server at the given address:::
 JMXConnectorServer#getMBeanServer():::Returns the MBean server that this connector server is attached to.:::return
+JMXConnectorServer#setMBeanServerForwarder(MBeanServerForwarder)::: connector server set bean server forwarder:::if->throw->new->IllegalArgumentException->if->mbsf->setMBeanServer
+JMXConnectorServer#getConnectionIds()::: connector server get connection ids:::synchronized->return->connectionIds->connectionIds->size->new->StringArr->toArray
 JMXConnectorServer#toJMXConnector(Map):::Returns a client stub for this connector server:::if->isActive->throw->new->IllegalStateException->addr->getAddress->return->JMXConnectorFactory->newJMXConnector
 JMXConnectorServer#getNotificationInfo():::Returns an array indicating the notifications that this MBean sends:::types->className->getName->description->return->new->MBeanNotificationInfoArr->new->MBeanNotificationInfo
 JMXConnectorServer#connectionOpened(String, String, Object):::Called by a subclass when a new client connection is opened:::if->throw->new->NullPointerException->synchronized->connectionIds->add->sendNotification
 JMXConnectorServer#connectionClosed(String, String, Object):::Called by a subclass when a client connection is closed normally:::if->throw->new->NullPointerException->synchronized->connectionIds->remove->sendNotification
 JMXConnectorServer#connectionFailed(String, String, Object):::Called by a subclass when a client connection fails:::if->throw->new->NullPointerException->synchronized->connectionIds->remove->sendNotification
+JMXConnectorServer#sendNotification(String, String, String, Object)::: connector server send notification:::notif->getNotificationSource->nextSequenceNumber->new->JMXConnectionNotification->sendNotification
+JMXConnectorServer#getNotificationSource()::: connector server get notification source:::if->return->else->return
+JMXConnectorServer#nextSequenceNumber()::: connector server next sequence number:::synchronized->return
 JMXConnectorServer#preRegister(MBeanServer, ObjectName):::Called by an MBean server when this connector server is registered in that MBean server:::if->throw->new->NullPointerException->if->return
+JMXConnectorServer#postRegister(Boolean)::: connector server post register:::
 JMXConnectorServer#preDeregister():::Called by an MBean server when this connector server is unregistered from that MBean server:::if->isActive->stop
+JMXConnectorServer#postDeregister()::: connector server post deregister:::
+JMXConnectorServerFactory#getConnectorServerAsService(ClassLoader, JMXServiceURL, Map, MBeanServer, Predicate>)::: connector server factory get connector server as service:::factory->p->newJMXConnectorServer->return->JMXConnectorFactory->getConnectorAsService
 JMXConnectorServerFactory#newJMXConnectorServer(JMXServiceURL, Map, MBeanServer):::Creates a connector server at the given address:::envcopy->if->new->HashMap<String,Object>->else->EnvHelp->checkAttributes->new->HashMap<String,Object>->targetInterface->loader->JMXConnectorFactory->resolveClassLoader->protocol->serviceURL->getProtocol->providerClassName->provider->JMXConnectorFactory->getProvider->exception->connection->if->systemProvider->JMXConnectorFactory->isSystemProvider->if->try->systemProvider->negate->getConnectorServerAsService->if->return->catch->throw->finally->getClassLoader->Collections->unmodifiableMap->getConnectorServerAsService->if->return->if->e->new->MalformedURLException->if->throw->else->throw->EnvHelp->initCause->Collections->unmodifiableMap->return->provider->newJMXConnectorServer
 JMXConnectorServerMBean#start():::Activates the connector server, that is, starts listening for client connections:::
 JMXConnectorServerMBean#stop():::Deactivates the connector server, that is, stops listening for client connections:::
@@ -38,18 +59,35 @@ JMXPrincipal#getName():::Returns the name of this principal.:::return
 JMXPrincipal#toString():::Returns a string representation of this JMXPrincipal.:::return
 JMXPrincipal#equals(Object):::Compares the specified Object with this JMXPrincipal for equality:::if->return->if->return->if->return->that->return->this->getName->that->getName->equals
 JMXPrincipal#hashCode():::Returns a hash code for this JMXPrincipal.:::return->name->hashCode
+JMXPrincipal#readObject(ObjectInputStream)::: principal read object:::gf->ois->readFields->principalName->gf->get->try->validate->catch->throw->e->getMessage->new->InvalidObjectException->finally
+JMXPrincipal#validate(String)::: principal validate:::if->throw->new->NullPointerException
+JMXProviderException#getCause()::: provider exception get cause:::return
+JMXServerErrorException#getCause()::: server error exception get cause:::return
+JMXServiceURL#getActiveNetworkInterfaceIP()::: service l get active network interface p:::networkInterface->NetworkInterface->getNetworkInterfaces->ipv6AddrStr->while->networkInterface->hasMoreElements->nic->networkInterface->nextElement->if->nic->isUp->nic->isLoopback->inet->nic->getInetAddresses->while->inet->hasMoreElements->addr->inet->nextElement->if->addr->isLinkLocalAddress->return->addr->getHostAddress->else->if->addr->isLinkLocalAddress->addr->getHostAddress->return
+JMXServiceURL#readObject(ObjectInputStream)::: service l read object:::gf->inputStream->readFields->h->gf->get->p->gf->get->proto->gf->get->url->gf->get->if->sb->new->StringBuilder->append->empty->if->sb->append->if->sb->append->append->if->sb->append->append->sb->append->throw->sb->toString->new->InvalidObjectException->if->h->contains->h->contains->throw->new->InvalidObjectException->try->validate->catch->throw->e->getMessage->new->InvalidObjectException->finally
+JMXServiceURL#validate(String, String, int, String)::: service l validate:::protoEnd->indexOfFirstNotInSet->if->proto->length->alphaBitSet->proto->charAt->get->throw->new->MalformedURLException->validateHost->if->throw->new->MalformedURLException->if->url->length->if->url->startsWith->url->startsWith->throw->new->MalformedURLException
+JMXServiceURL#validate()::: service l validate:::validate
+JMXServiceURL#validateHost(String, int)::: service l validate host:::if->h->length->if->throw->new->MalformedURLException->return->if->isNumericIPv6Address->try->InetAddress->getByName->catch->bad->new->MalformedURLException->EnvHelp->initCause->throw->finally->else->hostLen->h->length->lastc->sawDot->componentStart->for->i->try->if->throw->if->alphaBitSet->get->tok->new->StringTokenizer->for->i->if->tok->hasMoreTokens->throw->catch->throw->new->MalformedURLException->finally
 JMXServiceURL#getProtocol():::The protocol part of the Service URL.:::return
 JMXServiceURL#getHost():::The host part of the Service URL:::return
 JMXServiceURL#getPort():::The port of the Service URL:::return
 JMXServiceURL#getURLPath():::The URL Path part of the Service URL:::return
 JMXServiceURL#toString():::The string representation of this Service URL:::if->return->buf->new->StringBuilder->buf->getProtocol->append->append->getHost->getHost->if->isNumericIPv6Address->buf->append->append->append->else->buf->append->getPort->getPort->if->buf->append->append->buf->getURLPath->append->buf->toString->return
 JMXServiceURL#equals(Object):::Indicates whether some other object is equal to this one:::if->return->u->return->u->getProtocol->getProtocol->equalsIgnoreCase->u->getHost->getHost->equalsIgnoreCase->u->getPort->getPort->u->getURLPath->getURLPath->equals
+JMXServiceURL#hashCode()::: service l hash code:::return->toString->hashCode
+JMXServiceURL#isNumericIPv6Address(String)::: service l is numeric pv6 address:::return->s->indexOf
+JMXServiceURL#indexOf(String, char, int)::: service l index of:::index->s->indexOf->if->return->s->length->else->return
+JMXServiceURL#indexOfFirstNotInSet(String, BitSet, int)::: service l index of first not in set:::slen->s->length->i->while->if->break->c->s->charAt->if->break->if->set->get->break->return
 MBeanServerForwarder#getMBeanServer():::Returns the MBeanServer object to which requests will be forwarded.:::
 MBeanServerForwarder#setMBeanServer(MBeanServer):::Sets the MBeanServer object to which requests will be forwarded after treatment by this object.:::
 NotificationResult#getEarliestSequenceNumber():::Returns the sequence number of the earliest notification still in the buffer.:::return
 NotificationResult#getNextSequenceNumber():::Returns the sequence number of the next notification available for querying.:::return
 NotificationResult#getTargetedNotifications():::Returns the notifications resulting from the query, and the listeners they correspond to.:::return->targetedNotifications->clone
 NotificationResult#toString():::Returns a string representation of the object:::return->getEarliestSequenceNumber->getNextSequenceNumber->getTargetedNotifications
+NotificationResult#readObject(ObjectInputStream)::: notification result read object:::ois->defaultReadObject->try->validate->clone->catch->throw->e->getMessage->new->InvalidObjectException->finally
+NotificationResult#validate(TargetedNotification[], long, long)::: notification result validate:::if->msg->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException
 TargetedNotification#getNotification():::The emitted notification.:::return
 TargetedNotification#getListenerID():::The ID of the listener to which the notification is    targeted.:::return
 TargetedNotification#toString():::Returns a textual representation of this Targeted Notification.:::return
+TargetedNotification#readObject(ObjectInputStream)::: targeted notification read object:::ois->defaultReadObject->try->validate->catch->throw->e->getMessage->new->InvalidObjectException->finally
+TargetedNotification#validate(Notification, Integer)::: targeted notification validate:::if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException

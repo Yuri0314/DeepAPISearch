@@ -1,8 +1,67 @@
 FileHistory#load():::Load history from file, e.g:::load
+FileHistory#getFile()::: file history get file:::return
+FileHistory#load(File)::: file history load:::checkNotNull->if->file->exists->Log->trace->reader->try->new->FileReader->load->catch->finally->if->reader->close
+FileHistory#load(InputStream)::: file history load:::checkNotNull->new->InputStreamReader->load
+FileHistory#load(Reader)::: file history load:::checkNotNull->input->new->BufferedReader->item->while->input->readLine->internalAdd
+FileHistory#flush()::: file history flush:::Log->trace->if->file->exists->dir->file->getParentFile->if->dir->exists->dir->mkdirs->Log->warn->if->file->createNewFile->Log->warn->out->new->FileOutputStream->new->BufferedOutputStream->new->PrintStream->try->foreach->out->entry->value->println->catch->finally->out->close
+FileHistory#purge()::: file history purge:::Log->trace->clear->if->file->delete->Log->warn
+History#size()::: history size:::
+History#isEmpty()::: history is empty:::
+History#index()::: history index:::
+History#clear()::: history clear:::
+History#get(int)::: history get:::
+History#add(CharSequence)::: history add:::
 History#set(int, CharSequence):::Set the history item at the given index to the given CharSequence.:::
 History#remove(int):::Remove the history element at the given index.:::
 History#removeFirst():::Remove the first element from history.:::
 History#removeLast():::Remove the last element from history:::
+History#replace(CharSequence)::: history replace:::
+History.Entry#index()::: entry index:::
+History.Entry#value()::: entry value:::
+History#entries(int)::: history entries:::
+History#entries()::: history entries:::
+History#iterator()::: history iterator:::
+History#current()::: history current:::
+History#previous()::: history previous:::
+History#next()::: history next:::
+History#moveToFirst()::: history move to first:::
+History#moveToLast()::: history move to last:::
+History#moveTo(int)::: history move to:::
+History#moveToEnd()::: history move to end:::
+MemoryHistory#setMaxSize(int)::: memory history set max size:::maybeResize
+MemoryHistory#getMaxSize()::: memory history get max size:::return
+MemoryHistory#isIgnoreDuplicates()::: memory history is ignore duplicates:::return
+MemoryHistory#setIgnoreDuplicates(boolean)::: memory history set ignore duplicates:::
+MemoryHistory#isAutoTrim()::: memory history is auto trim:::return
+MemoryHistory#setAutoTrim(boolean)::: memory history set auto trim:::
+MemoryHistory#size()::: memory history size:::return->items->size
+MemoryHistory#isEmpty()::: memory history is empty:::return->items->isEmpty
+MemoryHistory#index()::: memory history index:::return
+MemoryHistory#clear()::: memory history clear:::items->clear
+MemoryHistory#get(int)::: memory history get:::return->items->get
+MemoryHistory#set(int, CharSequence)::: memory history set:::items->set
+MemoryHistory#add(CharSequence)::: memory history add:::checkNotNull->if->isAutoTrim->String->valueOf->trim->if->isIgnoreDuplicates->if->items->isEmpty->item->items->getLast->equals->return->internalAdd
+MemoryHistory#remove(int)::: memory history remove:::return->items->remove
+MemoryHistory#removeFirst()::: memory history remove first:::return->items->removeFirst
+MemoryHistory#removeLast()::: memory history remove last:::return->items->removeLast
+MemoryHistory#internalAdd(CharSequence)::: memory history internal add:::items->add->maybeResize
+MemoryHistory#replace(CharSequence)::: memory history replace:::items->removeLast->add
+MemoryHistory#maybeResize()::: memory history maybe resize:::while->size->getMaxSize->items->removeFirst->size
+MemoryHistory#entries(int)::: memory history entries:::return->new->EntriesIterator
+MemoryHistory#entries()::: memory history entries:::return->entries
+MemoryHistory#iterator()::: memory history iterator:::return->entries
+MemoryHistory.EntryImpl#index()::: entry impl index:::return
+MemoryHistory.EntryImpl#value()::: entry impl value:::return
+MemoryHistory.EntryImpl#toString()::: entry impl to string:::return->String->format
+MemoryHistory.EntriesIterator#next()::: entries iterator next:::if->source->hasNext->throw->new->NoSuchElementException->return->source->nextIndex->source->next->new->EntryImpl
+MemoryHistory.EntriesIterator#previous()::: entries iterator previous:::if->source->hasPrevious->throw->new->NoSuchElementException->return->source->previousIndex->source->previous->new->EntryImpl
+MemoryHistory.EntriesIterator#nextIndex()::: entries iterator next index:::return->source->nextIndex
+MemoryHistory.EntriesIterator#previousIndex()::: entries iterator previous index:::return->source->previousIndex
+MemoryHistory.EntriesIterator#hasNext()::: entries iterator has next:::return->source->hasNext
+MemoryHistory.EntriesIterator#hasPrevious()::: entries iterator has previous:::return->source->hasPrevious
+MemoryHistory.EntriesIterator#remove()::: entries iterator remove:::throw->new->UnsupportedOperationException
+MemoryHistory.EntriesIterator#set(Entry)::: entries iterator set:::throw->new->UnsupportedOperationException
+MemoryHistory.EntriesIterator#add(Entry)::: entries iterator add:::throw->new->UnsupportedOperationException
 MemoryHistory#moveToLast():::This moves the history to the last entry:::lastEntry->size->if->size->return->return
 MemoryHistory#moveTo(int):::Move to the specified index in the history:::if->size->return->return
 MemoryHistory#moveToFirst():::Moves the history index to the first entry.:::if->size->return->return
@@ -10,5 +69,6 @@ MemoryHistory#moveToEnd():::Move to the end of the history buffer:::size
 MemoryHistory#current():::Return the content of the current buffer.:::if->size->return->return->items->get
 MemoryHistory#previous():::Move the pointer to the previous element in the buffer.:::if->return->return
 MemoryHistory#next():::Move the pointer to the next element in the buffer.:::if->size->return->return
+MemoryHistory#toString()::: memory history to string:::sb->new->StringBuilder->foreach->sb->e->toString->append->return->sb->toString
 PersistentHistory#flush():::Flush all items to persistent storage.:::
 PersistentHistory#purge():::Purge persistent storage and #clear.:::

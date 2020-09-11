@@ -8,6 +8,7 @@ Arg#setExpression(String):::Set the value expression for this argument.:::
 Arg#isFromWithParam():::Tell if this variable is a parameter passed with a with-param or as a top-level parameter.:::return
 Arg#isVisible():::Tell if this variable is currently visible.:::return
 Arg#setIsVisible(boolean):::Update visibility status of this variable.:::
+Arg#hashCode()::: arg hash code:::return->Objects->hashCode
 Arg#equals(Object):::Equality function specialized for the variable name:::if->return->m_qname->equals->else->return->super->equals
 CachedXPathAPI#getXPathContext():::Returns the XPathSupport object used in this CachedXPathAPI  %REVIEW% I'm somewhat concerned about the loss of encapsulation this causes, but the xml-security folks say they need it.:::return
 CachedXPathAPI#selectSingleNode(Node, String):::Use an XPath string to select a single node:::return->selectSingleNode
@@ -41,6 +42,7 @@ Expression#assertion(boolean, java.lang.String):::Tell the user of an assertion 
 Expression#error(XPathContext, String, Object[]):::Tell the user of an error, and probably throw an exception.:::fmsg->XSLMessages->createXPATHMessage->if->eh->xctxt->getErrorListener->te->new->TransformerException->eh->fatalError
 Expression#getExpressionOwner():::Get the first non-Expression parent of this node.:::parent->exprGetParent->while->parent->exprGetParent->return
 Expression#exprSetParent(ExpressionNode):::This pair of methods are used to inform the node of its     parent.:::assertion
+Expression#exprGetParent()::: expression expr get parent:::return
 Expression#exprAddChild(ExpressionNode, int):::This method tells the node to add its argument to the node's     list of children.:::assertion
 Expression#exprGetChild(int):::This method returns a child node:::return
 Expression#exprGetNumChildren():::Return the number of children the node has.:::return
@@ -49,14 +51,17 @@ Expression#getSystemId():::Return the system identifier for the current document
 Expression#getLineNumber():::Return the line number where the current document event ends:::if->return->return->m_parent->getLineNumber
 Expression#getColumnNumber():::Return the character position where the current document event ends:::if->return->return->m_parent->getColumnNumber
 ExpressionNode#exprSetParent(ExpressionNode):::This pair of methods are used to inform the node of its     parent.:::
+ExpressionNode#exprGetParent()::: expression node expr get parent:::
 ExpressionNode#exprAddChild(ExpressionNode, int):::This method tells the node to add its argument to the node's     list of children.:::
 ExpressionNode#exprGetChild(int):::This method returns a child node:::
 ExpressionNode#exprGetNumChildren():::Return the number of children the node has.:::
 ExpressionOwner#getExpression():::Get the raw Expression object that this class wraps.:::
 ExpressionOwner#setExpression(Expression):::Set the raw expression object for this object.:::
+ExtensionsProvider#functionAvailable(String, String)::: extensions provider function available:::
 ExtensionsProvider#elementAvailable(String, String):::Is the extension element available?:::
 ExtensionsProvider#extFunction(String, String, List, Object):::Execute the extension function.:::
 ExtensionsProvider#extFunction(FuncExtFunction, List):::Execute the extension function.:::
+NodeSet#getRoot()::: node set get root:::return
 NodeSet#cloneWithReset():::Get a cloned Iterator, and reset its state to the beginning of the iteration.:::clone->clone->clone->reset->return
 NodeSet#reset():::Reset the iterator:::
 NodeSet#getWhatToShow()::: This attribute determines which node types are presented via the iterator:::return
@@ -77,6 +82,7 @@ NodeSet#addNodes(NodeSet):::Copy NodeList members into this nodelist, adding in 
 NodeSet#addNodes(NodeIterator):::Copy NodeList members into this nodelist, adding in document order:::if->throw->XSLMessages->createXPATHMessage->new->RuntimeException->if->obj->while->iterator->nextNode->addElement
 NodeSet#addNodesInDocOrder(NodeList, XPathContext):::Copy NodeList members into this nodelist, adding in document order:::if->throw->XSLMessages->createXPATHMessage->new->RuntimeException->nChildren->nodelist->getLength->for->i
 NodeSet#addNodesInDocOrder(NodeIterator, XPathContext):::Copy NodeList members into this nodelist, adding in document order:::if->throw->XSLMessages->createXPATHMessage->new->RuntimeException->node->while->iterator->nextNode->addNodeInDocOrder
+NodeSet#addNodesInDocOrder(int, int, int, NodeList, XPathContext):::Add the node list to this node set in document order.:::if->throw->XSLMessages->createXPATHMessage->new->RuntimeException->foundit->i->node->nodelist->item->for->if->insertElementAt->return
 NodeSet#addNodeInDocOrder(Node, boolean, XPathContext):::Add the node into a vector of nodes where it should occur in document order.:::if->throw->XSLMessages->createXPATHMessage->new->RuntimeException->insertIndex->if->size->size->i->for->if->insertElementAt->else->this->size->foundit->for->i->if->addElement->return
 NodeSet#addNodeInDocOrder(Node, XPathContext):::Add the node into a vector of nodes where it should occur in document order.:::if->throw->XSLMessages->createXPATHMessage->new->RuntimeException->return->addNodeInDocOrder
 NodeSet#getCurrentPos():::Get the current position, which is one less than the next nextNode() call will retrieve:::return
@@ -84,6 +90,8 @@ NodeSet#setCurrentPos(int):::Set the current position in the node set.:::if->thr
 NodeSet#getCurrentNode():::Return the last fetched node:::if->throw->XSLMessages->createXPATHMessage->new->RuntimeException->saved->n->elementAt->return
 NodeSet#getShouldCacheNodes():::Get whether or not this is a cached node set.:::return
 NodeSet#setShouldCacheNodes(boolean):::If setShouldCacheNodes(true) is called, then nodes will be cached:::if->isFresh->throw->XSLMessages->createXPATHMessage->new->RuntimeException
+NodeSet#getLast()::: node set get last:::return
+NodeSet#setLast(int)::: node set set last:::
 NodeSet#clone():::Get a cloned LocPathIterator.:::clone->super->clone->if->new->NodeArr->System->arraycopy->return
 NodeSet#size():::Get the length of the list.:::return
 NodeSet#addElement(Node):::Append a Node onto the vector.:::if->throw->XSLMessages->createXPATHMessage->new->RuntimeException->if->if->new->NodeArr->else->newMap->new->NodeArr->System->arraycopy
@@ -109,6 +117,7 @@ NodeSet#contains(Node):::Tell if the table contains the given node.:::runTo->if-
 NodeSet#indexOf(Node, int):::Searches for the first occurence of the given argument, beginning the search at index, and testing for equality using the equals method.:::runTo->if->return->for->i->return
 NodeSet#indexOf(Node):::Searches for the first occurence of the given argument, beginning the search at index, and testing for equality using the equals method.:::runTo->if->return->for->i->return
 NodeSetDTM#setEnvironment(Object):::Set the environment in which this iterator operates, which should provide: a node (the context node..:::
+NodeSetDTM#getRoot()::: node set m get root:::if->if->size->return->item->else->return->else->return
 NodeSetDTM#setRoot(int, Object):::Initialize the context values for this expression after it is cloned.:::
 NodeSetDTM#clone():::Clone this NodeSetDTM:::clone->super->clone->return
 NodeSetDTM#cloneWithReset():::Get a cloned Iterator, and reset its state to the beginning of the iteration.:::clone->clone->clone->reset->return
@@ -152,6 +161,8 @@ NodeSetDTM#getCurrentNode():::Return the last fetched node:::if->throw->new->Run
 NodeSetDTM#getShouldCacheNodes():::Get whether or not this is a cached node set.:::return
 NodeSetDTM#setShouldCacheNodes(boolean):::If setShouldCacheNodes(true) is called, then nodes will be cached:::if->isFresh->throw->XSLMessages->createXPATHMessage->new->RuntimeException
 NodeSetDTM#isMutable():::Tells if this iterator can have nodes added to it or set via the setItem(int node, int index) method.:::return
+NodeSetDTM#getLast()::: node set m get last:::return
+NodeSetDTM#setLast(int)::: node set m set last:::
 NodeSetDTM#isDocOrdered():::Returns true if all the nodes in the iteration well be returned in document order.:::return
 NodeSetDTM#getAxis():::Returns the axis being iterated, if it is known.:::return
 SourceTreeManager#reset():::Reset the list of SourceTree objects that this manager manages.:::new->ArrayList<>
@@ -188,6 +199,7 @@ VariableStack#getGlobalVariable(XPathContext, int, boolean):::Get a global varia
 VariableStack#getVariableOrParam(XPathContext, com.sun.org.apache.xml.internal.utils.QName):::Get a variable based on it's qualified name:::throw->XSLMessages->new->ObjectArr->qname->toString->createXPATHMessage->new->javax.xml.transform.TransformerException
 WhitespaceStrippingElementMatcher#shouldStripWhiteSpace(XPathContext, Element):::Get information about whether or not an element should strip whitespace.:::
 WhitespaceStrippingElementMatcher#canStripWhiteSpace():::Get information about whether or not whitespace can be stripped.:::
+XPath#initFunctionTable():::initial the function table:::new->FunctionTable
 XPath#getExpression():::Get the raw Expression object that this class wraps.:::return
 XPath#fixupVariables(List, int):::This function is used to fixup variables from QNames to stack frame indexes at stylesheet build time.:::m_mainExp->fixupVariables
 XPath#setExpression(Expression):::Set the raw expression object for this object.:::if->exp->m_mainExp->exprGetParent->exprSetParent
@@ -223,6 +235,7 @@ XPathContext#createDTMIterator(Object, int):::Create a new DTMIterator based on 
 XPathContext#createDTMIterator(String, PrefixResolver):::Create a new DTMIterator based on an XPath LocationPath or a UnionExpr.:::return->m_dtmManager->createDTMIterator
 XPathContext#createDTMIterator(int, DTMFilter, boolean):::Create a new DTMIterator based only on a whatToShow and a DTMFilter:::return->m_dtmManager->createDTMIterator
 XPathContext#createDTMIterator(int):::Create a new DTMIterator that holds exactly one node.:::iter->new->com.sun.org.apache.xpath.internal.axes.OneStepIteratorForward->iter->setRoot->return
+XPathContext#init(boolean)::: path context init:::m_prefixResolvers->push->m_currentNodes->push->m_currentExpressionNodes->push->m_saxLocations->push->DTMManager->getFactory->newInstance
 XPathContext#reset():::Reset for new run.:::releaseDTMXRTreeFrags->if->foreach->m_dtmManager->release->if->m_dtmManager->release->DTMManager->getFactory->newInstance->m_saxLocations->removeAllElements->m_axesIteratorStack->removeAllElements->m_contextNodeLists->removeAllElements->m_currentExpressionNodes->removeAllElements->m_currentNodes->removeAllElements->m_iteratorRoots->RemoveAllNoClear->m_predicatePos->removeAllElements->m_predicateRoots->RemoveAllNoClear->m_prefixResolvers->removeAllElements->m_prefixResolvers->push->m_currentNodes->push->m_currentExpressionNodes->push->m_saxLocations->push
 XPathContext#setSAXLocator(SourceLocator):::Set the current locater in the stylesheet.:::m_saxLocations->setTop
 XPathContext#pushSAXLocator(SourceLocator):::Set the current locater in the stylesheet.:::m_saxLocations->push
@@ -240,9 +253,13 @@ XPathContext#getURIResolver():::Get the URIResolver associated with this executi
 XPathContext#setURIResolver(URIResolver):::Set the URIResolver associated with this execution context.:::
 XPathContext#getPrimaryReader():::Get primary XMLReader associated with this execution context.:::return
 XPathContext#setPrimaryReader(XMLReader):::Set primary XMLReader associated with this execution context.:::
+XPathContext#getContextNodeListsStack()::: path context get context node lists stack:::return
+XPathContext#setContextNodeListsStack(Stack)::: path context set context node lists stack:::
 XPathContext#getContextNodeList():::Get the current context node list.:::if->m_contextNodeLists->size->return->m_contextNodeLists->peek->else->return
 XPathContext#pushContextNodeList(DTMIterator):::Set the current context node list.:::m_contextNodeLists->push
 XPathContext#popContextNodeList():::Pop the current context node list.:::if->m_contextNodeLists->isEmpty->println->else->m_contextNodeLists->pop
+XPathContext#getCurrentNodeStack()::: path context get current node stack:::return
+XPathContext#setCurrentNodeStack(IntStack)::: path context set current node stack:::
 XPathContext#getCurrentNode():::Get the current context node.:::return->m_currentNodes->peek
 XPathContext#pushCurrentNodeAndExpression(int, int):::Set the current context node and expression node.:::m_currentNodes->push->m_currentExpressionNodes->push
 XPathContext#popCurrentNodeAndExpression():::Set the current context node.:::m_currentNodes->quickPop->m_currentExpressionNodes->quickPop
@@ -256,6 +273,11 @@ XPathContext#getPredicateRoot():::Get the current predicate root.:::return->m_pr
 XPathContext#pushIteratorRoot(int):::Set the current location path iterator root.:::m_iteratorRoots->push
 XPathContext#popIteratorRoot():::Pop the current location path iterator root.:::m_iteratorRoots->popQuick
 XPathContext#getIteratorRoot():::Get the current location path iterator root.:::return->m_iteratorRoots->peepOrNull
+XPathContext#getCurrentExpressionNodeStack()::: path context get current expression node stack:::return
+XPathContext#setCurrentExpressionNodeStack(IntStack)::: path context set current expression node stack:::
+XPathContext#getPredicatePos()::: path context get predicate pos:::return->m_predicatePos->peek
+XPathContext#pushPredicatePos(int)::: path context push predicate pos:::m_predicatePos->push
+XPathContext#popPredicatePos()::: path context pop predicate pos:::m_predicatePos->pop
 XPathContext#getCurrentExpressionNode():::Get the current node that is the expression's context (i.e:::return->m_currentExpressionNodes->peek
 XPathContext#pushCurrentExpressionNode(int):::Set the current node that is the expression's context (i.e:::m_currentExpressionNodes->push
 XPathContext#popCurrentExpressionNode():::Pop the current node that is the expression's context (i.e:::m_currentExpressionNodes->quickPop
@@ -264,9 +286,12 @@ XPathContext#setNamespaceContext(PrefixResolver):::Get the current namespace con
 XPathContext#pushNamespaceContext(PrefixResolver):::Push a current namespace context for the xpath.:::m_prefixResolvers->push
 XPathContext#pushNamespaceContextNull():::Just increment the namespace contest stack, so that setNamespaceContext can be used on the slot.:::m_prefixResolvers->push
 XPathContext#popNamespaceContext():::Pop the current namespace context for the xpath.:::m_prefixResolvers->pop
+XPathContext#getAxesIteratorStackStacks()::: path context get axes iterator stack stacks:::return
+XPathContext#setAxesIteratorStackStacks(Stack)::: path context set axes iterator stack stacks:::
 XPathContext#pushSubContextList(SubContextList):::Push a TreeWalker on the stack.:::m_axesIteratorStack->push
 XPathContext#popSubContextList():::Pop the last pushed axes iterator.:::m_axesIteratorStack->pop
 XPathContext#getSubContextList():::Get the current axes iterator, or return null if none.:::return->m_axesIteratorStack->isEmpty->m_axesIteratorStack->peek
+XPathContext#getCurrentNodeList()::: path context get current node list:::return->m_axesIteratorStack->isEmpty->m_axesIteratorStack->get
 XPathContext#getContextNode():::Get the current context node.:::return->this->getCurrentNode
 XPathContext#getContextNodes():::Get the current context node list.:::try->cnl->getContextNodeList->if->return->cnl->cloneWithReset->else->return->catch->return->finally
 XPathContext#getExpressionContext():::The the expression context for extensions for this context.:::return
@@ -279,11 +304,13 @@ XPathContext.XPathExpressionContext#overrideDefaultParser():::Return the state o
 XPathContext.XPathExpressionContext#setOverrideDefaultParser(boolean):::Set the state of the services mechanism feature.:::
 XPathContext.XPathExpressionContext#toNumber(org.w3c.dom.Node):::Get the value of a node as a number.:::nodeHandle->getDTMHandleFromNode->dtm->getDTM->xobj->dtm->getStringValue->return->xobj->num
 XPathContext.XPathExpressionContext#toString(org.w3c.dom.Node):::Get the value of a node as a string.:::nodeHandle->getDTMHandleFromNode->dtm->getDTM->strVal->dtm->getStringValue->return->strVal->toString
+XPathContext.XPathExpressionContext#getVariableOrParam(com.sun.org.apache.xml.internal.utils.QName)::: path expression context get variable or param:::return->m_variableStacks->getVariableOrParam
 XPathContext#getGlobalRTFDTM():::Get a DTM to be used as a container for a global Result Tree Fragment:::if->m_global_rtfdtm->isTreeIncomplete->m_dtmManager->getDTM->return
 XPathContext#getRTFDTM():::Get a DTM to be used as a container for a dynamic Result Tree Fragment:::rtfdtm->if->new->ArrayList<>->m_dtmManager->getDTM->m_rtfdtm_stack->add->else->if->m_rtfdtm_stack->get->else->m_rtfdtm_stack->get->if->rtfdtm->isTreeIncomplete->if->m_rtfdtm_stack->size->m_rtfdtm_stack->get->else->m_dtmManager->getDTM->m_rtfdtm_stack->add->return
 XPathContext#pushRTFContext():::Push the RTFDTM's context mark, to allows discarding RTFs added after this point:::m_last_pushed_rtfdtm->push->if->getRTFDTM->pushRewindMark
 XPathContext#popRTFContext():::Pop the RTFDTM's context mark:::previous->m_last_pushed_rtfdtm->pop->if->return->if->if->isEmpty->m_rtfdtm_stack->get->popRewindMark->else->while->isEmpty->m_rtfdtm_stack->get->popRewindMark
 XPathContext#getDTMXRTreeFrag(int):::Gets DTMXRTreeFrag object if one has already been created:::if->new->HashMap<>->if->m_DTMXRTreeFrags->containsKey->return->m_DTMXRTreeFrags->get->else->frag->new->DTMXRTreeFrag->m_DTMXRTreeFrags->put->return
+XPathContext#releaseDTMXRTreeFrags():::Cleans DTMXRTreeFrag objects by removing references to DTM and XPathContext objects.:::if->return->iter->m_DTMXRTreeFrags->values->iterator->while->iter->hasNext->frag->iter->next->frag->destruct->iter->remove
 XPathException#getStylesheetNode():::Get the stylesheet node from where this error originated.:::return
 XPathException#setStylesheetNode(Object):::Set the stylesheet node from where this error originated.:::
 XPathException#getStylesheetNode(ExpressionNode):::Get the XSLT ElemVariable that this sub-expression references:::owner->getExpressionOwner->if->return->return

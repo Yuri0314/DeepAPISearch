@@ -1,3 +1,18 @@
+CKey.NativeHandles#finalize()::: native handles finalize:::try->synchronized->cleanUp->catch->finally->super->finalize
+CKey#cleanUp(long, long)::: key clean up:::
+CKey#length()::: key length:::return
+CKey#getHCryptKey()::: key get crypt key:::return
+CKey#getHCryptProvider()::: key get crypt provider:::return
+CKey#getAlgorithm()::: key get algorithm:::return
+CKey#getContainerName(long)::: key get container name:::
+CKey#getKeyType(long)::: key get key type:::
+CKey#generateECBlob(Key)::: key generate blob:::keyBitLength->KeyUtil->getKeySize->keyLen->isPrivate->keyBlob->new->byteArr->if->else->x->y->if->prk->s->prk->getS->bs->s->toByteArray->System->arraycopy->else->puk->puk->getW->getAffineX->puk->getW->getAffineY->by->y->toByteArray->System->arraycopy->bx->x->toByteArray->System->arraycopy->return
+CKeyPair#getPrivate()::: key pair get private:::return
+CKeyPair#getPublic()::: key pair get public:::return
+CKeyPairGenerator.RSA#initialize(int, SecureRandom)::: a initialize:::try->RSAKeyFactory->checkKeyLengths->catch->throw->e->getMessage->new->InvalidParameterException->finally
+CKeyPairGenerator.RSA#initialize(AlgorithmParameterSpec, SecureRandom)::: a initialize:::tmpSize->if->else->if->if->getPublicExponent->throw->new->InvalidAlgorithmParameterException->getKeysize->else->throw->new->InvalidAlgorithmParameterException->try->RSAKeyFactory->checkKeyLengths->catch->throw->new->InvalidAlgorithmParameterException->finally
+CKeyPairGenerator.RSA#generateKeyPair()::: a generate key pair:::try->keys->UUID->randomUUID->toString->generateCKeyPair->return->keys->getPublic->keys->getPrivate->new->KeyPair->catch->throw->new->ProviderException->finally
+CKeyPairGenerator.RSA#generateCKeyPair(String, int, String)::: a generate key pair:::
 CKeyStore.KeyEntry#getAlias():::Gets the alias for the keystore entry.:::return
 CKeyStore.KeyEntry#setAlias(String):::Sets the alias for the keystore entry.:::
 CKeyStore.KeyEntry#getPrivateKey():::Gets the private key for the keystore entry.:::return
@@ -20,17 +35,106 @@ CKeyStore#engineIsCertificateEntry(String):::Returns true if the entry identifie
 CKeyStore#engineGetCertificateAlias(Certificate):::Returns the (alias) name of the first keystore entry whose certificate matches the given certificate:::foreach->entries->entrySet->entry->mapEntry->getValue->if->equals->return->entry->getAlias->return
 CKeyStore#engineStore(OutputStream, char[]):::engineStore is currently a no-op:::if->throw->new->IOException->if->throw->new->IOException
 CKeyStore#engineLoad(InputStream, char[]):::Loads the keystore:::if->throw->new->IOException->if->throw->new->IOException->sm->System->getSecurityManager->if->sm->new->SecurityPermission->checkPermission->entries->clear->try->getName->loadKeysOrCertificateChains->catch->throw->new->IOException->finally->if->debug->entries->size->println
+CKeyStore#storeWithUniqueAlias(String, KeyEntry):::Stores the given entry into the map, making sure the alias, used as the key is unique:::uniqAlias->uniqNum->while->if->entries->putIfAbsent->break
+CKeyStore#generateCertificateChain(String, Collection):::Generates a certificate chain from the collection of certificates and stores the result into a key entry:::try->certChain->certCollection->size->new->X509CertificateArr->i->for->iter->certCollection->iterator->iter->hasNext->new->KeyEntry->storeWithUniqueAlias->catch->finally
+CKeyStore#generateKeyAndCertificateChain(boolean, String, long, long, int, Collection):::Generates key and certificate chain from the private key handle, collection of certificates and stores the result into key entries:::try->certChain->certCollection->size->new->X509CertificateArr->i->for->iter->certCollection->iterator->iter->hasNext->CPrivateKey->of->new->KeyEntry->storeWithUniqueAlias->catch->finally
+CKeyStore#generateCertificate(byte[], Collection):::Generates certificates from byte data and stores into cert collection:::try->bis->new->ByteArrayInputStream->if->CertificateFactory->getInstance->c->certificateFactory->generateCertificates->certCollection->addAll->catch->finally
+CKeyStore#getName():::Returns the name of the keystore.:::return
+CKeyStore#loadKeysOrCertificateChains(String):::Load keys and/or certificates from keystore into Collection.:::
+CKeyStore#storeCertificate(String, String, byte[], int, long, long):::Stores a DER-encoded certificate into the certificate store:::
+CKeyStore#removeCertificate(String, String, byte[], int):::Removes the certificate from the certificate store:::
+CKeyStore#destroyKeyContainer(String):::Destroys the key container.:::
+CKeyStore#generateRSAPrivateKeyBlob(int, byte[], byte[], byte[], byte[], byte[], byte[], byte[], byte[]):::Generates a private-key BLOB from a key's components.:::
+CKeyStore#storePrivateKey(String, byte[], String, int)::: key store store private key:::
+CPrivateKey#of(String, long, long, int)::: private key of:::return->new->NativeHandles->of
+CPrivateKey#of(String, NativeHandles, int)::: private key of:::return->new->CPrivateKey
+CPrivateKey#getFormat()::: private key get format:::return
+CPrivateKey#getEncoded()::: private key get encoded:::return
+CPrivateKey#toString()::: private key to string:::if->return->getKeyType->getContainerName->else->return
+CPrivateKey#writeObject(java.io.ObjectOutputStream)::: private key write object:::throw->new->java.io.NotSerializableException
+CPublicKey.CECPublicKey#getW()::: public key get w:::if->try->blob->getPublicKeyBlob->len->x->Arrays->copyOfRange->y->Arrays->copyOfRange->new->BigInteger->new->BigInteger->new->ECPoint->catch->throw->new->ProviderException->finally->return
+CPublicKey.CECPublicKey#getEncoded()::: public key get encoded:::if->try->KeyFactory->getInstance->getW->getParams->new->ECPublicKeySpec->generatePublic->getEncoded->catch->finally->return
+CPublicKey.CECPublicKey#getParams()::: public key get params:::try->ap->AlgorithmParameters->getInstance->ap->new->ECKeySizeParameterSpec->init->return->ap->getParameterSpec->catch->throw->new->ProviderException->finally
+CPublicKey.CECPublicKey#toString()::: public key to string:::sb->new->StringBuffer->sb->append->append->append->getW->append->append->getParams->append->return->sb->toString
+CPublicKey.CRSAPublicKey#toString()::: public key to string:::sb->new->StringBuffer->sb->append->append->append->if->sb->getKeyType->append->append->getContainerName->append->else->sb->append->sb->append->getModulus->append->append->getPublicExponent->append->return->sb->toString
+CPublicKey.CRSAPublicKey#getPublicExponent()::: public key get public exponent:::if->try->publicKeyBlob->getPublicKeyBlob->getExponent->new->BigInteger->catch->throw->new->ProviderException->finally->return
+CPublicKey.CRSAPublicKey#getModulus()::: public key get modulus:::if->try->publicKeyBlob->getPublicKeyBlob->getModulus->new->BigInteger->catch->throw->new->ProviderException->finally->return
+CPublicKey.CRSAPublicKey#getEncoded()::: public key get encoded:::if->try->RSAPublicKeyImpl->getModulus->getPublicExponent->newKey->getEncoded->catch->finally->return
+CPublicKey.CRSAPublicKey#getExponent(byte[])::: public key get exponent:::
+CPublicKey.CRSAPublicKey#getModulus(byte[])::: public key get modulus:::
+CPublicKey#of(String, long, long, int)::: public key of:::return->new->NativeHandles->of
+CPublicKey#of(String, NativeHandles, int)::: public key of:::switch->return->new->CRSAPublicKey->return->new->CECPublicKey->throw->new->AssertionError
+CPublicKey#getFormat()::: public key get format:::return
+CPublicKey#writeReplace()::: public key write replace:::return->getAlgorithm->getFormat->getEncoded->new->KeyRep
+CPublicKey#getPublicKeyBlob(long, long)::: public key get public key blob:::
+CRSACipher#engineSetMode(String)::: cipher engine set mode:::if->mode->equalsIgnoreCase->throw->new->NoSuchAlgorithmException
+CRSACipher#engineSetPadding(String)::: cipher engine set padding:::if->paddingName->equalsIgnoreCase->else->throw->new->NoSuchPaddingException
+CRSACipher#engineGetBlockSize()::: cipher engine get block size:::return
+CRSACipher#engineGetOutputSize(int)::: cipher engine get output size:::return
+CRSACipher#engineGetIV()::: cipher engine get v:::return
+CRSACipher#engineGetParameters()::: cipher engine get parameters:::return
+CRSACipher#engineInit(int, Key, SecureRandom)::: cipher engine init:::init
+CRSACipher#engineInit(int, Key, AlgorithmParameterSpec, SecureRandom)::: cipher engine init:::if->if->throw->new->InvalidAlgorithmParameterException->init
+CRSACipher#engineInit(int, Key, AlgorithmParameters, SecureRandom)::: cipher engine init:::if->throw->new->InvalidAlgorithmParameterException->init
+CRSACipher#init(int, Key)::: cipher init:::encrypt->switch->break->break->throw->new->InvalidKeyException->if->if->rsaKey->modulus->rsaKey->getModulus->exponent->rsaKey->getPublicExponent->RSAKeyFactory->modulus->bitLength->checkKeyLengths->modulusBytes->modulus->toByteArray->exponentBytes->exponent->toByteArray->keyBitLength->keyBlob->generatePublicKeyBlob->try->CSignature->importPublicKey->catch->throw->new->InvalidKeyException->finally->else->throw->new->InvalidKeyException->if->publicKey->length->else->if->privateKey->length->else->throw->new->InvalidKeyException->new->byteArr
+CRSACipher#update(byte[], int, int)::: cipher update:::if->return->if->return->System->arraycopy
+CRSACipher#doFinal()::: cipher do final:::if->throw->new->IllegalBlockSizeException->try->data->switch->return->privateKey->getHCryptKey->encryptDecrypt->return->publicKey->getHCryptKey->encryptDecrypt->return->publicKey->getHCryptKey->encryptDecrypt->return->privateKey->getHCryptKey->encryptDecrypt->throw->new->AssertionError->catch->throw->new->ProviderException->finally
+CRSACipher#engineUpdate(byte[], int, int)::: cipher engine update:::update->return
+CRSACipher#engineUpdate(byte[], int, int, byte[], int)::: cipher engine update:::update->return
+CRSACipher#engineDoFinal(byte[], int, int)::: cipher engine do final:::update->return->doFinal
+CRSACipher#engineDoFinal(byte[], int, int, byte[], int)::: cipher engine do final:::if->throw->new->ShortBufferException->update->result->doFinal->n->System->arraycopy->return
+CRSACipher#engineWrap(Key)::: cipher engine wrap:::encoded->key->getEncoded->if->throw->new->InvalidKeyException->if->throw->new->InvalidKeyException->update->try->return->doFinal->catch->throw->new->InvalidKeyException->finally
+CRSACipher#engineUnwrap(byte[], String, int)::: cipher engine unwrap:::if->throw->new->InvalidKeyException->isTlsRsaPremasterSecret->algorithm->equals->failover->encoded->update->try->doFinal->catch->if->else->throw->new->InvalidKeyException->throw->new->InvalidKeyException->finally->if->if->throw->new->IllegalStateException->KeyUtil->getClientVersion->getServerVersion->checkTlsPreMasterSecretKey->return->constructKey
+CRSACipher#engineGetKeySize(Key)::: cipher engine get key size:::if->return->length->else->if->return->getModulus->bitLength->else->throw->new->InvalidKeyException
+CRSACipher#constructPublicKey(byte[], String)::: cipher construct public key:::try->keyFactory->KeyFactory->getInstance->keySpec->new->X509EncodedKeySpec->return->keyFactory->generatePublic->catch->throw->new->NoSuchAlgorithmException->throw->new->InvalidKeyException->finally
+CRSACipher#constructPrivateKey(byte[], String)::: cipher construct private key:::try->keyFactory->KeyFactory->getInstance->keySpec->new->PKCS8EncodedKeySpec->return->keyFactory->generatePrivate->catch->throw->new->NoSuchAlgorithmException->throw->new->InvalidKeyException->finally
+CRSACipher#constructSecretKey(byte[], String)::: cipher construct secret key:::return->new->SecretKeySpec
+CRSACipher#constructKey(byte[], String, int)::: cipher construct key:::switch->return->constructPublicKey->return->constructPrivateKey->return->constructSecretKey->throw->new->InvalidKeyException
+CRSACipher#encryptDecrypt(byte[], int, long, boolean)::: cipher encrypt decrypt:::
+CSignature.RSA#engineInitSign(PrivateKey)::: a engine init sign:::if->throw->new->InvalidKeyException->if->key->getAlgorithm->equalsIgnoreCase->throw->key->getClass->key->getAlgorithm->new->InvalidKeyException->RSAKeyFactory->privateKey->length->checkKeyLengths->resetDigest
+CSignature.RSA#engineInitVerify(PublicKey)::: a engine init verify:::if->throw->new->InvalidKeyException->if->throw->key->getClass->new->InvalidKeyException->if->rsaKey->modulus->rsaKey->getModulus->exponent->rsaKey->getPublicExponent->RSAKeyFactory->modulus->bitLength->checkKeyLengths->modulusBytes->modulus->toByteArray->exponentBytes->exponent->toByteArray->keyBitLength->keyBlob->generatePublicKeyBlob->try->importPublicKey->catch->throw->new->InvalidKeyException->finally->else->resetDigest
 CSignature.RSA#engineSign():::Returns the signature bytes of all the data updated so far:::hash->getDigestValue->if->privateKey->getHCryptKey->return->privateKey->getHCryptProvider->signCngHash->else->noHashOID->result->privateKey->getHCryptProvider->privateKey->getHCryptKey->signHash->return->convertEndianArray
 CSignature.RSA#engineVerify(byte[]):::Verifies the passed-in signature.:::hash->getDigestValue->if->publicKey->getHCryptKey->return->publicKey->getHCryptProvider->verifyCngSignedHash->else->return->convertEndianArray->publicKey->getHCryptProvider->publicKey->getHCryptKey->verifySignedHash
+CSignature.RSA#generatePublicKeyBlob(int, byte[], byte[])::: a generate public key blob:::
+CSignature.NONEwithRSA#engineUpdate(byte)::: ewith a engine update:::if->return
+CSignature.NONEwithRSA#engineUpdate(byte[], int, int)::: ewith a engine update:::if->return->System->arraycopy
+CSignature.NONEwithRSA#engineUpdate(ByteBuffer)::: ewith a engine update:::len->byteBuffer->remaining->if->return->if->return->byteBuffer->get
+CSignature.NONEwithRSA#resetDigest()::: ewith a reset digest:::
+CSignature.NONEwithRSA#getDigestValue()::: ewith a get digest value:::if->throw->new->SignatureException->if->setDigestName->else->if->setDigestName->else->if->setDigestName->else->if->setDigestName->else->if->setDigestName->else->if->setDigestName->else->throw->new->SignatureException->result->new->byteArr->System->arraycopy->return
+CSignature.ECDSA#engineInitSign(PrivateKey)::: a engine init sign:::if->throw->new->InvalidKeyException->if->key->getAlgorithm->equalsIgnoreCase->throw->key->getClass->key->getAlgorithm->new->InvalidKeyException->resetDigest
+CSignature.ECDSA#engineInitVerify(PublicKey)::: a engine init verify:::if->throw->new->InvalidKeyException->if->throw->key->getClass->new->InvalidKeyException->if->try->CKey->generateECBlob->KeyUtil->getKeySize->importECPublicKey->catch->throw->new->InvalidKeyException->finally->else->resetDigest
+CSignature.ECDSA#engineSign()::: a engine sign:::hash->getDigestValue->raw->privateKey->getHCryptProvider->signCngHash->return->ECUtil->encodeSignature
+CSignature.ECDSA#engineVerify(byte[])::: a engine verify:::hash->getDigestValue->ECUtil->decodeSignature->return->publicKey->getHCryptProvider->verifyCngSignedHash
+CSignature.PSS#engineInitSign(PrivateKey)::: s engine init sign:::super->engineInitSign
+CSignature.PSS#engineInitVerify(PublicKey)::: s engine init verify:::if->throw->new->InvalidKeyException->if->throw->key->getClass->new->InvalidKeyException->if->else->if->try->Signature->getInstance->catch->throw->new->InvalidKeyException->finally->fallbackSignature->initVerify->if->try->fallbackSignature->setParameter->catch->throw->new->InvalidKeyException->finally->resetDigest
+CSignature.PSS#engineUpdate(byte)::: s engine update:::ensureInit->if->fallbackSignature->update->else->messageDigest->update
+CSignature.PSS#engineUpdate(byte[], int, int)::: s engine update:::ensureInit->if->fallbackSignature->update->else->messageDigest->update
+CSignature.PSS#engineUpdate(ByteBuffer)::: s engine update:::try->ensureInit->catch->throw->se->getMessage->new->RuntimeException->finally->if->try->fallbackSignature->update->catch->throw->se->getMessage->new->RuntimeException->finally->else->messageDigest->update
+CSignature.PSS#engineSign()::: s engine sign:::ensureInit->hash->getDigestValue->return->pssParams->getSaltLength->pssParams->getMGFParameters->getDigestAlgorithm->privateKey->getHCryptProvider->privateKey->getHCryptKey->signCngHash
+CSignature.PSS#engineVerify(byte[])::: s engine verify:::ensureInit->if->return->fallbackSignature->verify->else->hash->getDigestValue->return->pssParams->getSaltLength->pssParams->getMGFParameters->getDigestAlgorithm->publicKey->getHCryptProvider->publicKey->getHCryptKey->verifyCngSignedHash
+CSignature.PSS#engineSetParameter(AlgorithmParameterSpec)::: s engine set parameter:::if->throw->new->ProviderException->validateSigParams->if->fallbackSignature->setParameter
+CSignature.PSS#engineGetParameters()::: s engine get parameters:::ap->if->try->AlgorithmParameters->getInstance->ap->init->catch->throw->gse->getMessage->new->ProviderException->finally->return
+CSignature.PSS#ensureInit()::: s ensure init:::if->throw->new->SignatureException->if->throw->new->SignatureException->if->try->MessageDigest->pssParams->getDigestAlgorithm->getInstance->catch->throw->new->SignatureException->finally
+CSignature.PSS#validateSigParams(AlgorithmParameterSpec):::Validate the specified Signature PSS parameters.:::if->throw->new->InvalidAlgorithmParameterException->if->throw->new->InvalidAlgorithmParameterException->params->if->return->if->params->getMGFAlgorithm->equalsIgnoreCase->throw->new->InvalidAlgorithmParameterException->if->params->getTrailerField->throw->new->InvalidAlgorithmParameterException->algSpec->params->getMGFParameters->if->throw->new->InvalidAlgorithmParameterException->mgfSpec->msgHashAlg->params->getDigestAlgorithm->toLowerCase->replaceAll->if->msgHashAlg->equals->mgf1HashAlg->mgfSpec->getDigestAlgorithm->toLowerCase->replaceAll->if->mgf1HashAlg->equals->if->mgf1HashAlg->equals->throw->new->InvalidAlgorithmParameterException->return
 CSignature#signCngHash(int, byte[], int, int, String, long, long):::Sign hash using CNG API with HCRYPTKEY.:::
+CSignature#verifyCngSignedHash(int, byte[], int, byte[], int, int, String, long, long):::Verify a signed hash using CNG API with HCRYPTKEY.:::
 CSignature#resetDigest():::Resets the message digest if needed.:::if->if->messageDigest->reset
+CSignature#getDigestValue()::: signature get digest value:::return->messageDigest->digest
+CSignature#setDigestName(String)::: signature set digest name:::
 CSignature#engineUpdate(byte):::Updates the data to be signed or verified using the specified byte.:::messageDigest->update
 CSignature#engineUpdate(byte[], int, int):::Updates the data to be signed or verified, using the specified array of bytes, starting at the specified offset.:::messageDigest->update
 CSignature#engineUpdate(ByteBuffer):::Updates the data to be signed or verified, using the specified ByteBuffer.:::messageDigest->update
+CSignature#convertEndianArray(byte[]):::Convert array from big endian to little endian, or vice versa.:::if->return->retval->new->byteArr->for->i->return
+CSignature#signHash(boolean, byte[], int, String, long, long):::Sign hash using Microsoft Crypto API with HCRYPTKEY:::
+CSignature#verifySignedHash(byte[], int, String, byte[], int, long, long):::Verify a signed hash using Microsoft Crypto API with HCRYPTKEY.:::
 CSignature#engineSetParameter(String, Object):::Sets the specified algorithm parameter to the specified value:::throw->new->InvalidParameterException
 CSignature#engineSetParameter(AlgorithmParameterSpec):::Sets this signature engine with the specified algorithm parameter.:::if->throw->new->InvalidAlgorithmParameterException
 CSignature#engineGetParameter(String):::Gets the value of the specified algorithm parameter:::throw->new->InvalidParameterException
 CSignature#engineGetParameters():::Gets the algorithm parameter from this signature engine.:::return
+CSignature#importPublicKey(String, byte[], int)::: signature import public key:::
+CSignature#importECPublicKey(String, byte[], int)::: signature import public key:::
+PRNG#generateSeed(int, byte[])::: g generate seed:::
 PRNG#engineSetSeed(byte[]):::Reseeds this random object:::if->generateSeed
 PRNG#engineNextBytes(byte[]):::Generates a user-specified number of random bytes.:::if->if->generateSeed->throw->new->ProviderException
 PRNG#engineGenerateSeed(int):::Returns the given number of seed bytes:::seed->generateSeed->if->throw->new->ProviderException->return
+SunMSCAPI.ProviderService#newInstance(Object)::: provider service new instance:::type->getType->if->throw->new->InvalidParameterException->algo->getAlgorithm->try->if->type->equals->if->algo->equals->return->new->PRNG->else->if->type->equals->if->algo->equals->return->new->CKeyStore.MY->else->if->algo->equals->return->new->CKeyStore.ROOT->else->if->type->equals->if->algo->equals->return->new->CSignature.NONEwithRSA->else->if->algo->equals->return->new->CSignature.SHA1withRSA->else->if->algo->equals->return->new->CSignature.SHA256withRSA->else->if->algo->equals->return->new->CSignature.SHA384withRSA->else->if->algo->equals->return->new->CSignature.SHA512withRSA->else->if->algo->equals->return->new->CSignature.MD5withRSA->else->if->algo->equals->return->new->CSignature.MD2withRSA->else->if->algo->equals->return->new->CSignature.PSS->else->if->algo->equals->return->new->CSignature.SHA1withECDSA->else->if->algo->equals->return->new->CSignature.SHA224withECDSA->else->if->algo->equals->return->new->CSignature.SHA256withECDSA->else->if->algo->equals->return->new->CSignature.SHA384withECDSA->else->if->algo->equals->return->new->CSignature.SHA512withECDSA->else->if->type->equals->if->algo->equals->return->new->CKeyPairGenerator.RSA->else->if->type->equals->if->algo->equals->algo->equals->return->new->CRSACipher->catch->throw->new->NoSuchAlgorithmException->finally->throw->new->ProviderException

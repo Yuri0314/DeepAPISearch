@@ -1,23 +1,169 @@
+AddressDataSource#readByte()::: address data source read byte:::try->res->addr->getCIntegerAt->return->catch->throw->Long->e->getAddress->toHexString->new->IOException->initCause->throw->new->IOException->initCause->finally
+AddressDataSource#readShort()::: address data source read short:::b1->readByte->b2->readByte->return
+AddressDataSource#readInt()::: address data source read int:::b1->readByte->b2->readByte->b3->readByte->b4->readByte->return
+AddressDataSource#readLong()::: address data source read long:::b1->readByte->b2->readByte->b3->readByte->b4->readByte->b5->readByte->b6->readByte->b7->readByte->b8->readByte->return
+AddressDataSource#read(byte[])::: address data source read:::for->i->return
+AddressDataSource#seek(long)::: address data source seek:::
+AddressDataSource#getFilePointer()::: address data source get file pointer:::return
+AddressDataSource#close()::: address data source close:::
 DLL#isDLL():::Indicates whether this is really a DLL or actually a .EXE       file.:::return->getFile->getHeader->hasCharacteristic
 DLL#lookupSymbol(String):::Look up a symbol; returns absolute address or null if symbol was       not found.:::if->isDLL->return->exports->getExportDirectoryTable->return->exports->getNumberOfNamePointers->lookupSymbol
+DLL#getBase()::: l get base:::return
 DLL#getName():::Returns the full path name of this DLL/EXE, or null if this DLL       object was created by parsing the target process's address       space.:::return
+DLL#getSize()::: l get size:::return
+DLL#getDebugInfoDataBase()::: l get debug info data base:::if->return->if->return->if->Assert->that->new->WindbgCDebugInfoBuilder->buildDataBase->return
+DLL#debugInfoForPC(Address)::: l debug info for c:::db->getDebugInfoDataBase->if->return->return->db->debugInfoForPC
+DLL#closestSymbolToPC(Address)::: l closest symbol to c:::exports->getExportDirectoryTable->if->return->name->pc->dbg->getAddressValue->diff->base->dbg->getAddressValue->for->i->exports->getNumberOfNamePointers->if->return->return->new->ClosestSymbol
+DLL#lineNumberForPC(Address)::: l line number for c:::db->getDebugInfoDataBase->if->return->return->db->lineNumberForPC
+DLL#close()::: l close:::getFile->close
+DLL#getFile()::: l get file:::return->file->getValue
+DLL#lookupSymbol(String, ExportDirectoryTable, int, int)::: l lookup symbol:::do->curIdx->cur->exports->getExportName->if->symbol->equals->return->addr->exports->exports->getExportOrdinal->getExportAddress->addOffsetTo->if->symbol->compareTo->if->else->else->if->else->while->return
+DLL#getExportDirectoryTable()::: l get export directory table:::return->getFile->getHeader->getOptionalHeader->getDataDirectories->getExportDirectoryTable
+WindbgAddress#equals(Object)::: windbg address equals:::if->return->if->return->return
+WindbgAddress#hashCode()::: windbg address hash code:::return
+WindbgAddress#toString()::: windbg address to string:::return->debugger->addressValueToString
+WindbgAddress#getCIntegerAt(long, long, boolean)::: windbg address get integer at:::return->debugger->readCInteger
+WindbgAddress#getAddressAt(long)::: windbg address get address at:::return->debugger->readAddress
+WindbgAddress#getCompOopAddressAt(long)::: windbg address get comp oop address at:::return->debugger->readCompOopAddress
+WindbgAddress#getCompKlassAddressAt(long)::: windbg address get comp klass address at:::return->debugger->readCompKlassAddress
+WindbgAddress#getJBooleanAt(long)::: windbg address get boolean at:::return->debugger->readJBoolean
+WindbgAddress#getJByteAt(long)::: windbg address get byte at:::return->debugger->readJByte
+WindbgAddress#getJCharAt(long)::: windbg address get char at:::return->debugger->readJChar
+WindbgAddress#getJDoubleAt(long)::: windbg address get double at:::return->debugger->readJDouble
+WindbgAddress#getJFloatAt(long)::: windbg address get float at:::return->debugger->readJFloat
+WindbgAddress#getJIntAt(long)::: windbg address get int at:::return->debugger->readJInt
+WindbgAddress#getJLongAt(long)::: windbg address get long at:::return->debugger->readJLong
+WindbgAddress#getJShortAt(long)::: windbg address get short at:::return->debugger->readJShort
+WindbgAddress#getOopHandleAt(long)::: windbg address get oop handle at:::return->debugger->readOopHandle
+WindbgAddress#getCompOopHandleAt(long)::: windbg address get comp oop handle at:::return->debugger->readCompOopHandle
+WindbgAddress#setCIntegerAt(long, long, long)::: windbg address set integer at:::throw->new->DebuggerException
+WindbgAddress#setAddressAt(long, Address)::: windbg address set address at:::throw->new->DebuggerException
+WindbgAddress#setJBooleanAt(long, boolean)::: windbg address set boolean at:::throw->new->DebuggerException
+WindbgAddress#setJByteAt(long, byte)::: windbg address set byte at:::throw->new->DebuggerException
+WindbgAddress#setJCharAt(long, char)::: windbg address set char at:::throw->new->DebuggerException
+WindbgAddress#setJDoubleAt(long, double)::: windbg address set double at:::throw->new->DebuggerException
+WindbgAddress#setJFloatAt(long, float)::: windbg address set float at:::throw->new->DebuggerException
+WindbgAddress#setJIntAt(long, int)::: windbg address set int at:::throw->new->DebuggerException
+WindbgAddress#setJLongAt(long, long)::: windbg address set long at:::throw->new->DebuggerException
+WindbgAddress#setJShortAt(long, short)::: windbg address set short at:::throw->new->DebuggerException
+WindbgAddress#setOopHandleAt(long, OopHandle)::: windbg address set oop handle at:::throw->new->DebuggerException
+WindbgAddress#addOffsetTo(long)::: windbg address add offset to:::value->if->return->return->new->WindbgAddress
+WindbgAddress#addOffsetToAsOopHandle(long)::: windbg address add offset to as oop handle:::value->if->return->return->new->WindbgOopHandle
 WindbgAddress#minus(Address):::(FIXME: any signed/unsigned issues? Should this work for       OopHandles?):::if->return->return
+WindbgAddress#lessThan(Address)::: windbg address less than:::if->return->arg->if->return->if->return->return
+WindbgAddress#lessThanOrEqual(Address)::: windbg address less than or equal:::if->return->arg->if->return->if->return->return
+WindbgAddress#greaterThan(Address)::: windbg address greater than:::if->return->arg->if->return->if->return->return
+WindbgAddress#greaterThanOrEqual(Address)::: windbg address greater than or equal:::if->return->arg->if->return->if->return->return
+WindbgAddress#andWithMask(long)::: windbg address and with mask:::value->if->return->return->new->WindbgAddress
+WindbgAddress#orWithMask(long)::: windbg address or with mask:::value->if->return->return->new->WindbgAddress
+WindbgAddress#xorWithMask(long)::: windbg address xor with mask:::value->if->return->return->new->WindbgAddress
+WindbgAddress#asLongValue()::: windbg address as long value:::return
+WindbgAddress#getValue()::: windbg address get value:::return
+WindbgAddress#check(boolean, String)::: windbg address check:::if->println->System->exit
+WindbgAddress#main(String[])::: windbg address main:::p1->new->WindbgAddress->p2->p1->addOffsetTo->n1->p2->addOffsetTo->n2->n1->addOffsetTo->p1->lessThan->check->p1->lessThan->check->p1->lessThan->check->p2->lessThan->check->p2->lessThan->check->n1->lessThan->check->p1->lessThan->check->p2->lessThan->check->n1->lessThan->check->n2->lessThan->check->p2->lessThan->check->n1->lessThan->check->n2->lessThan->check->n1->lessThan->check->n2->lessThan->check->n2->lessThan->check->p1->lessThanOrEqual->check->p2->lessThanOrEqual->check->n1->lessThanOrEqual->check->n2->lessThanOrEqual->check->p1->lessThanOrEqual->check->p1->lessThanOrEqual->check->p1->lessThanOrEqual->check->p2->lessThanOrEqual->check->p2->lessThanOrEqual->check->n1->lessThanOrEqual->check->p2->lessThanOrEqual->check->n1->lessThanOrEqual->check->n2->lessThanOrEqual->check->n1->lessThanOrEqual->check->n2->lessThanOrEqual->check->n2->lessThanOrEqual->check->n2->greaterThan->check->n2->greaterThan->check->n2->greaterThan->check->n1->greaterThan->check->n1->greaterThan->check->p2->greaterThan->check->p1->greaterThan->check->p2->greaterThan->check->n1->greaterThan->check->n2->greaterThan->check->p1->greaterThan->check->p2->greaterThan->check->n1->greaterThan->check->p1->greaterThan->check->p2->greaterThan->check->p1->greaterThan->check->p1->greaterThanOrEqual->check->p2->greaterThanOrEqual->check->n1->greaterThanOrEqual->check->n2->greaterThanOrEqual->check->n2->greaterThanOrEqual->check->n2->greaterThanOrEqual->check->n2->greaterThanOrEqual->check->n1->greaterThanOrEqual->check->n1->greaterThanOrEqual->check->p2->greaterThanOrEqual->check->p1->greaterThanOrEqual->check->p2->greaterThanOrEqual->check->n1->greaterThanOrEqual->check->p1->greaterThanOrEqual->check->p2->greaterThanOrEqual->check->p1->greaterThanOrEqual->check->println
+WindbgCDebugger#getThreadList()::: windbg debugger get thread list:::return->dbg->getThreadList
+WindbgCDebugger#getLoadObjectList()::: windbg debugger get load object list:::return->dbg->getLoadObjectList
+WindbgCDebugger#loadObjectContainingPC(Address)::: windbg debugger load object containing c:::if->return->objs->getLoadObjectList->for->iter->objs->iterator->iter->hasNext->return
+WindbgCDebugger#topFrameForThread(ThreadProxy)::: windbg debugger top frame for thread:::if->dbg->getCPU->equals->context->thread->getContext->ebp->context->getRegisterAsAddress->if->return->pc->context->getRegisterAsAddress->if->return->return->new->WindowsX86CFrame->else->if->dbg->getCPU->equals->context->thread->getContext->rbp->context->getRegisterAsAddress->if->return->pc->context->getRegisterAsAddress->if->return->return->new->WindowsAMD64CFrame->else->return
+WindbgCDebugger#getNameOfFile(String)::: windbg debugger get name of file:::return->new->File->getName
+WindbgCDebugger#getProcessControl()::: windbg debugger get process control:::return
+WindbgCDebugger#canDemangle()::: windbg debugger can demangle:::return
+WindbgCDebugger#demangle(String)::: windbg debugger demangle:::throw->new->UnsupportedOperationException
+WindbgCDebugInfoBuilder#buildDataBase(String, Address)::: windbg debug info builder build data base:::COFFFileParser->getParser->parse->getDebugVC50->if->return->getSegMap->new->HashMap->new->Stack->new->BasicCDebugInfoDataBase->db->beginConstruction->types->getGlobalTypes->for->types->getTypeIterator->iter->done->iter->next->dir->vc50->getSubsectionDirectory->moduleNumber->for->i->dir->getNumEntries->for->i->dir->getNumEntries->db->new->ResolveListener->resolve->db->endConstruction->return
+WindbgCDebugInfoBuilder#getDebugVC50(COFFFile)::: windbg debug info builder get debug c50:::header->file->getHeader->opt->header->getOptionalHeader->if->return->dd->opt->getDataDirectories->if->return->debug->dd->getDebugDirectory->if->return->for->i->debug->getNumEntries->return
+WindbgCDebugInfoBuilder#getSegMap()::: windbg debug info builder get seg map:::return->findSubsection
+WindbgCDebugInfoBuilder#getGlobalTypes()::: windbg debug info builder get global types:::return->findSubsection
+WindbgCDebugInfoBuilder#getGlobalSymbols()::: windbg debug info builder get global symbols:::return->findSubsection
+WindbgCDebugInfoBuilder#findSubsection(short)::: windbg debug info builder find subsection:::dir->vc50->getSubsectionDirectory->for->i->dir->getNumEntries->throw->new->DebuggerException
+WindbgCDebugInfoBuilder#putType(Type)::: windbg debug info builder put type:::db->iter->getTypeIndex->new->Integer->addType
+WindbgCDebugInfoBuilder#newAddress(int, short)::: windbg debug info builder new address:::seg->section->file->getHeader->getSectionHeader->return->base->section->getVirtualAddress->addOffsetTo
+WindbgCDebugInfoBuilder#getTypeByIndex(int)::: windbg debug info builder get type by index:::index->new->Integer->if->type->primIndexToTypeMap->get->if->return->primMode->if->primType->switch->unsigned->size->name->switch->break->break->break->break->throw->new->DebuggerException->new->BasicIntType->break->size->switch->break->break->break->break->throw->new->DebuggerException->new->BasicIntType->break->switch->new->BasicFloatType->break->new->BasicDoubleType->break->throw->new->DebuggerException->break->switch->new->BasicIntType->break->new->BasicIntType->break->new->BasicIntType->break->new->BasicIntType->break->new->BasicIntType->break->new->BasicIntType->break->new->BasicIntType->break->new->BasicIntType->break->throw->new->DebuggerException->break->switch->new->BasicVoidType->break->throw->new->DebuggerException->break->throw->new->DebuggerException->else->targetType->getTypeByIndex->new->BasicPointerType->if->Assert->that->primIndexToTypeMap->put->return->return->new->LazyType
+WindbgCDebugInfoBuilder#addBlock(BlockSym)::: windbg debug info builder add block:::db->symIter->getOffset->new->Integer->addBlock->blockStack->push
+WindbgCDebugInfoBuilder#skipEnd()::: windbg debug info builder skip end:::
+WindbgCDebugInfoBuilder#newLazyBlockSym(int)::: windbg debug info builder new lazy block sym:::if->return->return->new->Integer->new->LazyBlockSym
+WindbgCDebugInfoBuilder#memberAttributeToAccessControl(short)::: windbg debug info builder member attribute to access control:::acc->switch->return->return->return->return->throw->new->RuntimeException
+WindbgCDebugInfoBuilder#addLocalToCurBlock(LocalSym)::: windbg debug info builder add local to cur block:::blockStack->peek->addLocal
+WindbgCDebugInfoBuilder#addGlobalSym(GlobalSym)::: windbg debug info builder add global sym:::db->addGlobalSym
+WindbgCDebugInfoBuilder#skipTypeRecord()::: windbg debug info builder skip type record:::while->iter->typeStringDone->iter->typeStringNext
+WindbgDebugger#addressValueToString(long)::: windbg debugger address value to string:::
+WindbgDebugger#readJBoolean(long)::: windbg debugger read boolean:::
+WindbgDebugger#readJByte(long)::: windbg debugger read byte:::
+WindbgDebugger#readJChar(long)::: windbg debugger read char:::
+WindbgDebugger#readJDouble(long)::: windbg debugger read double:::
+WindbgDebugger#readJFloat(long)::: windbg debugger read float:::
+WindbgDebugger#readJInt(long)::: windbg debugger read int:::
+WindbgDebugger#readJLong(long)::: windbg debugger read long:::
+WindbgDebugger#readJShort(long)::: windbg debugger read short:::
+WindbgDebugger#readCInteger(long, long, boolean)::: windbg debugger read integer:::
+WindbgDebugger#readAddress(long)::: windbg debugger read address:::
+WindbgDebugger#readCompOopAddress(long)::: windbg debugger read comp oop address:::
+WindbgDebugger#readCompKlassAddress(long)::: windbg debugger read comp klass address:::
+WindbgDebugger#readOopHandle(long)::: windbg debugger read oop handle:::
+WindbgDebugger#readCompOopHandle(long)::: windbg debugger read comp oop handle:::
+WindbgDebugger#getThreadIntegerRegisterSet(long)::: windbg debugger get thread integer register set:::
+WindbgDebugger#newAddress(long)::: windbg debugger new address:::
+WindbgDebugger#getThreadIdFromSysId(long)::: windbg debugger get thread id from sys id:::
+WindbgDebugger#getThreadList()::: windbg debugger get thread list:::
+WindbgDebugger#getLoadObjectList()::: windbg debugger get load object list:::
+WindbgDebugger#getAddressSize()::: windbg debugger get address size:::
 WindbgDebuggerLocal#hasProcessList():::From the Debugger interface via JVMDebugger:::return
 WindbgDebuggerLocal#getProcessList():::From the Debugger interface via JVMDebugger:::return
 WindbgDebuggerLocal#attach(int):::From the Debugger interface via JVMDebugger:::attachInit->attach0
 WindbgDebuggerLocal#attach(String, String):::From the Debugger interface via JVMDebugger:::attachInit->attach0
+WindbgDebuggerLocal#getLoadObjectList()::: windbg debugger local get load object list:::requireAttach->return
 WindbgDebuggerLocal#detach():::From the Debugger interface via JVMDebugger:::if->return->if->for->iter->nameToDllMap->values->iterator->iter->hasNext->clearCache->try->detach0->catch->finally->resetNativePointers->return
 WindbgDebuggerLocal#parseAddress(String):::From the Debugger interface via JVMDebugger:::return->utils->scanAddress->newAddress
 WindbgDebuggerLocal#getOS():::From the Debugger interface via JVMDebugger:::return->PlatformInfo->getOS
 WindbgDebuggerLocal#getCPU():::From the Debugger interface via JVMDebugger:::return->PlatformInfo->getCPU
+WindbgDebuggerLocal#hasConsole()::: windbg debugger local has console:::return
+WindbgDebuggerLocal#consoleExecuteCommand(String)::: windbg debugger local console execute command:::requireAttach->if->throw->new->DebuggerException->return->consoleExecuteCommand0
+WindbgDebuggerLocal#getConsolePrompt()::: windbg debugger local get console prompt:::return
+WindbgDebuggerLocal#getCDebugger()::: windbg debugger local get debugger:::if->new->WindbgCDebugger->return
 WindbgDebuggerLocal#lookup(String, String):::From the SymbolLookup interface via Debugger and JVMDebugger:::requireAttach->return->lookupByName->newAddress
 WindbgDebuggerLocal#lookupOop(String, String):::From the SymbolLookup interface via Debugger and JVMDebugger:::addr->lookup->if->return->return->addr->addOffsetToAsOopHandle
+WindbgDebuggerLocal#lookup(long)::: windbg debugger local lookup:::return->lookupByAddress0
 WindbgDebuggerLocal#getMachineDescription():::From the Debugger interface:::return
 WindbgDebuggerLocal#getThreadForIdentifierAddress(Address):::From the ThreadAccess interface via Debugger and JVMDebugger:::return->threadFactory->createThreadWrapper
+WindbgDebuggerLocal#getThreadForThreadId(long)::: windbg debugger local get thread for thread id:::throw->new->DebuggerException
+WindbgDebuggerLocal#getThreadIdFromSysId(long)::: windbg debugger local get thread id from sys id:::requireAttach->return->getThreadIdFromSysId0
+WindbgDebuggerLocal#readJLong(long)::: windbg debugger local read long:::checkJavaConfigured->utils->checkAlignment->data->readBytes->return->utils->dataToJLong
 WindbgDebuggerLocal#addressValueToString(long):::From the WindbgDebugger interface:::return->utils->addressValueToString
 WindbgDebuggerLocal#readAddress(long):::From the WindbgDebugger interface:::return->readAddressValue->newAddress
+WindbgDebuggerLocal#readCompOopAddress(long)::: windbg debugger local read comp oop address:::return->readCompOopAddressValue->newAddress
+WindbgDebuggerLocal#readCompKlassAddress(long)::: windbg debugger local read comp klass address:::return->readCompKlassAddressValue->newAddress
 WindbgDebuggerLocal#readOopHandle(long):::From the WindbgDebugger interface:::value->readAddressValue->return->new->WindbgOopHandle
+WindbgDebuggerLocal#readCompOopHandle(long)::: windbg debugger local read comp oop handle:::value->readCompOopAddressValue->return->new->WindbgOopHandle
 WindbgDebuggerLocal#getAddressSize():::From the WindbgDebugger interface:::return->machDesc->getAddressSize
+WindbgDebuggerLocal#setThreadIntegerRegisterSet(long, long[])::: windbg debugger local set thread integer register set:::threadIntegerRegisterSet->new->Long->put
+WindbgDebuggerLocal#addThread(long)::: windbg debugger local add thread:::threadList->threadFactory->createThreadWrapper->add
+WindbgDebuggerLocal#getThreadIntegerRegisterSet(long)::: windbg debugger local get thread integer register set:::requireAttach->return->threadIntegerRegisterSet->new->Long->get
+WindbgDebuggerLocal#getThreadList()::: windbg debugger local get thread list:::requireAttach->return
+WindbgDebuggerLocal#findFullPath(String)::: windbg debugger local find full path:::f->new->File->if->f->exists->return->else->f->getName->st->new->StringTokenizer->while->st->hasMoreTokens->st->nextToken->new->File->if->f->exists->return->f->getPath->return
+WindbgDebuggerLocal#addLoadObject(String, long, long)::: windbg debugger local add load object:::path->findFullPath->if->dll->if->newAddress->new->DLL->else->newAddress->new->DLL->loadObjects->add->nameToDllMap->new->File->getName->put
 WindbgDebuggerLocal#getAddressValue(Address):::From the Debugger interface:::if->return->return->getValue
 WindbgDebuggerLocal#newAddress(long):::From the WindbgDebugger interface:::if->return->return->new->WindbgAddress
+WindbgDebuggerLocal#checkAttached()::: windbg debugger local check attached:::if->msg->throw->new->DebuggerException
+WindbgDebuggerLocal#requireAttach()::: windbg debugger local require attach:::if->throw->new->RuntimeException
+WindbgDebuggerLocal#attachInit()::: windbg debugger local attach init:::checkAttached->new->ArrayList->new->HashMap->new->HashMap->new->ArrayList
+WindbgDebuggerLocal#resetNativePointers()::: windbg debugger local reset native pointers:::
+WindbgDebuggerLocal#lookupByName(String, String)::: windbg debugger local lookup by name:::res->if->lookupByName0->if->return->dll->nameToDllMap->get->if->addr->dll->lookupSymbol->if->return->addr->getValue->return
 WindbgDebuggerLocal#readBytesFromProcess(long, long):::This reads bytes from the remote process.:::requireAttach->res->readBytesFromProcess0->if->return->new->ReadResult->else->return->new->ReadResult
+WindbgDebuggerLocal#findDLLByName(String)::: windbg debugger local find by name:::for->iter->loadObjects->iterator->iter->hasNext->return
+WindbgDebuggerLocal#writeBytesToProcess(long, long, byte[])::: windbg debugger local write bytes to process:::throw->new->DebuggerException
+WindbgDebuggerLocal#initIDs()::: windbg debugger local init ds:::
+WindbgDebuggerLocal#attach0(String, String)::: windbg debugger local attach0:::
+WindbgDebuggerLocal#attach0(int)::: windbg debugger local attach0:::
+WindbgDebuggerLocal#detach0()::: windbg debugger local detach0:::
+WindbgDebuggerLocal#readBytesFromProcess0(long, long)::: windbg debugger local read bytes from process0:::
+WindbgDebuggerLocal#getThreadIdFromSysId0(long)::: windbg debugger local get thread id from sys id0:::
+WindbgDebuggerLocal#consoleExecuteCommand0(String)::: windbg debugger local console execute command0:::
+WindbgDebuggerLocal#lookupByName0(String, String)::: windbg debugger local lookup by name0:::
+WindbgDebuggerLocal#lookupByAddress0(long)::: windbg debugger local lookup by address0:::
+WindbgDebuggerLocal#createClosestSymbol(String, long)::: windbg debugger local create closest symbol:::return->new->ClosestSymbol
+WindbgOopHandle#equals(Object)::: windbg oop handle equals:::if->return->if->return->return
+WindbgOopHandle#addOffsetTo(long)::: windbg oop handle add offset to:::throw->new->UnsupportedOperationException
+WindbgOopHandle#andWithMask(long)::: windbg oop handle and with mask:::throw->new->UnsupportedOperationException
+WindbgOopHandle#orWithMask(long)::: windbg oop handle or with mask:::throw->new->UnsupportedOperationException
+WindbgOopHandle#xorWithMask(long)::: windbg oop handle xor with mask:::throw->new->UnsupportedOperationException
+WindbgThreadFactory#createThreadWrapper(Address)::: windbg thread factory create thread wrapper:::
+WindbgThreadFactory#createThreadWrapper(long)::: windbg thread factory create thread wrapper:::

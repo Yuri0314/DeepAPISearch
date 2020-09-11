@@ -4,6 +4,7 @@ DOM2DTM#nextNode():::This method iterates to the next node that will be added to
 DOM2DTM#getNode(int):::Return an DOM node for the given node.:::identity->makeNodeIdentity->return->m_nodes->get
 DOM2DTM#lookupNode(int):::Get a Node from an identity index:::return->m_nodes->get
 DOM2DTM#getNextNodeIdentity(int):::Get the next node identity value in the list, and call the iterator if it hasn't been added yet.:::if->m_nodes->size->if->nextNode->return
+DOM2DTM#getHandleFromNode(Node):::Get the handle from a Node:::if->len->m_nodes->size->isMore->i->do->for->nextNode->m_nodes->size->while->return
 DOM2DTM#getHandleOfNode(Node):::Get the handle from a Node:::if->if->m_root->getNodeType->node->getOwnerDocument->m_root->getNodeType->m_root->getOwnerDocument->node->getOwnerDocument->for->cursor->cursor->getNodeType->cursor->getParentNode->getOwnerElement->return
 DOM2DTM#getAttributeNode(int, String, String):::Retrieves an attribute node by by qualified name and namespace URI.:::if->type->getNodeType->if->identity->makeNodeIdentity->while->getNextNodeIdentity->_type->if->node->lookupNode->nodeuri->node->getNamespaceURI->if->nodelocalname->node->getLocalName->if->nodeuri->equals->name->equals->return->makeNodeHandle->else->break->return
 DOM2DTM#getStringValue(int):::Get the string-value of a node as a String object (see http://www.w3.org/TR/xpath#data-model for the definition of a node's string-value).:::type->getNodeType->node->getNode->if->buf->StringBufferPool->get->s->try->getNodeData->buf->length->buf->toString->catch->finally->StringBufferPool->free->return->m_xstrf->newstr->else->if->buf->StringBufferPool->get->while->buf->node->getNodeValue->append->logicalNextDOMTextNode->s->buf->length->buf->toString->StringBufferPool->free->return->m_xstrf->newstr->else->return->m_xstrf->node->getNodeValue->newstr
@@ -14,6 +15,7 @@ DOM2DTM#getNodeNameX(int):::Given a node handle, return the XPath node name:::na
 DOM2DTM#getLocalName(int):::Given a node handle, return its XPath-style localname:::if->id->makeNodeIdentity->if->return->newnode->m_nodes->get->newname->newnode->getLocalName->if->qname->newnode->getNodeName->if->qname->charAt->else->index->qname->indexOf->qname->substring->return->else->name->type->getNodeType->switch->node->getNode->node->getLocalName->if->qname->node->getNodeName->index->qname->indexOf->qname->substring->break->return
 DOM2DTM#getPrefix(int):::Given a namespace handle, return the prefix that the namespace decl is mapping:::prefix->type->getNodeType->switch->node->getNode->qname->node->getNodeName->index->qname->indexOf->qname->substring->break->node->getNode->qname->node->getNodeName->index->qname->indexOf->qname->substring->break->return
 DOM2DTM#getNamespaceURI(int):::Given a node handle, return its DOM-style namespace URI (As defined in Namespaces, this is the declared URI which this node's prefix -- or default in lieu thereof -- was mapped to.)  %REVIEW% Null or ""? -sb:::if->id->makeNodeIdentity->if->return->node->m_nodes->get->return->node->getNamespaceURI->else->nsuri->type->getNodeType->switch->node->getNode->node->getNamespaceURI->break->return
+DOM2DTM#logicalNextDOMTextNode(Node):::Utility function: Given a DOM Text node, determine whether it is logically followed by another Text or CDATASection node:::p->n->getNextSibling->if->for->n->getParentNode->n->getNodeType->n->getParentNode->while->n->getNodeType->if->n->hasChildNodes->n->getFirstChild->else->n->getNextSibling->if->ntype->n->getNodeType->if->return
 DOM2DTM#getNodeValue(int):::Given a node handle, return its node value:::type->makeNodeIdentity->_exptype->getNodeType->if->return->getNode->getNodeValue->node->getNode->n->logicalNextDOMTextNode->if->return->node->getNodeValue->buf->StringBufferPool->get->buf->node->getNodeValue->append->while->buf->n->getNodeValue->append->logicalNextDOMTextNode->s->buf->length->buf->toString->StringBufferPool->free->return
 DOM2DTM#getDocumentTypeDeclarationSystemIdentifier():::  A document type declaration information item has the following properties:      1:::doc->if->m_root->getNodeType->else->m_root->getOwnerDocument->if->dtd->doc->getDoctype->if->return->dtd->getSystemId->return
 DOM2DTM#getDocumentTypeDeclarationPublicIdentifier():::Return the public identifier of the external subset, normalized as described in 4.2.2 External Entities [XML]:::doc->if->m_root->getNodeType->else->m_root->getOwnerDocument->if->dtd->doc->getDoctype->if->return->dtd->getPublicId->return
@@ -27,12 +29,50 @@ DOM2DTM#getEntityResolver():::Return this DTM's EntityResolver.:::return
 DOM2DTM#getDTDHandler():::Return this DTM's DTDHandler.:::return
 DOM2DTM#getErrorHandler():::Return this DTM's ErrorHandler.:::return
 DOM2DTM#getDeclHandler():::Return this DTM's DeclHandler.:::return
+DOM2DTM#needsTwoThreads()::: m2 m needs two threads:::return
+DOM2DTM#isSpace(char):::Returns whether the specified <var>ch</var> conforms to the XML 1.0 definition of whitespace:::return->XMLCharacterRecognizer->isWhiteSpace
 DOM2DTM#dispatchCharactersEvents(int, org.xml.sax.ContentHandler, boolean):::Directly call the characters method on the passed ContentHandler for the string-value of the given node (see http://www.w3.org/TR/xpath#data-model for the definition of a node's string-value):::if->str->getStringValue->str->fixWhiteSpace->str->dispatchCharactersEvents->else->type->getNodeType->node->getNode->dispatchNodeData->if->while->logicalNextDOMTextNode->dispatchNodeData
 DOM2DTM#dispatchNodeData(Node, org.xml.sax.ContentHandler, int):::Retrieve the text content of a DOM subtree, appending it into a user-supplied FastStringBuffer object:::switch->node->getNodeType->for->child->node->getFirstChild->child->getNextSibling->break->if->break->str->node->getNodeValue->if->characters->else->ch->str->toCharArray->str->length->characters->break->break
 DOM2DTM#dispatchToEvents(int, org.xml.sax.ContentHandler):::Directly create SAX parser events from a subtree.:::treeWalker->prevCH->treeWalker->getContentHandler->if->new->TreeWalker->treeWalker->setContentHandler->try->node->getNode->treeWalker->traverseFragment->catch->finally->treeWalker->setContentHandler
+DOM2DTM.CharacterNodeHandler#characters(Node)::: character node handler characters:::
 DOM2DTM#setProperty(String, Object):::For the moment all the run time properties are ignored by this class.:::
 DOM2DTM#getSourceLocatorFor(int):::No source information is available for DOM2DTM, so return null here.:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getNodeName()::: m2 mdefault namespace declaration node get node name:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getName()::: m2 mdefault namespace declaration node get name:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getNamespaceURI()::: m2 mdefault namespace declaration node get namespace i:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getPrefix()::: m2 mdefault namespace declaration node get prefix:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getLocalName()::: m2 mdefault namespace declaration node get local name:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getNodeValue()::: m2 mdefault namespace declaration node get node value:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getValue()::: m2 mdefault namespace declaration node get value:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getOwnerElement()::: m2 mdefault namespace declaration node get owner element:::return
+DOM2DTMdefaultNamespaceDeclarationNode#isSupported(String, String)::: m2 mdefault namespace declaration node is supported:::return
+DOM2DTMdefaultNamespaceDeclarationNode#hasChildNodes()::: m2 mdefault namespace declaration node has child nodes:::return
+DOM2DTMdefaultNamespaceDeclarationNode#hasAttributes()::: m2 mdefault namespace declaration node has attributes:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getParentNode()::: m2 mdefault namespace declaration node get parent node:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getFirstChild()::: m2 mdefault namespace declaration node get first child:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getLastChild()::: m2 mdefault namespace declaration node get last child:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getPreviousSibling()::: m2 mdefault namespace declaration node get previous sibling:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getNextSibling()::: m2 mdefault namespace declaration node get next sibling:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getSpecified()::: m2 mdefault namespace declaration node get specified:::return
+DOM2DTMdefaultNamespaceDeclarationNode#normalize()::: m2 mdefault namespace declaration node normalize:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getChildNodes()::: m2 mdefault namespace declaration node get child nodes:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getAttributes()::: m2 mdefault namespace declaration node get attributes:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getNodeType()::: m2 mdefault namespace declaration node get node type:::return
+DOM2DTMdefaultNamespaceDeclarationNode#setNodeValue(String)::: m2 mdefault namespace declaration node set node value:::throw->new->DTMException
+DOM2DTMdefaultNamespaceDeclarationNode#setValue(String)::: m2 mdefault namespace declaration node set value:::throw->new->DTMException
+DOM2DTMdefaultNamespaceDeclarationNode#setPrefix(String)::: m2 mdefault namespace declaration node set prefix:::throw->new->DTMException
+DOM2DTMdefaultNamespaceDeclarationNode#insertBefore(Node, Node)::: m2 mdefault namespace declaration node insert before:::throw->new->DTMException
+DOM2DTMdefaultNamespaceDeclarationNode#replaceChild(Node, Node)::: m2 mdefault namespace declaration node replace child:::throw->new->DTMException
+DOM2DTMdefaultNamespaceDeclarationNode#appendChild(Node)::: m2 mdefault namespace declaration node append child:::throw->new->DTMException
+DOM2DTMdefaultNamespaceDeclarationNode#removeChild(Node)::: m2 mdefault namespace declaration node remove child:::throw->new->DTMException
+DOM2DTMdefaultNamespaceDeclarationNode#getOwnerDocument()::: m2 mdefault namespace declaration node get owner document:::return->pseudoparent->getOwnerDocument
+DOM2DTMdefaultNamespaceDeclarationNode#cloneNode(boolean)::: m2 mdefault namespace declaration node clone node:::throw->new->DTMException
 DOM2DTMdefaultNamespaceDeclarationNode#getHandleOfNode():::Non-DOM method, part of the temporary kluge %REVIEW% This would be a pruning problem, but since it will always be added to the root element and we prune on elements, we shouldn't have to worry.:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getTypeName()::: m2 mdefault namespace declaration node get type name:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getTypeNamespace()::: m2 mdefault namespace declaration node get type namespace:::return
+DOM2DTMdefaultNamespaceDeclarationNode#isDerivedFrom(String, String, int)::: m2 mdefault namespace declaration node is derived from:::return
+DOM2DTMdefaultNamespaceDeclarationNode#getSchemaTypeInfo()::: m2 mdefault namespace declaration node get schema type info:::return
+DOM2DTMdefaultNamespaceDeclarationNode#isId()::: m2 mdefault namespace declaration node is id:::return
 DOM2DTMdefaultNamespaceDeclarationNode#setUserData(String, Object, UserDataHandler):::Associate an object to a key on this node:::return->getOwnerDocument->setUserData
 DOM2DTMdefaultNamespaceDeclarationNode#getUserData(String):::Retrieves the object associated to a key on a this node:::return->getOwnerDocument->getUserData
 DOM2DTMdefaultNamespaceDeclarationNode#getFeature(String, String)::: This method returns a specialized object which implements the specialized APIs of the specified feature and version:::return->isSupported

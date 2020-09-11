@@ -1,7 +1,28 @@
+AbstractJSObject#call(Object, Object...)::: abstract object call:::throw->new->UnsupportedOperationException
+AbstractJSObject#newObject(Object...)::: abstract object new object:::throw->new->UnsupportedOperationException
+AbstractJSObject#eval(String)::: abstract object eval:::throw->new->UnsupportedOperationException
+AbstractJSObject#getMember(String)::: abstract object get member:::Objects->requireNonNull->return
+AbstractJSObject#getSlot(int)::: abstract object get slot:::return
+AbstractJSObject#hasMember(String)::: abstract object has member:::Objects->requireNonNull->return
+AbstractJSObject#hasSlot(int)::: abstract object has slot:::return
+AbstractJSObject#removeMember(String)::: abstract object remove member:::Objects->requireNonNull
+AbstractJSObject#setMember(String, Object)::: abstract object set member:::Objects->requireNonNull
+AbstractJSObject#setSlot(int, Object)::: abstract object set slot:::
+AbstractJSObject#keySet()::: abstract object key set:::return->Collections->emptySet
+AbstractJSObject#values()::: abstract object values:::return->Collections->emptySet
+AbstractJSObject#isInstance(Object)::: abstract object is instance:::return
+AbstractJSObject#isInstanceOf(Object)::: abstract object is instance of:::if->return->isInstance->return
+AbstractJSObject#getClassName()::: abstract object get class name:::return->getClass->getName
+AbstractJSObject#isFunction()::: abstract object is function:::return
+AbstractJSObject#isStrictFunction()::: abstract object is strict function:::return
+AbstractJSObject#isArray()::: abstract object is array:::return
 AbstractJSObject#toNumber():::Returns this object's numeric value.:::return
 AbstractJSObject#getDefaultValue(JSObject, Class):::When passed an AbstractJSObject, invokes its #getDefaultValue(Class) method:::return->jsobj->getDefaultValue
 ClassFilter#exposeToScripts(String):::Should the Java class of the specified name be exposed to scripts?:::
+DefaultValueImpl#getDefaultValue(JSObject, Class)::: default value impl get default value:::isNumber->foreach->objMember->jsobj->getMember->if->member->if->member->isFunction->value->member->call->if->JSType->isPrimitive->return->throw->new->UnsupportedOperationException
 Formatter#format(String, Object[]):::Method which converts javascript types to java types for the String.format method (jrunscript function sprintf).:::m->FS_PATTERN->matcher->positionalParameter->while->m->find->index->m->group->index->previous->m->group->isPreviousArgument->conversion->m->group->charAt->if->continue->if->if->continue->arg->if->m->group->if->longValue->else->switch->if->longValue->else->if->length->charAt->break->if->doubleValue->break->if->intValue->else->if->length->charAt->break->break->return->String->format
+Formatter#index(String):::Method to parse the integer of the argument index.:::index->if->try->Integer->s->s->length->substring->parseInt->catch->finally->else->return
+Formatter#isPreviousArgument(String):::Method to check if a string contains '&lt;':::return->s->indexOf
 JSObject#call(Object, Object...):::Call this object as a JavaScript function:::
 JSObject#newObject(Object...):::Call this 'constructor' JavaScript function to create a new object:::
 JSObject#eval(String):::Evaluate a JavaScript expression.:::
@@ -29,19 +50,99 @@ NashornException#setLineNumber(int):::Set the line number for this NashornExcept
 NashornException#getColumnNumber():::Get the column for this NashornException:::return
 NashornException#setColumnNumber(int):::Set the column for this NashornException:::
 NashornException#getScriptFrames(Throwable):::Returns array javascript stack frames from the given exception object.:::frames->exception->getStackTrace->filtered->new->ArrayList<>->foreach->if->ECMAErrors->isScriptFrame->className->st->getFileName->methodName->st->getMethodName->if->methodName->symbolName->equals->else->stripMethodName->filtered->st->getFileName->st->getLineNumber->new->StackTraceElement->add->return->filtered->new->StackTraceElementArr->toArray
+NashornException#stripMethodName(String)::: nashorn exception strip method name:::name->nestedSeparator->name->symbolName->lastIndexOf->if->name->substring->idSeparator->name->symbolName->indexOf->if->name->substring->return->name->symbolName->contains
 NashornException#getScriptStackString(Throwable):::Return a formatted script stack trace string with frames information separated by '\n':::buf->new->StringBuilder->frames->getScriptFrames->foreach->buf->append->buf->st->getMethodName->append->buf->append->buf->st->getFileName->append->buf->append->buf->st->getLineNumber->append->buf->append->len->buf->length->if->buf->deleteCharAt->return->buf->toString
 NashornException#getThrown():::Get the thrown object:::return
 NashornException#initEcmaError(ScriptObject):::Initialization function for ECMA errors:::if->return->thrown->getThrown->if->ScriptObjectMirror->wrap->setEcmaError->else->setEcmaError->return
 NashornException#getEcmaError():::Return the underlying ECMA error object, if available.:::return
 NashornException#setEcmaError(Object):::Return the underlying ECMA error object, if available.:::
+NashornException#ensureLineAndFileName()::: nashorn exception ensure line and file name:::if->foreach->getStackTrace->if->ECMAErrors->isScriptFrame->ste->getFileName->ste->getLineNumber->return
+NashornScriptEngine#createPermAccCtxt(String)::: nashorn script engine create perm acc ctxt:::perms->new->Permissions->perms->new->RuntimePermission->add->return->new->ProtectionDomainArr->new->ProtectionDomain->new->AccessControlContext
+NashornScriptEngine#getMessage(String, String...)::: nashorn script engine get message:::try->return->MESSAGES_BUNDLE->getString->new->MessageFormat->format->catch->throw->new->RuntimeException->finally
+NashornScriptEngine#eval(Reader, ScriptContext)::: nashorn script engine eval:::return->makeSource->evalImpl
+NashornScriptEngine#eval(String, ScriptContext)::: nashorn script engine eval:::return->makeSource->evalImpl
+NashornScriptEngine#getFactory()::: nashorn script engine get factory:::return
+NashornScriptEngine#createBindings()::: nashorn script engine create bindings:::if->return->new->SimpleBindings->return->createGlobalMirror
+NashornScriptEngine#compile(Reader)::: nashorn script engine compile:::return->makeSource->asCompiledScript
+NashornScriptEngine#compile(String)::: nashorn script engine compile:::return->makeSource->asCompiledScript
+NashornScriptEngine#invokeFunction(String, Object...)::: nashorn script engine invoke function:::return->invokeImpl
+NashornScriptEngine#invokeMethod(Object, String, Object...)::: nashorn script engine invoke method:::if->throw->getMessage->new->IllegalArgumentException->return->invokeImpl
+NashornScriptEngine#getInterface(Class)::: nashorn script engine get interface:::return->getInterfaceInner
+NashornScriptEngine#getInterface(Object, Class)::: nashorn script engine get interface:::if->throw->getMessage->new->IllegalArgumentException->return->getInterfaceInner
+NashornScriptEngine#makeSource(Reader, ScriptContext)::: nashorn script engine make source:::try->return->getScriptName->sourceFor->catch->throw->new->ScriptException->finally
+NashornScriptEngine#makeSource(String, ScriptContext)::: nashorn script engine make source:::return->getScriptName->sourceFor
+NashornScriptEngine#getScriptName(ScriptContext)::: nashorn script engine get script name:::val->ctxt->getAttribute->return->val->toString
+NashornScriptEngine#getInterfaceInner(Object, Class)::: nashorn script engine get interface inner:::if->clazz->isInterface->throw->getMessage->new->IllegalArgumentException->sm->System->getSecurityManager->if->if->Modifier->clazz->getModifiers->isPublic->throw->clazz->getName->getMessage->new->SecurityException->Context->checkPackageAccess->realSelf->realGlobal->if->getNashornGlobalFrom->else->if->mirror->mirror->getScriptObject->mirror->getHomeGlobal->if->isOfContext->throw->getMessage->new->IllegalArgumentException->if->throw->getMessage->new->IllegalArgumentException->try->oldGlobal->Context->getGlobal->globalChanged->try->if->Context->setGlobal->if->isInterfaceImplemented->return->return->clazz->JavaAdapterFactory->realSelf->getClass->MethodHandles->publicLookup->getConstructor->invoke->cast->catch->finally->if->Context->setGlobal->catch->throw->throw->new->RuntimeException->finally
+NashornScriptEngine#getNashornGlobalFrom(ScriptContext)::: nashorn script engine get nashorn global from:::if->return->bindings->ctxt->getBindings->if->glob->globalFromMirror->if->return->scope->bindings->get->if->glob->globalFromMirror->if->return->mirror->createGlobalMirror->bindings->put->mirror->getHomeGlobal->setInitScriptContext->return->mirror->getHomeGlobal
+NashornScriptEngine#globalFromMirror(ScriptObjectMirror)::: nashorn script engine global from mirror:::sobj->mirror->getScriptObject->if->isOfContext->return->return
+NashornScriptEngine#createGlobalMirror()::: nashorn script engine create global mirror:::newGlobal->createNashornGlobal->return->new->ScriptObjectMirror
+NashornScriptEngine#createNashornGlobal()::: nashorn script engine create nashorn global:::newGlobal->AccessController->new->PrivilegedAction<Global>->doPrivileged->nashornContext->initGlobal->return
+NashornScriptEngine#invokeImpl(Object, String, Object...)::: nashorn script engine invoke impl:::Objects->requireNonNull->invokeGlobal->selfMirror->if->if->selfMirror->getHomeGlobal->isOfContext->throw->getMessage->new->IllegalArgumentException->selfMirror->getHomeGlobal->else->if->ctxtGlobal->getNashornGlobalFrom->ScriptObjectMirror->wrap->if->try->return->ScriptObjectMirror->selfMirror->callMember->translateUndefined->catch->cause->e->getCause->if->throw->throwAsScriptException->throw->new->AssertionError->finally->throw->getMessage->new->IllegalArgumentException
+NashornScriptEngine#evalImpl(Source, ScriptContext)::: nashorn script engine eval impl:::return->compileImpl->evalImpl
+NashornScriptEngine#evalImpl(ScriptFunction, ScriptContext)::: nashorn script engine eval impl:::return->getNashornGlobalFrom->evalImpl
+NashornScriptEngine#evalImpl(Context.MultiGlobalCompiledScript, ScriptContext, Global)::: nashorn script engine eval impl:::oldGlobal->Context->getGlobal->globalChanged->try->if->Context->setGlobal->script->mgcs->getFunction->oldCtxt->ctxtGlobal->getScriptContext->ctxtGlobal->setScriptContext->try->return->ScriptObjectMirror->ScriptObjectMirror->ScriptRuntime->apply->wrap->translateUndefined->catch->finally->ctxtGlobal->setScriptContext->catch->throwAsScriptException->throw->new->AssertionError->finally->if->Context->setGlobal
+NashornScriptEngine#evalImpl(ScriptFunction, ScriptContext, Global)::: nashorn script engine eval impl:::if->return->oldGlobal->Context->getGlobal->globalChanged->try->if->Context->setGlobal->oldCtxt->ctxtGlobal->getScriptContext->ctxtGlobal->setScriptContext->try->return->ScriptObjectMirror->ScriptObjectMirror->ScriptRuntime->apply->wrap->translateUndefined->catch->finally->ctxtGlobal->setScriptContext->catch->throwAsScriptException->throw->new->AssertionError->finally->if->Context->setGlobal
+NashornScriptEngine#throwAsScriptException(Exception, Global)::: nashorn script engine throw as script exception:::if->throw->else->if->ne->se->ne->getMessage->ne->getFileName->ne->getLineNumber->ne->getColumnNumber->new->ScriptException->ne->initEcmaError->se->initCause->throw->else->if->throw->else->throw->new->ScriptException
+NashornScriptEngine#asCompiledScript(Source)::: nashorn script engine as compiled script:::mgcs->func->oldGlobal->Context->getGlobal->newGlobal->getNashornGlobalFrom->globalChanged->try->if->Context->setGlobal->nashornContext->compileScript->mgcs->getFunction->catch->throwAsScriptException->throw->new->AssertionError->finally->if->Context->setGlobal->return->new->CompiledScript
+NashornScriptEngine#compileImpl(Source, ScriptContext)::: nashorn script engine compile impl:::return->getNashornGlobalFrom->compileImpl
+NashornScriptEngine#compileImpl(Source, Global)::: nashorn script engine compile impl:::oldGlobal->Context->getGlobal->globalChanged->try->if->Context->setGlobal->return->nashornContext->compileScript->catch->throwAsScriptException->throw->new->AssertionError->finally->if->Context->setGlobal
+NashornScriptEngine#isInterfaceImplemented(Class, ScriptObject)::: nashorn script engine is interface implemented:::foreach->iface->getMethods->if->method->getDeclaringClass->continue->if->Modifier->method->getModifiers->isAbstract->continue->obj->sobj->method->getName->get->if->return->return
+NashornScriptEngine#isOfContext(Global, Context)::: nashorn script engine is of context:::return->global->isOfContext
+NashornScriptEngineFactory#getEngineName()::: nashorn script engine factory get engine name:::return->getParameter
+NashornScriptEngineFactory#getEngineVersion()::: nashorn script engine factory get engine version:::return->getParameter
+NashornScriptEngineFactory#getExtensions()::: nashorn script engine factory get extensions:::return->Collections->unmodifiableList
+NashornScriptEngineFactory#getLanguageName()::: nashorn script engine factory get language name:::return->getParameter
+NashornScriptEngineFactory#getLanguageVersion()::: nashorn script engine factory get language version:::return->getParameter
+NashornScriptEngineFactory#getMethodCallSyntax(String, String, String...)::: nashorn script engine factory get method call syntax:::sb->new->StringBuilder->Objects->requireNonNull->append->append->Objects->requireNonNull->append->append->len->if->sb->Objects->requireNonNull->append->for->i->sb->append->return->sb->toString
+NashornScriptEngineFactory#getMimeTypes()::: nashorn script engine factory get mime types:::return->Collections->unmodifiableList
+NashornScriptEngineFactory#getNames()::: nashorn script engine factory get names:::return->Collections->unmodifiableList
+NashornScriptEngineFactory#getOutputStatement(String)::: nashorn script engine factory get output statement:::return
+NashornScriptEngineFactory#getParameter(String)::: nashorn script engine factory get parameter:::switch->return->return->return->Version->version->return->return->return->return
+NashornScriptEngineFactory#getProgram(String...)::: nashorn script engine factory get program:::Objects->requireNonNull->sb->new->StringBuilder->foreach->sb->Objects->requireNonNull->append->append->return->sb->toString
+NashornScriptEngineFactory#getScriptEngine()::: nashorn script engine factory get script engine:::try->return->getAppClassLoader->new->NashornScriptEngine->catch->if->e->printStackTrace->throw->finally
 NashornScriptEngineFactory#getScriptEngine(ClassLoader):::Create a new Script engine initialized with the given class loader.:::return->newEngine
 NashornScriptEngineFactory#getScriptEngine(ClassFilter):::Create a new Script engine initialized with the given class filter.:::return->getAppClassLoader->Objects->requireNonNull->newEngine
 NashornScriptEngineFactory#getScriptEngine(String...):::Create a new Script engine initialized with the given arguments.:::return->Objects->requireNonNull->getAppClassLoader->newEngine
 NashornScriptEngineFactory#getScriptEngine(String[], ClassLoader):::Create a new Script engine initialized with the given arguments and the given class loader.:::return->Objects->requireNonNull->newEngine
 NashornScriptEngineFactory#getScriptEngine(String[], ClassLoader, ClassFilter):::Create a new Script engine initialized with the given arguments, class loader and class filter.:::return->Objects->requireNonNull->Objects->requireNonNull->newEngine
+NashornScriptEngineFactory#newEngine(String[], ClassLoader, ClassFilter)::: nashorn script engine factory new engine:::checkConfigPermission->try->return->new->NashornScriptEngine->catch->if->e->printStackTrace->throw->finally
+NashornScriptEngineFactory#checkConfigPermission()::: nashorn script engine factory check config permission:::sm->System->getSecurityManager->if->sm->new->RuntimePermission->checkPermission
+NashornScriptEngineFactory#immutableList(String...)::: nashorn script engine factory immutable list:::return->Collections->Arrays->asList->unmodifiableList
+NashornScriptEngineFactory#getAppClassLoader()::: nashorn script engine factory get app class loader:::ccl->Thread->currentThread->getContextClassLoader->return->getClassLoader
+ScriptObjectMirror#getContextAccCtxt()::: script object mirror get context acc ctxt:::perms->new->Permissions->perms->new->RuntimePermission->add->return->new->ProtectionDomainArr->new->ProtectionDomain->new->AccessControlContext
+ScriptObjectMirror#equals(Object)::: script object mirror equals:::if->return->sobj->equals->return
+ScriptObjectMirror#hashCode()::: script object mirror hash code:::return->sobj->hashCode
+ScriptObjectMirror#toString()::: script object mirror to string:::return->new->Callable<String>->inGlobal
+ScriptObjectMirror#call(Object, Object...)::: script object mirror call:::oldGlobal->Context->getGlobal->globalChanged->try->if->Context->setGlobal->if->modArgs->wrapArrayLikeMe->self->wrapLikeMe->return->ScriptRuntime->unwrap->unwrapArray->apply->wrapLikeMe->throw->toString->new->RuntimeException->catch->throw->ne->initEcmaError->throw->throw->new->RuntimeException->finally->if->Context->setGlobal
+ScriptObjectMirror#newObject(Object...)::: script object mirror new object:::oldGlobal->Context->getGlobal->globalChanged->try->if->Context->setGlobal->if->modArgs->wrapArrayLikeMe->return->ScriptRuntime->unwrapArray->construct->wrapLikeMe->throw->toString->new->RuntimeException->catch->throw->ne->initEcmaError->throw->throw->new->RuntimeException->finally->if->Context->setGlobal
+ScriptObjectMirror#eval(String)::: script object mirror eval:::return->new->Callable<Object>->inGlobal
 ScriptObjectMirror#callMember(String, Object...):::Call member function:::Objects->requireNonNull->oldGlobal->Context->getGlobal->globalChanged->try->if->Context->setGlobal->val->sobj->get->if->modArgs->wrapArrayLikeMe->return->ScriptRuntime->unwrapArray->apply->wrapLikeMe->else->if->isFunction->return->call->throw->new->NoSuchMethodException->catch->throw->ne->initEcmaError->throw->throw->new->RuntimeException->finally->if->Context->setGlobal
+ScriptObjectMirror#getMember(String)::: script object mirror get member:::Objects->requireNonNull->return->new->Callable<Object>->inGlobal
+ScriptObjectMirror#getSlot(int)::: script object mirror get slot:::return->new->Callable<Object>->inGlobal
+ScriptObjectMirror#hasMember(String)::: script object mirror has member:::Objects->requireNonNull->return->new->Callable<Boolean>->inGlobal
+ScriptObjectMirror#hasSlot(int)::: script object mirror has slot:::return->new->Callable<Boolean>->inGlobal
+ScriptObjectMirror#removeMember(String)::: script object mirror remove member:::Objects->requireNonNull->remove
+ScriptObjectMirror#setMember(String, Object)::: script object mirror set member:::Objects->requireNonNull->put
+ScriptObjectMirror#setSlot(int, Object)::: script object mirror set slot:::new->Callable<Void>->inGlobal
 ScriptObjectMirror#setIndexedPropertiesToExternalArrayData(ByteBuffer):::Nashorn extension: setIndexedPropertiesToExternalArrayData:::new->Callable<Void>->inGlobal
+ScriptObjectMirror#isInstance(Object)::: script object mirror is instance:::if->return->mirror->if->return->return->new->Callable<Boolean>->inGlobal
+ScriptObjectMirror#getClassName()::: script object mirror get class name:::return->sobj->getClassName
+ScriptObjectMirror#isFunction()::: script object mirror is function:::return
+ScriptObjectMirror#isStrictFunction()::: script object mirror is strict function:::return->isFunction->isStrict
+ScriptObjectMirror#isArray()::: script object mirror is array:::return->sobj->isArray
+ScriptObjectMirror#clear()::: script object mirror clear:::new->Callable<Object>->inGlobal
+ScriptObjectMirror#containsKey(Object)::: script object mirror contains key:::checkKey->return->new->Callable<Boolean>->inGlobal
+ScriptObjectMirror#containsValue(Object)::: script object mirror contains value:::return->new->Callable<Boolean>->inGlobal
+ScriptObjectMirror#entrySet()::: script object mirror entry set:::return->new->Callable<Set<Map.Entry<String,Object>>>->inGlobal
+ScriptObjectMirror#get(Object)::: script object mirror get:::checkKey->return->new->Callable<Object>->inGlobal
+ScriptObjectMirror#isEmpty()::: script object mirror is empty:::return->new->Callable<Boolean>->inGlobal
+ScriptObjectMirror#keySet()::: script object mirror key set:::return->new->Callable<Set<String>>->inGlobal
+ScriptObjectMirror#put(String, Object)::: script object mirror put:::checkKey->oldGlobal->Context->getGlobal->globalChanged->return->new->Callable<Object>->inGlobal
+ScriptObjectMirror#putAll(Map)::: script object mirror put all:::Objects->requireNonNull->oldGlobal->Context->getGlobal->globalChanged->new->Callable<Object>->inGlobal
+ScriptObjectMirror#remove(Object)::: script object mirror remove:::checkKey->return->new->Callable<Object>->inGlobal
 ScriptObjectMirror#delete(Object):::Delete a property from this object.:::return->new->Callable<Boolean>->inGlobal
+ScriptObjectMirror#size()::: script object mirror size:::return->new->Callable<Integer>->inGlobal
+ScriptObjectMirror#values()::: script object mirror values:::return->new->Callable<Collection<Object>>->inGlobal
 ScriptObjectMirror#getProto():::Return the __proto__ of this object.:::return->new->Callable<Object>->inGlobal
 ScriptObjectMirror#setProto(Object):::Set the __proto__ of this object.:::new->Callable<Void>->inGlobal
 ScriptObjectMirror#getOwnPropertyDescriptor(String):::ECMA 8.12.1 [[GetOwnProperty]] (P):::return->new->Callable<Object>->inGlobal
@@ -56,10 +157,24 @@ ScriptObjectMirror#isUndefined(Object):::Utility to check if given object is ECM
 ScriptObjectMirror#to(Class):::Utility to convert this script object to the given type.:::return->new->Callable<T>->inGlobal
 ScriptObjectMirror#wrap(Object, Object):::Make a script object mirror on given object if needed.:::return->wrap
 ScriptObjectMirror#wrapAsJSONCompatible(Object, Object):::Make a script object mirror on given object if needed:::return->wrap
+ScriptObjectMirror#wrap(Object, Object, boolean):::Make a script object mirror on given object if needed.:::if->if->return->sobj->global->mirror->new->ScriptObjectMirror->if->sobj->isArray->return->new->JSONListAdapter->return->else->if->return->obj->toString->else->if->return->asJSONCompatible->return
+ScriptObjectMirror#wrapLikeMe(Object, Object):::Wraps the passed object with the same jsonCompatible flag as this mirror.:::return->wrap
+ScriptObjectMirror#wrapLikeMe(Object):::Wraps the passed object with the same home global and jsonCompatible flag as this mirror.:::return->wrapLikeMe
 ScriptObjectMirror#unwrap(Object, Object):::Unwrap a script object mirror if needed.:::if->mirror->return->else->if->return->unwrap->return
 ScriptObjectMirror#wrapArray(Object[], Object):::Wrap an array of object to script object mirrors if needed.:::return->wrapArray
+ScriptObjectMirror#wrapArray(Object[], Object, boolean)::: script object mirror wrap array:::if->return->newArgs->new->ObjectArr->index->foreach->wrap->return
+ScriptObjectMirror#wrapArrayLikeMe(Object[], Object)::: script object mirror wrap array like me:::return->wrapArray
 ScriptObjectMirror#unwrapArray(Object[], Object):::Unwrap an array of script object mirrors if needed.:::if->return->newArgs->new->ObjectArr->index->foreach->unwrap->return
 ScriptObjectMirror#identical(Object, Object):::Are the given objects mirrors to same underlying object?:::o1->o2->return
+ScriptObjectMirror#getScriptObject()::: script object mirror get script object:::return
+ScriptObjectMirror#getHomeGlobal()::: script object mirror get home global:::return
+ScriptObjectMirror#translateUndefined(Object)::: script object mirror translate undefined:::return
+ScriptObjectMirror#getCallSiteFlags()::: script object mirror get call site flags:::return
+ScriptObjectMirror#inGlobal(Callable)::: script object mirror in global:::oldGlobal->Context->getGlobal->globalChanged->if->Context->setGlobal->try->return->callable->call->catch->throw->ne->initEcmaError->throw->throw->new->AssertionError->finally->if->Context->setGlobal
+ScriptObjectMirror#checkKey(Object):::Ensures the key is not null, empty string, or a non-String object:::Objects->requireNonNull->if->throw->key->getClass->getName->new->ClassCastException->else->if->length->throw->new->IllegalArgumentException
+ScriptObjectMirror#toNumber()::: script object mirror to number:::return->new->Callable<Double>->inGlobal
+ScriptObjectMirror#getDefaultValue(Class)::: script object mirror get default value:::return->new->Callable<Object>->inGlobal
+ScriptObjectMirror#asJSONCompatible()::: script object mirror as compatible:::if->return->return->new->ScriptObjectMirror
 ScriptUtils#parse(String, String, boolean):::Returns AST as JSON compatible string:::return->ScriptRuntime->parse
 ScriptUtils#format(String, Object[]):::Method which converts javascript types to java types for the String.format method (jrunscript function sprintf).:::return->Formatter->format
 ScriptUtils#makeSynchronizedFunction(Object, Object):::Create a wrapper function that calls func synchronized on sync or, if that is undefined, self:::unwrapped->unwrap->if->return->unwrap->createSynchronized->throw->new->IllegalArgumentException
@@ -68,5 +183,8 @@ ScriptUtils#unwrap(Object):::Unwrap a script object mirror if needed.:::if->retu
 ScriptUtils#wrapArray(Object[]):::Wrap an array of object to script object mirrors if needed.:::if->return->return->ScriptObjectMirror->Context->getGlobal->wrapArray
 ScriptUtils#unwrapArray(Object[]):::Unwrap an array of script object mirrors if needed.:::if->return->return->ScriptObjectMirror->Context->getGlobal->unwrapArray
 ScriptUtils#convert(Object, Object):::Convert the given object to the given type.:::if->return->clazz->if->else->if->getRepresentedClass->else->throw->new->IllegalArgumentException->linker->Bootstrap->getLinkerServices->objToConvert->unwrap->converter->linker->objToConvert->getClass->getTypeConverter->if->throw->new->UnsupportedOperationException->try->return->converter->invoke->catch->throw->throw->new->RuntimeException->finally
+URLReader#read(char[], int, int)::: reader read:::return->getReader->read
+URLReader#close()::: reader close:::getReader->close
 URLReader#getURL():::URL of this reader:::return
 URLReader#getCharset():::Charset used by this reader:::return
+URLReader#getReader()::: reader get reader:::synchronized->if->Source->readFully->new->CharArrayReader->return

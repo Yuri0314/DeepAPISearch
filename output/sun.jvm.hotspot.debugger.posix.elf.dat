@@ -1,19 +1,69 @@
+ELFFile#getHeader()::: file get header:::
+ELFFile#close()::: file close:::
 ELFFile#getMagicNumber():::Returns the 4 byte magic number for this file:::
 ELFFile#getObjectSize():::Returns a byte identifying the size of objects used for this ELF file:::
 ELFFile#getEncoding():::Returns a byte identifying the data encoding of the processor specific data:::
 ELFFile#getVersion():::Returns one of the version constants:::
+ELFFileParser#getParser()::: file parser get parser:::if->new->ELFFileParser->return
 ELFFileParser#parse(String):::Parses the data in filename and returns the ELFFile representation.:::try->file->new->RandomAccessFile->return->new->RandomAccessFileDataSource->parse->catch->throw->new->ELFException->finally
 ELFFileParser#parse(DataSource):::Parses the data source and returns the ELFFile representation.:::return->new->ELFFileImpl
+ELFFileParser.ELFFileImpl#getHeader()::: file impl get header:::return
+ELFFileParser.ELFFileImpl#getMagicNumber()::: file impl get magic number:::magicNumber->new->byteArr->return
+ELFFileParser.ELFFileImpl#getObjectSize()::: file impl get object size:::return
+ELFFileParser.ELFFileImpl#getEncoding()::: file impl get encoding:::return
+ELFFileParser.ELFFileImpl#getVersion()::: file impl get version:::return
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#getFileType()::: header impl get file type:::return
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#getArch()::: header impl get arch:::return
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#getSectionHeaderSize()::: header impl get section header size:::return
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#getNumberOfSectionHeaders()::: header impl get number of section headers:::return
 ELFFileParser.ELFFileImpl.ELFHeaderImpl#getSectionHeader(int):::Returns the section header at the specified index:::return->getValue
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#getSectionHeaderStringTable()::: header impl get section header string table:::return->getSectionHeader->getStringTable
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#getStringTable()::: header impl get string table:::return->findStringTableWithName
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#getDynamicStringTable()::: header impl get dynamic string table:::return->findStringTableWithName
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#findStringTableWithName(String)::: header impl find string table with name:::sh->for->i->getNumberOfSectionHeaders->return
 ELFFileParser.ELFFileImpl.ELFHeaderImpl#getHashTable():::The ELFHashTable does not currently work:::return
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#getSymbolTableSection()::: header impl get symbol table section:::if->return->getSymbolTableSection->return
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#getDynamicSymbolTableSection()::: header impl get dynamic symbol table section:::if->return->getSymbolTableSection->return
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#getSymbolTableSection(int)::: header impl get symbol table section:::sh->for->i->getNumberOfSectionHeaders->return
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#getELFSymbol(String)::: header impl get symbol:::if->return->symbol->numSymbols->sh->getDynamicSymbolTableSection->if->sh->getNumberOfSymbols->for->i->Math->ceil->getSymbolTableSection->if->sh->getNumberOfSymbols->for->i->Math->ceil->return
+ELFFileParser.ELFFileImpl.ELFHeaderImpl#getELFSymbol(long)::: header impl get symbol:::symbol->numSymbols->value->sh->getDynamicSymbolTableSection->if->sh->getNumberOfSymbols->for->i->getSymbolTableSection->if->sh->getNumberOfSymbols->for->i->return
+ELFFileParser.ELFFileImpl.ELFSectionHeaderImpl#getType()::: section header impl get type:::return
+ELFFileParser.ELFFileImpl.ELFSectionHeaderImpl#getNumberOfSymbols()::: section header impl get number of symbols:::if->return->return
 ELFFileParser.ELFFileImpl.ELFSectionHeaderImpl#getELFSymbol(int):::Returns the ELFSymbol at the specified index:::return->getValue
+ELFFileParser.ELFFileImpl.ELFSectionHeaderImpl#getStringTable()::: section header impl get string table:::if->return->stringTable->getValue->return
 ELFFileParser.ELFFileImpl.ELFSectionHeaderImpl#getHashTable():::The ELFHashTable does not currently work:::if->return->hashTable->getValue->return
+ELFFileParser.ELFFileImpl.ELFSectionHeaderImpl#getName()::: section header impl get name:::if->return->tbl->getHeader->getSectionHeaderStringTable->return->tbl->get
+ELFFileParser.ELFFileImpl.ELFSectionHeaderImpl#getLink()::: section header impl get link:::return
+ELFFileParser.ELFFileImpl.ELFSectionHeaderImpl#getOffset()::: section header impl get offset:::return
+ELFFileParser.ELFFileImpl.ELFSymbolImpl#getBinding()::: symbol impl get binding:::return
+ELFFileParser.ELFFileImpl.ELFSymbolImpl#getType()::: symbol impl get type:::return
+ELFFileParser.ELFFileImpl.ELFSymbolImpl#getOffset()::: symbol impl get offset:::return
+ELFFileParser.ELFFileImpl.ELFSymbolImpl#getName()::: symbol impl get name:::if->return->symbol_name->if->getHeader->getStringTable->get->else->if->getHeader->getDynamicStringTable->get->return
+ELFFileParser.ELFFileImpl.ELFSymbolImpl#getValue()::: symbol impl get value:::return
+ELFFileParser.ELFFileImpl.ELFSymbolImpl#getSize()::: symbol impl get size:::return
+ELFFileParser.ELFFileImpl.ELFStringTableImpl#get(int)::: string table impl get:::startPtr->endPtr->while->return->new->String
+ELFFileParser.ELFFileImpl.ELFStringTableImpl#getNumStrings()::: string table impl get num strings:::return
 ELFFileParser.ELFFileImpl.ELFHashTableImpl#getSymbol(String):::This method doesn't work every time and is unreliable:::return
+ELFFileParser.ELFFileImpl#close()::: file impl close:::try->file->close->catch->throw->new->ELFException->finally
+ELFFileParser.ELFFileImpl#seek(long)::: file impl seek:::try->file->seek->catch->throw->new->ELFException->finally
+ELFFileParser.ELFFileImpl#getFilePointer()::: file impl get file pointer:::try->return->file->getFilePointer->catch->throw->new->ELFException->finally
+ELFFileParser.ELFFileImpl#readByte()::: file impl read byte:::try->return->file->readByte->catch->throw->new->ELFException->finally
+ELFFileParser.ELFFileImpl#readBytes(byte[])::: file impl read bytes:::try->return->file->read->catch->throw->new->ELFException->finally
+ELFFileParser.ELFFileImpl#readShort()::: file impl read short:::try->val->switch->file->readShort->byteSwap->break->file->readShort->break->throw->new->ELFException->return->catch->throw->new->ELFException->finally
+ELFFileParser.ELFFileImpl#readInt()::: file impl read int:::try->val->switch->file->readInt->byteSwap->break->file->readInt->break->throw->new->ELFException->return->catch->throw->new->ELFException->finally
+ELFFileParser.ELFFileImpl#readLong()::: file impl read long:::try->val->switch->file->readLong->byteSwap->break->file->readLong->break->throw->new->ELFException->return->catch->throw->new->ELFException->finally
 ELFFileParser.ELFFileImpl#byteSwap(short):::Signed byte utility functions used for converting from big-endian (MSB) to little-endian (LSB).:::return
+ELFFileParser.ELFFileImpl#byteSwap(int)::: file impl byte swap:::return->byteSwap->byteSwap
+ELFFileParser.ELFFileImpl#byteSwap(long)::: file impl byte swap:::return->byteSwap->byteSwap
+ELFFileParser.ELFFileImpl#readUnsignedByte()::: file impl read unsigned byte:::try->return->file->readByte->unsignedByte->catch->throw->new->ELFException->finally
+ELFFileParser.ELFFileImpl#readUnsignedShort()::: file impl read unsigned short:::try->val->switch->file->readShort->unsignedByteSwap->break->file->readShort->unsignedByte->break->throw->new->ELFException->return->catch->throw->new->ELFException->finally
+ELFFileParser.ELFFileImpl#readUnsignedInt()::: file impl read unsigned int:::try->val->switch->file->readInt->unsignedByteSwap->break->file->readInt->unsignedByte->break->throw->new->ELFException->return->catch->throw->new->ELFException->finally
 ELFFileParser.ELFFileImpl#unsignedByte(byte):::Returns the unsigned value of the byte.:::return
 ELFFileParser.ELFFileImpl#unsignedByte(short):::Returns a big-endian unsigned representation of the short.:::val->if->else->unsignedByte->return
 ELFFileParser.ELFFileImpl#unsignedByte(int):::Returns a big-endian unsigned representation of the int.:::val->if->else->unsignedByte->return
 ELFFileParser.ELFFileImpl#unsignedByteSwap(short):::Unsigned byte utility functions used for converting from big-endian (MSB) to little-endian (LSB).:::return->unsignedByte->unsignedByte
+ELFFileParser.ELFFileImpl#unsignedByteSwap(int)::: file impl unsigned byte swap:::return->unsignedByteSwap->unsignedByteSwap
+ELFFileParser#main(String[])::: file parser main:::if->println->System->exit->elfFile->ELFFileParser->getParser->parse->elfHeader->elfFile->getHeader->println->elfFile->getObjectSize->elfFile->getObjectSize->println->elfFile->getEncoding->elfFile->getEncoding->println->h->elfHeader->getNumberOfSectionHeaders->println->for->i->elfHeader->getNumberOfSectionHeaders->println->elfFile->close
 ELFHashTable#getSymbol(String):::Returns the ELFSymbol that has the specified name or null if no symbol with that name exists:::
 ELFHeader#getFileType():::Returns a file type which is defined by the file type constants.:::
 ELFHeader#getArch():::Returns one of the architecture constants.:::
@@ -28,13 +78,17 @@ ELFHeader#getSymbolTableSection():::Returns the symbol table associated with thi
 ELFHeader#getDynamicSymbolTableSection():::Returns the dynamic symbol table associated with this ELF file, or null if one does not exist.:::
 ELFHeader#getELFSymbol(String):::Returns the elf symbol with the specified name or null if one is not found.:::
 ELFHeader#getELFSymbol(long):::Returns the elf symbol with the specified address or null if one is not found:::
+ELFProgramHeader#getType()::: program header get type:::
 ELFSectionHeader#getType():::Returns the type of section header.:::
 ELFSectionHeader#getNumberOfSymbols():::Returns the number of symbols in this section or 0 if none.:::
 ELFSectionHeader#getELFSymbol(int):::Returns the symbol at the specified index:::
 ELFSectionHeader#getStringTable():::Returns the string table for this section or null if one does not exist.:::
 ELFSectionHeader#getHashTable():::Returns the hash table for this section or null if one does not exist:::
+ELFSectionHeader#getLink()::: section header get link:::
 ELFSectionHeader#getName():::Returns the name of the section or null if the section has no name.:::
 ELFSectionHeader#getOffset():::Returns the offset in bytes to the beginning of the section.:::
+ELFStringTable#get(int)::: string table get:::
+ELFStringTable#getNumStrings()::: string table get num strings:::
 ELFSymbol#getOffset():::Returns the location from the beginning of the file to the symbol.:::
 ELFSymbol#getName():::Returns the name of the symbol or null if the symbol has no name.:::
 ELFSymbol#getBinding():::Returns the binding for this symbol.:::

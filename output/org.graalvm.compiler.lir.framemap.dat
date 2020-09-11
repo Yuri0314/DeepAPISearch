@@ -1,5 +1,10 @@
+FrameMap.ReferenceMapBuilderFactory#newReferenceMapBuilder(int)::: reference map builder factory new reference map builder:::
+FrameMap#getRegisterConfig()::: frame map get register config:::return
+FrameMap#getTarget()::: frame map get target:::return
+FrameMap#returnAddressSize()::: frame map return address size:::return->getTarget->getReturnAddressSize
 FrameMap#accessesCallerFrame():::Determines if an offset to an incoming stack argument was ever returned by #offsetForStackSlot(StackSlot).:::return
 FrameMap#frameSize():::Gets the frame size of the compiled frame, not including the size of the Architecture#getReturnAddressSize() return address slot.:::return
+FrameMap#outgoingSize()::: frame map outgoing size:::return
 FrameMap#frameNeedsAllocating():::Determines if any space is used in the frame apart from the Architecture#getReturnAddressSize() return address slot.:::unalignedFrameSize->returnAddressSize->return
 FrameMap#totalFrameSize():::Gets the total frame size of the compiled frame, including the size of the Architecture#getReturnAddressSize() return address slot.:::
 FrameMap#currentFrameSize():::Gets the current size of this frame:::
@@ -10,10 +15,29 @@ FrameMap#callsMethod(CallingConvention):::Informs the frame map that the compile
 FrameMap#reserveOutgoing(int):::Reserves space for stack-based outgoing arguments.:::Math->max
 FrameMap#spillSlotSize(ValueKind):::Returns the spill slot size for the given ValueKind:::return->kind->getPlatformKind->getSizeInBytes
 FrameMap#allocateSpillSlot(ValueKind):::Reserves a spill slot in the frame of the method being compiled:::size->spillSlotSize->NumUtil->roundUp->return->newStackSlot
+FrameMap#newStackSlot(ValueKind)::: frame map new stack slot:::return->StackSlot->get
 FrameMap#spillSlotRangeSize(int):::Returns the size of the stack slot range for slots objects.:::return->getTarget
 FrameMap#allocateStackSlots(int):::Reserves a number of contiguous slots in the frame of the method being compiled:::if->return->NumUtil->spillSlotRangeSize->getTarget->roundUp->return->LIRKind->getTarget->getWordKind->value->newStackSlot
+FrameMap#newReferenceMapBuilder()::: frame map new reference map builder:::return->referenceMapFactory->totalFrameSize->newReferenceMapBuilder
 FrameMapBuilder#allocateSpillSlot(ValueKind):::Reserves a spill slot in the frame of the method being compiled:::
 FrameMapBuilder#allocateStackSlots(int):::Reserves a number of contiguous slots in the frame of the method being compiled:::
+FrameMapBuilder#getRegisterConfig()::: frame map builder get register config:::
+FrameMapBuilder#getCodeCache()::: frame map builder get code cache:::
 FrameMapBuilder#callsMethod(CallingConvention):::Informs the frame map that the compiled code calls a particular method, which may need stack space for outgoing arguments.:::
 FrameMapBuilder#buildFrameMap(LIRGenerationResult):::Creates a FrameMap based on the information collected by this FrameMapBuilder.:::
+FrameMapBuilderImpl#allocateSpillSlot(ValueKind)::: frame map builder impl allocate spill slot:::slot->new->SimpleVirtualStackSlot->stackSlots->add->return
+FrameMapBuilderImpl#allocateStackSlots(int)::: frame map builder impl allocate stack slots:::if->return->slot->LIRKind->frameMap->getTarget->getWordKind->value->new->VirtualStackSlotRange->stackSlots->add->return
+FrameMapBuilderImpl#getRegisterConfig()::: frame map builder impl get register config:::return
+FrameMapBuilderImpl#getCodeCache()::: frame map builder impl get code cache:::return
+FrameMapBuilderImpl#getFrameMap()::: frame map builder impl get frame map:::return
+FrameMapBuilderImpl#getNumberOfStackSlots()::: frame map builder impl get number of stack slots:::return
+FrameMapBuilderImpl#callsMethod(CallingConvention)::: frame map builder impl calls method:::calls->add
+FrameMapBuilderImpl#buildFrameMap(LIRGenerationResult)::: frame map builder impl build frame map:::debug->res->getLIR->getDebug->if->debug->areScopesEnabled->verifyStackSlotAllocation->foreach->frameMap->callsMethod->frameMap->finish->return
+FrameMapBuilderImpl#verifyStackSlotAllocation(LIRGenerationResult)::: frame map builder impl verify stack slot allocation:::lir->res->getLIR->verifySlots->foreach->lir->getControlFlowGraph->getBlocks->lir->getLIRforBlock->op->visitEachInput->op->visitEachAlive->op->visitEachState->op->visitEachTemp->op->visitEachOutput->forEach
+FrameMapBuilderImpl#getStackSlots()::: frame map builder impl get stack slots:::return
 FrameMapBuilderTool#getNumberOfStackSlots():::Returns the number of VirtualStackSlots created by this FrameMapBuilder:::
+FrameMapBuilderTool#getStackSlots()::: frame map builder tool get stack slots:::
+FrameMapBuilderTool#getFrameMap()::: frame map builder tool get frame map:::
+ReferenceMapBuilder#addLiveValue(Value)::: reference map builder add live value:::
+ReferenceMapBuilder#finish(LIRFrameState)::: reference map builder finish:::
+VirtualStackSlotRange#getSlots()::: virtual stack slot range get slots:::return

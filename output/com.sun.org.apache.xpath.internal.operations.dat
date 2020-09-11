@@ -26,6 +26,14 @@ Operation#canTraverseOutsideSubtree():::Tell if this expression or it's subexpre
 Operation#setLeftRight(Expression, Expression):::Set the left and right operand expressions for this operation.:::l->exprSetParent->r->exprSetParent
 Operation#execute(XPathContext):::Execute a binary operation by calling execute on each of the operands, and then calling the operate method on the derived class.:::left->m_left->execute->right->m_right->execute->result->operate->left->detach->right->detach->return
 Operation#operate(XObject, XObject):::Apply the operation to two operands, and return the result.:::return
+Operation#getLeftOperand()::: operation get left operand:::return
+Operation#getRightOperand()::: operation get right operand:::return
+Operation.LeftExprOwner#getExpression()::: left expr owner get expression:::return
+Operation.LeftExprOwner#setExpression(Expression)::: left expr owner set expression:::exp->exprSetParent
+Operation#callVisitors(ExpressionOwner, XPathVisitor)::: operation call visitors:::if->visitor->visitBinaryOperation->m_left->new->LeftExprOwner->callVisitors->m_right->callVisitors
+Operation#getExpression()::: operation get expression:::return
+Operation#setExpression(Expression)::: operation set expression:::exp->exprSetParent
+Operation#deepEquals(Expression)::: operation deep equals:::if->isSameClass->return->if->m_left->deepEquals->return->if->m_right->deepEquals->return->return
 Or#execute(XPathContext):::OR two expressions and return the boolean result:::expr1->m_left->execute->if->expr1->bool->expr2->m_right->execute->return->expr2->bool->else->return
 Or#boolean bool(XPathContext):::Evaluate this operation directly to a boolean.:::return->m_left->bool->m_right->bool
 Plus#operate(XObject, XObject):::Apply the operation to two operands, and return the result.:::return->left->num->right->num->new->XNumber
@@ -37,6 +45,11 @@ UnaryOperation#canTraverseOutsideSubtree():::Tell if this expression or it's sub
 UnaryOperation#setRight(Expression):::Set the expression operand for the operation.:::r->exprSetParent
 UnaryOperation#execute(XPathContext):::Execute the operand and apply the unary operation to the result.:::return->m_right->execute->operate
 UnaryOperation#operate(XObject):::Apply the operation to two operands, and return the result.:::
+UnaryOperation#getOperand()::: unary operation get operand:::return
+UnaryOperation#callVisitors(ExpressionOwner, XPathVisitor)::: unary operation call visitors:::if->visitor->visitUnaryOperation->m_right->callVisitors
+UnaryOperation#getExpression()::: unary operation get expression:::return
+UnaryOperation#setExpression(Expression)::: unary operation set expression:::exp->exprSetParent
+UnaryOperation#deepEquals(Expression)::: unary operation deep equals:::if->isSameClass->return->if->m_right->deepEquals->return->return
 Variable#setIndex(int):::Set the index for the variable into the stack:::
 Variable#getIndex():::Set the index for the variable into the stack:::return
 Variable#setIsGlobal(boolean):::Set whether or not this is a global reference:::
@@ -48,5 +61,7 @@ Variable#execute(XPathContext):::Execute an expression in the XPath runtime cont
 Variable#execute(XPathContext, boolean):::Dereference the variable, and return the reference value:::xprefixResolver->xctxt->getNamespaceContext->result->if->if->xctxt->getVarStack->getGlobalVariable->else->xctxt->getVarStack->getLocalVariable->else->xctxt->getVarStack->getVariableOrParam->if->new->ObjectArr->m_qname->getLocalPart->warn->xctxt->getDTMManager->new->XNodeSet->return
 Variable#isStableNumber():::Tell if this expression returns a stable number that will not change during iterations within the expression:::return
 Variable#getAnalysisBits():::Get the analysis bits for this walker, as defined in the WalkerFactory.:::return
+Variable#callVisitors(ExpressionOwner, XPathVisitor)::: variable call visitors:::visitor->visitVariableRef
+Variable#deepEquals(Expression)::: variable deep equals:::if->isSameClass->return->if->m_qname->equals->return->return
 Variable#isPsuedoVarRef():::Tell if this is a psuedo variable reference, declared by Xalan instead of by the user.:::ns->m_qname->getNamespaceURI->if->ns->equals->if->m_qname->getLocalName->startsWith->return->return
 VariableSafeAbsRef#execute(XPathContext, boolean):::Dereference the variable, and return the reference value:::xns->super->execute->dtmMgr->xctxt->getDTMManager->context->xctxt->getContextNode->if->dtmMgr->xns->getRoot->getDTM->getDocument->dtmMgr->getDTM->getDocument->expr->xns->getContainedIter->expr->asIterator->return

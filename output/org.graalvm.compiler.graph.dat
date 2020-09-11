@@ -1,38 +1,97 @@
+Graph_OptionDescriptors#get(String)::: graph_ option descriptors get:::switch->return->OptionDescriptor->create->return->OptionDescriptor->create->return->OptionDescriptor->create->return
+Graph_OptionDescriptors#iterator()::: graph_ option descriptors iterator:::return->new->Iterator<OptionDescriptor>
+CachedGraph#fromReadonlyCopy(G)::: cached graph from readonly copy:::return->new->CachedGraph<>
+CachedGraph#fromMutableCopy(G)::: cached graph from mutable copy:::return->new->CachedGraph<>
+CachedGraph#getReadonlyCopy()::: cached graph get readonly copy:::if->hasMutableCopy->return->return
+CachedGraph#hasMutableCopy()::: cached graph has mutable copy:::return
+CachedGraph#getMutableCopy(Consumer>)::: cached graph get mutable copy:::if->hasMutableCopy->readonlyCopy->readonlyCopy->getDebug->copy->return
+Edges#translateInto(Edges, ArrayList)::: edges translate into:::for->index->edges->getCount
+Edges#getNodeUnsafe(Node, long)::: edges get node unsafe:::return->UNSAFE->getObject
+Edges#getNodeListUnsafe(Node, long)::: edges get node list unsafe:::return->UNSAFE->getObject
+Edges#putNodeUnsafe(Node, long, Node)::: edges put node unsafe:::UNSAFE->putObject
+Edges#putNodeListUnsafe(Node, long, NodeList)::: edges put node list unsafe:::UNSAFE->putObject
 Edges#getDirectCount():::Get the number of direct edges represented by this object:::return
 Edges#getNode(Node, long[], int):::Gets the Node at the end point of a #getDirectCount() direct edge.:::return->getNodeUnsafe
 Edges#getNodeList(Node, long[], int):::Gets the NodeList at the end point of a #getDirectCount() direct edge.:::return->getNodeListUnsafe
 Edges#clear(Node):::Clear edges in a given node:::curOffsets->curType->index->curDirectCount->getDirectCount->while->initializeNode->curCount->getCount->while->list->getNodeList->if->size->newList->new->NodeInputList<>->new->NodeSuccessorList<>->initializeList
 Edges#initializeLists(Node, Node):::Initializes the list edges in a given node based on the size of the list edges in a prototype node.:::index->getDirectCount->curOffsets->curType->while->getCount->list->getNodeList->if->size->newList->new->NodeInputList<>->new->NodeSuccessorList<>->initializeList
 Edges#copy(Node, Node):::Copies edges from fromNode to toNode:::index->curOffsets->curType->curDirectCount->getDirectCount->while->getNode->initializeNode->curCount->getCount->while->list->getNodeList->fromList->getNodeList->if->new->NodeInputList<>->new->NodeSuccessorList<>->initializeList->else->list->copy
+Edges#set(Object, int, Object)::: edges set:::throw->new->IllegalArgumentException
 Edges#initializeNode(Node, int, Node):::Sets the value of a given edge without notifying the new and old nodes on the other end of the edge of the change.:::verifyUpdateValid->putNodeUnsafe
+Edges#initializeList(Node, int, NodeList)::: edges initialize list:::verifyUpdateValid->putNodeListUnsafe
+Edges#verifyUpdateValid(Node, int, Object)::: edges verify update valid:::if->getType->newValue->getClass->isAssignableFrom->throw->newValue->getClass->getType->new->IllegalArgumentException
 Edges#setNode(Node, int, Node):::Sets the value of a given edge and notifies the new and old nodes on the other end of the edge of the change.:::old->getNodeUnsafe->initializeNode->update
+Edges#update(Node, Node, Node)::: edges update:::
+Edges#contains(Node, Node)::: edges contains:::curOffsets->for->i->for->i->getCount->return
+Edges.EdgesIterator#forward()::: edges iterator forward:::if->if->return->else->if->edges->getCount->forwardNodeList
+Edges.EdgesIterator#forwardNodeList()::: edges iterator forward node list:::do->list->Edges->getNodeList->if->if->list->size->return->while->edges->getCount
+Edges.EdgesIterator#hasNext()::: edges iterator has next:::if->forward->return->edges->getCount
+Edges.EdgesIterator#next()::: edges iterator next:::if->forward->if->return->new->Position->else->return->new->Position
+Edges.EdgesIterator#remove()::: edges iterator remove:::throw->new->UnsupportedOperationException
+Edges.EdgesWithModCountIterator#hasNext()::: edges with mod count iterator has next:::try->return->super->hasNext->catch->finally
+Edges.EdgesWithModCountIterator#next()::: edges with mod count iterator next:::try->return->super->next->catch->finally
+Edges#getPositionsIterable(Node)::: edges get positions iterable:::return->new->Iterable<Position>
+Edges#type()::: edges type:::return
 GraalGraphError#addContext(Graph):::Adds a graph to the context of this VerificationError:::if->addContext->if->return
 GraalGraphError#addContext(Node):::Adds a node to the context of this VerificationError:::if->addContext->if->return
 GraalGraphError#transformAndAddContext(GraalError, Graph):::Transform a GraalError into a GraalGraphInternalError and add a graph to the context.:::graphError->if->else->new->GraalGraphError->return->graphError->addContext
 GraalGraphError#transformAndAddContext(GraalError, Node):::Transform a GraalError into a GraalGraphInternalError and add a node to the context.:::graphError->if->else->new->GraalGraphError->return->graphError->addContext
+GraalGraphError#node()::: graal graph error node:::return
+GraalGraphError#graph()::: graal graph error graph:::return
+Graph.NodeSourcePositionScope#getDebug()::: node source position scope get debug:::return
+Graph.NodeSourcePositionScope#close()::: node source position scope close:::
+Graph#currentNodeSourcePosition()::: graph current node source position:::return
 Graph#withNodeSourcePosition(Node):::Opens a scope in which the source information from node is copied into nodes created within the scope:::return->node->getNodeSourcePosition->withNodeSourcePosition
 Graph#withNodeSourcePosition(NodeSourcePosition):::Opens a scope in which sourcePosition is copied into nodes created within the scope:::return->trackNodeSourcePosition->new->NodeSourcePositionScope
 Graph#withoutNodeSourcePosition():::Opens a scope in which newly created nodes do not get any source information added.:::return->new->NodeSourcePositionScope
+Graph#trackNodeSourcePosition()::: graph track node source position:::return
+Graph#setTrackNodeSourcePosition()::: graph set track node source position:::if
+Graph#trackNodeSourcePositionDefault(OptionValues, DebugContext)::: graph track node source position default:::return->getValue->debug->isDumpEnabledForMethod
 Graph#isModificationCountsEnabled():::We only want the expensive modification count tracking when assertions are enabled for the Graph class.:::enabled->return
+Graph#extractOriginalNodeId(Node)::: graph extract original node id:::id->if->return
+Graph#modCount(Node)::: graph mod count:::id->extractOriginalNodeId->if->return->return
+Graph#incModCount(Node)::: graph inc mod count:::id->extractOriginalNodeId->if->if->Arrays->copyOf->else
+Graph#usageModCount(Node)::: graph usage mod count:::id->extractOriginalNodeId->if->return->return
+Graph#incUsageModCount(Node)::: graph inc usage mod count:::id->extractOriginalNodeId->if->if->Arrays->copyOf->else
 Graph#copy(DebugContext):::Creates a copy of this graph.:::return->copy
 Graph#copy(Consumer>, DebugContext):::Creates a copy of this graph.:::return->copy
 Graph#copy(String, DebugContext):::Creates a copy of this graph.:::return->copy
 Graph#copy(String, Consumer>, DebugContext):::Creates a copy of this graph.:::copy->trackNodeSourcePosition->new->Graph->duplicates->copy->getNodes->this->getNodeCount->addDuplicates->if->duplicationMapCallback->accept->return
+Graph#getOptions()::: graph get options:::return
+Graph#getDebug()::: graph get debug:::return
 Graph#resetDebug(DebugContext):::Resets the DebugContext for this graph to a new value:::
+Graph#toString()::: graph to string:::return->super->toString
 Graph#getNodeCount():::Gets the number of live nodes in this graph:::return->getNodesDeletedSinceLastCompression
 Graph#getCompressions():::Gets the number of times this graph has been #maybeCompress() compressed:::return
 Graph#getNodesDeletedSinceLastCompression():::Gets the number of nodes which have been deleted from this graph since it was last #maybeCompress() compressed.:::return
 Graph#getTotalNodesDeleted():::Gets the total number of nodes which have been deleted from this graph.:::return
 Graph#add(T):::Adds a new node to the graph.:::if->node->getNodeClass->valueNumberable->throw->new->IllegalStateException->return->addHelper
+Graph#addWithoutUnique(T)::: graph add without unique:::return->addHelper
+Graph#addOrUnique(T)::: graph add or unique:::if->node->getNodeClass->valueNumberable->return->uniqueHelper->return->add
+Graph#maybeAddOrUnique(T)::: graph maybe add or unique:::if->node->isAlive->return->return->addOrUnique
+Graph#addOrUniqueWithInputs(T)::: graph add or unique with inputs:::if->node->isAlive->return->else->addInputs->if->node->getNodeClass->valueNumberable->return->uniqueHelper->return->add
+Graph#addWithoutUniqueWithInputs(T)::: graph add without unique with inputs:::addInputs->return->addHelper
+Graph.AddInputsFilter#apply(Node, Node)::: add inputs filter apply:::if->input->isAlive->return->addOrUniqueWithInputs->else->return
+Graph#addInputs(T)::: graph add inputs:::node->applyInputs
+Graph#addHelper(T)::: graph add helper:::node->initialize->return
 Graph.NodeEventListener#event(NodeEvent, Node):::A method called when a change event occurs:::switch->inputChanged->break->usagesDroppedToZero->break->nodeAdded->break->nodeRemoved->break->changed
 Graph.NodeEventListener#changed(NodeEvent, Node):::Notifies this listener about any change event in the graph.:::
 Graph.NodeEventListener#inputChanged(Node):::Notifies this listener about a change in a node's inputs.:::
 Graph.NodeEventListener#usagesDroppedToZero(Node):::Notifies this listener of a node becoming unused.:::
 Graph.NodeEventListener#nodeAdded(Node):::Notifies this listener of an added node.:::
 Graph.NodeEventListener#nodeRemoved(Node):::Notifies this listener of a removed node.:::
+Graph.NodeEventScope#close()::: node event scope close:::if->else
+Graph.ChainedNodeEventListener#changed(NodeEvent, Node)::: chained node event listener changed:::head->event->next->event
 Graph#trackNodeEvents(NodeEventListener):::Registers a given NodeEventListener with this graph:::return->new->NodeEventScope
 Graph#unique(T):::Looks for a node similar to node and returns it if found:::return->uniqueHelper
+Graph#uniqueHelper(T)::: graph unique helper:::other->this->findDuplicate->if->if->other->getNodeSourcePosition->other->node->getNodeSourcePosition->setNodeSourcePosition->return->else->result->addHelper->if->node->getNodeClass->isLeafNode->putNodeIntoCache->return
+Graph#removeNodeFromCache(Node)::: graph remove node from cache:::leafId->node->getNodeClass->getLeafId->if->removeKey
+Graph#putNodeIntoCache(Node)::: graph put node into cache:::leafId->node->getNodeClass->getLeafId->if->newLeafNodes->new->EconomicMapArr->if->System->arraycopy->if->EconomicMap->create->put
+Graph#findNodeInCache(Node)::: graph find node in cache:::leafId->node->getNodeClass->getLeafId->if->return->result->get->return
 Graph#findDuplicate(T):::Returns a possible duplicate for the given node in the graph or null if no such duplicate exists.:::nodeClass->node->getNodeClass->if->nodeClass->isLeafNode->cachedNode->findNodeInCache->if->return->else->return->else->earlyExitUsageCount->node->graph->minCount->minCountNode->foreach->node->inputs->usageCount->input->getUsageCount->if->return->else->if->if->foreach->minCountNode->usages->if->usage->getNodeClass->node->valueEquals->nodeClass->equalInputs->nodeClass->equalSuccessors->return->return->return
+Graph#isNew(Mark, Node)::: graph is new:::return->mark->getValue
+Graph.Mark#equals(Object)::: mark equals:::if->other->return->other->getValue->getValue->other->getGraph->getGraph->return
+Graph.Mark#hashCode()::: mark hash code:::return
 Graph.Mark#isStart():::Determines if this mark is positioned at the first live node in the graph.:::return
 Graph.Mark#getValue():::Gets the Graph#getNodeCount() live node count of the associated graph when this object was created.:::return
 Graph.Mark#isCurrent():::Determines if this mark still represents the Graph#getNodeCount() live node count of the graph.:::return->graph->nodeIdCount
@@ -42,13 +101,60 @@ Graph#getNodes():::Returns an Iterable providing all the live nodes.:::return->n
 Graph#maybeCompress():::If the Options#GraphCompressionThreshold compression threshold is met, the list of nodes is compressed such that all non-null entries precede all null entries while preserving the ordering between the nodes within the list.:::if->debug->isDumpEnabledForMethod->debug->isLogEnabledForMethod->return->liveNodeCount->getNodeCount->liveNodePercent->compressionThreshold->getValue->if->return->GraphCompressions->increment->nextId->for->i->if->isModificationCountsEnabled->Arrays->fill->Arrays->fill->return
 Graph#getNodes(NodeClass):::Returns an Iterable providing all the live nodes whose type is compatible with type.:::return->new->NodeIterable<T>
 Graph#hasNode(NodeClass):::Returns whether the graph contains at least one node of the given type.:::return->getNodes->iterator->hasNext
+Graph#getIterableNodeStart(int)::: graph get iterable node start:::if->iterableNodesFirst->size->return->start->iterableNodesFirst->get->if->start->isDeleted->return->return->findFirstLiveIterable
+Graph#findFirstLiveIterable(int, Node)::: graph find first live iterable:::start->while->start->isDeleted->iterableNodesFirst->set->if->iterableNodesLast->set->return
+Graph#getIterableNodeNext(Node)::: graph get iterable node next:::if->return->n->if->n->isDeleted->return->return->findNextLiveiterable
+Graph#findNextLiveiterable(Node)::: graph find next liveiterable:::n->while->n->isDeleted->if->nodeClassId->start->getNodeClass->iterableId->iterableNodesLast->set->else->return
+Graph#createNodeBitMap()::: graph create node bit map:::return->new->NodeBitMap
+Graph#createNodeMap()::: graph create node map:::return->new->NodeMap<>
+Graph#createNodeFlood()::: graph create node flood:::return->new->NodeFlood
+Graph#createNodeWorkList()::: graph create node work list:::return->new->NodeWorkList.SingletonNodeWorkList
+Graph#createIterativeNodeWorkList(boolean, int)::: graph create iterative node work list:::return->new->NodeWorkList.IterativeNodeWorkList
+Graph#register(Node)::: graph register:::if->grow->id->if->trackNodeSourcePosition->node->setNodeSourcePosition->if->TrackNodeInsertion->getOptions->getValue->node->new->NodeInsertionStackTrace->setInsertionPosition->updateNodeCaches->if->nodeEventListener->event->afterRegister
+Graph#grow()::: graph grow:::newNodes->new->NodeArr->System->arraycopy
+Graph#afterRegister(Node)::: graph after register:::
+Graph#postDeserialization()::: graph post deserialization:::recomputeIterableNodeLists
+Graph#recomputeIterableNodeLists():::Rebuilds the lists used to support #getNodes(NodeClass):::iterableNodesFirst->clear->iterableNodesLast->clear->foreach->if->node->isAlive->updateNodeCaches
+Graph#updateNodeCaches(Node)::: graph update node caches:::nodeClassId->node->getNodeClass->iterableId->if->while->iterableNodesFirst->size->iterableNodesFirst->add->iterableNodesLast->add->prev->iterableNodesLast->get->if->else->iterableNodesFirst->set->iterableNodesLast->set
+Graph#unregister(Node)::: graph unregister:::if->node->getNodeClass->isLeafNode->node->getNodeClass->valueNumberable->removeNodeFromCache->if->nodeEventListener->event
+Graph#verify()::: graph verify:::if->getValue->foreach->getNodes->try->try->catch->throw->new->GraalError->throw->new->GraalError->finally->catch->throw->GraalGraphError->transformAndAddContext->addContext->finally->return
+Graph#verifySourcePositions(boolean)::: graph verify source positions:::if->trackNodeSourcePosition->root->foreach->getNodes->pos->node->getNodeSourcePosition->if->if->pos->getRootMethod->else->if->return
+Graph#getNode(int)::: graph get node:::return
 Graph#nodeIdCount():::Returns the number of node ids generated so far.:::return
 Graph#addDuplicates(Iterable, Graph, int, EconomicMap):::Adds duplicates of the nodes in newNodes to this graph:::replacements->if->else->new->MapReplacement->return->addDuplicates
+Graph.DuplicationReplacement#replacement(Node)::: duplication replacement replacement:::
+Graph.MapReplacement#replacement(Node)::: map replacement replacement:::replacement->map->get->return
+Graph#addDuplicates(Iterable, Graph, int, DuplicationReplacement)::: graph add duplicates:::try->s->DuplicateGraph->getDebug->start->return->NodeClass->addGraphDuplicate->catch->finally
+Graph#isFrozen()::: graph is frozen:::return
+Graph#freeze()::: graph freeze:::
+Graph#temporaryFreeze()::: graph temporary freeze:::if->throw->new->GraalError
+Graph#unfreeze()::: graph unfreeze:::if->throw->new->GraalError
+GraphNodeIterator#forward()::: graph node iterator forward:::if->do->while
+GraphNodeIterator#hasNext()::: graph node iterator has next:::checkForDeletedNode->return
+GraphNodeIterator#checkForDeletedNode()::: graph node iterator check for deleted node:::while
+GraphNodeIterator#next()::: graph node iterator next:::try->return->catch->finally->forward
+GraphNodeIterator#remove()::: graph node iterator remove:::throw->new->UnsupportedOperationException
+InlineCacheGuardPosition#getDispatchedType()::: inline cache guard position get dispatched type:::return
+InlineCacheGuardPosition#getTargetMethod()::: inline cache guard position get target method:::return
+InlineCacheGuardPosition#hashCode()::: inline cache guard position hash code:::return
+InlineCacheGuardPosition#equals(Object)::: inline cache guard position equals:::if->return->if->getClass->obj->getClass->that->if->return->if->this->getBCI->that->getBCI->Objects->this->getMethod->that->getMethod->equals->Objects->this->getCaller->that->getCaller->equals->Objects->equals->Objects->equals->return->return
+InlineCacheGuardPosition#toString()::: inline cache guard position to string:::return->dispatchedType->getName->concreteMethod->getName->concreteMethod->getDeclaringClass->getName->super->toString
+InputEdges#translateInto(InputEdges, ArrayList)::: input edges translate into:::for->index->inputs->getCount
+InputEdges#getInputType(int)::: input edges get input type:::return
+InputEdges#isOptional(int)::: input edges is optional:::return
+InputEdges#update(Node, Node, Node)::: input edges update:::node->updateUsages
+Node.NodeStackTrace#getString(String)::: node stack trace get string:::sb->new->StringBuilder->if->sb->append->append->foreach->sb->append->ste->toString->append->append->return->sb->toString
+Node.NodeStackTrace#getStrackTraceString()::: node stack trace get strack trace string:::return->getString
+Node.NodeStackTrace#toString()::: node stack trace to string:::return->getClass->getSimpleName->getString
+Node#init(NodeClass)::: node init:::if->new->NodeCreationStackTrace->setCreationPosition
+Node#id()::: node id:::return
+Node#asNode()::: node as node:::return
 Node#graph():::Gets the graph context of this node.:::return
 Node#getOptions():::Gets the option values associated with this node's graph.:::return->graph->getOptions
 Node#getDebug():::Gets the debug context associated with this node's graph.:::return->graph->getDebug
 Node#inputs():::Returns an NodeIterable iterable which can be used to traverse all non-null input edges of this node.:::return->nodeClass->getInputIterable
 Node#inputPositions():::Returns an Iterable iterable which can be used to traverse all non-null input edges of this node.:::return->nodeClass->getInputEdges->getPositionsIterable
+Node.EdgeVisitor#apply(Node, Node)::: edge visitor apply:::
 Node#applyInputs(EdgeVisitor):::Applies the given visitor to all inputs of this node.:::nodeClass->applyInputs
 Node#applySuccessors(EdgeVisitor):::Applies the given visitor to all successors of this node.:::nodeClass->applySuccessors
 Node#successors():::Returns an NodeIterable iterable which can be used to traverse all non-null successor edges of this node.:::return->nodeClass->getSuccessorIterable
@@ -60,41 +166,379 @@ Node#hasUsages():::Checks whether this node has usages.:::return
 Node#hasMoreThanOneUsage():::Checks whether this node has more than one usages.:::return
 Node#hasExactlyOneUsage():::Checks whether this node has exactly one usgae.:::return->hasUsages->hasMoreThanOneUsage
 Node#addUsage(Node):::Adds a given node to this node's #usages() usages.:::incUsageModCount->if->else->if->else->length->if->new->NodeArr->else->if->newExtraUsages->new->NodeArr->System->arraycopy
+Node#movUsageFromEndTo(int)::: node mov usage from end to:::if->movUsageFromEndToExtraUsages->else->if->movUsageFromEndToIndexOne->else->movUsageFromEndToIndexZero
+Node#movUsageFromEndToExtraUsages(int)::: node mov usage from end to extra usages:::n
+Node#movUsageFromEndToIndexZero()::: node mov usage from end to index zero:::if->else->if->else
+Node#movUsageFromEndToIndexOne()::: node mov usage from end to index one:::if->else
 Node#removeUsage(Node):::Removes a given node from this node's #usages() usages.:::incUsageModCount->if->movUsageFromEndToIndexZero->return->if->movUsageFromEndToIndexOne->return->for->i->return
+Node#predecessor()::: node predecessor:::return
+Node#modCount()::: node mod count:::if->isModificationCountsEnabled->return->graph->modCount->return
+Node#incModCount()::: node inc mod count:::if->isModificationCountsEnabled->graph->incModCount
+Node#usageModCount()::: node usage mod count:::if->isModificationCountsEnabled->return->graph->usageModCount->return
+Node#incUsageModCount()::: node inc usage mod count:::if->isModificationCountsEnabled->graph->incUsageModCount
+Node#isDeleted()::: node is deleted:::return
+Node#isAlive()::: node is alive:::return
+Node#isUnregistered()::: node is unregistered:::return
 Node#updateUsages(Node, Node):::Updates the usages sets of the given nodes after an input slot is changed from oldInput to newInput by removing this node from oldInput's usages and adds this node to newInput's usages.:::if->if->result->removeThisFromUsages->maybeNotifyInputChanged->if->newInput->addUsage->if->oldInput->hasNoUsages->maybeNotifyZeroUsages
+Node#updateUsagesInterface(NodeInterface, NodeInterface)::: node update usages interface:::oldInput->asNode->newInput->asNode->updateUsages
 Node#updatePredecessor(Node, Node):::Updates the predecessor of the given nodes after a successor slot is changed from oldSuccessor to newSuccessor: removes this node from oldSuccessor's predecessors and adds this node to newSuccessor's predecessors.:::if->if->if->maybeNotifyInputChanged
+Node#initialize(Graph)::: node initialize:::newGraph->register->nc->nc->registerAtInputsAsUsage->nc->registerAtSuccessorsAsPredecessor
+Node#getNodeInfo(Class)::: node get node info:::if->return->if->clazz->isInstance->return->clazz->cast->if->annotation->getClass->annotations->foreach->if->clazz->isInstance->return->clazz->cast->return
+Node#setNodeInfo(Class, T)::: node set node info:::if->clazz->isInstance->else->if->annotation->getClass->annotations->for->i->newAnnotations->Arrays->copyOf->else->new->ObjectArr
+Node#getNodeSourcePosition()::: node get node source position:::return->getNodeInfo
 Node#setNodeSourcePosition(NodeSourcePosition):::Set the source position to sourcePosition:::if->return->setNodeInfo
+Node#clearNodeSourcePosition()::: node clear node source position:::setNodeInfo
+Node#getCreationPosition()::: node get creation position:::return->getNodeInfo
+Node#setCreationPosition(NodeCreationStackTrace)::: node set creation position:::setNodeInfo
+Node#getInsertionPosition()::: node get insertion position:::return->getNodeInfo
+Node#setInsertionPosition(NodeInsertionStackTrace)::: node set insertion position:::setNodeInfo
 Node#updateNodeSourcePosition(Supplier):::Update the source position only if it is null.:::if->this->getNodeSourcePosition->sourcePositionSupp->get->setNodeSourcePosition
+Node#withNodeSourcePosition()::: node with node source position:::return->graph->withNodeSourcePosition
+Node#getNodeClass()::: node get node class:::return
+Node#isAllowedUsageType(InputType)::: node is allowed usage type:::if->return->return->getNodeClass->getAllowedUsageTypes->contains
+Node#checkReplaceWith(Node)::: node check replace with:::if->graph->isFrozen->fail->if->fail->if->isDeleted->fail->if->other->isDeleted->fail->return
+Node#replaceAtUsages(Node)::: node replace at usages:::replaceAtAllUsages
+Node#replaceAtUsages(Node, Predicate)::: node replace at usages:::replaceAtUsages
+Node#replaceAtUsagesAndDelete(Node)::: node replace at usages and delete:::replaceAtUsages->safeDelete
+Node#replaceAtUsagesAndDelete(Node, Predicate)::: node replace at usages and delete:::replaceAtUsages->safeDelete
+Node#replaceAtUsages(Node, Predicate, Node)::: node replace at usages:::if->replaceAtAllUsages->else->replaceAtMatchingUsages
+Node#replaceAtAllUsages(Node, Node)::: node replace at all usages:::checkReplaceWith->if->return->replaceAtUsage->if->return->replaceAtUsage->if->return->for->i
+Node#replaceAtUsage(Node, Node, Node)::: node replace at usage:::result->usage->getNodeClass->replaceFirstInput->if->maybeNotifyInputChanged->if->other->addUsage
+Node#replaceAtMatchingUsages(Node, Predicate, Node)::: node replace at matching usages:::if->throw->fail->checkReplaceWith->i->usageCount->this->getUsageCount->while->usage->this->getUsageAt->if->filter->test->replaceAtUsage->this->movUsageFromEndTo->else
+Node#getUsageAt(int)::: node get usage at:::if->return->else->if->return->else->return
+Node#replaceAtMatchingUsages(Node, NodePredicate)::: node replace at matching usages:::checkReplaceWith->replaceAtMatchingUsages
+Node#replaceAtUsagePos(Node, Node, Position)::: node replace at usage pos:::pos->initialize->maybeNotifyInputChanged->if->other->addUsage
+Node#replaceAtUsages(InputType, Node)::: node replace at usages:::checkReplaceWith->i->usageCount->this->getUsageCount->if->return->while->usage->this->getUsageAt->foreach->usage->inputPositions->if->pos->getInputType->pos->get->replaceAtUsagePos->this->movUsageFromEndTo->continue->if->hasNoUsages->maybeNotifyZeroUsages
+Node#maybeNotifyInputChanged(Node)::: node maybe notify input changed:::if->listener->if->listener->event
+Node#maybeNotifyZeroUsages(Node)::: node maybe notify zero usages:::if->listener->if->node->isAlive->listener->event
+Node#replaceAtPredecessor(Node)::: node replace at predecessor:::checkReplaceWith->if->if->predecessor->getNodeClass->replaceFirstSuccessor->fail->predecessor->updatePredecessor
+Node#replaceAndDelete(Node)::: node replace and delete:::checkReplaceWith->if->fail->if->this->hasUsages->replaceAtUsages->replaceAtPredecessor->this->safeDelete
+Node#replaceFirstSuccessor(Node, Node)::: node replace first successor:::if->nodeClass->replaceFirstSuccessor->updatePredecessor
+Node#replaceFirstInput(Node, Node)::: node replace first input:::if->nodeClass->replaceFirstInput->updateUsages
+Node#replaceFirstInput(Node, Node, InputType)::: node replace first input:::foreach->inputPositions->if->pos->getInputType->pos->get->pos->set
+Node#clearInputs()::: node clear inputs:::getNodeClass->unregisterAtInputsAsUsage
+Node#removeThisFromUsages(Node)::: node remove this from usages:::return->n->removeUsage
+Node#clearSuccessors()::: node clear successors:::getNodeClass->unregisterAtSuccessorsAsPredecessor
+Node#checkDeletion()::: node check deletion:::isAlive->assertTrue->hasNoUsages->usages->assertTrue->assertTrue->return
 Node#safeDelete():::Removes this node from its graph:::this->clearInputs->this->clearSuccessors->markDeleted
+Node#markDeleted()::: node mark deleted:::graph->unregister
+Node#copyWithInputs()::: node copy with inputs:::return->copyWithInputs
+Node#copyWithInputs(boolean)::: node copy with inputs:::newNode->clone->if->foreach->inputs->input->addUsage->return
 Node#simplify(SimplifierTool):::Must be overridden by subclasses that implement Simplifiable:::throw->new->UnsupportedOperationException
+Node#copyOrClearEdgesForClone(Node, Edges.Type, EnumSet)::: node copy or clear edges for clone:::if->edgesToCopy->contains->getNodeClass->getEdges->copy->else->getNodeClass->getEdges->initializeLists
 Node#clone(Graph, EnumSet):::Makes a copy of this node in(to) a given graph.:::nodeClassTmp->getNodeClass->useIntoLeafNodeCache->if->if->nodeClassTmp->valueNumberable->nodeClassTmp->isLeafNode->otherNode->into->findNodeInCache->if->return->newNode->try->UNSAFE->getClass->allocateInstance->nodeClassTmp->getData->copy->copyOrClearEdgesForClone->copyOrClearEdgesForClone->catch->throw->new->GraalGraphError->addContext->finally->if->getNodeSourcePosition->into->trackNodeSourcePosition->newNode->getNodeSourcePosition->setNodeSourcePosition->if->into->register->if->into->putNodeIntoCache->newNode->afterClone->return
+Node#afterClone(Node)::: node after clone:::
+Node#verifyInputs()::: node verify inputs:::foreach->inputPositions->input->pos->get->if->pos->isInputOptional->assertTrue->else->input->isDeleted->assertFalse->input->isAlive->assertTrue->pos->getInputType->input->pos->getInputType->isAllowedUsageType->pos->getInputType->assertTrue->expectedType->pos->getType->expectedType->input->getClass->isAssignableFrom->input->getClass->assertTrue->return
+Node#verify()::: node verify:::isAlive->assertTrue->graph->assertTrue->verifyInputs->if->getOptions->getValue->verifyEdges->return
+Node#verifySourcePosition()::: node verify source position:::return
 Node#verifyEdges():::Perform expensive verification of inputs, usages, predecessors and successors.:::foreach->inputs->input->usages->contains->assertTrue->foreach->successors->successor->predecessor->successor->predecessor->assertTrue->successor->graph->graph->assertTrue->foreach->usages->usage->isDeleted->assertFalse->usage->inputs->contains->assertTrue->foundThis->foreach->usage->inputPositions->if->pos->get->if->pos->getInputType->pos->getInputType->isAllowedUsageType->pos->getInputType->pos->getName->assertTrue->assertTrue->if->predecessor->isDeleted->assertFalse->predecessor->successors->contains->assertTrue->return
+Node#assertTrue(boolean, String, Object...)::: node assert true:::if->return->else->throw->fail
+Node#assertFalse(boolean, String, Object...)::: node assert false:::if->throw->fail->else->return
+Node#fail(String, Object...)::: node fail:::throw->new->VerificationError->addContext
+Node#cfgPredecessors()::: node cfg predecessors:::if->return->Collections->emptySet->else->return->Collections->singleton
 Node#cfgSuccessors():::Returns an iterator that will provide all control-flow successors of this node:::return->successors
 Node#hashCode():::Nodes using their #id as the hash code:::if->this->isDeleted->return->return
 Node#getDebugProperties():::Provides a Map of properties of this node for use in debugging (e.g., to view in the ideal graph visualizer).:::return->new->HashMap<>->getDebugProperties
 Node#getDebugProperties(Map):::Fills a Map with properties of this node for use in debugging (e.g., to view in the ideal graph visualizer):::properties->getNodeClass->getData->for->i->properties->getCount->pos->getNodeSourcePosition->if->map->put->creation->getCreationPosition->if->map->creation->getStrackTraceString->put->insertion->getInsertionPosition->if->map->insertion->getStrackTraceString->put->return
 Node#toString():::This method is a shortcut for #toString(Verbosity) with Verbosity#Short.:::return->toString
 Node#toString(Verbosity):::Creates a String representation for this node with a given Verbosity.:::switch->return->Integer->toString->return->getNodeClass->shortName->return->toString->toString->return->toString->str->new->StringBuilder->str->toString->append->append->foreach->getDebugProperties->entrySet->str->entry->getKey->append->append->entry->getValue->append->append->str->append->return->str->toString->throw->new->RuntimeException
+Node#getId()::: node get id:::return
+Node#formatTo(Formatter, int, int, int)::: node format to:::if->formatter->toString->format->else->if->formatter->toString->format->else->formatter->toString->format->neighborsAlternate->neighborsFlags->if->if->formatter->format->formatTo->formatter->format->foreach->this->inputPositions->input->position->get->if->formatter->format->formatter->position->getName->format->formatter->format->input->formatTo->formatter->format->if->if->hasNoUsages->formatter->format->z->foreach->usages->if->formatter->format->usage->formatTo->formatter->format->foreach->this->successorPositions->successor->position->get->if->formatter->format->formatter->position->getName->format->formatter->format->successor->formatTo->formatter->format
 Node#valueEquals(Node):::Determines if this node's NodeClass#getData() data fields are equal to the data fields of another node of the same type:::return->getNodeClass->dataEquals
 Node#dataFlowEquals(Node):::Determines if this node is equal to the other node while ignoring differences in Successor control-flow edges.:::return->other->getNodeClass->this->valueEquals->nodeClass->equalInputs
+Node#pushInputs(NodeStack)::: node push inputs:::getNodeClass->pushInputs
+Node#estimatedNodeSize()::: node estimated node size:::return->nodeClass->size
+Node#estimatedNodeCycles()::: node estimated node cycles:::return->nodeClass->cycles
+NodeBitMap#sizeForNodeCount(int)::: node bit map size for node count:::return
+NodeBitMap#getCounter()::: node bit map get counter:::return
+NodeBitMap#graph()::: node bit map graph:::return
+NodeBitMap#isNew(Node)::: node bit map is new:::return->getNodeId
+NodeBitMap#isMarked(Node)::: node bit map is marked:::return->getNodeId->isMarked
+NodeBitMap#checkAndMarkInc(Node)::: node bit map check and mark inc:::if->isMarked->this->mark->return->else->return
+NodeBitMap#isMarked(int)::: node bit map is marked:::return
+NodeBitMap#isMarkedAndGrow(Node)::: node bit map is marked and grow:::id->getNodeId->checkGrow->return->isMarked
+NodeBitMap#mark(Node)::: node bit map mark:::id->getNodeId
+NodeBitMap#markAndGrow(Node)::: node bit map mark and grow:::id->getNodeId->checkGrow
+NodeBitMap#clear(Node)::: node bit map clear:::id->getNodeId
+NodeBitMap#clearAndGrow(Node)::: node bit map clear and grow:::id->getNodeId->checkGrow
+NodeBitMap#checkGrow(int)::: node bit map check grow:::if->if->grow->else
+NodeBitMap#clearAll()::: node bit map clear all:::Arrays->fill
+NodeBitMap#intersect(NodeBitMap)::: node bit map intersect:::commonLength->Math->min->for->i->for->i
+NodeBitMap#subtract(NodeBitMap)::: node bit map subtract:::commonLength->Math->min->for->i
+NodeBitMap#union(NodeBitMap)::: node bit map union:::grow->if->Arrays->copyOf->for->i->Math->min
+NodeBitMap#invert()::: node bit map invert:::for->i
+NodeBitMap#grow()::: node bit map grow:::Math->graph->nodeIdCount->max->newLength->sizeForNodeCount->if->Math->max->Arrays->copyOf
+NodeBitMap#check(Node, boolean)::: node bit map check:::return
+NodeBitMap#markAll(Iterable)::: node bit map mark all:::foreach->mark
+NodeBitMap#nextMarkedNode(int)::: node bit map next marked node:::wordIndex->wordsInUse->if->word->getPartOfWord->while->while->bitIndex->Long->numberOfTrailingZeros->nodeId->result->graph->getNode->if->nextNodeId->if->break->else->getPartOfWord->else->return->if->break->return
+NodeBitMap#getPartOfWord(long, int)::: node bit map get part of word:::return
+NodeBitMap.MarkedNodeIterator#forward()::: marked node iterator forward:::NodeBitMap.this->nextMarkedNode->if->getNodeId->else
+NodeBitMap.MarkedNodeIterator#hasNext()::: marked node iterator has next:::if->forward->return
+NodeBitMap.MarkedNodeIterator#next()::: marked node iterator next:::if->hasNext->throw->new->NoSuchElementException->if->currentNode->isAlive->throw->new->ConcurrentModificationException->result->return
+NodeBitMap.MarkedNodeIterator#remove()::: marked node iterator remove:::throw->new->UnsupportedOperationException
+NodeBitMap#iterator()::: node bit map iterator:::return->new->MarkedNodeIterator
+NodeBitMap#copy()::: node bit map copy:::return->new->NodeBitMap
+NodeBitMap#count()::: node bit map count:::count->foreach->Long->bitCount->return
+NodeBitMap#contains(Node)::: node bit map contains:::return->isMarked
+NodeBitMap#toString()::: node bit map to string:::return->snapshot->toString
+NodeClass#getAnnotationTimed(AnnotatedElement, Class, DebugContext)::: node class get annotation timed:::try->s->Init_AnnotationParsing->start->return->e->getAnnotation->catch->finally
 NodeClass#create(Class):::Gets the NodeClass associated with a given Class.:::superclass->c->getSuperclass->nodeSuperclass->if->get->return->new->NodeClass<>
+NodeClass#getUnchecked(Class)::: node class get unchecked:::try->field->clazz->getDeclaredField->field->setAccessible->return->field->get->catch->throw->new->RuntimeException->finally
+NodeClass#get(Class)::: node class get:::numTries->while->shouldBeInitializedBefore->UNSAFE->shouldBeInitialized->result->getUnchecked->if->return->shouldBeInitializedAfter->UNSAFE->shouldBeInitialized->msg->clazz->getTypeName->if->TTY->println->UNSAFE->ensureClassInitialized->else->throw->GraalError->shouldNotReachHere->return
+NodeClass#cycles()::: node class cycles:::return
+NodeClass#size()::: node class size:::return
+NodeClass#computeIterationMask(Type, int, long[])::: node class compute iteration mask:::mask->if->throw->new->GraalError->if->throw->new->GraalError->for->i->return
+NodeClass#addIterableId(int)::: node class add iterable id:::copy->Arrays->copyOf
+NodeClass#verifyIterableIds()::: node class verify iterable ids:::snc->while->snc->getClazz->isAssignableFrom->return
+NodeClass#containsId(int, int[])::: node class contains id:::foreach->if->return->return
+NodeClass#shortName()::: node class short name:::if->info->getClazz->getAnnotation->if->info->shortName->isEmpty->info->shortName->else->localShortName->getClazz->getSimpleName->if->localShortName->endsWith->localShortName->equals->localShortName->equals->localShortName->localShortName->length->substring->else->return
+NodeClass#getAllFields()::: node class get all fields:::return->new->FieldsArr
+NodeClass#iterableIds()::: node class iterable ids:::return
+NodeClass#iterableId()::: node class iterable id:::return
+NodeClass#valueNumberable()::: node class value numberable:::return
 NodeClass#isCanonicalizable():::Determines if this node type implements Canonicalizable.:::return
 NodeClass#isCommutative():::Determines if this node type implements BinaryCommutative.:::return
 NodeClass#isSimplifiable():::Determines if this node type implements Simplifiable.:::return
+NodeClass#allocatedNodeIterabledIds()::: node class allocated node iterabled ids:::return->nextIterableId->get
+NodeClass#getAllowedUsageTypes()::: node class get allowed usage types:::return
 NodeClass.EdgeInfo#compareTo(FieldsScanner.FieldInfo):::Sorts non-list edges before list edges.:::if->isAssignableFrom->if->isAssignableFrom->return->else->if->isAssignableFrom->return->return->super->compareTo
+NodeClass.InputInfo#toString()::: input info to string:::return->super->toString
+NodeClass.NodeFieldsScanner#scanField(Field, long)::: node fields scanner scan field:::inputAnnotation->getAnnotationTimed->optionalInputAnnotation->getAnnotationTimed->successorAnnotation->getAnnotationTimed->try->s->Init_FieldScanningInner->start->type->field->getType->modifiers->field->getModifiers->if->if->INPUT_LIST_CLASS->isAssignableFrom->GraalError->Modifier->isFinal->guarantee->GraalError->Modifier->isPublic->guarantee->else->GraalError->NODE_CLASS->isAssignableFrom->type->isInterface->guarantee->GraalError->Modifier->isFinal->guarantee->inputType->if->inputAnnotation->value->else->optionalInputAnnotation->value->inputs->field->getName->field->getDeclaringClass->field->isAnnotationPresent->new->InputInfo->add->else->if->if->SUCCESSOR_LIST_CLASS->isAssignableFrom->GraalError->Modifier->isFinal->guarantee->GraalError->Modifier->isPublic->guarantee->else->GraalError->NODE_CLASS->isAssignableFrom->guarantee->GraalError->Modifier->isFinal->guarantee->successors->field->getName->field->getDeclaringClass->new->EdgeInfo->add->else->GraalError->NODE_CLASS->isAssignableFrom->field->getName->equals->guarantee->GraalError->INPUT_LIST_CLASS->isAssignableFrom->guarantee->GraalError->SUCCESSOR_LIST_CLASS->isAssignableFrom->guarantee->super->scanField->catch->finally
+NodeClass#toString()::: node class to string:::str->new->StringBuilder->str->append->getClazz->getSimpleName->append->append->inputs->appendFields->str->append->successors->appendFields->str->append->data->appendFields->str->append->return->str->toString
+NodeClass#deepHashCode0(Object)::: node class deep hash code0:::if->return->else->if->o->getClass->isArray->return->o->hashCode->else->if->return->Arrays->deepHashCode->else->if->return->Arrays->hashCode->else->if->return->Arrays->hashCode->else->if->return->Arrays->hashCode->else->if->return->Arrays->hashCode->else->if->return->Arrays->hashCode->else->if->return->Arrays->hashCode->else->if->return->Arrays->hashCode->else->if->return->Arrays->hashCode->else->throw->shouldNotReachHere
+NodeClass#valueNumber(Node)::: node class value number:::number->if->for->i->data->getCount->return
+NodeClass#deepEquals0(Object, Object)::: node class deep equals0:::if->return->else->if->return->else->if->e1->getClass->isArray->e1->getClass->e2->getClass->return->e1->equals->else->if->return->deepEquals->else->if->return->Arrays->equals->else->if->return->Arrays->equals->else->if->return->Arrays->equals->else->if->return->Arrays->equals->else->if->return->Arrays->equals->else->if->return->Arrays->equals->else->if->return->Arrays->equals->else->if->return->Arrays->equals->else->throw->shouldNotReachHere
+NodeClass#deepEquals(Object[], Object[])::: node class deep equals:::length->if->return->for->i->return
+NodeClass#dataEquals(Node, Node)::: node class data equals:::for->i->data->getCount->return
+NodeClass#isValid(Position, NodeClass, Edges)::: node class is valid:::if->return->toEdges->fromEdges->type->getEdges->if->pos->getIndex->toEdges->getCount->return->if->pos->getIndex->fromEdges->getCount->return->return->toEdges->pos->getIndex->isSame
+NodeClass#updateEdgesInPlace(Node, InplaceUpdateClosure, Edges)::: node class update edges in place:::index->curType->edges->type->directCount->edges->getDirectCount->curOffsets->edges->getOffsets->while->edge->Edges->getNode->if->newEdge->duplicationReplacement->replacement->if->node->updateUsages->else->node->updatePredecessor->edges->initializeNode->while->edges->getCount->list->Edges->getNodeList->if->edges->updateEdgeListCopy->initializeList
+NodeClass#updateInputSuccInPlace(Node, InplaceUpdateClosure)::: node class update input succ in place:::updateEdgesInPlace->updateEdgesInPlace
+NodeClass#updateEdgeListCopy(Node, NodeList, InplaceUpdateClosure, Edges.Type)::: node class update edge list copy:::result->list->size->new->NodeInputList<>->list->size->new->NodeSuccessorList<>->for->i->list->count->return
 NodeClass#getEdges(Edges.Type):::Gets the input or successor edges defined by this node class.:::return
+NodeClass#getInputEdges()::: node class get input edges:::return
+NodeClass#getSuccessorEdges()::: node class get successor edges:::return
 NodeClass#allocateInstance():::Returns a newly allocated node for which no subclass-specific constructor has been called.:::try->node->UNSAFE->getJavaClass->allocateInstance->node->init->return->catch->throw->shouldNotReachHere->finally
+NodeClass#getJavaClass()::: node class get java class:::return->getClazz
 NodeClass#getNameTemplate():::The template used to build the Verbosity#Name version:::return
+NodeClass.InplaceUpdateClosure#replacement(Node, Edges.Type)::: inplace update closure replacement:::
+NodeClass#addGraphDuplicate(Graph, Graph, int, Iterable, DuplicationReplacement)::: node class add graph duplicate:::newNodes->denseThreshold->oldGraph->getNodeCount->oldGraph->getNodesDeletedSinceLastCompression->if->new->NodeMap<>->else->EconomicMap->create->createNodeDuplicates->replacementClosure->new->InplaceUpdateClosure->foreach->node->newNodes->get->nodeClass->node->getNodeClass->if->replacements->replacement->nodeClass->updateInputSuccInPlace->else->transferEdgesDifferentNodeClass->return
+NodeClass#createNodeDuplicates(Graph, Iterable, DuplicationReplacement, EconomicMap)::: node class create node duplicates:::foreach->if->replacement->if->replacements->replacement->if->newNodes->put->else->newNode->node->clone->newNodes->put
+NodeClass#transferEdgesDifferentNodeClass(Graph, DuplicationReplacement, EconomicMap, Node, Node)::: node class transfer edges different node class:::transferEdges->transferEdges
+NodeClass#transferEdges(Graph, DuplicationReplacement, EconomicMap, Node, Node, Edges.Type)::: node class transfer edges:::nodeClass->node->getNodeClass->oldNodeClass->oldNode->getNodeClass->oldEdges->oldNodeClass->getEdges->foreach->oldEdges->getPositionsIterable->if->nodeClass->isValid->continue->oldEdge->pos->get->if->target->newNodes->get->if->replacement->if->replacements->replacement->if->else->if->oldEdge->graph->pos->set
+NodeClass#isLeafNode()::: node class is leaf node:::return
+NodeClass#getLeafId()::: node class get leaf id:::return
+NodeClass#getSuperNodeClass()::: node class get super node class:::return
+NodeClass#inputsIteration()::: node class inputs iteration:::return
+NodeClass.RawEdgesIterator#hasNext()::: raw edges iterator has next:::next->if->return->else->forward->return
+NodeClass.RawEdgesIterator#forward()::: raw edges iterator forward:::while->next->getInput->advanceInput->if->return->return
+NodeClass.RawEdgesIterator#next()::: raw edges iterator next:::next->if->forward->if->throw->new->NoSuchElementException->else->return->else->return
+NodeClass.RawEdgesIterator#advanceInput()::: raw edges iterator advance input:::state->if->return->else->if->if->return->else->return->else->nodeList->Edges->getNodeListUnsafe->if->size->nodeList->size->if->return->return
+NodeClass.RawEdgesIterator#getInput()::: raw edges iterator get input:::state->if->return->Edges->getNodeUnsafe->else->if->nodeList->Edges->getNodeListUnsafe->return->nodeList->size->else->return
+NodeClass.RawEdgesIterator#remove()::: raw edges iterator remove:::throw->new->UnsupportedOperationException
+NodeClass.RawEdgesIterator#nextPosition()::: raw edges iterator next position:::return
+NodeClass.RawEdgesWithModCountIterator#hasNext()::: raw edges with mod count iterator has next:::try->return->super->hasNext->catch->finally
+NodeClass.RawEdgesWithModCountIterator#next()::: raw edges with mod count iterator next:::try->return->super->next->catch->finally
+NodeClass.RawEdgesWithModCountIterator#nextPosition()::: raw edges with mod count iterator next position:::try->return->super->nextPosition->catch->finally
+NodeClass#getSuccessorIterable(Node)::: node class get successor iterable:::mask->return->new->NodeIterable<Node>
+NodeClass#getInputIterable(Node)::: node class get input iterable:::mask->return->new->NodeIterable<Node>
+NodeClass#equalSuccessors(Node, Node)::: node class equal successors:::return->equalEdges
+NodeClass#equalInputs(Node, Node)::: node class equal inputs:::return->equalEdges
+NodeClass#equalEdges(Node, Node, long)::: node class equal edges:::myMask->while->offset->if->v1->Edges->getNodeUnsafe->v2->Edges->getNodeUnsafe->if->return->else->v1->Edges->getNodeListUnsafe->v2->Edges->getNodeListUnsafe->if->Objects->equals->return->return
+NodeClass#pushInputs(Node, NodeStack)::: node class push inputs:::myMask->while->offset->if->curNode->Edges->getNodeUnsafe->if->stack->push->else->pushAllHelper
+NodeClass#pushAllHelper(NodeStack, Node, long)::: node class push all helper:::list->Edges->getNodeListUnsafe->if->for->i->list->size
+NodeClass#applySuccessors(Node, EdgeVisitor)::: node class apply successors:::applyEdges
+NodeClass#applyInputs(Node, EdgeVisitor)::: node class apply inputs:::applyEdges
+NodeClass#applyEdges(Node, EdgeVisitor, long)::: node class apply edges:::myMask->while->offset->if->curNode->Edges->getNodeUnsafe->if->newNode->consumer->apply->if->Edges->putNodeUnsafe->else->applyHelper
+NodeClass#applyHelper(Node, EdgeVisitor, long)::: node class apply helper:::list->Edges->getNodeListUnsafe->if->for->i->list->size
+NodeClass#unregisterAtSuccessorsAsPredecessor(Node)::: node class unregister at successors as predecessor:::myMask->while->offset->if->curNode->Edges->getNodeUnsafe->if->node->updatePredecessor->Edges->putNodeUnsafe->else->unregisterAtSuccessorsAsPredecessorHelper
+NodeClass#unregisterAtSuccessorsAsPredecessorHelper(Node, long)::: node class unregister at successors as predecessor helper:::list->Edges->getNodeListUnsafe->if->for->i->list->size->list->clearWithoutUpdate
+NodeClass#registerAtSuccessorsAsPredecessor(Node)::: node class register at successors as predecessor:::myMask->while->offset->if->curNode->Edges->getNodeUnsafe->if->node->updatePredecessor->else->registerAtSuccessorsAsPredecessorHelper
+NodeClass#registerAtSuccessorsAsPredecessorHelper(Node, long)::: node class register at successors as predecessor helper:::list->Edges->getNodeListUnsafe->if->for->i->list->size
+NodeClass#replaceFirstInput(Node, Node, Node)::: node class replace first input:::return->replaceFirstEdge
+NodeClass#replaceFirstSuccessor(Node, Node, Node)::: node class replace first successor:::return->replaceFirstEdge
+NodeClass#replaceFirstEdge(Node, Node, Node, long)::: node class replace first edge:::myMask->while->offset->if->curNode->Edges->getNodeUnsafe->if->Edges->putNodeUnsafe->return->else->list->Edges->getNodeListUnsafe->if->list->replaceFirst->return->return
+NodeClass#registerAtInputsAsUsage(Node)::: node class register at inputs as usage:::myMask->while->offset->if->curNode->Edges->getNodeUnsafe->if->curNode->addUsage->else->registerAtInputsAsUsageHelper
+NodeClass#registerAtInputsAsUsageHelper(Node, long)::: node class register at inputs as usage helper:::list->Edges->getNodeListUnsafe->if->for->i->list->size
+NodeClass#unregisterAtInputsAsUsage(Node)::: node class unregister at inputs as usage:::myMask->while->offset->if->curNode->Edges->getNodeUnsafe->if->node->removeThisFromUsages->if->curNode->hasNoUsages->node->maybeNotifyZeroUsages->Edges->putNodeUnsafe->else->unregisterAtInputsAsUsageHelper
+NodeClass#unregisterAtInputsAsUsageHelper(Node, long)::: node class unregister at inputs as usage helper:::list->Edges->getNodeListUnsafe->if->for->i->list->size->list->clearWithoutUpdate
+NodeFlood#add(Node)::: node flood add:::if->visited->isMarked->visited->mark->worklist->add
+NodeFlood#getTotalMarkedCount()::: node flood get total marked count:::return
+NodeFlood#addAll(Iterable)::: node flood add all:::foreach->this->add
+NodeFlood#getVisited()::: node flood get visited:::return
+NodeFlood#isMarked(Node)::: node flood is marked:::return->visited->isMarked
+NodeFlood#isNew(Node)::: node flood is new:::return->visited->isNew
+NodeFlood.QueueConsumingIterator#hasNext()::: queue consuming iterator has next:::return->queue->isEmpty
+NodeFlood.QueueConsumingIterator#next()::: queue consuming iterator next:::return->queue->remove
+NodeFlood.QueueConsumingIterator#remove()::: queue consuming iterator remove:::throw->new->UnsupportedOperationException
+NodeFlood#iterator()::: node flood iterator:::return->new->QueueConsumingIterator
+NodeFlood.UnmarkedNodeIterator#forward()::: unmarked node iterator forward:::do->if->nodes->hasNext->return->nodes->next->while->visited->isMarked
+NodeFlood.UnmarkedNodeIterator#hasNext()::: unmarked node iterator has next:::return
+NodeFlood.UnmarkedNodeIterator#next()::: unmarked node iterator next:::try->return->catch->finally->forward
+NodeFlood.UnmarkedNodeIterator#remove()::: unmarked node iterator remove:::throw->new->UnsupportedOperationException
+NodeFlood#unmarkedNodes()::: node flood unmarked nodes:::return->new->Iterable<Node>
+NodeIdAccessor#getGraph()::: node id accessor get graph:::return
 NodeIdAccessor#verifyIdsAreStable():::Verifies that node identifiers have not changed since this object was created.:::compressions->if->throw->new->VerificationError->return
 NodeIdAccessor#getNodeId(Node):::Gets the identifier for a node:::return->node->id
+NodeInputList#update(T, T)::: node input list update:::self->updateUsages
+NodeInputList#getEdgesType()::: node input list get edges type:::return
+NodeInterface#asNode()::: node interface as node:::
+NodeList#isList()::: node list is list:::return
+NodeList#update(T, T)::: node list update:::
+NodeList#getEdgesType()::: node list get edges type:::
+NodeList#size()::: node list size:::return
+NodeList#isEmpty()::: node list is empty:::return
+NodeList#isNotEmpty()::: node list is not empty:::return
+NodeList#count()::: node list count:::return
+NodeList#incModCount()::: node list inc mod count:::
+NodeList#add(Node)::: node list add:::self->incModCount->incModCount->length->if->new->NodeArr->else->if->newNodes->new->NodeArr->System->arraycopy->update->return
+NodeList#get(int)::: node list get:::return
+NodeList#assertInRange(int)::: node list assert in range:::return
+NodeList#last()::: node list last:::return->size->get
+NodeList#set(int, Node)::: node list set:::incModCount->oldValue->update->return
+NodeList#initialize(int, Node)::: node list initialize:::incModCount
+NodeList#copy(NodeList)::: node list copy:::self->incModCount->incModCount->newNodes->new->NodeArr->System->arraycopy
+NodeList#equals(Object)::: node list equals:::if->return->if->otherList->if->otherList->size->return->for->i->return->return
+NodeList#clear()::: node list clear:::self->incModCount->incModCount->for->i->clearWithoutUpdate
+NodeList#clearWithoutUpdate()::: node list clear without update:::
+NodeList#remove(Object)::: node list remove:::self->incModCount->i->incModCount->while->if->oldValue->while->update->return->else->return
+NodeList#remove(int)::: node list remove:::self->incModCount->oldValue->i->incModCount->while->update->return
+NodeList#replaceFirst(Node, Node)::: node list replace first:::for->i->return
+NodeList#iterator()::: node list iterator:::return->new->NodeListIterator<>
+NodeList#contains(T)::: node list contains:::for->i->return
+NodeList#snapshot()::: node list snapshot:::return->Arrays->Arrays->copyOf->asList
+NodeList#snapshotTo(Collection)::: node list snapshot to:::for->i
+NodeList#setAll(NodeList)::: node list set all:::self->incModCount->incModCount->for->i->size->Arrays->values->size->copyOf->values->size->for->i->size
+NodeList#toArray(A[])::: node list to array:::if->System->arraycopy->return->return->Arrays->a->getClass->copyOf
+NodeList#toArray()::: node list to array:::return->Arrays->copyOf
+NodeList#replace(T, T)::: node list replace:::incModCount->for->i->size
+NodeList#indexOf(Object)::: node list index of:::for->i->return
+NodeList#contains(Object)::: node list contains:::return->indexOf
+NodeList#containsAll(Collection)::: node list contains all:::throw->new->UnsupportedOperationException
+NodeList#addAll(Collection)::: node list add all:::foreach->add->return
+NodeList#addAll(T[])::: node list add all:::foreach->add->return
+NodeList#toString()::: node list to string:::sb->new->StringBuilder->sb->append->for->i->sb->append->return->sb->toString
+NodeList#first()::: node list first:::if->size->return->get->return
+NodeList#subList(int)::: node list sub list:::return->new->SubList<>
+NodeList.SubList#get(int)::: sub list get:::return->list->get
+NodeList.SubList#size()::: sub list size:::return->list->size
+NodeList.SubList#subList(int)::: sub list sub list:::return->new->SubList<>
+NodeList.SubList#iterator()::: sub list iterator:::return->new->NodeListIterator<>
+NodeList.NodeListIterator#hasNext()::: node list iterator has next:::return
+NodeList.NodeListIterator#next()::: node list iterator next:::return
+NodeList.NodeListIterator#remove()::: node list iterator remove:::throw->new->UnsupportedOperationException
+NodeMap#get(Node)::: node map get:::return->getNodeId
+NodeMap#getAndGrow(Node)::: node map get and grow:::checkAndGrow->return->getNodeId
+NodeMap#checkAndGrow(Node)::: node map check and grow:::if->isNew->Arrays->Math->graph->nodeIdCount->max->copyOf
+NodeMap#isEmpty()::: node map is empty:::throw->new->UnsupportedOperationException
+NodeMap#containsKey(Node)::: node map contains key:::if->node->graph->graph->return->get->return
+NodeMap#containsValue(Object)::: node map contains value:::foreach->if->return->return
+NodeMap#graph()::: node map graph:::return
+NodeMap#set(Node, T)::: node map set:::getNodeId
+NodeMap#setAndGrow(Node, T)::: node map set and grow:::checkAndGrow->set
+NodeMap#getKey(int)::: node map get key:::return->graph->getNode
+NodeMap#size()::: node map size:::throw->new->UnsupportedOperationException
+NodeMap#capacity()::: node map capacity:::return
+NodeMap#isNew(Node)::: node map is new:::return->getNodeId->capacity
+NodeMap#check(Node)::: node map check:::return
+NodeMap#clear()::: node map clear:::Arrays->fill
+NodeMap#getKeys()::: node map get keys:::return->new->Iterable<Node>
+NodeMap#getEntries()::: node map get entries:::return->new->MapCursor<Node,T>
+NodeMap#getValues()::: node map get values:::return->new->Iterable<T>
+NodeMap#toString()::: node map to string:::i->getEntries->if->i->advance->return->sb->new->StringBuilder->sb->append->while->key->i->getKey->value->i->getValue->sb->append->sb->append->sb->append->if->i->advance->return->sb->append->toString->sb->append->append
+NodeMap#put(Node, T)::: node map put:::result->get->set->return
+NodeMap#removeKey(Node)::: node map remove key:::return->put
+NodeMap#replaceAll(BiFunction)::: node map replace all:::foreach->getKeys->function->get->apply->put
 NodeSourcePosition#trim():::Remove marker frames.:::lastMarker->for->current->current->getCaller->if->return->return->lastMarker->getCaller
+NodeSourcePosition#getRootMethod()::: node source position get root method:::cur->while->cur->getCaller->cur->getCaller->return->cur->getMethod
+NodeSourcePosition#verifyRootMethod(ResolvedJavaMethod)::: node source position verify root method:::currentRoot->getRootMethod->return
+NodeSourcePosition#iterator()::: node source position iterator:::return->new->Iterator<NodeSourcePosition>
+NodeSourcePosition#placeholder(ResolvedJavaMethod)::: node source position placeholder:::return->new->NodeSourcePosition
+NodeSourcePosition#placeholder(ResolvedJavaMethod, int)::: node source position placeholder:::return->new->NodeSourcePosition
+NodeSourcePosition#isPlaceholder()::: node source position is placeholder:::return
+NodeSourcePosition#substitution(ResolvedJavaMethod)::: node source position substitution:::return->substitution
+NodeSourcePosition#substitution(ResolvedJavaMethod, int)::: node source position substitution:::return->substitution
+NodeSourcePosition#substitution(NodeSourcePosition, ResolvedJavaMethod)::: node source position substitution:::return->substitution
+NodeSourcePosition#substitution(NodeSourcePosition, ResolvedJavaMethod, int)::: node source position substitution:::return->new->NodeSourcePosition
+NodeSourcePosition#isSubstitution()::: node source position is substitution:::return
+NodeSourcePosition#equals(Object)::: node source position equals:::if->return->if->getClass->obj->getClass->that->if->return->if->this->getBCI->that->getBCI->Objects->this->getMethod->that->getMethod->equals->Objects->this->getCaller->that->getCaller->equals->Objects->equals->return->return
+NodeSourcePosition#hashCode()::: node source position hash code:::return
+NodeSourcePosition#depth()::: node source position depth:::d->pos->while->pos->getCaller->return
+NodeSourcePosition#getSourceLanguage()::: node source position get source language:::return
+NodeSourcePosition#getCaller()::: node source position get caller:::return->super->getCaller
+NodeSourcePosition#addCaller(SourceLanguagePosition, NodeSourcePosition)::: node source position add caller:::return->addCaller
+NodeSourcePosition#addCaller(NodeSourcePosition)::: node source position add caller:::return->addCaller
+NodeSourcePosition#addCaller(NodeSourcePosition, boolean)::: node source position add caller:::return->addCaller
+NodeSourcePosition#addCaller(SourceLanguagePosition, NodeSourcePosition, boolean)::: node source position add caller:::if->getCaller->if->isPlaceholder->return->getMethod->new->NodeSourcePosition->return->getMethod->getBCI->new->NodeSourcePosition->else->return->getCaller->addCaller->getMethod->getBCI->new->NodeSourcePosition
+NodeSourcePosition#toString()::: node source position to string:::sb->new->StringBuilder->pos->while->format->if->sb->toShortString->append->pos->getCaller->if->sb->append->return->sb->toString
+NodeSourcePosition#format(StringBuilder, NodeSourcePosition)::: node source position format:::MetaUtil->sb->append->pos->getMethod->pos->getBCI->appendLocation->if->sb->append->if->disassembly->BytecodeDisassembler->pos->getMethod->pos->getBCI->disassembleOne->if->disassembly->length->sb->append->sb->append
+NodeSourcePosition#shallowToString()::: node source position shallow to string:::sb->new->StringBuilder->format->return->sb->toString
+NodeSourcePosition#verify()::: node source position verify:::current->caller->getCaller->while->caller->getCaller->return
+NodeSourcePosition#verifyCaller(NodeSourcePosition, NodeSourcePosition)::: node source position verify caller:::if->return->if->BytecodeFrame->caller->getBCI->isPlaceholderBci->return->opcode->BytecodeDisassembler->caller->getMethod->caller->getBCI->getBytecodeAt->method->BytecodeDisassembler->caller->getMethod->caller->getBCI->getInvokedMethodAt->return
+NodeStack#size()::: node stack size:::return
+NodeStack#push(Node)::: node stack push:::newIndex->valuesLength->if->grow
+NodeStack#grow()::: node stack grow:::valuesLength->newValues->new->NodeArr->System->arraycopy
+NodeStack#get(int)::: node stack get:::return
+NodeStack#pop()::: node stack pop:::return
+NodeStack#peek()::: node stack peek:::return
+NodeStack#isEmpty()::: node stack is empty:::return
+NodeStack#clear()::: node stack clear:::
+NodeStack#toString()::: node stack to string:::if->return->sb->new->StringBuilder->for->i->return->sb->substring
+NodeSuccessorList#update(T, T)::: node successor list update:::self->updatePredecessor
+NodeSuccessorList#getEdgesType()::: node successor list get edges type:::return
 NodeUnionFind#union(Node, Node):::Merge the equivalence sets of two nodes:::getNodeId->getNodeId->union
 NodeUnionFind#find(Node):::Get a representative element of the equivalence set of a node:::id->getNodeId->find->return->graph->getNode
+NodeUnionFind#equiv(Node, Node)::: node union find equiv:::return->getNodeId->find->getNodeId->find
+NodeUnionFind#union(int, int)::: node union find union:::aRoot->find->bRoot->find->if->if->else->if
+NodeUnionFind#find(int)::: node union find find:::ret->while->return
+NodeUsageIterable#iterator()::: node usage iterable iterator:::if->isModificationCountsEnabled->return->new->NodeUsageWithModCountIterator->else->return->new->NodeUsageIterator
+NodeUsageIterable#first()::: node usage iterable first:::return
+NodeUsageIterable#isEmpty()::: node usage iterable is empty:::return
+NodeUsageIterable#isNotEmpty()::: node usage iterable is not empty:::return
+NodeUsageIterable#count()::: node usage iterable count:::return->node->getUsageCount
+NodeUsageIterable#toString()::: node usage iterable to string:::sb->new->StringBuilder->iterator->iterator->first->sb->append->sb->append->while->iterator->hasNext->input->iterator->next->if->sb->append->sb->append->sb->append->return->sb->toString
+NodeUsageIterator#advance()::: node usage iterator advance:::if->else->if->else->relativeIndex->if
+NodeUsageIterator#hasNext()::: node usage iterator has next:::return
+NodeUsageIterator#next()::: node usage iterator next:::result->if->throw->new->NoSuchElementException->advance->return
+NodeUsageIterator#remove()::: node usage iterator remove:::throw->new->UnsupportedOperationException
+NodeUsageWithModCountIterator#hasNext()::: node usage with mod count iterator has next:::if->node->usageModCount->throw->new->ConcurrentModificationException->return->super->hasNext
+NodeUsageWithModCountIterator#next()::: node usage with mod count iterator next:::if->node->usageModCount->throw->new->ConcurrentModificationException->return->super->next
+NodeWorkList#addAll(Iterable)::: node work list add all:::foreach->if->node->isAlive->this->add
+NodeWorkList#add(Node)::: node work list add:::
+NodeWorkList#contains(Node)::: node work list contains:::
+NodeWorkList.QueueConsumingIterator#dropDeleted()::: queue consuming iterator drop deleted:::while->worklist->isEmpty->worklist->peek->isDeleted->worklist->remove
+NodeWorkList.QueueConsumingIterator#remove()::: queue consuming iterator remove:::throw->new->UnsupportedOperationException
+NodeWorkList.IterativeNodeWorkList#iterator()::: iterative node work list iterator:::return->new->QueueConsumingIterator
+NodeWorkList.IterativeNodeWorkList#add(Node)::: iterative node work list add:::if->if->worklist->size->node->graph->inflateToBitMap->if->if->inQueue->isMarkedAndGrow->return->else->foreach->if->return->if->inQueue->markAndGrow->worklist->add
+NodeWorkList.IterativeNodeWorkList#contains(Node)::: iterative node work list contains:::if->return->inQueue->isMarked->else->foreach->if->return->return
+NodeWorkList.IterativeNodeWorkList#checkInfiniteWork(Node)::: iterative node work list check infinite work:::if->node->hasNoUsages->if->else->if->return->else->else->return
+NodeWorkList.IterativeNodeWorkList#inflateToBitMap(Graph)::: iterative node work list inflate to bit map:::graph->createNodeBitMap->foreach->if->queuedNode->isAlive->inQueue->mark
+NodeWorkList.SingletonNodeWorkList#add(Node)::: singleton node work list add:::if->if->visited->isMarkedAndGrow->visited->mark->worklist->add
+NodeWorkList.SingletonNodeWorkList#contains(Node)::: singleton node work list contains:::return->visited->isMarked
+NodeWorkList.SingletonNodeWorkList#iterator()::: singleton node work list iterator:::return->new->QueueConsumingIterator
+Position#get(Node)::: position get:::if->edges->getDirectCount->return->Edges->edges->getOffsets->getNode->else->return->Edges->edges->getOffsets->getNodeList->get
+Position#getInputType()::: position get input type:::return->getInputType
+Position#getName()::: position get name:::return->edges->getName
+Position#isInputOptional()::: position is input optional:::return->isOptional
+Position#set(Node, Node)::: position set:::if->edges->getDirectCount->edges->setNode->else->Edges->edges->getOffsets->getNodeList->set
+Position#initialize(Node, Node)::: position initialize:::if->edges->getDirectCount->edges->initializeNode->else->Edges->edges->getOffsets->getNodeList->initialize
+Position#toString()::: position to string:::res->edges->getType->getSimpleName->edges->getName->if->return
+Position#hashCode()::: position hash code:::prime->result->edges->hashCode->return
+Position#equals(Object)::: position equals:::if->return->if->return->if->getClass->obj->getClass->return->other->if->return->if->return->if->return->return
 Position#getSubIndex():::Gets the index within a NodeList if #getIndex() denotes a NodeList field otherwise Node#NOT_ITERABLE.:::return
 Position#getIndex():::Gets the index of the Node or NodeList field denoted by this position.:::return
+Position#getType()::: position get type:::if->edges->getDirectCount->return->edges->getType->else->return
 SourceLanguagePosition#toShortString():::Produce a compact description of this position suitable for printing.:::
 SourceLanguagePosition#getOffsetEnd():::Mimics GraphLocations operation.:::
 SourceLanguagePosition#getOffsetStart():::Mimics GraphLocations operation.:::
 SourceLanguagePosition#getLineNumber():::Mimics GraphLocations operation.:::
 SourceLanguagePosition#getURI():::Mimics GraphLocations operation.:::
 SourceLanguagePosition#getLanguage():::Mimics GraphLocations operation.:::
+SourceLanguagePositionProvider#getPosition(JavaConstant)::: source language position provider get position:::
+SuccessorEdges#update(Node, Node, Node)::: successor edges update:::node->updatePredecessor
+TypedGraphNodeIterator#findNext()::: typed graph node iterator find next:::if->forward->else->c->current->afterDeleted->graph->getIterableNodeNext->if->else->if->setCurrent->if->return->return->current
+TypedGraphNodeIterator#forward()::: typed graph node iterator forward:::startIdx->while->next->if->current->graph->getIterableNodeStart->else->graph->current->getIterableNodeNext->if->if->if->return->else->setCurrent->break
+TypedGraphNodeIterator#current()::: typed graph node iterator current:::return
+TypedGraphNodeIterator#setCurrent(Node)::: typed graph node iterator set current:::
+TypedGraphNodeIterator#hasNext()::: typed graph node iterator has next:::return->findNext
+TypedGraphNodeIterator#next()::: typed graph node iterator next:::result->findNext->if->throw->new->NoSuchElementException->return
+TypedGraphNodeIterator#remove()::: typed graph node iterator remove:::throw->new->UnsupportedOperationException

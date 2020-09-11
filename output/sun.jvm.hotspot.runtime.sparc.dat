@@ -1,6 +1,63 @@
+SPARCFrame#unBiasSP(Address)::: frame un bias p:::if->return->raw_sp->VM->getVM->getStackBias->addOffsetTo->else->return
+SPARCFrame#biasSP(Address)::: frame bias p:::if->if->real_sp->VM->getVM->getStackBias->addOffsetTo->println->return->real_sp->VM->getVM->getStackBias->addOffsetTo->else->if->println->return
+SPARCFrame#findYoungerSP(Address, Address)::: frame find younger p:::findRaw->biasSP->if->throw->new->RuntimeException->maxFrames->count->search->next->pc->if->println->while->search->spOffsetInSavedWindow->getAddressAt->search->spOffsetInSavedWindow->getAddressAt->if->println->if->next->equals->return->unBiasSP->if->println->return
+SPARCFrame#getSP()::: frame get p:::if->unBiasSP->println->return->unBiasSP
+SPARCFrame#getID()::: frame get d:::return->getSP
+SPARCFrame#getYoungerSP()::: frame get younger p:::if->unBiasSP->println->return->unBiasSP
+SPARCFrame#clone()::: frame clone:::frame->new->SPARCFrame->return
+SPARCFrame#equals(Object)::: frame equals:::if->return->if->return->other->return->AddressOps->getSP->other->getSP->equal->AddressOps->getFP->other->getFP->equal->AddressOps->getPC->other->getPC->equal
+SPARCFrame#hashCode()::: frame hash code:::if->return->return->raw_sp->hashCode
+SPARCFrame#toString()::: frame to string:::fp->getFP->sp->getSP->youngerSP->getYoungerSP->return->sp->toString->youngerSP->toString->fp->toString->pc->toString
 SPARCFrame#isSignalHandlerFrameDbg():::<P> Identifies a signal handler frame on the stack:::cdbg->VM->getVM->getDebugger->getCDebugger->if->dso->cdbg->getPC->loadObjectContainingPC->if->cs->dso->getPC->closestSymbolToPC->if->cs->getName->equals->return->else->return->else->return->else->if->getYoungerSP->return->i2->getSP->spOffsetInSavedWindow->getAddressAt->if->return->fp->getFP->MAJOR_HACK_OFFSET->res->i2->fp->VM->getVM->getAddressSize->addOffsetTo->equals->if->sigInfoAddr->getSP->spOffsetInSavedWindow->getAddressAt->if->println->return
+SPARCFrame#getSignalNumberDbg()::: frame get signal number dbg:::sigInfoAddr->getSP->spOffsetInSavedWindow->getAddressAt->return->sigInfoAddr->getCIntegerAt
+SPARCFrame#getSignalNameDbg()::: frame get signal name dbg:::return->POSIXSignals->getSignalNumberDbg->getSignalName
+SPARCFrame#isInterpretedFrameValid()::: frame is interpreted frame valid:::if->Assert->isInterpretedFrame->that->if->getFP->getFP->VM->getVM->getAddressSize->andWithMask->return->if->getSP->getSP->VM->getVM->getAddressSize->andWithMask->return->if->getFP->VM->getVM->getAddressSize->addOffsetTo->getSP->lessThan->return->methodHandle->addressOfInterpreterFrameMethod->getAddressAt->if->VM->getVM->getObjectHeap->isValidMethod->return->if->getFP->getSP->lessThanOrEqual->return->if->getFP->getSP->minus->VM->getVM->getAddressSize->return->bcx->addressOfInterpreterFrameBCX->getAddressAt->method->try->Metadata->instantiateWrapperFor->catch->return->finally->bci->bcpToBci->if->return->return
+SPARCFrame#frameSize()::: frame frame size:::return->getSenderSP->getSP->minus->VM->getVM->getAddressSize
+SPARCFrame#getLink()::: frame get link:::return->getFP->spOffsetInSavedWindow->getAddressAt->unBiasSP
+SPARCFrame#sender(RegisterMap, CodeBlob)::: frame sender:::map->if->Assert->that->map->setIncludeArgumentOops->if->isEntryFrame->return->senderForEntryFrame->youngerSP->getSP->sp->getSenderSP->isInterpreted->if->VM->getVM->isDebugging->if->isSignalHandlerFrameDbg->if->println->offset->getMContextAreaOffsetInUContext->fp->fp->getUContextOffset->getMContextAreaOffsetInUContext->addOffsetTo->PC_OFFSET_IN_GREGSET->SP_OFFSET_IN_GREGSET->fp->VM->getVM->getAddressSize->getAddressAt->pc->fp->VM->getVM->getAddressSize->getAddressAt->return->new->SPARCFrame->if->VM->getVM->getInterpreter->contains->map->makeIntegerRegsUnsaved->map->shiftWindow->else->VM->getVM->getCodeCache->findBlob->if->map->shiftWindow->if->map->getUpdateMap->if->cb->callerMustGCArguments->map->setIncludeArgumentOops->if->cb->getOopMaps->ImmutableOopMapSet->VM->getVM->isDebugging->updateRegisterMap->return->biasSP->biasSP->new->SPARCFrame
+SPARCFrame#hasSenderPD()::: frame has sender d:::try->if->getSP->return->if->getSP->spOffsetInSavedWindow->getAddressAt->unBiasSP->return->return->catch->if->println->throw->finally
+SPARCFrame#getSenderPC()::: frame get sender c:::return->addressOfI7->getAddressAt->addOffsetTo
+SPARCFrame#getUnextendedSP()::: frame get unextended p:::return->getSP->addOffsetTo
+SPARCFrame#getSenderSP()::: frame get sender p:::return->getFP
 SPARCFrame#afterSave():::Given the next-younger sp for a given frame's sp, compute the       frame:::return->getYoungerSP->biasSP->new->SPARCFrame
 SPARCFrame#getFP():::Accessors for the instance variables:::sp->getSP->if->println->fpAddr->sp->spOffsetInSavedWindow->addOffsetTo->try->fp->fpAddr->getAddressAt->unBiasSP->if->println->return->catch->println->return->finally
+SPARCFrame#addressOfFPSlot(int)::: frame address of slot:::return->getFP->VM->getVM->getAddressSize->addOffsetTo
+SPARCFrame#addressOfInterpreterFrameLocals()::: frame address of interpreter frame locals:::return->getSP->spOffsetInSavedWindow->addOffsetTo
+SPARCFrame#addressOfInterpreterFrameBCX()::: frame address of interpreter frame x:::return->getSP->spOffsetInSavedWindow->addOffsetTo
+SPARCFrame#getInterpreterFrameBCI()::: frame get interpreter frame i:::bcp->addressOfInterpreterFrameBCX->getAddressAt->methodHandle->addressOfInterpreterFrameMethod->getAddressAt->method->Metadata->instantiateWrapperFor->return->bcpToBci
+SPARCFrame#addressOfInterpreterFrameExpressionStack()::: frame address of interpreter frame expression stack:::return->addressOfInterpreterFrameMonitors->VM->getVM->getAddressSize->addOffsetTo
+SPARCFrame#getInterpreterFrameExpressionStackDirection()::: frame get interpreter frame expression stack direction:::return
 SPARCFrame#addressOfInterpreterFrameTOS():::Top of expression stack:::return->getSP->spOffsetInSavedWindow->getAddressAt->VM->getVM->getAddressSize->addOffsetTo
 SPARCFrame#addressOfInterpreterFrameTOSAt(int):::Expression stack from top down:::return->addressOfInterpreterFrameTOS->VM->getVM->getAddressSize->addOffsetTo
+SPARCFrame#getInterpreterFrameSenderSP()::: frame get interpreter frame sender p:::if->Assert->isInterpretedFrame->that->return->getFP
+SPARCFrame#addressOfInterpreterFrameMonitors()::: frame address of interpreter frame monitors:::return->getSP->spOffsetInSavedWindow->addOffsetTo->getAddressAt
+SPARCFrame#interpreterFrameMonitorBegin()::: frame interpreter frame monitor begin:::roundedVMLocalWords->Bits->roundTo->return->addressOfFPSlot->new->BasicObjectLock
+SPARCFrame#interpreterFrameMonitorEnd()::: frame interpreter frame monitor end:::return->addressOfInterpreterFrameMonitors->new->BasicObjectLock
+SPARCFrame#interpreterFrameMonitorSize()::: frame interpreter frame monitor size:::return->Bits->BasicObjectLock->size->VM->getVM->getAddressSize->roundTo
+SPARCFrame#addressOfInterpreterFrameMethod()::: frame address of interpreter frame method:::return->getSP->spOffsetInSavedWindow->addOffsetTo
+SPARCFrame#addressOfInterpreterFrameCPCache()::: frame address of interpreter frame cache:::return->getSP->spOffsetInSavedWindow->addOffsetTo
+SPARCFrame#getEntryFrameCallWrapper()::: frame get entry frame call wrapper:::link->new->SPARCArgument->return->VMObjectFactory->getSP->link->asIn->asRegister->spOffsetInSavedWindow->getAddressAt->newObject
+SPARCFrame#addressOfSavedOopResult()::: frame address of saved oop result:::return->addressOfO0
+SPARCFrame#addressOfSavedReceiver()::: frame address of saved receiver:::return->addressOfO0
+SPARCFrame#addressOfI7()::: frame address of i7:::return->getSP->spOffsetInSavedWindow->addOffsetTo
+SPARCFrame#addressOfO7()::: frame address of o7:::return->afterSave->addressOfI7
+SPARCFrame#addressOfI0()::: frame address of i0:::return->getSP->spOffsetInSavedWindow->addOffsetTo
+SPARCFrame#addressOfO0()::: frame address of o0:::return->afterSave->addressOfI0
+SPARCFrame#addressesEqual(Address, Address)::: frame addresses equal:::if->return->if->return->return->a1->equals
+SPARCFrame#senderForEntryFrame(RegisterMap)::: frame sender for entry frame:::map->if->Assert->that->jcw->getEntryFrameCallWrapper->if->Assert->entryFrameIsFirst->that->Assert->jcw->getLastJavaSP->getSP->greaterThan->that->lastJavaSP->jcw->getLastJavaSP->lastJavaPC->jcw->getLastJavaPC->map->clear->map->makeIntegerRegsUnsaved->map->shiftWindow->if->Assert->map->getIncludeArgumentOops->that->if->return->biasSP->new->SPARCFrame->else->youngerSP->getSP->getNextYoungerSP->return->biasSP->biasSP->new->SPARCFrame
+SPARCFrame#getNextYoungerSP(Address, Address)::: frame get next younger p:::sp->getNextYoungerSPOrNull->if->Assert->that->return
+SPARCFrame#getNextYoungerSPOrNull(Address, Address, Address)::: frame get next younger or null:::if->throw->new->RuntimeException->if->previousSP->maxFrames->oldSP->minus->VM->getVM->getAddressSize->while->sp->equals->spIsValid->if->break->sp->spOffsetInSavedWindow->getAddressAt->unBiasSP->return->sp->equals
+SPARCFrame#spIsValid(Address, Address, Address)::: frame sp is valid:::mask->VM->getVM->getAddressSize->return->sp->andWithMask->sp->lessThanOrEqual->sp->greaterThanOrEqual
+SPARCFrame#getUContextOffset()::: frame get context offset:::MAJOR_HACK_OFFSET->return->VM->getVM->getAddressSize
+SPARCFrame#getMContextAreaOffsetInUContext()::: frame get context area offset in context:::offset->VM->getVM->VM->getVM->getAddressSize->alignUp->VM->getVM->VM->getVM->getAddressSize->alignUp->VM->getVM->getAddressSize->VM->getVM->VM->getVM->getAddressSize->alignUp->return
+SPARCRegisterMap#initialize(TypeDataBase)::: register map initialize:::db->lookupType->getSize->db->lookupIntConstant->intValue->for->i->for->i
+SPARCRegisterMap#clone()::: register map clone:::retval->new->SPARCRegisterMap->return
+SPARCRegisterMap#clearPD()::: register map clear d:::if->thread->hasLastJavaFrame->fr->thread->getLastFrame->fr->getSP->else->if->VM->getVM->isDebugging->fr->thread->getCurrentFrameGuess->if->fr->getSP
+SPARCRegisterMap#getLocationPD(VMReg)::: register map get location d:::vm->VM->getVM->regname->vmreg->getValue->if->Assert->that->if->return->if->return->secondWord->if->isEven->if->vm->isLP64->else->return->reg->new->SPARCRegister->if->reg->isOut->if->Assert->that->return->youngerWindow->reg->afterSave->spOffsetInSavedWindow->addOffsetTo->if->reg->isLocal->reg->isIn->if->Assert->that->return->window->reg->spOffsetInSavedWindow->addOffsetTo->return
+SPARCRegisterMap#initializePD()::: register map initialize d:::makeIntegerRegsUnsaved
+SPARCRegisterMap#initializeFromPD(RegisterMap)::: register map initialize from d:::srm->makeIntegerRegsUnsaved
+SPARCRegisterMap#shiftWindow(Address, Address)::: register map shift window:::if->shiftIndividualRegisters
 SPARCRegisterMap#makeIntegerRegsUnsaved():::When popping out of compiled frames, we make all IRegs disappear.:::
+SPARCRegisterMap#shiftIndividualRegisters()::: register map shift individual registers:::if->getUpdateMap->return->checkLocationValid->lv->lv0->if->for->i->checkLocationValid
+SPARCRegisterMap#isEven(int)::: register map is even:::return
+SPARCRegisterMap#checkLocationValid()::: register map check location valid:::if->Assert->that

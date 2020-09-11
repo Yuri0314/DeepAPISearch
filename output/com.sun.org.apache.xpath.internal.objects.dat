@@ -1,3 +1,9 @@
+DTMXRTreeFrag#destruct()::: tree frag destruct:::
+DTMXRTreeFrag#getDTM()::: tree frag get m:::return
+DTMXRTreeFrag#getDTMIdentity()::: tree frag get identity:::return
+DTMXRTreeFrag#getXPathContext()::: tree frag get path context:::return
+DTMXRTreeFrag#hashCode()::: tree frag hash code:::return
+DTMXRTreeFrag#equals(Object)::: tree frag equals:::if->return->getDTMIdentity->return
 XBoolean#getType():::Tell that this is a CLASS_BOOLEAN.:::return
 XBoolean#getTypeString():::Given a request type, return the equivalent string:::return
 XBoolean#num():::Cast result object to a number.:::return
@@ -27,6 +33,7 @@ XNodeSet#object():::Return a java object that's closest to the representation th
 XNodeSet#nodeset():::Cast result object to a nodelist.:::return->iter->new->com.sun.org.apache.xml.internal.dtm.ref.DTMNodeIterator
 XNodeSet#nodelist():::Cast result object to a nodelist.:::nodelist->new->com.sun.org.apache.xml.internal.dtm.ref.DTMNodeList->clone->nodelist->getDTMIterator->clone->getVector->SetVector->return
 XNodeSet#iterRaw():::Return the iterator without cloning, etc.:::return
+XNodeSet#release(DTMIterator)::: node set release:::
 XNodeSet#iter():::Cast result object to a nodelist.:::try->if->hasCache->return->cloneWithReset->else->return->catch->throw->cnse->getMessage->new->RuntimeException->finally
 XNodeSet#getFresh():::Get a fresh copy of the object:::try->if->hasCache->return->cloneWithReset->else->return->catch->throw->cnse->getMessage->new->RuntimeException->finally
 XNodeSet#mutableNodeset():::Cast result object to a mutableNodeset.:::mnl->if->else->iter->new->NodeSetDTM->setObject->setCurrentPos->return
@@ -56,6 +63,7 @@ XNodeSetForDOM#nodeset():::Cast result object to a nodelist:::return->super->nod
 XNodeSetForDOM#nodelist():::Cast result object to a nodelist:::return->super->nodelist
 XNull#getType():::Tell what kind of class this is.:::return
 XNull#getTypeString():::Given a request type, return the equivalent string:::return
+XNull#num()::: null num:::return
 XNull#boolean bool():::Cast result object to a boolean.:::return
 XNull#str():::Cast result object to a string.:::return
 XNull#rtf(XPathContext):::Cast result object to a result tree fragment.:::return
@@ -66,9 +74,12 @@ XNumber#num():::Cast result object to a number.:::return
 XNumber#num(XPathContext):::Evaluate expression to a number.:::return
 XNumber#boolean bool():::Cast result object to a boolean.:::return->Double->isNaN
 XNumber#str():::Cast result object to a string.:::if->Double->isNaN->return->else->if->Double->isInfinite->if->return->else->return->num->s->Double->toString->len->s->length->if->s->charAt->s->charAt->s->substring->if->s->equals->return->return->e->s->indexOf->if->if->s->charAt->return->s->substring->else->return->exp->Integer->s->substring->parseInt->sign->if->s->charAt->s->substring->else->nDigits->if->return->s->substring->s->substring->zeros->while->s->charAt->if->return->s->substring->s->substring->s->substring->return->zeros->s->substring->s->substring
+XNumber#zeros(int):::Return a string of '0' of the given length:::if->return->buf->new->charArr->for->i->return->new->String
 XNumber#object():::Return a java object that's closest to the representation that should be handed to an extension.:::if->setObject->return
 XNumber#equals(XObject):::Tell if two objects are functionally equal.:::t->obj2->getType->try->if->return->obj2->equals->else->if->return->obj2->bool->bool->else->return->obj2->num->catch->throw->new->com.sun.org.apache.xml.internal.utils.WrappedRuntimeException->finally
 XNumber#isStableNumber():::Tell if this expression returns a stable number that will not change during iterations within the expression:::return
+XNumber#callVisitors(ExpressionOwner, XPathVisitor)::: number call visitors:::visitor->visitNumberLiteral
+XObject#setObject(Object)::: object set object:::
 XObject#execute(XPathContext):::For support of literal objects in xpaths.:::return
 XObject#allowDetachToRelease(boolean):::Specify if it's OK for detach to release the iterator for reuse:::
 XObject#detach():::Detaches the DTMIterator from the set which it iterated over, releasing any computational resources and placing the iterator in the INVALID state:::
@@ -107,8 +118,11 @@ XObject#error(String):::Tell the user of an error, and probably throw an excepti
 XObject#error(String, Object[]):::Tell the user of an error, and probably throw an exception.:::fmsg->XSLMessages->createXPATHMessage->throw->new->XPathException
 XObject#fixupVariables(List, int):::XObjects should not normally need to fix up variables.:::
 XObject#appendToFsb(com.sun.org.apache.xml.internal.utils.FastStringBuffer):::Cast result object to a string:::fsb->str->append
+XObject#callVisitors(ExpressionOwner, XPathVisitor)::: object call visitors:::assertion
+XObject#deepEquals(Expression)::: object deep equals:::if->isSameClass->return->if->this->equals->return->return
 XObjectFactory#create(Object):::Create the right XObject based on the type of the object passed:::result->if->else->if->new->XString->else->if->new->XBoolean->else->if->new->XNumber->else->new->XObject->return
 XObjectFactory#create(Object, XPathContext):::Create the right XObject based on the type of the object passed:::result->if->else->if->new->XString->else->if->new->XBoolean->else->if->new->XNumber->else->if->dtm->try->dtmRoot->dtm->getDocument->iter->dtm->getAxisIterator->iter->setStartNode->iterator->new->OneStepIterator->iterator->setRoot->new->XNodeSet->catch->throw->new->com.sun.org.apache.xml.internal.utils.WrappedRuntimeException->finally->else->if->iter->try->iterator->new->OneStepIterator->iterator->iter->getStartNode->setRoot->new->XNodeSet->catch->throw->new->com.sun.org.apache.xml.internal.utils.WrappedRuntimeException->finally->else->if->new->XNodeSet->else->if->new->XNodeSetForDOM->else->if->new->XNodeSetForDOM->else->if->new->XNodeSetForDOM->else->new->XObject->return
+XRTreeFrag#initDTM(int, XPathContext)::: tree frag init m:::dtm->xctxt->getDTM->if->xctxt->xctxt->getDTMIdentity->getDTMXRTreeFrag
 XRTreeFrag#object():::Return a java object that's closest to the representation that should be handed to an extension.:::if->m_DTMXRTreeFrag->getXPathContext->return->m_DTMXRTreeFrag->getXPathContext->getDTMManager->new->com.sun.org.apache.xpath.internal.NodeSetDTM->new->com.sun.org.apache.xml.internal.dtm.ref.DTMNodeIterator->else->return->super->object
 XRTreeFrag#allowDetachToRelease(boolean):::Specify if it's OK for detach to release the iterator for reuse.:::
 XRTreeFrag#detach():::Detaches the DTMIterator from the set which it iterated over, releasing any computational resources and placing the iterator in the INVALID state:::if->m_DTMXRTreeFrag->destruct->setObject
@@ -176,7 +190,9 @@ XString#toLowerCase():::Converts all of the characters in this String to lower c
 XString#toUpperCase(Locale):::Converts all of the characters in this String to upper case using the rules of the given locale.:::return->str->toUpperCase->new->XString
 XString#toUpperCase():::Converts all of the characters in this String to upper case using the rules of the default locale, which is returned by Locale.getDefault:::return->str->toUpperCase->new->XString
 XString#trim():::Removes white space from both ends of this string.:::return->str->trim->new->XString
+XString#isSpace(char):::Returns whether the specified <var>ch</var> conforms to the XML 1.0 definition of whitespace:::return->XMLCharacterRecognizer->isWhiteSpace
 XString#fixWhiteSpace(boolean, boolean, boolean):::Conditionally trim all leading and trailing whitespace in the specified String:::len->this->length->buf->new->charArr->this->getChars->edit->s->for->d->pres->for->if->start->if->xsf->XMLStringFactoryImpl->getFactory->return->xsf->new->String->newstr
+XString#callVisitors(ExpressionOwner, XPathVisitor)::: string call visitors:::visitor->visitStringLiteral
 XStringForChars#fsb():::Cast result object to a string.:::throw->XSLMessages->createXPATHMessage->new->RuntimeException
 XStringForChars#appendToFsb(com.sun.org.apache.xml.internal.utils.FastStringBuffer):::Cast result object to a string.:::fsb->append
 XStringForChars#hasString():::Tell if this object contains a java String object.:::return
@@ -213,5 +229,6 @@ XStringForFSB#substring(int):::Returns a new string that is a substring of this 
 XStringForFSB#substring(int, int):::Returns a new string that is a substring of this string:::len->if->if->return->else->start->return->fsb->new->XStringForFSB
 XStringForFSB#concat(String):::Concatenates the specified string to the end of this string.:::return->str->concat->new->XString
 XStringForFSB#trim():::Removes white space from both ends of this string.:::return->fixWhiteSpace
+XStringForFSB#isSpace(char):::Returns whether the specified <var>ch</var> conforms to the XML 1.0 definition of whitespace:::return->XMLCharacterRecognizer->isWhiteSpace
 XStringForFSB#fixWhiteSpace(boolean, boolean, boolean):::Conditionally trim all leading and trailing whitespace in the specified String:::end->buf->new->charArr->fsb->fsb->edit->d->pres->for->s->if->start->if->xsf->XMLStringFactoryImpl->getFactory->return->xsf->newstr
 XStringForFSB#toDouble():::Convert a string to a double -- Allowed input is in fixed notation ddd.fff:::if->return->i->c->valueString->fsb->getString->for->if->return->if->valueString->charAt->for->for->if->return->try->return->Double->parseDouble->catch->return->finally

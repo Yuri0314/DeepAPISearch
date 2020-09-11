@@ -2,18 +2,27 @@ Perf.GetPerfAction#run():::Run the Perf.getPerf() method in a privileged context
 Perf#getPerf():::Return a reference to the singleton Perf instance:::security->System->getSecurityManager->if->perm->new->RuntimePermission->security->checkPermission->return
 Perf#attach(int, String):::Attach to the instrumentation buffer for the specified Java virtual machine:::if->mode->compareTo->return->attachImpl->else->if->mode->compareTo->return->attachImpl->else->throw->new->IllegalArgumentException
 Perf#attach(String, int, String):::Attach to the instrumentation buffer for the specified Java virtual machine owned by the given user:::if->mode->compareTo->return->attachImpl->else->if->mode->compareTo->return->attachImpl->else->throw->new->IllegalArgumentException
+Perf#attachImpl(String, int, int):::Call the implementation specific attach method:::b->attach->if->return->else->dup->b->duplicate->CleanerFactory->cleaner->new->CleanerAction->register->return
+Perf.CleanerAction#run()::: cleaner action run:::try->perf->detach->catch->finally
+Perf#attach(String, int, int):::Native method to perform the implementation specific attach mechanism:::
+Perf#detach(ByteBuffer):::Native method to perform the implementation specific detach mechanism:::
 Perf#createLong(String, int, int, long):::Create a long scalar entry in the instrumentation buffer with the given variability characteristic, units, and initial value:::
 Perf#createString(String, int, int, String, int):::Create a String entry in the instrumentation buffer with the given variability characteristic, units, and initial value:::v->getBytes->v1->new->byteArr->System->arraycopy->return->Math->max->createByteArray
 Perf#createString(String, int, int, String):::Create a String entry in the instrumentation buffer with the given variability characteristic, units, and initial value:::v->getBytes->v1->new->byteArr->System->arraycopy->return->createByteArray
 Perf#createByteArray(String, int, int, byte[], int):::Create a byte vector entry in the instrumentation buffer with the given variability characteristic, units, and initial value:::
+Perf#getBytes(String):::convert string to an array of UTF-8 bytes:::bytes->try->s->getBytes->catch->finally->return
 Perf#highResCounter():::Return the value of the High Resolution Counter:::
 Perf#highResFrequency():::Returns the frequency of the High Resolution Counter, in ticks per second:::
+Perf#registerNatives()::: perf register natives:::
+PerfCounter#newPerfCounter(String)::: perf counter new perf counter:::return->new->PerfCounter
+PerfCounter#newConstantPerfCounter(String)::: perf counter new constant perf counter:::c->new->PerfCounter->return
 PerfCounter#get():::Returns the current value of the perf counter.:::return->lb->get
 PerfCounter#set(long):::Sets the value of the perf counter to the given newValue.:::lb->put
 PerfCounter#add(long):::Adds the given value to the perf counter.:::res->get->lb->put
 PerfCounter#increment():::Increments the perf counter with 1.:::add
 PerfCounter#addTime(long):::Adds the given interval to the perf counter.:::add
 PerfCounter#addElapsedTimeFrom(long):::Adds the elapsed time from the given start time (ns) to the perf counter.:::System->nanoTime->add
+PerfCounter#toString()::: perf counter to string:::return->get
 PerfCounter#getFindClasses():::Number of findClass calls:::return
 PerfCounter#getFindClassTime():::Time (ns) spent in finding classes that includes lookup and read class bytes and defineClass:::return
 PerfCounter#getReadClassBytesTime():::Time (ns) spent in finding classes:::return

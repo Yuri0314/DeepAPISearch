@@ -1,11 +1,16 @@
+AbstractDoclet#isValidDoclet():::Verify that the only doclet that is using this toolkit is #TOOLKIT_DOCLET_NAME.:::if->getClass->getName->equals->messages->error->return->return
 AbstractDoclet#run(DocletEnvironment):::The method that starts the execution of the doclet.:::getConfiguration->configuration->initConfiguration->configuration->getMessages->if->isValidDoclet->return->try->try->startGeneration->return->catch->throw->e->getCause->finally->catch->switch->messages->getPath->e->getCause->error->break->messages->getPath->e->getCause->error->dumpStack->messages->getPath->e->getCause->error->dumpStack->e->getMessage->print->dumpStack->e->getMessage->print->e->getCause->reportInternalError->messages->error->reportInternalError->finally->return
+AbstractDoclet#reportInternalError(Throwable)::: abstract doclet report internal error:::if->getClass->equals->getClass->equals->configuration->getResources->getText->println->dumpStack
+AbstractDoclet#dumpStack(boolean, Throwable)::: abstract doclet dump stack:::if->t->printStackTrace
 AbstractDoclet#getSupportedSourceVersion():::Returns the SourceVersion indicating the features supported by this doclet.:::return
 AbstractDoclet#getConfiguration():::Create the configuration instance and returns it.:::
+AbstractDoclet#startGeneration(DocletEnvironment):::Start the generation of files:::if->configuration->getSpecifiedModuleElements->isEmpty->configuration->getIncludedTypeElements->isEmpty->messages->error->return->if->configuration->setOptions->return->messages->configuration->getDocletVersion->notice->classtree->new->ClassTree->generateClassFiles->ElementListWriter->generate->generatePackageFiles->generateModuleFiles->generateOtherFiles->printReport
 AbstractDoclet#generateOtherFiles(DocletEnvironment, ClassTree):::Generate additional documentation that is added to the API documentation.:::builderFactory->configuration->getBuilderFactory->constantsSummaryBuilder->builderFactory->getConstantsSummaryBuilder->constantsSummaryBuilder->build->serializedFormBuilder->builderFactory->getSerializedFormBuilder->serializedFormBuilder->build
 AbstractDoclet#generateModuleFiles():::Generate the module documentation.:::
 AbstractDoclet#generatePackageFiles(ClassTree):::Generate the package documentation.:::
 AbstractDoclet#generateClassFiles(SortedSet, ClassTree):::Generate the class documentation.:::
 AbstractDoclet#generateClassFiles(DocletEnvironment, ClassTree):::Iterate through all classes and construct documentation for them.:::generateClassFiles->packages->utils->makePackageComparator->new->TreeSet<>->packages->configuration->getSpecifiedPackageElements->addAll->values->stream->packages->addAll->forEach->foreach->utils->getAllClasses->generateClassFiles
+AbstractDoclet#generateClassFiles(ClassTree):::Generate the class files for single classes specified on the command line.:::packages->packages->foreach->allClasses->generateClassFiles
 AnnotationTypeFieldWriter#getMemberTreeHeader():::Add the annotation type member tree header.:::
 AnnotationTypeFieldWriter#addAnnotationFieldDetailsMarker(Content):::Add the annotation type field details marker.:::
 AnnotationTypeFieldWriter#addAnnotationDetailsTreeHeader(TypeElement, Content):::Add the annotation type details tree header.:::
@@ -43,11 +48,31 @@ AnnotationTypeWriter#getMemberDetailsTree(Content):::Get the member details tree
 AnnotationTypeWriter#addFooter(Content):::Add the footer of the page.:::
 AnnotationTypeWriter#printDocument(Content):::Print the document.:::
 AnnotationTypeWriter#getAnnotationTypeElement():::Return the TypeElement being documented.:::
+BaseConfiguration#getMessages()::: base configuration get messages:::
+BaseConfiguration#getResources()::: base configuration get resources:::
 BaseConfiguration#getDocletVersion():::Returns a string identifying the version of the doclet.:::
+BaseConfiguration#finishOptionSettings()::: base configuration finish option settings:::
+BaseConfiguration#initConfiguration(DocletEnvironment)::: base configuration init configuration:::if->throw->new->IllegalStateException->new->Utils->new->CommentUtils->new->WorkArounds->new->VisibleMemberCache->new->PropertyUtils->specifiedSplitter->new->Splitter->Collections->unmodifiableSet->Collections->unmodifiableSet->Collections->unmodifiableSet->includedSplitter->new->Splitter->Collections->unmodifiableSet->Collections->unmodifiableSet->Collections->unmodifiableSet
 BaseConfiguration#getBuilderFactory():::Return the builder factory for this doclet.:::if->new->BuilderFactory->return
+BaseConfiguration#getReporter()::: base configuration get reporter:::return
+BaseConfiguration#getSpecifiedModuleElements()::: base configuration get specified module elements:::return
+BaseConfiguration#getSpecifiedPackageElements()::: base configuration get specified package elements:::return
+BaseConfiguration#getSpecifiedTypeElements()::: base configuration get specified type elements:::return
+BaseConfiguration#getIncludedModuleElements()::: base configuration get included module elements:::return
+BaseConfiguration#getIncludedPackageElements()::: base configuration get included package elements:::return
+BaseConfiguration#getIncludedTypeElements()::: base configuration get included type elements:::return
+BaseConfiguration#initModules()::: base configuration init modules:::utils->makeModuleComparator->new->TreeSet<>->modules->getSpecifiedModuleElements->addAll->utils->makeModuleComparator->new->TreeMap<>->foreach->mdle->docEnv->getElementUtils->getModuleOf->if->mdle->isUnnamed->s->modulePackages->utils->makePackageComparator->new->TreeSet<>->computeIfAbsent->s->add->foreach->getIncludedPackageElements->mdle->docEnv->getElementUtils->getModuleOf->if->mdle->isUnnamed->s->modulePackages->utils->makePackageComparator->new->TreeSet<>->computeIfAbsent->s->add->modules->modulePackages->Collections->emptySet->computeIfAbsent->forEach->modules->modulePackages->keySet->addAll->modules->isEmpty->foreach->modulePackages->values->packages->addAll
+BaseConfiguration#initPackages()::: base configuration init packages:::utils->makePackageComparator->new->TreeSet<>->packages->addAll
+BaseConfiguration#getSupportedOptions()::: base configuration get supported options:::resources->getResources->options->new->Option->new->Option->new->Option->new->Option->new->Hidden->new->Option->new->Option->new->Option->new->Option->new->Option->new->Option->new->Option->new->Option->new->Option->new->Option->new->Option->new->Option->new->Option->new->Hidden->new->Option->new->Option->new->Option->new->Option->new->Option->new->Option->new->Hidden->new->Option->new->Hidden->new->Hidden->new->XOption->set->new->TreeSet<>->set->Arrays->asList->addAll->return
+BaseConfiguration#finishOptionSettings0()::: base configuration finish option settings0:::initDestDirectory->foreach->extern->link->foreach->extern->link->new->TypeElementCatalog->initTagletManager->groupPairs->stream->if->group->checkModuleGroups->else->group->checkPackageGroups->forEach->workArounds->getUnnamedPackage->getOverviewPath->new->OverviewElement->return
 BaseConfiguration#setOptions():::Set the command line options supported by this configuration.:::initPackages->initModules->if->finishOptionSettings0->finishOptionSettings->return->return
+BaseConfiguration#initDestDirectory()::: base configuration init dest directory:::if->destDirName->isEmpty->destDir->DocFile->createFileForDirectory->if->destDir->exists->reporter->getText->print->destDir->mkdirs->else->if->destDir->isDirectory->throw->destDir->getPath->getText->new->SimpleDocletException->else->if->destDir->canWrite->throw->destDir->getPath->getText->new->SimpleDocletException->DocFileFactory->getFactory->setDestDir
+BaseConfiguration#initTagletManager(Set>):::Initialize the taglet manager:::new->TagletManager->foreach->if->args->get->equals->tagletManager->args->get->getFileManager->addCustomTag->continue->tokens->args->get->tokenize->switch->tokens->size->tagName->args->get->if->tagletManager->isKnownCustomTag->tagletManager->addNewSimpleCustomTag->else->heading->new->StringBuilder->heading->Character->tagName->charAt->toUpperCase->setCharAt->tagletManager->heading->toString->addNewSimpleCustomTag->break->tagletManager->tokens->get->tokens->get->addNewSimpleCustomTag->break->tagletManager->tokens->get->tokens->get->tokens->get->addNewSimpleCustomTag->break->messages->getMessages->messages->args->get->error
+BaseConfiguration#tokenize(String, char, int):::Given a string, return an array of tokens:::tokens->new->ArrayList<>->token->new->StringBuilder->prevIsEscapeChar->for->i->s->length->Character->charCount->if->token->length->tokens->token->toString->add->return
+BaseConfiguration#addToSet(Set, String)::: base configuration add to set:::st->new->StringTokenizer->current->while->st->hasMoreTokens->st->nextToken->s->add
 BaseConfiguration#addTrailingFileSep(String):::Add a trailing file separator, if not found:::fs->System->getProperty->dblfs->indexDblfs->while->path->indexOf->path->substring->path->fs->length->substring->if->path->endsWith->return
 BaseConfiguration#generalValidOptions():::This checks for the validity of the options used by the user:::if->if->checkOutputFileEncoding->return->if->encoding->isEmpty->if->checkOutputFileEncoding->return->return
+BaseConfiguration#checkOutputFileEncoding(String):::Check the validity of the given Source or Output File encoding on this platform.:::ost->new->ByteArrayOutputStream->osw->try->new->OutputStreamWriter->catch->reporter->getText->print->return->finally->try->if->osw->close->catch->finally->return
 BaseConfiguration#shouldExcludeDocFileDir(String):::Return true if the given doc-file subdirectory should be excluded and false otherwise.:::return->excludedDocFileDirs->contains
 BaseConfiguration#shouldExcludeQualifier(String):::Return true if the given qualifier should be excluded and false otherwise.:::if->excludedQualifiers->contains->excludedQualifiers->contains->excludedQualifiers->contains->return->else->index->while->qualifier->indexOf->if->excludedQualifiers->qualifier->substring->contains->return->return
 BaseConfiguration#getClassName(TypeElement):::Return the qualified name of the Element if its qualifier is not excluded:::pkg->utils->containingPackage->return->utils->getPackageName->shouldExcludeQualifier->utils->getSimpleName->utils->getFullyQualifiedName
@@ -63,7 +88,22 @@ BaseConfiguration#getBuilderXML():::Return the input stream to the builder XML.:
 BaseConfiguration#getLocale():::Return the Locale for this document.:::
 BaseConfiguration#getOverviewPath():::Return the path of the overview file and null if it does not exist.:::
 BaseConfiguration#getFileManager():::Return the current file manager.:::
+BaseConfiguration#setTabWidth(int)::: base configuration set tab width:::String->format
+BaseConfiguration#showMessage(DocTreePath, String)::: base configuration show message:::
+BaseConfiguration#showMessage(Element, String)::: base configuration show message:::
+BaseConfiguration.Option#getOptionsMessage(Resources, String)::: option get options message:::try->return->resources->getText->catch->return->finally
+BaseConfiguration.Option#getDescription()::: option get description:::return
+BaseConfiguration.Option#getKind()::: option get kind:::return
+BaseConfiguration.Option#getNames()::: option get names:::return->Arrays->asList
+BaseConfiguration.Option#getParameters()::: option get parameters:::return
+BaseConfiguration.Option#toString()::: option to string:::return->Arrays->toString
+BaseConfiguration.Option#getArgumentCount()::: option get argument count:::return
+BaseConfiguration.Option#matches(String)::: option matches:::foreach->matchCase->name->startsWith->if->option->startsWith->option->contains->return->name->option->option->indexOf->substring->equals->else->if->return->name->equals->return->name->toLowerCase->option->toLowerCase->equals->return
+BaseConfiguration.Option#compareTo(Option)::: option compare to:::return->this->getNames->get->that->getNames->get->compareTo
+BaseConfiguration.XOption#getKind()::: option get kind:::return
+BaseConfiguration.Hidden#getKind()::: hidden get kind:::return
 BaseConfiguration#isAllowScriptInComments():::Returns whether or not to allow JavaScript in comments:::return
+BaseConfiguration#getVisibleMemberTable(TypeElement)::: base configuration get visible member table:::return->visibleMemberCache->getVisibleMemberTable
 ClassWriter#getHeader(String):::Get the header of the page.:::
 ClassWriter#getClassContentHeader():::Get the class content header.:::
 ClassWriter#addClassTree(Content):::Add the class tree documentation.:::
@@ -88,6 +128,17 @@ ClassWriter#printDocument(Content):::Print the document.:::
 ClassWriter#getTypeElement():::Return the TypeElement being documented.:::
 ClassWriter#getMemberSummaryTree(Content):::Get the member summary tree.:::
 ClassWriter#getMemberDetailsTree(Content):::Get the member details tree.:::
+CommentUtils#makePropertyDescriptionTree(List)::: comment utils make property description tree:::out->new->ArrayList<>->name->elementUtils->getName->out->treeFactory->newUnknownBlockTagTree->add->return
+CommentUtils#makePropertyDescriptionTree(String)::: comment utils make property description tree:::inlist->new->ArrayList<>->inlist->treeFactory->newCommentTree->add->out->new->ArrayList<>->name->elementUtils->getName->out->treeFactory->newUnknownBlockTagTree->add->return
+CommentUtils#makeFirstSentenceTree(String)::: comment utils make first sentence tree:::out->new->ArrayList<>->out->treeFactory->newTextTree->add->return
+CommentUtils#makeSeeTree(String, Element)::: comment utils make see tree:::list->new->ArrayList<>->list->treeFactory->newReferenceTree->add->return->treeFactory->newSeeTree
+CommentUtils#makeTextTree(String)::: comment utils make text tree:::text->treeFactory->newTextTree->return
+CommentUtils#setEnumValuesTree(BaseConfiguration, Element)::: comment utils set enum values tree:::utils->klassName->utils->utils->getEnclosingTypeElement->getSimpleName->fullBody->new->ArrayList<>->fullBody->treeFactory->config->getText->newTextTree->add->descriptions->new->ArrayList<>->descriptions->treeFactory->config->getText->newTextTree->add->tags->new->ArrayList<>->tags->treeFactory->newReturnTree->add->docTree->treeFactory->newDocCommentTree->dcTreesMap->new->DocCommentDuo->put
+CommentUtils#setEnumValueOfTree(BaseConfiguration, Element)::: comment utils set enum value of tree:::fullBody->new->ArrayList<>->fullBody->treeFactory->config->getText->newTextTree->add->tags->new->ArrayList<>->paramDescs->new->ArrayList<>->paramDescs->treeFactory->config->getText->newTextTree->add->ee->parameters->ee->getParameters->param->parameters->get->id->treeFactory->elementUtils->param->getSimpleName->toString->getName->newIdentifierTree->tags->treeFactory->newParamTree->add->returnDescs->new->ArrayList<>->returnDescs->treeFactory->config->getText->newTextTree->add->tags->treeFactory->newReturnTree->add->throwsDescs->new->ArrayList<>->throwsDescs->treeFactory->config->getText->newTextTree->add->ref->treeFactory->newReferenceTree->tags->treeFactory->newThrowsTree->add->new->ArrayList<>->throwsDescs->treeFactory->config->getText->newTextTree->add->treeFactory->newReferenceTree->tags->treeFactory->newThrowsTree->add->docTree->treeFactory->newDocCommentTree->dcTreesMap->new->DocCommentDuo->put
+CommentUtils#getSyntheticCommentDuo(Element)::: comment utils get synthetic comment duo:::return->dcTreesMap->get
+CommentUtils#getHtmlCommentDuo(Element)::: comment utils get html comment duo:::fo->pe->switch->e->getKind->if->de->de->getFileObject->de->getPackageElement->break->getJavaFileObject->break->return->if->return->dcTree->trees->getDocCommentTree->if->return->treePath->trees->getDocTreePath->return->treePath->getTreePath->new->DocCommentDuo
+CommentUtils#parse(URI, String)::: comment utils parse:::return->trees->new->SimpleJavaFileObject->getDocCommentTree
+CommentUtils#setDocCommentTree(Element, List, List, Utils)::: comment utils set doc comment tree:::docTree->treeFactory->newDocCommentTree->dcTreesMap->new->DocCommentDuo->put->utils->removeCommentHelper
 ConstantsSummaryWriter#getHeader():::Get the header for the constant summary documentation.:::
 ConstantsSummaryWriter#getContentsHeader():::Get the header for the constant content list.:::
 ConstantsSummaryWriter#addLinkToPackageContent(PackageElement, Set, Content):::Adds the given package name link to the constant content list tree.:::
@@ -117,6 +168,20 @@ Content#isEmpty():::Returns true if the content is empty.:::
 Content#isValid():::Returns true if the content is valid.:::return->isEmpty
 Content#charCount():::Return the number of characters of plain text content in this object (optional operation.):::return
 Content#nullCheck(T):::Checks for null values.:::return->Objects->requireNonNull
+DocFileElement#getPackageElement()::: doc file element get package element:::switch->element->getKind->throw->new->UnsupportedOperationException->return->throw->element->getKind->new->AssertionError
+DocFileElement#getFileObject()::: doc file element get file object:::return
+DocFileElement#getSubKind()::: doc file element get sub kind:::return
+DocFilesHandler#copyDocFiles()::: doc files handler copy doc files:::
+DocletElement#asType()::: doclet element as type:::throw->new->UnsupportedOperationException
+DocletElement#getKind()::: doclet element get kind:::return
+DocletElement#getModifiers()::: doclet element get modifiers:::throw->new->UnsupportedOperationException
+DocletElement#getSimpleName()::: doclet element get simple name:::throw->new->UnsupportedOperationException
+DocletElement#getEnclosingElement()::: doclet element get enclosing element:::throw->new->UnsupportedOperationException
+DocletElement#getEnclosedElements()::: doclet element get enclosed elements:::throw->new->UnsupportedOperationException
+DocletElement#getAnnotationMirrors()::: doclet element get annotation mirrors:::throw->new->UnsupportedOperationException
+DocletElement#getAnnotation(Class)::: doclet element get annotation:::throw->new->UnsupportedOperationException
+DocletElement#accept(ElementVisitor, P)::: doclet element accept:::return->v->visitUnknown
+DocletElement#getAnnotationsByType(Class)::: doclet element get annotations by type:::throw->new->UnsupportedOperationException
 DocletElement#getPackageElement():::Returns the anchoring package element, in the case of a module element, this is the module's unnamed package.:::
 DocletElement#getFileObject():::Returns the file object associated with this special element such as overview.html, doc-file/foo.html.:::
 DocletElement#getSubKind():::Returns the subkind of this element.:::
@@ -150,6 +215,10 @@ Messages#warning(String, Object...):::Reports a warning message to the doclet's 
 Messages#warning(DocTreePath, String, Object...):::Reports a warning message to the doclet's reporter.:::if->configuration->showMessage->resources->getText->report
 Messages#warning(Element, String, Object...):::Reports a warning message to the doclet's reporter.:::if->configuration->showMessage->resources->getText->report
 Messages#notice(String, Object...):::Reports an informational notice to the doclet's reporter.:::if->resources->getText->report
+Messages#report(Diagnostic.Kind, String)::: messages report:::initReporter->reporter->print
+Messages#report(Diagnostic.Kind, DocTreePath, String)::: messages report:::initReporter->reporter->print
+Messages#report(Diagnostic.Kind, Element, String)::: messages report:::initReporter->reporter->print
+Messages#initReporter()::: messages init reporter:::if
 MethodWriter#getMethodDetailsTreeHeader(TypeElement, Content):::Get the method details tree header.:::
 MethodWriter#getMethodDocTreeHeader(ExecutableElement, Content):::Get the method documentation tree header.:::
 MethodWriter#getSignature(ExecutableElement):::Get the signature for the given method.:::
@@ -170,6 +239,9 @@ ModuleSummaryWriter#addServicesSummary(Content):::Adds the services summary to t
 ModuleSummaryWriter#addModuleContent(Content, Content):::Adds the module content tree to the documentation tree.:::
 ModuleSummaryWriter#addModuleFooter(Content):::Adds the footer to the documentation tree.:::
 ModuleSummaryWriter#printDocument(Content):::Print the module summary document.:::
+OverviewElement#getPackageElement()::: overview element get package element:::return
+OverviewElement#getFileObject()::: overview element get file object:::return
+OverviewElement#getSubKind()::: overview element get sub kind:::return
 PackageSummaryWriter#getPackageHeader(String):::Get the header for the summary.:::
 PackageSummaryWriter#getContentHeader():::Get the header for the package content.:::
 PackageSummaryWriter#getSummaryHeader():::Get the header for the package summary.:::
@@ -235,7 +307,25 @@ SerializedFormWriter.SerialMethodWriter#addMemberHeader(ExecutableElement, Conte
 SerializedFormWriter.SerialMethodWriter#addDeprecatedMemberInfo(ExecutableElement, Content):::Adds the deprecated information for this member.:::
 SerializedFormWriter.SerialMethodWriter#addMemberDescription(ExecutableElement, Content):::Adds the description for this member.:::
 SerializedFormWriter.SerialMethodWriter#addMemberTags(ExecutableElement, Content):::Adds the tag information for this member.:::
+WorkArounds#runDocLint(TreePath)::: work arounds run doc lint:::unit->path->getCompilationUnit->if->shouldCheck->doclint->shouldCheck->computeIfAbsent->doclint->scan
+WorkArounds#initDocLint(Collection, Collection, String)::: work arounds init doc lint:::doclintOpts->new->ArrayList<>->msgOptionSeen->foreach->if->opt->startsWith->if->opt->equals->return->doclintOpts->add->if->doclintOpts->add->sep->customTags->new->StringBuilder->foreach->customTags->append->customTags->append->doclintOpts->customTags->toString->add->doclintOpts->add->t->BasicJavacTask->instance->new->DocLint->doclintOpts->add->doclint->doclintOpts->doclintOpts->size->new->StringArr->toArray->init
+WorkArounds#haveDocLint()::: work arounds have doc lint:::return
+WorkArounds#isDeprecated0(Element)::: work arounds is deprecated0:::if->utils->getDeprecatedTrees->isEmpty->return->jctypes->deprecatedType->utils->getDeprecatedType->foreach->e->getAnnotationMirrors->if->jctypes->anno->getAnnotationType->asElement->asType->isSameType->return->return
+WorkArounds#isSynthesized(AnnotationMirror)::: work arounds is synthesized:::return->isSynthesized
+WorkArounds#getConstValue(VariableElement)::: work arounds get const value:::return->getConstValue
+WorkArounds#getElementToTreePath()::: work arounds get element to tree path:::return
+WorkArounds#getUnnamedPackage()::: work arounds get unnamed package:::return->allowedInSource
+WorkArounds#getJavaFileObject(PackageElement)::: work arounds get java file object:::return
+WorkArounds#searchClass(TypeElement, String)::: work arounds search class:::te->me->utils->containingModule->if->getElementUtils->getTypeElement->if->return->foreach->utils->getClasses->innerClass->searchClass->if->return->utils->utils->containingPackage->findClassInPackageElement->if->return->tsym->if->tsym->complete->if->compenv->toolEnv->getEnv->if->return->names->s->foreach->s->names->fromString->getSymbolsByName->if->return->foreach->s->names->fromString->getSymbolsByName->if->return->getElementUtils->getTypeElement->if->return->return
 WorkArounds#overriddenType(ExecutableElement):::Return the type containing the method that this method overrides:::if->utils->isStatic->return->sym->origin->for->t->toolEnv->getTypes->supertype->t->hasTag->toolEnv->getTypes->supertype->return
+WorkArounds#overrides(ExecutableElement, ExecutableElement, TypeElement)::: work arounds overrides:::rider->ridee->origin->return->rider->isStatic->ridee->toolEnv->getTypes->isMemberOf->rider->toolEnv->getTypes->overrides
+WorkArounds#getLocationForModule(ModuleElement)::: work arounds get location for module:::msym->return
+WorkArounds#getSerializableFields(Utils, TypeElement)::: work arounds get serializable fields:::sf->serializedForms->get->if->getElementUtils->new->NewSerializedForm->serializedForms->put->return
+WorkArounds#getSerializationMethods(Utils, TypeElement)::: work arounds get serialization methods:::sf->serializedForms->get->if->getElementUtils->new->NewSerializedForm->serializedForms->put->return
+WorkArounds#definesSerializableFields(Utils, TypeElement)::: work arounds defines serializable fields:::if->utils->isSerializable->utils->isExternalizable->return->else->sf->serializedForms->get->if->getElementUtils->new->NewSerializedForm->serializedForms->put->return
+WorkArounds.NewSerializedForm#getDefinedSerializableFields(ClassSymbol)::: new serialized form get defined serializable fields:::names->foreach->def->members->names->fromString->getSymbolsByName->if->f->if->f->flags->f->flags->return->return
+WorkArounds.NewSerializedForm#addMethodIfExist(ClassSymbol, String)::: new serialized form add method if exist:::names->foreach->def->members->names->fromString->getSymbolsByName->if->md->if->md->flags->methods->add
+WorkArounds.NewSerializedForm#computeDefaultSerializableFields(ClassSymbol)::: new serialized form compute default serializable fields:::foreach->te->members->getSymbols->if->f->if->f->flags->f->flags->fields->add
 WorkArounds.NewSerializedForm#findMethod(TypeElement, String, List):::Find a method in this class scope:::allMembers->getAllMembers->foreach->if->e->getKind->continue->ee->if->ee->getSimpleName->contentEquals->continue->parameters->ee->getParameters->if->paramTypes->size->parameters->size->continue->for->i->parameters->size->return->encl->utils->getEnclosingTypeElement->if->return->return->findMethod
 WorkArounds#getAbbreviatedPackageElement(PackageElement):::Returns a representation of the package truncated to two levels:::parsedPackageName->utils->parsePackageName->encl->pkg->getEnclosingElement->abbrevPkg->getPackageElement->getPackageElement->return
 WriterFactory#getConstantsSummaryWriter():::Return the writer for the constant summary.:::

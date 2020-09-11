@@ -1,3 +1,186 @@
+ExplodedImage.PathNode#isDirectory()::: path node is directory:::return->getFileAttributes->isDirectory
+ExplodedImage.PathNode#isLink()::: path node is link:::return
+ExplodedImage.PathNode#resolveLink(boolean)::: path node resolve link:::if->return->return->link->isLink->link->resolveLink
+ExplodedImage.PathNode#getContent()::: path node get content:::if->getFileAttributes->isRegularFile->throw->getName->new->FileSystemException->return->Files->readAllBytes
+ExplodedImage.PathNode#getChildren()::: path node get children:::if->isDirectory->throw->getNameString->new->IllegalArgumentException->if->list->new->ArrayList<>->try->stream->Files->newDirectoryStream->foreach->explodedModulesDir->relativize->pName->p->toString->nativeSlashToFrontSlash->node->findNode->if->list->add->catch->return->finally->return
+ExplodedImage.PathNode#size()::: path node size:::try->return->isDirectory->Files->size->catch->throw->new->UncheckedIOException->finally
+ExplodedImage#close()::: exploded image close:::nodes->clear
+ExplodedImage#getResource(Node)::: exploded image get resource:::return->getContent
+ExplodedImage#findNode(String)::: exploded image find node:::node->findModulesNode->if->return->if->str->startsWith->pkgEndIdx->str->indexOf->if->modEndIdx->str->indexOf->if->linkNode->nodes->str->substring->get->if->linkNode->isLink->return->mod->str->substring->return->findModulesNode->return
+ExplodedImage#findModulesNode(String)::: exploded image find modules node:::node->nodes->get->if->return->p->underlyingPath->if->try->attrs->Files->readAttributes->if->attrs->isRegularFile->f->p->getFileName->if->f->toString->startsWith->return->new->PathNode->nodes->put->return->catch->finally->return
+ExplodedImage#underlyingPath(String)::: exploded image underlying path:::if->str->startsWith->str->length->substring->frontSlashToNativeSlash->return->defaultFS->explodedModulesDir->toString->getPath->return
+ExplodedImage#frontSlashToNativeSlash(String)::: exploded image front slash to native slash:::return->str->replace
+ExplodedImage#nativeSlashToFrontSlash(String)::: exploded image native slash to front slash:::return->str->replace
+ExplodedImage#slashesToDots(String)::: exploded image slashes to dots:::return->str->replace
+ExplodedImage#initNodes()::: exploded image init nodes:::packageToModules->new->HashMap<>->try->stream->Files->newDirectoryStream->foreach->if->Files->isDirectory->moduleName->module->getFileName->toString->findModulesNode->Files->walk->Files->isDirectory->filter->module->relativize->pkgName->p->toString->slashesToDots->if->pkgName->isEmpty->pkgName->startsWith->moduleNames->packageToModules->get->if->new->ArrayList<>->packageToModules->put->moduleNames->add->forEach->catch->finally->modulesDir->nodes->values->new->ArrayList<>->new->PathNode->nodes->modulesDir->getName->put->packagesChildren->packageToModules->size->new->ArrayList<>->foreach->packageToModules->entrySet->pkgName->entry->getKey->moduleNameList->entry->getValue->moduleLinkNodes->moduleNameList->size->new->ArrayList<>->foreach->moduleNode->findModulesNode->linkNode->new->PathNode->nodes->linkNode->getName->put->moduleLinkNodes->add->pkgDir->new->PathNode->nodes->pkgDir->getName->put->packagesChildren->add->packagesDir->new->PathNode->nodes->packagesDir->getName->put->rootChildren->new->ArrayList<>->rootChildren->add->rootChildren->add->root->new->PathNode->nodes->root->getName->put
+JrtDirectoryStream#iterator()::: jrt directory stream iterator:::if->throw->new->ClosedDirectoryStreamException->if->throw->new->IllegalStateException->try->iteratorOf->catch->throw->new->IllegalStateException->finally->return->new->Iterator<Path>
+JrtDirectoryStream#close()::: jrt directory stream close:::
+JrtFileAttributes#creationTime()::: jrt file attributes creation time:::return->node->creationTime
+JrtFileAttributes#isDirectory()::: jrt file attributes is directory:::return->node->isDirectory
+JrtFileAttributes#isOther()::: jrt file attributes is other:::return
+JrtFileAttributes#isRegularFile()::: jrt file attributes is regular file:::return->isDirectory
+JrtFileAttributes#lastAccessTime()::: jrt file attributes last access time:::return->node->lastAccessTime
+JrtFileAttributes#lastModifiedTime()::: jrt file attributes last modified time:::return->node->lastModifiedTime
+JrtFileAttributes#size()::: jrt file attributes size:::return->node->size
+JrtFileAttributes#isSymbolicLink()::: jrt file attributes is symbolic link:::return->node->isLink
+JrtFileAttributes#fileKey()::: jrt file attributes file key:::return->node->resolveLink
 JrtFileAttributes#compressedSize():::Compressed resource file:::return->node->compressedSize
 JrtFileAttributes#extension():::"file" extension of a file resource.:::return->node->extension
+JrtFileAttributes#toString()::: jrt file attributes to string:::sb->new->StringBuilder->try->fm->new->Formatter->if->creationTime->fm->creationTime->toMillis->format->else->fm->format->if->lastAccessTime->fm->lastAccessTime->toMillis->format->else->fm->format->fm->lastModifiedTime->toMillis->format->fm->isRegularFile->format->fm->isDirectory->format->fm->isSymbolicLink->format->fm->isOther->format->fm->fileKey->format->fm->size->format->fm->compressedSize->format->fm->extension->format->catch->finally->return->sb->toString
+JrtFileAttributeView#get(JrtPath, Class, LinkOption...)::: jrt file attribute view get:::Objects->requireNonNull->if->return->new->JrtFileAttributeView->if->return->new->JrtFileAttributeView->return
+JrtFileAttributeView#get(JrtPath, String, LinkOption...)::: jrt file attribute view get:::Objects->requireNonNull->if->type->equals->return->new->JrtFileAttributeView->if->type->equals->return->new->JrtFileAttributeView->return
+JrtFileAttributeView#name()::: jrt file attribute view name:::return
+JrtFileAttributeView#readAttributes()::: jrt file attribute view read attributes:::return->path->getAttributes
+JrtFileAttributeView#setTimes(FileTime, FileTime, FileTime)::: jrt file attribute view set times:::path->setTimes
+JrtFileAttributeView#setAttribute(JrtPath, String, Object)::: jrt file attribute view set attribute:::colonPos->attribute->indexOf->if->type->attribute->substring->if->type->equals->type->equals->throw->new->UnsupportedOperationException->attribute->substring->try->id->AttrID->valueOf->if->path->setTimes->else->if->path->setTimes->else->if->path->setTimes->return->catch->finally->throw->new->UnsupportedOperationException
+JrtFileAttributeView#readAttributes(JrtPath, String, LinkOption...)::: jrt file attribute view read attributes:::colonPos->attributes->indexOf->isJrtView->if->type->attributes->substring->if->type->equals->type->equals->throw->new->UnsupportedOperationException->attributes->substring->jrtfas->path->getAttributes->map->new->LinkedHashMap<>->if->equals->foreach->AttrID->values->map->id->name->attribute->put->else->as->attributes->split->foreach->map->AttrID->valueOf->attribute->put->return
+JrtFileAttributeView#attribute(AttrID, JrtFileAttributes, boolean)::: jrt file attribute view attribute:::switch->return->jrtfas->size->return->jrtfas->creationTime->return->jrtfas->lastAccessTime->return->jrtfas->lastModifiedTime->return->jrtfas->isDirectory->return->jrtfas->isRegularFile->return->jrtfas->isSymbolicLink->return->jrtfas->isOther->return->jrtfas->fileKey->if->return->jrtfas->compressedSize->break->if->return->jrtfas->extension->break->return
+JrtFileStore#name()::: jrt file store name:::return->jrtfs->toString
+JrtFileStore#type()::: jrt file store type:::return
+JrtFileStore#isReadOnly()::: jrt file store is read only:::return->jrtfs->isReadOnly
+JrtFileStore#supportsFileAttributeView(String)::: jrt file store supports file attribute view:::return->name->equals->name->equals
+JrtFileStore#getFileStoreAttributeView(Class)::: jrt file store get file store attribute view:::Objects->requireNonNull->return
+JrtFileStore#getTotalSpace()::: jrt file store get total space:::throw->new->UnsupportedOperationException
+JrtFileStore#getUsableSpace()::: jrt file store get usable space:::throw->new->UnsupportedOperationException
+JrtFileStore#getUnallocatedSpace()::: jrt file store get unallocated space:::throw->new->UnsupportedOperationException
+JrtFileStore#getAttribute(String)::: jrt file store get attribute:::throw->new->UnsupportedOperationException
+JrtFileStore#supportsFileAttributeView(Class)::: jrt file store supports file attribute view:::return
+JrtFileSystem#isOpen()::: jrt file system is open:::return
+JrtFileSystem#close()::: jrt file system close:::if->throw->new->UnsupportedOperationException->cleanup
+JrtFileSystem#finalize()::: jrt file system finalize:::try->cleanup->catch->finally
+JrtFileSystem#provider()::: jrt file system provider:::return
+JrtFileSystem#getRootDirectories()::: jrt file system get root directories:::return->Collections->getRootPath->singleton
+JrtFileSystem#getPath(String, String...)::: jrt file system get path:::if->return->new->JrtPath->sb->new->StringBuilder->sb->append->foreach->if->path->length->if->sb->length->sb->append->sb->append->return->sb->toString->new->JrtPath
+JrtFileSystem#isReadOnly()::: jrt file system is read only:::return
+JrtFileSystem#getUserPrincipalLookupService()::: jrt file system get user principal lookup service:::throw->new->UnsupportedOperationException
+JrtFileSystem#newWatchService()::: jrt file system new watch service:::throw->new->UnsupportedOperationException
+JrtFileSystem#getFileStores()::: jrt file system get file stores:::return->Collections->getRootPath->getFileStore->singleton
+JrtFileSystem#supportedFileAttributeViews()::: jrt file system supported file attribute views:::return
+JrtFileSystem#toString()::: jrt file system to string:::return
+JrtFileSystem#getSeparator()::: jrt file system get separator:::return
+JrtFileSystem#getPathMatcher(String)::: jrt file system get path matcher:::pos->syntaxAndInput->indexOf->if->syntaxAndInput->length->throw->new->IllegalArgumentException->syntax->syntaxAndInput->substring->input->syntaxAndInput->substring->expr->if->syntax->equalsIgnoreCase->JrtUtils->toRegexPattern->else->if->syntax->equalsIgnoreCase->else->throw->new->UnsupportedOperationException->pattern->Pattern->compile->return->pattern->path->toString->matcher->matches
+JrtFileSystem#resolveLink(JrtPath)::: jrt file system resolve link:::node->checkNode->if->node->isLink->node->resolveLink->return->node->getName->new->JrtPath->return
+JrtFileSystem#getFileAttributes(JrtPath, LinkOption...)::: jrt file system get file attributes:::node->checkNode->if->node->isLink->followLinks->return->node->resolveLink->new->JrtFileAttributes->return->new->JrtFileAttributes
 JrtFileSystem#iteratorOf(JrtPath, DirectoryStream.Filter):::returns the list of child paths of the given directory "path":::node->checkNode->resolveLink->if->node->isDirectory->throw->path->getName->new->NotDirectoryException->if->return->node->getChildren->stream->path->child->getNameString->new->JrtPath->getFileName->resolve->map->iterator->return->node->getChildren->stream->path->child->getNameString->new->JrtPath->getFileName->resolve->map->try->return->filter->accept->catch->finally->return->filter->iterator
+JrtFileSystem#getFileContent(JrtPath)::: jrt file system get file content:::node->checkNode->if->node->isDirectory->throw->new->FileSystemException->return->image->getResource
+JrtFileSystem#readOnly()::: jrt file system read only:::return->new->ReadOnlyFileSystemException
+JrtFileSystem#followLinks(LinkOption...)::: jrt file system follow links:::if->foreach->Objects->requireNonNull->if->return->else->throw->new->AssertionError->return
+JrtFileSystem#checkOptions(Set)::: jrt file system check options:::foreach->Objects->requireNonNull->if->throw->option->getClass->new->IllegalArgumentException->if->options->contains->options->contains->throw->readOnly
+JrtFileSystem#cleanup()::: jrt file system cleanup:::if->image->close
+JrtFileSystem#setTimes(JrtPath, FileTime, FileTime, FileTime)::: jrt file system set times:::throw->readOnly
+JrtFileSystem#createDirectory(JrtPath, FileAttribute...)::: jrt file system create directory:::throw->readOnly
+JrtFileSystem#deleteFile(JrtPath, boolean)::: jrt file system delete file:::throw->readOnly
+JrtFileSystem#newOutputStream(JrtPath, OpenOption...)::: jrt file system new output stream:::throw->readOnly
+JrtFileSystem#copyFile(boolean, JrtPath, JrtPath, CopyOption...)::: jrt file system copy file:::throw->readOnly
+JrtFileSystem#newFileChannel(JrtPath, Set, FileAttribute...)::: jrt file system new file channel:::throw->new->UnsupportedOperationException
+JrtFileSystem#newInputStream(JrtPath)::: jrt file system new input stream:::return->getFileContent->new->ByteArrayInputStream
+JrtFileSystem#newByteChannel(JrtPath, Set, FileAttribute...)::: jrt file system new byte channel:::checkOptions->buf->getFileContent->rbc->Channels->new->ByteArrayInputStream->newChannel->size->return->new->SeekableByteChannel
+JrtFileSystem#getFileStore(JrtPath)::: jrt file system get file store:::return->new->JrtFileStore
+JrtFileSystem#ensureOpen()::: jrt file system ensure open:::if->isOpen->throw->new->ClosedFileSystemException
+JrtFileSystem#getRootPath()::: jrt file system get root path:::return
+JrtFileSystem#isSameFile(JrtPath, JrtPath)::: jrt file system is same file:::return->checkNode->checkNode
+JrtFileSystem#isLink(JrtPath)::: jrt file system is link:::return->checkNode->isLink
+JrtFileSystem#exists(JrtPath)::: jrt file system exists:::try->checkNode->catch->return->finally->return
+JrtFileSystem#isDirectory(JrtPath, boolean)::: jrt file system is directory:::node->checkNode->return->node->isLink->node->resolveLink->isDirectory->node->isDirectory
+JrtFileSystem#toRealPath(JrtPath, LinkOption...)::: jrt file system to real path:::node->checkNode->if->followLinks->node->isLink->node->resolveLink->return->node->getName->new->JrtPath
+JrtFileSystem#lookup(String)::: jrt file system lookup:::try->return->image->findNode->catch->throw->ex->toString->new->InvalidPathException->finally
+JrtFileSystem#lookupSymbolic(String)::: jrt file system lookup symbolic:::i->while->path->length->path->indexOf->if->break->prefix->path->substring->node->lookup->if->break->if->node->isLink->link->node->resolveLink->resPath->link->getName->path->substring->lookup->return->lookupSymbolic->return
+JrtFileSystem#checkNode(JrtPath)::: jrt file system check node:::ensureOpen->p->path->getResolvedPath->node->lookup->if->lookupSymbolic->if->throw->new->NoSuchFileException->return
+JrtFileSystemProvider#getScheme()::: jrt file system provider get scheme:::return
+JrtFileSystemProvider#checkPermission():::Need RuntimePermission "accessSystemModules" to create or get jrt:/:::sm->System->getSecurityManager->if->perm->new->RuntimePermission->sm->checkPermission
+JrtFileSystemProvider#checkUri(URI)::: jrt file system provider check uri:::if->uri->getScheme->getScheme->equalsIgnoreCase->throw->new->IllegalArgumentException->if->uri->getAuthority->throw->new->IllegalArgumentException->if->uri->getPath->throw->new->IllegalArgumentException->if->uri->getPath->equals->throw->new->IllegalArgumentException->if->uri->getQuery->throw->new->IllegalArgumentException->if->uri->getFragment->throw->new->IllegalArgumentException
+JrtFileSystemProvider#newFileSystem(URI, Map)::: jrt file system provider new file system:::Objects->requireNonNull->checkPermission->checkUri->if->env->containsKey->return->env->get->newFileSystem->else->return->new->JrtFileSystem
+JrtFileSystemProvider#newFileSystem(String, URI, Map)::: jrt file system provider new file system:::Objects->requireNonNull->jrtfs->FileSystems->getDefault->getPath->if->Files->notExists->throw->jrtfs->toString->new->IOException->newEnv->new->HashMap<>->newEnv->remove->cl->newJrtFsLoader->try->c->Class->getName->forName->tmp->c->newInstance->return->newFileSystem->catch->throw->new->IOException->finally
+JrtFileSystemProvider.JrtFsLoader#loadClass(String, boolean)::: jrt fs loader load class:::c->findLoadedClass->if->u->cn->replace->findResource->if->findClass->else->return->super->loadClass->if->resolveClass->return
+JrtFileSystemProvider#newJrtFsLoader(Path)::: jrt file system provider new jrt fs loader:::url->try->jrtfs->toUri->toURL->catch->throw->new->IllegalArgumentException->finally->urls->new->URLArr->return->AccessController->new->PrivilegedAction<URLClassLoader>->doPrivileged
+JrtFileSystemProvider#getPath(URI)::: jrt file system provider get path:::checkPermission->if->uri->getScheme->getScheme->equalsIgnoreCase->throw->new->IllegalArgumentException->if->uri->getAuthority->throw->new->IllegalArgumentException->if->uri->getQuery->throw->new->IllegalArgumentException->if->uri->getFragment->throw->new->IllegalArgumentException->path->uri->getPath->if->path->charAt->throw->new->IllegalArgumentException->return->getTheFileSystem->getPath
+JrtFileSystemProvider#getTheFileSystem()::: jrt file system provider get the file system:::checkPermission->fs->if->synchronized->if->try->new->JrtFileSystem->catch->throw->new->InternalError->finally->return
+JrtFileSystemProvider#getFileSystem(URI)::: jrt file system provider get file system:::checkPermission->checkUri->return->getTheFileSystem
+JrtFileSystemProvider#toJrtPath(Path)::: jrt file system provider to jrt path:::Objects->requireNonNull->if->throw->new->ProviderMismatchException->return
+JrtFileSystemProvider#checkAccess(Path, AccessMode...)::: jrt file system provider check access:::toJrtPath->checkAccess
+JrtFileSystemProvider#readSymbolicLink(Path)::: jrt file system provider read symbolic link:::return->toJrtPath->readSymbolicLink
+JrtFileSystemProvider#copy(Path, Path, CopyOption...)::: jrt file system provider copy:::toJrtPath->toJrtPath->copy
+JrtFileSystemProvider#createDirectory(Path, FileAttribute...)::: jrt file system provider create directory:::toJrtPath->createDirectory
+JrtFileSystemProvider#delete(Path)::: jrt file system provider delete:::toJrtPath->delete
+JrtFileSystemProvider#getFileAttributeView(Path, Class, LinkOption...)::: jrt file system provider get file attribute view:::return->JrtFileAttributeView->toJrtPath->get
+JrtFileSystemProvider#getFileStore(Path)::: jrt file system provider get file store:::return->toJrtPath->getFileStore
+JrtFileSystemProvider#isHidden(Path)::: jrt file system provider is hidden:::return->toJrtPath->isHidden
+JrtFileSystemProvider#isSameFile(Path, Path)::: jrt file system provider is same file:::return->toJrtPath->isSameFile
+JrtFileSystemProvider#move(Path, Path, CopyOption...)::: jrt file system provider move:::toJrtPath->toJrtPath->move
+JrtFileSystemProvider#newAsynchronousFileChannel(Path, Set, ExecutorService, FileAttribute...)::: jrt file system provider new asynchronous file channel:::throw->new->UnsupportedOperationException
+JrtFileSystemProvider#newByteChannel(Path, Set, FileAttribute...)::: jrt file system provider new byte channel:::return->toJrtPath->newByteChannel
+JrtFileSystemProvider#newDirectoryStream(Path, Filter)::: jrt file system provider new directory stream:::return->toJrtPath->newDirectoryStream
+JrtFileSystemProvider#newFileChannel(Path, Set, FileAttribute...)::: jrt file system provider new file channel:::return->toJrtPath->newFileChannel
+JrtFileSystemProvider#newInputStream(Path, OpenOption...)::: jrt file system provider new input stream:::return->toJrtPath->newInputStream
+JrtFileSystemProvider#newOutputStream(Path, OpenOption...)::: jrt file system provider new output stream:::return->toJrtPath->newOutputStream
+JrtFileSystemProvider#readAttributes(Path, Class, LinkOption...)::: jrt file system provider read attributes:::if->return->toJrtPath->getAttributes->return
+JrtFileSystemProvider#readAttributes(Path, String, LinkOption...)::: jrt file system provider read attributes:::return->toJrtPath->readAttributes
+JrtFileSystemProvider#setAttribute(Path, String, Object, LinkOption...)::: jrt file system provider set attribute:::toJrtPath->setAttribute
+JrtPath#getName()::: jrt path get name:::return
+JrtPath#getRoot()::: jrt path get root:::if->this->isAbsolute->return->jrtfs->getRootPath->else->return
+JrtPath#getFileName()::: jrt path get file name:::if->path->length->return->if->path->length->path->charAt->return->off->path->lastIndexOf->if->return->return->path->substring->new->JrtPath
+JrtPath#getParent()::: jrt path get parent:::initOffsets->count->if->return->off->if->return->getRoot->return->path->substring->new->JrtPath
+JrtPath#getNameCount()::: jrt path get name count:::initOffsets->return
+JrtPath#getName(int)::: jrt path get name:::initOffsets->if->throw->new->IllegalArgumentException->begin->end->if->path->length->else->return->path->substring->new->JrtPath
+JrtPath#subpath(int, int)::: jrt path subpath:::initOffsets->if->throw->new->IllegalArgumentException->begin->end->if->path->length->else->return->path->substring->new->JrtPath
+JrtPath#toRealPath(LinkOption...)::: jrt path to real path:::return->jrtfs->toRealPath
+JrtPath#toAbsolutePath()::: jrt path to absolute path:::if->isAbsolute->return->return->new->JrtPath
+JrtPath#toUri()::: jrt path to uri:::try->return->toAbsolutePath->new->URI->catch->throw->new->AssertionError->finally
+JrtPath#equalsNameAt(JrtPath, int)::: jrt path equals name at:::mbegin->mlen->if->path->length->else->obegin->olen->if->length->else->if->return->n->while->if->path->charAt->charAt->return->return
+JrtPath#relativize(Path)::: jrt path relativize:::o->checkPath->if->o->equals->return->new->JrtPath->if->path->length->return->if->isAbsolute->o->isAbsolute->throw->new->IllegalArgumentException->tp->op->if->op->startsWith->off->tp->length->if->op->charAt->return->op->substring->new->JrtPath->if->op->charAt->return->op->substring->new->JrtPath->mc->this->getNameCount->oc->o->getNameCount->n->Math->min->i->while->if->equalsNameAt->break->dotdots->len->if->length->sb->new->StringBuilder->while->sb->append->if->sb->length->sb->append->if->sb->length->append->return->sb->toString->new->JrtPath
+JrtPath#getFileSystem()::: jrt path get file system:::return
+JrtPath#isAbsolute()::: jrt path is absolute:::return->path->length->path->charAt
+JrtPath#resolve(Path)::: jrt path resolve:::o->checkPath->if->length->o->isAbsolute->return->if->length->return->sb->path->length->length->new->StringBuilder->sb->append->if->path->path->length->charAt->sb->append->sb->append->return->sb->toString->new->JrtPath
+JrtPath#resolveSibling(Path)::: jrt path resolve sibling:::Objects->requireNonNull->parent->getParent->return->parent->resolve
+JrtPath#startsWith(Path)::: jrt path starts with:::if->Objects->requireNonNull->return->o->tp->op->if->isAbsolute->o->isAbsolute->tp->startsWith->return->off->op->length->if->return->tp->length->return->tp->length->tp->charAt->op->charAt
+JrtPath#endsWith(Path)::: jrt path ends with:::if->Objects->requireNonNull->return->o->t->olast->length->if->charAt->last->length->if->charAt->if->return->if->o->isAbsolute->t->isAbsolute->return->for->return->charAt->charAt
+JrtPath#resolve(String)::: jrt path resolve:::return->getFileSystem->getPath->resolve
+JrtPath#resolveSibling(String)::: jrt path resolve sibling:::return->getFileSystem->getPath->resolveSibling
+JrtPath#startsWith(String)::: jrt path starts with:::return->getFileSystem->getPath->startsWith
+JrtPath#endsWith(String)::: jrt path ends with:::return->getFileSystem->getPath->endsWith
+JrtPath#normalize()::: jrt path normalize:::res->getResolved->if->return->return->new->JrtPath
+JrtPath#checkPath(Path)::: jrt path check path:::Objects->requireNonNull->if->throw->path->getClass->new->ProviderMismatchException->return
+JrtPath#initOffsets()::: jrt path init offsets:::if->len->path->length->count->off->while->c->path->charAt->if->path->indexOf->if->break->offsets->new->intArr->while->c->path->charAt->if->else->path->indexOf->if->break
+JrtPath#getResolvedPath()::: jrt path get resolved path:::r->if->if->isAbsolute->getResolved->else->toAbsolutePath->getResolvedPath->return
+JrtPath#normalize(String)::: jrt path normalize:::len->path->length->if->return->prevC->for->i->if->return->path->substring->return
+JrtPath#normalize(String, int)::: jrt path normalize:::len->path->length->to->new->StringBuilder->to->append->prevC->while->c->path->charAt->if->if->continue->if->throw->new->InvalidPathException->to->append->to->length->if->to->charAt->to->deleteCharAt->return->to->toString
+JrtPath#getResolved()::: jrt path get resolved:::length->path->length->if->path->indexOf->path->charAt->return->else->return->resolvePath
+JrtPath#resolvePath()::: jrt path resolve path:::length->path->length->to->new->charArr->nc->getNameCount->lastM->new->intArr->lastMOff->m->for->i->if->return->new->String->new->String
+JrtPath#toString()::: jrt path to string:::return
+JrtPath#hashCode()::: jrt path hash code:::return->path->hashCode
+JrtPath#equals(Object)::: jrt path equals:::return->equals
+JrtPath#compareTo(Path)::: jrt path compare to:::o->checkPath->return->path->compareTo
+JrtPath#register(WatchService, WatchEvent.Kind[], WatchEvent.Modifier...)::: jrt path register:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->throw->new->UnsupportedOperationException
+JrtPath#register(WatchService, WatchEvent.Kind...)::: jrt path register:::return->new->WatchEvent.ModifierArr->register
+JrtPath#toFile()::: jrt path to file:::throw->new->UnsupportedOperationException
+JrtPath#iterator()::: jrt path iterator:::return->new->Iterator<Path>
+JrtPath#readSymbolicLink()::: jrt path read symbolic link:::if->jrtfs->isLink->throw->new->IOException->return->jrtfs->resolveLink
+JrtPath#isHidden()::: jrt path is hidden:::return
+JrtPath#createDirectory(FileAttribute...)::: jrt path create directory:::jrtfs->createDirectory
+JrtPath#newInputStream(OpenOption...)::: jrt path new input stream:::if->foreach->if->throw->new->UnsupportedOperationException->return->jrtfs->newInputStream
+JrtPath#newDirectoryStream(Filter)::: jrt path new directory stream:::return->new->JrtDirectoryStream
+JrtPath#delete()::: jrt path delete:::jrtfs->deleteFile
+JrtPath#deleteIfExists()::: jrt path delete if exists:::jrtfs->deleteFile
+JrtPath#getAttributes(LinkOption...)::: jrt path get attributes:::zfas->jrtfs->getFileAttributes->if->throw->toString->new->NoSuchFileException->return
+JrtPath#setAttribute(String, Object, LinkOption...)::: jrt path set attribute:::JrtFileAttributeView->setAttribute
+JrtPath#readAttributes(String, LinkOption...)::: jrt path read attributes:::return->JrtFileAttributeView->readAttributes
+JrtPath#setTimes(FileTime, FileTime, FileTime)::: jrt path set times:::jrtfs->setTimes
+JrtPath#getFileStore()::: jrt path get file store:::if->exists->return->jrtfs->getFileStore->throw->new->NoSuchFileException
+JrtPath#isSameFile(Path)::: jrt path is same file:::if->this->equals->return->if->this->getFileSystem->other->getFileSystem->return->this->checkAccess->o->o->checkAccess->return->this->getResolvedPath->o->getResolvedPath->equals->jrtfs->isSameFile
+JrtPath#newByteChannel(Set, FileAttribute...)::: jrt path new byte channel:::return->jrtfs->newByteChannel
+JrtPath#newFileChannel(Set, FileAttribute...)::: jrt path new file channel:::return->jrtfs->newFileChannel
+JrtPath#checkAccess(AccessMode...)::: jrt path check access:::if->jrtfs->checkNode->else->w->foreach->switch->break->break->throw->toString->new->AccessDeniedException->throw->new->UnsupportedOperationException->jrtfs->checkNode->if->jrtfs->isReadOnly->throw->toString->new->AccessDeniedException
+JrtPath#exists()::: jrt path exists:::try->return->jrtfs->exists->catch->finally->return
+JrtPath#newOutputStream(OpenOption...)::: jrt path new output stream:::if->return->jrtfs->newOutputStream->return->jrtfs->newOutputStream
+JrtPath#move(JrtPath, CopyOption...)::: jrt path move:::if->jrtfs->copyFile->else->copyToTarget->delete
+JrtPath#copy(JrtPath, CopyOption...)::: jrt path copy:::if->jrtfs->copyFile->else->copyToTarget
+JrtPath#copyToTarget(JrtPath, CopyOption...)::: jrt path copy to target:::replaceExisting->copyAttrs->foreach->if->else->if->jrtfas->getAttributes->exists->if->try->target->deleteIfExists->catch->finally->else->target->exists->if->throw->target->toString->new->FileAlreadyExistsException->if->jrtfas->isDirectory->target->createDirectory->else->try->is->jrtfs->newInputStream->os->target->newOutputStream->buf->new->byteArr->n->while->is->read->os->write->catch->finally->if->view->Files->getFileAttributeView->try->view->jrtfas->lastModifiedTime->jrtfas->lastAccessTime->jrtfas->creationTime->setTimes->catch->try->target->delete->catch->finally->throw->finally
+JrtUtils#isRegexMeta(char)::: jrt utils is regex meta:::return->regexMetaChars->indexOf
+JrtUtils#isGlobMeta(char)::: jrt utils is glob meta:::return->globMetaChars->indexOf
+JrtUtils#next(String, int)::: jrt utils next:::if->glob->length->return->glob->charAt->return
+JrtUtils#toRegexPattern(String)::: jrt utils to regex pattern:::inGroup->regex->new->StringBuilder->i->while->globPattern->length->c->globPattern->charAt->switch->if->globPattern->length->throw->new->PatternSyntaxException->next->globPattern->charAt->if->isGlobMeta->isRegexMeta->regex->append->regex->append->break->regex->append->break->regex->append->if->next->regex->append->else->if->next->regex->append->if->next->regex->append->hasRangeStart->last->while->globPattern->length->globPattern->charAt->if->break->if->throw->new->PatternSyntaxException->if->next->regex->append->regex->append->if->if->throw->new->PatternSyntaxException->if->next->break->if->throw->new->PatternSyntaxException->regex->append->else->if->throw->new->PatternSyntaxException->regex->append->break->if->throw->new->PatternSyntaxException->regex->append->break->if->regex->append->else->regex->append->break->if->regex->append->else->regex->append->break->if->next->regex->append->else->regex->append->break->regex->append->break->if->isRegexMeta->regex->append->regex->append->if->throw->new->PatternSyntaxException->return->regex->append->toString
+SystemImage#findNode(String)::: system image find node:::
+SystemImage#getResource(Node)::: system image get resource:::
+SystemImage#close()::: system image close:::
+SystemImage#open()::: system image open:::if->image->ImageReader->open->image->getRootDirectory->return->new->SystemImage->if->Files->notExists->throw->explodedModulesDir->toString->new->FileSystemNotFoundException->return->new->ExplodedImage
+SystemImage#findHome():::Returns the appropriate JDK home for this usage of the FileSystemProvider:::cs->getProtectionDomain->getCodeSource->if->return->System->getProperty->url->cs->getLocation->if->url->getProtocol->equalsIgnoreCase->throw->new->InternalError->try->lib->Paths->url->toURI->get->getParent->if->lib->getFileName->toString->equals->throw->new->InternalError->return->lib->getParent->toString->catch->throw->new->InternalError->finally

@@ -1,22 +1,32 @@
+DelegationPermission#init(String):::Initialize the DelegationPermission object.:::t->if->target->startsWith->throw->new->IllegalArgumentException->else->new->StringTokenizer->t->nextToken->if->t->countTokens->t->nextToken->t->nextToken->else->if->t->countTokens->throw->t->nextToken->new->IllegalArgumentException
 DelegationPermission#implies(Permission):::Checks if this Kerberos delegation permission object "implies" the specified permission:::return->equals
 DelegationPermission#equals(Object):::Checks two DelegationPermission objects for equality.:::if->return->if->return->that->return->equals->equals
 DelegationPermission#hashCode():::Returns the hash code value for this object.:::return->subordinate->hashCode->service->hashCode
 DelegationPermission#newPermissionCollection():::Returns a PermissionCollection object for storing DelegationPermission objects:::return->new->KrbDelegationPermissionCollection
+DelegationPermission#writeObject(java.io.ObjectOutputStream):::WriteObject is called to save the state of the DelegationPermission to a stream:::s->defaultWriteObject
+DelegationPermission#readObject(java.io.ObjectInputStream):::readObject is called to restore the state of the DelegationPermission from a stream.:::s->defaultReadObject->getName->init
 KrbDelegationPermissionCollection#implies(Permission):::Check and see if this collection of permissions implies the permissions expressed in "permission".:::if->return->return->perms->containsKey
 KrbDelegationPermissionCollection#add(Permission):::Adds a permission to the DelegationPermissions:::if->throw->new->IllegalArgumentException->if->isReadOnly->throw->new->SecurityException->perms->put
 KrbDelegationPermissionCollection#elements():::Returns an enumeration of all the DelegationPermission objects in the container.:::return->perms->keys
+KrbDelegationPermissionCollection#writeObject(ObjectOutputStream)::: krb delegation permission collection write object:::permissions->perms->keySet->new->Vector<>->pfields->out->putFields->pfields->put->out->writeFields
+KrbDelegationPermissionCollection#readObject(ObjectInputStream)::: krb delegation permission collection read object:::gfields->in->readFields->permissions->gfields->get->permissions->size->new->ConcurrentHashMap<>->foreach->perms->put
 EncryptionKey#getKeyType():::Returns the key type for this key.:::return->key->getKeyType
 EncryptionKey#getAlgorithm():::Returns the standard algorithm name for this key:::return->key->getAlgorithm
 EncryptionKey#getFormat():::Returns the name of the encoding format for this key.:::return->key->getFormat
 EncryptionKey#getEncoded():::Returns the key material of this key.:::return->key->getEncoded
 EncryptionKey#destroy():::Destroys this key by clearing out the key material of this key.:::if->key->destroy
+EncryptionKey#isDestroyed()::: encryption key is destroyed:::return
 EncryptionKey#toString():::Returns an informative textual representation of this EncryptionKey.:::if->return->return->key->toString
 EncryptionKey#hashCode():::Returns a hash code for this EncryptionKey.:::result->if->isDestroyed->return->Arrays->getEncoded->hashCode->return->getKeyType
 EncryptionKey#equals(Object):::Compares the specified object with this key for equality:::if->return->if->return->otherKey->if->isDestroyed->otherKey->isDestroyed->return->return->getKeyType->otherKey->getKeyType->Arrays->getEncoded->otherKey->getEncoded->equals
+JavaxSecurityAuthKerberosAccessImpl#keyTabTakeSnapshot(KeyTab)::: javax security auth kerberos access impl key tab take snapshot:::return->ktab->takeSnapshot
+JavaxSecurityAuthKerberosAccessImpl#kerberosTicketGetProxy(KerberosTicket)::: javax security auth kerberos access impl kerberos ticket get proxy:::return
+JavaxSecurityAuthKerberosAccessImpl#kerberosTicketSetProxy(KerberosTicket, KerberosTicket)::: javax security auth kerberos access impl kerberos ticket set proxy:::
 KerberosCredMessage#getEncoded():::Returns the DER encoded form of the KRB_CRED message.:::if->throw->new->IllegalStateException->return->message->clone
 KerberosCredMessage#getSender():::Returns the sender of this message.:::if->throw->new->IllegalStateException->return
 KerberosCredMessage#getRecipient():::Returns the recipient of this message.:::if->throw->new->IllegalStateException->return
 KerberosCredMessage#destroy():::Destroys this object by clearing out the message.:::if->Arrays->fill
+KerberosCredMessage#isDestroyed()::: kerberos cred message is destroyed:::return
 KerberosCredMessage#toString():::Returns an informative textual representation of this KerberosCredMessage.:::if->return->else->return->Base64->getUrlEncoder->encodeToString
 KerberosCredMessage#hashCode():::Returns a hash code for this KerberosCredMessage.:::if->isDestroyed->return->else->return->Objects->Arrays->hashCode->hash
 KerberosCredMessage#equals(Object):::Compares the specified object with this KerberosCredMessage for equality:::if->return->if->return->otherMessage->if->isDestroyed->otherMessage->isDestroyed->return->return->Objects->equals->Objects->equals->Arrays->equals
@@ -34,9 +44,13 @@ KerberosKey#equals(Object):::Compares the specified object with this KerberosKey
 KerberosPrincipal#getRealm():::Returns the realm component of this Kerberos principal.:::return
 KerberosPrincipal#hashCode():::Returns a hash code for this KerberosPrincipal:::return->getName->hashCode
 KerberosPrincipal#equals(Object):::Compares the specified object with this principal for equality:::if->return->if->return->myFullName->getName->otherFullName->getName->return->myFullName->equals
+KerberosPrincipal#writeObject(ObjectOutputStream):::Save the KerberosPrincipal object to a stream:::krb5Principal->try->new->PrincipalName->oos->krb5Principal->asn1Encode->writeObject->oos->krb5Principal->getRealm->asn1Encode->writeObject->catch->throw->new->IOException->finally
+KerberosPrincipal#readObject(ObjectInputStream):::Reads this object from a stream (i.e., deserializes it):::asn1EncPrincipal->ois->readObject->encRealm->ois->readObject->try->realmObject->new->DerValue->new->Realm->krb5Principal->new->DerValue->new->PrincipalName->realmObject->toString->krb5Principal->toString->krb5Principal->getNameType->catch->throw->new->IOException->finally
 KerberosPrincipal#getName():::The returned string corresponds to the single-string representation of a Kerberos Principal name as specified in Section 2.1 of RFC 1964.:::return
 KerberosPrincipal#getNameType():::Returns the name type of the KerberosPrincipal:::return
 KerberosPrincipal#toString():::Returns an informative textual representation of this KerberosPrincipal.:::return->getName
+KerberosTicket#init(byte[], KerberosPrincipal, KerberosPrincipal, byte[], int, boolean[], Date, Date, Date, Date, InetAddress[])::: kerberos ticket init:::if->throw->new->IllegalArgumentException->new->KeyImpl->init
+KerberosTicket#init(byte[], KerberosPrincipal, KerberosPrincipal, KeyImpl, boolean[], Date, Date, Date, Date, InetAddress[])::: kerberos ticket init:::if->throw->new->IllegalArgumentException->asn1Encoding->clone->if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->if->if->flags->clone->else->new->booleanArr->for->i->else->new->booleanArr->if->renewTill->getTime->new->Date->if->authTime->getTime->new->Date->if->startTime->getTime->new->Date->else->if->throw->new->IllegalArgumentException->endTime->getTime->new->Date->if->clientAddresses->clone
 KerberosTicket#getClient():::Returns the client principal associated with this ticket.:::return
 KerberosTicket#getServer():::Returns the service principal associated with this ticket.:::return
 KerberosTicket#getSessionKey():::Returns the session key associated with this ticket:::if->throw->new->IllegalStateException->return->sessionKey->getEncoded->sessionKey->getKeyType->new->EncryptionKey
@@ -62,27 +76,48 @@ KerberosTicket#isDestroyed():::Determines if this ticket has been destroyed.:::r
 KerberosTicket#toString():::Returns an informative textual representation of this KerberosTicket.:::if->return->caddrString->new->StringBuilder->if->for->i->return->new->HexDumpEncoder->encodeBuffer->client->toString->server->toString->sessionKey->toString->String->valueOf->String->valueOf->endTime->toString->String->valueOf->caddrString->toString
 KerberosTicket#hashCode():::Returns a hash code for this KerberosTicket.:::result->if->isDestroyed->return->Arrays->getEncoded->hashCode->endTime->hashCode->client->hashCode->server->hashCode->sessionKey->hashCode->if->authTime->hashCode->if->startTime->hashCode->if->renewTill->hashCode->Arrays->hashCode->if->proxy->hashCode->return->Arrays->hashCode
 KerberosTicket#equals(Object):::Compares the specified object with this KerberosTicket for equality:::if->return->if->return->otherTicket->if->isDestroyed->otherTicket->isDestroyed->return->if->Arrays->getEncoded->otherTicket->getEncoded->equals->endTime->otherTicket->getEndTime->equals->server->otherTicket->getServer->equals->client->otherTicket->getClient->equals->sessionKey->equals->Arrays->otherTicket->getClientAddresses->equals->Arrays->otherTicket->getFlags->equals->return->if->if->otherTicket->getAuthTime->return->else->if->authTime->otherTicket->getAuthTime->equals->return->if->if->otherTicket->getStartTime->return->else->if->startTime->otherTicket->getStartTime->equals->return->if->if->otherTicket->getRenewTill->return->else->if->renewTill->otherTicket->getRenewTill->equals->return->if->Objects->equals->return->return
+KerberosTicket#readObject(ObjectInputStream)::: kerberos ticket read object:::s->defaultReadObject->if->throw->new->InvalidObjectException->try->init->catch->throw->iae->getMessage->new->InvalidObjectException->initCause->finally
 KeyImpl#getKeyType():::Returns the keyType for this key as defined in the Kerberos Spec.:::if->throw->new->IllegalStateException->return
+KeyImpl#getAlgorithm()::: key impl get algorithm:::return->getAlgorithmName
+KeyImpl#getAlgorithmName(int)::: key impl get algorithm name:::if->throw->new->IllegalStateException->switch->return->return->return->return->return->return->return->return->return->return
+KeyImpl#getFormat()::: key impl get format:::if->throw->new->IllegalStateException->return
+KeyImpl#getEncoded()::: key impl get encoded:::if->throw->new->IllegalStateException->return->keyBytes->clone
+KeyImpl#destroy()::: key impl destroy:::if->Arrays->fill
+KeyImpl#isDestroyed()::: key impl is destroyed:::return
+KeyImpl#writeObject(ObjectOutputStream)::: key impl write object:::if->throw->new->IOException->try->ois->new->EncryptionKey->asn1Encode->writeObject->catch->throw->ae->getMessage->new->IOException->finally
+KeyImpl#readObject(ObjectInputStream)::: key impl read object:::try->encKey->ois->readObject->new->DerValue->new->EncryptionKey->encKey->getEType->encKey->getBytes->catch->throw->ae->getMessage->new->IOException->finally
+KeyImpl#toString()::: key impl to string:::hd->new->HexDumpEncoder->return->hd->encodeBuffer
+KeyImpl#hashCode()::: key impl hash code:::result->if->isDestroyed->return->Arrays->hashCode->return
+KeyImpl#equals(Object)::: key impl equals:::if->return->if->return->otherKey->if->isDestroyed->otherKey->isDestroyed->return->if->otherKey->getKeyType->Arrays->otherKey->getEncoded->equals->return->return
 KeyTab#getInstance(File):::Returns a KeyTab instance from a File object that is bound to an unknown service principal:::if->throw->new->NullPointerException->return->new->KeyTab
 KeyTab#getUnboundInstance(File):::Returns an unbound KeyTab instance from a File object:::if->throw->new->NullPointerException->return->new->KeyTab
 KeyTab#getInstance(KerberosPrincipal, File):::Returns a KeyTab instance from a File object that is bound to the specified service principal:::if->throw->new->NullPointerException->if->throw->new->NullPointerException->return->new->KeyTab
 KeyTab#getInstance():::Returns the default KeyTab instance that is bound to an unknown service principal:::return->new->KeyTab
 KeyTab#getUnboundInstance():::Returns the default unbound KeyTab instance:::return->new->KeyTab
 KeyTab#getInstance(KerberosPrincipal):::Returns the default KeyTab instance that is bound to the specified service principal:::if->throw->new->NullPointerException->return->new->KeyTab
+KeyTab#takeSnapshot()::: key tab take snapshot:::try->return->getInstance->catch->if->throw->else->ace2->new->AccessControlException->ace2->ace->getStackTrace->setStackTrace->throw->finally
 KeyTab#getKeys(KerberosPrincipal):::Returns fresh keys for the given Kerberos principal:::try->if->principal->equals->return->new->KerberosKeyArr->pn->principal->getName->new->PrincipalName->keys->takeSnapshot->readServiceKeys->kks->new->KerberosKeyArr->for->i->return->catch->return->new->KerberosKeyArr->finally
+KeyTab#getEncryptionKeys(PrincipalName)::: key tab get encryption keys:::return->takeSnapshot->readServiceKeys
 KeyTab#exists():::Checks if the keytab file exists:::return->takeSnapshot->isMissing
 KeyTab#toString():::Returns an informative textual representation of this KeyTab.:::s->file->toString->if->return->else->if->return->else->return
 KeyTab#hashCode():::Returns a hash code for this KeyTab.:::return->Objects->hash
 KeyTab#equals(Object):::Compares the specified object with this KeyTab for equality:::if->return->if->return->otherKtab->return->Objects->equals->Objects->equals
 KeyTab#getPrincipal():::Returns the service principal this KeyTab object is bound to:::return
 KeyTab#isBound():::Returns if the keytab is bound to a principal:::return
+ServicePermission#init(String, int):::Initialize the ServicePermission object.:::if->throw->new->NullPointerException->if->throw->new->IllegalArgumentException
 ServicePermission#implies(Permission):::Checks if this Kerberos service permission object "implies" the specified permission:::if->return->that->return->impliesIgnoreMask
+ServicePermission#impliesIgnoreMask(ServicePermission)::: service permission implies ignore mask:::return->this->getName->equals->this->getName->p->getName->equals->p->getName->startsWith->this->getName->p->getName->endsWith
 ServicePermission#equals(Object):::Checks two ServicePermission objects for equality.:::if->return->if->return->that->return->this->getName->that->getName->equals
 ServicePermission#hashCode():::Returns the hash code value for this object.:::return->getName->hashCode
 ServicePermission#getActions(int):::Returns the "canonical string representation" of the actions in the specified mask:::sb->new->StringBuilder->comma->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->return->sb->toString
 ServicePermission#getActions():::Returns the canonical string representation of the actions:::if->getActions->return
 ServicePermission#newPermissionCollection():::Returns a PermissionCollection object for storing ServicePermission objects:::return->new->KrbServicePermissionCollection
 ServicePermission#getMask():::Return the current action mask.:::return
+ServicePermission#getMask(String):::Convert an action string to an integer actions mask:::if->throw->new->NullPointerException->if->action->equals->throw->new->IllegalArgumentException->mask->a->action->toCharArray->if->return->i->while->c->while->matchlen->if->else->if->else->throw->new->IllegalArgumentException->seencomma->while->switch->break->break->throw->new->IllegalArgumentException->return
+ServicePermission#writeObject(java.io.ObjectOutputStream):::WriteObject is called to save the state of the ServicePermission to a stream:::if->getActions->s->defaultWriteObject
+ServicePermission#readObject(java.io.ObjectInputStream):::readObject is called to restore the state of the ServicePermission from a stream.:::s->defaultReadObject->getName->getMask->init
 KrbServicePermissionCollection#implies(Permission):::Check and see if this collection of permissions implies the permissions expressed in "permission".:::if->return->np->desired->np->getMask->if->foreach->perms->values->sp->if->sp->impliesIgnoreMask->return->return->x->perms->get->if->if->x->getMask->return->perms->np->getName->get->if->if->x->getMask->return->return
 KrbServicePermissionCollection#add(Permission):::Adds a permission to the ServicePermissions:::if->throw->new->IllegalArgumentException->if->isReadOnly->throw->new->SecurityException->sp->princName->sp->getName->perms->new->java.util.function.BiFunction<>->merge
 KrbServicePermissionCollection#elements():::Returns an enumeration of all the ServicePermission objects in the container.:::return->perms->elements
+KrbServicePermissionCollection#writeObject(ObjectOutputStream)::: krb service permission collection write object:::permissions->perms->values->new->Vector<>->pfields->out->putFields->pfields->put->out->writeFields
+KrbServicePermissionCollection#readObject(ObjectInputStream)::: krb service permission collection read object:::gfields->in->readFields->permissions->gfields->get->permissions->size->new->ConcurrentHashMap<>->foreach->perms->perm->getName->put

@@ -1,4 +1,22 @@
+Bits#getBoolean(byte[], int)::: bits get boolean:::return
+Bits#getChar(byte[], int)::: bits get char:::return
+Bits#getShort(byte[], int)::: bits get short:::return
+Bits#getInt(byte[], int)::: bits get int:::return
+Bits#getFloat(byte[], int)::: bits get float:::return->Float->getInt->intBitsToFloat
+Bits#getLong(byte[], int)::: bits get long:::return
+Bits#getDouble(byte[], int)::: bits get double:::return->Double->getLong->longBitsToDouble
+Bits#putBoolean(byte[], int, boolean)::: bits put boolean:::
+Bits#putChar(byte[], int, char)::: bits put char:::
+Bits#putShort(byte[], int, short)::: bits put short:::
+Bits#putInt(byte[], int, int)::: bits put int:::
+Bits#putFloat(byte[], int, float)::: bits put float:::Float->floatToIntBits->putInt
+Bits#putLong(byte[], int, long)::: bits put long:::
+Bits#putDouble(byte[], int, double)::: bits put double:::Double->doubleToLongBits->putLong
+BufferedInputStream#getInIfOpen():::Check to make sure that underlying input stream has not been nulled out due to close; if not return it;:::input->if->throw->new->IOException->return
+BufferedInputStream#getBufIfOpen():::Check to make sure that buffer has not been nulled out due to close; if not return it;:::buffer->if->throw->new->IOException->return
+BufferedInputStream#fill():::Fills the buffer with more data, taking into account shuffling and other tricks for dealing with marks:::buffer->getBufIfOpen->if->else->if->if->sz->System->arraycopy->else->if->else->if->throw->new->OutOfMemoryError->else->nsz->if->nbuf->new->byteArr->System->arraycopy->if->U->compareAndSetObject->throw->new->IOException->n->getInIfOpen->read->if
 BufferedInputStream#read():::See the general contract of the read method of InputStream.:::if->fill->if->return->return->getBufIfOpen
+BufferedInputStream#read1(byte[], int, int):::Read characters into a portion of an array, reading from the underlying stream at most once if necessary.:::avail->if->if->getBufIfOpen->return->getInIfOpen->read->fill->if->return->cnt->System->getBufIfOpen->arraycopy->return
 BufferedInputStream#read(byte[], int, int):::Reads bytes from this byte-input stream into the specified byte array, starting at the given offset:::getBufIfOpen->if->throw->new->IndexOutOfBoundsException->else->if->return->n->for
 BufferedInputStream#skip(long):::See the general contract of the skip method of InputStream.:::getBufIfOpen->if->return->avail->if->if->return->getInIfOpen->skip->fill->if->return->skipped->return
 BufferedInputStream#available():::Returns an estimate of the number of bytes that can be read (or skipped over) from this input stream without blocking by the next invocation of a method for this input stream:::n->avail->getInIfOpen->available->return
@@ -6,10 +24,14 @@ BufferedInputStream#mark(int):::See the general contract of the mark method of I
 BufferedInputStream#reset():::See the general contract of the reset method of InputStream:::getBufIfOpen->if->throw->new->IOException
 BufferedInputStream#markSupported():::Tests if this input stream supports the mark and reset methods:::return
 BufferedInputStream#close():::Closes this input stream and releases any system resources associated with the stream:::buffer->while->if->U->compareAndSetObject->input->if->input->close->return
+BufferedOutputStream#flushBuffer():::Flush the internal buffer:::if->out->write
 BufferedOutputStream#write(int):::Writes the specified byte to this buffered output stream.:::if->flushBuffer
 BufferedOutputStream#write(byte[], int, int):::Writes len bytes from the specified byte array starting at offset off to this buffered output stream:::if->flushBuffer->out->write->return->if->flushBuffer->System->arraycopy
 BufferedOutputStream#flush():::Flushes this buffered output stream:::flushBuffer->out->flush
+BufferedReader#ensureOpen():::Checks to make sure that the stream has not been closed:::if->throw->new->IOException
+BufferedReader#fill():::Fills the input buffer, taking the mark into account if it is valid.:::dst->if->else->delta->if->else->if->System->arraycopy->else->ncb->new->charArr->System->arraycopy->n->do->in->read->while->if
 BufferedReader#read():::Reads a single character.:::synchronized->ensureOpen->for
+BufferedReader#read1(char[], int, int):::Reads characters into a portion of an array, reading from the underlying stream if necessary.:::if->if->return->in->read->fill->if->return->if->if->if->fill->if->return->n->Math->min->System->arraycopy->return
 BufferedReader#read(char[], int, int):::Reads characters into a portion of an array:::synchronized->ensureOpen->if->throw->new->IndexOutOfBoundsException->else->if->return->n->read1->if->return->while->in->ready->n1->read1->if->break->return
 BufferedReader#readLine(boolean):::Reads a line of text:::s->startChar->synchronized->ensureOpen->omitLF->for
 BufferedReader#readLine():::Reads a line of text:::return->readLine
@@ -18,21 +40,31 @@ BufferedReader#ready():::Tells whether this stream is ready to be read:::synchro
 BufferedReader#markSupported():::Tells whether this stream supports the mark() operation, which it does.:::return
 BufferedReader#mark(int):::Marks the present position in the stream:::if->throw->new->IllegalArgumentException->synchronized->ensureOpen
 BufferedReader#reset():::Resets the stream to the most recent mark.:::synchronized->ensureOpen->if->throw->new->IOException
+BufferedReader#close()::: buffered reader close:::synchronized->if->return->try->in->close->catch->finally
 BufferedReader#lines():::Returns a Stream, the elements of which are lines read from this BufferedReader:::iter->new->Iterator<>->return->StreamSupport->Spliterators->spliteratorUnknownSize->stream
+BufferedWriter#ensureOpen():::Checks to make sure that the stream has not been closed:::if->throw->new->IOException
 BufferedWriter#flushBuffer():::Flushes the output buffer to the underlying character stream, without flushing the stream itself:::synchronized->ensureOpen->if->return->out->write
 BufferedWriter#write(int):::Writes a single character.:::synchronized->ensureOpen->if->flushBuffer
+BufferedWriter#min(int, int):::Our own little min method, to avoid loading java.lang.Math if we've run out of file descriptors and we're trying to print a stack trace.:::if->return->return
 BufferedWriter#write(char[], int, int):::Writes a portion of an array of characters:::synchronized->ensureOpen->if->throw->new->IndexOutOfBoundsException->else->if->return->if->flushBuffer->out->write->return->b->t->while->d->min->System->arraycopy->if->flushBuffer
 BufferedWriter#write(String, int, int):::Writes a portion of a String.:::synchronized->ensureOpen->b->t->while->d->min->s->getChars->if->flushBuffer
 BufferedWriter#newLine():::Writes a line separator:::System->lineSeparator->write
 BufferedWriter#flush():::Flushes the stream.:::synchronized->flushBuffer->out->flush
+BufferedWriter#close()::: buffered writer close:::synchronized->if->return->try->w->flushBuffer->catch->finally
 ByteArrayInputStream#read():::Reads the next byte of data from this input stream:::return
 ByteArrayInputStream#read(byte[], int, int):::Reads up to len bytes of data into an array of bytes from this input stream:::Objects->checkFromIndexSize->if->return->avail->if->if->return->System->arraycopy->return
+ByteArrayInputStream#readAllBytes()::: byte array input stream read all bytes:::result->Arrays->copyOfRange->return
+ByteArrayInputStream#readNBytes(byte[], int, int)::: byte array input stream read bytes:::n->read->return
+ByteArrayInputStream#transferTo(OutputStream)::: byte array input stream transfer to:::len->out->write->return
 ByteArrayInputStream#skip(long):::Skips n bytes of input from this input stream:::k->if->return
 ByteArrayInputStream#available():::Returns the number of remaining bytes that can be read (or skipped over) from this input stream:::return
 ByteArrayInputStream#markSupported():::Tests if this InputStream supports mark/reset:::return
 ByteArrayInputStream#mark(int):::Set the current marked position in the stream:::
 ByteArrayInputStream#reset():::Resets the buffer to the marked position:::
 ByteArrayInputStream#close():::Closing a ByteArrayInputStream has no effect:::
+ByteArrayOutputStream#ensureCapacity(int):::Increases the capacity if necessary to ensure that it can hold at least the number of elements specified by the minimum capacity argument.:::if->grow
+ByteArrayOutputStream#grow(int):::Increases the capacity to ensure that it can hold at least the number of elements specified by the minimum capacity argument.:::oldCapacity->newCapacity->if->if->hugeCapacity->Arrays->copyOf
+ByteArrayOutputStream#hugeCapacity(int)::: byte array output stream huge capacity:::if->throw->new->OutOfMemoryError->return
 ByteArrayOutputStream#write(int):::Writes the specified byte to this ByteArrayOutputStream.:::ensureCapacity
 ByteArrayOutputStream#write(byte[], int, int):::Writes len bytes from the specified byte array starting at offset off to this ByteArrayOutputStream.:::Objects->checkFromIndexSize->ensureCapacity->System->arraycopy
 ByteArrayOutputStream#writeBytes(byte[]):::Writes the complete contents of the specified byte array to this ByteArrayOutputStream.:::write
@@ -45,6 +77,7 @@ ByteArrayOutputStream#toString(String):::Converts the buffer's contents into a s
 ByteArrayOutputStream#toString(Charset):::Converts the buffer's contents into a string by decoding the bytes using the specified java.nio.charset.Charset charset:::return->new->String
 ByteArrayOutputStream#toString(int):::Creates a newly allocated string:::return->new->String
 ByteArrayOutputStream#close():::Closing a ByteArrayOutputStream has no effect:::
+CharArrayReader#ensureOpen():::Checks to make sure that the stream has not been closed:::if->throw->new->IOException
 CharArrayReader#read():::Reads a single character.:::synchronized->ensureOpen->if->return->else->return
 CharArrayReader#read(char[], int, int):::Reads characters into a portion of an array.:::synchronized->ensureOpen->if->throw->new->IndexOutOfBoundsException->else->if->return->if->return->avail->if->if->return->System->arraycopy->return
 CharArrayReader#skip(long):::Skips characters:::synchronized->ensureOpen->avail->if->if->return->return
@@ -74,8 +107,17 @@ Console#printf(String, Object...):::A convenience method to write a formatted st
 Console#readLine(String, Object...):::Provides a formatted prompt, then reads a single line of text from the console.:::line->synchronized->synchronized->if->fmt->length->pw->format->try->ca->readline->if->new->String->catch->throw->new->IOError->finally->return
 Console#readLine():::Reads a single line of text from the console.:::return->readLine
 Console#readPassword(String, Object...):::Provides a formatted prompt, then reads a password or passphrase from the console with echoing disabled.:::passwd->synchronized->synchronized->installShutdownHook->try->echo->catch->throw->new->IOError->finally->ioe->try->if->fmt->length->pw->format->readline->catch->new->IOError->finally->try->if->echo->catch->if->new->IOError->else->ioe->addSuppressed->finally->if->throw->pw->println->return
+Console#installShutdownHook()::: console install shutdown hook:::if->return->try->SharedSecrets->getJavaLangAccess->new->Runnable->registerShutdownHook->catch->finally
 Console#readPassword():::Reads a password or passphrase from the console with echoing disabled:::return->readPassword
 Console#flush():::Flushes the console and forces any buffered output to be written immediately .:::pw->flush
+Console#encoding()::: console encoding:::
+Console#echo(boolean)::: console echo:::
+Console#readline(boolean)::: console readline:::len->reader->read->if->return->if->else->if->if->b->new->charArr->if->System->arraycopy->if->Arrays->fill->return
+Console#grow()::: console grow:::t->new->charArr->System->arraycopy->return
+Console.LineReader#close()::: line reader close:::
+Console.LineReader#ready()::: line reader ready:::return->in->ready
+Console.LineReader#read(char[], int, int)::: line reader read:::off->end->if->throw->new->IndexOutOfBoundsException->synchronized->eof->c->for
+Console#istty()::: console istty:::
 DataInput#readFully(byte[]):::Reads some bytes from an input stream and stores them into the buffer array b:::
 DataInput#readFully(byte[], int, int):::Reads len bytes from an input stream:::
 DataInput#skipBytes(int):::Makes an attempt to skip over n bytes of data from the input stream, discarding the skipped bytes:::
@@ -123,6 +165,7 @@ DataOutput#writeDouble(double):::Writes a double value, which is comprised of ei
 DataOutput#writeBytes(String):::Writes a string to the output stream:::
 DataOutput#writeChars(String):::Writes every character in the string s, to the output stream, in order, two bytes per character:::
 DataOutput#writeUTF(String):::Writes two bytes of length information to the output stream, followed by the modified UTF-8 representation of  every character in the string s:::
+DataOutputStream#incCount(int):::Increases the written counter by the specified value until it reaches Integer.MAX_VALUE.:::temp->if
 DataOutputStream#write(int):::Writes the specified byte (the low eight bits of the argument b) to the underlying output stream:::out->write->incCount
 DataOutputStream#write(byte[], int, int):::Writes len bytes from the specified byte array starting at offset off to the underlying output stream:::out->write->incCount
 DataOutputStream#flush():::Flushes this data output stream:::out->flush
@@ -140,6 +183,17 @@ DataOutputStream#writeUTF(String):::Writes a string to the underlying output str
 DataOutputStream#writeUTF(String, DataOutput):::Writes a string to the specified DataOutput using modified UTF-8 encoding in a machine-independent manner:::strlen->str->length->utflen->c->count->for->i->if->throw->new->UTFDataFormatException->bytearr->if->dos->if->new->byteArr->else->new->byteArr->i->for->for->out->write->return
 DataOutputStream#size():::Returns the current value of the counter written, the number of bytes written to this data output stream so far:::return
 DefaultFileSystem#getFileSystem():::Return the FileSystem object for Windows platform.:::return->new->WinNTFileSystem
+DeleteOnExitHook#add(String)::: delete on exit hook add:::if->throw->new->IllegalStateException->files->add
+DeleteOnExitHook#runHooks()::: delete on exit hook run hooks:::theFiles->synchronized->toBeDeleted->new->ArrayList<>->Collections->reverse->foreach->new->File->delete
+ExpiringCache.Entry#timestamp()::: entry timestamp:::return
+ExpiringCache.Entry#setTimestamp(long)::: entry set timestamp:::
+ExpiringCache.Entry#val()::: entry val:::return
+ExpiringCache.Entry#setVal(String)::: entry set val:::
+ExpiringCache#get(String)::: expiring cache get:::if->cleanup->entry->entryFor->if->return->entry->val->return
+ExpiringCache#put(String, String)::: expiring cache put:::if->cleanup->entry->entryFor->if->entry->System->currentTimeMillis->setTimestamp->entry->setVal->else->map->System->currentTimeMillis->new->Entry->put
+ExpiringCache#clear()::: expiring cache clear:::map->clear
+ExpiringCache#entryFor(String)::: expiring cache entry for:::entry->map->get->if->delta->System->currentTimeMillis->entry->timestamp->if->map->remove->return
+ExpiringCache#cleanup()::: expiring cache cleanup:::keySet->map->keySet->keys->keySet->size->new->StringArr->i->foreach->for->j
 Externalizable#writeExternal(ObjectOutput):::The object implements the writeExternal method to save its contents by calling the methods of DataOutput for its primitive values or calling the writeObject method of ObjectOutput for objects, strings, and arrays.:::
 Externalizable#readExternal(ObjectInput):::The object implements the readExternal method to restore its contents by calling the methods of DataInput for primitive types and readObject for objects, strings and arrays:::
 File#isInvalid():::Check if the file has an invalid path:::s->if->indexOf->return
@@ -153,6 +207,7 @@ File#getAbsolutePath():::Returns the absolute pathname string of this abstract p
 File#getAbsoluteFile():::Returns the absolute form of this abstract pathname:::absPath->getAbsolutePath->return->fs->prefixLength->new->File
 File#getCanonicalPath():::Returns the canonical pathname string of this abstract pathname:::if->isInvalid->throw->new->IOException->return->fs->fs->resolve->canonicalize
 File#getCanonicalFile():::Returns the canonical form of this abstract pathname:::canonPath->getCanonicalPath->return->fs->prefixLength->new->File
+File#slashify(String, boolean)::: file slashify:::p->if->p->replace->if->p->startsWith->if->p->endsWith->return
 File#toURL():::Converts this abstract pathname into a file: URL:::if->isInvalid->throw->new->MalformedURLException->return->getAbsolutePath->isDirectory->slashify->new->URL
 File#toURI():::Constructs a file: URI that represents this abstract pathname:::try->f->getAbsoluteFile->sp->f->getPath->f->isDirectory->slashify->if->sp->startsWith->return->new->URI->catch->throw->new->Error->finally
 File#canRead():::Tests whether the application can read the file denoted by this abstract pathname:::security->System->getSecurityManager->if->security->checkRead->if->isInvalid->return->return->fs->checkAccess
@@ -187,54 +242,89 @@ File#listRoots():::List the available filesystem roots:::return->fs->listRoots
 File#getTotalSpace():::Returns the size of the partition named by this abstract pathname.:::sm->System->getSecurityManager->if->sm->new->RuntimePermission->checkPermission->sm->checkRead->if->isInvalid->return->return->fs->getSpace
 File#getFreeSpace():::Returns the number of unallocated bytes in the partition named by this abstract path name:::sm->System->getSecurityManager->if->sm->new->RuntimePermission->checkPermission->sm->checkRead->if->isInvalid->return->return->fs->getSpace
 File#getUsableSpace():::Returns the number of bytes available to this virtual machine on the partition named by this abstract pathname:::sm->System->getSecurityManager->if->sm->new->RuntimePermission->checkPermission->sm->checkRead->if->isInvalid->return->return->fs->getSpace
+File.TempDirectory#location()::: temp directory location:::return
+File.TempDirectory#shortenSubName(int, int, int)::: temp directory shorten sub name:::newLength->Math->max->if->return->return
+File.TempDirectory#generateFile(String, String, File)::: temp directory generate file:::n->random->nextLong->nus->Long->toUnsignedString->new->File->getName->prefixLength->prefix->length->nusLength->nus->length->suffixLength->suffix->length->name->nameMax->fs->dir->getPath->getNameMax->excess->if->else->shortenSubName->if->suffix->indexOf->shortenSubName->shortenSubName->if->shortenSubName->sb->new->StringBuilder->sb->prefix->length->prefix->substring->append->sb->nus->length->nus->substring->append->sb->suffix->length->suffix->substring->append->sb->toString->fs->normalize->f->new->File->if->name->f->getName->equals->f->isInvalid->if->System->getSecurityManager->throw->new->IOException->else->throw->new->IOException->return
 File#createTempFile(String, String, File)::: Creates a new empty file in the specified directory, using the given prefix and suffix strings to generate its name:::if->prefix->length->throw->new->IllegalArgumentException->if->tmpdir->TempDirectory->location->sm->System->getSecurityManager->f->do->TempDirectory->generateFile->if->try->sm->f->getPath->checkWrite->catch->if->throw->new->SecurityException->throw->finally->while->fs->getBooleanAttributes->if->fs->f->getPath->createFileExclusively->throw->new->IOException->return
 File#createTempFile(String, String):::Creates an empty file in the default temporary-file directory, using the given prefix and suffix to generate its name:::return->createTempFile
 File#compareTo(File):::Compares two abstract pathnames lexicographically:::return->fs->compare
 File#equals(Object):::Tests this abstract pathname for equality with the given object:::if->return->compareTo->return
 File#hashCode():::Computes a hash code for this abstract pathname:::return->fs->hashCode
 File#toString():::Returns the pathname string of this abstract pathname:::return->getPath
+File#writeObject(java.io.ObjectOutputStream):::WriteObject is called to save this filename:::s->defaultWriteObject->s->writeChar
+File#readObject(java.io.ObjectInputStream):::readObject is called to restore this filename:::fields->s->readFields->pathField->fields->get->sep->s->readChar->if->pathField->replace->path->fs->normalize->UNSAFE->putObject->UNSAFE->fs->prefixLength->putIntVolatile
 File#toPath():::Returns a Path java.nio.file.Path object constructed from this abstract path:::result->if->synchronized->if->FileSystems->getDefault->getPath->return
+FileCleanable#cleanupClose0(int, long)::: file cleanable cleanup close0:::
 FileCleanable#register(FileDescriptor):::Register a Cleanable with the FileDescriptor if the FileDescriptor is non-null and valid.:::if->fdo->valid->fd->fdAccess->get->handle->fdAccess->getHandle->fdo->CleanerFactory->cleaner->new->FileCleanable->registerCleanup
 FileCleanable#unregister(FileDescriptor):::Unregister a Cleanable from the FileDescriptor.:::if->fdo->unregisterCleanup
 FileCleanable#performCleanup():::Close the native handle or fd.:::try->cleanupClose0->catch->throw->new->UncheckedIOException->finally
 FileDescriptor#valid():::Tests if this file descriptor object is valid.:::return
 FileDescriptor#sync():::Force all system buffers to synchronize with the underlying device:::
+FileDescriptor#initIDs()::: file descriptor init ds:::
+FileDescriptor#getHandle(int)::: file descriptor get handle:::
+FileDescriptor#getAppend(int):::Returns true, if the file was opened for appending.:::
 FileDescriptor#set(int):::Set the fd:::if->cleanup->clear
 FileDescriptor#setHandle(long):::Set the handle:::if->cleanup->clear
 FileDescriptor#registerCleanup(PhantomCleanable):::Register a cleanup for the current handle:::Objects->requireNonNull->if->cleanup->clear
 FileDescriptor#unregisterCleanup():::Unregister a cleanup for the current raw fd or handle:::if->cleanup->clear
 FileDescriptor#close():::Close the raw file descriptor or handle, if it has not already been closed:::unregisterCleanup->close0
+FileDescriptor#close0()::: file descriptor close0:::
 FileDescriptor#attach(Closeable):::Attach a Closeable to this FD for tracking:::if->else->if->new->ArrayList<>->otherParents->add->otherParents->add->else->otherParents->add
 FileDescriptor#closeAll(Closeable):::Cycle through all Closeables sharing this FD and call close() on each one:::if->ioe->try->if->foreach->try->referent->close->catch->if->else->ioe->addSuppressed->finally->catch->if->ex->addSuppressed->finally->if->throw
 FileFilter#accept(File):::Tests whether or not the specified abstract pathname should be included in a pathname list.:::
+FileInputStream#open0(String):::Opens the specified file for reading.:::
+FileInputStream#open(String):::Opens the specified file for reading.:::open0
 FileInputStream#read():::Reads a byte of data from this input stream:::return->read0
+FileInputStream#read0()::: file input stream read0:::
+FileInputStream#readBytes(byte[], int, int):::Reads a subarray as a sequence of bytes.:::
 FileInputStream#read(byte[]):::Reads up to b.length bytes of data from this input stream into an array of bytes:::return->readBytes
 FileInputStream#read(byte[], int, int):::Reads up to len bytes of data from this input stream into an array of bytes:::return->readBytes
 FileInputStream#skip(long):::Skips over and discards n bytes of data from the input stream:::return->skip0
+FileInputStream#skip0(long)::: file input stream skip0:::
 FileInputStream#available():::Returns an estimate of the number of remaining bytes that can be read (or skipped over) from this input stream without blocking by the next invocation of a method for this input stream:::return->available0
+FileInputStream#available0()::: file input stream available0:::
 FileInputStream#close():::Closes this file input stream and releases any system resources associated with the stream:::if->return->synchronized->if->return->fc->if->fc->close->fd->new->Closeable->closeAll
 FileInputStream#getFD():::Returns the FileDescriptor object  that represents the connection to the actual file in the file system being used by this FileInputStream.:::if->return->throw->new->IOException
 FileInputStream#getChannel():::Returns the unique java.nio.channels.FileChannel FileChannel object associated with this file input stream:::fc->if->synchronized->if->FileChannelImpl->open->if->try->fc->close->catch->throw->new->InternalError->finally->return
+FileInputStream#initIDs()::: file input stream init ds:::
 FileInputStream#finalize():::Ensures that the #close method of this file input stream is called when there are no more references to it:::
+FileInputStream#getFinalizer(FileInputStream)::: file input stream get finalizer:::clazz->fis->getClass->while->try->clazz->getDeclaredMethod->return->new->AltFinalizer->catch->finally->clazz->getSuperclass->return
+FileInputStream.AltFinalizer#finalize()::: alt finalizer finalize:::try->if->fis->close->catch->finally
 FilenameFilter#accept(File, String):::Tests if a specified file should be included in a file list.:::
+FileOutputStream#open0(String, boolean):::Opens a file, with the specified name, for overwriting or appending.:::
+FileOutputStream#open(String, boolean):::Opens a file, with the specified name, for overwriting or appending.:::open0
+FileOutputStream#write(int, boolean):::Writes the specified byte to this file output stream.:::
 FileOutputStream#write(int):::Writes the specified byte to this file output stream:::fdAccess->getAppend->write
+FileOutputStream#writeBytes(byte[], int, int, boolean):::Writes a sub array as a sequence of bytes.:::
 FileOutputStream#write(byte[]):::Writes b.length bytes from the specified byte array to this file output stream.:::fdAccess->getAppend->writeBytes
 FileOutputStream#write(byte[], int, int):::Writes len bytes from the specified byte array starting at offset off to this file output stream.:::fdAccess->getAppend->writeBytes
 FileOutputStream#close():::Closes this file output stream and releases any system resources associated with this stream:::if->return->synchronized->if->return->fc->if->fc->close->fd->new->Closeable->closeAll
 FileOutputStream#getFD():::Returns the file descriptor associated with this stream.:::if->return->throw->new->IOException
 FileOutputStream#getChannel():::Returns the unique java.nio.channels.FileChannel FileChannel object associated with this file output stream:::fc->if->synchronized->if->FileChannelImpl->open->if->try->fc->close->catch->throw->new->InternalError->finally->return
 FileOutputStream#finalize():::Cleans up the connection to the file, and ensures that the #close method of this file output stream is called when there are no more references to this stream:::
+FileOutputStream#initIDs()::: file output stream init ds:::
+FileOutputStream#getFinalizer(FileOutputStream)::: file output stream get finalizer:::clazz->fos->getClass->while->try->clazz->getDeclaredMethod->return->new->AltFinalizer->catch->finally->clazz->getSuperclass->return
+FileOutputStream.AltFinalizer#finalize()::: alt finalizer finalize:::try->if->if->fos->flush->else->fos->close->catch->finally
+FilePermission#altPath(Path):::Returns the alternative path as a Path object, i.e:::try->if->in->isAbsolute->return->here->resolve->normalize->else->return->here->relativize->normalize->catch->return->finally
+FilePermission#init(int):::initialize a FilePermission object:::if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->if->name->getName->if->throw->new->NullPointerException->if->name->equals->return->rememberStar->if->name->endsWith->name->name->length->substring->try->builtInFS->new->File->getPath->getPath->normalize->lastName->npath->getFileName->if->lastName->equals->npath->getParent->if->catch->builtInFS->getPath->finally->else->if->getName->throw->new->NullPointerException->if->cpath->equals->return->try->name->cpath->endsWith->cpath->cpath->length->substring->builtInFS->new->File->getPath->getPath->catch->return->finally->AccessController->new->PrivilegedAction<>->doPrivileged->len->cpath->length->last->cpath->charAt->if->cpath->charAt->cpath->substring->else->if->cpath->charAt->cpath->substring->else
 FilePermission#implies(Permission):::Checks if this FilePermission object "implies" the specified permission:::if->return->that->return->impliesIgnoreMask
 FilePermission#impliesIgnoreMask(FilePermission):::Checks if the Permission's actions are a proper subset of the this object's actions:::if->return->if->return->if->return->if->return->if->if->return->if->equals->return->diff->containsPath->if->return->if->return->if->if->equals->return->containsPath->if->return->if->return->return->else->if->if->if->return->length->length->startsWith->else->return->length->length->startsWith->else->if->if->return->else->return->equals->else->last->lastIndexOf->if->return->else->return->length->regionMatches->else->if->return->else->return->equals
+FilePermission#containsPath(Path, Path):::Returns the depth between an outer path p1 and an inner path p2:::if->Objects->p1->getRoot->p2->getRoot->equals->return->if->p1->equals->if->p2->equals->return->else->if->p2->getName->equals->return->else->return->p2->getNameCount->else->if->p2->equals->c1->p1->getNameCount->if->p1->getName->equals->return->return->c1->p1->getNameCount->c2->p2->getNameCount->n->Math->min->i->while->if->p1->getName->p2->getName->equals->break->if->p1->getName->equals->return->if->p2->getName->equals->return->return
 FilePermission#equals(Object):::Checks two FilePermission objects for equality:::if->return->if->return->that->if->return->if->return->equals->Objects->equals->else->return->equals
 FilePermission#hashCode():::Returns the hash code value for this object.:::if->return->Objects->hash->else->return
+FilePermission#getMask(String):::Converts an actions String to an actions mask.:::mask->if->return->if->return->else->if->return->else->if->return->else->if->return->else->if->return->a->actions->toCharArray->i->if->return->while->c->while->matchlen->if->else->if->else->if->else->if->else->if->else->throw->new->IllegalArgumentException->seencomma->while->switch->break->break->throw->new->IllegalArgumentException->return
 FilePermission#getMask():::Return the current action mask:::return
+FilePermission#getActions(int):::Return the canonical string representation of the actions:::sj->new->StringJoiner->if->sj->add->if->sj->add->if->sj->add->if->sj->add->if->sj->add->return->sj->toString
 FilePermission#getActions():::Returns the "canonical string representation" of the actions:::if->getActions->return
 FilePermission#newPermissionCollection():::Returns a new PermissionCollection object for storing FilePermission objects:::return->new->FilePermissionCollection
+FilePermission#writeObject(ObjectOutputStream):::WriteObject is called to save the state of the FilePermission to a stream:::if->getActions->s->defaultWriteObject
+FilePermission#readObject(ObjectInputStream):::readObject is called to restore the state of the FilePermission from a stream.:::s->defaultReadObject->getMask->init
 FilePermission#withNewActions(int):::Create a cloned FilePermission with a different actions.:::return->this->getName->new->FilePermission
 FilePermissionCollection#add(Permission):::Adds a permission to the FilePermissionCollection:::if->throw->new->IllegalArgumentException->if->isReadOnly->throw->new->SecurityException->fp->perms->fp->getName->new->java.util.function.BiFunction<>->merge
 FilePermissionCollection#implies(Permission):::Check and see if this set of permissions implies the permissions expressed in "permission".:::if->return->fperm->desired->fperm->getMask->effective->needed->foreach->perms->values->fp->if->fp->getMask->fp->impliesIgnoreMask->fp->getMask->if->return->return
 FilePermissionCollection#elements():::Returns an enumeration of all the FilePermission objects in the container.:::return->perms->elements
+FilePermissionCollection#writeObject(ObjectOutputStream)::: file permission collection write object:::permissions->perms->values->new->Vector<>->pfields->out->putFields->pfields->put->out->writeFields
+FilePermissionCollection#readObject(ObjectInputStream)::: file permission collection read object:::gfields->in->readFields->permissions->gfields->get->permissions->size->new->ConcurrentHashMap<>->foreach->perms->perm->getName->put
 FileSystem#getSeparator():::Return the local filesystem's name-separator character.:::
 FileSystem#getPathSeparator():::Return the local filesystem's path-separator character.:::
 FileSystem#normalize(String):::Convert the given pathname string to normal form:::
@@ -244,6 +334,7 @@ FileSystem#getDefaultParent():::Return the parent pathname string to be used whe
 FileSystem#fromURIPath(String):::Post-process the given URI path string if necessary:::
 FileSystem#isAbsolute(File):::Tell whether or not the given abstract pathname is absolute.:::
 FileSystem#resolve(File):::Resolve the given abstract pathname into absolute form:::
+FileSystem#canonicalize(String)::: file system canonicalize:::
 FileSystem#getBooleanAttributes(File):::Return the simple boolean attributes for the file or directory denoted by the given abstract pathname, or zero if it does not exist or some other I/O error occurs.:::
 FileSystem#checkAccess(File, int):::Check whether the file or directory denoted by the given abstract pathname may be accessed by this process:::
 FileSystem#setPermission(File, int, boolean, boolean):::Set on or off the access permission (to owner only or to all) to the file or directory denoted by the given abstract pathname, based on the parameters enable, access and oweronly.:::
@@ -257,9 +348,11 @@ FileSystem#rename(File, File):::Rename the file or directory denoted by the firs
 FileSystem#setLastModifiedTime(File, long):::Set the last-modified time of the file or directory denoted by the given abstract pathname, returning true if and only if the operation succeeds.:::
 FileSystem#setReadOnly(File):::Mark the file or directory denoted by the given abstract pathname as read-only, returning true if and only if the operation succeeds.:::
 FileSystem#listRoots():::List the available filesystem roots.:::
+FileSystem#getSpace(File, int)::: file system get space:::
 FileSystem#getNameMax(String):::Retrieve the maximum length of a component of a file path.:::
 FileSystem#compare(File, File):::Compare two abstract pathnames lexicographically.:::
 FileSystem#hashCode(File):::Compute the hash code of an abstract pathname.:::
+FileSystem#getBooleanProperty(String, boolean)::: file system get boolean property:::return->Boolean->System->String->valueOf->getProperty->parseBoolean
 FilterInputStream#read():::Reads the next byte of data from this input stream:::return->in->read
 FilterInputStream#read(byte[]):::Reads up to b.length bytes of data from this input stream into an array of bytes:::return->read
 FilterInputStream#read(byte[], int, int):::Reads up to len bytes of data from this input stream into an array of bytes:::return->in->read
@@ -281,10 +374,12 @@ FilterReader#ready():::Tells whether this stream is ready to be read.:::return->
 FilterReader#markSupported():::Tells whether this stream supports the mark() operation.:::return->in->markSupported
 FilterReader#mark(int):::Marks the present position in the stream.:::in->mark
 FilterReader#reset():::Resets the stream.:::in->reset
+FilterReader#close()::: filter reader close:::in->close
 FilterWriter#write(int):::Writes a single character.:::out->write
 FilterWriter#write(char[], int, int):::Writes a portion of an array of characters.:::out->write
 FilterWriter#write(String, int, int):::Writes a portion of a string.:::out->write
 FilterWriter#flush():::Flushes the stream.:::out->flush
+FilterWriter#close()::: filter writer close:::out->close
 Flushable#flush():::Flushes this stream by writing any buffered output to the underlying stream.:::
 InputStream#nullInputStream():::Returns a new InputStream that reads no bytes:::return->new->InputStream
 InputStream#read():::Reads the next byte of data from the input stream:::
@@ -304,6 +399,7 @@ InputStreamReader#getEncoding():::Returns the name of the character encoding bei
 InputStreamReader#read():::Reads a single character.:::return->sd->read
 InputStreamReader#read(char[], int, int):::Reads characters into a portion of an array.:::return->sd->read
 InputStreamReader#ready():::Tells whether this stream is ready to be read:::return->sd->ready
+InputStreamReader#close()::: input stream reader close:::sd->close
 InvalidClassException#getMessage():::Produce the message and include the classname, if present.:::if->return->super->getMessage->else->return->super->getMessage
 LineNumberInputStream#read():::Reads the next byte of data from this input stream:::c->if->else->in->read->switch->in->read->if->return->return
 LineNumberInputStream#read(byte[], int, int):::Reads up to len bytes of data from this input stream into an array of bytes:::if->throw->new->NullPointerException->else->if->throw->new->IndexOutOfBoundsException->else->if->return->c->read->if->return->i->try->for->catch->finally->return
@@ -340,8 +436,14 @@ ObjectInputFilter.Config#setSerialFilter(ObjectInputFilter):::Set the process-wi
 ObjectInputFilter.Config#createFilter(String):::Returns an ObjectInputFilter from a string of patterns:::Objects->requireNonNull->return->Global->createFilter
 ObjectInputFilter.Config#createFilter2(String):::Returns an ObjectInputFilter from a string of patterns that checks only the length for arrays, not the component type.:::Objects->requireNonNull->return->Global->createFilter
 ObjectInputFilter.Config.Global#createFilter(String, boolean):::Returns an ObjectInputFilter from a string of patterns.:::try->return->new->Global->catch->return->finally
+ObjectInputFilter.Config.Global#parseLimit(String):::Parse out a limit for one of maxarray, maxdepth, maxbytes, maxreferences.:::eqNdx->pattern->indexOf->if->return->valueString->pattern->substring->if->pattern->startsWith->parseValue->else->if->pattern->startsWith->parseValue->else->if->pattern->startsWith->parseValue->else->if->pattern->startsWith->parseValue->else->throw->pattern->substring->new->IllegalArgumentException->return
+ObjectInputFilter.Config.Global#parseValue(String):::Parse the value of a limit and check that it is non-negative.:::value->Long->parseLong->if->throw->new->IllegalArgumentException->return
+ObjectInputFilter.Config.Global#checkInput(FilterInfo)::: global check input:::if->filterInfo->references->filterInfo->depth->filterInfo->streamBytes->filterInfo->references->filterInfo->depth->filterInfo->streamBytes->return->clazz->filterInfo->serialClass->if->if->clazz->isArray->if->filterInfo->arrayLength->filterInfo->arrayLength->return->if->return->do->clazz->getComponentType->while->clazz->isArray->if->clazz->isPrimitive->return->else->cl->status->filters->stream->f->apply->map->filter->findFirst->return->status->orElse->return
+ObjectInputFilter.Config.Global#matchesPackage(Class, String):::Returns true if the class is in the package.:::return->pkg->c->getPackageName->equals
 ObjectInputFilter.Config.Global#toString():::Returns the pattern used to create this filter.:::return
 ObjectInputStream#readObject():::Read an object from the ObjectInputStream:::return->readObject
+ObjectInputStream#readString():::Reads a String and only a string.:::try->return->readObject->catch->throw->new->IllegalStateException->finally
+ObjectInputStream#readObject(Class):::Internal method to read an object from the ObjectInputStream of the expected type:::if->return->readObjectOverride->if->throw->new->AssertionError->outerHandle->try->obj->readObject0->handles->markDependency->ex->handles->lookupException->if->throw->if->vlist->doCallbacks->freeze->return->catch->finally->if->clear
 ObjectInputStream#readObjectOverride():::This method is called by trusted subclasses of ObjectOutputStream that constructed ObjectOutputStream using the protected no-arg constructor:::return
 ObjectInputStream#readUnshared():::Reads an "unshared" object from the ObjectInputStream:::outerHandle->try->obj->readObject0->handles->markDependency->ex->handles->lookupException->if->throw->if->vlist->doCallbacks->freeze->return->catch->finally->if->clear
 ObjectInputStream#defaultReadObject():::Read the non-static and non-transient fields of the current class from this stream:::ctx->if->throw->new->NotActiveException->curObj->ctx->getObj->curDesc->ctx->getDesc->bin->setBlockDataMode->vals->defaultReadFields->if->defaultCheckFieldValues->defaultSetFieldValues->bin->setBlockDataMode->if->curDesc->hasWriteObjectData->ex->handles->lookupException->if->throw
@@ -374,6 +476,8 @@ ObjectInputStream#readLine():::Reads in a line that has been terminated by a \n,
 ObjectInputStream#readUTF():::Reads a String in modified UTF-8 format.:::return->bin->readUTF
 ObjectInputStream#getObjectInputFilter():::Returns the serialization filter for this stream:::return
 ObjectInputStream#setObjectInputFilter(ObjectInputFilter):::Set the serialization filter for the stream:::sm->System->getSecurityManager->if->sm->checkPermission->if->getSerialFilter->throw->new->IllegalStateException
+ObjectInputStream#filterCheck(Class, int):::Invoke the serialization filter if non-null:::if->ex->status->bytesRead->bin->getBytesRead->try->serialFilter->new->FilterValues->checkInput->catch->finally->if->Objects->toString->log->if->ice->new->InvalidClassException->ice->initCause->throw
+ObjectInputStream#checkArray(Class, int):::Checks the given array type and length to ensure that creation of such an array is permitted by this ObjectInputStream:::if->arrayType->isArray->throw->new->IllegalArgumentException->if->throw->new->NegativeArraySizeException->filterCheck
 ObjectInputStream.GetField#getObjectStreamClass():::Get the ObjectStreamClass that describes the fields in the stream.:::
 ObjectInputStream.GetField#defaulted(String):::Return true if the named field is defaulted and has no value in this stream.:::
 ObjectInputStream.GetField#get(String, boolean):::Get the value of the named boolean field from the persistent field.:::
@@ -385,7 +489,120 @@ ObjectInputStream.GetField#get(String, long):::Get the value of the named long f
 ObjectInputStream.GetField#get(String, float):::Get the value of the named float field from the persistent field.:::
 ObjectInputStream.GetField#get(String, double):::Get the value of the named double field from the persistent field.:::
 ObjectInputStream.GetField#get(String, Object):::Get the value of the named Object field from the persistent field.:::
+ObjectInputStream#verifySubclass():::Verifies that this (possibly subclass) instance can be constructed without violating security constraints: the subclass must not override security-sensitive non-final methods, or else the "enableSubclassImplementation" SerializablePermission is checked.:::cl->getClass->if->return->sm->System->getSecurityManager->if->return->processQueue->key->new->WeakClassKey->result->get->if->auditSubclass->putIfAbsent->if->sm->checkPermission
+ObjectInputStream#auditSubclass(Class):::Performs reflective checks on given subclass to verify that it doesn't override security-sensitive non-final methods:::return->AccessController->new->PrivilegedAction<Boolean>->doPrivileged
+ObjectInputStream#clear():::Clears internal data structures.:::handles->clear->vlist->clear
+ObjectInputStream#readObject0(Class, boolean):::Underlying readObject implementation.:::oldMode->bin->getBlockDataMode->if->remain->bin->currentBlockRemaining->if->throw->new->OptionalDataException->else->if->throw->new->OptionalDataException->bin->setBlockDataMode->tc->while->bin->peekByte->bin->readByte->handleReset->try->switch->return->readNull->return->type->readHandle->cast->if->throw->new->ClassCastException->return->readClass->if->throw->new->ClassCastException->return->readClassDesc->return->readString->checkResolve->if->throw->new->ClassCastException->return->readArray->checkResolve->if->throw->new->ClassCastException->return->readEnum->checkResolve->if->throw->new->ClassCastException->return->readOrdinaryObject->checkResolve->if->throw->new->ClassCastException->ex->readFatalException->throw->new->WriteAbortedException->if->bin->setBlockDataMode->bin->peek->throw->bin->currentBlockRemaining->new->OptionalDataException->else->throw->new->StreamCorruptedException->if->throw->new->OptionalDataException->else->throw->new->StreamCorruptedException->throw->String->format->new->StreamCorruptedException->catch->finally->bin->setBlockDataMode
+ObjectInputStream#checkResolve(Object):::If resolveObject has been enabled and given object does not have an exception associated with it, calls resolveObject to determine replacement for object, and updates handle table accordingly:::if->handles->lookupException->return->rep->resolveObject->if->if->if->rep->getClass->isArray->rep->getClass->Array->getLength->filterCheck->else->rep->getClass->filterCheck->handles->setObject->return
 ObjectInputStream#readTypeString():::Reads string without allowing it to be replaced in stream:::oldHandle->try->tc->bin->peekByte->switch->return->readNull->return->readHandle->return->readString->throw->String->format->new->StreamCorruptedException->catch->finally
+ObjectInputStream#readNull():::Reads in null code, sets passHandle to NULL_HANDLE and returns null.:::if->bin->readByte->throw->new->InternalError->return
+ObjectInputStream#readHandle(boolean):::Reads in object handle, sets passHandle to the read handle, and returns object associated with the handle.:::if->bin->readByte->throw->new->InternalError->bin->readInt->if->handles->size->throw->String->format->new->StreamCorruptedException->if->throw->new->InvalidObjectException->obj->handles->lookupObject->if->throw->new->InvalidObjectException->filterCheck->return
+ObjectInputStream#readClass(boolean):::Reads in and returns class object:::if->bin->readByte->throw->new->InternalError->desc->readClassDesc->cl->desc->forClass->handles->assign->resolveEx->desc->getResolveException->if->handles->markException->handles->finish->return
+ObjectInputStream#readClassDesc(boolean):::Reads in and returns (possibly null) class descriptor:::tc->bin->peekByte->descriptor->switch->readNull->break->readHandle->descriptor->checkInitialized->break->readProxyDesc->break->readNonProxyDesc->break->throw->String->format->new->StreamCorruptedException->return
+ObjectInputStream#isCustomSubclass()::: object input stream is custom subclass:::return->getClass->getClassLoader->getClassLoader
+ObjectInputStream#readProxyDesc(boolean):::Reads in and returns class descriptor for a dynamic proxy class:::if->bin->readByte->throw->new->InternalError->desc->new->ObjectStreamClass->descHandle->handles->assign->numIfaces->bin->readInt->if->throw->new->InvalidObjectException->ifaces->new->StringArr->for->i->cl->resolveEx->bin->setBlockDataMode->try->if->resolveProxyClass->new->ClassNotFoundException->else->if->Proxy->isProxyClass->throw->new->InvalidClassException->else->ReflectUtil->getClass->getClassLoader->cl->getInterfaces->checkProxyPackageAccess->foreach->cl->getInterfaces->filterCheck->catch->finally->filterCheck->skipCustomData->try->desc->readClassDesc->initProxy->catch->finally->handles->finish->return
+ObjectInputStream#readNonProxyDesc(boolean):::Reads in and returns class descriptor for a class that is not a dynamic proxy class:::if->bin->readByte->throw->new->InternalError->desc->new->ObjectStreamClass->descHandle->handles->assign->readDesc->try->readClassDescriptor->catch->throw->new->InvalidClassException->initCause->finally->cl->resolveEx->bin->setBlockDataMode->checksRequired->isCustomSubclass->try->if->resolveClass->new->ClassNotFoundException->else->if->ReflectUtil->checkPackageAccess->catch->finally->filterCheck->skipCustomData->try->desc->readClassDesc->initNonProxy->catch->finally->handles->finish->return
+ObjectInputStream#readString(boolean):::Reads in and returns new string:::str->tc->bin->readByte->switch->bin->readUTF->break->bin->readLongUTF->break->throw->String->format->new->StreamCorruptedException->handles->assign->handles->finish->return
+ObjectInputStream#readArray(boolean):::Reads in and returns array object, or null if array class is unresolvable:::if->bin->readByte->throw->new->InternalError->desc->readClassDesc->len->bin->readInt->desc->forClass->filterCheck->array->cl->ccl->if->desc->forClass->cl->getComponentType->Array->newInstance->arrayHandle->handles->assign->resolveEx->desc->getResolveException->if->handles->markException->if->for->i->else->if->ccl->isPrimitive->if->bin->readInts->else->if->bin->readFully->else->if->bin->readLongs->else->if->bin->readFloats->else->if->bin->readDoubles->else->if->bin->readShorts->else->if->bin->readChars->else->if->bin->readBooleans->else->throw->new->InternalError->else->oa->for->i->handles->finish->return
+ObjectInputStream#readEnum(boolean):::Reads in and returns enum constant, or null if enum type is unresolvable:::if->bin->readByte->throw->new->InternalError->desc->readClassDesc->if->desc->isEnum->throw->new->InvalidClassException->enumHandle->handles->assign->resolveEx->desc->getResolveException->if->handles->markException->name->readString->result->cl->desc->forClass->if->try->en->Enum->valueOf->catch->throw->new->InvalidObjectException->initCause->finally->if->handles->setObject->handles->finish->return
+ObjectInputStream#readOrdinaryObject(boolean):::Reads and returns "ordinary" (i.e., not a String, Class, ObjectStreamClass, array, or enum constant) object, or null if object's class is unresolvable (in which case a ClassNotFoundException will be associated with object's handle):::if->bin->readByte->throw->new->InternalError->desc->readClassDesc->desc->checkDeserialize->cl->desc->forClass->if->throw->new->InvalidClassException->obj->try->desc->isInstantiable->desc->newInstance->catch->throw->desc->forClass->getName->new->InvalidClassException->initCause->finally->handles->assign->resolveEx->desc->getResolveException->if->handles->markException->if->desc->isExternalizable->readExternalData->else->readSerialData->handles->finish->if->handles->lookupException->desc->hasReadResolveMethod->rep->desc->invokeReadResolve->if->rep->getClass->isArray->cloneArray->if->if->if->rep->getClass->isArray->rep->getClass->Array->getLength->filterCheck->else->rep->getClass->filterCheck->handles->setObject->return
+ObjectInputStream#readExternalData(Externalizable, ObjectStreamClass):::If obj is non-null, reads externalizable data by invoking readExternal() method of obj; otherwise, attempts to skip over externalizable data:::oldContext->if->oldContext->check->try->blocked->desc->hasBlockExternalData->if->bin->setBlockDataMode->if->try->obj->readExternal->catch->handles->markException->finally->if->skipCustomData->catch->finally->if->oldContext->check
+ObjectInputStream#readSerialData(Object, ObjectStreamClass):::Reads (or attempts to skip, if obj is null or is tagged with a ClassNotFoundException) instance data for each serializable class of object in stream, from superclass to subclass:::slots->desc->getClassDataLayout->slotValues->hasSpecialReadMethod->for->i->if->new->FieldValuesArr->for->i->if->for->i->for->i
+ObjectInputStream#skipCustomData():::Skips over all block data and objects until TC_ENDBLOCKDATA is encountered.:::oldHandle->for
+ObjectInputStream#defaultReadFields(Object, ObjectStreamClass):::Reads in values of serializable fields declared by given class descriptor:::cl->desc->forClass->if->cl->isInstance->throw->new->ClassCastException->primVals->primDataSize->desc->getPrimDataSize->if->new->byteArr->bin->readFully->objVals->numObjFields->desc->getNumObjFields->if->objHandle->fields->desc->getFields->new->ObjectArr->numPrimFields->for->i->return->new->FieldValues
+ObjectInputStream#defaultCheckFieldValues(Object, ObjectStreamClass, FieldValues):::Throws ClassCastException if any value is not assignable.:::objectValues->if->desc->checkObjFieldValueTypes
+ObjectInputStream#defaultSetFieldValues(Object, ObjectStreamClass, FieldValues):::Sets field values in obj.:::primValues->objectValues->if->desc->setPrimFieldValues->if->desc->setObjFieldValues
+ObjectInputStream#readFatalException():::Reads in and returns IOException that caused serialization to abort:::if->bin->readByte->throw->new->InternalError->clear->return->readObject0
+ObjectInputStream#handleReset():::If recursion depth is 0, clears internal data structures; otherwise, throws a StreamCorruptedException:::if->throw->new->StreamCorruptedException->clear
+ObjectInputStream#bytesToFloats(byte[], int, float[], int, int)::: object input stream bytes to floats:::
+ObjectInputStream#bytesToDoubles(byte[], int, double[], int, int)::: object input stream bytes to doubles:::
+ObjectInputStream#latestUserDefinedLoader():::Returns the first non-null and non-platform class loader (not counting class loaders of generated reflection implementation classes) up the execution stack, or the platform class loader if only code from the bootstrap and platform class loader is on the stack.:::return->latestUserDefinedLoader
+ObjectInputStream.GetFieldImpl#getObjectStreamClass()::: get field impl get object stream class:::return
+ObjectInputStream.GetFieldImpl#defaulted(String)::: get field impl defaulted:::return->getFieldOffset
+ObjectInputStream.GetFieldImpl#get(String, boolean)::: get field impl get:::off->getFieldOffset->return->Bits->getBoolean
+ObjectInputStream.GetFieldImpl#get(String, byte)::: get field impl get:::off->getFieldOffset->return
+ObjectInputStream.GetFieldImpl#get(String, char)::: get field impl get:::off->getFieldOffset->return->Bits->getChar
+ObjectInputStream.GetFieldImpl#get(String, short)::: get field impl get:::off->getFieldOffset->return->Bits->getShort
+ObjectInputStream.GetFieldImpl#get(String, int)::: get field impl get:::off->getFieldOffset->return->Bits->getInt
+ObjectInputStream.GetFieldImpl#get(String, float)::: get field impl get:::off->getFieldOffset->return->Bits->getFloat
+ObjectInputStream.GetFieldImpl#get(String, long)::: get field impl get:::off->getFieldOffset->return->Bits->getLong
+ObjectInputStream.GetFieldImpl#get(String, double)::: get field impl get:::off->getFieldOffset->return->Bits->getDouble
+ObjectInputStream.GetFieldImpl#get(String, Object)::: get field impl get:::off->getFieldOffset->if->objHandle->handles->markDependency->return->handles->lookupException->else->return
+ObjectInputStream.GetFieldImpl#readFields():::Reads primitive and object field values from stream.:::bin->readFully->oldHandle->fields->desc->getFields->numPrimFields->for->i
+ObjectInputStream.GetFieldImpl#getFieldOffset(String, Class):::Returns offset of field with given name and type:::field->desc->getField->if->return->field->getOffset->else->if->desc->getLocalDesc->getField->return->else->throw->new->IllegalArgumentException
+ObjectInputStream.ValidationList#register(ObjectInputValidation, int):::Registers callback:::if->throw->new->InvalidObjectException->prev->cur->while->acc->AccessController->getContext->if->new->Callback->else->new->Callback
+ObjectInputStream.ValidationList#doCallbacks():::Invokes all registered callbacks and clears the callback list:::try->while->AccessController->new->PrivilegedExceptionAction<Void>->doPrivileged->catch->throw->ex->getException->finally
+ObjectInputStream.ValidationList#clear():::Resets the callback list to its initial (empty) state.:::
+ObjectInputStream.FilterValues#serialClass()::: filter values serial class:::return
+ObjectInputStream.FilterValues#arrayLength()::: filter values array length:::return
+ObjectInputStream.FilterValues#references()::: filter values references:::return
+ObjectInputStream.FilterValues#depth()::: filter values depth:::return
+ObjectInputStream.FilterValues#streamBytes()::: filter values stream bytes:::return
+ObjectInputStream.PeekInputStream#peek():::Peeks at next byte value in stream:::if->return->in->read->return
+ObjectInputStream.PeekInputStream#read()::: peek input stream read:::if->v->return->else->nbytes->in->read->return
+ObjectInputStream.PeekInputStream#read(byte[], int, int)::: peek input stream read:::nbytes->if->return->else->if->in->read->return->else->in->read->return
+ObjectInputStream.PeekInputStream#readFully(byte[], int, int)::: peek input stream read fully:::n->while->count->read->if->throw->new->EOFException
+ObjectInputStream.PeekInputStream#skip(long)::: peek input stream skip:::if->return->skipped->if->in->skip->return
+ObjectInputStream.PeekInputStream#available()::: peek input stream available:::return->in->available
+ObjectInputStream.PeekInputStream#close()::: peek input stream close:::in->close
+ObjectInputStream.PeekInputStream#getBytesRead()::: peek input stream get bytes read:::return
+ObjectInputStream#freeze():::Performs a "freeze" action, required to adhere to final field semantics:::UNSAFE->storeFence
+ObjectInputStream.BlockDataInputStream#setBlockDataMode(boolean):::Sets block data mode to the given mode (true == on, false == off) and returns the previous mode value:::if->return->if->else->if->throw->new->IllegalStateException->return
+ObjectInputStream.BlockDataInputStream#getBlockDataMode():::Returns true if the stream is currently in block data mode, false otherwise.:::return
+ObjectInputStream.BlockDataInputStream#skipBlockData():::If in block data mode, skips to the end of the current group of data blocks (but does not unset block data mode):::if->throw->new->IllegalStateException->while->refill
+ObjectInputStream.BlockDataInputStream#readBlockHeader(boolean):::Attempts to read in the next block data header (if any):::if->return->try->for->catch->throw->new->StreamCorruptedException->finally
+ObjectInputStream.BlockDataInputStream#refill():::Refills internal buffer buf with block data:::try->do->if->n->in->Math->min->read->if->else->throw->new->StreamCorruptedException->else->n->readBlockHeader->if->else->while->catch->throw->finally
+ObjectInputStream.BlockDataInputStream#currentBlockRemaining():::If in block data mode, returns the number of unconsumed bytes remaining in the current data block:::if->return->else->throw->new->IllegalStateException
+ObjectInputStream.BlockDataInputStream#peek():::Peeks at (but does not consume) and returns the next byte value in the stream, or -1 if the end of the stream/block data (if in block data mode) has been reached.:::if->if->refill->return->else->return->in->peek
+ObjectInputStream.BlockDataInputStream#peekByte():::Peeks at (but does not consume) and returns the next byte value in the stream, or throws EOFException if end of stream/block data has been reached.:::val->peek->if->throw->new->EOFException->return
+ObjectInputStream.BlockDataInputStream#read()::: block data input stream read:::if->if->refill->return->else->return->in->read
+ObjectInputStream.BlockDataInputStream#read(byte[], int, int)::: block data input stream read:::return->read
+ObjectInputStream.BlockDataInputStream#skip(long)::: block data input stream skip:::remain->while->if->if->refill->if->break->nread->Math->min->else->nread->Math->min->if->in->read->break->return
+ObjectInputStream.BlockDataInputStream#available()::: block data input stream available:::if->if->n->while->readBlockHeader->switch->break->break->break->unreadAvail->Math->in->available->min->return->else->return->in->available
+ObjectInputStream.BlockDataInputStream#close()::: block data input stream close:::if->in->close
+ObjectInputStream.BlockDataInputStream#read(byte[], int, int, boolean):::Attempts to read len bytes into byte array b at offset off:::if->return->else->if->if->refill->if->return->nread->Math->min->System->arraycopy->return->else->if->nread->in->Math->min->read->if->System->arraycopy->return->else->return->in->read
+ObjectInputStream.BlockDataInputStream#readFully(byte[])::: block data input stream read fully:::readFully
+ObjectInputStream.BlockDataInputStream#readFully(byte[], int, int)::: block data input stream read fully:::readFully
+ObjectInputStream.BlockDataInputStream#readFully(byte[], int, int, boolean)::: block data input stream read fully:::while->n->read->if->throw->new->EOFException
+ObjectInputStream.BlockDataInputStream#skipBytes(int)::: block data input stream skip bytes:::return->din->skipBytes
+ObjectInputStream.BlockDataInputStream#readBoolean()::: block data input stream read boolean:::v->read->if->throw->new->EOFException->return
+ObjectInputStream.BlockDataInputStream#readByte()::: block data input stream read byte:::v->read->if->throw->new->EOFException->return
+ObjectInputStream.BlockDataInputStream#readUnsignedByte()::: block data input stream read unsigned byte:::v->read->if->throw->new->EOFException->return
+ObjectInputStream.BlockDataInputStream#readChar()::: block data input stream read char:::if->in->readFully->else->if->return->din->readChar->v->Bits->getChar->return
+ObjectInputStream.BlockDataInputStream#readShort()::: block data input stream read short:::if->in->readFully->else->if->return->din->readShort->v->Bits->getShort->return
+ObjectInputStream.BlockDataInputStream#readUnsignedShort()::: block data input stream read unsigned short:::if->in->readFully->else->if->return->din->readUnsignedShort->v->Bits->getShort->return
+ObjectInputStream.BlockDataInputStream#readInt()::: block data input stream read int:::if->in->readFully->else->if->return->din->readInt->v->Bits->getInt->return
+ObjectInputStream.BlockDataInputStream#readFloat()::: block data input stream read float:::if->in->readFully->else->if->return->din->readFloat->v->Bits->getFloat->return
+ObjectInputStream.BlockDataInputStream#readLong()::: block data input stream read long:::if->in->readFully->else->if->return->din->readLong->v->Bits->getLong->return
+ObjectInputStream.BlockDataInputStream#readDouble()::: block data input stream read double:::if->in->readFully->else->if->return->din->readDouble->v->Bits->getDouble->return
+ObjectInputStream.BlockDataInputStream#readUTF()::: block data input stream read f:::return->readUnsignedShort->readUTFBody
+ObjectInputStream.BlockDataInputStream#readLine()::: block data input stream read line:::return->din->readLine
+ObjectInputStream.BlockDataInputStream#readBooleans(boolean[], int, int)::: block data input stream read booleans:::stop->endoff->while->if->span->Math->min->in->readFully->else->if->din->readBoolean->continue->else->Math->min->while->Bits->getBoolean
+ObjectInputStream.BlockDataInputStream#readChars(char[], int, int)::: block data input stream read chars:::stop->endoff->while->if->span->Math->min->in->readFully->else->if->din->readChar->continue->else->Math->min->while->Bits->getChar
+ObjectInputStream.BlockDataInputStream#readShorts(short[], int, int)::: block data input stream read shorts:::stop->endoff->while->if->span->Math->min->in->readFully->else->if->din->readShort->continue->else->Math->min->while->Bits->getShort
+ObjectInputStream.BlockDataInputStream#readInts(int[], int, int)::: block data input stream read ints:::stop->endoff->while->if->span->Math->min->in->readFully->else->if->din->readInt->continue->else->Math->min->while->Bits->getInt
+ObjectInputStream.BlockDataInputStream#readFloats(float[], int, int)::: block data input stream read floats:::span->endoff->while->if->Math->min->in->readFully->else->if->din->readFloat->continue->else->Math->min->bytesToFloats
+ObjectInputStream.BlockDataInputStream#readLongs(long[], int, int)::: block data input stream read longs:::stop->endoff->while->if->span->Math->min->in->readFully->else->if->din->readLong->continue->else->Math->min->while->Bits->getLong
+ObjectInputStream.BlockDataInputStream#readDoubles(double[], int, int)::: block data input stream read doubles:::span->endoff->while->if->Math->min->in->readFully->else->if->din->readDouble->continue->else->Math->min->bytesToDoubles
+ObjectInputStream.BlockDataInputStream#readLongUTF():::Reads in string written in "long" UTF format:::return->readLong->readUTFBody
+ObjectInputStream.BlockDataInputStream#readUTFBody(long):::Reads in the "body" (i.e., the UTF representation minus the 2-byte or 8-byte length header) of a UTF encoding, which occupies the next utflen bytes.:::sbuf->if->initialCapacity->Math->min->new->StringBuilder->else->new->StringBuilder->if->while->avail->if->readUTFSpan->else->if->readUTFChar->else->if->System->arraycopy->Math->min->in->readFully->return->sbuf->toString
+ObjectInputStream.BlockDataInputStream#readUTFSpan(StringBuilder, long):::Reads span of UTF-encoded characters out of internal buffer (starting at offset pos and ending at or before offset end), consuming no more than utflen bytes:::cpos->start->avail->Math->min->stop->outOfBounds->try->while->b1->b2->b3->switch->break->if->throw->new->UTFDataFormatException->break->if->throw->new->UTFDataFormatException->break->throw->new->UTFDataFormatException->catch->finally->if->throw->new->UTFDataFormatException->sbuf->append->return
+ObjectInputStream.BlockDataInputStream#readUTFChar(StringBuilder, long):::Reads in single UTF-encoded character one byte at a time, appends the character to sbuf, and returns the number of bytes consumed:::b1->b2->b3->readByte->switch->sbuf->append->return->if->throw->new->UTFDataFormatException->readByte->if->throw->new->UTFDataFormatException->sbuf->append->return->if->if->readByte->throw->new->UTFDataFormatException->readByte->readByte->if->throw->new->UTFDataFormatException->sbuf->append->return->throw->new->UTFDataFormatException
+ObjectInputStream.BlockDataInputStream#getBytesRead():::Returns the number of bytes read from the input stream.:::return->in->getBytesRead
+ObjectInputStream.HandleTable#assign(Object):::Assigns next available handle to given object, and returns assigned handle:::if->grow->return
+ObjectInputStream.HandleTable#markDependency(int, int):::Registers a dependency (in exception status) of one handle on another:::if->return->switch->switch->break->markException->break->if->new->HandleList->add->if->break->throw->new->InternalError->break->break->throw->new->InternalError
+ObjectInputStream.HandleTable#markException(int, ClassNotFoundException):::Associates a ClassNotFoundException (if one not already associated) with the currently active handle and propagates it to other referencing objects as appropriate:::switch->dlist->if->ndeps->dlist->size->for->i->break->break->throw->new->InternalError
+ObjectInputStream.HandleTable#finish(int):::Marks given handle as finished, meaning that no new dependencies will be marked for handle:::end->if->else->if->else->return->for->i
+ObjectInputStream.HandleTable#setObject(int, Object):::Assigns a new object to the given handle:::switch->break->break->throw->new->InternalError
+ObjectInputStream.HandleTable#lookupObject(int):::Looks up and returns object associated with the given handle:::return
+ObjectInputStream.HandleTable#lookupException(int):::Looks up and returns ClassNotFoundException associated with the given handle:::return
+ObjectInputStream.HandleTable#clear():::Resets table to its initial state.:::Arrays->fill->Arrays->fill->Arrays->fill
+ObjectInputStream.HandleTable#size():::Returns number of handles registered in table.:::return
+ObjectInputStream.HandleTable#grow():::Expands capacity of internal arrays.:::newCapacity->newStatus->new->byteArr->newEntries->new->ObjectArr->newDeps->new->HandleListArr->System->arraycopy->System->arraycopy->System->arraycopy
+ObjectInputStream.HandleTable.HandleList#add(int)::: handle list add:::if->newList->new->intArr->System->arraycopy
+ObjectInputStream.HandleTable.HandleList#get(int)::: handle list get:::if->throw->new->ArrayIndexOutOfBoundsException->return
+ObjectInputStream.HandleTable.HandleList#size()::: handle list size:::return
+ObjectInputStream#cloneArray(Object):::Method for cloning arrays in case of using unsharing reading:::if->return->clone->else->if->return->clone->else->if->return->clone->else->if->return->clone->else->if->return->clone->else->if->return->clone->else->if->return->clone->else->if->return->clone->else->if->return->clone->else->throw->new->AssertionError
 ObjectInputValidation#validateObject():::Validates the object.:::
 ObjectOutput#writeObject(Object):::Write an object to the underlying storage or stream:::
 ObjectOutput#write(int):::Writes a byte:::
@@ -436,6 +653,91 @@ ObjectOutputStream.PutField#put(String, Object):::Put the value of the named Obj
 ObjectOutputStream.PutField#write(ObjectOutput):::Write the data and fields to the specified ObjectOutput stream, which must be the same stream that produced this PutField object.:::
 ObjectOutputStream#getProtocolVersion():::Returns protocol version in use.:::return
 ObjectOutputStream#writeTypeString(String):::Writes string without allowing it to be replaced in stream:::handle->if->writeNull->else->if->handles->lookup->writeHandle->else->writeString
+ObjectOutputStream#verifySubclass():::Verifies that this (possibly subclass) instance can be constructed without violating security constraints: the subclass must not override security-sensitive non-final methods, or else the "enableSubclassImplementation" SerializablePermission is checked.:::cl->getClass->if->return->sm->System->getSecurityManager->if->return->processQueue->key->new->WeakClassKey->result->get->if->auditSubclass->putIfAbsent->if->sm->checkPermission
+ObjectOutputStream#auditSubclass(Class):::Performs reflective checks on given subclass to verify that it doesn't override security-sensitive non-final methods:::return->AccessController->new->PrivilegedAction<>->doPrivileged
+ObjectOutputStream#clear():::Clears internal data structures.:::subs->clear->handles->clear
+ObjectOutputStream#writeObject0(Object, boolean):::Underlying writeObject/writeUnshared implementation.:::oldMode->bout->setBlockDataMode->try->h->if->subs->lookup->writeNull->return->else->if->handles->lookup->writeHandle->return->else->if->writeClass->return->else->if->writeClassDesc->return->orig->cl->obj->getClass->desc->for->if->rep->replaceObject->if->rep->getClass->ObjectStreamClass->lookup->if->subs->assign->if->writeNull->return->else->if->handles->lookup->writeHandle->return->else->if->writeClass->return->else->if->writeClassDesc->return->if->writeString->else->if->cl->isArray->writeArray->else->if->writeEnum->else->if->writeOrdinaryObject->else->if->throw->cl->getName->debugInfoStack->toString->new->NotSerializableException->else->throw->cl->getName->new->NotSerializableException->catch->finally->bout->setBlockDataMode
+ObjectOutputStream#writeNull():::Writes null code to stream.:::bout->writeByte
+ObjectOutputStream#writeHandle(int):::Writes given object handle to stream.:::bout->writeByte->bout->writeInt
+ObjectOutputStream#writeClass(Class, boolean):::Writes representation of given class to stream.:::bout->writeByte->ObjectStreamClass->lookup->writeClassDesc->handles->assign
+ObjectOutputStream#writeClassDesc(ObjectStreamClass, boolean):::Writes representation of given class descriptor to stream.:::handle->if->writeNull->else->if->handles->lookup->writeHandle->else->if->desc->isProxy->writeProxyDesc->else->writeNonProxyDesc
+ObjectOutputStream#isCustomSubclass()::: object output stream is custom subclass:::return->getClass->getClassLoader->getClassLoader
+ObjectOutputStream#writeProxyDesc(ObjectStreamClass, boolean):::Writes class descriptor representing a dynamic proxy class to stream.:::bout->writeByte->handles->assign->cl->desc->forClass->ifaces->cl->getInterfaces->bout->writeInt->for->i->bout->setBlockDataMode->if->isCustomSubclass->ReflectUtil->checkPackageAccess->annotateProxyClass->bout->setBlockDataMode->bout->writeByte->desc->getSuperDesc->writeClassDesc
+ObjectOutputStream#writeNonProxyDesc(ObjectStreamClass, boolean):::Writes class descriptor representing a standard (i.e., not a dynamic proxy) class to stream.:::bout->writeByte->handles->assign->if->desc->writeNonProxy->else->writeClassDescriptor->cl->desc->forClass->bout->setBlockDataMode->if->isCustomSubclass->ReflectUtil->checkPackageAccess->annotateClass->bout->setBlockDataMode->bout->writeByte->desc->getSuperDesc->writeClassDesc
+ObjectOutputStream#writeString(String, boolean):::Writes given string to stream, using standard or long UTF format depending on string length.:::handles->assign->utflen->bout->getUTFLength->if->bout->writeByte->bout->writeUTF->else->bout->writeByte->bout->writeLongUTF
+ObjectOutputStream#writeArray(Object, ObjectStreamClass, boolean):::Writes given array object to stream.:::bout->writeByte->writeClassDesc->handles->assign->ccl->desc->forClass->getComponentType->if->ccl->isPrimitive->if->ia->bout->writeInt->bout->writeInts->else->if->ba->bout->writeInt->bout->write->else->if->ja->bout->writeInt->bout->writeLongs->else->if->fa->bout->writeInt->bout->writeFloats->else->if->da->bout->writeInt->bout->writeDoubles->else->if->sa->bout->writeInt->bout->writeShorts->else->if->ca->bout->writeInt->bout->writeChars->else->if->za->bout->writeInt->bout->writeBooleans->else->throw->new->InternalError->else->objs->len->bout->writeInt->if->debugInfoStack->array->getClass->getName->push->try->for->i->catch->finally->if->debugInfoStack->pop
+ObjectOutputStream#writeEnum(Enum, ObjectStreamClass, boolean):::Writes given enum constant to stream.:::bout->writeByte->sdesc->desc->getSuperDesc->sdesc->forClass->writeClassDesc->handles->assign->en->name->writeString
+ObjectOutputStream#writeOrdinaryObject(Object, ObjectStreamClass, boolean):::Writes representation of a "ordinary" (i.e., not a String, Class, ObjectStreamClass, array, or enum constant) serializable object to the stream.:::if->debugInfoStack->obj->getClass->getName->obj->toString->push->try->desc->checkSerialize->bout->writeByte->writeClassDesc->handles->assign->if->desc->isExternalizable->desc->isProxy->writeExternalData->else->writeSerialData->catch->finally->if->debugInfoStack->pop
+ObjectOutputStream#writeExternalData(Externalizable):::Writes externalizable data of given object by invoking its writeExternal() method.:::oldPut->if->debugInfoStack->push->oldContext->try->if->obj->writeExternal->else->bout->setBlockDataMode->obj->writeExternal->bout->setBlockDataMode->bout->writeByte->catch->finally->if->debugInfoStack->pop
+ObjectOutputStream#writeSerialData(Object, ObjectStreamClass):::Writes instance data for each serializable class of given object, from superclass to subclass.:::slots->desc->getClassDataLayout->for->i
+ObjectOutputStream#defaultWriteFields(Object, ObjectStreamClass):::Fetches and writes values of serializable fields of given object to stream:::cl->desc->forClass->if->cl->isInstance->throw->new->ClassCastException->desc->checkDefaultSerialize->primDataSize->desc->getPrimDataSize->if->if->new->byteArr->desc->getPrimFieldValues->bout->write->numObjFields->desc->getNumObjFields->if->fields->desc->getFields->objVals->new->ObjectArr->numPrimFields->desc->getObjFieldValues->for->i
+ObjectOutputStream#writeFatalException(IOException):::Attempts to write to stream fatal IOException that has caused serialization to abort.:::clear->oldMode->bout->setBlockDataMode->try->bout->writeByte->writeObject0->clear->catch->finally->bout->setBlockDataMode
+ObjectOutputStream#floatsToBytes(float[], int, byte[], int, int)::: object output stream floats to bytes:::
+ObjectOutputStream#doublesToBytes(double[], int, byte[], int, int)::: object output stream doubles to bytes:::
+ObjectOutputStream.PutFieldImpl#put(String, boolean)::: put field impl put:::Bits->getFieldOffset->putBoolean
+ObjectOutputStream.PutFieldImpl#put(String, byte)::: put field impl put:::getFieldOffset
+ObjectOutputStream.PutFieldImpl#put(String, char)::: put field impl put:::Bits->getFieldOffset->putChar
+ObjectOutputStream.PutFieldImpl#put(String, short)::: put field impl put:::Bits->getFieldOffset->putShort
+ObjectOutputStream.PutFieldImpl#put(String, int)::: put field impl put:::Bits->getFieldOffset->putInt
+ObjectOutputStream.PutFieldImpl#put(String, float)::: put field impl put:::Bits->getFieldOffset->putFloat
+ObjectOutputStream.PutFieldImpl#put(String, long)::: put field impl put:::Bits->getFieldOffset->putLong
+ObjectOutputStream.PutFieldImpl#put(String, double)::: put field impl put:::Bits->getFieldOffset->putDouble
+ObjectOutputStream.PutFieldImpl#put(String, Object)::: put field impl put:::getFieldOffset
+ObjectOutputStream.PutFieldImpl#write(ObjectOutput)::: put field impl write:::if->throw->new->IllegalArgumentException->out->write->fields->desc->getFields->numPrimFields->for->i
+ObjectOutputStream.PutFieldImpl#writeFields():::Writes buffered primitive data and object fields to stream.:::bout->write->fields->desc->getFields->numPrimFields->for->i
+ObjectOutputStream.PutFieldImpl#getFieldOffset(String, Class):::Returns offset of field with given name and type:::field->desc->getField->if->throw->new->IllegalArgumentException->return->field->getOffset
+ObjectOutputStream.BlockDataOutputStream#setBlockDataMode(boolean):::Sets block data mode to the given mode (true == on, false == off) and returns the previous mode value:::if->return->drain->return
+ObjectOutputStream.BlockDataOutputStream#getBlockDataMode():::Returns true if the stream is currently in block data mode, false otherwise.:::return
+ObjectOutputStream.BlockDataOutputStream#write(int)::: block data output stream write:::if->drain
+ObjectOutputStream.BlockDataOutputStream#write(byte[])::: block data output stream write:::write
+ObjectOutputStream.BlockDataOutputStream#write(byte[], int, int)::: block data output stream write:::write
+ObjectOutputStream.BlockDataOutputStream#flush()::: block data output stream flush:::drain->out->flush
+ObjectOutputStream.BlockDataOutputStream#close()::: block data output stream close:::flush->out->close
+ObjectOutputStream.BlockDataOutputStream#write(byte[], int, int, boolean):::Writes specified span of byte values from given array:::if->drain->out->write->return->while->if->drain->if->writeBlockHeader->out->write->else->wlen->Math->min->System->arraycopy
+ObjectOutputStream.BlockDataOutputStream#drain():::Writes all buffered data from this stream to the underlying stream, but does not flush underlying stream.:::if->return->if->writeBlockHeader->out->write
+ObjectOutputStream.BlockDataOutputStream#writeBlockHeader(int):::Writes block data header:::if->out->write->else->Bits->putInt->out->write
+ObjectOutputStream.BlockDataOutputStream#writeBoolean(boolean)::: block data output stream write boolean:::if->drain->Bits->putBoolean
+ObjectOutputStream.BlockDataOutputStream#writeByte(int)::: block data output stream write byte:::if->drain
+ObjectOutputStream.BlockDataOutputStream#writeChar(int)::: block data output stream write char:::if->Bits->putChar->else->dout->writeChar
+ObjectOutputStream.BlockDataOutputStream#writeShort(int)::: block data output stream write short:::if->Bits->putShort->else->dout->writeShort
+ObjectOutputStream.BlockDataOutputStream#writeInt(int)::: block data output stream write int:::if->Bits->putInt->else->dout->writeInt
+ObjectOutputStream.BlockDataOutputStream#writeFloat(float)::: block data output stream write float:::if->Bits->putFloat->else->dout->writeFloat
+ObjectOutputStream.BlockDataOutputStream#writeLong(long)::: block data output stream write long:::if->Bits->putLong->else->dout->writeLong
+ObjectOutputStream.BlockDataOutputStream#writeDouble(double)::: block data output stream write double:::if->Bits->putDouble->else->dout->writeDouble
+ObjectOutputStream.BlockDataOutputStream#writeBytes(String)::: block data output stream write bytes:::endoff->s->length->cpos->csize->for->off
+ObjectOutputStream.BlockDataOutputStream#writeChars(String)::: block data output stream write chars:::endoff->s->length->for->off
+ObjectOutputStream.BlockDataOutputStream#writeUTF(String)::: block data output stream write f:::getUTFLength->writeUTF
+ObjectOutputStream.BlockDataOutputStream#writeBooleans(boolean[], int, int)::: block data output stream write booleans:::endoff->while->if->drain->stop->Math->min->while->Bits->putBoolean
+ObjectOutputStream.BlockDataOutputStream#writeChars(char[], int, int)::: block data output stream write chars:::limit->endoff->while->if->avail->stop->Math->min->while->Bits->putChar->else->dout->writeChar
+ObjectOutputStream.BlockDataOutputStream#writeShorts(short[], int, int)::: block data output stream write shorts:::limit->endoff->while->if->avail->stop->Math->min->while->Bits->putShort->else->dout->writeShort
+ObjectOutputStream.BlockDataOutputStream#writeInts(int[], int, int)::: block data output stream write ints:::limit->endoff->while->if->avail->stop->Math->min->while->Bits->putInt->else->dout->writeInt
+ObjectOutputStream.BlockDataOutputStream#writeFloats(float[], int, int)::: block data output stream write floats:::limit->endoff->while->if->avail->chunklen->Math->min->floatsToBytes->else->dout->writeFloat
+ObjectOutputStream.BlockDataOutputStream#writeLongs(long[], int, int)::: block data output stream write longs:::limit->endoff->while->if->avail->stop->Math->min->while->Bits->putLong->else->dout->writeLong
+ObjectOutputStream.BlockDataOutputStream#writeDoubles(double[], int, int)::: block data output stream write doubles:::limit->endoff->while->if->avail->chunklen->Math->min->doublesToBytes->else->dout->writeDouble
+ObjectOutputStream.BlockDataOutputStream#getUTFLength(String):::Returns the length in bytes of the UTF encoding of the given string.:::len->s->length->utflen->for->off->return
+ObjectOutputStream.BlockDataOutputStream#writeUTF(String, long):::Writes the given string in UTF format:::if->throw->new->UTFDataFormatException->writeShort->if->s->length->writeBytes->else->writeUTFBody
+ObjectOutputStream.BlockDataOutputStream#writeLongUTF(String):::Writes given string in "long" UTF format:::getUTFLength->writeLongUTF
+ObjectOutputStream.BlockDataOutputStream#writeLongUTF(String, long):::Writes given string in "long" UTF format, where the UTF encoding length of the string is already known.:::writeLong->if->s->length->writeBytes->else->writeUTFBody
+ObjectOutputStream.BlockDataOutputStream#writeUTFBody(String):::Writes the "body" (i.e., the UTF representation minus the 2-byte or 8-byte length header) of the UTF encoding for the given string.:::limit->len->s->length->for->off
+ObjectOutputStream.HandleTable#assign(Object):::Assigns next available handle to given object, and returns handle value:::if->growEntries->if->growSpine->insert->return
+ObjectOutputStream.HandleTable#lookup(Object):::Looks up and returns handle associated with given object, or -1 if no mapping found.:::if->return->index->hash->for->i->return
+ObjectOutputStream.HandleTable#clear():::Resets table to its initial (empty) state.:::Arrays->fill->Arrays->fill
+ObjectOutputStream.HandleTable#size():::Returns the number of mappings currently in table.:::return
+ObjectOutputStream.HandleTable#insert(Object, int):::Inserts mapping object -> handle mapping into table:::index->hash
+ObjectOutputStream.HandleTable#growSpine():::Expands the hash "spine" -- equivalent to increasing the number of buckets in a conventional hash table.:::new->intArr->Arrays->fill->for->i
+ObjectOutputStream.HandleTable#growEntries():::Increases hash table capacity by lengthening entry arrays.:::newLength->newNext->new->intArr->System->arraycopy->newObjs->new->ObjectArr->System->arraycopy
+ObjectOutputStream.HandleTable#hash(Object):::Returns hash value for given object.:::return->System->identityHashCode
+ObjectOutputStream.ReplaceTable#assign(Object, Object):::Enters mapping from object to replacement object.:::index->htab->assign->while->grow
+ObjectOutputStream.ReplaceTable#lookup(Object):::Looks up and returns replacement for given object:::index->htab->lookup->return
+ObjectOutputStream.ReplaceTable#clear():::Resets table to its initial (empty) state.:::Arrays->htab->size->fill->htab->clear
+ObjectOutputStream.ReplaceTable#size():::Returns the number of mappings currently in table.:::return->htab->size
+ObjectOutputStream.ReplaceTable#grow():::Increases table capacity.:::newReps->new->ObjectArr->System->arraycopy
+ObjectOutputStream.DebugTraceInfoStack#clear():::Removes all of the elements from enclosed list.:::stack->clear
+ObjectOutputStream.DebugTraceInfoStack#pop():::Removes the object at the top of enclosed list.:::stack->stack->size->remove
+ObjectOutputStream.DebugTraceInfoStack#push(String):::Pushes a String onto the top of enclosed list.:::stack->add
+ObjectOutputStream.DebugTraceInfoStack#toString():::Returns a string representation of this object:::sj->new->StringJoiner->for->i->stack->size->return->sj->toString
+ObjectStreamClass.ExceptionInfo#newInvalidClassException():::Returns (does not throw) an InvalidClassException instance created from the information in this object, suitable for being thrown by the caller.:::return->new->InvalidClassException
+ObjectStreamClass#initNative():::Initializes native code.:::
 ObjectStreamClass#lookup(Class):::Find the descriptor for a class that can be serialized:::return->lookup
 ObjectStreamClass#lookupAny(Class):::Returns the descriptor for any class, regardless of whether it implements Serializable.:::return->lookup
 ObjectStreamClass#getName():::Returns the name of the class described by this descriptor:::return
@@ -445,11 +747,17 @@ ObjectStreamClass#getFields():::Return an array of the fields of this serializab
 ObjectStreamClass#getField(String):::Get the field of this class by name.:::return->getField
 ObjectStreamClass#toString():::Return a string describing this ObjectStreamClass.:::return->getSerialVersionUID
 ObjectStreamClass#lookup(Class, boolean):::Looks up and returns class descriptor for given class, or null if class is non-serializable and "all" is set to false.:::if->isAssignableFrom->return->processQueue->key->new->WeakClassKey->ref->get->entry->if->ref->get->future->if->newEntry->new->EntryFuture->newRef->new->SoftReference<>->do->if->remove->putIfAbsent->if->ref->get->while->if->if->return->if->if->future->getOwner->Thread->currentThread->else->future->get->if->try->new->ObjectStreamClass->catch->finally->if->future->set->new->SoftReference<>->put->else->future->get->if->return->else->if->throw->else->if->throw->else->throw->new->InternalError
+ObjectStreamClass.EntryFuture#set(Object):::Attempts to set the value contained by this EntryFuture:::if->return->notifyAll->return
+ObjectStreamClass.EntryFuture#get():::Returns the value contained by this EntryFuture, blocking if necessary until a value is set.:::interrupted->while->try->wait->catch->finally->if->AccessController->new->PrivilegedAction<>->doPrivileged->return
+ObjectStreamClass.EntryFuture#getOwner():::Returns the thread that created this EntryFuture.:::return
+ObjectStreamClass#noPermissionsDomain():::Creates a PermissionDomain that grants no permission.:::perms->new->Permissions->perms->setReadOnly->return->new->ProtectionDomain
+ObjectStreamClass#getProtectionDomains(Constructor, Class):::Aggregate the ProtectionDomains of all the classes that separate a concrete class cl from its ancestor's class declaring a constructor cons:::domains->if->cl->getClassLoader->System->getSecurityManager->cls->fnscl->cons->getDeclaringClass->pds->while->pd->cls->getProtectionDomain->if->if->new->HashSet<>->pds->add->cls->getSuperclass->if->if->new->HashSet<>->else->pds->clear->pds->noPermissionsDomain->add->break->if->pds->new->ProtectionDomainArr->toArray->return
 ObjectStreamClass#initProxy(Class, ClassNotFoundException, ObjectStreamClass):::Initializes class descriptor representing a proxy class.:::osc->if->lookup->if->throw->new->InvalidClassException->Long->valueOf->if->getReflector
 ObjectStreamClass#initNonProxy(ObjectStreamClass, Class, ClassNotFoundException, ObjectStreamClass):::Initializes class descriptor representing a non-proxy class.:::suid->Long->model->getSerialVersionUID->valueOf->osc->if->lookup->if->throw->new->InvalidClassException->if->throw->new->InvalidClassException->if->cl->isArray->osc->getSerialVersionUID->throw->osc->getSerialVersionUID->new->InvalidClassException->if->classNamesEqual->throw->new->InvalidClassException->if->if->throw->new->InvalidClassException->if->new->ExceptionInfo->if->if->getReflector->fieldRefl->getFields
 ObjectStreamClass#readNonProxy(ObjectInputStream):::Reads non-proxy class descriptor information from given input stream:::in->readUTF->Long->in->readLong->valueOf->flags->in->readByte->sflag->if->throw->new->InvalidClassException->if->suid->longValue->throw->new->InvalidClassException->numFields->in->readShort->if->throw->new->InvalidClassException->new->ObjectStreamFieldArr->for->i->computeFieldOffsets
 ObjectStreamClass#writeNonProxy(ObjectOutputStream):::Writes non-proxy class descriptor information to given output stream.:::out->writeUTF->out->getSerialVersionUID->writeLong->flags->if->protocol->out->getProtocolVersion->if->else->if->if->if->out->writeByte->out->writeShort->for->i
 ObjectStreamClass#getResolveException():::Returns ClassNotFoundException (if any) thrown while attempting to resolve local class corresponding to this class descriptor.:::return
+ObjectStreamClass#requireInitialized():::Throws InternalError if not initialized.:::if->throw->new->InternalError
 ObjectStreamClass#checkInitialized():::Throws InvalidClassException if not initialized:::if->throw->new->InvalidClassException
 ObjectStreamClass#checkDeserialize():::Throws an InvalidClassException if object instances referencing this class descriptor should not be allowed to deserialize:::requireInitialized->if->throw->deserializeEx->newInvalidClassException
 ObjectStreamClass#checkSerialize():::Throws an InvalidClassException if objects whose class is represented by this descriptor should not be allowed to serialize:::requireInitialized->if->throw->serializeEx->newInvalidClassException
@@ -477,6 +785,7 @@ ObjectStreamClass#invokeReadObjectNoData(Object):::Invokes the readObjectNoData 
 ObjectStreamClass#invokeWriteReplace(Object):::Invokes the writeReplace method of the represented serializable class and returns the result:::requireInitialized->if->try->return->writeReplaceMethod->invoke->catch->th->ex->getTargetException->if->throw->else->throwMiscException->throw->new->InternalError->throw->new->InternalError->finally->else->throw->new->UnsupportedOperationException
 ObjectStreamClass#invokeReadResolve(Object):::Invokes the readResolve method of the represented serializable class and returns the result:::requireInitialized->if->try->return->readResolveMethod->invoke->catch->th->ex->getTargetException->if->throw->else->throwMiscException->throw->new->InternalError->throw->new->InternalError->finally->else->throw->new->UnsupportedOperationException
 ObjectStreamClass#getClassDataLayout():::Returns array of ClassDataSlot instances representing the data layout (including superclass data) for serialized objects described by this class descriptor:::if->getClassDataLayout0->return
+ObjectStreamClass#getClassDataLayout0()::: object stream class get class data layout0:::slots->new->ArrayList<>->start->end->while->isAssignableFrom->end->getSuperclass->oscNames->new->HashSet<>->for->d->for->c->c->getSuperclass->Collections->reverse->return->slots->slots->size->new->ClassDataSlotArr->toArray
 ObjectStreamClass#getPrimDataSize():::Returns aggregate size (in bytes) of marshalled primitive field values for represented class.:::return
 ObjectStreamClass#getNumObjFields():::Returns number of non-primitive serializable fields of represented class.:::return
 ObjectStreamClass#getPrimFieldValues(Object, byte[]):::Fetches the serializable primitive field values of object obj and marshals them into byte array buf starting at offset 0:::fieldRefl->getPrimFieldValues
@@ -484,13 +793,48 @@ ObjectStreamClass#setPrimFieldValues(Object, byte[]):::Sets the serializable pri
 ObjectStreamClass#getObjFieldValues(Object, Object[]):::Fetches the serializable object field values of object obj and stores them in array vals starting at offset 0:::fieldRefl->getObjFieldValues
 ObjectStreamClass#checkObjFieldValueTypes(Object, Object[]):::Checks that the given values, from array vals starting at offset 0, are assignable to the given serializable object fields.:::fieldRefl->checkObjectFieldValueTypes
 ObjectStreamClass#setObjFieldValues(Object, Object[]):::Sets the serializable object fields of object obj using values from array vals starting at offset 0:::fieldRefl->setObjFieldValues
+ObjectStreamClass#computeFieldOffsets():::Calculates and sets serializable field offsets, as well as primitive data size and object field count totals:::firstObjIndex->for->i->if->throw->new->InvalidClassException
+ObjectStreamClass#getVariantFor(Class):::If given class is the same as the class associated with this class descriptor, returns reference to this class descriptor:::if->return->desc->new->ObjectStreamClass->if->desc->initProxy->else->desc->initNonProxy->return
+ObjectStreamClass#getExternalizableConstructor(Class):::Returns public no-arg constructor of given class, or null if none found:::try->cons->cl->getDeclaredConstructor->cons->setAccessible->return->cons->getModifiers->catch->return->finally
+ObjectStreamClass#getSerializableConstructor(Class):::Returns subclass-accessible no-arg constructor of first non-serializable superclass, or null if none found:::return->reflFactory->newConstructorForSerialization
+ObjectStreamClass#getInheritableMethod(Class, String, Class[], Class):::Returns non-static, non-abstract method with given signature provided it is defined by or accessible (via inheritance) by the given class, or null if no match found:::meth->defCl->while->try->defCl->getDeclaredMethod->break->catch->defCl->getSuperclass->finally->if->meth->getReturnType->return->meth->setAccessible->mods->meth->getModifiers->if->return->else->if->return->else->if->return->else->return->packageEquals
+ObjectStreamClass#getPrivateMethod(Class, String, Class[], Class):::Returns non-static private method with given signature defined by given class, or null if none found:::try->meth->cl->getDeclaredMethod->meth->setAccessible->mods->meth->getModifiers->return->meth->getReturnType->catch->return->finally
+ObjectStreamClass#packageEquals(Class, Class):::Returns true if classes are defined in the same runtime package, false otherwise.:::return->cl1->getClassLoader->cl2->getClassLoader->cl1->getPackageName->cl2->getPackageName->equals
+ObjectStreamClass#classNamesEqual(String, String):::Compares class names for equality, ignoring package names:::idx1->name1->lastIndexOf->idx2->name2->lastIndexOf->len1->name1->length->len2->name2->length->return->name1->regionMatches
+ObjectStreamClass#getMethodSignature(Class[], Class):::Returns JVM type signature for given list of parameters and return type.:::sb->new->StringBuilder->sb->append->for->i->sb->append->appendClassSignature->return->sb->toString
+ObjectStreamClass#throwMiscException(Throwable):::Convenience method for throwing an exception that is either a RuntimeException, Error, or of some unexpected type (in which case it is wrapped inside an IOException).:::if->throw->else->if->throw->else->ex->new->IOException->ex->initCause->throw
+ObjectStreamClass#getSerialFields(Class):::Returns ObjectStreamField array describing the serializable fields of the given class:::fields->if->isAssignableFrom->isAssignableFrom->Proxy->isProxyClass->cl->isInterface->if->getDeclaredSerialFields->getDefaultSerialFields->Arrays->sort->else->return
+ObjectStreamClass#getDeclaredSerialFields(Class):::Returns serializable fields of given class as defined explicitly by a "serialPersistentFields" field, or null if no appropriate "serialPersistentFields" field is defined:::serialPersistentFields->try->f->cl->getDeclaredField->mask->if->f->getModifiers->f->setAccessible->f->get->catch->finally->if->return->else->if->return->boundFields->new->ObjectStreamFieldArr->fieldNames->new->HashSet<>->for->i->return
+ObjectStreamClass#getDefaultSerialFields(Class):::Returns array of ObjectStreamFields corresponding to all non-static non-transient fields declared by given class:::clFields->cl->getDeclaredFields->list->new->ArrayList<>->mask->for->i->size->list->size->return->list->new->ObjectStreamFieldArr->toArray
+ObjectStreamClass#getDeclaredSUID(Class):::Returns explicit serial version UID value declared by given class, or null if none.:::try->f->cl->getDeclaredField->mask->if->f->getModifiers->f->setAccessible->return->Long->f->getLong->valueOf->catch->finally->return
+ObjectStreamClass#computeDefaultSUID(Class):::Computes the default serial version UID value for the given class.:::if->isAssignableFrom->Proxy->isProxyClass->return->try->bout->new->ByteArrayOutputStream->dout->new->DataOutputStream->dout->cl->getName->writeUTF->classMods->cl->getModifiers->methods->cl->getDeclaredMethods->if->dout->writeInt->if->cl->isArray->interfaces->cl->getInterfaces->ifaceNames->new->StringArr->for->i->Arrays->sort->for->i->fields->cl->getDeclaredFields->fieldSigs->new->MemberSignatureArr->for->i->Arrays->new->Comparator<>->sort->for->i->if->hasStaticInitializer->dout->writeUTF->dout->writeInt->dout->writeUTF->cons->cl->getDeclaredConstructors->consSigs->new->MemberSignatureArr->for->i->Arrays->new->Comparator<>->sort->for->i->methSigs->new->MemberSignatureArr->for->i->Arrays->new->Comparator<>->sort->for->i->dout->flush->md->MessageDigest->getInstance->hashBytes->md->bout->toByteArray->digest->hash->for->i->Math->min->return->catch->throw->new->InternalError->throw->ex->getMessage->new->SecurityException->finally
+ObjectStreamClass#hasStaticInitializer(Class):::Returns true if the given class defines a static initializer method, false otherwise.:::
+ObjectStreamClass.FieldReflector#getFields():::Returns list of ObjectStreamFields representing fields operated on by this reflector:::return
+ObjectStreamClass.FieldReflector#getPrimFieldValues(Object, byte[]):::Fetches the serializable primitive field values of object obj and marshals them into byte array buf starting at offset 0:::if->throw->new->NullPointerException->for->i
+ObjectStreamClass.FieldReflector#setPrimFieldValues(Object, byte[]):::Sets the serializable primitive fields of object obj using values unmarshalled from byte array buf starting at offset 0:::if->throw->new->NullPointerException->for->i
+ObjectStreamClass.FieldReflector#getObjFieldValues(Object, Object[]):::Fetches the serializable object field values of object obj and stores them in array vals starting at offset 0:::if->throw->new->NullPointerException->for->i
+ObjectStreamClass.FieldReflector#checkObjectFieldValueTypes(Object, Object[]):::Checks that the given values, from array vals starting at offset 0, are assignable to the given serializable object fields.:::setObjFieldValues
+ObjectStreamClass.FieldReflector#setObjFieldValues(Object, Object[]):::Sets the serializable object fields of object obj using values from array vals starting at offset 0:::setObjFieldValues
+ObjectStreamClass.FieldReflector#setObjFieldValues(Object, Object[], boolean)::: field reflector set obj field values:::if->throw->new->NullPointerException->for->i
+ObjectStreamClass#getReflector(ObjectStreamField[], ObjectStreamClass):::Matches given set of serializable fields with serializable fields described by the given local class descriptor, and returns a FieldReflector instance capable of setting/getting values from the subset of fields that match (non-matching fields are treated as filler, for which get operations return default values and set operations discard given values):::cl->processQueue->key->new->FieldReflectorKey->ref->get->entry->if->ref->get->future->if->newEntry->new->EntryFuture->newRef->new->SoftReference<>->do->if->remove->putIfAbsent->if->ref->get->while->if->if->return->else->if->get->else->if->try->matchFields->new->FieldReflector->catch->finally->future->set->new->SoftReference<>->put->if->return->else->if->throw->else->if->throw->else->if->throw->else->throw->new->InternalError
+ObjectStreamClass.FieldReflectorKey#hashCode()::: field reflector key hash code:::return
+ObjectStreamClass.FieldReflectorKey#equals(Object)::: field reflector key equals:::if->return->if->other->referent->return->get->other->get->Arrays->equals->else->return
+ObjectStreamClass#matchFields(ObjectStreamField[], ObjectStreamClass):::Matches given set of serializable fields with serializable fields obtained from the given local class descriptor (which contain bindings to reflective Field objects):::localFields->matches->new->ObjectStreamFieldArr->for->i->return
 ObjectStreamClass#processQueue(ReferenceQueue>, ConcurrentMap>, ?>):::Removes from the specified map any keys that have been enqueued on the specified reference queue.:::ref->while->queue->poll->map->remove
 ObjectStreamClass.WeakClassKey#hashCode():::Returns the identity hash code of the original referent.:::return
 ObjectStreamClass.WeakClassKey#equals(Object):::Returns true if the given object is this identical WeakClassKey instance, or, if this object's referent has not been cleared, if the given object is another WeakClassKey instance with the identical non-null referent as this one.:::if->return->if->referent->get->return->get->else->return
+ObjectStreamField#getPrimitiveSignature(Class):::Returns JVM type signature for given primitive.:::if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->throw->new->InternalError
 ObjectStreamField#getClassSignature(Class):::Returns JVM type signature for given class.:::if->cl->isPrimitive->return->getPrimitiveSignature->else->return->new->StringBuilder->appendClassSignature->toString
+ObjectStreamField#appendClassSignature(StringBuilder, Class)::: object stream field append class signature:::while->cl->isArray->sbuf->append->cl->getComponentType->if->cl->isPrimitive->sbuf->getPrimitiveSignature->append->else->sbuf->append->cl->getName->replace->append->append->return
 ObjectStreamField#getName():::Get the name of this field.:::return
 ObjectStreamField#getType():::Get the type of the field:::if->System->getSecurityManager->caller->Reflection->getCallerClass->if->ReflectUtil->caller->getClassLoader->type->getClassLoader->needsPackageAccessCheck->ReflectUtil->checkPackageAccess->return
+ObjectStreamField#getTypeCode()::: object stream field get type code:::return->getSignature->charAt
+ObjectStreamField#getTypeString()::: object stream field get type string:::return->isPrimitive->getSignature
+ObjectStreamField#getOffset()::: object stream field get offset:::return
+ObjectStreamField#setOffset(int)::: object stream field set offset:::
+ObjectStreamField#isPrimitive()::: object stream field is primitive:::tcode->getTypeCode->return
 ObjectStreamField#isUnshared():::Returns boolean value indicating whether or not the serializable field represented by this ObjectStreamField instance is unshared.:::return
+ObjectStreamField#compareTo(Object)::: object stream field compare to:::other->isPrim->isPrimitive->if->other->isPrimitive->return->return->name->compareTo
 ObjectStreamField#toString():::Return a string that describes this field.:::return->getSignature
 ObjectStreamField#getField():::Returns field represented by this ObjectStreamField, or null if ObjectStreamField is not associated with an actual field.:::return
 ObjectStreamField#getSignature():::Returns JVM type signature of field (similar to getTypeString, except that signature strings are returned for primitive fields as well).:::if->return->sig->if->getClassSignature->intern->return
@@ -505,10 +849,16 @@ OutputStreamWriter#flushBuffer():::Flushes the output buffer to the underlying b
 OutputStreamWriter#write(int):::Writes a single character.:::se->write
 OutputStreamWriter#write(char[], int, int):::Writes a portion of an array of characters.:::se->write
 OutputStreamWriter#write(String, int, int):::Writes a portion of a string.:::se->write
+OutputStreamWriter#append(CharSequence, int, int)::: output stream writer append:::if->return->csq->subSequence->append
+OutputStreamWriter#append(CharSequence)::: output stream writer append:::if->se->write->else->se->String->valueOf->write->return
 OutputStreamWriter#flush():::Flushes the stream.:::se->flush
+OutputStreamWriter#close()::: output stream writer close:::se->close
+PipedInputStream#initPipe(int)::: piped input stream init pipe:::if->throw->new->IllegalArgumentException->new->byteArr
 PipedInputStream#connect(PipedOutputStream):::Causes this piped input stream to be connected to the piped  output stream src:::src->connect
 PipedInputStream#receive(int):::Receives a byte of data:::checkStateForReceive->Thread->currentThread->if->awaitSpace->if->if
 PipedInputStream#receive(byte[], int, int):::Receives data into an array of bytes:::checkStateForReceive->Thread->currentThread->bytesToTransfer->while->if->awaitSpace->nextTransferAmount->if->else->if->if->else->if->System->arraycopy->if
+PipedInputStream#checkStateForReceive()::: piped input stream check state for receive:::if->throw->new->IOException->else->if->throw->new->IOException->else->if->readSide->isAlive->throw->new->IOException
+PipedInputStream#awaitSpace()::: piped input stream await space:::while->checkStateForReceive->notifyAll->try->wait->catch->throw->new->java.io.InterruptedIOException->finally
 PipedInputStream#receivedLast():::Notifies all waiting threads that the last byte of data has been received.:::notifyAll
 PipedInputStream#read():::Reads the next byte of data from this piped input stream:::if->throw->new->IOException->else->if->throw->new->IOException->else->if->writeSide->isAlive->throw->new->IOException->Thread->currentThread->trials->while->if->return->if->writeSide->isAlive->throw->new->IOException->notifyAll->try->wait->catch->throw->new->java.io.InterruptedIOException->finally->ret->if->if->return
 PipedInputStream#read(byte[], int, int):::Reads up to len bytes of data from this piped input stream into an array of bytes:::if->throw->new->NullPointerException->else->if->throw->new->IndexOutOfBoundsException->else->if->return->c->read->if->return->rlen->while->available->if->Math->min->else->if->System->arraycopy->if->if->return
@@ -519,6 +869,7 @@ PipedOutputStream#write(int):::Writes the specified byte to the piped output str
 PipedOutputStream#write(byte[], int, int):::Writes len bytes from the specified byte array starting at offset off to this piped output stream:::if->throw->new->IOException->else->if->throw->new->NullPointerException->else->if->throw->new->IndexOutOfBoundsException->else->if->return->sink->receive
 PipedOutputStream#flush():::Flushes this output stream and forces any buffered output bytes to be written out:::if->synchronized->sink->notifyAll
 PipedOutputStream#close():::Closes this piped output stream and releases any system resources associated with this stream:::if->sink->receivedLast
+PipedReader#initPipe(int)::: piped reader init pipe:::if->throw->new->IllegalArgumentException->new->charArr
 PipedReader#connect(PipedWriter):::Causes this piped reader to be connected to the piped  writer src:::src->connect
 PipedReader#receive(int):::Receives a char of data:::if->throw->new->IOException->else->if->throw->new->IOException->else->if->readSide->isAlive->throw->new->IOException->Thread->currentThread->while->if->readSide->isAlive->throw->new->IOException->notifyAll->try->wait->catch->throw->new->java.io.InterruptedIOException->finally->if->if
 PipedReader#receive(char[], int, int):::Receives data into an array of characters:::while->receive
@@ -532,6 +883,9 @@ PipedWriter#write(int):::Writes the specified char to the piped output stream:::
 PipedWriter#write(char[], int, int):::Writes len characters from the specified character array starting at offset off to this piped output stream:::if->throw->new->IOException->else->if->throw->new->IndexOutOfBoundsException->sink->receive
 PipedWriter#flush():::Flushes this output stream and forces any buffered output characters to be written out:::if->if->throw->new->IOException->synchronized->sink->notifyAll
 PipedWriter#close():::Closes this piped output stream and releases any system resources associated with this stream:::if->sink->receivedLast
+PrintStream#requireNonNull(T, String):::requireNonNull is explicitly declared here so as not to create an extra dependency on java.util.Objects.requireNonNull:::if->throw->new->NullPointerException->return
+PrintStream#toCharset(String):::Returns a charset object for the given charset name.:::requireNonNull->try->return->Charset->forName->catch->throw->new->UnsupportedEncodingException->finally
+PrintStream#ensureOpen():::Check to make sure that the stream has not been closed:::if->throw->new->IOException
 PrintStream#flush():::Flushes the stream:::synchronized->try->ensureOpen->out->flush->catch->finally
 PrintStream#close():::Closes the stream:::synchronized->if->try->textOut->close->out->close->catch->finally
 PrintStream#checkError():::Flushes the stream and checks its error state:::if->flush->if->ps->return->ps->checkError->return
@@ -539,6 +893,9 @@ PrintStream#setError():::Sets the error state of the stream to true:::
 PrintStream#clearError():::Clears the internal error state of this stream:::
 PrintStream#write(int):::Writes the specified byte to this stream:::try->synchronized->ensureOpen->out->write->if->out->flush->catch->Thread->currentThread->interrupt->finally
 PrintStream#write(byte[], int, int):::Writes len bytes from the specified byte array starting at offset off to this stream:::try->synchronized->ensureOpen->out->write->if->out->flush->catch->Thread->currentThread->interrupt->finally
+PrintStream#write(char[])::: print stream write:::try->synchronized->ensureOpen->textOut->write->textOut->flushBuffer->charOut->flushBuffer->if->for->i->catch->Thread->currentThread->interrupt->finally
+PrintStream#write(String)::: print stream write:::try->synchronized->ensureOpen->textOut->write->textOut->flushBuffer->charOut->flushBuffer->if->s->indexOf->out->flush->catch->Thread->currentThread->interrupt->finally
+PrintStream#newLine()::: print stream new line:::try->synchronized->ensureOpen->textOut->newLine->textOut->flushBuffer->charOut->flushBuffer->if->out->flush->catch->Thread->currentThread->interrupt->finally
 PrintStream#print(boolean):::Prints a boolean value:::String->valueOf->write
 PrintStream#print(char):::Prints a character:::String->valueOf->write
 PrintStream#print(int):::Prints an integer:::String->valueOf->write
@@ -565,6 +922,8 @@ PrintStream#format(Locale, String, Object...):::Writes a formatted string to thi
 PrintStream#append(CharSequence):::Appends the specified character sequence to this output stream:::String->valueOf->print->return
 PrintStream#append(CharSequence, int, int):::Appends a subsequence of the specified character sequence to this output stream:::if->return->csq->subSequence->append
 PrintStream#append(char):::Appends the specified character to this output stream:::print->return
+PrintWriter#toCharset(String):::Returns a charset object for the given charset name.:::Objects->requireNonNull->try->return->Charset->forName->catch->throw->new->UnsupportedEncodingException->finally
+PrintWriter#ensureOpen():::Checks to make sure that the stream has not been closed:::if->throw->new->IOException
 PrintWriter#flush():::Flushes the stream.:::try->synchronized->ensureOpen->out->flush->catch->finally
 PrintWriter#close():::Closes the stream and releases any system resources associated with it:::try->synchronized->if->return->out->close->catch->finally
 PrintWriter#checkError():::Flushes the stream if it's not closed and checks its error state.:::if->flush->if->pw->return->pw->checkError->else->if->return->psOut->checkError->return
@@ -575,6 +934,7 @@ PrintWriter#write(char[], int, int):::Writes A Portion of an array of characters
 PrintWriter#write(char[]):::Writes an array of characters:::write
 PrintWriter#write(String, int, int):::Writes a portion of a string.:::try->synchronized->ensureOpen->out->write->catch->Thread->currentThread->interrupt->finally
 PrintWriter#write(String):::Writes a string:::s->length->write
+PrintWriter#newLine()::: print writer new line:::try->synchronized->ensureOpen->out->System->lineSeparator->write->if->out->flush->catch->Thread->currentThread->interrupt->finally
 PrintWriter#print(boolean):::Prints a boolean value:::String->valueOf->write
 PrintWriter#print(char):::Prints a character:::write
 PrintWriter#print(int):::Prints an integer:::String->valueOf->write
@@ -601,6 +961,7 @@ PrintWriter#format(Locale, String, Object...):::Writes a formatted string to thi
 PrintWriter#append(CharSequence):::Appends the specified character sequence to this writer:::String->valueOf->write->return
 PrintWriter#append(CharSequence, int, int):::Appends a subsequence of the specified character sequence to this writer:::if->return->csq->subSequence->append
 PrintWriter#append(char):::Appends the specified character to this writer:::write->return
+PushbackInputStream#ensureOpen():::Check to make sure that this stream has not been closed:::if->throw->new->IOException
 PushbackInputStream#read():::Reads the next byte of data from this input stream:::ensureOpen->if->return->return->super->read
 PushbackInputStream#read(byte[], int, int):::Reads up to len bytes of data from this input stream into an array of bytes:::ensureOpen->if->throw->new->NullPointerException->else->if->throw->new->IndexOutOfBoundsException->else->if->return->avail->if->if->System->arraycopy->if->super->read->if->return->return->return
 PushbackInputStream#unread(int):::Pushes back a byte by copying it to the front of the pushback buffer:::ensureOpen->if->throw->new->IOException
@@ -612,6 +973,7 @@ PushbackInputStream#markSupported():::Tests if this input stream supports the ma
 PushbackInputStream#mark(int):::Marks the current position in this input stream:::
 PushbackInputStream#reset():::Repositions this stream to the position at the time the mark method was last called on this input stream:::throw->new->IOException
 PushbackInputStream#close():::Closes this input stream and releases any system resources associated with the stream:::if->return->in->close
+PushbackReader#ensureOpen():::Checks to make sure that the stream has not been closed.:::if->throw->new->IOException
 PushbackReader#read():::Reads a single character.:::synchronized->ensureOpen->if->return->else->return->super->read
 PushbackReader#read(char[], int, int):::Reads characters into a portion of an array.:::synchronized->ensureOpen->try->if->if->throw->new->IndexOutOfBoundsException->else->if->throw->new->IndexOutOfBoundsException->return->avail->if->if->System->arraycopy->if->super->read->if->return->return->return->catch->throw->new->IndexOutOfBoundsException->finally
 PushbackReader#unread(int):::Pushes back a single character by copying it to the front of the pushback buffer:::synchronized->ensureOpen->if->throw->new->IOException
@@ -625,17 +987,24 @@ PushbackReader#close():::Closes the stream and releases any system resources ass
 PushbackReader#skip(long):::Skips characters:::if->throw->new->IllegalArgumentException->synchronized->ensureOpen->avail->if->if->return->else->return->super->skip
 RandomAccessFile#getFD():::Returns the opaque file descriptor object associated with this stream.:::if->return->throw->new->IOException
 RandomAccessFile#getChannel():::Returns the unique java.nio.channels.FileChannel FileChannel object associated with this file:::fc->if->synchronized->if->FileChannelImpl->open->if->closed->get->try->fc->close->catch->throw->new->InternalError->finally->return
+RandomAccessFile#open0(String, int):::Opens a file and returns the file descriptor:::
+RandomAccessFile#open(String, int):::Opens a file and returns the file descriptor:::open0
 RandomAccessFile#read():::Reads a byte of data from this file:::return->read0
+RandomAccessFile#read0()::: random access file read0:::
+RandomAccessFile#readBytes(byte[], int, int):::Reads a sub array as a sequence of bytes.:::
 RandomAccessFile#read(byte[], int, int):::Reads up to len bytes of data from this file into an array of bytes:::return->readBytes
 RandomAccessFile#read(byte[]):::Reads up to b.length bytes of data from this file into an array of bytes:::return->readBytes
 RandomAccessFile#readFully(byte[]):::Reads b.length bytes from this file into the byte array, starting at the current file pointer:::readFully
 RandomAccessFile#readFully(byte[], int, int):::Reads exactly len bytes from this file into the byte array, starting at the current file pointer:::n->do->count->this->read->if->throw->new->EOFException->while
 RandomAccessFile#skipBytes(int):::Attempts to skip over n bytes of input discarding the skipped bytes:::pos->len->newpos->if->return->getFilePointer->length->if->seek->return
 RandomAccessFile#write(int):::Writes the specified byte to this file:::write0
+RandomAccessFile#write0(int)::: random access file write0:::
+RandomAccessFile#writeBytes(byte[], int, int):::Writes a sub array as a sequence of bytes.:::
 RandomAccessFile#write(byte[]):::Writes b.length bytes from the specified byte array to this file, starting at the current file pointer.:::writeBytes
 RandomAccessFile#write(byte[], int, int):::Writes len bytes from the specified byte array starting at offset off to this file.:::writeBytes
 RandomAccessFile#getFilePointer():::Returns the current offset in this file.:::
 RandomAccessFile#seek(long):::Sets the file-pointer offset, measured from the beginning of this file, at which the next read or write occurs:::if->throw->new->IOException->else->seek0
+RandomAccessFile#seek0(long)::: random access file seek0:::
 RandomAccessFile#length():::Returns the length of this file.:::
 RandomAccessFile#setLength(long):::Sets the length of this file:::
 RandomAccessFile#close():::Closes this random access file stream and releases any system resources associated with the stream:::if->closed->compareAndSet->return->fc->if->fc->close->fd->new->Closeable->closeAll
@@ -649,6 +1018,7 @@ RandomAccessFile#readInt():::Reads a signed 32-bit integer from this file:::ch1-
 RandomAccessFile#readLong():::Reads a signed 64-bit integer from this file:::return->readInt->readInt
 RandomAccessFile#readFloat():::Reads a float from this file:::return->Float->readInt->intBitsToFloat
 RandomAccessFile#readDouble():::Reads a double from this file:::return->Double->readLong->longBitsToDouble
+RandomAccessFile#readLine()::: random access file read line:::input->new->StringBuilder->c->eol->while->switch->read->break->cur->getFilePointer->if->read->seek->break->input->append->break->if->input->length->return->return->input->toString
 RandomAccessFile#readUTF():::Reads in a string from this file:::return->DataInputStream->readUTF
 RandomAccessFile#writeBoolean(boolean):::Writes a boolean to the file as a one-byte value:::write
 RandomAccessFile#writeByte(int):::Writes a byte to the file as a one-byte value:::write
@@ -661,6 +1031,7 @@ RandomAccessFile#writeDouble(double):::Converts the double argument to a long us
 RandomAccessFile#writeBytes(String):::Writes the string to the file as a sequence of bytes:::len->s->length->b->new->byteArr->s->getBytes->writeBytes
 RandomAccessFile#writeChars(String):::Writes a string to the file as a sequence of characters:::clen->s->length->blen->b->new->byteArr->c->new->charArr->s->getChars->for->i->j->writeBytes
 RandomAccessFile#writeUTF(String):::Writes a string to the file using modified UTF-8 encoding in a machine-independent manner:::DataOutputStream->writeUTF
+RandomAccessFile#initIDs()::: random access file init ds:::
 Reader#nullReader():::Returns a new Reader that reads no characters:::return->new->Reader
 Reader#read(java.nio.CharBuffer):::Attempts to read characters into the specified character buffer:::len->target->remaining->cbuf->new->charArr->n->read->if->target->put->return
 Reader#read():::Reads a single character:::cb->new->charArr->if->read->return->else->return
@@ -674,10 +1045,16 @@ Reader#reset():::Resets the stream:::throw->new->IOException
 Reader#close():::Closes the stream and releases any system resources associated with it:::
 Reader#transferTo(Writer):::Reads all characters from this reader and writes the characters to the given writer in the order that they are read:::Objects->requireNonNull->transferred->buffer->new->charArr->nRead->while->read->out->write->return
 SequenceInputStream#nextStream()::: Continues reading in the next stream if an EOF is reached.:::if->in->close->peekNextStream
+SequenceInputStream#peekNextStream()::: sequence input stream peek next stream:::if->e->hasMoreElements->e->nextElement->if->throw->new->NullPointerException->else
 SequenceInputStream#available():::Returns an estimate of the number of bytes that can be read (or skipped over) from the current underlying input stream without blocking by the next invocation of a method for the current underlying input stream:::if->return->return->in->available
 SequenceInputStream#read():::Reads the next byte of data from this input stream:::while->c->in->read->if->return->nextStream->return
 SequenceInputStream#read(byte[], int, int):::Reads up to len bytes of data from this input stream into an array of bytes:::if->return->else->if->throw->new->NullPointerException->else->if->throw->new->IndexOutOfBoundsException->else->if->return->do->n->in->read->if->return->nextStream->while->return
 SequenceInputStream#close():::Closes this input stream and releases any system resources associated with the stream:::do->nextStream->while
+SerialCallbackContext#getObj()::: serial callback context get obj:::checkAndSetUsed->return
+SerialCallbackContext#getDesc()::: serial callback context get desc:::return
+SerialCallbackContext#check()::: serial callback context check:::if->Thread->currentThread->throw->Thread->currentThread->new->NotActiveException
+SerialCallbackContext#checkAndSetUsed()::: serial callback context check and set used:::if->Thread->currentThread->throw->new->NotActiveException
+SerialCallbackContext#setUsed()::: serial callback context set used:::
 StreamTokenizer#resetSyntax():::Resets this tokenizer's syntax table so that all characters are "ordinary." See the ordinaryChar method for more information on a character being ordinary.:::for->i
 StreamTokenizer#wordChars(int, int):::Specifies that all characters c in the range low&nbsp;&lt;=&nbsp;c&nbsp;&lt;=&nbsp;high are word constituents:::if->if->while
 StreamTokenizer#whitespaceChars(int, int):::Specifies that all characters c in the range low&nbsp;&lt;=&nbsp;c&nbsp;&lt;=&nbsp;high are white space characters:::if->if->while
@@ -690,6 +1067,7 @@ StreamTokenizer#eolIsSignificant(boolean):::Determines whether or not ends of li
 StreamTokenizer#slashStarComments(boolean):::Determines whether or not the tokenizer recognizes C-style comments:::
 StreamTokenizer#slashSlashComments(boolean):::Determines whether or not the tokenizer recognizes C++-style comments:::
 StreamTokenizer#lowerCaseMode(boolean):::Determines whether or not word token are automatically lowercased:::
+StreamTokenizer#read():::Read the next character:::if->return->reader->read->else->if->return->input->read->else->throw->new->IllegalStateException
 StreamTokenizer#nextToken():::Parses the next token from the input stream of this tokenizer:::if->return->ct->c->if->if->read->if->return->if->if->read->if->return->ctype->while->if->if->return->read->if->read->else->if->if->return->read->if->return->if->neg->if->read->if->return->v->decexp->seendot->while->if->else->if->else->break->read->if->denom->while->return->if->i->do->if->Arrays->copyOf->read->while->String->copyValueOf->if->sval->toLowerCase->return->if->i->d->read->while->if->read->first->if->c2->read->if->read->if->read->else->else->else->switch->break->break->break->break->break->break->break->read->else->read->if->Arrays->copyOf->String->copyValueOf->return->if->read->if->prevc->while->read->if->read->if->read->else->if->read->if->return->return->nextToken->else->if->while->read->return->nextToken->else->if->while->read->return->nextToken->else->return->if->while->read->return->nextToken->return
 StreamTokenizer#pushBack():::Causes the next call to the nextToken method of this tokenizer to return the current value in the ttype field, and not to modify the value in the nval or sval field.:::if
 StreamTokenizer#lineno():::Return the current line number.:::return
@@ -699,6 +1077,7 @@ StringBufferInputStream#read(byte[], int, int):::Reads up to len bytes of data f
 StringBufferInputStream#skip(long):::Skips n bytes of input from this input stream:::if->return->if->return
 StringBufferInputStream#available():::Returns the number of bytes that can be read from the input stream without blocking.:::return
 StringBufferInputStream#reset():::Resets the input stream to begin reading from the first character of this input stream's underlying buffer.:::
+StringReader#ensureOpen():::Check to make sure that the stream has not been closed:::if->throw->new->IOException
 StringReader#read():::Reads a single character.:::synchronized->ensureOpen->if->return->return->str->charAt
 StringReader#read(char[], int, int):::Reads characters into a portion of an array.:::synchronized->ensureOpen->if->throw->new->IndexOutOfBoundsException->else->if->return->if->return->n->Math->min->str->getChars->return
 StringReader#skip(long):::Skips the specified number of characters in the stream:::synchronized->ensureOpen->if->return->n->Math->min->Math->max->return
@@ -719,6 +1098,55 @@ StringWriter#getBuffer():::Return the string buffer itself.:::return
 StringWriter#flush():::Flush the stream.:::
 StringWriter#close():::Closing a StringWriter has no effect:::
 UncheckedIOException#getCause():::Returns the cause of this exception.:::return->super->getCause
+UncheckedIOException#readObject(ObjectInputStream):::Called to read the object from a stream.:::s->defaultReadObject->cause->super->getCause->if->throw->new->InvalidObjectException
+WinNTFileSystem#isSlash(char)::: win file system is slash:::return
+WinNTFileSystem#isLetter(char)::: win file system is letter:::return
+WinNTFileSystem#slashify(String)::: win file system slashify:::if->p->length->p->charAt->return->else->return
+WinNTFileSystem#getSeparator()::: win file system get separator:::return
+WinNTFileSystem#getPathSeparator()::: win file system get path separator:::return
+WinNTFileSystem#normalize(String)::: win file system normalize:::n->path->length->slash->altSlash->prev->for->i->if->return->normalize->return
+WinNTFileSystem#normalize(String, int, int)::: win file system normalize:::if->return->if->src->slash->sb->new->StringBuilder->if->normalizePrefix->else->sb->append->while->c->path->charAt->if->isSlash->while->path->charAt->isSlash->if->sn->sb->length->if->sb->charAt->sb->append->break->if->sb->append->break->if->sb->charAt->isSlash->sb->append->break->break->else->sb->append->else->sb->append->return->sb->toString
+WinNTFileSystem#normalizePrefix(String, int, StringBuilder)::: win file system normalize prefix:::src->while->path->charAt->isSlash->c->if->path->charAt->isLetter->path->charAt->sb->append->sb->append->else->if->path->charAt->isSlash->path->charAt->isSlash->sb->append->return
+WinNTFileSystem#prefixLength(String)::: win file system prefix length:::slash->n->path->length->if->return->c0->path->charAt->c1->path->charAt->if->if->return->return->if->isLetter->if->path->charAt->return->return->return
+WinNTFileSystem#resolve(String, String)::: win file system resolve:::pn->parent->length->if->return->cn->child->length->if->return->c->childStart->parentEnd->isDirectoryRelative->parent->charAt->isLetter->parent->charAt->if->c->charAt->if->c->charAt->else->if->if->if->parent->charAt->return->parent->substring->return->if->parent->charAt->strlen->theChars->if->child->charAt->new->charArr->parent->getChars->child->getChars->else->new->charArr->parent->getChars->child->getChars->return->new->String
+WinNTFileSystem#getDefaultParent()::: win file system get default parent:::return
+WinNTFileSystem#fromURIPath(String)::: win file system from path:::p->if->p->length->p->charAt->p->substring->if->p->length->p->endsWith->p->p->length->substring->else->if->p->length->p->endsWith->p->p->length->substring->return
+WinNTFileSystem#isAbsolute(File)::: win file system is absolute:::pl->f->getPrefixLength->return->f->getPath->charAt
+WinNTFileSystem#resolve(File)::: win file system resolve:::path->f->getPath->pl->f->getPrefixLength->if->path->charAt->return->if->return->if->return->getUserPath->slashify->if->up->getUserPath->ud->getDrive->if->return->return->if->up->getUserPath->ud->getDrive->if->path->startsWith->return->path->substring->slashify->drive->path->charAt->dir->getDriveDirectory->np->if->p->path->substring->slashify->security->System->getSecurityManager->try->if->security->checkRead->catch->throw->new->SecurityException->finally->return->return->path->substring->slashify->throw->new->InternalError
+WinNTFileSystem#getUserPath()::: win file system get user path:::sm->System->getSecurityManager->if->sm->checkPropertyAccess->return->normalize
+WinNTFileSystem#getDrive(String)::: win file system get drive:::pl->prefixLength->return->path->substring
+WinNTFileSystem#driveIndex(char)::: win file system drive index:::if->return->if->return->return
+WinNTFileSystem#getDriveDirectory(int)::: win file system get drive directory:::
+WinNTFileSystem#getDriveDirectory(char)::: win file system get drive directory:::i->driveIndex->if->return->s->if->return->getDriveDirectory->return
+WinNTFileSystem#canonicalize(String)::: win file system canonicalize:::len->path->length->if->path->charAt->isLetter->path->charAt->c->path->charAt->if->return->return->else->if->path->charAt->isLetter->path->charAt->path->charAt->c->path->charAt->if->return->return->if->return->canonicalize0->else->res->cache->get->if->dir->resDir->if->parentOrNull->if->prefixCache->get->if->filename->path->dir->length->substring->canonicalizeWithPrefix->cache->put->if->canonicalize0->cache->put->if->parentOrNull->if->f->new->File->if->f->exists->f->isDirectory->prefixCache->put->return
+WinNTFileSystem#canonicalize0(String)::: win file system canonicalize0:::
+WinNTFileSystem#canonicalizeWithPrefix(String, String)::: win file system canonicalize with prefix:::return->canonicalizeWithPrefix0
+WinNTFileSystem#canonicalizeWithPrefix0(String, String)::: win file system canonicalize with prefix0:::
+WinNTFileSystem#parentOrNull(String)::: win file system parent or null:::if->return->sep->altSep->last->path->length->idx->adjacentDots->nonDotCount->while->c->path->charAt->if->if->return->if->return->else->if->if->return->if->path->charAt->path->charAt->return->return->path->substring->else->if->return->else->if->return->else->return
+WinNTFileSystem#getBooleanAttributes(File)::: win file system get boolean attributes:::
+WinNTFileSystem#checkAccess(File, int)::: win file system check access:::
+WinNTFileSystem#getLastModifiedTime(File)::: win file system get last modified time:::
+WinNTFileSystem#getLength(File)::: win file system get length:::
+WinNTFileSystem#setPermission(File, int, boolean, boolean)::: win file system set permission:::
+WinNTFileSystem#createFileExclusively(String)::: win file system create file exclusively:::
+WinNTFileSystem#list(File)::: win file system list:::
+WinNTFileSystem#createDirectory(File)::: win file system create directory:::
+WinNTFileSystem#setLastModifiedTime(File, long)::: win file system set last modified time:::
+WinNTFileSystem#setReadOnly(File)::: win file system set read only:::
+WinNTFileSystem#delete(File)::: win file system delete:::cache->clear->prefixCache->clear->return->delete0
+WinNTFileSystem#delete0(File)::: win file system delete0:::
+WinNTFileSystem#rename(File, File)::: win file system rename:::cache->clear->prefixCache->clear->return->rename0
+WinNTFileSystem#rename0(File, File)::: win file system rename0:::
+WinNTFileSystem#listRoots()::: win file system list roots:::return->BitSet->new->longArr->listRoots0->valueOf->stream->new->File->mapToObj->f->getPath->access->f->exists->filter->File[]->new->toArray
+WinNTFileSystem#listRoots0()::: win file system list roots0:::
+WinNTFileSystem#access(String)::: win file system access:::try->security->System->getSecurityManager->if->security->checkRead->return->catch->return->finally
+WinNTFileSystem#getSpace(File, int)::: win file system get space:::if->f->exists->return->getSpace0->return
+WinNTFileSystem#getSpace0(File, int)::: win file system get space0:::
+WinNTFileSystem#getNameMax0(String)::: win file system get name max0:::
+WinNTFileSystem#getNameMax(String)::: win file system get name max:::s->if->f->new->File->if->f->isAbsolute->root->f->toPath->getRoot->if->root->toString->if->s->endsWith->return->getNameMax0
+WinNTFileSystem#compare(File, File)::: win file system compare:::return->f1->getPath->f2->getPath->compareToIgnoreCase
+WinNTFileSystem#hashCode(File)::: win file system hash code:::return->f->getPath->toLowerCase->hashCode
+WinNTFileSystem#initIDs()::: win file system init ds:::
 WriteAbortedException#getMessage():::Produce the message and include the message from the nested exception, if there is one.:::if->return->super->getMessage->else->return->super->getMessage->detail->toString
 WriteAbortedException#getCause():::Returns the exception that terminated the operation (the cause).:::return
 Writer#nullWriter():::Returns a new Writer which discards all characters:::return->new->Writer

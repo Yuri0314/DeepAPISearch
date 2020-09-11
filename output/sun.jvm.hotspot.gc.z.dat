@@ -1,0 +1,97 @@
+ZAddress#as_long(Address)::: address as_long:::if->return->return->value->asLongValue
+ZAddress#is_null(Address)::: address is_null:::return
+ZAddress#is_weak_bad(Address)::: address is_weak_bad:::return->as_long->ZGlobals->ZAddressWeakBadMask
+ZAddress#is_weak_good(Address)::: address is_weak_good:::return->is_weak_bad->is_null
+ZAddress#is_weak_good_or_null(Address)::: address is_weak_good_or_null:::return->is_weak_bad
+ZAddress#offset(Address)::: address offset:::return->as_long
+ZAddress#address(long)::: address address:::vm->VM->getVM->if->vm->getOS->equals->vm->getCPU->equals->return->ZOop->to_address
+ZAddress#good(Address)::: address good:::return->offset->ZGlobals->ZAddressGoodMask->address
+ZAddress#good_or_null(Address)::: address good_or_null:::return->is_null->good
+ZAddressRangeMapForPageTable#initialize(TypeDataBase)::: address range map for page table initialize:::type->db->lookupType->type->getAddressField
+ZAddressRangeMapForPageTable#map()::: address range map for page table map:::return->mapField->getValue
+ZAddressRangeMapForPageTable#index_for_addr(Address)::: address range map for page table index_for_addr:::index->ZAddress->offset->return
+ZAddressRangeMapForPageTable#get(Address)::: address range map for page table get:::index->index_for_addr->return->map->VM->getVM->getBytesPerLong->getAddressAt
+ZBarrier#is_weak_good_or_null_fast_path(Address)::: barrier is_weak_good_or_null_fast_path:::return->ZAddress->is_weak_good_or_null
+ZBarrier#weak_load_barrier_on_oop_slow_path(Address)::: barrier weak_load_barrier_on_oop_slow_path:::return->ZAddress->is_weak_good->ZAddress->good->relocate_or_remap
+ZBarrier#during_relocate()::: barrier during_relocate:::return->ZGlobals->ZGlobalPhase
+ZBarrier#relocate(Address)::: barrier relocate:::heap->zheap->if->heap->is_relocating->return->heap->relocate_object->return->ZAddress->good
+ZBarrier#zheap()::: barrier zheap:::zCollectedHeap->VM->getVM->getUniverse->heap->return->zCollectedHeap->heap
+ZBarrier#remap(Address)::: barrier remap:::heap->zheap->if->heap->is_relocating->return->heap->forward_object->return->ZAddress->good
+ZBarrier#relocate_or_remap(Address)::: barrier relocate_or_remap:::return->during_relocate->relocate->remap
+ZBarrier#weak_barrier(Address)::: barrier weak_barrier:::if->is_weak_good_or_null_fast_path->return->ZAddress->good_or_null->return->weak_load_barrier_on_oop_slow_path
+ZCollectedHeap#initialize(TypeDataBase)::: collected heap initialize:::type->db->lookupType->type->getAddressField->getOffset
+ZCollectedHeap#heap()::: collected heap heap:::heapAddr->addr->addOffsetTo->return->VMObjectFactory->newObject
+ZCollectedHeap#kind()::: collected heap kind:::return
+ZCollectedHeap#printOn(PrintStream)::: collected heap print on:::heap->printOn
+ZCollectedHeap#oop_load_at(OopHandle, long)::: collected heap oop_load_at:::oopAddress->handle->getAddressAt->ZBarrier->weak_barrier->if->return->return->oopAddress->addOffsetToAsOopHandle
+ZCollectedHeap#oopAddressDescription(OopHandle)::: collected heap oop address description:::origOop->ZOop->to_address->loadBarrieredOop->ZBarrier->weak_barrier->if->origOop->equals->return->loadBarrieredOop->toString->else->return->handle->toString
+ZForwardingTable#initialize(TypeDataBase)::: forwarding table initialize:::type->db->lookupType->type->getAddressField->type->getCIntegerField
+ZForwardingTable#table()::: forwarding table table:::return->tableField->getAddress
+ZForwardingTable#size()::: forwarding table size:::return->sizeField->getJLong
+ZForwardingTable#at(ZForwardingTableCursor)::: forwarding table at:::return->table->VM->getVM->getBytesPerLong->getAddressAt->new->ZForwardingTableEntry
+ZForwardingTable#first(long, ZForwardingTableCursor)::: forwarding table first:::mask->size->hash->ZHash->uint32_to_uint32->return->at
+ZForwardingTable#next(ZForwardingTableCursor)::: forwarding table next:::mask->size->return->at
+ZForwardingTable#find(long, ZForwardingTableCursor)::: forwarding table find:::entry->first->while->entry->is_empty->if->entry->from_index->return->next->return
+ZForwardingTable#find(long)::: forwarding table find:::dummy->new->ZForwardingTableCursor->return->find
+ZForwardingTable#dump()::: forwarding table dump:::s->size->count->println->cursor->new->ZForwardingTableCursor->for->i
+ZForwardingTableEntry#empty()::: forwarding table entry empty:::return
+ZForwardingTableEntry#is_empty()::: forwarding table entry is_empty:::return->entry->asLongValue->empty
+ZForwardingTableEntry#to_offset()::: forwarding table entry to_offset:::return->entry->andWithMask
+ZForwardingTableEntry#from_index()::: forwarding table entry from_index:::return->entry->asLongValue
+ZForwardingTableEntry#toString()::: forwarding table entry to string:::return->from_index->to_offset
+ZGlobals#initialize(TypeDataBase)::: globals initialize:::type->db->lookupType->type->getField->db->lookupIntConstant->intValue->db->lookupIntConstant->byteValue->db->lookupIntConstant->byteValue->db->lookupIntConstant->byteValue->db->lookupLongConstant->longValue->db->lookupLongConstant->longValue->db->lookupLongConstant->longValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupLongConstant->longValue->db->lookupLongConstant->longValue->db->lookupLongConstant->longValue->db->lookupLongConstant->longValue
+ZGlobals#instance()::: globals instance:::return->instanceField->getAddress->new->ZGlobalsForVMStructs
+ZGlobals#ZGlobalPhase()::: globals  global phase:::return->instance->ZGlobalPhase
+ZGlobals#ZAddressGoodMask()::: globals  address good mask:::return->instance->ZAddressGoodMask
+ZGlobals#ZAddressBadMask()::: globals  address bad mask:::return->instance->ZAddressBadMask
+ZGlobals#ZAddressWeakBadMask()::: globals  address weak bad mask:::return->instance->ZAddressWeakBadMask
+ZGlobals#ZObjectAlignmentSmallShift()::: globals  object alignment small shift:::return->instance->ZObjectAlignmentSmallShift
+ZGlobals#ZObjectAlignmentSmall()::: globals  object alignment small:::return->instance->ZObjectAlignmentSmall
+ZGlobalsForVMStructs#initialize(TypeDataBase)::: globals for structs initialize:::type->db->lookupType->type->getAddressField->type->getAddressField->type->getAddressField->type->getAddressField->type->getAddressField->type->getAddressField
+ZGlobalsForVMStructs#ZGlobalPhase()::: globals for structs  global phase:::return->ZGlobalPhaseField->getValue->getJIntAt
+ZGlobalsForVMStructs#ZAddressGoodMask()::: globals for structs  address good mask:::return->ZAddressGoodMaskField->getValue->getJLongAt
+ZGlobalsForVMStructs#ZAddressBadMask()::: globals for structs  address bad mask:::return->ZAddressBadMaskField->getValue->getJLongAt
+ZGlobalsForVMStructs#ZAddressWeakBadMask()::: globals for structs  address weak bad mask:::return->ZAddressWeakBadMaskField->getValue->getJLongAt
+ZGlobalsForVMStructs#ZObjectAlignmentSmallShift()::: globals for structs  object alignment small shift:::return->ZObjectAlignmentSmallShiftField->getValue->getJIntAt
+ZGlobalsForVMStructs#ZObjectAlignmentSmall()::: globals for structs  object alignment small:::return->ZObjectAlignmentSmallField->getValue->getJIntAt
+ZHash#uint32(long)::: hash uint32:::return
+ZHash#uint32_to_uint32(long)::: hash uint32_to_uint32:::uint32->uint32->uint32->uint32->uint32->uint32->return
+ZHeap#initialize(TypeDataBase)::: heap initialize:::type->db->lookupType->type->getAddressField->getOffset->type->getAddressField->getOffset
+ZHeap#pageAllocator()::: heap page allocator:::pageAllocatorAddr->addr->addOffsetTo->return->VMObjectFactory->newObject
+ZHeap#pageTable()::: heap page table:::return->VMObjectFactory->addr->addOffsetTo->newObject
+ZHeap#maxCapacity()::: heap max capacity:::return->pageAllocator->maxCapacity
+ZHeap#capacity()::: heap capacity:::return->pageAllocator->capacity
+ZHeap#used()::: heap used:::return->pageAllocator->used
+ZHeap#is_relocating(Address)::: heap is_relocating:::return->pageTable->is_relocating
+ZHeap#forward_object(Address)::: heap forward_object:::page->pageTable->get->return->page->forward_object
+ZHeap#relocate_object(Address)::: heap relocate_object:::page->pageTable->get->return->page->relocate_object
+ZHeap#printOn(PrintStream)::: heap print on:::tty->print->tty->used->print->tty->capacity->print->tty->maxCapacity->println
+ZOop#msbAddress()::: oop msb address:::return->VM->getVM->getUniverse->heap->start->orWithMask->andWithMask
+ZOop#to_address(long)::: oop to_address:::oneAddress->msbAddress->return->oneAddress->orWithMask->ZAddress->as_long->xorWithMask
+ZOop#to_address(OopHandle)::: oop to_address:::return->ZAddress->as_long->to_address
+ZPage#initialize(TypeDataBase)::: page initialize:::type->db->lookupType->type->getCIntegerField->type->getField->getOffset->type->getField->getOffset
+ZPage#type()::: page type:::return->typeField->getJByte
+ZPage#virtual()::: page virtual:::return->VMObjectFactory->addr->addOffsetTo->newObject
+ZPage#forwarding()::: page forwarding:::return->VMObjectFactory->addr->addOffsetTo->newObject
+ZPage#start()::: page start:::return->virtual->start
+ZPage#forward_object(Address)::: page forward_object:::from_offset->ZAddress->offset->from_index->start->object_alignment_shift->entry->forwarding->find->return->ZAddress->entry->to_offset->good
+ZPage#relocate_object(Address)::: page relocate_object:::from_offset->ZAddress->offset->from_index->start->object_alignment_shift->entry->forwarding->find->if->entry->is_empty->entry->from_index->return->ZAddress->entry->to_offset->good->return->ZAddress->good
+ZPage#object_alignment_shift()::: page object_alignment_shift:::if->type->return->ZGlobals->ZObjectAlignmentSmallShift->else->if->type->return->else->return
+ZPageAllocator#initialize(TypeDataBase)::: page allocator initialize:::type->db->lookupType->type->getAddressField->type->getCIntegerField
+ZPageAllocator#physical()::: page allocator physical:::physicalAddr->physicalField->getValue->return->VMObjectFactory->newObject
+ZPageAllocator#maxCapacity()::: page allocator max capacity:::return->physical->maxCapacity
+ZPageAllocator#capacity()::: page allocator capacity:::return->physical->capacity
+ZPageAllocator#used()::: page allocator used:::return->usedField->getValue
+ZPageTable#initialize(TypeDataBase)::: page table initialize:::type->db->lookupType->type->getAddressField->getOffset
+ZPageTable#map()::: page table map:::return->VMObjectFactory->addr->addOffsetTo->newObject
+ZPageTable#getEntry(Address)::: page table get entry:::return->map->get->new->ZPageTableEntry
+ZPageTable#get(Address)::: page table get:::return->getEntry->page
+ZPageTable#is_relocating(Address)::: page table is_relocating:::return->getEntry->relocating
+ZPageTableEntry#page()::: page table entry page:::return->VMObjectFactory->entry->andWithMask->newObject
+ZPageTableEntry#relocating()::: page table entry relocating:::return->entry->asLongValue
+ZPhysicalMemoryManager#initialize(TypeDataBase)::: physical memory manager initialize:::type->db->lookupType->type->getCIntegerField->type->getCIntegerField
+ZPhysicalMemoryManager#capacity()::: physical memory manager capacity:::return->capacityField->getValue
+ZPhysicalMemoryManager#maxCapacity()::: physical memory manager max capacity:::return->maxCapacityField->getValue
+ZVirtualMemory#initialize(TypeDataBase)::: virtual memory initialize:::type->db->lookupType->type->getCIntegerField->type->getCIntegerField
+ZVirtualMemory#start()::: virtual memory start:::return->startField->getJLong
+ZVirtualMemory#end()::: virtual memory end:::return->endField->getJLong

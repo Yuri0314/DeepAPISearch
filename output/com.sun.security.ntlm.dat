@@ -4,6 +4,27 @@ Client#getDomain():::Returns the domain value provided by server after the authe
 Client#dispose():::Disposes any password-derived information.:::Arrays->fill->Arrays->fill
 NTLM#debug(String, Object...):::Prints out a formatted string, called in various places inside then NTLM implementation for debugging/logging purposes:::if->printf
 NTLM#debug(byte[]):::Prints out the content of a byte array, called in various places inside the NTLM implementation for debugging/logging purposes:::if->try->new->sun.security.util.HexDumpEncoder->encodeBuffer->catch->finally
+NTLM.Reader#readInt(int)::: reader read int:::try->return->catch->throw->new->NTLMException->finally
+NTLM.Reader#readShort(int)::: reader read short:::try->return->catch->throw->new->NTLMException->finally
+NTLM.Reader#readBytes(int, int)::: reader read bytes:::try->return->Arrays->copyOfRange->catch->throw->new->NTLMException->finally
+NTLM.Reader#readSecurityBuffer(int)::: reader read security buffer:::pos->readInt->if->return->new->byteArr->try->return->Arrays->readShort->copyOfRange->catch->throw->new->NTLMException->finally
+NTLM.Reader#readSecurityBuffer(int, boolean)::: reader read security buffer:::raw->readSecurityBuffer->try->return->new->String->catch->throw->new->NTLMException->finally
+NTLM.Writer#writeShort(int, int)::: writer write short:::
+NTLM.Writer#writeInt(int, int)::: writer write int:::
+NTLM.Writer#writeBytes(int, byte[])::: writer write bytes:::System->arraycopy
+NTLM.Writer#writeSecurityBuffer(int, byte[])::: writer write security buffer:::if->writeShort->else->len->if->Arrays->copyOf->writeShort->writeShort->writeShort->System->arraycopy
+NTLM.Writer#writeSecurityBuffer(int, String, boolean)::: writer write security buffer:::try->str->getBytes->writeSecurityBuffer->catch->finally
+NTLM.Writer#getBytes()::: writer get bytes:::return->Arrays->copyOf
+NTLM#makeDesKey(byte[], int)::: m make des key:::in->new->intArr->for->i->out->new->byteArr->return
+NTLM#calcLMHash(byte[])::: m calc hash:::magic->pwb1->new->byteArr->len->if->System->arraycopy->try->dks1->makeDesKey->new->DESKeySpec->dks2->makeDesKey->new->DESKeySpec->key1->fac->generateSecret->key2->fac->generateSecret->cipher->init->out1->cipher->doFinal->cipher->init->out2->cipher->doFinal->result->new->byteArr->System->arraycopy->System->arraycopy->return->catch->finally->return
+NTLM#calcNTHash(byte[])::: m calc hash:::out->md4->digest->result->new->byteArr->System->arraycopy->return
+NTLM#calcResponse(byte[], byte[])::: m calc response:::try->dks1->makeDesKey->new->DESKeySpec->dks2->makeDesKey->new->DESKeySpec->dks3->makeDesKey->new->DESKeySpec->key1->fac->generateSecret->key2->fac->generateSecret->key3->fac->generateSecret->cipher->init->out1->cipher->doFinal->cipher->init->out2->cipher->doFinal->cipher->init->out3->cipher->doFinal->result->new->byteArr->System->arraycopy->System->arraycopy->System->arraycopy->return->catch->finally->return
+NTLM#hmacMD5(byte[], byte[])::: m hmac d5:::try->skey->Arrays->copyOf->new->SecretKeySpec->hmac->init->return->hmac->doFinal->catch->finally->return
+NTLM#calcV2(byte[], String, byte[], byte[])::: m calc v2:::try->ntlmv2hash->text->getBytes->hmacMD5->cn->new->byteArr->System->arraycopy->System->arraycopy->result->new->byteArr->System->hmacMD5->arraycopy->System->arraycopy->return->catch->finally->return
+NTLM#ntlm2LM(byte[])::: m ntlm2 m:::return->Arrays->copyOf
+NTLM#ntlm2NTLM(byte[], byte[], byte[])::: m ntlm2 m:::b->Arrays->copyOf->System->arraycopy->sesshash->Arrays->md5->digest->copyOf->return->calcResponse
+NTLM#getP1(char[])::: m get p1:::try->return->new->String->toUpperCase->getBytes->catch->return->finally
+NTLM#getP2(char[])::: m get p2:::try->return->new->String->getBytes->catch->return->finally
 NTLMException#errorCode():::Returns the error code associated with this NTLMException.:::return
 Server#type2(byte[], byte[]):::Generates the Type 2 message:::if->throw->new->NTLMException->debug->if->debug->p->new->Writer->flags->p->writeSecurityBuffer->p->writeInt->p->writeBytes->debug->p->getBytes->debug->return->p->getBytes
 Server#verify(byte[], byte[]):::Verifies the Type3 message received from client and returns various negotiated information.:::if->throw->new->NTLMException->debug->if->debug->r->new->Reader->username->r->readSecurityBuffer->hostname->r->readSecurityBuffer->incomingDomain->r->readSecurityBuffer->verified->password->getPassword->if->throw->new->NTLMException->incomingLM->r->readSecurityBuffer->incomingNTLM->r->readSecurityBuffer->if->if->pw1->getP1->lmhash->calcLMHash->lmresponse->calcResponse->if->Arrays->equals->if->pw2->getP2->nthash->calcNTHash->ntresponse->calcResponse->if->Arrays->equals->debug->if->pw2->getP2->nthash->calcNTHash->clientNonce->Arrays->copyOf->ntlmresponse->ntlm2NTLM->if->Arrays->equals->debug->if->pw2->getP2->nthash->calcNTHash->if->clientNonce->Arrays->copyOfRange->lmresponse->username->toUpperCase->calcV2->if->Arrays->equals->if->clientBlob->Arrays->copyOfRange->ntlmresponse->username->toUpperCase->calcV2->if->Arrays->equals->debug->if->throw->new->NTLMException->return->new->StringArr

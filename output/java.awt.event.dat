@@ -7,6 +7,7 @@ AdjustmentEvent#getAdjustable():::Returns the Adjustable object where this event
 AdjustmentEvent#getValue():::Returns the current value in the adjustment event.:::return
 AdjustmentEvent#getAdjustmentType():::Returns the type of adjustment which caused the value changed event:::return
 AdjustmentEvent#getValueIsAdjusting():::Returns true if this is one of multiple adjustment events.:::return
+AdjustmentEvent#paramString()::: adjustment event param string:::typeStr->switch->break->adjTypeStr->switch->break->break->break->break->break->return
 AdjustmentListener#adjustmentValueChanged(AdjustmentEvent):::Invoked when the value of the adjustable has changed.:::
 AWTEventListener#eventDispatched(AWTEvent):::Invoked when an event is dispatched in the AWT.:::
 AWTEventListenerProxy#eventDispatched(AWTEvent):::Forwards the AWT event to the listener delegate.:::getListener->eventDispatched
@@ -47,7 +48,10 @@ HierarchyEvent#getChangedParent():::Returns the parent of the Component returned
 HierarchyEvent#getChangeFlags():::Returns a bitmask which indicates the type(s) of HIERARCHY_CHANGED events represented in this event object:::return
 HierarchyEvent#paramString():::Returns a parameter string identifying this event:::typeStr->switch->break->break->first->if->if->if->else->if->if->else->if->break->return
 HierarchyListener#hierarchyChanged(HierarchyEvent):::Called when the hierarchy has been changed:::
+InputEvent#getButtonDownMasks():::A method to access an array of extended modifiers for additional buttons.:::return->Arrays->copyOf
 InputEvent#getMaskForButton(int):::A method to obtain a mask for any existing mouse button:::if->throw->new->IllegalArgumentException->return
+InputEvent#initIDs():::Initialize JNI field and method IDs for fields that may be        accessed from C.:::
+InputEvent#canAccessSystemClipboard()::: input event can access system clipboard:::b->if->GraphicsEnvironment->isHeadless->sm->System->getSecurityManager->if->try->sm->checkPermission->catch->if->logger->isLoggable->logger->fine->finally->else->return
 InputEvent#isShiftDown():::Returns whether or not the Shift modifier is down on this event.:::return
 InputEvent#isControlDown():::Returns whether or not the Control modifier is down on this event.:::return
 InputEvent#isMetaDown():::Returns whether or not the Meta modifier is down on this event.:::return
@@ -67,6 +71,8 @@ InputMethodEvent#consume():::Consumes this event so that it will not be processe
 InputMethodEvent#isConsumed():::Returns whether or not this event has been consumed.:::return
 InputMethodEvent#getWhen():::Returns the time stamp of when this event occurred.:::return
 InputMethodEvent#paramString():::Returns a parameter string identifying this event:::typeStr->switch->break->break->textString->if->else->textBuffer->new->StringBuilder->committedCharacterCount->c->text->first->while->textBuffer->append->text->next->textBuffer->append->while->textBuffer->append->text->next->textBuffer->append->textBuffer->toString->countString->caretString->if->else->caret->toString->visiblePositionString->if->else->visiblePosition->toString->return
+InputMethodEvent#readObject(ObjectInputStream):::Initializes the when field if it is not present in the object input stream:::s->defaultReadObject->if->EventQueue->getMostRecentEventTime
+InputMethodEvent#getMostRecentEventTimeForSource(Object):::Get the most recent event time in the EventQueue which the source belongs to.:::if->throw->new->IllegalArgumentException->appContext->SunToolkit->targetToAppContext->eventQueue->SunToolkit->getSystemEventQueueImplPP->return->AWTAccessor->getEventQueueAccessor->getMostRecentEventTime
 InputMethodListener#inputMethodTextChanged(InputMethodEvent):::Invoked when the text entered through an input method has changed.:::
 InputMethodListener#caretPositionChanged(InputMethodEvent):::Invoked when the caret within composed text has changed.:::
 InvocationEvent#dispatch():::Executes the Runnable's run() method and notifies the notifier (if any) when run() has returned or thrown an exception.:::try->if->try->runnable->run->catch->if->finally->else->runnable->run->catch->finally->finishedDispatching
@@ -74,6 +80,7 @@ InvocationEvent#getException():::Returns any Exception caught while executing th
 InvocationEvent#getThrowable():::Returns any Throwable caught while executing the Runnable's run() method.:::return
 InvocationEvent#getWhen():::Returns the timestamp of when this event occurred.:::return
 InvocationEvent#isDispatched():::Returns true if the event is dispatched or any exception is thrown while dispatching, false otherwise:::return
+InvocationEvent#finishedDispatching(boolean):::Called when the event was dispatched or disposed:::if->synchronized->notifier->notifyAll->if->listener->run
 InvocationEvent#paramString():::Returns a parameter string identifying this event:::typeStr->switch->break->return
 ItemEvent#getItemSelectable():::Returns the originator of the event.:::return
 ItemEvent#getItem():::Returns the item affected by the event.:::return
@@ -83,6 +90,7 @@ ItemListener#itemStateChanged(ItemEvent):::Invoked when an item has been selecte
 KeyAdapter#keyTyped(KeyEvent):::Invoked when a key has been typed:::
 KeyAdapter#keyPressed(KeyEvent):::Invoked when a key has been pressed.:::
 KeyAdapter#keyReleased(KeyEvent):::Invoked when a key has been released.:::
+KeyEvent#initIDs():::Initialize JNI field and method IDs for fields that may be accessed from C.:::
 KeyEvent#getKeyCode():::Returns the integer keyCode associated with the key in this event.:::return
 KeyEvent#setKeyCode(int):::Set the keyCode value to indicate a physical key.:::
 KeyEvent#getKeyChar():::Returns the character associated with the key in this event:::return
@@ -95,12 +103,25 @@ KeyEvent#isActionKey():::Returns whether the key in this event is an "action" ke
 KeyEvent#paramString():::Returns a parameter string identifying this event:::str->new->StringBuilder->switch->str->append->break->str->append->break->str->append->break->str->append->break->str->append->append->str->append->getKeyText->append->str->append->switch->str->getKeyText->append->break->str->getKeyText->append->break->str->getKeyText->append->break->str->getKeyText->append->break->str->getKeyText->append->break->str->getKeyText->append->break->str->Toolkit->getProperty->append->str->append->break->str->append->append->append->break->if->getModifiers->str->append->getKeyModifiersText->append->if->getModifiersEx->str->append->getModifiersExText->append->str->append->switch->str->append->break->str->append->break->str->append->break->str->append->break->str->append->break->str->append->break->str->append->append->str->append->append->str->append->append->str->append->Long->toHexString->append->return->str->toString
 KeyEvent#getExtendedKeyCode():::Returns an extended key code for the event:::return
 KeyEvent#getExtendedKeyCodeForChar(int):::Returns an extended key code for a unicode character.:::return->getExtendedKeyCodeForChar
+KeyEvent#setNewModifiers():::Sets new modifiers by the old ones:::if->if->if->if->if->if
+KeyEvent#setOldModifiers():::Sets old modifiers by the new ones.:::if->if->if->if->if->if
+KeyEvent#readObject(ObjectInputStream):::Sets new modifiers by the old ones:::s->defaultReadObject->if->getModifiers->getModifiersEx->setNewModifiers
 KeyListener#keyTyped(KeyEvent):::Invoked when a key has been typed:::
 KeyListener#keyPressed(KeyEvent):::Invoked when a key has been pressed:::
 KeyListener#keyReleased(KeyEvent):::Invoked when a key has been released:::
+MouseAdapter#mouseClicked(MouseEvent)::: mouse adapter mouse clicked:::
+MouseAdapter#mousePressed(MouseEvent)::: mouse adapter mouse pressed:::
+MouseAdapter#mouseReleased(MouseEvent)::: mouse adapter mouse released:::
+MouseAdapter#mouseEntered(MouseEvent)::: mouse adapter mouse entered:::
+MouseAdapter#mouseExited(MouseEvent)::: mouse adapter mouse exited:::
+MouseAdapter#mouseWheelMoved(MouseWheelEvent)::: mouse adapter mouse wheel moved:::
+MouseAdapter#mouseDragged(MouseEvent)::: mouse adapter mouse dragged:::
+MouseAdapter#mouseMoved(MouseEvent)::: mouse adapter mouse moved:::
+MouseEvent#initIDs():::Initialize JNI field and method IDs for fields that may be  accessed from C.:::
 MouseEvent#getLocationOnScreen():::Returns the absolute x, y position of the event:::return->new->Point
 MouseEvent#getXOnScreen():::Returns the absolute horizontal x position of the event:::return
 MouseEvent#getYOnScreen():::Returns the absolute vertical y position of the event:::return
+MouseEvent#getModifiersEx()::: mouse event get modifiers ex:::tmpModifiers->if->InputEvent->getButton->getMaskForButton->return
 MouseEvent#getX():::Returns the horizontal x position of the event relative to the source component.:::return
 MouseEvent#getY():::Returns the vertical y position of the event relative to the source component.:::return
 MouseEvent#getPoint():::Returns the x,y position of the event relative to the source component.:::x->y->synchronized->return->new->Point
@@ -110,6 +131,9 @@ MouseEvent#getButton():::Returns which, if any, of the mouse buttons has changed
 MouseEvent#isPopupTrigger():::Returns whether or not this mouse event is the popup menu trigger event for the platform:::return
 MouseEvent#getMouseModifiersText(int):::Returns a String instance describing the modifier keys and mouse buttons that were down during the event, such as "Shift", or "Ctrl+Shift":::buf->new->StringBuilder->if->buf->Toolkit->getProperty->append->buf->append->if->buf->Toolkit->getProperty->append->buf->append->if->buf->Toolkit->getProperty->append->buf->append->if->buf->Toolkit->getProperty->append->buf->append->if->buf->Toolkit->getProperty->append->buf->append->if->buf->Toolkit->getProperty->append->buf->append->if->buf->Toolkit->getProperty->append->buf->append->if->buf->Toolkit->getProperty->append->buf->append->mask->for->i->if->buf->length->buf->buf->length->setLength->return->buf->toString
 MouseEvent#paramString():::Returns a parameter string identifying this event:::str->new->StringBuilder->switch->str->append->break->str->append->break->str->append->break->str->append->break->str->append->break->str->append->break->str->append->break->str->append->break->str->append->str->append->append->append->append->append->str->append->append->append->append->append->if->str->append->getButton->append->if->getModifiers->str->append->getMouseModifiersText->append->if->getModifiersEx->str->append->getModifiersEx->getModifiersExText->append->str->append->append->return->str->toString
+MouseEvent#setNewModifiers():::Sets new modifiers by the old ones:::if->if->if->if->if->if->else->if->if->else->if->if->if->if->if->if->if
+MouseEvent#setOldModifiers():::Sets old modifiers by the new ones.:::if->switch->break->break->break->else->if->if->if->if->if->if->if->if
+MouseEvent#readObject(ObjectInputStream):::Sets new modifiers by the old ones.:::s->defaultReadObject->if->getModifiers->getModifiersEx->setNewModifiers
 MouseListener#mouseClicked(MouseEvent):::Invoked when the mouse button has been clicked (pressed and released) on a component.:::
 MouseListener#mousePressed(MouseEvent):::Invoked when a mouse button has been pressed on a component.:::
 MouseListener#mouseReleased(MouseEvent):::Invoked when a mouse button has been released on a component.:::
@@ -129,6 +153,7 @@ MouseWheelListener#mouseWheelMoved(MouseWheelEvent):::Invoked when the mouse whe
 NativeLibLoader#loadLibraries():::This is copied from java.awt.Toolkit since we need the library loaded in sun.awt.image also:  WARNING: This is a temporary workaround for a problem in the way the AWT loads native libraries:::new->java.security.PrivilegedAction<Void>->doPrivileged
 PaintEvent#getUpdateRect():::Returns the rectangle representing the area which needs to be repainted in response to this event.:::return
 PaintEvent#setUpdateRect(Rectangle):::Sets the rectangle representing the area which needs to be repainted in response to this event.:::
+PaintEvent#paramString()::: paint event param string:::typeStr->switch->break->break->return->updateRect->toString
 TextEvent#paramString():::Returns a parameter string identifying this text event:::typeStr->switch->break->return
 TextListener#textValueChanged(TextEvent):::Invoked when the value of the text has changed:::
 WindowAdapter#windowOpened(WindowEvent):::Invoked when a window has been opened.:::

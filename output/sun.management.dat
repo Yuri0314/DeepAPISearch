@@ -1,7 +1,36 @@
+BaseOperatingSystemImpl#getName()::: base operating system impl get name:::return->jvm->getOsName
+BaseOperatingSystemImpl#getArch()::: base operating system impl get arch:::return->jvm->getOsArch
+BaseOperatingSystemImpl#getVersion()::: base operating system impl get version:::return->jvm->getOsVersion
+BaseOperatingSystemImpl#getAvailableProcessors()::: base operating system impl get available processors:::return->jvm->getAvailableProcessors
+BaseOperatingSystemImpl#getSystemLoadAverage()::: base operating system impl get system load average:::if->unsafe->getLoadAverage->return->else->return
+BaseOperatingSystemImpl#getObjectName()::: base operating system impl get object name:::return->Util->newObjectName
+ClassLoadingImpl#getTotalLoadedClassCount()::: class loading impl get total loaded class count:::return->jvm->getTotalClassCount
+ClassLoadingImpl#getLoadedClassCount()::: class loading impl get loaded class count:::return->jvm->getLoadedClassCount
+ClassLoadingImpl#getUnloadedClassCount()::: class loading impl get unloaded class count:::return->jvm->getUnloadedClassCount
+ClassLoadingImpl#isVerbose()::: class loading impl is verbose:::return->jvm->getVerboseClass
+ClassLoadingImpl#setVerbose(boolean)::: class loading impl set verbose:::Util->checkControlAccess->setVerboseClass
+ClassLoadingImpl#setVerboseClass(boolean)::: class loading impl set verbose class:::
+ClassLoadingImpl#getObjectName()::: class loading impl get object name:::return->Util->newObjectName
+CompilationImpl#getName()::: compilation impl get name:::return
+CompilationImpl#isCompilationTimeMonitoringSupported()::: compilation impl is compilation time monitoring supported:::return->jvm->isCompilationTimeMonitoringSupported
+CompilationImpl#getTotalCompilationTime()::: compilation impl get total compilation time:::if->isCompilationTimeMonitoringSupported->throw->new->UnsupportedOperationException->return->jvm->getTotalCompileTime
+CompilationImpl#getObjectName()::: compilation impl get object name:::return->Util->newObjectName
 CompilerThreadStat#getName():::Returns the name of the compiler thread associated with this compiler thread statistic.:::return
 CompilerThreadStat#getCompileTaskCount():::Returns the number of compile tasks performed by the compiler thread associated with this compiler thread statistic.:::return
 CompilerThreadStat#getCompileTime():::Returns the accumulated elapsed time spent by the compiler thread associated with this compiler thread statistic.:::return
 CompilerThreadStat#getLastCompiledMethodInfo():::Returns the information about the last method compiled by the compiler thread associated with this compiler thread statistic.:::return
+CompilerThreadStat#toString()::: compiler thread stat to string:::return->getName->getCompileTaskCount->getCompileTime
+GarbageCollectorImpl#getCollectionCount()::: garbage collector impl get collection count:::
+GarbageCollectorImpl#getCollectionTime()::: garbage collector impl get collection time:::
+GarbageCollectorImpl#getObjectName()::: garbage collector impl get object name:::return->Util->getName->newObjectName
+HotspotClassLoading#getLoadedClassSize()::: hotspot class loading get loaded class size:::return->jvm->getLoadedClassSize
+HotspotClassLoading#getUnloadedClassSize()::: hotspot class loading get unloaded class size:::return->jvm->getUnloadedClassSize
+HotspotClassLoading#getClassLoadingTime()::: hotspot class loading get class loading time:::return->jvm->getClassLoadingTime
+HotspotClassLoading#getMethodDataSize()::: hotspot class loading get method data size:::return->jvm->getMethodDataSize
+HotspotClassLoading#getInitializedClassCount()::: hotspot class loading get initialized class count:::return->jvm->getInitializedClassCount
+HotspotClassLoading#getClassInitializationTime()::: hotspot class loading get class initialization time:::return->jvm->getClassInitializationTime
+HotspotClassLoading#getClassVerificationTime()::: hotspot class loading get class verification time:::return->jvm->getClassVerificationTime
+HotspotClassLoading#getInternalClassLoadingCounters()::: hotspot class loading get internal class loading counters:::return->jvm->getInternalCounters
 HotspotClassLoadingMBean#getLoadedClassSize():::Returns the amount of memory in bytes occupied by loaded classes in the Java virtual machine.:::
 HotspotClassLoadingMBean#getUnloadedClassSize():::Returns the number of bytes that the Java virtual machine collected due to class unloading.:::
 HotspotClassLoadingMBean#getClassLoadingTime():::Returns the accumulated elapsed time spent by class loading in milliseconds.:::
@@ -10,6 +39,20 @@ HotspotClassLoadingMBean#getInitializedClassCount():::Returns the number of clas
 HotspotClassLoadingMBean#getClassInitializationTime():::Returns the accumulated elapsed time spent in class initializers in milliseconds.:::
 HotspotClassLoadingMBean#getClassVerificationTime():::Returns the accumulated elapsed time spent in class verifier in milliseconds.:::
 HotspotClassLoadingMBean#getInternalClassLoadingCounters():::Returns a list of internal counters maintained in the Java virtual machine for the class loading system.:::
+HotspotCompilation.CompilerThreadInfo#getCompilerThreadStat()::: compiler thread info get compiler thread stat:::minfo->method->stringValue->type->longValue->new->MethodInfo->return->compiles->longValue->time->longValue->new->CompilerThreadStat
+HotspotCompilation#lookup(String)::: hotspot compilation lookup:::c->if->counters->get->return->if->counters->get->return->if->counters->get->return->throw->new->AssertionError
+HotspotCompilation#initCompilerCounters()::: hotspot compilation init compiler counters:::new->TreeMap<>->foreach->getInternalCompilerCounters->counters->c->getName->put->lookup->lookup->lookup->lookup->lookup->lookup->lookup->lookup->lookup->lookup->lookup->lookup->lookup->compilerThreads->longValue->new->ArrayList<CompilerThreadInfo>->for->i
+HotspotCompilation#getCompilerThreadCount()::: hotspot compilation get compiler thread count:::return
+HotspotCompilation#getTotalCompileCount()::: hotspot compilation get total compile count:::return->totalCompiles->longValue
+HotspotCompilation#getBailoutCompileCount()::: hotspot compilation get bailout compile count:::return->totalBailouts->longValue
+HotspotCompilation#getInvalidatedCompileCount()::: hotspot compilation get invalidated compile count:::return->totalInvalidates->longValue
+HotspotCompilation#getCompiledMethodCodeSize()::: hotspot compilation get compiled method code size:::return->nmethodCodeSize->longValue
+HotspotCompilation#getCompiledMethodSize()::: hotspot compilation get compiled method size:::return->nmethodSize->longValue
+HotspotCompilation#getCompilerThreadStats()::: hotspot compilation get compiler thread stats:::list->threads->size->new->ArrayList<>->foreach->list->info->getCompilerThreadStat->add->return
+HotspotCompilation#getLastCompile()::: hotspot compilation get last compile:::return->lastMethod->stringValue->lastType->longValue->lastSize->longValue->new->MethodInfo
+HotspotCompilation#getFailedCompile()::: hotspot compilation get failed compile:::return->lastFailedMethod->stringValue->lastFailedType->longValue->new->MethodInfo
+HotspotCompilation#getInvalidatedCompile()::: hotspot compilation get invalidated compile:::return->lastInvalidatedMethod->stringValue->lastInvalidatedType->longValue->new->MethodInfo
+HotspotCompilation#getInternalCompilerCounters()::: hotspot compilation get internal compiler counters:::return->jvm->getInternalCounters
 HotspotCompilationMBean#getCompilerThreadCount():::Returns the number of compiler threads.:::
 HotspotCompilationMBean#getCompilerThreadStats():::Returns the statistic of all compiler threads.:::
 HotspotCompilationMBean#getTotalCompileCount():::Returns the total number of compiles.:::
@@ -21,29 +64,250 @@ HotspotCompilationMBean#getInvalidatedCompile():::Returns the method information
 HotspotCompilationMBean#getCompiledMethodCodeSize():::Returns the number of bytes for the code of the compiled methods.:::
 HotspotCompilationMBean#getCompiledMethodSize():::Returns the number of bytes occupied by the compiled methods.:::
 HotspotCompilationMBean#getInternalCompilerCounters():::Returns a list of internal counters maintained in the Java virtual machine for the compilation system.:::
+HotspotInternal#preRegister(MBeanServer, ObjectName)::: hotspot internal pre register:::ManagementFactoryHelper->registerInternalMBeans->return
+HotspotInternal#postRegister(Boolean)::: hotspot internal post register:::
+HotspotInternal#preDeregister()::: hotspot internal pre deregister:::ManagementFactoryHelper->unregisterInternalMBeans
+HotspotInternal#postDeregister()::: hotspot internal post deregister:::
+HotspotMemory#getInternalMemoryCounters()::: hotspot memory get internal memory counters:::return->jvm->getInternalCounters
 HotspotMemoryMBean#getInternalMemoryCounters():::Returns a list of internal counters maintained in the Java virtual machine for the memory system.:::
+HotspotRuntime#getSafepointCount()::: hotspot runtime get safepoint count:::return->jvm->getSafepointCount
+HotspotRuntime#getTotalSafepointTime()::: hotspot runtime get total safepoint time:::return->jvm->getTotalSafepointTime
+HotspotRuntime#getSafepointSyncTime()::: hotspot runtime get safepoint sync time:::return->jvm->getSafepointSyncTime
+HotspotRuntime#getInternalRuntimeCounters()::: hotspot runtime get internal runtime counters:::return->jvm->getInternalCounters
 HotspotRuntimeMBean#getSafepointCount():::Returns the number of safepoints taken place since the Java virtual machine started.:::
 HotspotRuntimeMBean#getTotalSafepointTime():::Returns the accumulated time spent at safepoints in milliseconds:::
 HotspotRuntimeMBean#getSafepointSyncTime():::Returns the accumulated time spent getting to safepoints in milliseconds.:::
 HotspotRuntimeMBean#getInternalRuntimeCounters():::Returns a list of internal counters maintained in the Java virtual machine for the runtime system.:::
+HotspotThread#getInternalThreadCount()::: hotspot thread get internal thread count:::
+HotspotThread#getInternalThreadCpuTimes()::: hotspot thread get internal thread cpu times:::count->getInternalThreadCount->if->return->emptyMap->names->new->StringArr->times->new->longArr->numThreads->getInternalThreadTimes0->result->new->HashMap<>->for->i->return
+HotspotThread#getInternalThreadTimes0(String[], long[])::: hotspot thread get internal thread times0:::
+HotspotThread#getInternalThreadingCounters()::: hotspot thread get internal threading counters:::return->jvm->getInternalCounters
 HotspotThreadMBean#getInternalThreadCount():::Returns the current number of VM internal threads.:::
 HotspotThreadMBean#getInternalThreadCpuTimes():::Returns a Map of the name of all VM internal threads to the thread CPU time in nanoseconds:::
 HotspotThreadMBean#getInternalThreadingCounters():::Returns a list of internal counters maintained in the Java virtual machine for the thread system.:::
+LazyCompositeData#containsKey(String)::: lazy composite data contains key:::return->compositeData->containsKey
+LazyCompositeData#containsValue(Object)::: lazy composite data contains value:::return->compositeData->containsValue
+LazyCompositeData#equals(Object)::: lazy composite data equals:::return->compositeData->equals
+LazyCompositeData#get(String)::: lazy composite data get:::return->compositeData->get
+LazyCompositeData#getAll(String[])::: lazy composite data get all:::return->compositeData->getAll
+LazyCompositeData#getCompositeType()::: lazy composite data get composite type:::return->compositeData->getCompositeType
+LazyCompositeData#hashCode()::: lazy composite data hash code:::return->compositeData->hashCode
+LazyCompositeData#toString()::: lazy composite data to string:::return->compositeData->toString
+LazyCompositeData#values()::: lazy composite data values:::return->compositeData->values
+LazyCompositeData#compositeData()::: lazy composite data composite data:::if->return->getCompositeData->return
 LazyCompositeData#writeReplace():::Designate to a CompositeData object when writing to an output stream during serialization so that the receiver only requires JMX 1.2 classes but not any implementation specific class.:::return->compositeData
 LazyCompositeData#getCompositeData():::Returns the CompositeData representing this object:::
+LazyCompositeData#getString(CompositeData, String)::: lazy composite data get string:::if->throw->new->IllegalArgumentException->return->cd->get
+LazyCompositeData#getBoolean(CompositeData, String)::: lazy composite data get boolean:::if->throw->new->IllegalArgumentException->return->cd->get
+LazyCompositeData#getLong(CompositeData, String)::: lazy composite data get long:::if->throw->new->IllegalArgumentException->return->cd->get
+LazyCompositeData#getInt(CompositeData, String)::: lazy composite data get int:::if->throw->new->IllegalArgumentException->return->cd->get
 LazyCompositeData#isTypeMatched(CompositeType, CompositeType):::Compares two CompositeTypes and returns true if all items in type1 exist in type2 and their item types are the same.:::if->return->allItems->type1->keySet->if->type2->keySet->containsAll->return->return->allItems->stream->type1->getType->type2->getType->isTypeMatched->allMatch
+LazyCompositeData#isTypeMatched(TabularType, TabularType)::: lazy composite data is type matched:::if->return->list1->type1->getIndexNames->list2->type2->getIndexNames->if->list1->equals->return->return->type1->getRowType->type2->getRowType->isTypeMatched
+LazyCompositeData#isTypeMatched(ArrayType, ArrayType)::: lazy composite data is type matched:::if->return->dim1->type1->getDimension->dim2->type2->getDimension->if->return->return->type1->getElementOpenType->type2->getElementOpenType->isTypeMatched
+LazyCompositeData#isTypeMatched(OpenType, OpenType)::: lazy composite data is type matched:::if->if->return->if->isTypeMatched->return->else->if->if->return->if->isTypeMatched->return->else->if->if->return->if->isTypeMatched->return->else->if->ot1->equals->return->return
+LockInfoCompositeData#getLockInfo()::: lock info composite data get lock info:::return
+LockInfoCompositeData#toCompositeData(LockInfo)::: lock info composite data to composite data:::if->return->licd->new->LockInfoCompositeData->return->licd->getCompositeData
+LockInfoCompositeData#getCompositeData()::: lock info composite data get composite data:::items->Map->lock->getClassName->lock->getIdentityHashCode->of->try->return->new->CompositeDataSupport->catch->throw->Util->newException->finally
+LockInfoCompositeData#compositeType()::: lock info composite data composite type:::return
+LockInfoCompositeData#toLockInfo(CompositeData)::: lock info composite data to lock info:::if->throw->new->NullPointerException->if->cd->getCompositeType->isTypeMatched->throw->new->IllegalArgumentException->className->getString->identityHashCode->getInt->return->new->LockInfo
+ManagementFactoryHelper#getVMManagement()::: management factory helper get management:::return
+ManagementFactoryHelper#getClassLoadingMXBean()::: management factory helper get class loading bean:::if->new->ClassLoadingImpl->return
+ManagementFactoryHelper#getMemoryMXBean()::: management factory helper get memory bean:::if->new->MemoryImpl->return
+ManagementFactoryHelper#getThreadMXBean()::: management factory helper get thread bean:::if->new->ThreadImpl->return
+ManagementFactoryHelper#getRuntimeMXBean()::: management factory helper get runtime bean:::if->new->RuntimeImpl->return
+ManagementFactoryHelper#getCompilationMXBean()::: management factory helper get compilation bean:::if->jvm->getCompilerName->new->CompilationImpl->return
+ManagementFactoryHelper#getOperatingSystemMXBean()::: management factory helper get operating system bean:::if->new->BaseOperatingSystemImpl->return
+ManagementFactoryHelper#getMemoryPoolMXBeans()::: management factory helper get memory pool beans:::pools->MemoryImpl->getMemoryPools->list->new->ArrayList<>->foreach->list->add->return
+ManagementFactoryHelper#getMemoryManagerMXBeans()::: management factory helper get memory manager beans:::mgrs->MemoryImpl->getMemoryManagers->result->new->ArrayList<>->foreach->result->add->return
+ManagementFactoryHelper#getGarbageCollectorMXBeans()::: management factory helper get garbage collector beans:::mgrs->MemoryImpl->getMemoryManagers->result->new->ArrayList<>->foreach->if->isInstance->result->cast->add->return
+ManagementFactoryHelper#getPlatformLoggingMXBean()::: management factory helper get platform logging bean:::if->LoggingMXBeanAccess->isAvailable->return->else->return
+ManagementFactoryHelper#isPlatformLoggingMXBeanAvailable()::: management factory helper is platform logging bean available:::return->LoggingMXBeanAccess->isAvailable
 ManagementFactoryHelper#getAllMemoryPoolNames():::Returns an array of the name of all memory pools:::return->Arrays->MemoryImpl->getMemoryPools->stream->MemoryPoolMXBean->getName->map->String[]->new->toArray
+ManagementFactoryHelper.LoggingMXBeanAccess#isAvailable()::: logging bean access is available:::return
+ManagementFactoryHelper.LoggingMXBeanAccess#loadLoggingClass(String)::: logging bean access load logging class:::return->AccessController->new->PrivilegedAction<>->doPrivileged
+ManagementFactoryHelper.LoggingMXBeanAccess#initMethodMap(Object)::: logging bean access init method map:::if->return->Collections->emptyMap->intfClass->loadLoggingClass->methodsMap->new->HashMap<>->foreach->intfClass->getMethods->try->specMethod->m->getName->m->getParameterTypes->getMethod->if->specMethod->getReturnType->m->getReturnType->isAssignableFrom->if->methodsMap->m->getName->putIfAbsent->throw->m->getName->new->RuntimeException->catch->throw->new->InternalError->finally->return->Collections->unmodifiableMap
+ManagementFactoryHelper.LoggingMXBeanAccess#getMXBeanImplementation()::: logging bean access get bean implementation:::if->isAvailable->throw->new->NoClassDefFoundError->try->m->LOG_MANAGER_CLASS->getMethod->return->m->invoke->catch->throw->new->ExceptionInInitializerError->finally
+ManagementFactoryHelper.LoggingMXBeanAccess#invoke(String, Object...)::: logging bean access invoke:::m->methods->get->if->throw->new->UnsupportedOperationException->try->result->m->invoke->return->catch->throw->new->UnsupportedOperationException->throw->unwrap->finally
+ManagementFactoryHelper.LoggingMXBeanAccess#unwrap(InvocationTargetException)::: logging bean access unwrap:::t->x->getCause->if->return->if->throw->return->new->UndeclaredThrowableException
+ManagementFactoryHelper.PlatformLoggingImpl#getObjectName()::: platform logging impl get object name:::result->if->synchronized->if->Util->newObjectName->return
+ManagementFactoryHelper.PlatformLoggingImpl#getLoggerNames()::: platform logging impl get logger names:::return->loggingAccess->invoke
+ManagementFactoryHelper.PlatformLoggingImpl#getLoggerLevel(String)::: platform logging impl get logger level:::return->loggingAccess->invoke
+ManagementFactoryHelper.PlatformLoggingImpl#setLoggerLevel(String, String)::: platform logging impl set logger level:::loggingAccess->invoke
+ManagementFactoryHelper.PlatformLoggingImpl#getParentLoggerName(String)::: platform logging impl get parent logger name:::return->loggingAccess->invoke
+ManagementFactoryHelper.PlatformLoggingImpl#getInstance()::: platform logging impl get instance:::return->new->LoggingMXBeanAccess->new->PlatformLoggingImpl
+ManagementFactoryHelper#getBufferPoolMXBeans()::: management factory helper get buffer pool beans:::if->new->ArrayList<>->bufferPools->SharedSecrets->getJavaNioAccess->getDirectBufferPool->createBufferPoolMXBean->add->bufferPools->getMappedBufferPool->createBufferPoolMXBean->add->return
+ManagementFactoryHelper#createBufferPoolMXBean(JavaNioAccess.BufferPool):::Creates management interface for the given buffer pool.:::return->new->BufferPoolMXBean
 ManagementFactoryHelper#getHotspotRuntimeMBean():::This method is for testing only.:::if->new->HotspotRuntime->return
 ManagementFactoryHelper#getHotspotClassLoadingMBean():::This method is for testing only.:::if->new->HotspotClassLoading->return
 ManagementFactoryHelper#getHotspotThreadMBean():::This method is for testing only.:::if->new->HotspotThread->return
 ManagementFactoryHelper#getHotspotMemoryMBean():::This method is for testing only.:::if->new->HotspotMemory->return
 ManagementFactoryHelper#getHotspotCompilationMBean():::This method is for testing only.:::if->new->HotspotCompilation->return
+ManagementFactoryHelper#addMBean(MBeanServer, Object, String):::Registers a given MBean if not registered in the MBeanServer; otherwise, just return.:::try->objName->Util->newObjectName->mbs0->mbean0->AccessController->new->PrivilegedExceptionAction<Void>->doPrivileged->catch->throw->Util->e->getException->newException->finally
+ManagementFactoryHelper#registerInternalMBeans(MBeanServer)::: management factory helper register internal beans:::getHotspotClassLoadingMBean->addMBean->getHotspotMemoryMBean->addMBean->getHotspotRuntimeMBean->addMBean->getHotspotThreadMBean->addMBean->if->getCompilationMXBean->getHotspotCompilationMBean->addMBean
+ManagementFactoryHelper#unregisterMBean(MBeanServer, String)::: management factory helper unregister bean:::try->objName->Util->newObjectName->mbs0->AccessController->new->PrivilegedExceptionAction<Void>->doPrivileged->catch->throw->Util->e->getException->newException->finally
+ManagementFactoryHelper#unregisterInternalMBeans(MBeanServer)::: management factory helper unregister internal beans:::unregisterMBean->unregisterMBean->unregisterMBean->unregisterMBean->if->getCompilationMXBean->unregisterMBean
+ManagementFactoryHelper#isThreadSuspended(int)::: management factory helper is thread suspended:::return
+ManagementFactoryHelper#isThreadRunningNative(int)::: management factory helper is thread running native:::return
+ManagementFactoryHelper#toThreadState(int)::: management factory helper to thread state:::threadStatus->return->toThreadState
+ManagementFactoryHelper#createMemoryPool(String, boolean, long, long)::: management factory helper create memory pool:::return->new->MemoryPoolImpl
+ManagementFactoryHelper#createMemoryManager(String)::: management factory helper create memory manager:::return->new->MemoryManagerImpl
+ManagementFactoryHelper#createGarbageCollector(String, String)::: management factory helper create garbage collector:::return->new->GarbageCollectorImpl
+MappedMXBeanType#newMappedType(Type)::: mapped bean type new mapped type:::mt->if->c->if->c->isEnum->new->EnumMXBeanType->else->if->c->isArray->new->ArrayMXBeanType->else->new->CompositeDataMXBeanType->else->if->pt->rawType->pt->getRawType->if->rc->if->new->ListMXBeanType->else->if->new->MapMXBeanType->else->if->t->new->GenericArrayMXBeanType->if->throw->new->OpenDataException->convertedTypes->put->return
+MappedMXBeanType#newBasicType(Class, OpenType)::: mapped bean type new basic type:::mt->new->BasicMXBeanType->convertedTypes->put->return
+MappedMXBeanType#getMappedType(Type)::: mapped bean type get mapped type:::mt->convertedTypes->get->if->newMappedType->if->mt->getOpenType->throw->new->OpenDataException->return
+MappedMXBeanType#toOpenType(Type)::: mapped bean type to open type:::mt->getMappedType->return->mt->getOpenType
+MappedMXBeanType#toJavaTypeData(Object, Type)::: mapped bean type to java type data:::if->return->mt->getMappedType->return->mt->toJavaTypeData
+MappedMXBeanType#toOpenTypeData(Object, Type)::: mapped bean type to open type data:::if->return->mt->getMappedType->return->mt->toOpenTypeData
+MappedMXBeanType#getOpenType()::: mapped bean type get open type:::return
+MappedMXBeanType#isBasicType()::: mapped bean type is basic type:::return
+MappedMXBeanType#getTypeName()::: mapped bean type get type name:::return->getMappedTypeClass->getName
+MappedMXBeanType#getMappedTypeClass()::: mapped bean type get mapped type class:::return
+MappedMXBeanType#getJavaType()::: mapped bean type get java type:::
+MappedMXBeanType#getName()::: mapped bean type get name:::
+MappedMXBeanType#toOpenTypeData(Object)::: mapped bean type to open type data:::
+MappedMXBeanType#toJavaTypeData(Object)::: mapped bean type to java type data:::
+MappedMXBeanType.BasicMXBeanType#getJavaType()::: basic bean type get java type:::return
+MappedMXBeanType.BasicMXBeanType#getName()::: basic bean type get name:::return->basicType->getName
+MappedMXBeanType.BasicMXBeanType#toOpenTypeData(Object)::: basic bean type to open type data:::return
+MappedMXBeanType.BasicMXBeanType#toJavaTypeData(Object)::: basic bean type to java type data:::return
+MappedMXBeanType.EnumMXBeanType#getJavaType()::: enum bean type get java type:::return
+MappedMXBeanType.EnumMXBeanType#getName()::: enum bean type get name:::return->enumClass->getName
+MappedMXBeanType.EnumMXBeanType#toOpenTypeData(Object)::: enum bean type to open type data:::return->name
+MappedMXBeanType.EnumMXBeanType#toJavaTypeData(Object)::: enum bean type to java type data:::try->return->Enum->valueOf->catch->ioe->new->InvalidObjectException->ioe->initCause->throw->finally
+MappedMXBeanType.ArrayMXBeanType#getJavaType()::: array bean type get java type:::return
+MappedMXBeanType.ArrayMXBeanType#getName()::: array bean type get name:::return->arrayClass->getName
+MappedMXBeanType.ArrayMXBeanType#toOpenTypeData(Object)::: array bean type to open type data:::if->baseElementType->isBasicType->return->array->openArray->Array->componentType->getMappedTypeClass->newInstance->i->foreach->if->else->componentType->toOpenTypeData->return
+MappedMXBeanType.ArrayMXBeanType#toJavaTypeData(Object)::: array bean type to java type data:::if->baseElementType->isBasicType->return->openArray->array->Array->componentType->getJavaType->newInstance->i->foreach->if->else->componentType->toJavaTypeData->return
+MappedMXBeanType.GenericArrayMXBeanType#getJavaType()::: generic array bean type get java type:::return
+MappedMXBeanType.GenericArrayMXBeanType#getName()::: generic array bean type get name:::return->gtype->toString
+MappedMXBeanType.ListMXBeanType#getJavaType()::: list bean type get java type:::return
+MappedMXBeanType.ListMXBeanType#getName()::: list bean type get name:::return
+MappedMXBeanType.ListMXBeanType#toOpenTypeData(Object)::: list bean type to open type data:::list->openArray->Array->paramType->getMappedTypeClass->list->size->newInstance->i->foreach->paramType->toOpenTypeData->return
+MappedMXBeanType.ListMXBeanType#toJavaTypeData(Object)::: list bean type to java type data:::openArray->result->new->ArrayList<>->foreach->result->paramType->toJavaTypeData->add->return
+MappedMXBeanType.MapMXBeanType#getJavaType()::: map bean type get java type:::return
+MappedMXBeanType.MapMXBeanType#getName()::: map bean type get name:::return
+MappedMXBeanType.MapMXBeanType#toOpenTypeData(Object)::: map bean type to open type data:::map->tabularType->table->new->TabularDataSupport->rowType->tabularType->getRowType->foreach->map->entrySet->key->keyType->entry->getKey->toOpenTypeData->value->valueType->entry->getValue->toOpenTypeData->row->new->ObjectArr->new->CompositeDataSupport->table->put->return
+MappedMXBeanType.MapMXBeanType#toJavaTypeData(Object)::: map bean type to java type data:::td->result->new->HashMap<>->foreach->td->values->key->keyType->row->get->toJavaTypeData->value->valueType->row->get->toJavaTypeData->result->put->return
+MappedMXBeanType.CompositeDataMXBeanType#getJavaType()::: composite data bean type get java type:::return
+MappedMXBeanType.CompositeDataMXBeanType#getName()::: composite data bean type get name:::return->javaClass->getName
+MappedMXBeanType.CompositeDataMXBeanType#toOpenTypeData(Object)::: composite data bean type to open type data:::if->try->return->toMethod->invoke->catch->throw->new->AssertionError->ode->toMethod->getName->javaClass->getName->new->OpenDataException->ode->initCause->throw->finally->if->return->MemoryUsageCompositeData->toCompositeData->if->return->ThreadInfoCompositeData->toCompositeData->if->if->return->MonitorInfoCompositeData->toCompositeData->return->LockInfoCompositeData->toCompositeData->if->return->MemoryNotifInfoCompositeData->toCompositeData->if->cd->ct->cd->getCompositeType->itemNames->ct->keySet->new->StringArr->toArray->itemValues->cd->getAll->return->new->CompositeDataSupport->throw->javaClass->getName->new->OpenDataException
+MappedMXBeanType.CompositeDataMXBeanType#toJavaTypeData(Object)::: composite data bean type to java type data:::if->throw->new->AssertionError->try->return->fromMethod->invoke->catch->throw->new->AssertionError->ode->fromMethod->getName->javaClass->getName->new->OpenDataException->ode->initCause->throw->finally
+MappedMXBeanType.InProgress#toString()::: in progress to string:::return
+MappedMXBeanType.InProgress#hashCode()::: in progress hash code:::return
+MappedMXBeanType.InProgress#equals(Object)::: in progress equals:::return
+MappedMXBeanType.InProgress#isValue(Object)::: in progress is value:::return
+MappedMXBeanType#decapitalize(String):::Utility method to take a string and convert it to normal Java variable name capitalization:::if->name->length->return->if->name->length->Character->name->charAt->isUpperCase->Character->name->charAt->isUpperCase->return->chars->name->toCharArray->Character->toLowerCase->return->new->String
+MemoryImpl#getObjectPendingFinalizationCount()::: memory impl get object pending finalization count:::return->getFinalRefCount
+MemoryImpl#gc()::: memory impl gc:::Runtime->getRuntime->gc
+MemoryImpl#getHeapMemoryUsage()::: memory impl get heap memory usage:::return->getMemoryUsage0
+MemoryImpl#getNonHeapMemoryUsage()::: memory impl get non heap memory usage:::return->getMemoryUsage0
+MemoryImpl#isVerbose()::: memory impl is verbose:::return->jvm->getVerboseGC
+MemoryImpl#setVerbose(boolean)::: memory impl set verbose:::Util->checkControlAccess->setVerboseGC
+MemoryImpl#getMemoryPools()::: memory impl get memory pools:::if->getMemoryPools0->return
+MemoryImpl#getMemoryManagers()::: memory impl get memory managers:::if->getMemoryManagers0->return
+MemoryImpl#getMemoryPools0()::: memory impl get memory pools0:::
+MemoryImpl#getMemoryManagers0()::: memory impl get memory managers0:::
+MemoryImpl#getMemoryUsage0(boolean)::: memory impl get memory usage0:::
+MemoryImpl#setVerboseGC(boolean)::: memory impl set verbose c:::
+MemoryImpl#getNotificationInfo()::: memory impl get notification info:::return->new->MBeanNotificationInfoArr->new->MBeanNotificationInfo
+MemoryImpl#getNotifMsg(String)::: memory impl get notif msg:::for->i->return
+MemoryImpl#getNextSeqNumber()::: memory impl get next seq number:::return
+MemoryImpl#createNotification(String, String, MemoryUsage, long)::: memory impl create notification:::mbean->ManagementFactory->getMemoryMXBean->if->mbean->hasListeners->return->timestamp->System->currentTimeMillis->msg->getNotifMsg->notif->mbean->getObjectName->getNextSeqNumber->new->Notification->info->new->MemoryNotificationInfo->cd->MemoryNotifInfoCompositeData->toCompositeData->notif->setUserData->mbean->sendNotification
+MemoryImpl#getObjectName()::: memory impl get object name:::return->Util->newObjectName
+MemoryManagerImpl#getName()::: memory manager impl get name:::return
+MemoryManagerImpl#isValid()::: memory manager impl is valid:::return
+MemoryManagerImpl#getMemoryPoolNames()::: memory manager impl get memory pool names:::ps->getMemoryPools->names->new->StringArr->for->i->return
+MemoryManagerImpl#getMemoryPools()::: memory manager impl get memory pools:::if->getMemoryPools0->return
+MemoryManagerImpl#getMemoryPools0()::: memory manager impl get memory pools0:::
+MemoryManagerImpl#getNotificationInfo()::: memory manager impl get notification info:::synchronized->if->new->MBeanNotificationInfoArr->return
+MemoryManagerImpl#getObjectName()::: memory manager impl get object name:::return->Util->getName->newObjectName
+MemoryNotifInfoCompositeData#getMemoryNotifInfo()::: memory notif info composite data get memory notif info:::return
+MemoryNotifInfoCompositeData#toCompositeData(MemoryNotificationInfo)::: memory notif info composite data to composite data:::mnicd->new->MemoryNotifInfoCompositeData->return->mnicd->getCompositeData
+MemoryNotifInfoCompositeData#getCompositeData()::: memory notif info composite data get composite data:::memoryNotifInfoItemValues->memoryNotifInfo->getPoolName->MemoryUsageCompositeData->memoryNotifInfo->getUsage->toCompositeData->memoryNotifInfo->getCount->try->return->new->CompositeDataSupport->catch->throw->new->AssertionError->finally
+MemoryNotifInfoCompositeData#getPoolName(CompositeData)::: memory notif info composite data get pool name:::poolname->getString->if->throw->new->IllegalArgumentException->return
+MemoryNotifInfoCompositeData#getUsage(CompositeData)::: memory notif info composite data get usage:::usageData->cd->get->return->MemoryUsage->from
+MemoryNotifInfoCompositeData#getCount(CompositeData)::: memory notif info composite data get count:::return->getLong
 MemoryNotifInfoCompositeData#validateCompositeData(CompositeData):::Validate if the input CompositeData has the expected CompositeType (i.e:::if->throw->new->NullPointerException->if->cd->getCompositeType->isTypeMatched->throw->new->IllegalArgumentException
+MemoryPoolImpl#getName()::: memory pool impl get name:::return
+MemoryPoolImpl#isValid()::: memory pool impl is valid:::return
+MemoryPoolImpl#getType()::: memory pool impl get type:::if->return->else->return
+MemoryPoolImpl#getUsage()::: memory pool impl get usage:::return->getUsage0
+MemoryPoolImpl#getPeakUsage()::: memory pool impl get peak usage:::return->getPeakUsage0
+MemoryPoolImpl#getUsageThreshold()::: memory pool impl get usage threshold:::if->isUsageThresholdSupported->throw->new->UnsupportedOperationException->return
+MemoryPoolImpl#setUsageThreshold(long)::: memory pool impl set usage threshold:::if->isUsageThresholdSupported->throw->new->UnsupportedOperationException->Util->checkControlAccess->usage->getUsage0->if->throw->new->IllegalArgumentException->if->usage->getMax->usage->getMax->throw->usage->getCommitted->usage->getMax->new->IllegalArgumentException->synchronized->if->setPoolUsageSensor->setUsageThreshold0
+MemoryPoolImpl#getMemoryManagers()::: memory pool impl get memory managers:::if->getMemoryManagers0->return
+MemoryPoolImpl#getMemoryManagerNames()::: memory pool impl get memory manager names:::mgrs->getMemoryManagers->names->new->StringArr->for->i->return
+MemoryPoolImpl#resetPeakUsage()::: memory pool impl reset peak usage:::Util->checkControlAccess->synchronized->resetPeakUsage0
+MemoryPoolImpl#isUsageThresholdExceeded()::: memory pool impl is usage threshold exceeded:::if->isUsageThresholdSupported->throw->new->UnsupportedOperationException->if->return->u->getUsage0->return->u->getUsed->usageSensor->isOn
+MemoryPoolImpl#getUsageThresholdCount()::: memory pool impl get usage threshold count:::if->isUsageThresholdSupported->throw->new->UnsupportedOperationException->return->usageSensor->getCount
+MemoryPoolImpl#isUsageThresholdSupported()::: memory pool impl is usage threshold supported:::return
+MemoryPoolImpl#getCollectionUsageThreshold()::: memory pool impl get collection usage threshold:::if->isCollectionUsageThresholdSupported->throw->new->UnsupportedOperationException->return
+MemoryPoolImpl#setCollectionUsageThreshold(long)::: memory pool impl set collection usage threshold:::if->isCollectionUsageThresholdSupported->throw->new->UnsupportedOperationException->Util->checkControlAccess->usage->getUsage0->if->throw->new->IllegalArgumentException->if->usage->getMax->usage->getMax->throw->usage->getMax->new->IllegalArgumentException->synchronized->if->setPoolCollectionSensor->setCollectionThreshold0
+MemoryPoolImpl#isCollectionUsageThresholdExceeded()::: memory pool impl is collection usage threshold exceeded:::if->isCollectionUsageThresholdSupported->throw->new->UnsupportedOperationException->if->return->u->getCollectionUsage0->return->gcSensor->isOn->u->getUsed
+MemoryPoolImpl#getCollectionUsageThresholdCount()::: memory pool impl get collection usage threshold count:::if->isCollectionUsageThresholdSupported->throw->new->UnsupportedOperationException->return->gcSensor->getCount
+MemoryPoolImpl#getCollectionUsage()::: memory pool impl get collection usage:::return->getCollectionUsage0
+MemoryPoolImpl#isCollectionUsageThresholdSupported()::: memory pool impl is collection usage threshold supported:::return
+MemoryPoolImpl#getUsage0()::: memory pool impl get usage0:::
+MemoryPoolImpl#getPeakUsage0()::: memory pool impl get peak usage0:::
+MemoryPoolImpl#getCollectionUsage0()::: memory pool impl get collection usage0:::
+MemoryPoolImpl#setUsageThreshold0(long, long)::: memory pool impl set usage threshold0:::
+MemoryPoolImpl#setCollectionThreshold0(long, long)::: memory pool impl set collection threshold0:::
+MemoryPoolImpl#resetPeakUsage0()::: memory pool impl reset peak usage0:::
+MemoryPoolImpl#getMemoryManagers0()::: memory pool impl get memory managers0:::
+MemoryPoolImpl#setPoolUsageSensor(Sensor)::: memory pool impl set pool usage sensor:::
+MemoryPoolImpl#setPoolCollectionSensor(Sensor)::: memory pool impl set pool collection sensor:::
+MemoryPoolImpl.PoolSensor#triggerAction(MemoryUsage)::: pool sensor trigger action:::MemoryImpl->pool->getName->getCount->createNotification
+MemoryPoolImpl.PoolSensor#triggerAction()::: pool sensor trigger action:::
+MemoryPoolImpl.PoolSensor#clearAction()::: pool sensor clear action:::
+MemoryPoolImpl.CollectionSensor#triggerAction(MemoryUsage)::: collection sensor trigger action:::MemoryImpl->pool->getName->gcSensor->getCount->createNotification
+MemoryPoolImpl.CollectionSensor#triggerAction()::: collection sensor trigger action:::
+MemoryPoolImpl.CollectionSensor#clearAction()::: collection sensor clear action:::
+MemoryPoolImpl#getObjectName()::: memory pool impl get object name:::return->Util->getName->newObjectName
+MemoryUsageCompositeData#getMemoryUsage()::: memory usage composite data get memory usage:::return
+MemoryUsageCompositeData#toCompositeData(MemoryUsage)::: memory usage composite data to composite data:::mucd->new->MemoryUsageCompositeData->return->mucd->getCompositeData
+MemoryUsageCompositeData#getCompositeData()::: memory usage composite data get composite data:::memoryUsageItemValues->usage->getInit->usage->getUsed->usage->getCommitted->usage->getMax->try->return->new->CompositeDataSupport->catch->throw->new->AssertionError->finally
+MemoryUsageCompositeData#getMemoryUsageCompositeType()::: memory usage composite data get memory usage composite type:::return
+MemoryUsageCompositeData#getInit(CompositeData)::: memory usage composite data get init:::return->getLong
+MemoryUsageCompositeData#getUsed(CompositeData)::: memory usage composite data get used:::return->getLong
+MemoryUsageCompositeData#getCommitted(CompositeData)::: memory usage composite data get committed:::return->getLong
+MemoryUsageCompositeData#getMax(CompositeData)::: memory usage composite data get max:::return->getLong
 MemoryUsageCompositeData#validateCompositeData(CompositeData):::Validate if the input CompositeData has the expected CompositeType (i.e:::if->throw->new->NullPointerException->if->cd->getCompositeType->isTypeMatched->throw->new->IllegalArgumentException
 MethodInfo#getName():::Returns the name of the compiled method.:::return
 MethodInfo#getType():::Returns the type of the compiled method such as normal-compile, osr-compile, and native-compile.:::return
 MethodInfo#getCompileSize():::Returns the number of bytes occupied by this compiled method:::return
+MethodInfo#toString()::: method info to string:::return->getName->getType->getCompileSize
+MonitorInfoCompositeData#getMonitorInfo()::: monitor info composite data get monitor info:::return
+MonitorInfoCompositeData#toCompositeData(MonitorInfo)::: monitor info composite data to composite data:::micd->new->MonitorInfoCompositeData->return->micd->getCompositeData
+MonitorInfoCompositeData#getCompositeData()::: monitor info composite data get composite data:::ste->lock->getLockedStackFrame->steCData->StackTraceElementCompositeData->toCompositeData->items->new->HashMap<>->items->lock->getClassName->put->items->lock->getIdentityHashCode->put->items->put->items->lock->getLockedStackDepth->put->try->return->new->CompositeDataSupport->catch->throw->new->AssertionError->finally
+MonitorInfoCompositeData#v6CompositeType()::: monitor info composite data v6 composite type:::return
+MonitorInfoCompositeData#getClassName(CompositeData)::: monitor info composite data get class name:::return->getString
+MonitorInfoCompositeData#getIdentityHashCode(CompositeData)::: monitor info composite data get identity hash code:::return->getInt
+MonitorInfoCompositeData#getLockedStackFrame(CompositeData)::: monitor info composite data get locked stack frame:::ste->cd->get->if->return->StackTraceElementCompositeData->from->else->return
+MonitorInfoCompositeData#getLockedStackDepth(CompositeData)::: monitor info composite data get locked stack depth:::return->getInt
 MonitorInfoCompositeData#validateCompositeData(CompositeData):::Validate if the input CompositeData has the expected CompositeType (i.e:::if->throw->new->NullPointerException->if->cd->getCompositeType->isTypeMatched->cd->getCompositeType->isTypeMatched->throw->new->IllegalArgumentException
+NotificationEmitterSupport#addNotificationListener(NotificationListener, NotificationFilter, Object)::: notification emitter support add notification listener:::if->throw->new->IllegalArgumentException->synchronized->newList->listenerList->size->new->ArrayList<>->newList->addAll->newList->new->ListenerInfo->add
+NotificationEmitterSupport#removeNotificationListener(NotificationListener)::: notification emitter support remove notification listener:::synchronized->newList->new->ArrayList<>->for->i->newList->size->if->newList->size->listenerList->size->throw->new->ListenerNotFoundException
+NotificationEmitterSupport#removeNotificationListener(NotificationListener, NotificationFilter, Object)::: notification emitter support remove notification listener:::found->synchronized->newList->new->ArrayList<>->size->newList->size->for->i->if->throw->new->ListenerNotFoundException->else->throw->new->ListenerNotFoundException
+NotificationEmitterSupport#sendNotification(Notification)::: notification emitter support send notification:::if->return->currentList->synchronized->size->currentList->size->for->i
+NotificationEmitterSupport#hasListeners()::: notification emitter support has listeners:::synchronized->return->listenerList->isEmpty
+NotificationEmitterSupport#getNotificationInfo()::: notification emitter support get notification info:::
+RuntimeImpl#getName()::: runtime impl get name:::return->jvm->getVmId
+RuntimeImpl#getManagementSpecVersion()::: runtime impl get management spec version:::return->jvm->getManagementVersion
+RuntimeImpl#getVmName()::: runtime impl get vm name:::return->jvm->getVmName
+RuntimeImpl#getVmVendor()::: runtime impl get vm vendor:::return->jvm->getVmVendor
+RuntimeImpl#getVmVersion()::: runtime impl get vm version:::return->jvm->getVmVersion
+RuntimeImpl#getSpecName()::: runtime impl get spec name:::return->jvm->getVmSpecName
+RuntimeImpl#getSpecVendor()::: runtime impl get spec vendor:::return->jvm->getVmSpecVendor
+RuntimeImpl#getSpecVersion()::: runtime impl get spec version:::return->jvm->getVmSpecVersion
+RuntimeImpl#getClassPath()::: runtime impl get class path:::return->jvm->getClassPath
+RuntimeImpl#getLibraryPath()::: runtime impl get library path:::return->jvm->getLibraryPath
+RuntimeImpl#getBootClassPath()::: runtime impl get boot class path:::throw->new->UnsupportedOperationException
+RuntimeImpl#getInputArguments()::: runtime impl get input arguments:::Util->checkMonitorAccess->return->jvm->getVmArguments
+RuntimeImpl#getUptime()::: runtime impl get uptime:::return->jvm->getUptime
+RuntimeImpl#getStartTime()::: runtime impl get start time:::return
+RuntimeImpl#isBootClassPathSupported()::: runtime impl is boot class path supported:::return
+RuntimeImpl#getSystemProperties()::: runtime impl get system properties:::sysProps->System->getProperties->map->new->HashMap<>->keys->sysProps->stringPropertyNames->foreach->value->sysProps->getProperty->map->put->return
+RuntimeImpl#getObjectName()::: runtime impl get object name:::return->Util->newObjectName
 Sensor#getName():::Returns the name of this sensor.:::return
 Sensor#getCount():::Returns the total number of times that this sensor has been triggered.:::synchronized->return
 Sensor#isOn():::Tests if this sensor is currently on.:::synchronized->return
@@ -52,8 +316,219 @@ Sensor#trigger(int):::Triggers this sensor:::synchronized->triggerAction
 Sensor#trigger(int, MemoryUsage):::Triggers this sensor piggybacking a memory usage object:::synchronized->triggerAction
 Sensor#clear():::Clears this sensor.:::synchronized->clearAction
 Sensor#clear(int):::Clears this sensor and increments the count with the input increment.:::synchronized->clearAction
+Sensor#toString()::: sensor to string:::return->getName->isOn->getCount
+Sensor#triggerAction()::: sensor trigger action:::
+Sensor#triggerAction(MemoryUsage)::: sensor trigger action:::
+Sensor#clearAction()::: sensor clear action:::
+StackTraceElementCompositeData#getStackTraceElement()::: stack trace element composite data get stack trace element:::return
+StackTraceElementCompositeData#from(CompositeData)::: stack trace element composite data from:::validateCompositeData->if->STACK_TRACE_ELEMENT_COMPOSITE_TYPE->cd->getCompositeType->equals->return->getString->getString->getString->getString->getString->getString->getInt->new->StackTraceElement->else->return->getString->getString->getString->getInt->new->StackTraceElement
+StackTraceElementCompositeData#toCompositeData(StackTraceElement)::: stack trace element composite data to composite data:::cd->new->StackTraceElementCompositeData->return->cd->getCompositeData
+StackTraceElementCompositeData#getCompositeData()::: stack trace element composite data get composite data:::items->new->HashMap<>->items->ste->getClassLoaderName->put->items->ste->getModuleName->put->items->ste->getModuleVersion->put->items->ste->getClassName->put->items->ste->getMethodName->put->items->ste->getFileName->put->items->ste->getLineNumber->put->items->ste->isNativeMethod->put->try->return->new->CompositeDataSupport->catch->throw->new->AssertionError->finally
+StackTraceElementCompositeData#v5CompositeType()::: stack trace element composite data v5 composite type:::return
 StackTraceElementCompositeData#validateCompositeData(CompositeData):::Validate if the input CompositeData has the expected CompositeType (i.e:::if->throw->new->NullPointerException->ct->cd->getCompositeType->if->isTypeMatched->isTypeMatched->throw->new->IllegalArgumentException
+ThreadImpl#getThreadCount()::: thread impl get thread count:::return->jvm->getLiveThreadCount
+ThreadImpl#getPeakThreadCount()::: thread impl get peak thread count:::return->jvm->getPeakThreadCount
+ThreadImpl#getTotalStartedThreadCount()::: thread impl get total started thread count:::return->jvm->getTotalThreadCount
+ThreadImpl#getDaemonThreadCount()::: thread impl get daemon thread count:::return->jvm->getDaemonThreadCount
+ThreadImpl#isThreadContentionMonitoringSupported()::: thread impl is thread contention monitoring supported:::return->jvm->isThreadContentionMonitoringSupported
+ThreadImpl#isThreadContentionMonitoringEnabled()::: thread impl is thread contention monitoring enabled:::if->isThreadContentionMonitoringSupported->throw->new->UnsupportedOperationException->return
+ThreadImpl#isThreadCpuTimeSupported()::: thread impl is thread cpu time supported:::return->jvm->isOtherThreadCpuTimeSupported
+ThreadImpl#isCurrentThreadCpuTimeSupported()::: thread impl is current thread cpu time supported:::return->jvm->isCurrentThreadCpuTimeSupported
+ThreadImpl#isThreadAllocatedMemorySupported()::: thread impl is thread allocated memory supported:::return->jvm->isThreadAllocatedMemorySupported
+ThreadImpl#isThreadCpuTimeEnabled()::: thread impl is thread cpu time enabled:::if->isThreadCpuTimeSupported->isCurrentThreadCpuTimeSupported->throw->new->UnsupportedOperationException->return
+ThreadImpl#isThreadAllocatedMemoryEnabled()::: thread impl is thread allocated memory enabled:::if->isThreadAllocatedMemorySupported->throw->new->UnsupportedOperationException->return
+ThreadImpl#getAllThreadIds()::: thread impl get all thread ids:::Util->checkMonitorAccess->threads->getThreads->length->ids->new->longArr->for->i->return
+ThreadImpl#getThreadInfo(long)::: thread impl get thread info:::ids->new->longArr->infos->getThreadInfo->return
+ThreadImpl#getThreadInfo(long, int)::: thread impl get thread info:::ids->new->longArr->infos->getThreadInfo->return
+ThreadImpl#getThreadInfo(long[])::: thread impl get thread info:::return->getThreadInfo
+ThreadImpl#verifyThreadIds(long[])::: thread impl verify thread ids:::if->throw->new->NullPointerException->for->i
+ThreadImpl#getThreadInfo(long[], int)::: thread impl get thread info:::verifyThreadIds->if->throw->new->IllegalArgumentException->if->return->new->ThreadInfoArr->Util->checkMonitorAccess->infos->new->ThreadInfoArr->if->getThreadInfo1->else->getThreadInfo1->return
+ThreadImpl#setThreadContentionMonitoringEnabled(boolean)::: thread impl set thread contention monitoring enabled:::if->isThreadContentionMonitoringSupported->throw->new->UnsupportedOperationException->Util->checkControlAccess->synchronized->if->if->resetContentionTimes0->setThreadContentionMonitoringEnabled0
+ThreadImpl#verifyCurrentThreadCpuTime()::: thread impl verify current thread cpu time:::if->isCurrentThreadCpuTimeSupported->throw->new->UnsupportedOperationException->return->isThreadCpuTimeEnabled
+ThreadImpl#getCurrentThreadCpuTime()::: thread impl get current thread cpu time:::if->verifyCurrentThreadCpuTime->return->getThreadTotalCpuTime0->return
+ThreadImpl#getThreadCpuTime(long)::: thread impl get thread cpu time:::ids->new->longArr->times->getThreadCpuTime->return
+ThreadImpl#verifyThreadCpuTime(long[])::: thread impl verify thread cpu time:::verifyThreadIds->if->isThreadCpuTimeSupported->isCurrentThreadCpuTimeSupported->throw->new->UnsupportedOperationException->if->isThreadCpuTimeSupported->for->i->return->isThreadCpuTimeEnabled
+ThreadImpl#getThreadCpuTime(long[])::: thread impl get thread cpu time:::verified->verifyThreadCpuTime->length->times->new->longArr->fill->if->if->id->if->Thread->currentThread->getId->getThreadTotalCpuTime0->else->getThreadTotalCpuTime1->return
+ThreadImpl#getCurrentThreadUserTime()::: thread impl get current thread user time:::if->verifyCurrentThreadCpuTime->return->getThreadUserCpuTime0->return
+ThreadImpl#getThreadUserTime(long)::: thread impl get thread user time:::ids->new->longArr->times->getThreadUserTime->return
+ThreadImpl#getThreadUserTime(long[])::: thread impl get thread user time:::verified->verifyThreadCpuTime->length->times->new->longArr->fill->if->if->id->if->Thread->currentThread->getId->getThreadUserCpuTime0->else->getThreadUserCpuTime1->return
+ThreadImpl#setThreadCpuTimeEnabled(boolean)::: thread impl set thread cpu time enabled:::if->isThreadCpuTimeSupported->isCurrentThreadCpuTimeSupported->throw->new->UnsupportedOperationException->Util->checkControlAccess->synchronized->if->setThreadCpuTimeEnabled0
+ThreadImpl#getThreadAllocatedBytes(long)::: thread impl get thread allocated bytes:::ids->new->longArr->sizes->getThreadAllocatedBytes->return
+ThreadImpl#verifyThreadAllocatedMemory(long[])::: thread impl verify thread allocated memory:::verifyThreadIds->if->isThreadAllocatedMemorySupported->throw->new->UnsupportedOperationException->return->isThreadAllocatedMemoryEnabled
+ThreadImpl#getThreadAllocatedBytes(long[])::: thread impl get thread allocated bytes:::verified->verifyThreadAllocatedMemory->sizes->new->longArr->fill->if->getThreadAllocatedMemory1->return
+ThreadImpl#setThreadAllocatedMemoryEnabled(boolean)::: thread impl set thread allocated memory enabled:::if->isThreadAllocatedMemorySupported->throw->new->UnsupportedOperationException->Util->checkControlAccess->synchronized->if->setThreadAllocatedMemoryEnabled0
+ThreadImpl#findMonitorDeadlockedThreads()::: thread impl find monitor deadlocked threads:::Util->checkMonitorAccess->threads->findMonitorDeadlockedThreads0->if->return->ids->new->longArr->for->i->return
+ThreadImpl#findDeadlockedThreads()::: thread impl find deadlocked threads:::if->isSynchronizerUsageSupported->throw->new->UnsupportedOperationException->Util->checkMonitorAccess->threads->findDeadlockedThreads0->if->return->ids->new->longArr->for->i->return
+ThreadImpl#resetPeakThreadCount()::: thread impl reset peak thread count:::Util->checkControlAccess->resetPeakThreadCount0
+ThreadImpl#isObjectMonitorUsageSupported()::: thread impl is object monitor usage supported:::return->jvm->isObjectMonitorUsageSupported
+ThreadImpl#isSynchronizerUsageSupported()::: thread impl is synchronizer usage supported:::return->jvm->isSynchronizerUsageSupported
+ThreadImpl#verifyDumpThreads(boolean, boolean)::: thread impl verify dump threads:::if->isObjectMonitorUsageSupported->throw->new->UnsupportedOperationException->if->isSynchronizerUsageSupported->throw->new->UnsupportedOperationException->Util->checkMonitorAccess
+ThreadImpl#getThreadInfo(long[], boolean, boolean)::: thread impl get thread info:::return->dumpThreads0
+ThreadImpl#getThreadInfo(long[], boolean, boolean, int)::: thread impl get thread info:::if->throw->new->IllegalArgumentException->verifyThreadIds->if->return->new->ThreadInfoArr->verifyDumpThreads->return->dumpThreads0
+ThreadImpl#dumpAllThreads(boolean, boolean)::: thread impl dump all threads:::return->dumpAllThreads
+ThreadImpl#dumpAllThreads(boolean, boolean, int)::: thread impl dump all threads:::if->throw->new->IllegalArgumentException->verifyDumpThreads->return->dumpThreads0
+ThreadImpl#getThreads()::: thread impl get threads:::
+ThreadImpl#getThreadInfo1(long[], int, ThreadInfo[])::: thread impl get thread info1:::
+ThreadImpl#getThreadTotalCpuTime0(long)::: thread impl get thread total cpu time0:::
+ThreadImpl#getThreadTotalCpuTime1(long[], long[])::: thread impl get thread total cpu time1:::
+ThreadImpl#getThreadUserCpuTime0(long)::: thread impl get thread user cpu time0:::
+ThreadImpl#getThreadUserCpuTime1(long[], long[])::: thread impl get thread user cpu time1:::
+ThreadImpl#getThreadAllocatedMemory1(long[], long[])::: thread impl get thread allocated memory1:::
+ThreadImpl#setThreadCpuTimeEnabled0(boolean)::: thread impl set thread cpu time enabled0:::
+ThreadImpl#setThreadAllocatedMemoryEnabled0(boolean)::: thread impl set thread allocated memory enabled0:::
+ThreadImpl#setThreadContentionMonitoringEnabled0(boolean)::: thread impl set thread contention monitoring enabled0:::
+ThreadImpl#findMonitorDeadlockedThreads0()::: thread impl find monitor deadlocked threads0:::
+ThreadImpl#findDeadlockedThreads0()::: thread impl find deadlocked threads0:::
+ThreadImpl#resetPeakThreadCount0()::: thread impl reset peak thread count0:::
+ThreadImpl#dumpThreads0(long[], boolean, boolean, int)::: thread impl dump threads0:::
+ThreadImpl#resetContentionTimes0(long)::: thread impl reset contention times0:::
+ThreadImpl#getObjectName()::: thread impl get object name:::return->Util->newObjectName
+ThreadInfoCompositeData#getThreadInfo()::: thread info composite data get thread info:::return
+ThreadInfoCompositeData#getInstance(CompositeData)::: thread info composite data get instance:::validateCompositeData->return->new->ThreadInfoCompositeData
+ThreadInfoCompositeData#toCompositeData(ThreadInfo)::: thread info composite data to composite data:::ticd->new->ThreadInfoCompositeData->return->ticd->getCompositeData
+ThreadInfoCompositeData#getCompositeData()::: thread info composite data get composite data:::stackTrace->threadInfo->getStackTrace->stackTraceData->new->CompositeDataArr->for->i->lockInfoData->LockInfoCompositeData->threadInfo->getLockInfo->toCompositeData->lockedSyncs->threadInfo->getLockedSynchronizers->lockedSyncsData->new->CompositeDataArr->for->i->lockedMonitors->threadInfo->getLockedMonitors->lockedMonitorsData->new->CompositeDataArr->for->i->items->new->HashMap<>->items->threadInfo->getThreadId->put->items->threadInfo->getThreadName->put->items->threadInfo->getThreadState->name->put->items->threadInfo->getBlockedTime->put->items->threadInfo->getBlockedCount->put->items->threadInfo->getWaitedTime->put->items->threadInfo->getWaitedCount->put->items->put->items->threadInfo->getLockName->put->items->threadInfo->getLockOwnerId->put->items->threadInfo->getLockOwnerName->put->items->put->items->threadInfo->isSuspended->put->items->threadInfo->isInNative->put->items->put->items->put->items->threadInfo->isDaemon->put->items->threadInfo->getPriority->put->try->return->ThreadInfoCompositeTypes->ofVersion->new->CompositeDataSupport->catch->throw->new->AssertionError->finally
+ThreadInfoCompositeData#threadId()::: thread info composite data thread id:::return->getLong
+ThreadInfoCompositeData#threadName()::: thread info composite data thread name:::name->getString->if->throw->new->IllegalArgumentException->return
+ThreadInfoCompositeData#threadState()::: thread info composite data thread state:::return->getString->valueOf
+ThreadInfoCompositeData#blockedTime()::: thread info composite data blocked time:::return->getLong
+ThreadInfoCompositeData#blockedCount()::: thread info composite data blocked count:::return->getLong
+ThreadInfoCompositeData#waitedTime()::: thread info composite data waited time:::return->getLong
+ThreadInfoCompositeData#waitedCount()::: thread info composite data waited count:::return->getLong
+ThreadInfoCompositeData#lockName()::: thread info composite data lock name:::return->getString
+ThreadInfoCompositeData#lockOwnerId()::: thread info composite data lock owner id:::return->getLong
+ThreadInfoCompositeData#lockOwnerName()::: thread info composite data lock owner name:::return->getString
+ThreadInfoCompositeData#suspended()::: thread info composite data suspended:::return->getBoolean
+ThreadInfoCompositeData#inNative()::: thread info composite data in native:::return->getBoolean
+ThreadInfoCompositeData#isDaemon()::: thread info composite data is daemon:::return->cdata->containsKey->getBoolean
+ThreadInfoCompositeData#getPriority()::: thread info composite data get priority:::return->cdata->containsKey->getInt
+ThreadInfoCompositeData#stackTrace()::: thread info composite data stack trace:::stackTraceData->cdata->get->stackTrace->new->StackTraceElementArr->for->i->return
+ThreadInfoCompositeData#lockInfo()::: thread info composite data lock info:::if->cdata->containsKey->lockInfoData->cdata->get->return->LockInfo->from->else->lockName->lockName->lock->if->result->lockName->split->if->identityHashCode->Integer->parseInt->new->LockInfo->return
 ThreadInfoCompositeData#lockedMonitors():::Returns an empty array if locked_monitors attribute is not present.:::if->cdata->containsKey->return->new->MonitorInfoArr->lockedMonitorsData->cdata->get->monitors->new->MonitorInfoArr->for->i->return
 ThreadInfoCompositeData#lockedSynchronizers():::Returns an empty array if locked_monitors attribute is not present.:::if->cdata->containsKey->return->new->LockInfoArr->lockedSyncsData->cdata->get->locks->new->LockInfoArr->for->i->return
 ThreadInfoCompositeData#validateCompositeData(CompositeData):::Validate if the input CompositeData has the expected CompositeType (i.e:::if->throw->new->NullPointerException->type->cd->getCompositeType->version->if->Arrays->stream->type->containsKey->anyMatch->Runtime->version->feature->else->if->Arrays->stream->type->containsKey->anyMatch->else->if->ThreadInfoCompositeTypes->ofVersion->isTypeMatched->throw->new->IllegalArgumentException
+ThreadInfoCompositeData.ThreadInfoCompositeTypes#ofVersion(int)::: thread info composite types of version:::return->compositeTypes->get
+ThreadInfoCompositeData.ThreadInfoCompositeTypes#initCompositeTypes()::: thread info composite types init composite types:::types->new->HashMap<>->ctype->initCompositeType->types->put->types->initV5CompositeType->put->types->initV6CompositeType->put->return
+ThreadInfoCompositeData.ThreadInfoCompositeTypes#initCompositeType()::: thread info composite types init composite type:::try->return->MappedMXBeanType->toOpenType->catch->throw->new->AssertionError->finally
+ThreadInfoCompositeData.ThreadInfoCompositeTypes#initV5CompositeType(CompositeType)::: thread info composite types init v5 composite type:::try->v5Types->new->OpenType<?>Arr->for->i->return->new->CompositeType->catch->throw->new->AssertionError->finally
+ThreadInfoCompositeData.ThreadInfoCompositeTypes#initV6CompositeType(CompositeType)::: thread info composite types init v6 composite type:::try->v6Names->Stream->of->Arrays->stream->flatMap->String[]->new->toArray->v6Types->new->OpenType<?>Arr->for->i->return->new->CompositeType->catch->throw->new->AssertionError->finally
+Util#newException(Exception)::: util new exception:::throw->new->RuntimeException
+Util#toStringArray(List)::: util to string array:::return->list->toArray
+Util#newObjectName(String, String)::: util new object name:::return->newObjectName
+Util#newObjectName(String)::: util new object name:::try->return->ObjectName->getInstance->catch->throw->new->IllegalArgumentException->finally
 Util#checkAccess(ManagementPermission):::Check that the current context is trusted to perform monitoring or management:::sm->System->getSecurityManager->if->sm->checkPermission
+Util#checkMonitorAccess()::: util check monitor access:::checkAccess
+Util#checkControlAccess()::: util check control access:::checkAccess
+VMManagement#isCompilationTimeMonitoringSupported()::: management is compilation time monitoring supported:::
+VMManagement#isThreadContentionMonitoringSupported()::: management is thread contention monitoring supported:::
+VMManagement#isThreadContentionMonitoringEnabled()::: management is thread contention monitoring enabled:::
+VMManagement#isCurrentThreadCpuTimeSupported()::: management is current thread cpu time supported:::
+VMManagement#isOtherThreadCpuTimeSupported()::: management is other thread cpu time supported:::
+VMManagement#isThreadCpuTimeEnabled()::: management is thread cpu time enabled:::
+VMManagement#isBootClassPathSupported()::: management is boot class path supported:::
+VMManagement#isObjectMonitorUsageSupported()::: management is object monitor usage supported:::
+VMManagement#isSynchronizerUsageSupported()::: management is synchronizer usage supported:::
+VMManagement#isThreadAllocatedMemorySupported()::: management is thread allocated memory supported:::
+VMManagement#isThreadAllocatedMemoryEnabled()::: management is thread allocated memory enabled:::
+VMManagement#isGcNotificationSupported()::: management is gc notification supported:::
+VMManagement#isRemoteDiagnosticCommandsSupported()::: management is remote diagnostic commands supported:::
+VMManagement#getTotalClassCount()::: management get total class count:::
+VMManagement#getLoadedClassCount()::: management get loaded class count:::
+VMManagement#getUnloadedClassCount()::: management get unloaded class count:::
+VMManagement#getVerboseClass()::: management get verbose class:::
+VMManagement#getVerboseGC()::: management get verbose c:::
+VMManagement#getManagementVersion()::: management get management version:::
+VMManagement#getVmId()::: management get vm id:::
+VMManagement#getVmName()::: management get vm name:::
+VMManagement#getVmVendor()::: management get vm vendor:::
+VMManagement#getVmVersion()::: management get vm version:::
+VMManagement#getVmSpecName()::: management get vm spec name:::
+VMManagement#getVmSpecVendor()::: management get vm spec vendor:::
+VMManagement#getVmSpecVersion()::: management get vm spec version:::
+VMManagement#getClassPath()::: management get class path:::
+VMManagement#getLibraryPath()::: management get library path:::
+VMManagement#getBootClassPath()::: management get boot class path:::
+VMManagement#getVmArguments()::: management get vm arguments:::
+VMManagement#getStartupTime()::: management get startup time:::
+VMManagement#getUptime()::: management get uptime:::
+VMManagement#getAvailableProcessors()::: management get available processors:::
+VMManagement#getCompilerName()::: management get compiler name:::
+VMManagement#getTotalCompileTime()::: management get total compile time:::
+VMManagement#getTotalThreadCount()::: management get total thread count:::
+VMManagement#getLiveThreadCount()::: management get live thread count:::
+VMManagement#getPeakThreadCount()::: management get peak thread count:::
+VMManagement#getDaemonThreadCount()::: management get daemon thread count:::
+VMManagement#getOsName()::: management get os name:::
+VMManagement#getOsArch()::: management get os arch:::
+VMManagement#getOsVersion()::: management get os version:::
+VMManagement#getSafepointCount()::: management get safepoint count:::
+VMManagement#getTotalSafepointTime()::: management get total safepoint time:::
+VMManagement#getSafepointSyncTime()::: management get safepoint sync time:::
+VMManagement#getTotalApplicationNonStoppedTime()::: management get total application non stopped time:::
+VMManagement#getLoadedClassSize()::: management get loaded class size:::
+VMManagement#getUnloadedClassSize()::: management get unloaded class size:::
+VMManagement#getClassLoadingTime()::: management get class loading time:::
+VMManagement#getMethodDataSize()::: management get method data size:::
+VMManagement#getInitializedClassCount()::: management get initialized class count:::
+VMManagement#getClassInitializationTime()::: management get class initialization time:::
+VMManagement#getClassVerificationTime()::: management get class verification time:::
+VMManagement#getInternalCounters(String)::: management get internal counters:::
+VMManagementImpl#getVersion0()::: management impl get version0:::
+VMManagementImpl#initOptionalSupportFields()::: management impl init optional support fields:::
+VMManagementImpl#isCompilationTimeMonitoringSupported()::: management impl is compilation time monitoring supported:::return
+VMManagementImpl#isThreadContentionMonitoringSupported()::: management impl is thread contention monitoring supported:::return
+VMManagementImpl#isCurrentThreadCpuTimeSupported()::: management impl is current thread cpu time supported:::return
+VMManagementImpl#isOtherThreadCpuTimeSupported()::: management impl is other thread cpu time supported:::return
+VMManagementImpl#isBootClassPathSupported()::: management impl is boot class path supported:::return
+VMManagementImpl#isObjectMonitorUsageSupported()::: management impl is object monitor usage supported:::return
+VMManagementImpl#isSynchronizerUsageSupported()::: management impl is synchronizer usage supported:::return
+VMManagementImpl#isThreadAllocatedMemorySupported()::: management impl is thread allocated memory supported:::return
+VMManagementImpl#isGcNotificationSupported()::: management impl is gc notification supported:::isSupported->try->Class->forName->catch->finally->return
+VMManagementImpl#isRemoteDiagnosticCommandsSupported()::: management impl is remote diagnostic commands supported:::return
+VMManagementImpl#isThreadContentionMonitoringEnabled()::: management impl is thread contention monitoring enabled:::
+VMManagementImpl#isThreadCpuTimeEnabled()::: management impl is thread cpu time enabled:::
+VMManagementImpl#isThreadAllocatedMemoryEnabled()::: management impl is thread allocated memory enabled:::
+VMManagementImpl#getLoadedClassCount()::: management impl get loaded class count:::count->getTotalClassCount->getUnloadedClassCount->return
+VMManagementImpl#getTotalClassCount()::: management impl get total class count:::
+VMManagementImpl#getUnloadedClassCount()::: management impl get unloaded class count:::
+VMManagementImpl#getVerboseClass()::: management impl get verbose class:::
+VMManagementImpl#getVerboseGC()::: management impl get verbose c:::
+VMManagementImpl#getManagementVersion()::: management impl get management version:::return
+VMManagementImpl#getVmId()::: management impl get vm id:::pid->getProcessId->hostname->try->InetAddress->getLocalHost->getHostName->catch->finally->return
+VMManagementImpl#getProcessId()::: management impl get process id:::
+VMManagementImpl#getVmName()::: management impl get vm name:::return->System->getProperty
+VMManagementImpl#getVmVendor()::: management impl get vm vendor:::return->System->getProperty
+VMManagementImpl#getVmVersion()::: management impl get vm version:::return->System->getProperty
+VMManagementImpl#getVmSpecName()::: management impl get vm spec name:::return->System->getProperty
+VMManagementImpl#getVmSpecVendor()::: management impl get vm spec vendor:::return->System->getProperty
+VMManagementImpl#getVmSpecVersion()::: management impl get vm spec version:::return->System->getProperty
+VMManagementImpl#getClassPath()::: management impl get class path:::return->System->getProperty
+VMManagementImpl#getLibraryPath()::: management impl get library path:::return->System->getProperty
+VMManagementImpl#getBootClassPath()::: management impl get boot class path:::throw->new->UnsupportedOperationException
+VMManagementImpl#getUptime()::: management impl get uptime:::return->getUptime0
+VMManagementImpl#getVmArguments()::: management impl get vm arguments:::if->args->getVmArguments0->l->Arrays->asList->Collections->emptyList->Collections->unmodifiableList->return
+VMManagementImpl#getVmArguments0()::: management impl get vm arguments0:::
+VMManagementImpl#getStartupTime()::: management impl get startup time:::
+VMManagementImpl#getUptime0()::: management impl get uptime0:::
+VMManagementImpl#getAvailableProcessors()::: management impl get available processors:::
+VMManagementImpl#getCompilerName()::: management impl get compiler name:::name->AccessController->new->PrivilegedAction<String>->doPrivileged->return
+VMManagementImpl#getTotalCompileTime()::: management impl get total compile time:::
+VMManagementImpl#getTotalThreadCount()::: management impl get total thread count:::
+VMManagementImpl#getLiveThreadCount()::: management impl get live thread count:::
+VMManagementImpl#getPeakThreadCount()::: management impl get peak thread count:::
+VMManagementImpl#getDaemonThreadCount()::: management impl get daemon thread count:::
+VMManagementImpl#getOsName()::: management impl get os name:::return->System->getProperty
+VMManagementImpl#getOsArch()::: management impl get os arch:::return->System->getProperty
+VMManagementImpl#getOsVersion()::: management impl get os version:::return->System->getProperty
+VMManagementImpl#getSafepointCount()::: management impl get safepoint count:::
+VMManagementImpl#getTotalSafepointTime()::: management impl get total safepoint time:::
+VMManagementImpl#getSafepointSyncTime()::: management impl get safepoint sync time:::
+VMManagementImpl#getTotalApplicationNonStoppedTime()::: management impl get total application non stopped time:::
+VMManagementImpl#getLoadedClassSize()::: management impl get loaded class size:::
+VMManagementImpl#getUnloadedClassSize()::: management impl get unloaded class size:::
+VMManagementImpl#getClassLoadingTime()::: management impl get class loading time:::
+VMManagementImpl#getMethodDataSize()::: management impl get method data size:::
+VMManagementImpl#getInitializedClassCount()::: management impl get initialized class count:::
+VMManagementImpl#getClassInitializationTime()::: management impl get class initialization time:::
+VMManagementImpl#getClassVerificationTime()::: management impl get class verification time:::
+VMManagementImpl#getPerfInstrumentation()::: management impl get perf instrumentation:::if->return->perf->AccessController->new->Perf.GetPerfAction->doPrivileged->try->bb->perf->attach->if->bb->capacity->return->new->PerfInstrumentation->catch->throw->new->AssertionError->finally->return
+VMManagementImpl#getInternalCounters(String)::: management impl get internal counters:::perf->getPerfInstrumentation->if->return->perf->findByPattern->else->return->Collections->emptyList

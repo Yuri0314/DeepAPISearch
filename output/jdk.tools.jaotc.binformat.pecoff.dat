@@ -1,1 +1,46 @@
+JPECoffRelocObject#createByteSection(ArrayList, String, byte[], boolean, int, int)::: coff reloc object create byte section:::sect->sections->size->new->PECoffSection->sections->add->return
+JPECoffRelocObject#createByteSection(ArrayList, ByteContainer, int, int)::: coff reloc object create byte section:::sect->hasRelocs->c->hasRelocations->scnData->c->getByteArray->c->getContainerName->createByteSection->c->sect->getSectionId->setSectionId
+JPECoffRelocObject#createCodeSection(ArrayList, CodeContainer)::: coff reloc object create code section:::scnFlags->createByteSection
+JPECoffRelocObject#createReadOnlySection(ArrayList, ReadOnlyDataContainer)::: coff reloc object create read only section:::scnFlags->createByteSection
+JPECoffRelocObject#createReadWriteSection(ArrayList, ByteContainer)::: coff reloc object create read write section:::scnFlags->if->c->getByteArray->else->createByteSection
 JPECoffRelocObject#createPECoffRelocObject(Map>, Collection):::Creates a PECoff relocatable object.:::sections->new->ArrayList<>->binContainer->getCodeContainer->createCodeSection->binContainer->getMetaspaceNamesContainer->createReadOnlySection->binContainer->getKlassesOffsetsContainer->createReadOnlySection->binContainer->getMethodsOffsetsContainer->createReadOnlySection->binContainer->getKlassesDependenciesContainer->createReadOnlySection->binContainer->getMethodMetadataContainer->createReadOnlySection->binContainer->getStubsOffsetsContainer->createReadOnlySection->binContainer->getHeaderContainer->getContainer->createReadOnlySection->binContainer->getCodeSegmentsContainer->createReadOnlySection->binContainer->getConstantDataContainer->createReadOnlySection->binContainer->getConfigContainer->createReadOnlySection->binContainer->getKlassesGotContainer->createReadWriteSection->binContainer->getCountersGotContainer->createReadWriteSection->binContainer->getMetadataGotContainer->createReadWriteSection->binContainer->getMethodStateContainer->createReadWriteSection->binContainer->getOopGotContainer->createReadWriteSection->binContainer->getExtLinkageGOTContainer->createReadWriteSection->header->new->PECoffHeader->symtab->createPECoffSymbolTables->scnFlags->symtab->getDirectiveArray->createByteSection->pecoffRelocs->createPECoffRelocTable->fileOffset->sections->size->header->sections->size->setSectionCount->header->symtab->getSymtabCount->setSymbolCount->header->setSymbolOff->symtab->getSymtabCount->symtab->getStrtabSize->sections->get->getDataAlign->sections->get->getDataAlign->for->i->sections->size->for->i->sections->size->pecoffContainer->header->getArray->writeBytes->for->i->sections->size->pecoffContainer->symtab->getSymtabArray->writeBytes->pecoffContainer->symtab->getStrtabArray->writeBytes->for->i->sections->size->for->i->sections->size->pecoffContainer->close
+JPECoffRelocObject#createPECoffSymbolTables(Collection):::Construct PECoff symbol data from BinaryContainer object's symbol tables:::symtab->new->PECoffSymtab->foreach->secHdrIndex->symbol->getSection->getSectionId->pecoffSymbol->symtab->symbol->getName->getPECoffTypeOf->getPECoffClassOf->symbol->getOffset->addSymbolEntry->symbol->setNativeSymbol->return
+JPECoffRelocObject#getPECoffTypeOf(Symbol)::: coff reloc object get coff type of:::kind->sym->getKind->if->return->return
+JPECoffRelocObject#getPECoffClassOf(Symbol)::: coff reloc object get coff class of:::binding->sym->getBinding->if->return->return
+JPECoffRelocObject#createPECoffRelocTable(ArrayList, Map>):::Construct a PECoff relocation table from BinaryContainer object's relocation tables.:::pecoffRelocTable->sections->size->new->PECoffRelocTable->foreach->relocationTable->entrySet->relocs->entry->getValue->symbol->entry->getKey->foreach->createRelocation->foreach->binContainer->getUniqueRelocationTable->entrySet->entry->getKey->entry->getValue->createRelocation->return
+JPECoffRelocObject#createRelocation(Symbol, Relocation, PECoffRelocTable)::: coff reloc object create relocation:::relocType->reloc->getType->pecoffRelocType->getPECoffRelocationType->sym->symbol->getNativeSymbol->symno->sym->getIndex->sectindex->reloc->getSection->getSectionId->offset->reloc->getOffset->addend->switch->reloc->getSize->break->return->break->break->throw->new->InternalError->pecoffRelocTable->createRelocationEntry
+JPECoffRelocObject#getPECoffRelocationType(RelocType)::: coff reloc object get coff relocation type:::pecoffRelocType->switch->PECoffTargetInfo->getPECoffArch->if->else->if->else->if->else->if->else->if->else->break->println->return
+PECoffByteBuffer#allocate(int)::: coff byte buffer allocate:::buf->ByteBuffer->allocate->buf->order->return
+PECoffContainer#close()::: coff container close:::try->outputStream->close->catch->println->finally
+PECoffContainer#writeBytes(byte[])::: coff container write bytes:::if->return->try->outputStream->write->catch->println->finally
+PECoffContainer#writeBytes(byte[], int)::: coff container write bytes:::if->return->try->while->outputStream->write->outputStream->write->catch->println->finally
+PECoffHeader#setSectionCount(int)::: coff header set section count:::header->putChar
+PECoffHeader#setSymbolCount(int)::: coff header set symbol count:::header->putInt
+PECoffHeader#setSymbolOff(int)::: coff header set symbol off:::header->putInt
+PECoffHeader#getArray()::: coff header get array:::return->header->array
+PECoffRelocEntry#getArray()::: coff reloc entry get array:::return->entry->array
+PECoffRelocTable#createRelocationEntry(int, int, int, int)::: coff reloc table create relocation entry:::entry->new->PECoffRelocEntry->relocEntries->get->add
+PECoffRelocTable#getAlign()::: coff reloc table get align:::return
+PECoffRelocTable#getNumRelocs(int)::: coff reloc table get num relocs:::return->relocEntries->get->size
+PECoffRelocTable#getRelocData(int)::: coff reloc table get reloc data:::entryList->relocEntries->get->entryCount->entryList->size->allocCount->if->return->if->relocData->PECoffByteBuffer->allocate->if->entry->new->PECoffRelocEntry->relocData->entry->getArray->put->for->i->return->relocData->array
+PECoffSection#getSize()::: coff section get size:::return->section->getInt
+PECoffSection#getDataAlign()::: coff section get data align:::return
+PECoffSection#getShdrAlign()::: coff section get shdr align:::return
+PECoffSection#getArray()::: coff section get array:::return->section->array
+PECoffSection#getDataArray()::: coff section get data array:::return
+PECoffSection#setOffset(long)::: coff section set offset:::section->putInt
+PECoffSection#getOffset()::: coff section get offset:::return->section->getInt
+PECoffSection#setReloff(int)::: coff section set reloff:::section->putInt
+PECoffSection#setRelcount(int)::: coff section set relcount:::if->flags->section->putChar->section->getInt->section->putInt->else->section->putChar
+PECoffSection#hasRelocations()::: coff section has relocations:::return
+PECoffSection#getSectionId()::: coff section get section id:::return
+PECoffSymbol#getArray()::: coff symbol get array:::return->sym->array
+PECoffSymtab#addSymbolEntry(String, byte, byte, byte, long)::: coff symtab add symbol entry:::index->sym->if->name->isEmpty->strTabContent->append->new->PECoffSymbol->symbols->add->else->nameSize->name->getBytes->strTabContent->append->append->new->PECoffSymbol->symbols->add->if->addDirective->return
+PECoffSymtab#addDirective(String, byte)::: coff symtab add directive:::directives->append->if->directives->append->directives->append
+PECoffSymtab#getSymtabCount()::: coff symtab get symtab count:::return
+PECoffSymtab#getStrtabSize()::: coff symtab get strtab size:::return
+PECoffSymtab#getSymtabArray()::: coff symtab get symtab array:::symtabData->PECoffByteBuffer->allocate->symtabData->order->for->i->return->symtabData->array
+PECoffSymtab#getStrtabArray()::: coff symtab get strtab array:::strs->strTabContent->toString->getBytes->buff->ByteBuffer->wrap->buff->order->buff->putInt->return
+PECoffSymtab#getDirectiveArray()::: coff symtab get directive array:::return->directives->toString->getBytes
+PECoffTargetInfo#getPECoffArch()::: coff target info get coff arch:::return
+PECoffTargetInfo#getOsName()::: coff target info get os name:::return

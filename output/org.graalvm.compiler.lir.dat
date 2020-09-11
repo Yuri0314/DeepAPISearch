@@ -1,35 +1,302 @@
 CompositeValue#forEachComponent(LIRInstruction, OperandMode, InstructionValueProcedure):::Invoke proc on each Value element of this CompositeValue:::
 CompositeValue#visitValueArray(LIRInstruction, Value[], OperandMode, InstructionValueProcedure, EnumSet):::A helper method to visit Value[] ensuring that a copy of the array is made if it's needed.:::newValues->for->i->return
+CompositeValue#visitEachComponent(LIRInstruction, OperandMode, InstructionValueConsumer)::: composite value visit each component:::
+CompositeValue#toString()::: composite value to string:::return->CompositeValueClass->format
+CompositeValue#hashCode()::: composite value hash code:::return->super->hashCode
+CompositeValue#equals(Object)::: composite value equals:::if->other->return->super->equals->return
+CompositeValueClass#get(Class)::: composite value class get:::return->compositeClass->get
+CompositeValueClass.CompositeValueFieldsScanner#getFlags(Field)::: composite value fields scanner get flags:::result->EnumSet->noneOf->if->field->isAnnotationPresent->result->Arrays->field->getAnnotation->value->asList->addAll->else->GraalError->shouldNotReachHere->return
+CompositeValueClass#getAllFields()::: composite value class get all fields:::return->new->FieldsArr
+CompositeValueClass#toString()::: composite value class to string:::str->new->StringBuilder->str->getClass->getSimpleName->append->append->getClazz->getSimpleName->append->append->values->appendFields->str->append->data->appendFields->str->append->return->str->toString
+CompositeValueClass#format(CompositeValue)::: composite value class format:::valueClass->compositeClass->obj->getClass->get->result->new->StringBuilder->LIRIntrospection->new->StringArr->appendValues->for->i->getCount->return->result->toString
+ConstantValue#getConstant()::: constant value get constant:::return
+ConstantValue#isJavaConstant()::: constant value is java constant:::return
+ConstantValue#getJavaConstant()::: constant value get java constant:::return
+ConstantValue#toString()::: constant value to string:::return->constant->toString
+ConstantValue#equals(Object)::: constant value equals:::if->other->return->super->equals->equals->return
+ConstantValue#hashCode()::: constant value hash code:::return->constant->hashCode->super->hashCode
 ControlFlowOptimizer#run(TargetDescription, LIRGenerationResult, PostAllocationOptimizationContext):::Performs control flow optimizations on the given LIR graph.:::lir->lirGenRes->getLIR->new->Optimizer->lir->codeEmittingOrder->deleteEmptyBlocks
+ControlFlowOptimizer.Optimizer#canDeleteBlock(AbstractBlockBase):::Checks whether a block can be deleted:::if->block->getSuccessorCount->block->getPredecessorCount->block->getSuccessors->return->instructions->lir->getLIRforBlock->return->instructions->size->instructions->instructions->size->get->hasState->block->isExceptionEntry
+ControlFlowOptimizer.Optimizer#alignBlock(AbstractBlockBase)::: optimizer align block:::if->block->isAligned->block->setAlign->instructions->lir->getLIRforBlock->label->instructions->get->instructions->label->getLabel->new->StandardOp.LabelOp->set
+ControlFlowOptimizer.Optimizer#deleteEmptyBlocks(AbstractBlockBase[])::: optimizer delete empty blocks:::for->i
+EdgeMoveOptimizer#run(TargetDescription, LIRGenerationResult, PostAllocationOptimizationContext)::: edge move optimizer run:::ir->lirGenRes->getLIR->optimizer->new->Optimizer->blockList->ir->linearScanOrder->for->i
+EdgeMoveOptimizer.Optimizer#same(LIRInstruction, LIRInstruction):::Determines if two operations are both MoveOp moves that have the same source and MoveOp#getResult() destination operands.:::if->ValueMoveOp->isValueMoveOp->ValueMoveOp->isValueMoveOp->move1->ValueMoveOp->asValueMoveOp->move2->ValueMoveOp->asValueMoveOp->if->move1->getInput->move2->getInput->equals->move1->getResult->move2->getResult->equals->return->else->if->LoadConstantOp->isLoadConstantOp->LoadConstantOp->isLoadConstantOp->move1->LoadConstantOp->asLoadConstantOp->move2->LoadConstantOp->asLoadConstantOp->if->move1->getConstant->move2->getConstant->equals->move1->getResult->move2->getResult->equals->return->return
+EdgeMoveOptimizer.Optimizer#optimizeMovesAtBlockEnd(AbstractBlockBase):::Moves the longest #same common subsequence at the end all predecessors of block to the start of block.:::foreach->block->getPredecessors->if->return->edgeInstructionSeqences->clear->numPreds->block->getPredecessorCount->foreach->block->getPredecessors->predInstructions->ir->getLIRforBlock->if->pred->getSuccessorCount->return->if->predInstructions->predInstructions->size->get->hasState->return->seq->predInstructions->predInstructions->size->subList->edgeInstructionSeqences->add->while->seq->edgeInstructionSeqences->get->if->seq->isEmpty->return->op->last->for->i->ir->getLIRforBlock->add->for->i
+EdgeMoveOptimizer.Optimizer#optimizeMovesAtBlockBegin(AbstractBlockBase):::Moves the longest #same common subsequence at the start of all successors of block to the end of block just prior to the branch instruction ending block.:::edgeInstructionSeqences->clear->numSux->block->getSuccessorCount->instructions->ir->getLIRforBlock->lastInstruction->instructions->instructions->size->get->if->lastInstruction->hasState->return->branch->if->branch->hasOperands->return->insertIdx->instructions->size->foreach->block->getSuccessors->suxInstructions->ir->getLIRforBlock->if->sux->getPredecessorCount->return->seq->suxInstructions->suxInstructions->size->subList->edgeInstructionSeqences->add->while->seq->edgeInstructionSeqences->get->if->seq->isEmpty->return->op->first->for->i->ir->getLIRforBlock->add->for->i
+EdgeMoveOptimizer.Optimizer#first(List):::Gets the first element from a LIR instruction sequence.:::return->seq->get
+EdgeMoveOptimizer.Optimizer#last(List):::Gets the last element from a LIR instruction sequence.:::return->seq->seq->size->get
+EdgeMoveOptimizer.Optimizer#removeFirst(List):::Removes the first element from a LIR instruction sequence.:::seq->remove
+EdgeMoveOptimizer.Optimizer#removeLast(List):::Removes the last element from a LIR instruction sequence.:::seq->seq->size->remove
+FullInfopointOp#emitCode(CompilationResultBuilder)::: full infopoint op emit code:::crb->position->recordInfopoint->ensureUniquePC
+InstructionStateProcedure#doState(LIRInstruction, LIRFrameState)::: instruction state procedure do state:::
 InstructionValueConsumer#visitValue(LIRInstruction, Value, OperandMode, EnumSet):::Iterator method to be overwritten.:::
 InstructionValueProcedure#doValue(LIRInstruction, Value, OperandMode, EnumSet):::Iterator method to be overwritten.:::
 LabelRef#forSuccessor(LIR, AbstractBlockBase, int):::Returns a new reference to a successor of the given block.:::return->new->LabelRef
+LabelRef#getSourceBlock()::: label ref get source block:::return
+LabelRef#getTargetBlock()::: label ref get target block:::return->block->getSuccessors
+LabelRef#label()::: label ref label:::return->lir->getTargetBlock->getLIRforBlock->get->getLabel
+LabelRef#toString()::: label ref to string:::return->getSourceBlock->block->getSuccessors->getTargetBlock
+LIR#getControlFlowGraph()::: r get control flow graph:::return
+LIR#getOptions()::: r get options:::return
+LIR#getDebug()::: r get debug:::return
 LIR#hasDebugInfo():::Determines if any instruction in the LIR has debug info associated with it.:::foreach->linearScanOrder->foreach->getLIRforBlock->if->op->hasState->return->return
+LIR#getLIRforBlock(AbstractBlockBase)::: r get rfor block:::return->lirInstructions->get
+LIR#setLIRforBlock(AbstractBlockBase, ArrayList)::: r set rfor block:::lirInstructions->put
 LIR#linearScanOrder():::Gets the linear scan ordering of blocks as an array.:::return
+LIR#codeEmittingOrder()::: r code emitting order:::return
+LIR#setHasArgInCallerFrame()::: r set has arg in caller frame:::
 LIR#hasArgInCallerFrame():::Determines if any of the parameters to the method are passed via the stack where the parameters are located in the caller's frame.:::return
 LIR#getNextBlock(AbstractBlockBase[], int):::Gets the next non-null block in a list.:::for->nextIndex->return
 LIR#getExceptionEdge(LIRInstruction):::Gets the exception edge (if any) originating at a given operation.:::exceptionEdge->op->if->forEachState->return
+LIR#verifyBlock(LIR, AbstractBlockBase)::: r verify block:::ops->lir->getLIRforBlock->if->ops->size->return->opWithExceptionEdge->index->lastIndex->ops->size->foreach->ops->subList->exceptionEdge->getExceptionEdge->if->distanceFromEnd->end->ops->get->return
+LIR#verifyBlocks(LIR, AbstractBlockBase[])::: r verify blocks:::foreach->if->continue->foreach->block->getSuccessors->foreach->block->getPredecessors->if->verifyBlock->return->return
+LIR#resetLabels()::: r reset labels:::foreach->codeEmittingOrder->if->continue->foreach->lirInstructions->get->if->label->getLabel->if->label->reset
+LIRFrameState#hasDebugInfo()::: frame state has debug info:::return
+LIRFrameState#debugInfo()::: frame state debug info:::return
 LIRFrameState#forEachState(LIRInstruction, InstructionValueProcedure):::Iterates the frame state and calls the InstructionValueProcedure for every variable.:::for->cur->cur->caller->if->foreach->obj->getValues->processValues->if->liveBasePointers->forEach
 LIRFrameState#visitEachState(LIRInstruction, InstructionValueConsumer):::Iterates the frame state and calls the InstructionValueConsumer for every variable.:::for->cur->cur->caller->if->foreach->obj->getValues->visitValues->if->liveBasePointers->visitEach
+LIRFrameState#processValues(LIRInstruction, JavaValue[], InstructionValueProcedure)::: frame state process values:::for->i
+LIRFrameState#visitValues(LIRInstruction, JavaValue[], InstructionValueConsumer)::: frame state visit values:::for->i
+LIRFrameState#unprocessed(JavaValue)::: frame state unprocessed:::if->isIllegalJavaValue->return->else->if->isConstantJavaValue->return->else->if->isVirtualObject->return->else->return
 LIRFrameState#initDebugInfo(FrameMap, boolean):::Called by the register allocator to initialize the frame state.:::new->DebugInfo
+LIRFrameState#getLiveBasePointers()::: frame state get live base pointers:::return
+LIRFrameState#setLiveBasePointers(IndexedValueMap)::: frame state set live base pointers:::
+LIRFrameState#toString()::: frame state to string:::return->debugInfo->toString->topFrame->toString
 LIRInsertionBuffer#init(List):::Initialize this buffer:::
+LIRInsertionBuffer#initialized()::: insertion buffer initialized:::return
+LIRInsertionBuffer#lirList()::: insertion buffer lir list:::return
 LIRInsertionBuffer#append(int, LIRInstruction):::Enqueue a new instruction that will be appended to the instruction list when #finish() is called:::i->numberOfInsertionPoints->if->indexAt->appendNew->else->countAt->setCountAt->ops->add
 LIRInsertionBuffer#finish():::Append all enqueued instructions to the instruction list:::if->ops->size->n->lir->size->for->i->ops->size->opIndex->ops->size->ipIndex->numberOfInsertionPoints->fromIndex->toIndex->lir->size->while->index->indexAt->while->lir->lir->get->set->for->i->countAt->ops->clear
+LIRInsertionBuffer#appendNew(int, int)::: insertion buffer append new:::oldSize->newSize->if->Arrays->copyOf
+LIRInsertionBuffer#setCountAt(int, int)::: insertion buffer set count at:::
+LIRInsertionBuffer#numberOfInsertionPoints()::: insertion buffer number of insertion points:::return
+LIRInsertionBuffer#indexAt(int)::: insertion buffer index at:::return
+LIRInsertionBuffer#countAt(int)::: insertion buffer count at:::return
+LIRInsertionBuffer#verify()::: insertion buffer verify:::sum->prevIdx->for->i->numberOfInsertionPoints->return
+LIRInstruction#emitCode(CompilationResultBuilder)::: instruction emit code:::
+LIRInstruction#id()::: instruction id:::return
+LIRInstruction#setId(int)::: instruction set id:::
+LIRInstruction#getPosition()::: instruction get position:::return
+LIRInstruction#setPosition(NodeSourcePosition)::: instruction set position:::
+LIRInstruction#name()::: instruction name:::return->instructionClass->getOpcode
+LIRInstruction#hasOperands()::: instruction has operands:::return->instructionClass->hasOperands->hasState->destroysCallerSavedRegisters
+LIRInstruction#hasState()::: instruction has state:::return->instructionClass->hasState
+LIRInstruction#destroysCallerSavedRegisters()::: instruction destroys caller saved registers:::return
+LIRInstruction#forEachInput(InstructionValueProcedure)::: instruction for each input:::instructionClass->forEachUse
+LIRInstruction#forEachAlive(InstructionValueProcedure)::: instruction for each alive:::instructionClass->forEachAlive
+LIRInstruction#forEachTemp(InstructionValueProcedure)::: instruction for each temp:::instructionClass->forEachTemp
+LIRInstruction#forEachOutput(InstructionValueProcedure)::: instruction for each output:::instructionClass->forEachDef
+LIRInstruction#forEachState(InstructionValueProcedure)::: instruction for each state:::instructionClass->forEachState
+LIRInstruction#forEachInput(ValueProcedure)::: instruction for each input:::instructionClass->forEachUse
+LIRInstruction#forEachAlive(ValueProcedure)::: instruction for each alive:::instructionClass->forEachAlive
+LIRInstruction#forEachTemp(ValueProcedure)::: instruction for each temp:::instructionClass->forEachTemp
+LIRInstruction#forEachOutput(ValueProcedure)::: instruction for each output:::instructionClass->forEachDef
+LIRInstruction#forEachState(ValueProcedure)::: instruction for each state:::instructionClass->forEachState
+LIRInstruction#forEachState(InstructionStateProcedure)::: instruction for each state:::instructionClass->forEachState
+LIRInstruction#forEachState(StateProcedure)::: instruction for each state:::instructionClass->forEachState
+LIRInstruction#visitEachInput(InstructionValueConsumer)::: instruction visit each input:::instructionClass->visitEachUse
+LIRInstruction#visitEachAlive(InstructionValueConsumer)::: instruction visit each alive:::instructionClass->visitEachAlive
+LIRInstruction#visitEachTemp(InstructionValueConsumer)::: instruction visit each temp:::instructionClass->visitEachTemp
+LIRInstruction#visitEachOutput(InstructionValueConsumer)::: instruction visit each output:::instructionClass->visitEachDef
+LIRInstruction#visitEachState(InstructionValueConsumer)::: instruction visit each state:::instructionClass->visitEachState
+LIRInstruction#visitEachInput(ValueConsumer)::: instruction visit each input:::instructionClass->visitEachUse
+LIRInstruction#visitEachAlive(ValueConsumer)::: instruction visit each alive:::instructionClass->visitEachAlive
+LIRInstruction#visitEachTemp(ValueConsumer)::: instruction visit each temp:::instructionClass->visitEachTemp
+LIRInstruction#visitEachOutput(ValueConsumer)::: instruction visit each output:::instructionClass->visitEachDef
+LIRInstruction#visitEachState(ValueConsumer)::: instruction visit each state:::instructionClass->visitEachState
+LIRInstruction#forEachRegisterHint(Value, OperandMode, InstructionValueProcedure)::: instruction for each register hint:::return->instructionClass->forEachRegisterHint
+LIRInstruction#forEachRegisterHint(Value, OperandMode, ValueProcedure)::: instruction for each register hint:::return->instructionClass->forEachRegisterHint
 LIRInstruction#isMoveOp():::Returns true if the instruction is a MoveOp:::return->instructionClass->isMoveOp
 LIRInstruction#isValueMoveOp():::Returns true if the instruction is a ValueMoveOp:::return->instructionClass->isValueMoveOp
 LIRInstruction#isLoadConstantOp():::Returns true if the instruction is a LoadConstantOp:::return->instructionClass->isLoadConstantOp
 LIRInstruction#addStackSlotsToTemporaries(Value[], Value[]):::Utility method to add stack arguments to a list of temporaries:::extraTemps->foreach->if->isStackSlot->if->index->newTemporaries->Arrays->copyOf->foreach->if->isStackSlot->return->return
+LIRInstruction#verify()::: instruction verify:::
 LIRInstruction#setComment(LIRGenerationResult, String):::Adds a comment to this instruction.:::res->setComment
 LIRInstruction#getComment(LIRGenerationResult):::Gets the comment attached to this instruction.:::return->res->getComment
+LIRInstruction#toStringWithIdPrefix()::: instruction to string with id prefix:::if->return->String->toString->format->return->toString
+LIRInstruction#toString()::: instruction to string:::return->instructionClass->toString
+LIRInstruction#toString(LIRGenerationResult)::: instruction to string:::toString->toString->if->return->comment->getComment->if->return->return->String->format
+LIRInstruction#getLIRInstructionClass()::: instruction get instruction class:::return
+LIRInstruction#hashCode()::: instruction hash code:::return
+LIRInstructionClass#create(Class)::: instruction class create:::return->new->LIRInstructionClass<>
+LIRInstructionClass#get(Class)::: instruction class get:::try->field->clazz->getDeclaredField->field->setAccessible->result->field->get->if->throw->GraalError->clazz->getTypeName->shouldNotReachHere->return->catch->throw->new->RuntimeException->finally
+LIRInstructionClass.LIRInstructionFieldsScanner#getFlags(Field)::: instruction fields scanner get flags:::result->EnumSet->noneOf->if->field->isAnnotationPresent->result->Arrays->field->getAnnotation->value->asList->addAll->else->if->field->isAnnotationPresent->result->Arrays->field->getAnnotation->value->asList->addAll->else->if->field->isAnnotationPresent->result->Arrays->field->getAnnotation->value->asList->addAll->else->if->field->isAnnotationPresent->result->Arrays->field->getAnnotation->value->asList->addAll->else->GraalError->shouldNotReachHere->return
+LIRInstructionClass.LIRInstructionFieldsScanner#scan(Class)::: instruction fields scanner scan:::if->clazz->getAnnotation->clazz->getAnnotation->value->super->scan->if->clazz->getSimpleName->if->opcodeConstant->endsWith->opcodeConstant->opcodeConstant->length->substring
+LIRInstructionClass.LIRInstructionFieldsScanner#scanField(Field, long)::: instruction fields scanner scan field:::type->field->getType->if->STATE_CLASS->isAssignableFrom->states->field->getName->field->getDeclaringClass->new->FieldsScanner.FieldInfo->add->else->super->scanField->if->field->getAnnotation->data->data->size->get
+LIRInstructionClass#getAllFields()::: instruction class get all fields:::return->new->FieldsArr
+LIRInstructionClass#toString()::: instruction class to string:::str->new->StringBuilder->str->getClass->getSimpleName->append->append->getClazz->getSimpleName->append->append->uses->appendFields->str->append->alives->appendFields->str->append->temps->appendFields->str->append->defs->appendFields->str->append->states->appendFields->str->append->data->appendFields->str->append->return->str->toString
+LIRInstructionClass#getValues(OperandMode)::: instruction class get values:::switch->return->return->return->return->throw->GraalError->shouldNotReachHere
+LIRInstructionClass#getOpcode(LIRInstruction)::: instruction class get opcode:::if->return->return->String->data->getObject->valueOf
+LIRInstructionClass#hasOperands()::: instruction class has operands:::return->uses->getCount->alives->getCount->temps->getCount->defs->getCount
+LIRInstructionClass#hasState(LIRInstruction)::: instruction class has state:::for->i->states->getCount->return
+LIRInstructionClass#forEachUse(LIRInstruction, InstructionValueProcedure)::: instruction class for each use:::forEach
+LIRInstructionClass#forEachAlive(LIRInstruction, InstructionValueProcedure)::: instruction class for each alive:::forEach
+LIRInstructionClass#forEachTemp(LIRInstruction, InstructionValueProcedure)::: instruction class for each temp:::forEach
+LIRInstructionClass#forEachDef(LIRInstruction, InstructionValueProcedure)::: instruction class for each def:::forEach
+LIRInstructionClass#visitEachUse(LIRInstruction, InstructionValueConsumer)::: instruction class visit each use:::visitEach
+LIRInstructionClass#visitEachAlive(LIRInstruction, InstructionValueConsumer)::: instruction class visit each alive:::visitEach
+LIRInstructionClass#visitEachTemp(LIRInstruction, InstructionValueConsumer)::: instruction class visit each temp:::visitEach
+LIRInstructionClass#visitEachDef(LIRInstruction, InstructionValueConsumer)::: instruction class visit each def:::visitEach
+LIRInstructionClass#forEachState(LIRInstruction, InstructionValueProcedure)::: instruction class for each state:::for->i->states->getCount
+LIRInstructionClass#visitEachState(LIRInstruction, InstructionValueConsumer)::: instruction class visit each state:::for->i->states->getCount
+LIRInstructionClass#forEachState(LIRInstruction, InstructionStateProcedure)::: instruction class for each state:::for->i->states->getCount
+LIRInstructionClass#forEachRegisterHint(LIRInstruction, OperandMode, InstructionValueProcedure)::: instruction class for each register hint:::hints->if->else->if->else->return->for->i->hints->getCount->return
+LIRInstructionClass#toString(LIRInstruction)::: instruction class to string:::result->new->StringBuilder->new->StringArr->appendValues->result->String->getOpcode->valueOf->toUpperCase->append->new->StringArr->appendValues->new->StringArr->appendValues->for->i->data->getCount->for->i->states->getCount->return->result->toString
+LIRInstructionClass#isMoveOp()::: instruction class is move op:::return
+LIRInstructionClass#isValueMoveOp()::: instruction class is value move op:::return
+LIRInstructionClass#isLoadConstantOp()::: instruction class is load constant op:::return
+LIRIntrospection.Values#getDirectCount()::: values get direct count:::return
+LIRIntrospection.Values#getFlags(int)::: values get flags:::return
+LIRIntrospection.Values#getValue(Object, int)::: values get value:::return->getObject
+LIRIntrospection.Values#setValue(Object, int, Value)::: values set value:::putObject
+LIRIntrospection.Values#getValueArray(Object, int)::: values get value array:::return->getObject
+LIRIntrospection.Values#setValueArray(Object, int, Value[])::: values set value array:::putObject
 LIRIntrospection.ValueFieldInfo#compareTo(FieldsScanner.FieldInfo):::Sorts non-array fields before array fields.:::if->VALUE_ARRAY_CLASS->isAssignableFrom->if->VALUE_ARRAY_CLASS->isAssignableFrom->return->else->if->VALUE_ARRAY_CLASS->isAssignableFrom->return->return->super->compareTo
+LIRIntrospection.ValueFieldInfo#toString()::: value field info to string:::return->super->toString
+LIRIntrospection.LIRFieldsScanner#getOperandModeAnnotation(Field)::: fields scanner get operand mode annotation:::result->cursor->valueAnnotations->getEntries->while->cursor->advance->annotation->field->cursor->getKey->getAnnotation->if->cursor->getValue->return
+LIRIntrospection.LIRFieldsScanner#getFlags(Field)::: fields scanner get flags:::
+LIRIntrospection.LIRFieldsScanner#scanField(Field, long)::: fields scanner scan field:::type->field->getType->if->VALUE_CLASS->isAssignableFrom->CONSTANT_VALUE_CLASS->isAssignableFrom->annotation->getOperandModeAnnotation->flags->getFlags->field->getName->field->getDeclaringClass->new->ValueFieldInfo->add->else->if->VALUE_ARRAY_CLASS->isAssignableFrom->annotation->getOperandModeAnnotation->flags->getFlags->field->getName->field->getDeclaringClass->new->ValueFieldInfo->add->else->super->scanField
+LIRIntrospection.LIRFieldsScanner#verifyFlags(Field, Class, EnumSet)::: fields scanner verify flags:::if->flags->contains->if->flags->contains->if->flags->contains->return
+LIRIntrospection#forEach(LIRInstruction, Values, OperandMode, InstructionValueProcedure)::: introspection for each:::for->i->values->getCount
+LIRIntrospection#visitEach(LIRInstruction, Values, OperandMode, InstructionValueConsumer)::: introspection visit each:::for->i->values->getCount
+LIRIntrospection#appendValues(StringBuilder, Object, String, String, String, String, String[], Fields...)::: introspection append values:::total->foreach->fields->getCount->if->return->sb->append->if->sb->append->sep->i->foreach->for->j->fields->getCount->if->sb->append->sb->append
+LIRIntrospection#getFieldString(Object, int, Fields)::: introspection get field string:::value->fields->get->type->fields->getType->if->type->isPrimitive->type->isArray->return->String->valueOf->if->return->Arrays->toString->else->if->return->Arrays->toString->else->if->byteValue->if->isPrintableAsciiString->return->toString->else->return->Arrays->toString->else->if->type->getComponentType->isPrimitive->return->Arrays->toString->return
+LIRIntrospection#isPrintableAsciiString(byte[]):::Tests if all values in this string are printable ASCII characters or value \0 (b in [0x20,0x7F]) or b == 0.:::foreach->c->if->return->return
+LIRIntrospection#toString(byte[])::: introspection to string:::sb->new->StringBuilder->sb->append->foreach->if->sb->append->else->if->sb->append->else->if->sb->append->else->sb->append->sb->append->return->sb->toString
+LIRValueUtil#isVariable(Value)::: value util is variable:::return
+LIRValueUtil#asVariable(Value)::: value util as variable:::return
+LIRValueUtil#isConstantValue(Value)::: value util is constant value:::return
+LIRValueUtil#asConstantValue(Value)::: value util as constant value:::return
+LIRValueUtil#asConstant(Value)::: value util as constant:::return->asConstantValue->getConstant
+LIRValueUtil#isJavaConstant(Value)::: value util is java constant:::return->isConstantValue->asConstantValue->isJavaConstant
+LIRValueUtil#asJavaConstant(Value)::: value util as java constant:::return->asConstantValue->getJavaConstant
+LIRValueUtil#isNullConstant(Value)::: value util is null constant:::return->isJavaConstant->asJavaConstant->isNull
+LIRValueUtil#isIntConstant(Value, long)::: value util is int constant:::if->isJavaConstant->javaConstant->asJavaConstant->if->javaConstant->getJavaKind->isNumericInteger->return->javaConstant->asLong->return
+LIRValueUtil#isStackSlotValue(Value)::: value util is stack slot value:::return
+LIRValueUtil#isVirtualStackSlot(Value)::: value util is virtual stack slot:::return
+LIRValueUtil#asVirtualStackSlot(Value)::: value util as virtual stack slot:::return
+LIRValueUtil#sameRegister(Value, Value)::: value util same register:::return->isRegister->isRegister->asRegister->asRegister->equals
+LIRValueUtil#sameRegister(Value, Value, Value)::: value util same register:::return->sameRegister->sameRegister
 LIRValueUtil#differentRegisters(Object...):::Checks if all the provided values are different physical registers:::registers->new->ArrayList<Register>->collectRegisters->for->i->registers->size->return
+LIRValueUtil#collectRegisters(Object[], List)::: value util collect registers:::foreach->if->registers->add->else->if->if->isRegister->registers->asRegister->add->else->if->collectRegisters->else->throw->new->IllegalArgumentException->return
 LIRValueUtil#subtractRegisters(Value[], Value[]):::Subtract sets of registers (x - y).:::result->new->ArrayList<>->foreach->append->foreach->if->sameRegister->break->if->result->add->resultArray->result->size->new->ValueArr->return->result->toArray
+LIRVerifier#liveOutFor(AbstractBlockBase)::: verifier live out for:::return->block->getId
+LIRVerifier#setLiveOutFor(AbstractBlockBase, BitSet)::: verifier set live out for:::block->getId
+LIRVerifier#maxRegisterNum()::: verifier max register num:::return->frameMap->getTarget->getRegisters->size
+LIRVerifier#isAllocatableRegister(Value)::: verifier is allocatable register:::return->isRegister->frameMap->getRegisterConfig->getAttributesMap->asRegister->isAllocatable
+LIRVerifier#verify(LIRInstruction)::: verifier verify:::op->LIRVerifier->allowed->visitEachInput->op->LIRVerifier->allowed->visitEachAlive->op->LIRVerifier->allowed->visitEachState->op->LIRVerifier->allowed->visitEachTemp->op->LIRVerifier->allowed->visitEachOutput->op->verify->return
+LIRVerifier#verify(boolean, LIR, FrameMap)::: verifier verify:::verifier->new->LIRVerifier->verifier->verify->return
+LIRVerifier#verify()::: verifier verify:::useConsumer->new->ValueConsumer->defConsumer->new->ValueConsumer->maxRegisterNum->maxRegisterNum->new->BitSet->foreach->lir->linearScanOrder->new->BitSet->new->ValueArr->if->block->getDominator->curVariablesLive->block->getDominator->liveOutFor->or->if->block->getSuccessorCount->last->lir->getLIRforBlock->lir->getLIRforBlock->size->get->if->block->getPredecessorCount->SSAUtil->verifyPhi->foreach->lir->getLIRforBlock->op->visitEachInput->if->op->destroysCallerSavedRegisters->foreach->frameMap->getRegisterConfig->getCallerSaveRegisters->curRegistersDefined->clear->op->visitEachAlive->op->visitEachState->op->visitEachTemp->op->visitEachOutput->setLiveOutFor
+LIRVerifier#use(Value, OperandMode, EnumSet)::: verifier use:::allowed->if->isVariable->variableIdx->asVariable->if->curVariablesLive->get->TTY->println->TTY->println->if->TTY->println->TTY->println->throw->GraalError->shouldNotReachHere->else->if->isAllocatableRegister->regNum->asRegister->if->curRegistersDefined->set->if->equals->TTY->println->TTY->Arrays->toString->println->TTY->println->throw->GraalError->shouldNotReachHere
+LIRVerifier#def(Value, OperandMode, EnumSet)::: verifier def:::allowed->if->isVariable->variableIdx->asVariable->if->TTY->println->TTY->println->TTY->println->TTY->println->throw->GraalError->shouldNotReachHere->if->curVariablesLive->set->else->if->isAllocatableRegister->regNum->asRegister->if->curRegistersDefined->get->TTY->println->TTY->println->throw->GraalError->shouldNotReachHere->curRegistersDefined->set->if->if->else
+LIRVerifier#allowed(Object, Value, OperandMode, EnumSet)::: verifier allowed:::if->isVariable->flags->contains->isRegister->flags->contains->isStackSlotValue->flags->contains->isConstantValue->flags->contains->isIllegal->flags->contains->return->throw->value->getClass->getSimpleName->new->GraalError
+NullCheckOptimizer#run(TargetDescription, LIRGenerationResult, PostAllocationOptimizationContext)::: null check optimizer run:::ir->lirGenRes->getLIR->blocks->ir->codeEmittingOrder->NullCheckOptimizer->foldNullChecks
+NullCheckOptimizer#foldNullChecks(LIR, AbstractBlockBase[], int)::: null check optimizer fold null checks:::foreach->if->continue->list->ir->getLIRforBlock->if->list->isEmpty->lastInstruction->list->get->for->i->list->size
+RedundantMoveElimination#run(TargetDescription, LIRGenerationResult, PostAllocationOptimizationContext)::: redundant move elimination run:::redundantMoveElimination->lirGenRes->getFrameMap->new->Optimization->redundantMoveElimination->lirGenRes->getLIR->doOptimize
+RedundantMoveElimination.Optimization#doOptimize(LIR):::The main method doing the elimination of redundant moves.:::debug->lir->getDebug->try->indent->debug->logAndIndent->registerConfig->frameMap->getRegisterConfig->registerConfig->getCallerSaveRegisters->initBlockData->new->intArr->Arrays->fill->foreach->registerConfig->getAllocatableRegisters->if->if->solveDataFlow->return->eliminateMoves->catch->finally
+RedundantMoveElimination.Optimization#initBlockData(LIR)::: optimization init block data:::debug->lir->getDebug->blocks->lir->linearScanOrder->maxStackLocations->foreach->instructions->lir->getLIRforBlock->foreach->if->isEligibleMove->dest->MoveOp->asMoveOp->getResult->if->isRegister->regNum->getRegister->if->else->if->isStackSlot->stackSlot->offset->getOffset->if->stackIndices->containsKey->stackIndices->size->stackIndices->stackIndices->size->put->numLocations->stackIndices->size->debug->stackIndices->size->log->foreach->data->new->BlockData->blockData->put
+RedundantMoveElimination.Optimization#getOffset(StackSlot)::: optimization get offset:::return->stackSlot->frameMap->totalFrameSize->getOffset
+RedundantMoveElimination.Optimization#solveDataFlow(LIR):::Calculates the entry and exit states for all basic blocks.:::debug->lir->getDebug->try->indent->debug->logAndIndent->blocks->lir->linearScanOrder->numIter->currentValueNum->firstRound->changed->do->try->indent2->debug->logAndIndent->foreach->data->blockData->get->if->valueNum->newState->if->block->isExceptionEntry->debug->block->getId->log->clearValues->else->foreach->block->getPredecessors->predData->blockData->get->mergeState->if->try->indent3->debug->block->getId->logAndIndent->iterState->copyState->instructions->lir->getLIRforBlock->foreach->updateState->catch->finally->if->catch->finally->if->return->while->catch->finally->return
+RedundantMoveElimination.Optimization#eliminateMoves(LIR):::Deletes all move instructions where the target location already contains the source value.:::debug->lir->getDebug->try->indent->debug->logAndIndent->blocks->lir->linearScanOrder->foreach->try->indent2->debug->block->getId->logAndIndent->instructions->lir->getLIRforBlock->data->blockData->get->hasDead->iterState->valueNum->numInsts->instructions->size->for->idx->if->instructions->Collections->singleton->removeAll->catch->finally->catch->finally
+RedundantMoveElimination.Optimization#updateState(DebugContext, int[], LIRInstruction, int):::Updates the state for one instruction.:::try->indent->debug->logAndIndent->if->isEligibleMove->moveOp->ValueMoveOp->asValueMoveOp->sourceIdx->moveOp->getInput->getStateIdx->destIdx->moveOp->getResult->getStateIdx->if->debug->log->return->valueNum->if->op->destroysCallerSavedRegisters->debug->log->foreach->if->encodeValueNum->outputValueConsumer->new->OutputValueConsumer->op->visitEachTemp->op->visitEachOutput->if->op->hasState->debug->log->clearValuesOfKindObject->return->catch->finally
+RedundantMoveElimination.Optimization#mergeState(int[], int[], int):::The state merge function for dataflow joins.:::changed->for->idx->return
+RedundantMoveElimination.Optimization#copyState(int[], int[])::: optimization copy state:::for->idx
+RedundantMoveElimination.Optimization#clearValues(int[], int)::: optimization clear values:::for->idx
+RedundantMoveElimination.Optimization#clearValuesOfKindObject(int[], int)::: optimization clear values of kind object:::for->idx
+RedundantMoveElimination.Optimization#getStateIdx(Value):::Returns the index to the state arrays in BlockData for a specific location.:::if->isRegister->regNum->getRegister->if->return->return->if->isStackSlot->slot->index->stackIndices->getOffset->get->if->return->index->intValue->return
+RedundantMoveElimination.Optimization#encodeValueNum(int, boolean):::Encodes a value number + the is-object information to a number to be stored in a state.:::if->return->return
+RedundantMoveElimination.Optimization#isObjectValue(int):::Returns true if an encoded value number (which is stored in a state) refers to an object reference.:::return
+RedundantMoveElimination.Optimization#isEligibleMove(LIRInstruction):::Returns true for a move instruction which is a candidate for elimination.:::if->ValueMoveOp->isValueMoveOp->moveOp->ValueMoveOp->asValueMoveOp->source->moveOp->getInput->dest->moveOp->getResult->return->source->getValueKind->dest->getValueKind->equals->return
+StandardOp.NullCheck#getCheckedValue()::: null check get checked value:::
+StandardOp.NullCheck#getState()::: null check get state:::
+StandardOp.ImplicitNullCheck#makeNullCheckFor(Value, LIRFrameState, int)::: implicit null check make null check for:::
+StandardOp.LabelHoldingOp#getLabel()::: label holding op get label:::
+StandardOp.LabelOp#setPhiValues(Value[])::: label op set phi values:::setIncomingValues->setNumberOfPhis
+StandardOp.LabelOp#setNumberOfPhis(int)::: label op set number of phis:::
+StandardOp.LabelOp#getPhiSize()::: label op get phi size:::return
+StandardOp.LabelOp#setIncomingValues(Value[])::: label op set incoming values:::
+StandardOp.LabelOp#getIncomingSize()::: label op get incoming size:::return
+StandardOp.LabelOp#getIncomingValue(int)::: label op get incoming value:::return
+StandardOp.LabelOp#clearIncomingValues()::: label op clear incoming values:::
+StandardOp.LabelOp#addIncomingValues(Value[])::: label op add incoming values:::if->setIncomingValues->return->t->newArray->new->ValueArr->System->arraycopy->System->arraycopy
+StandardOp.LabelOp#checkRange(int)::: label op check range:::return
+StandardOp.LabelOp#emitCode(CompilationResultBuilder)::: label op emit code:::if->crb->getOptions->getValue->align->bind
+StandardOp.LabelOp#getLabel()::: label op get label:::return
+StandardOp.LabelOp#isPhiIn()::: label op is phi in:::return->getPhiSize
+StandardOp.LabelOp#forEachIncomingValue(InstructionValueProcedure)::: label op for each incoming value:::for->i
+StandardOp.JumpOp#emitCode(CompilationResultBuilder)::: jump op emit code:::if->crb->isSuccessorEdge->destination->label->jmp
+StandardOp.JumpOp#destination()::: jump op destination:::return
+StandardOp.JumpOp#setPhiValues(Value[])::: jump op set phi values:::
+StandardOp.JumpOp#getPhiSize()::: jump op get phi size:::return
+StandardOp.JumpOp#getOutgoingValue(int)::: jump op get outgoing value:::return
+StandardOp.JumpOp#clearOutgoingValues()::: jump op clear outgoing values:::
+StandardOp.JumpOp#checkRange(int)::: jump op check range:::return
+StandardOp.MoveOp#getResult()::: move op get result:::
+StandardOp.MoveOp#asMoveOp(LIRInstruction)::: move op as move op:::return
+StandardOp.MoveOp#isMoveOp(LIRInstruction)::: move op is move op:::return->op->isMoveOp
+StandardOp.ValueMoveOp#getInput()::: value move op get input:::
+StandardOp.ValueMoveOp#asValueMoveOp(LIRInstruction)::: value move op as value move op:::return
+StandardOp.ValueMoveOp#isValueMoveOp(LIRInstruction)::: value move op is value move op:::return->op->isValueMoveOp
+StandardOp.LoadConstantOp#getConstant()::: load constant op get constant:::
+StandardOp.LoadConstantOp#asLoadConstantOp(LIRInstruction)::: load constant op as load constant op:::return
+StandardOp.LoadConstantOp#isLoadConstantOp(LIRInstruction)::: load constant op is load constant op:::return->op->isLoadConstantOp
 StandardOp.SaveRegistersOp#supportsRemove():::Determines if the #remove(EconomicSet) operation is supported for this object.:::
 StandardOp.SaveRegistersOp#remove(EconomicSet):::Prunes doNotSave from the registers saved by this operation.:::
 StandardOp.SaveRegistersOp#getMap(FrameMap):::Gets a map from the saved registers saved by this operation to the frame slots in which they are saved.:::
+StandardOp.NoOp#replace(LIR, LIRInstruction)::: no op replace:::instructions->lir->getLIRforBlock->instructions->set
+StandardOp.NoOp#remove(LIR)::: no op remove:::instructions->lir->getLIRforBlock->instructions->remove
+StandardOp.NoOp#emitCode(CompilationResultBuilder)::: no op emit code:::if->throw->new->GraalError
+StandardOp.BlackholeOp#emitCode(CompilationResultBuilder)::: blackhole op emit code:::
+StandardOp.BindToRegisterOp#emitCode(CompilationResultBuilder)::: bind to register op emit code:::
+StandardOp.SpillRegistersOp#destroysCallerSavedRegisters()::: spill registers op destroys caller saved registers:::return
+StandardOp.SpillRegistersOp#emitCode(CompilationResultBuilder)::: spill registers op emit code:::
+StandardOp.StackMove#emitCode(CompilationResultBuilder)::: stack move emit code:::throw->new->GraalError
+StandardOp.StackMove#getInput()::: stack move get input:::return
+StandardOp.StackMove#getResult()::: stack move get result:::return
+StateProcedure#doState(LIRFrameState)::: state procedure do state:::
+StateProcedure#doState(LIRInstruction, LIRFrameState)::: state procedure do state:::doState
+SwitchStrategy.SwitchClosure#conditionalJump(int, Condition, boolean):::Generates a conditional or unconditional jump:::
+SwitchStrategy.SwitchClosure#conditionalJumpOrDefault(int, Condition, boolean):::Generates a conditional jump to the target with the specified index:::
+SwitchStrategy.SwitchClosure#conditionalJump(int, Condition):::Create a new label and generate a conditional jump to it.:::
+SwitchStrategy.SwitchClosure#bind(Label):::Binds a label returned by #conditionalJump(int, Condition).:::
+SwitchStrategy.SwitchClosure#isSameTarget(int, int):::Return true iff the target of both indexes is the same.:::
 SwitchStrategy.BaseSwitchClosure#conditionalJump(int, Condition, Label):::This method generates code for a comparison between the actual value and the constant at the given index and a condition jump to target.:::
+SwitchStrategy.BaseSwitchClosure#conditionalJump(int, Condition, boolean)::: base switch closure conditional jump:::target->defaultTarget->label->label->if->masm->jmp->else->conditionalJump
+SwitchStrategy.BaseSwitchClosure#conditionalJumpOrDefault(int, Condition, boolean)::: base switch closure conditional jump or default:::if->crb->isSuccessorEdge->label->conditionalJump->else->if->crb->isSuccessorEdge->condition->negate->defaultTarget->label->conditionalJump->else->label->conditionalJump->masm->defaultTarget->label->jmp
+SwitchStrategy.BaseSwitchClosure#conditionalJump(int, Condition)::: base switch closure conditional jump:::label->new->Label->conditionalJump->return
+SwitchStrategy.BaseSwitchClosure#bind(Label)::: base switch closure bind:::masm->bind
+SwitchStrategy.BaseSwitchClosure#isSameTarget(int, int)::: base switch closure is same target:::return
+SwitchStrategy.EffortClosure#conditionalJump(int, Condition, boolean)::: effort closure conditional jump:::
+SwitchStrategy.EffortClosure#conditionalJumpOrDefault(int, Condition, boolean)::: effort closure conditional jump or default:::
+SwitchStrategy.EffortClosure#conditionalJump(int, Condition)::: effort closure conditional jump:::return
+SwitchStrategy.EffortClosure#bind(Label)::: effort closure bind:::
+SwitchStrategy.EffortClosure#isSameTarget(int, int)::: effort closure is same target:::return
+SwitchStrategy.EffortClosure#getAverageEffort()::: effort closure get average effort:::defaultProbability->effort->for->i->return
+SwitchStrategy#getKeyConstants()::: switch strategy get key constants:::
+SwitchStrategy#getAverageEffort()::: switch strategy get average effort:::return
 SwitchStrategy#registerEffort(int, int, int):::Tells the system that the given (inclusive) range of keys is reached after depth number of comparisons, which is used to calculate the average effort.:::if->for->i
 SwitchStrategy#registerDefaultEffort(int):::Tells the system that the default successor is reached after depth number of comparisons, which is used to calculate average effort.:::if
+SwitchStrategy#toString()::: switch strategy to string:::return->getClass->getSimpleName
+SwitchStrategy.SequentialStrategy#getKeyConstants()::: sequential strategy get key constants:::return
+SwitchStrategy.SequentialStrategy#run(SwitchClosure)::: sequential strategy run:::for->i->closure->conditionalJumpOrDefault->registerEffort->registerDefaultEffort
+SwitchStrategy.PrimitiveStrategy#getKeyConstants()::: primitive strategy get key constants:::return
+SwitchStrategy.PrimitiveStrategy#getSliceEnd(SwitchClosure, int):::Looks for the end of a stretch of key constants that are successive numbers and have the same target.:::slice->while->asLong->asLong->closure->isSameTarget->return
+SwitchStrategy.RangesStrategy#run(SwitchClosure)::: ranges strategy run:::depth->closure->conditionalJump->registerDefaultEffort->rangeStart->rangeEnd->getSliceEnd->while->if->closure->conditionalJump->registerEffort->else->if->asLong->asLong->closure->conditionalJump->registerDefaultEffort->closure->conditionalJump->registerEffort->getSliceEnd->if->closure->conditionalJumpOrDefault->registerEffort->registerDefaultEffort->else->if->asLong->asLong->closure->conditionalJump->registerDefaultEffort->closure->conditionalJumpOrDefault->registerEffort->registerDefaultEffort
+SwitchStrategy.BinaryStrategy#run(SwitchClosure)::: binary strategy run:::recurseBinarySwitch
+SwitchStrategy.BinaryStrategy#recurseBinarySwitch(SwitchClosure, int, int, int):::Recursively generate a list of comparisons that always subdivides the keys in the given (inclusive) range in the middle (in terms of probability, not index):::depth->leftBorder->rightBorder->if->if->asLong->asLong->asLong->asLong->closure->conditionalJump->registerEffort->closure->conditionalJumpOrDefault->registerEffort->registerDefaultEffort->else->closure->conditionalJump->registerEffort->closure->conditionalJump->registerEffort->return->probabilityStart->probabilityMiddle->middle->while->getSliceEnd->getSliceEnd->getSliceEnd->getSliceEnd->if->getSliceEnd->if->closure->conditionalJump->registerDefaultEffort->closure->conditionalJump->registerEffort->if->closure->conditionalJumpOrDefault->registerEffort->registerDefaultEffort->else->if->asLong->asLong->closure->conditionalJump->registerDefaultEffort->if->getSliceEnd->if->asLong->asLong->closure->conditionalJumpOrDefault->registerEffort->registerDefaultEffort->else->closure->conditionalJump->registerEffort->else->recurseBinarySwitch->else->if->getSliceEnd->if->asLong->asLong->closure->conditionalJump->registerDefaultEffort->closure->conditionalJump->registerEffort->recurseBinarySwitch->else->label->closure->conditionalJump->recurseBinarySwitch->closure->bind->recurseBinarySwitch
+SwitchStrategy#run(SwitchClosure)::: switch strategy run:::
+SwitchStrategy#getStrategies(double[], JavaConstant[], LabelRef[])::: switch strategy get strategies:::strategies->new->SwitchStrategyArr->new->SequentialStrategy->new->RangesStrategy->new->BinaryStrategy->foreach->strategy->new->EffortClosure->strategy->run->getAverageEffort->return
 SwitchStrategy#getBestStrategy(double[], JavaConstant[], LabelRef[]):::Creates all switch strategies for the given switch, evaluates them (based on average effort) and returns the best one.:::strategies->getStrategies->bestEffort->bestStrategy->foreach->if->strategy->getAverageEffort->strategy->getAverageEffort->return
 ValueConsumer#visitValue(Value, OperandMode, EnumSet):::Iterator method to be overwritten.:::
+ValueConsumer#visitValue(LIRInstruction, Value, OperandMode, EnumSet)::: value consumer visit value:::visitValue
 ValueProcedure#doValue(Value, OperandMode, EnumSet):::Iterator method to be overwritten.:::
+ValueProcedure#doValue(LIRInstruction, Value, OperandMode, EnumSet)::: value procedure do value:::return->doValue
+Variable#setName(String)::: variable set name:::
+Variable#getName()::: variable get name:::return
+Variable#toString()::: variable to string:::if->return->else->return->getKindSuffix
+Variable#hashCode()::: variable hash code:::return->super->hashCode
+Variable#equals(Object)::: variable equals:::if->other->return->super->equals->return
+VirtualStackSlot#getId()::: virtual stack slot get id:::return
+VirtualStackSlot#toString()::: virtual stack slot to string:::return->getKindSuffix
+VirtualStackSlot#hashCode()::: virtual stack slot hash code:::prime->result->super->hashCode->return
+VirtualStackSlot#equals(Object)::: virtual stack slot equals:::if->return->if->super->equals->return->if->getClass->obj->getClass->return->other->if->return->return

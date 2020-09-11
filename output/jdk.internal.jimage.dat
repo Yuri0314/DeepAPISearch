@@ -1,4 +1,210 @@
+BasicImageReader#isSystemProperty(String, String, String)::: basic image reader is system property:::return->AccessController->new->PrivilegedAction<Boolean>->doPrivileged
+BasicImageReader#open(Path)::: basic image reader open:::return->ByteOrder->nativeOrder->new->BasicImageReader
+BasicImageReader#getHeader()::: basic image reader get header:::return
+BasicImageReader#readHeader(IntBuffer)::: basic image reader read header:::result->ImageHeader->readFrom->if->result->getMagic->throw->new->IOException->if->result->getMajorVersion->result->getMinorVersion->throw->result->getMajorVersion->result->getMinorVersion->new->IOException->return
+BasicImageReader#slice(ByteBuffer, int, int)::: basic image reader slice:::synchronized->buffer->limit->buffer->position->return->buffer->slice
+BasicImageReader#intBuffer(ByteBuffer, int, int)::: basic image reader int buffer:::return->slice->order->asIntBuffer
+BasicImageReader#releaseByteBuffer(ByteBuffer)::: basic image reader release byte buffer:::Objects->requireNonNull->if->ImageBufferCache->releaseBuffer
+BasicImageReader#getName()::: basic image reader get name:::return
+BasicImageReader#getByteOrder()::: basic image reader get byte order:::return
+BasicImageReader#getImagePath()::: basic image reader get image path:::return
+BasicImageReader#close()::: basic image reader close:::if->channel->close
+BasicImageReader#getStrings()::: basic image reader get strings:::return
+BasicImageReader#findLocation(String, String)::: basic image reader find location:::Objects->requireNonNull->Objects->requireNonNull->count->header->getTableLength->index->redirect->ImageStringsReader->hashCode->get->if->else->if->ImageStringsReader->hashCode->else->return->attributes->offsets->get->getAttributes->if->ImageLocation->verify->return->return->new->ImageLocation
+BasicImageReader#findLocation(String)::: basic image reader find location:::Objects->requireNonNull->count->header->getTableLength->index->redirect->ImageStringsReader->hashCode->get->if->else->if->ImageStringsReader->hashCode->else->return->attributes->offsets->get->getAttributes->if->ImageLocation->verify->return->return->new->ImageLocation
+BasicImageReader#getEntryNames()::: basic image reader get entry names:::attributeOffsets->offsets->capacity->new->intArr->offsets->get->return->IntStream->of->filter->ImageLocation->readFrom->getFullName->mapToObj->sorted->String[]->new->toArray
+BasicImageReader#getLocation(int)::: basic image reader get location:::return->ImageLocation->readFrom
+BasicImageReader#getAttributes(int)::: basic image reader get attributes:::if->locations->limit->throw->new->IndexOutOfBoundsException->buffer->locations->limit->slice->return->ImageLocation->decompress
+BasicImageReader#getString(int)::: basic image reader get string:::if->strings->limit->throw->new->IndexOutOfBoundsException->buffer->strings->limit->slice->return->ImageStringsReader->stringFromByteBuffer
+BasicImageReader#getBufferBytes(ByteBuffer)::: basic image reader get buffer bytes:::Objects->requireNonNull->bytes->buffer->limit->new->byteArr->buffer->get->return
+BasicImageReader#readBuffer(long, long)::: basic image reader read buffer:::if->throw->new->IndexOutOfBoundsException->if->throw->new->IndexOutOfBoundsException->if->buffer->slice->buffer->order->return->else->if->throw->new->InternalError->buffer->ImageBufferCache->getBuffer->read->try->channel->read->buffer->rewind->catch->ImageBufferCache->releaseBuffer->throw->new->RuntimeException->finally->if->ImageBufferCache->releaseBuffer->throw->new->RuntimeException->return
+BasicImageReader#getResource(String)::: basic image reader get resource:::Objects->requireNonNull->location->findLocation->return->getResource
+BasicImageReader#getResource(ImageLocation)::: basic image reader get resource:::buffer->getResourceBuffer->if->bytes->getBufferBytes->ImageBufferCache->releaseBuffer->return->return
+BasicImageReader#getResourceBuffer(ImageLocation)::: basic image reader get resource buffer:::Objects->requireNonNull->offset->loc->getContentOffset->compressedSize->loc->getCompressedSize->uncompressedSize->loc->getUncompressedSize->if->throw->new->IndexOutOfBoundsException->if->throw->new->IndexOutOfBoundsException->if->return->readBuffer->else->buffer->readBuffer->if->bytesIn->getBufferBytes->ImageBufferCache->releaseBuffer->bytesOut->try->decompressor->getString->decompressResource->catch->throw->new->RuntimeException->finally->return->ByteBuffer->wrap->return
+BasicImageReader#getResourceStream(ImageLocation)::: basic image reader get resource stream:::Objects->requireNonNull->bytes->getResource->return->new->ByteArrayInputStream
+ImageBufferCache#allocateBuffer(long)::: image buffer cache allocate buffer:::return->ByteBuffer->allocateDirect
+ImageBufferCache#getBuffer(long)::: image buffer cache get buffer:::if->throw->new->IndexOutOfBoundsException->result->if->allocateBuffer->else->cache->CACHE->get->for->i->if->allocateBuffer->result->limit->return
+ImageBufferCache#releaseBuffer(ByteBuffer)::: image buffer cache release buffer:::if->buffer->capacity->return->cache->CACHE->get->for->i->new->BufferReference->Arrays->sort
+ImageHeader#getHeaderSize()::: image header get header size:::return
+ImageHeader#readFrom(IntBuffer)::: image header read from:::Objects->requireNonNull->if->buffer->capacity->throw->buffer->capacity->new->InternalError->magic->buffer->get->version->buffer->get->majorVersion->minorVersion->flags->buffer->get->resourceCount->buffer->get->tableLength->buffer->get->locationsSize->buffer->get->stringsSize->buffer->get->return->new->ImageHeader
+ImageHeader#writeTo(ImageStream)::: image header write to:::Objects->requireNonNull->stream->getHeaderSize->ensure->stream->getBuffer->writeTo
+ImageHeader#writeTo(ByteBuffer)::: image header write to:::Objects->requireNonNull->buffer->putInt->buffer->putInt->buffer->putInt->buffer->putInt->buffer->putInt->buffer->putInt->buffer->putInt
+ImageHeader#getMagic()::: image header get magic:::return
+ImageHeader#getMajorVersion()::: image header get major version:::return
+ImageHeader#getMinorVersion()::: image header get minor version:::return
+ImageHeader#getFlags()::: image header get flags:::return
+ImageHeader#getResourceCount()::: image header get resource count:::return
+ImageHeader#getTableLength()::: image header get table length:::return
+ImageHeader#getRedirectSize()::: image header get redirect size:::return
+ImageHeader#getOffsetsSize()::: image header get offsets size:::return
+ImageHeader#getLocationsSize()::: image header get locations size:::return
+ImageHeader#getStringsSize()::: image header get strings size:::return
+ImageHeader#getIndexSize()::: image header get index size:::return->getHeaderSize->getRedirectSize->getOffsetsSize->getLocationsSize->getStringsSize
+ImageHeader#getRedirectOffset()::: image header get redirect offset:::return->getHeaderSize
+ImageHeader#getOffsetsOffset()::: image header get offsets offset:::return->getRedirectOffset->getRedirectSize
+ImageHeader#getLocationsOffset()::: image header get locations offset:::return->getOffsetsOffset->getOffsetsSize
+ImageHeader#getStringsOffset()::: image header get strings offset:::return->getLocationsOffset->getLocationsSize
+ImageLocation#getStrings()::: image location get strings:::return
+ImageLocation#decompress(ByteBuffer)::: image location decompress:::Objects->requireNonNull->attributes->new->longArr->if->while->bytes->hasRemaining->data->bytes->get->kind->if->break->if->throw->new->InternalError->length->value->for->j->return
+ImageLocation#compress(long[])::: image location compress:::Objects->requireNonNull->stream->new->ImageStream->for->kind->stream->put->return->stream->toArray
+ImageLocation#verify(String)::: image location verify:::return->verify
 ImageLocation#verify(String, long[], ImageStrings):::A simpler verification would be name.equals(getFullName()), but by not creating the full name and enabling early returns we allocate fewer objects:::Objects->requireNonNull->length->name->length->index->moduleOffset->if->module->strings->get->moduleLen->module->length->if->name->charAt->name->regionMatches->name->charAt->return->return->verifyName
+ImageLocation#verify(String, String, long[], ImageStrings)::: image location verify:::Objects->requireNonNull->Objects->requireNonNull->moduleOffset->if->if->module->strings->get->equals->return->return->name->length->verifyName
+ImageLocation#verifyName(String, int, int, long[], ImageStrings)::: image location verify name:::parentOffset->if->parent->strings->get->parentLen->parent->length->if->name->regionMatches->return->if->name->charAt->return->base->strings->get->baseLen->base->length->if->name->regionMatches->return->extOffset->if->extension->strings->get->extLen->extension->length->if->name->charAt->name->regionMatches->return->return
+ImageLocation#getAttribute(int)::: image location get attribute:::if->throw->new->InternalError->return
+ImageLocation#getAttributeString(int)::: image location get attribute string:::if->throw->new->InternalError->return->getStrings->get
+ImageLocation#getModule()::: image location get module:::return->getAttributeString
+ImageLocation#getModuleOffset()::: image location get module offset:::return->getAttribute
+ImageLocation#getBase()::: image location get base:::return->getAttributeString
+ImageLocation#getBaseOffset()::: image location get base offset:::return->getAttribute
+ImageLocation#getParent()::: image location get parent:::return->getAttributeString
+ImageLocation#getParentOffset()::: image location get parent offset:::return->getAttribute
+ImageLocation#getExtension()::: image location get extension:::return->getAttributeString
+ImageLocation#getExtensionOffset()::: image location get extension offset:::return->getAttribute
+ImageLocation#getFullName()::: image location get full name:::return->getFullName
+ImageLocation#getFullName(boolean)::: image location get full name:::builder->new->StringBuilder->if->getModuleOffset->if->builder->append->builder->append->builder->getModule->append->builder->append->if->getParentOffset->builder->getParent->append->builder->append->builder->getBase->append->if->getExtensionOffset->builder->append->builder->getExtension->append->return->builder->toString
+ImageLocation#buildName(boolean, boolean, boolean)::: image location build name:::builder->new->StringBuilder->if->getModuleOffset->builder->append->builder->getModule->append->if->getParentOffset->builder->append->builder->getParent->append->if->if->builder->append->builder->getBase->append->if->getExtensionOffset->builder->append->builder->getExtension->append->return->builder->toString
+ImageLocation#getContentOffset()::: image location get content offset:::return->getAttribute
+ImageLocation#getCompressedSize()::: image location get compressed size:::return->getAttribute
+ImageLocation#getUncompressedSize()::: image location get uncompressed size:::return->getAttribute
+ImageLocation#readFrom(BasicImageReader, int)::: image location read from:::Objects->requireNonNull->attributes->reader->getAttributes->strings->reader->getStrings->return->new->ImageLocation
+ImageReader#open(Path, ByteOrder)::: image reader open:::Objects->requireNonNull->Objects->requireNonNull->return->SharedImageReader->open
+ImageReader#open(Path)::: image reader open:::return->ByteOrder->nativeOrder->open
+ImageReader#close()::: image reader close:::if->throw->new->IOException->reader->close
+ImageReader#ensureOpen()::: image reader ensure open:::if->throw->new->IOException
+ImageReader#requireOpen()::: image reader require open:::if->throw->new->IllegalStateException
+ImageReader#getRootDirectory()::: image reader get root directory:::ensureOpen->return->reader->getRootDirectory
+ImageReader#findNode(String)::: image reader find node:::ensureOpen->return->reader->findNode
+ImageReader#getResource(Node)::: image reader get resource:::ensureOpen->return->reader->getResource
+ImageReader#getResource(Resource)::: image reader get resource:::ensureOpen->return->reader->getResource
+ImageReader#getHeader()::: image reader get header:::requireOpen->return->reader->getHeader
+ImageReader#releaseByteBuffer(ByteBuffer)::: image reader release byte buffer:::BasicImageReader->releaseByteBuffer
+ImageReader#getName()::: image reader get name:::requireOpen->return->reader->getName
+ImageReader#getByteOrder()::: image reader get byte order:::requireOpen->return->reader->getByteOrder
+ImageReader#getImagePath()::: image reader get image path:::requireOpen->return->reader->getImagePath
+ImageReader#getStrings()::: image reader get strings:::requireOpen->return->reader->getStrings
+ImageReader#findLocation(String, String)::: image reader find location:::requireOpen->return->reader->findLocation
+ImageReader#findLocation(String)::: image reader find location:::requireOpen->return->reader->findLocation
+ImageReader#getEntryNames()::: image reader get entry names:::requireOpen->return->reader->getEntryNames
+ImageReader#getModuleNames()::: image reader get module names:::requireOpen->off->length->return->reader->findNode->getChildren->stream->Node->getNameString->map->s->s->length->substring->map->String[]->new->toArray
+ImageReader#getAttributes(int)::: image reader get attributes:::requireOpen->return->reader->getAttributes
+ImageReader#getString(int)::: image reader get string:::requireOpen->return->reader->getString
+ImageReader#getResource(String)::: image reader get resource:::requireOpen->return->reader->getResource
+ImageReader#getResource(ImageLocation)::: image reader get resource:::requireOpen->return->reader->getResource
+ImageReader#getResourceBuffer(ImageLocation)::: image reader get resource buffer:::requireOpen->return->reader->getResourceBuffer
+ImageReader#getResourceStream(ImageLocation)::: image reader get resource stream:::requireOpen->return->reader->getResourceStream
+ImageReader.SharedImageReader#open(Path, ByteOrder)::: shared image reader open:::Objects->requireNonNull->Objects->requireNonNull->synchronized->reader->OPEN_FILES->get->if->new->SharedImageReader->OPEN_FILES->put->else->if->reader->getByteOrder->throw->reader->getName->new->IOException->image->new->ImageReader->add->return
+ImageReader.SharedImageReader#close(ImageReader)::: shared image reader close:::Objects->requireNonNull->synchronized->if->openers->remove->throw->new->IOException->if->openers->isEmpty->close->nodes->clear->if->OPEN_FILES->this->getImagePath->remove->throw->new->IOException
+ImageReader.SharedImageReader#addOpener(ImageReader)::: shared image reader add opener:::synchronized->openers->add
+ImageReader.SharedImageReader#removeOpener(ImageReader)::: shared image reader remove opener:::synchronized->return->openers->remove
+ImageReader.SharedImageReader#getRootDirectory()::: shared image reader get root directory:::return->buildRootDirectory
+ImageReader.SharedImageReader#buildNode(String):::Lazily build a node from a name.:::n->isPackages->name->startsWith->isModules->name->startsWith->if->return->loc->findLocation->if->if->handlePackages->else->handleModulesSubTree->else->if->handleResource->else->handleModuleLink->return
+ImageReader.SharedImageReader#buildRootDirectory()::: shared image reader build root directory:::root->if->return->newDirectory->root->setIsRootDir->newDirectory->packagesDir->setIsPackagesDir->newDirectory->modulesDir->setIsModulesDir->root->setCompleted->return
+ImageReader.SharedImageReader.LocationVisitor#visit(ImageLocation)::: location visitor visit:::
+ImageReader.SharedImageReader#visitLocation(ImageLocation, LocationVisitor)::: shared image reader visit location:::offsets->getResource->buffer->ByteBuffer->wrap->buffer->getByteOrder->order->intBuffer->buffer->asIntBuffer->for->i
+ImageReader.SharedImageReader#visitPackageLocation(ImageLocation)::: shared image reader visit package location:::pkgName->getBaseExt->stringsOffsets->getResource->buffer->ByteBuffer->wrap->buffer->getByteOrder->order->intBuffer->buffer->asIntBuffer->for->i
+ImageReader.SharedImageReader#handlePackages(String, ImageLocation)::: shared image reader handle packages:::size->loc->getUncompressedSize->n->if->name->equals->childloc->getFullName->findNode->visitLocation->packagesDir->setCompleted->else->if->pkgName->getBaseExt->pkgDir->packagesDir->getName->newDirectory->visitPackageLocation->pkgDir->setCompleted->else->pkgName->loc->getParent->modName->getBaseExt->targetNode->findNode->if->pkgDirName->packagesDir->getName->pkgDir->nodes->get->linkNode->pkgDir->getName->newLinkNode->return
+ImageReader.SharedImageReader#handleModuleLink(String)::: shared image reader handle module link:::ret->radical->path->if->path->startsWith->start->radical->length->pkgEnd->path->indexOf->if->pkg->path->substring->pkgPath->n->findNode->foreach->n->getChildren->if->equals->break->return
+ImageReader.SharedImageReader#handleModulesSubTree(String, ImageLocation)::: shared image reader handle modules sub tree:::n->dir->makeDirectories->path->childloc->getFullName->if->path->startsWith->makeDirectories->else->childloc->buildName->makeDirectories->newResource->visitLocation->dir->setCompleted->return
+ImageReader.SharedImageReader#handleResource(String)::: shared image reader handle resource:::n->locationPath->name->length->substring->resourceLoc->findLocation->if->dir->resourceLoc->buildName->makeDirectories->res->newResource->return
+ImageReader.SharedImageReader#getBaseExt(ImageLocation)::: shared image reader get base ext:::base->loc->getBase->ext->loc->getExtension->if->ext->isEmpty->return
+ImageReader.SharedImageReader#findNode(String)::: shared image reader find node:::buildRootDirectory->n->nodes->get->if->n->isCompleted->buildNode->return
+ImageReader.SharedImageReader#imageFileAttributes():::Returns the file attributes of the image file.:::attrs->if->try->file->getImagePath->Files->readAttributes->catch->throw->new->UncheckedIOException->finally->return
+ImageReader.SharedImageReader#newDirectory(Directory, String)::: shared image reader new directory:::dir->Directory->imageFileAttributes->create->nodes->dir->getName->put->return
+ImageReader.SharedImageReader#newResource(Directory, ImageLocation)::: shared image reader new resource:::res->Resource->imageFileAttributes->create->nodes->res->getName->put->return
+ImageReader.SharedImageReader#newLinkNode(Directory, String, Node)::: shared image reader new link node:::linkNode->LinkNode->create->nodes->linkNode->getName->put->return
+ImageReader.SharedImageReader#makeDirectories(String)::: shared image reader make directories:::last->for->offset->parent->indexOf->parent->indexOf->return->makeDirectory
+ImageReader.SharedImageReader#makeDirectory(String, Directory)::: shared image reader make directory:::nextDir->nodes->get->if->newDirectory->return
+ImageReader.SharedImageReader#getResource(Node)::: shared image reader get resource:::if->node->isResource->return->super->node->getLocation->getResource->throw->new->IOException
+ImageReader.SharedImageReader#getResource(Resource)::: shared image reader get resource:::return->super->rs->getLocation->getResource
 ImageReader.Node#isCompleted():::A node is completed when all its direct children have been built.:::return
+ImageReader.Node#setCompleted(boolean)::: node set completed:::
+ImageReader.Node#setIsRootDir()::: node set is root dir:::
+ImageReader.Node#isRootDir()::: node is root dir:::return
+ImageReader.Node#setIsPackagesDir()::: node set is packages dir:::
+ImageReader.Node#isPackagesDir()::: node is packages dir:::return
+ImageReader.Node#setIsModulesDir()::: node set is modules dir:::
+ImageReader.Node#isModulesDir()::: node is modules dir:::return
+ImageReader.Node#getName()::: node get name:::return
+ImageReader.Node#getFileAttributes()::: node get file attributes:::return
+ImageReader.Node#resolveLink()::: node resolve link:::return->resolveLink
+ImageReader.Node#resolveLink(boolean)::: node resolve link:::return
+ImageReader.Node#isLink()::: node is link:::return
+ImageReader.Node#isDirectory()::: node is directory:::return
+ImageReader.Node#getChildren()::: node get children:::throw->getNameString->new->IllegalArgumentException
+ImageReader.Node#isResource()::: node is resource:::return
+ImageReader.Node#getLocation()::: node get location:::throw->getNameString->new->IllegalArgumentException
+ImageReader.Node#size()::: node size:::return
+ImageReader.Node#compressedSize()::: node compressed size:::return
+ImageReader.Node#extension()::: node extension:::return
+ImageReader.Node#contentOffset()::: node content offset:::return
+ImageReader.Node#creationTime()::: node creation time:::return->fileAttrs->creationTime
+ImageReader.Node#lastAccessTime()::: node last access time:::return->fileAttrs->lastAccessTime
+ImageReader.Node#lastModifiedTime()::: node last modified time:::return->fileAttrs->lastModifiedTime
+ImageReader.Node#getNameString()::: node get name string:::return
+ImageReader.Node#toString()::: node to string:::return->getNameString
+ImageReader.Node#hashCode()::: node hash code:::return->name->hashCode
+ImageReader.Node#equals(Object)::: node equals:::if->return->if->return->name->equals->return
+ImageReader.Directory#create(Directory, String, BasicFileAttributes)::: directory create:::d->new->Directory->if->parent->addChild->return
+ImageReader.Directory#isDirectory()::: directory is directory:::return
+ImageReader.Directory#getChildren()::: directory get children:::return->Collections->unmodifiableList
+ImageReader.Directory#addChild(Node)::: directory add child:::children->add
+ImageReader.Directory#walk(Consumer)::: directory walk:::consumer->accept->foreach->if->child->isDirectory->walk->else->consumer->accept
+ImageReader.Resource#create(Directory, ImageLocation, BasicFileAttributes)::: resource create:::rs->new->Resource->parent->addChild->return
+ImageReader.Resource#isCompleted()::: resource is completed:::return
+ImageReader.Resource#isResource()::: resource is resource:::return
+ImageReader.Resource#getLocation()::: resource get location:::return
+ImageReader.Resource#size()::: resource size:::return->loc->getUncompressedSize
+ImageReader.Resource#compressedSize()::: resource compressed size:::return->loc->getCompressedSize
+ImageReader.Resource#extension()::: resource extension:::return->loc->getExtension
+ImageReader.Resource#contentOffset()::: resource content offset:::return->loc->getContentOffset
+ImageReader.LinkNode#create(Directory, String, Node)::: link node create:::ln->new->LinkNode->parent->addChild->return
+ImageReader.LinkNode#isCompleted()::: link node is completed:::return
+ImageReader.LinkNode#resolveLink(boolean)::: link node resolve link:::return->resolveLink
+ImageReader.LinkNode#isLink()::: link node is link:::return
 ImageReaderFactory#get(Path):::Returns an ImageReader to read from the given image file:::Objects->requireNonNull->try->return->readers->computeIfAbsent->catch->throw->io->getCause->finally
 ImageReaderFactory#getImageReader():::Returns the ImageReader to read the image file in this run-time image.:::try->return->get->catch->throw->new->UncheckedIOException->finally
+ImageStream#align(int)::: image stream align:::padding->getSize->for->i->return
+ImageStream#ensure(int)::: image stream ensure:::if->throw->new->IndexOutOfBoundsException->if->buffer->remaining->bytes->buffer->array->byteOrder->buffer->order->position->buffer->position->newSize->ByteBuffer->allocate->buffer->order->buffer->put
+ImageStream#hasByte()::: image stream has byte:::return->buffer->remaining
+ImageStream#hasBytes(int)::: image stream has bytes:::return->buffer->remaining
+ImageStream#skip(int)::: image stream skip:::if->throw->new->IndexOutOfBoundsException->buffer->buffer->position->position
+ImageStream#get()::: image stream get:::return->buffer->get
+ImageStream#get(byte[], int, int)::: image stream get:::buffer->get
+ImageStream#getShort()::: image stream get short:::return->buffer->getShort
+ImageStream#getInt()::: image stream get int:::return->buffer->getInt
+ImageStream#getLong()::: image stream get long:::return->buffer->getLong
+ImageStream#put(byte)::: image stream put:::ensure->buffer->put->return
+ImageStream#put(int)::: image stream put:::return->put
+ImageStream#put(byte[], int, int)::: image stream put:::ensure->buffer->put->return
+ImageStream#put(ImageStream)::: image stream put:::array->position->put->return
+ImageStream#putShort(short)::: image stream put short:::ensure->buffer->putShort->return
+ImageStream#putShort(int)::: image stream put short:::return->putShort
+ImageStream#putInt(int)::: image stream put int:::ensure->buffer->putInt->return
+ImageStream#putLong(long)::: image stream put long:::ensure->buffer->putLong->return
+ImageStream#getBuffer()::: image stream get buffer:::return
+ImageStream#getPosition()::: image stream get position:::return->buffer->position
+ImageStream#getSize()::: image stream get size:::return->buffer->position
+ImageStream#getBytes()::: image stream get bytes:::return->buffer->array
+ImageStream#setPosition(int)::: image stream set position:::buffer->position
+ImageStream#toArray()::: image stream to array:::return->Arrays->buffer->array->buffer->position->copyOf
+ImageStrings#get(int)::: image strings get:::
+ImageStrings#add(String)::: image strings add:::
+ImageStringsReader#get(int)::: image strings reader get:::return->reader->getString
+ImageStringsReader#add(String)::: image strings reader add:::throw->new->InternalError
+ImageStringsReader#hashCode(String)::: image strings reader hash code:::return->hashCode
+ImageStringsReader#hashCode(String, int)::: image strings reader hash code:::return->unmaskedHashCode
+ImageStringsReader#hashCode(String, String)::: image strings reader hash code:::return->hashCode
+ImageStringsReader#hashCode(String, String, int)::: image strings reader hash code:::unmaskedHashCode->unmaskedHashCode->unmaskedHashCode->unmaskedHashCode->return
+ImageStringsReader#unmaskedHashCode(String, int)::: image strings reader unmasked hash code:::slen->s->length->buffer->for->i->return
+ImageStringsReader#charsFromMUTF8Length(byte[], int, int)::: image strings reader chars from f8 length:::length->for->i->return
+ImageStringsReader#charsFromMUTF8(char[], byte[], int, int)::: image strings reader chars from f8:::j->for->i
+ImageStringsReader#stringFromMUTF8(byte[], int, int)::: image strings reader string from f8:::length->charsFromMUTF8Length->chars->new->charArr->try->charsFromMUTF8->catch->throw->new->InternalError->finally->return->new->String
+ImageStringsReader#stringFromMUTF8(byte[])::: image strings reader string from f8:::return->stringFromMUTF8
+ImageStringsReader#charsFromByteBufferLength(ByteBuffer)::: image strings reader chars from byte buffer length:::length->while->buffer->hasRemaining->ch->buffer->get->if->return->if->throw->new->InternalError
+ImageStringsReader#charsFromByteBuffer(char[], ByteBuffer)::: image strings reader chars from byte buffer:::j->while->buffer->hasRemaining->ch->buffer->get->if->return->is_unicode->uch->if->mask->while->buffer->get->if->throw->new->InternalError->if->throw->new->InternalError->throw->new->InternalError
+ImageStringsReader#stringFromByteBuffer(ByteBuffer)::: image strings reader string from byte buffer:::length->charsFromByteBufferLength->buffer->rewind->chars->new->charArr->charsFromByteBuffer->return->new->String
+ImageStringsReader#mutf8FromStringLength(String)::: image strings reader mutf8 from string length:::length->slen->s->length->for->i->return
+ImageStringsReader#mutf8FromString(byte[], int, String)::: image strings reader mutf8 from string:::j->buffer->slen->s->length->for->i
+ImageStringsReader#mutf8FromString(String)::: image strings reader mutf8 from string:::length->mutf8FromStringLength->bytes->new->byteArr->mutf8FromString->return
+NativeImageBuffer#getNativeMap(String)::: native image buffer get native map:::

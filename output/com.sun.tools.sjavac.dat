@@ -1,3 +1,11 @@
+AutoFlushWriter#write(int)::: auto flush writer write:::super->write->if->flush
+AutoFlushWriter#write(String, int, int)::: auto flush writer write:::super->write->if->str->contains->str->contains->flush
+AutoFlushWriter#write(char[], int, int)::: auto flush writer write:::super->write->foreach->if->flush->break
+BuildState#modules()::: build state modules:::return
+BuildState#packages()::: build state packages:::return
+BuildState#sources()::: build state sources:::return
+BuildState#artifacts()::: build state artifacts:::return
+BuildState#dependents()::: build state dependents:::return
 BuildState#lookupModule(String):::Lookup a module from a name:::m->modules->get->if->new->Module->modules->put->return
 BuildState#findModuleFromPackageName(String):::Find a module from a given package name:::cp->pkg->indexOf->Assert->check->mod->pkg->substring->return->lookupModule
 BuildState#flattenPackagesSourcesAndArtifacts(Map):::Store references to all packages, sources and artifacts for all modules into the build state:::foreach->modules->values->foreach->i->packages->entrySet->p->packages->j->getKey->get->Assert->j->getValue->check->if->j->getValue->packages->j->getKey->j->getValue->put->foreach->p->sources->entrySet->s->sources->k->getKey->get->Assert->k->getValue->check->if->k->getValue->sources->k->getKey->k->getValue->put->foreach->p->artifacts->entrySet->f->artifacts->g->getKey->get->Assert->g->getValue->check->if->g->getValue->artifacts->g->getKey->g->getValue->put
@@ -8,12 +16,34 @@ BuildState#loadModule(String):::Load a module from the javac state file.:::m->Mo
 BuildState#loadPackage(Module, String):::Load a package from the javac state file.:::p->Package->load->lastModule->addPackage->packages->p->name->put->return
 BuildState#loadSource(Package, String, boolean):::Load a source from the javac state file.:::s->Source->load->lastPackage->addSource->sources->s->name->put->return
 BuildState#copyPackagesExcept(BuildState, Set, Set):::During an incremental compile we need to copy the old javac state information about packages that were not recompiled.:::foreach->prev->packages->keySet->if->recompiled->contains->removed->contains->continue->mnew->findModuleFromPackageName->pprev->prev->packages->get->if->packages->containsKey->pprev->PubApi->pprev->getPubApi->packages->get->getPubApi->mergeTypes->setPubapi->mnew->addPackage->packages->put
+CleanProperties#setExtra(String)::: clean properties set extra:::
+CleanProperties#setExtra(Options)::: clean properties set extra:::
+CleanProperties#transform(CompilationService, Map>, Set, Map>, URI, Map>, Map>>, Map>>, Map, Map, int, boolean, int)::: clean properties transform:::rc->foreach->pkgSrcs->keySet->pkgNameF->pkgName->replace->foreach->pkgSrcs->get->src->new->File->r->new->File->clean->if->return
+CleanProperties#clean(String, String, File, File, int, Map>)::: clean properties clean:::p->new->Properties->try->p->new->FileInputStream->load->catch->Log->src->getPath->error->return->finally->sortedKeys->new->ArrayList<>->foreach->p->keySet->sortedKeys->add->Collections->sort->data->new->StringBuilder->foreach->data->CompileProperties->escape->append->append->CompileProperties->p->get->escape->append->append->destFilename->destRoot->getPath->src->getName->dest->new->File->if->dest->getParentFile->isDirectory->if->dest->getParentFile->mkdirs->Log->dest->getParentFile->getPath->error->return->as->packageArtifacts->get->if->new->HashSet<>->packageArtifacts->put->as->dest->toURI->add->if->dest->exists->dest->lastModified->src->lastModified->return->Log->src->getName->info->try->writer->new->FileOutputStream->new->OutputStreamWriter->new->BufferedWriter->writer->data->toString->write->catch->Log->dest->getPath->error->return->finally->return
+CompileChunk#compareTo(CompileChunk)::: compile chunk compare to:::if->return->if->return->return
+CompileChunk#equal(CompileChunk)::: compile chunk equal:::return
+CompileJavaPackages#setExtra(String)::: compile java packages set extra:::
+CompileJavaPackages#setExtra(Options)::: compile java packages set extra:::
+CompileJavaPackages#transform(CompilationService, Map>, Set, Map>, URI, Map>, Map>>, Map>>, Map, Map, int, boolean, int)::: compile java packages transform:::Log->debug->rc->concurrentCompiles->id->String->new->Random->nextInt->valueOf->sysinfo->sjavac->getSysInfo->numMBytes->Log->debug->if->Log->debug->else->if->Log->debug->else->Log->debug->numCompiles->if->numSources->foreach->pkgSrcs->keySet->ss->pkgSrcs->get->ss->size->sourcesPerCompile->kbPerFile->osarch->System->getProperty->dataModel->System->getProperty->if->equals->numRequiredMBytes->Log->debug->Log->debug->Log->debug->if->if->Log->debug->else->if->Log->debug->else->if->usagePerCompile->usage->Log->debug->if->Log->debug->Log->debug->compileChunks->createCompileChunks->if->Log->isDebugging->cn->foreach->Log->debug->foreach->Log->debug->start->System->currentTimeMillis->compilationCalls->new->ArrayList<>->lock->new->Object->for->i->subResults->new->ArrayList<>->futs->new->ArrayList<>->exec->Executors->compilationCalls->size->newFixedThreadPool->foreach->futs->exec->submit->add->foreach->try->subResults->fut->get->add->catch->Log->ee->getMessage->error->Log->error->Log->ie->getMessage->error->Log->error->Thread->currentThread->interrupt->finally->exec->shutdownNow->foreach->foreach->keySet->pkgArtifacts->get->packageArtifacts->Util->union->merge->foreach->keySet->packageDependencies->new->HashMap<>->putIfAbsent->packageDependencies->get->get->putAll->foreach->keySet->packageCpDependencies->new->HashMap<>->putIfAbsent->packageCpDependencies->get->get->putAll->foreach->keySet->packagePubapis->get->PubApi->mergeTypes->merge->foreach->keySet->dependencyPubapis->get->PubApi->mergeTypes->merge->if->duration->System->currentTimeMillis->minutes->seconds->Log->debug->return
 CompileJavaPackages#createCompileChunks(Map>, Map>, int, int):::Split up the sources into compile chunks:::compileChunks->new->CompileChunkArr->for->i->ci->packageNames->pkgSrcs->keySet->new->StringArr->toArray->Arrays->sort->from->foreach->cc->s->pkgSrcs->get->if->size->s->size->addAll->justPkgName->Util->justPackageName->ss->oldPackageDependents->get->if->ss->size->if->from->trim->equals->s->size->append->Arrays->sort->return
+CompileProperties#setExtra(String)::: compile properties set extra:::
+CompileProperties#setExtra(Options)::: compile properties set extra:::
+CompileProperties#transform(CompilationService, Map>, Set, Map>, URI, Map>, Map>>, Map>>, Map, Map, int, boolean, int)::: compile properties transform:::rc->foreach->pkgSrcs->keySet->pkgNameF->Util->toFileSystemPath->foreach->pkgSrcs->get->src->new->File->r->new->File->compile->if->return
+CompileProperties#compile(String, String, File, File, int, Map>)::: compile properties compile:::superClass->if->p->new->Properties->try->p->new->FileInputStream->load->catch->Log->src->getPath->error->return->finally->dp->src->getName->lastIndexOf->classname->src->getName->substring->sortedKeys->new->ArrayList<>->foreach->p->keySet->sortedKeys->add->Collections->sort->keys->sortedKeys->iterator->data->new->StringBuilder->while->keys->hasNext->key->keys->next->data->escape->p->get->escape->append->destFilename->destRoot->getPath->dest->new->File->if->dest->getParentFile->isDirectory->if->dest->getParentFile->mkdirs->Log->dest->getParentFile->getPath->error->return->as->packageArtifacts->get->if->new->HashSet<>->packageArtifacts->put->as->dest->toURI->add->if->dest->exists->dest->lastModified->src->lastModified->return->packageString->pkgNameF->replace->Log->src->getName->info->try->writer->new->FileOutputStream->new->OutputStreamWriter->new->BufferedWriter->format->new->MessageFormat->writer->format->new->ObjectArr->format->write->catch->Log->dest->getPath->error->return->finally->return
+CompileProperties#escape(String)::: compile properties escape:::len->theString->length->outBuffer->new->StringBuilder->for->x->return->outBuffer->toString
+CompileProperties#toHex(int)::: compile properties to hex:::return
+CopyFile#setExtra(String)::: copy file set extra:::
+CopyFile#setExtra(Options)::: copy file set extra:::
+CopyFile#transform(CompilationService, Map>, Set, Map>, URI, Map>, Map>>, Map>>, Map, Map, int, boolean, int)::: copy file transform:::rc->dest_filename->dest->foreach->pkgSrcs->keySet->pkgNameF->Util->toFileSystemPath->foreach->pkgSrcs->get->src->new->File->destDir->destRoot->getPath->new->File->destRoot->getPath->src->getName->new->File->if->destDir->isDirectory->if->destDir->mkdirs->Log->destDir->getPath->error->return->as->packageArtifacts->get->if->new->HashSet<>->packageArtifacts->put->as->dest->toURI->add->if->dest->exists->dest->lastModified->src->lastModified->continue->Log->src->getName->info->try->fin->new->FileInputStream->fout->new->FileOutputStream->buf->new->byteArr->len->while->fin->read->fout->write->catch->Log->src->getPath->dest->getPath->error->finally->return
+JavacState#prev()::: javac state prev:::return
+JavacState#now()::: javac state now:::return
 JavacState#removeArgsNotAffectingState(String[]):::Remove args not affecting the state.:::out->new->StringArr->j->for->i->ret->new->StringArr->System->arraycopy->return
 JavacState#setVisibleSources(Map):::Specify which sources are visible to the compiler through -sourcepath.:::new->HashSet<>->foreach->vs->keySet->src->vs->get->visibleSrcs->src->file->toURI->add
 JavacState#isIncremental():::Returns true if this is an incremental build.:::return->prev->sources->isEmpty
 JavacState#findAllArtifacts():::Find all artifacts that exists on disk.:::findAllFiles->findAllFiles->findAllFiles
+JavacState#fetchPrevArtifacts(String):::Lookup the artifacts generated for this package in the previous build.:::p->prev->packages->get->if->return->p->artifacts->return->new->HashMap<>
 JavacState#deleteClassArtifactsInTaintedPackages():::Delete all prev artifacts in the currently tainted packages.:::foreach->arts->fetchPrevArtifacts->foreach->arts->values->if->f->exists->f->getName->endsWith->f->delete
+JavacState#needsSaving():::Mark the javac_state file to be in need of saving and as a side effect, it gets a new timestamp.:::
 JavacState#save():::Save the javac_state file.:::if->return->try->out->new->FileWriter->b->new->StringBuilder->millisNow->System->currentTimeMillis->d->new->Date->df->new->SimpleDateFormat->b->df->format->append->b->append->b->append->b->append->b->append->b->append->b->append->b->append->b->append->b->append->b->append->b->append->b->append->append->append->now->new->HashSet<String>->copyPackagesExcept->Module->now->modules->saveModules->s->b->toString->out->s->length->write->catch->finally
 JavacState#load(Options):::Load a javac_state file.:::db->new->JavacState->lastModule->lastPackage->lastSource->noFileFound->foundCorrectVerNr->newCommandLine->syntaxError->Log->debug->try->in->new->FileReader->new->BufferedReader->for->catch->Log->warn->new->JavacState->finally->if->Log->debug->new->JavacState->else->if->Log->debug->new->JavacState->else->if->Log->warn->new->JavacState->calculateDependents->return
 JavacState#taintPackage(String, String):::Mark a java package as tainted, ie it needs recompilation.:::if->taintedPackages->contains->if->Log->Util->justPackageName->debug->taintedPackages->add->needsSaving->nowp->now->packages->get->if->foreach->nowp->dependents->taintPackage
@@ -26,16 +56,129 @@ JavacState#taintPackagesDependingOnChangedPackages(Set, Set):::Propagate recompi
 JavacState#taintPackagesDependingOnChangedClasspathPackages():::Compare the javac_state recorded public apis of packages on the classpath with the actual public apis on the classpath.:::fqDependencies->new->HashSet<>->foreach->prev->packages->values->if->pkg->sources->isEmpty->continue->pkg->typeClasspathDependencies->values->fqDependencies->addAll->forEach->pubApiExtractor->new->PubApiExtractor->onDiskPubApi->new->HashMap<>->foreach->onDiskPubApi->pubApiExtractor->getPubApi->put->pubApiExtractor->close->foreach->prev->packages->values->if->pkg->sources->isEmpty->continue->cpDepsOfThisPkg->new->HashSet<>->foreach->pkg->typeClasspathDependencies->values->cpDepsOfThisPkg->addAll->foreach->depPkg->fqDep->fqDep->lastIndexOf->substring->prevPkgApi->prev->packages->get->getPubApi->prevDepApi->get->currentDepApi->onDiskPubApi->get->get->if->currentDepApi->isBackwardCompatibleWith->apiDiff->currentDepApi->diff->pkg->name->String->join->taintPackage->continue
 JavacState#removeUnidentifiedArtifacts():::Scan all output dirs for artifacts and remove those files (artifacts?) that are not recognized as such, in the javac_state file.:::allKnownArtifacts->new->HashSet<>->foreach->prev->packages->values->foreach->pkg->artifacts->values->allKnownArtifacts->add->allKnownArtifacts->add->foreach->if->allKnownArtifacts->contains->options->f->getAbsolutePath->isUnidentifiedArtifactPermitted->Log->f->getPath->debug->f->delete->foreach->if->allKnownArtifacts->contains->Log->f->getPath->debug->f->delete->foreach->if->allKnownArtifacts->contains->Log->f->getPath->debug->f->delete
 JavacState#removeSuperfluousArtifacts(Set):::Remove artifacts that are no longer produced when compiling!:::if->recentlyCompiled->size->return->foreach->now->packages->keySet->if->recentlyCompiled->contains->continue->arts->now->artifacts->values->foreach->fetchPrevArtifacts->values->if->arts->contains->Log->f->getPath->debug->if->f->exists->f->delete
+JavacState#calculateRemovedSources():::Return those files belonging to prev, but not now.:::removed->new->HashSet<>->foreach->prev->sources->keySet->if->now->sources->get->removed->prev->sources->get->add->return
+JavacState#calculateAddedSources():::Return those files belonging to now, but not prev.:::added->new->HashSet<>->foreach->now->sources->keySet->if->prev->sources->get->added->now->sources->get->add->return
+JavacState#calculateModifiedSources():::Return those files where the timestamp is newer:::modified->new->HashSet<>->foreach->now->sources->keySet->n->now->sources->get->t->prev->sources->get->if->prev->sources->get->if->if->n->lastModified->t->lastModified->modified->add->else->if->n->lastModified->t->lastModified->modified->add->Log->n->name->warn->return
+JavacState#deleteContents(File):::Recursively delete a directory and all its contents.:::if->dir->exists->foreach->dir->listFiles->if->f->isDirectory->deleteContents->if->options->f->getAbsolutePath->isUnidentifiedArtifactPermitted->Log->f->getAbsolutePath->debug->f->delete
 JavacState#performCopying(File, Map):::Run the copy translator only.:::sr->new->HashMap<>->foreach->suffixRules->entrySet->if->e->getValue->getClass->equals->sr->e->getKey->e->getValue->put->perform
 JavacState#performTranslation(File, Map):::Run all the translators that translate into java source code:::sr->new->HashMap<>->foreach->suffixRules->entrySet->trClass->e->getValue->getClass->if->continue->sr->e->getKey->e->getValue->put->perform
 JavacState#performJavaCompilations(CompilationService, Options, Set, boolean[]):::Compile all the java sources:::suffixRules->new->HashMap<>->suffixRules->put->compileJavaPackages->setExtra->perform->recentlyCompiled->taintedPackages->addAll->clearTaintedPackages->again->packagesWithChangedPublicApis->isEmpty->taintPackagesDependingOnChangedPackages->new->HashSet<>->return
+JavacState#addFileToTransform(Map>>, Transformer, Source):::Store the source into the set of sources belonging to the given transform.:::fs->gs->get->if->new->HashMap<>->gs->put->ss->fs->s->pkg->name->get->if->new->HashSet<>->fs->s->pkg->name->put->ss->s->file->toURI->add
+JavacState#perform(CompilationService, File, Map):::For all packages, find all sources belonging to the package, group the sources based on their transformers and apply the transformers on each source code group.:::rc->groupedSources->new->HashMap<>->foreach->now->sources->values->t->suffixRules->src->suffix->get->if->if->taintedPackages->src->pkg->name->contains->src->isLinkedOnly->addFileToTransform->foreach->groupedSources->entrySet->t->e->getKey->srcs->e->getValue->packageArtifacts->Collections->new->HashMap<>->synchronizedMap->packageDependencies->Collections->new->HashMap<>->synchronizedMap->packageCpDependencies->Collections->new->HashMap<>->synchronizedMap->packagePublicApis->Collections->new->HashMap<>->synchronizedMap->dependencyPublicApis->Collections->new->HashMap<>->synchronizedMap->r->t->prev->dependents->outputDir->toURI->isIncremental->transform->if->foreach->srcs->keySet->recompiledPackages->add->foreach->packageArtifacts->entrySet->mnow->now->a->getKey->findModuleFromPackageName->mnow->a->getKey->a->getValue->addArtifacts->foreach->packageDependencies->entrySet->deps->a->getValue->mnow->now->a->getKey->findModuleFromPackageName->mnow->a->getKey->setDependencies->foreach->packageCpDependencies->entrySet->deps->a->getValue->mnow->now->a->getKey->findModuleFromPackageName->mnow->a->getKey->setDependencies->foreach->dependencyPublicApis->entrySet->pkg->a->getKey->packagePartialPubApi->a->getValue->pkgNow->now->findModuleFromPackageName->lookupPackage->currentPubApi->pkgNow->getPubApi->newPubApi->PubApi->mergeTypes->pkgNow->setPubapi->if->now->packages->containsKey->now->packages->get->setPubapi->else->now->packages->put->foreach->packagePublicApis->entrySet->pkg->a->getKey->newPubApi->a->getValue->mprev->prev->findModuleFromPackageName->mnow->now->findModuleFromPackageName->mnow->setPubapi->if->mprev->hasPubapiChanged->if->mprev->lookupPackage->existsInJavacState->packagesWithChangedPublicApis->add->Log->Util->justPackageName->debug->return
+JavacState#findAllFiles(File):::Utility method to recursively find all files below a directory.:::foundFiles->new->HashSet<>->if->return->recurse->return
+JavacState#recurse(File, Set)::: javac state recurse:::foreach->dir->listFiles->if->f->isFile->foundFiles->add->else->if->f->isDirectory->recurse
 JavacState#compareWithMakefileList(File):::Compare the calculate source list, with an explicit list, usually supplied from the makefile:::mightNeedRewriting->if->return->calculatedSources->new->HashSet<>->listedSources->new->HashSet<>->foreach->now->sources->values->if->s->isLinkedOnly->path->s->file->getPath->if->Util->normalizeDriveLetter->calculatedSources->add->try->in->new->FileReader->new->BufferedReader->for->catch->throw->makefileSourceList->getPath->new->ProblemException->throw->makefileSourceList->getPath->new->ProblemException->finally->foreach->if->calculatedSources->contains->throw->new->ProblemException->foreach->if->listedSources->contains->throw->new->ProblemException
+Log#setLogForCurrentThread(Log)::: log set log for current thread:::loggers->set
+Log#setLogLevel(String)::: log set log level:::Level->l->toUpperCase->valueOf->setLogLevel
+Log#setLogLevel(Level)::: log set log level:::get
+Log#trace(String)::: log trace:::log
+Log#debug(String)::: log debug:::log
+Log#info(String)::: log info:::log
+Log#warn(String)::: log warn:::log
+Log#error(String)::: log error:::log
+Log#error(Throwable)::: log error:::log
+Log#log(Level, String)::: log log:::get->printLogMsg
+Log#debug(Throwable)::: log debug:::log
+Log#log(Level, Throwable)::: log log:::sw->new->StringWriter->t->new->PrintWriter->printStackTrace->sw->toString->log
+Log#isDebugging()::: log is debugging:::return->get->isLevelLogged
+Log#isLevelLogged(Level)::: log is level logged:::return->l->ordinal->level->ordinal
+Log#get()::: log get:::log->loggers->get->return
+Log#printLogMsg(Level, String)::: log print log msg:::if->isLevelLogged->pw->msgLevel->ordinal->ordinal->pw->println
+Main#main(String...)::: main main:::System->go->exit
+Main#go(String[])::: main go:::serverMode->Arrays->asList->stream->arg->startsWith->anyMatch->return->ServerMain->run->ClientMain->run
+Module#name()::: module name:::return
+Module#dirname()::: module dirname:::return
+Module#packages()::: module packages:::return
+Module#sources()::: module sources:::return
+Module#artifacts()::: module artifacts:::return
+Module#equals(Object)::: module equals:::return->name->equals
+Module#hashCode()::: module hash code:::return->name->hashCode
+Module#compareTo(Module)::: module compare to:::return->name->compareTo
+Module#save(StringBuilder)::: module save:::b->append->append->append->append->Package->savePackages
+Module#load(String)::: module load:::cp->l->indexOf->if->return->name->l->substring->return->new->Module
+Module#saveModules(Map, StringBuilder)::: module save modules:::foreach->ms->values->m->save
+Module#addPackage(Package)::: module add package:::packages->p->name->put
+Module#lookupPackage(String)::: module lookup package:::p->packages->get->if->new->Package->packages->put->return
+Module#addSource(String, Source)::: module add source:::p->lookupPackage->src->setPackage->p->addSource->sources->src->file->getPath->put
+Module#lookupSource(String)::: module lookup source:::return->sources->get
+Module#addArtifacts(String, Set)::: module add artifacts:::p->lookupPackage->foreach->p->new->File->addArtifact
+Module#setDependencies(String, Map>, boolean)::: module set dependencies:::lookupPackage->setDependencies
+Module#setPubapi(String, PubApi)::: module set pubapi:::p->lookupPackage->p->setPubapi
+Module#hasPubapiChanged(String, PubApi)::: module has pubapi changed:::p->lookupPackage->return->p->hasPubApiChanged
+Package#mod()::: package mod:::return
+Package#name()::: package name:::return
+Package#dirname()::: package dirname:::return
+Package#sources()::: package sources:::return
+Package#artifacts()::: package artifacts:::return
+Package#getPubApi()::: package get pub api:::return
+Package#typeDependencies()::: package type dependencies:::return
+Package#typeClasspathDependencies()::: package type classpath dependencies:::return
+Package#dependents()::: package dependents:::return
+Package#equals(Object)::: package equals:::return->name->equals
+Package#hashCode()::: package hash code:::return->name->hashCode
+Package#compareTo(Package)::: package compare to:::return->name->compareTo
+Package#addSource(Source)::: package add source:::sources->s->file->getPath->put
+Package#parseAndAddDependency(String, boolean)::: package parse and add dependency:::m->DEP_PATTERN->matcher->if->m->matches->throw->new->IllegalArgumentException->m->group->m->group->addDependency
+Package#addDependency(String, String, boolean)::: package add dependency:::map->if->map->containsKey->map->new->HashSet<>->put->map->get->add
+Package#addDependent(String)::: package add dependent:::dependents->add
 Package#existsInJavacState():::Check if we have knowledge in the javac state that describe the results of compiling this package before.:::return->artifacts->size->pubApi->isEmpty
+Package#hasPubApiChanged(PubApi)::: package has pub api changed:::return->newPubApi->isBackwardCompatibleWith
+Package#setPubapi(PubApi)::: package set pubapi:::
+Package#setDependencies(Map>, boolean)::: package set dependencies:::clear->foreach->ds->keySet->foreach->ds->get->addDependency
+Package#save(StringBuilder)::: package save:::b->append->append->append->Source->saveSources->saveDependencies->savePubapi->saveArtifacts
+Package#load(Module, String)::: package load:::name->l->substring->return->new->Package
+Package#saveDependencies(StringBuilder)::: package save dependencies:::foreach->dependencies->keySet->foreach->dependencies->get->b->String->format->append->foreach->cpDependencies->keySet->foreach->cpDependencies->get->b->String->format->append
+Package#savePubapi(StringBuilder)::: package save pubapi:::pubApi->asListOfStrings->stream->Stream->of->flatMap->b->append->forEach
+Package#savePackages(Map, StringBuilder)::: package save packages:::sorted_packages->new->ArrayList<>->foreach->packages->keySet->sorted_packages->add->Collections->sort->foreach->p->packages->get->p->save
+Package#addArtifact(String)::: package add artifact:::artifacts->new->File->put
+Package#addArtifact(File)::: package add artifact:::artifacts->f->getPath->put
+Package#addArtifacts(Set)::: package add artifacts:::foreach->new->File->addArtifact
+Package#setArtifacts(Set)::: package set artifacts:::Assert->artifacts->isEmpty->check->new->HashMap<>->addArtifacts
+Package#loadArtifact(String)::: package load artifact:::dp->l->indexOf->fn->l->substring->last_modified->Long->l->substring->parseLong->f->new->File->if->f->exists->f->lastModified->Log->f->getPath->debug->f->delete->artifacts->f->getPath->put
+Package#saveArtifacts(StringBuilder)::: package save artifacts:::sorted_artifacts->new->ArrayList<>->foreach->artifacts->values->sorted_artifacts->add->Collections->sort->foreach->b->f->getPath->f->lastModified->append
 Package#deleteArtifacts():::Always clean out a tainted package before it is recompiled.:::foreach->artifacts->values->a->delete
+PubApiExtractor#getPubApi(String)::: pub api extractor get pub api:::syms->Symtab->instance->cr->ClassFinder->instance->ns->Names->instance->n->ns->fromString->cs->cr->syms->Convert->packagePart->inferModule->loadClass->v->new->PubapiVisitor->v->visit->return->v->getCollectedPubApi
+PubApiExtractor#close()::: pub api extractor close:::fileManager->close
+Source#equals(Object)::: source equals:::return->name->equals
+Source#compareTo(Source)::: source compare to:::return->name->compareTo
+Source#hashCode()::: source hash code:::return->name->hashCode
+Source#name()::: source name:::return
+Source#suffix()::: source suffix:::return
+Source#pkg()::: source pkg:::return
+Source#file()::: source file:::return
+Source#lastModified()::: source last modified:::return
+Source#setPackage(Package)::: source set package:::
+Source#markAsGenerated()::: source mark as generated:::
+Source#isGenerated()::: source is generated:::return
+Source#markAsLinkedOnly()::: source mark as linked only:::
+Source#isLinkedOnly()::: source is linked only:::return
+Source#save(StringBuilder)::: source save:::CL->GS->b->file->lastModified->append
+Source#load(Package, String, boolean)::: source load:::sp->l->indexOf->if->return->name->l->substring->last_modified->Long->l->substring->parseLong->isLinkedOnly->if->l->charAt->else->if->l->charAt->else->return->s->new->Source->new->File->if->s->markAsGenerated->if->s->markAsLinkedOnly->return
+Source#saveSources(Map, StringBuilder)::: source save sources:::sorted_sources->new->ArrayList<>->foreach->sources->keySet->sorted_sources->add->Collections->sort->foreach->s->sources->get->s->save
 Source#scanRoot(File, Set, List, List, Map, Map, Module, boolean, boolean, boolean):::Recurse into the directory root and find all files matchine the excl/incl/exclfiles/inclfiles rules:::if->return->fs->root->toPath->getFileSystem->if->includes->isEmpty->Collections->singletonList->includeMatchers->createPathMatchers->excludeMatchers->createPathMatchers->Files->root->toPath->new->SimpleFileVisitor<Path>->walkFileTree
+Source#createPathMatchers(FileSystem, List)::: source create path matchers:::matchers->new->ArrayList<>->foreach->try->matchers->fs->getPathMatcher->add->catch->Log->error->throw->finally->return
+Source#packageOfJavaFile(Path, Path)::: source package of java file:::javaFileDir->javaFile->getParent->packageDir->sourceRoot->relativize->separateDirs->new->ArrayList<>->foreach->separateDirs->pathElement->getFileName->toString->add->return->String->join
+Source#toString()::: source to string:::return->String->getClass->getSimpleName->format
 Transformer#transform(CompilationService, Map>, Set, Map>, URI, Map>, Map>>, Map>>, Map, Map, int, boolean, int):::The transform method takes a set of package names, mapped to their source files and to the pubapis of the packages:::
+Transformer#setExtra(String)::: transformer set extra:::
+Transformer#setExtra(Options)::: transformer set extra:::
+Util#toFileSystemPath(String)::: util to file system path:::if->pkgId->length->return->pn->if->pkgId->charAt->pkgId->substring->replace->else->cp->pkgId->indexOf->mn->pkgId->substring->pkgId->substring->replace->return
+Util#justPackageName(String)::: util just package name:::c->pkgName->indexOf->if->throw->new->IllegalArgumentException->return->pkgName->substring
+Util#extractStringOption(String, String)::: util extract string option:::return->extractStringOption
+Util#extractStringOption(String, String, String)::: util extract string option:::p->s->indexOf->if->return->opName->length->pe->s->indexOf->if->s->length->return->s->substring
+Util#extractBooleanOption(String, String, boolean)::: util extract boolean option:::str->extractStringOption->return->equals->equals
+Util#extractIntOption(String, String)::: util extract int option:::return->extractIntOption
+Util#extractIntOption(String, String, int)::: util extract int option:::p->s->indexOf->if->return->opName->length->pe->s->indexOf->if->s->length->v->try->Integer->s->substring->parseInt->catch->finally->return
 Util#pkgNameOfClassName(String):::Extract the package name from a fully qualified class name:::i->fqClassName->lastIndexOf->pkg->fqClassName->substring->return
 Util#cleanSubOptions(Set, String):::Clean out unwanted sub options supplied inside a primary option:::sb->new->StringBuilder->st->new->StringTokenizer->while->st->hasMoreTokens->o->st->nextToken->p->o->indexOf->if->key->o->substring->val->o->substring->if->allowedSubOptions->contains->if->sb->length->sb->append->sb->append->return->sb->toString
 Util#set(String...):::Convenience method to create a set with strings.:::set->new->HashSet<>->set->Arrays->asList->addAll->return
 Util#normalizeDriveLetter(String):::Normalize windows drive letter paths to upper case to enable string comparison.:::if->file->length->file->charAt->return->Character->file->charAt->toUpperCase->file->substring->else->if->file->length->file->charAt->file->charAt->return->file->substring->Character->file->charAt->toUpperCase->file->substring->return
 Util#findServerSettings(String[]):::Locate the setting for the server properties.:::foreach->if->s->startsWith->return->return
+Util#union(Set, Set)::: util union:::union->new->HashSet<>->union->addAll->union->addAll->return
+Util#subtract(Set, Set)::: util subtract:::difference->new->HashSet<>->difference->removeAll->return
+Util#getStackTrace(Throwable)::: util get stack trace:::sw->new->StringWriter->t->new->PrintWriter->printStackTrace->return->sw->toString
+Util#pathToFile(Path)::: util path to file:::return->path->toFile
+Util#intersection(Collection, Collection)::: util intersection:::intersection->new->HashSet<E>->intersection->retainAll->return
+Util#indexBy(Collection, Function)::: util index by:::return->c->stream->Collectors->toMap->collect
+Util#fileSuffix(Path)::: util file suffix:::fileNameStr->file->getFileName->toString->dotIndex->fileNameStr->indexOf->return->fileNameStr->substring
+Util#getLines(String)::: util get lines:::return->str->isEmpty->Stream->empty->Stream->str->Pattern->System->lineSeparator->quote->split->of

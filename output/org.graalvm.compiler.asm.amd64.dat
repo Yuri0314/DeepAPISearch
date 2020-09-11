@@ -1,16 +1,441 @@
+AMD64Address#toString()::: d64 address to string:::s->new->StringBuilder->s->append->sep->if->getBase->equals->s->getBase->append->if->getIndex->equals->s->append->getIndex->append->append->getScale->append->if->getDisplacement->s->append->getDisplacement->append->else->if->getDisplacement->s->append->getDisplacement->append->s->append->return->s->toString
+AMD64Address#getBase()::: d64 address get base:::return
+AMD64Address#getIndex()::: d64 address get index:::return
+AMD64Address#getScale()::: d64 address get scale:::return
+AMD64Address#getDisplacement()::: d64 address get displacement:::return
+AMD64Assembler.AMD64Op#emitOpcode(AMD64Assembler, OperandSize, int, int, int)::: d64 op emit opcode:::if->asm->emitByte->if->size->getSizePrefix->asm->size->getSizePrefix->emitByte->rexPrefix->if->if->asm->emitByte->if->asm->emitShort->else->if->asm->emitByte->asm->emitByte
+AMD64Assembler.AMD64Op#verify(AMD64Assembler, OperandSize, Register, Register)::: d64 op verify:::return
+AMD64Assembler.AMD64Op#getAllowedSizes()::: d64 op get allowed sizes:::return
+AMD64Assembler.AMD64Op#isSSEInstruction()::: d64 op is instruction:::if->return->switch->return->return
+AMD64Assembler.AMD64Op#getAssertion()::: d64 op get assertion:::return
+AMD64Assembler.AMD64Op#toString()::: d64 op to string:::return
+AMD64Assembler.AMD64ImmOp#emitImmediate(AMD64Assembler, OperandSize, int)::: d64 imm op emit immediate:::if->asm->emitByte->else->size->emitImmediate
+AMD64Assembler.AMD64ImmOp#immediateSize(OperandSize)::: d64 imm op immediate size:::if->return->else->return->size->getBytes
+AMD64Assembler.AMD64RROp#emit(AMD64Assembler, OperandSize, Register, Register)::: d64 op emit:::
+AMD64Assembler.AMD64RMOp#emit(AMD64Assembler, OperandSize, Register, Register)::: d64 op emit:::if->isSSEInstruction->nds->switch->if->break->break->break->asm->simdPrefix->asm->emitByte->asm->emitModRM->else->getRXB->emitOpcode->asm->emitModRM
+AMD64Assembler.AMD64RMOp#emit(AMD64Assembler, OperandSize, Register, AMD64Address)::: d64 op emit:::if->isSSEInstruction->nds->switch->if->break->break->break->asm->simdPrefix->asm->emitByte->asm->emitOperandHelper->else->getRXB->emitOpcode->asm->emitOperandHelper
+AMD64Assembler.AMD64MROp#emit(AMD64Assembler, OperandSize, Register, Register)::: d64 op emit:::if->isSSEInstruction->nds->switch->if->break->break->asm->simdPrefix->asm->emitByte->asm->emitModRM->else->getRXB->emitOpcode->asm->emitModRM
+AMD64Assembler.AMD64MROp#emit(AMD64Assembler, OperandSize, AMD64Address, Register)::: d64 op emit:::if->isSSEInstruction->asm->simdPrefix->asm->emitByte->else->getRXB->emitOpcode->asm->emitOperandHelper
+AMD64Assembler.AMD64MOp#emit(AMD64Assembler, OperandSize, Register)::: d64 op emit:::getRXB->emitOpcode->asm->emitModRM
+AMD64Assembler.AMD64MOp#emit(AMD64Assembler, OperandSize, AMD64Address)::: d64 op emit:::getRXB->emitOpcode->asm->emitOperandHelper
+AMD64Assembler.AMD64MIOp#emit(AMD64Assembler, OperandSize, Register, int)::: d64 op emit:::emit
+AMD64Assembler.AMD64MIOp#emit(AMD64Assembler, OperandSize, Register, int, boolean)::: d64 op emit:::insnPos->asm->position->getRXB->emitOpcode->asm->emitModRM->immPos->asm->position->emitImmediate->nextInsnPos->asm->position->if->new->OperandDataAnnotation->accept
+AMD64Assembler.AMD64MIOp#emit(AMD64Assembler, OperandSize, AMD64Address, int)::: d64 op emit:::emit
+AMD64Assembler.AMD64MIOp#emit(AMD64Assembler, OperandSize, AMD64Address, int, boolean)::: d64 op emit:::insnPos->asm->position->getRXB->emitOpcode->asm->immediateSize->emitOperandHelper->immPos->asm->position->emitImmediate->nextInsnPos->asm->position->if->new->OperandDataAnnotation->accept
+AMD64Assembler.AMD64RMIOp#emit(AMD64Assembler, OperandSize, Register, Register, int)::: d64 op emit:::if->isSSEInstruction->nds->switch->break->break->asm->simdPrefix->asm->emitByte->asm->emitModRM->else->getRXB->emitOpcode->asm->emitModRM->emitImmediate
+AMD64Assembler.AMD64RMIOp#emit(AMD64Assembler, OperandSize, Register, AMD64Address, int)::: d64 op emit:::if->isSSEInstruction->nds->switch->break->break->asm->simdPrefix->asm->emitByte->else->getRXB->emitOpcode->asm->immediateSize->emitOperandHelper->emitImmediate
+AMD64Assembler.AMD64BinaryArithmetic#getMIOpcode(OperandSize, boolean)::: d64 binary arithmetic get opcode:::if->return->else->if->return->else->return
+AMD64Assembler.AMD64BinaryArithmetic#getMROpcode(OperandSize)::: d64 binary arithmetic get opcode:::if->return->else->return
+AMD64Assembler.AMD64BinaryArithmetic#getRMOpcode(OperandSize)::: d64 binary arithmetic get opcode:::if->return->else->return
+AMD64Assembler.VexOp#isSupported(AMD64Assembler, AVXSize)::: vex op is supported:::return->assertion->getFeatures->supports
+AMD64Assembler.VexOp#toString()::: vex op to string:::return
+AMD64Assembler.VexRROp#emit(AMD64Assembler, AVXSize, Register, Register)::: vex op emit:::asm->vexPrefix->asm->emitByte->asm->emitModRM
+AMD64Assembler.VexRMOp#emit(AMD64Assembler, AVXSize, Register, AMD64Address)::: vex op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper
+AMD64Assembler.VexMoveOp#emit(AMD64Assembler, AVXSize, AMD64Address, Register)::: vex move op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper
+AMD64Assembler.VexMoveOp#emitReverse(AMD64Assembler, AVXSize, Register, Register)::: vex move op emit reverse:::asm->vexPrefix->asm->emitByte->asm->emitModRM
+AMD64Assembler.VexRRIOp#emit(AMD64Assembler, AVXSize, Register, Register, int)::: vex op emit:::
+AMD64Assembler.VexRMIOp#emit(AMD64Assembler, AVXSize, Register, Register, int)::: vex op emit:::asm->vexPrefix->asm->emitByte->asm->emitModRM->asm->emitByte
+AMD64Assembler.VexRMIOp#emit(AMD64Assembler, AVXSize, Register, AMD64Address, int)::: vex op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper->asm->emitByte
+AMD64Assembler.VexMRIOp#emit(AMD64Assembler, AVXSize, Register, Register, int)::: vex op emit:::asm->vexPrefix->asm->emitByte->asm->emitModRM->asm->emitByte
+AMD64Assembler.VexMRIOp#emit(AMD64Assembler, AVXSize, AMD64Address, Register, int)::: vex op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper->asm->emitByte
+AMD64Assembler.VexRVMROp#emit(AMD64Assembler, AVXSize, Register, Register, Register, Register)::: vex op emit:::asm->vexPrefix->asm->emitByte->asm->emitModRM->asm->mask->encoding->emitByte
+AMD64Assembler.VexRVMROp#emit(AMD64Assembler, AVXSize, Register, Register, Register, AMD64Address)::: vex op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper->asm->mask->encoding->emitByte
+AMD64Assembler.VexRVMOp#emit(AMD64Assembler, AVXSize, Register, Register, Register)::: vex op emit:::asm->vexPrefix->asm->emitByte->asm->emitModRM
+AMD64Assembler.VexRVMOp#emit(AMD64Assembler, AVXSize, Register, Register, AMD64Address)::: vex op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper
+AMD64Assembler.VexGeneralPurposeRVMOp#emit(AMD64Assembler, AVXSize, Register, Register, Register)::: vex general purpose op emit:::asm->vexPrefix->asm->emitByte->asm->emitModRM
+AMD64Assembler.VexGeneralPurposeRVMOp#emit(AMD64Assembler, AVXSize, Register, Register, AMD64Address)::: vex general purpose op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper
+AMD64Assembler.VexGeneralPurposeRMVOp#emit(AMD64Assembler, AVXSize, Register, Register, Register)::: vex general purpose op emit:::asm->vexPrefix->asm->emitByte->asm->emitModRM
+AMD64Assembler.VexGeneralPurposeRMVOp#emit(AMD64Assembler, AVXSize, Register, AMD64Address, Register)::: vex general purpose op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper
+AMD64Assembler.VexGeneralPurposeRMOp#emit(AMD64Assembler, AVXSize, Register, Register)::: vex general purpose op emit:::asm->vexPrefix->asm->emitByte->asm->emitModRM
+AMD64Assembler.VexGeneralPurposeRMOp#emit(AMD64Assembler, AVXSize, Register, AMD64Address)::: vex general purpose op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper
+AMD64Assembler.VexShiftOp#emit(AMD64Assembler, AVXSize, Register, Register, int)::: vex shift op emit:::asm->vexPrefix->asm->emitByte->asm->emitModRM->asm->emitByte
+AMD64Assembler.VexMaskMoveOp#emit(AMD64Assembler, AVXSize, Register, Register, AMD64Address)::: vex mask move op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper
+AMD64Assembler.VexMaskMoveOp#emit(AMD64Assembler, AVXSize, AMD64Address, Register, Register)::: vex mask move op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper
+AMD64Assembler.VexRVMIOp#emit(AMD64Assembler, AVXSize, Register, Register, Register, int)::: vex op emit:::asm->vexPrefix->asm->emitByte->asm->emitModRM->asm->emitByte
+AMD64Assembler.VexRVMIOp#emit(AMD64Assembler, AVXSize, Register, Register, AMD64Address, int)::: vex op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper->asm->emitByte
+AMD64Assembler.VexFloatCompareOp#emit(AMD64Assembler, AVXSize, Register, Register, Register, Predicate)::: vex float compare op emit:::asm->vexPrefix->asm->emitByte->asm->emitModRM->asm->emitByte
+AMD64Assembler.VexFloatCompareOp#emit(AMD64Assembler, AVXSize, Register, Register, AMD64Address, Predicate)::: vex float compare op emit:::asm->vexPrefix->asm->emitByte->asm->emitOperandHelper->asm->emitByte
+AMD64Assembler#addl(AMD64Address, int)::: d64 assembler addl:::ADD->isByte->getMIOpcode->emit
+AMD64Assembler#addl(Register, int)::: d64 assembler addl:::ADD->isByte->getMIOpcode->emit
+AMD64Assembler#addl(Register, Register)::: d64 assembler addl:::emit
+AMD64Assembler#addpd(Register, Register)::: d64 assembler addpd:::emit
+AMD64Assembler#addpd(Register, AMD64Address)::: d64 assembler addpd:::emit
+AMD64Assembler#addsd(Register, Register)::: d64 assembler addsd:::emit
+AMD64Assembler#addsd(Register, AMD64Address)::: d64 assembler addsd:::emit
+AMD64Assembler#addrNop4()::: d64 assembler addr nop4:::emitByte->emitByte->emitByte->emitByte
+AMD64Assembler#addrNop5()::: d64 assembler addr nop5:::emitByte->emitByte->emitByte->emitByte->emitByte
+AMD64Assembler#addrNop7()::: d64 assembler addr nop7:::emitByte->emitByte->emitByte->emitInt
+AMD64Assembler#addrNop8()::: d64 assembler addr nop8:::emitByte->emitByte->emitByte->emitByte->emitInt
+AMD64Assembler#andl(Register, int)::: d64 assembler andl:::AND->isByte->getMIOpcode->emit
+AMD64Assembler#andl(Register, Register)::: d64 assembler andl:::emit
+AMD64Assembler#andpd(Register, Register)::: d64 assembler andpd:::emit
+AMD64Assembler#andpd(Register, AMD64Address)::: d64 assembler andpd:::emit
+AMD64Assembler#bsfq(Register, Register)::: d64 assembler bsfq:::prefixq->emitByte->emitByte->emitModRM
+AMD64Assembler#bsrl(Register, Register)::: d64 assembler bsrl:::prefix->emitByte->emitByte->emitModRM
+AMD64Assembler#bswapl(Register)::: d64 assembler bswapl:::prefix->emitByte->emitModRM
+AMD64Assembler#cdql()::: d64 assembler cdql:::emitByte
+AMD64Assembler#cmovl(ConditionFlag, Register, Register)::: d64 assembler cmovl:::prefix->emitByte->cc->getValue->emitByte->emitModRM
+AMD64Assembler#cmovl(ConditionFlag, Register, AMD64Address)::: d64 assembler cmovl:::prefix->emitByte->cc->getValue->emitByte->emitOperandHelper
+AMD64Assembler#cmpb(Register, Register)::: d64 assembler cmpb:::emit
+AMD64Assembler#cmpw(Register, Register)::: d64 assembler cmpw:::emit
+AMD64Assembler#cmpl(Register, int)::: d64 assembler cmpl:::CMP->isByte->getMIOpcode->emit
+AMD64Assembler#cmpl(Register, Register)::: d64 assembler cmpl:::emit
+AMD64Assembler#cmpl(Register, AMD64Address)::: d64 assembler cmpl:::emit
+AMD64Assembler#cmpl(AMD64Address, int)::: d64 assembler cmpl:::CMP->isByte->getMIOpcode->emit
 AMD64Assembler#cmpxchgb(Register, AMD64Address):::The 8-bit cmpxchg compares the value at adr with the contents of X86.rax, and stores reg into adr if so; otherwise, the value at adr is loaded into X86.rax,:::prefixb->emitByte->emitByte->emitOperandHelper
 AMD64Assembler#cmpxchgw(Register, AMD64Address):::The 16-bit cmpxchg compares the value at adr with the contents of X86.rax, and stores reg into adr if so; otherwise, the value at adr is loaded into X86.rax,:::emitByte->prefix->emitByte->emitByte->emitOperandHelper
 AMD64Assembler#cmpxchgl(Register, AMD64Address):::The 32-bit cmpxchg compares the value at adr with the contents of X86.rax, and stores reg into adr if so; otherwise, the value at adr is loaded into X86.rax,:::prefix->emitByte->emitByte->emitOperandHelper
+AMD64Assembler#cvtsi2sdl(Register, Register)::: d64 assembler cvtsi2sdl:::emit
+AMD64Assembler#cvttsd2sil(Register, Register)::: d64 assembler cvttsd2sil:::emit
+AMD64Assembler#decl(AMD64Address)::: d64 assembler decl:::prefix->emitByte->emitOperandHelper
+AMD64Assembler#divsd(Register, Register)::: d64 assembler divsd:::emit
+AMD64Assembler#hlt()::: d64 assembler hlt:::emitByte
+AMD64Assembler#imull(Register, Register, int)::: d64 assembler imull:::if->isByte->emit->else->emit
+AMD64Assembler#incl(AMD64Address)::: d64 assembler incl:::prefix->emitByte->emitOperandHelper
+AMD64Assembler#jcc(ConditionFlag, int, boolean)::: d64 assembler jcc:::shortSize->longSize->disp->position->if->isByte->cc->getValue->emitByte->emitByte->else->emitByte->cc->getValue->emitByte->emitInt
+AMD64Assembler#jcc(ConditionFlag, Label)::: d64 assembler jcc:::if->l->isBound->l->position->jcc->else->l->position->addPatchAt->emitByte->cc->getValue->emitByte->emitInt
+AMD64Assembler#jccb(ConditionFlag, Label)::: d64 assembler jccb:::if->l->isBound->shortSize->entry->l->position->disp->position->cc->getValue->emitByte->emitByte->else->l->position->addPatchAt->cc->getValue->emitByte->emitByte
+AMD64Assembler#jmp(int, boolean)::: d64 assembler jmp:::shortSize->longSize->disp->position->if->isByte->emitByte->emitByte->else->emitByte->emitInt
+AMD64Assembler#jmp(Label)::: d64 assembler jmp:::if->l->isBound->l->position->jmp->else->l->position->addPatchAt->emitByte->emitInt
+AMD64Assembler#jmp(Register)::: d64 assembler jmp:::prefix->emitByte->emitModRM
+AMD64Assembler#jmp(AMD64Address)::: d64 assembler jmp:::prefix->emitByte->emitOperandHelper
+AMD64Assembler#jmpb(Label)::: d64 assembler jmpb:::if->l->isBound->shortSize->displacement->l->position->position->GraalError->isByte->guarantee->emitByte->emitByte->else->l->position->addPatchAt->emitByte->emitByte
+AMD64Assembler#lead(Register, AMD64Address)::: d64 assembler lead:::prefix->emitByte->emitOperandHelper
+AMD64Assembler#leaq(Register, AMD64Address)::: d64 assembler leaq:::prefixq->emitByte->emitOperandHelper
+AMD64Assembler#leave()::: d64 assembler leave:::emitByte
+AMD64Assembler#lock()::: d64 assembler lock:::emitByte
+AMD64Assembler#movapd(Register, Register)::: d64 assembler movapd:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#movaps(Register, Register)::: d64 assembler movaps:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#movb(AMD64Address, int)::: d64 assembler movb:::prefix->emitByte->emitOperandHelper->emitByte
+AMD64Assembler#movb(AMD64Address, Register)::: d64 assembler movb:::prefixb->emitByte->emitOperandHelper
+AMD64Assembler#movl(Register, int)::: d64 assembler movl:::movl
+AMD64Assembler#movl(Register, int, boolean)::: d64 assembler movl:::insnPos->position->prefix->encode->emitByte->immPos->position->emitInt->nextInsnPos->position->if->codePatchingAnnotationConsumer->new->OperandDataAnnotation->accept
+AMD64Assembler#movl(Register, Register)::: d64 assembler movl:::prefix->emitByte->emitModRM
+AMD64Assembler#movl(Register, AMD64Address)::: d64 assembler movl:::prefix->emitByte->emitOperandHelper
+AMD64Assembler#movl(Register, AMD64Address, boolean)::: d64 assembler movl:::prefix->emitByte->emitOperandHelper
+AMD64Assembler#movl(AMD64Address, int)::: d64 assembler movl:::prefix->emitByte->emitOperandHelper->emitInt
+AMD64Assembler#movl(AMD64Address, Register)::: d64 assembler movl:::prefix->emitByte->emitOperandHelper
 AMD64Assembler#movlpd(Register, AMD64Address):::New CPUs require use of movsd and movss to avoid partial register stall when loading from memory:::simdPrefix->emitByte->emitOperandHelper
+AMD64Assembler#movlhps(Register, Register)::: d64 assembler movlhps:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#movq(Register, AMD64Address)::: d64 assembler movq:::movq
+AMD64Assembler#movq(Register, AMD64Address, boolean)::: d64 assembler movq:::if->inRC->simdPrefix->emitByte->emitOperandHelper->else->prefixq->emitByte->emitOperandHelper
+AMD64Assembler#movq(Register, Register)::: d64 assembler movq:::prefixq->emitByte->emitModRM
+AMD64Assembler#movq(AMD64Address, Register)::: d64 assembler movq:::if->inRC->simdPrefix->emitByte->emitOperandHelper->else->prefixq->emitByte->emitOperandHelper
+AMD64Assembler#movsbl(Register, AMD64Address)::: d64 assembler movsbl:::prefix->emitByte->emitByte->emitOperandHelper
+AMD64Assembler#movsbl(Register, Register)::: d64 assembler movsbl:::prefix->emitByte->emitByte->emitModRM
+AMD64Assembler#movsbq(Register, AMD64Address)::: d64 assembler movsbq:::prefixq->emitByte->emitByte->emitOperandHelper
+AMD64Assembler#movsbq(Register, Register)::: d64 assembler movsbq:::prefixq->emitByte->emitByte->emitModRM
+AMD64Assembler#movsd(Register, Register)::: d64 assembler movsd:::emit
+AMD64Assembler#movsd(Register, AMD64Address)::: d64 assembler movsd:::emit
+AMD64Assembler#movsd(AMD64Address, Register)::: d64 assembler movsd:::emit
+AMD64Assembler#movss(Register, Register)::: d64 assembler movss:::emit
+AMD64Assembler#movss(Register, AMD64Address)::: d64 assembler movss:::emit
+AMD64Assembler#movss(AMD64Address, Register)::: d64 assembler movss:::emit
+AMD64Assembler#mulpd(Register, Register)::: d64 assembler mulpd:::emit
+AMD64Assembler#mulpd(Register, AMD64Address)::: d64 assembler mulpd:::emit
+AMD64Assembler#mulsd(Register, Register)::: d64 assembler mulsd:::emit
+AMD64Assembler#mulsd(Register, AMD64Address)::: d64 assembler mulsd:::emit
+AMD64Assembler#mulss(Register, Register)::: d64 assembler mulss:::emit
+AMD64Assembler#movswl(Register, AMD64Address)::: d64 assembler movswl:::emit
+AMD64Assembler#movswq(Register, AMD64Address)::: d64 assembler movswq:::emit
+AMD64Assembler#movw(AMD64Address, int)::: d64 assembler movw:::emitByte->prefix->emitByte->emitOperandHelper->emitShort
+AMD64Assembler#movw(AMD64Address, Register)::: d64 assembler movw:::emitByte->prefix->emitByte->emitOperandHelper
+AMD64Assembler#movw(Register, AMD64Address)::: d64 assembler movw:::emitByte->prefix->emitByte->emitOperandHelper
+AMD64Assembler#movzbl(Register, AMD64Address)::: d64 assembler movzbl:::prefix->emitByte->emitByte->emitOperandHelper
+AMD64Assembler#movzbl(Register, Register)::: d64 assembler movzbl:::emit
+AMD64Assembler#movzbq(Register, Register)::: d64 assembler movzbq:::emit
+AMD64Assembler#movzbq(Register, AMD64Address)::: d64 assembler movzbq:::emit
+AMD64Assembler#movzwl(Register, AMD64Address)::: d64 assembler movzwl:::emit
+AMD64Assembler#movzwq(Register, AMD64Address)::: d64 assembler movzwq:::emit
+AMD64Assembler#negl(Register)::: d64 assembler negl:::NEG->emit
+AMD64Assembler#notl(Register)::: d64 assembler notl:::NOT->emit
+AMD64Assembler#notq(Register)::: d64 assembler notq:::NOT->emit
+AMD64Assembler#ensureUniquePC()::: d64 assembler ensure unique c:::nop
+AMD64Assembler#nop()::: d64 assembler nop:::nop
+AMD64Assembler#nop(int)::: d64 assembler nop:::i->if->for->return->if->if->intelNops->else->amdNops->return->while->emitByte->emitByte->emitByte->emitByte->if->if->emitByte->emitByte->emitByte->emitByte->if->if->emitByte->emitByte->emitByte->emitByte->switch->emitByte->emitByte->emitByte->emitByte->break->emitByte->emitByte->emitByte->break->emitByte->emitByte->break->emitByte->break
+AMD64Assembler#amdNops(int)::: d64 assembler amd nops:::i->while->emitByte->emitByte->emitByte->addrNop8->switch->emitByte->emitByte->emitByte->addrNop8->break->emitByte->emitByte->addrNop8->break->emitByte->addrNop8->break->addrNop8->break->addrNop7->break->emitByte->addrNop5->break->switch->emitByte->emitByte->emitByte->addrNop8->break->emitByte->emitByte->addrNop8->break->emitByte->addrNop8->break->addrNop8->break->addrNop7->break->emitByte->addrNop5->break->addrNop5->break->addrNop4->break->emitByte->emitByte->emitByte->break->emitByte->emitByte->break->emitByte->break
+AMD64Assembler#intelNops(int)::: d64 assembler intel nops:::i->while->emitByte->emitByte->emitByte->addrNop8->emitByte->emitByte->emitByte->emitByte->switch->emitByte->emitByte->addrNop8->emitByte->emitByte->emitByte->emitByte->break->emitByte->emitByte->emitByte->addrNop8->break->addrNop7->break->emitByte->addrNop5->break->addrNop4->break->emitByte->emitByte->emitByte->break
+AMD64Assembler#orl(Register, Register)::: d64 assembler orl:::emit
+AMD64Assembler#orl(Register, int)::: d64 assembler orl:::OR->isByte->getMIOpcode->emit
+AMD64Assembler#packuswb(Register, Register)::: d64 assembler packuswb:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#pop(Register)::: d64 assembler pop:::prefix->encode->emitByte
+AMD64Assembler#popfq()::: d64 assembler popfq:::emitByte
+AMD64Assembler#ptest(Register, Register)::: d64 assembler ptest:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#pcmpeqb(Register, Register)::: d64 assembler pcmpeqb:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#pcmpeqw(Register, Register)::: d64 assembler pcmpeqw:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#pcmpeqd(Register, Register)::: d64 assembler pcmpeqd:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#pcmpestri(Register, AMD64Address, int)::: d64 assembler pcmpestri:::simdPrefix->emitByte->emitOperandHelper->emitByte
+AMD64Assembler#pcmpestri(Register, Register, int)::: d64 assembler pcmpestri:::simdPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#pmovmskb(Register, Register)::: d64 assembler pmovmskb:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#pmovSZx(Register, AMD64Address, int)::: d64 assembler pmov zx:::simdPrefix->emitByte->emitOperandHelper
+AMD64Assembler#pmovsxbw(Register, AMD64Address)::: d64 assembler pmovsxbw:::pmovSZx
+AMD64Assembler#pmovsxbd(Register, AMD64Address)::: d64 assembler pmovsxbd:::pmovSZx
+AMD64Assembler#pmovsxbq(Register, AMD64Address)::: d64 assembler pmovsxbq:::pmovSZx
+AMD64Assembler#pmovsxwd(Register, AMD64Address)::: d64 assembler pmovsxwd:::pmovSZx
+AMD64Assembler#pmovsxwq(Register, AMD64Address)::: d64 assembler pmovsxwq:::pmovSZx
+AMD64Assembler#pmovsxdq(Register, AMD64Address)::: d64 assembler pmovsxdq:::pmovSZx
+AMD64Assembler#pmovzxbw(Register, AMD64Address)::: d64 assembler pmovzxbw:::pmovSZx
+AMD64Assembler#pmovzxbd(Register, AMD64Address)::: d64 assembler pmovzxbd:::pmovSZx
+AMD64Assembler#pmovzxbq(Register, AMD64Address)::: d64 assembler pmovzxbq:::pmovSZx
+AMD64Assembler#pmovzxwd(Register, AMD64Address)::: d64 assembler pmovzxwd:::pmovSZx
+AMD64Assembler#pmovzxwq(Register, AMD64Address)::: d64 assembler pmovzxwq:::pmovSZx
+AMD64Assembler#pmovzxdq(Register, AMD64Address)::: d64 assembler pmovzxdq:::pmovSZx
+AMD64Assembler#pmovzxbw(Register, Register)::: d64 assembler pmovzxbw:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#push(Register)::: d64 assembler push:::prefix->encode->emitByte
+AMD64Assembler#pushfq()::: d64 assembler pushfq:::emitByte
+AMD64Assembler#paddd(Register, Register)::: d64 assembler paddd:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#paddq(Register, Register)::: d64 assembler paddq:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#pextrw(Register, Register, int)::: d64 assembler pextrw:::simdPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#pinsrw(Register, Register, int)::: d64 assembler pinsrw:::simdPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#por(Register, Register)::: d64 assembler por:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#pand(Register, Register)::: d64 assembler pand:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#pxor(Register, Register)::: d64 assembler pxor:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#pslld(Register, int)::: d64 assembler pslld:::simdPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#psllq(Register, Register)::: d64 assembler psllq:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#psllq(Register, int)::: d64 assembler psllq:::simdPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#psrad(Register, int)::: d64 assembler psrad:::simdPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#psrld(Register, int)::: d64 assembler psrld:::simdPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#psrlq(Register, int)::: d64 assembler psrlq:::simdPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#psrldq(Register, int)::: d64 assembler psrldq:::simdPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#pshufb(Register, Register)::: d64 assembler pshufb:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#pshuflw(Register, Register, int)::: d64 assembler pshuflw:::simdPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#pshufd(Register, Register, int)::: d64 assembler pshufd:::simdPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#psubd(Register, Register)::: d64 assembler psubd:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#punpcklbw(Register, Register)::: d64 assembler punpcklbw:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#rcpps(Register, Register)::: d64 assembler rcpps:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#ret(int)::: d64 assembler ret:::if->emitByte->else->emitByte->emitShort
+AMD64Assembler#sarl(Register, int)::: d64 assembler sarl:::prefix->if->emitByte->emitModRM->else->emitByte->emitModRM->emitByte
+AMD64Assembler#shll(Register, int)::: d64 assembler shll:::prefix->if->emitByte->emitModRM->else->emitByte->emitModRM->emitByte
+AMD64Assembler#shll(Register)::: d64 assembler shll:::prefix->emitByte->emitModRM
+AMD64Assembler#shlxl(Register, Register, Register)::: d64 assembler shlxl:::emit
+AMD64Assembler#shrl(Register, int)::: d64 assembler shrl:::prefix->emitByte->emitModRM->emitByte
+AMD64Assembler#shrl(Register)::: d64 assembler shrl:::prefix->emitByte->emitModRM
+AMD64Assembler#subl(AMD64Address, int)::: d64 assembler subl:::SUB->isByte->getMIOpcode->emit
+AMD64Assembler#subl(Register, int)::: d64 assembler subl:::SUB->isByte->getMIOpcode->emit
+AMD64Assembler#subl(Register, Register)::: d64 assembler subl:::emit
+AMD64Assembler#subpd(Register, Register)::: d64 assembler subpd:::emit
+AMD64Assembler#subsd(Register, Register)::: d64 assembler subsd:::emit
+AMD64Assembler#subsd(Register, AMD64Address)::: d64 assembler subsd:::emit
+AMD64Assembler#testl(Register, int)::: d64 assembler testl:::if->emitByte->else->prefix->emitByte->emitModRM->emitInt
+AMD64Assembler#testl(Register, Register)::: d64 assembler testl:::prefix->emitByte->emitModRM
+AMD64Assembler#testl(Register, AMD64Address)::: d64 assembler testl:::prefix->emitByte->emitOperandHelper
+AMD64Assembler#unpckhpd(Register, Register)::: d64 assembler unpckhpd:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#unpcklpd(Register, Register)::: d64 assembler unpcklpd:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#xorl(Register, Register)::: d64 assembler xorl:::emit
+AMD64Assembler#xorq(Register, Register)::: d64 assembler xorq:::emit
+AMD64Assembler#xorpd(Register, Register)::: d64 assembler xorpd:::emit
+AMD64Assembler#xorps(Register, Register)::: d64 assembler xorps:::emit
+AMD64Assembler#decl(Register)::: d64 assembler decl:::prefix->emitByte->emitModRM
+AMD64Assembler#incl(Register)::: d64 assembler incl:::prefix->emitByte->emitModRM
+AMD64Assembler#addq(Register, int)::: d64 assembler addq:::ADD->isByte->getMIOpcode->emit
+AMD64Assembler#addq(AMD64Address, int)::: d64 assembler addq:::ADD->isByte->getMIOpcode->emit
+AMD64Assembler#addq(Register, Register)::: d64 assembler addq:::emit
+AMD64Assembler#addq(AMD64Address, Register)::: d64 assembler addq:::emit
+AMD64Assembler#andq(Register, int)::: d64 assembler andq:::AND->isByte->getMIOpcode->emit
+AMD64Assembler#bsrq(Register, Register)::: d64 assembler bsrq:::prefixq->emitByte->emitByte->emitModRM
+AMD64Assembler#bswapq(Register)::: d64 assembler bswapq:::prefixq->emitByte->encode->emitByte
+AMD64Assembler#cdqq()::: d64 assembler cdqq:::rexw->emitByte
+AMD64Assembler#repStosb()::: d64 assembler rep stosb:::emitByte->rexw->emitByte
+AMD64Assembler#repStosq()::: d64 assembler rep stosq:::emitByte->rexw->emitByte
+AMD64Assembler#cmovq(ConditionFlag, Register, Register)::: d64 assembler cmovq:::prefixq->emitByte->cc->getValue->emitByte->emitModRM
+AMD64Assembler#setb(ConditionFlag, Register)::: d64 assembler setb:::prefix->emitByte->cc->getValue->emitByte->emitModRM
+AMD64Assembler#cmovq(ConditionFlag, Register, AMD64Address)::: d64 assembler cmovq:::prefixq->emitByte->cc->getValue->emitByte->emitOperandHelper
+AMD64Assembler#cmpq(Register, int)::: d64 assembler cmpq:::CMP->isByte->getMIOpcode->emit
+AMD64Assembler#cmpq(Register, Register)::: d64 assembler cmpq:::emit
+AMD64Assembler#cmpq(Register, AMD64Address)::: d64 assembler cmpq:::emit
+AMD64Assembler#cmpxchgq(Register, AMD64Address)::: d64 assembler cmpxchgq:::prefixq->emitByte->emitByte->emitOperandHelper
+AMD64Assembler#cvtdq2pd(Register, Register)::: d64 assembler cvtdq2pd:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#cvtsi2sdq(Register, Register)::: d64 assembler cvtsi2sdq:::emit
+AMD64Assembler#cvttsd2siq(Register, Register)::: d64 assembler cvttsd2siq:::emit
+AMD64Assembler#cvttpd2dq(Register, Register)::: d64 assembler cvttpd2dq:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#decq(Register)::: d64 assembler decq:::prefixq->emitByte->emitModRM
+AMD64Assembler#decq(AMD64Address)::: d64 assembler decq:::DEC->emit
+AMD64Assembler#imulq(Register, Register)::: d64 assembler imulq:::prefixq->emitByte->emitByte->emitModRM
+AMD64Assembler#incq(Register)::: d64 assembler incq:::prefixq->emitByte->emitModRM
+AMD64Assembler#incq(AMD64Address)::: d64 assembler incq:::INC->emit
+AMD64Assembler#movq(Register, long)::: d64 assembler movq:::movq
+AMD64Assembler#movq(Register, long, boolean)::: d64 assembler movq:::insnPos->position->prefixq->encode->emitByte->immPos->position->emitLong->nextInsnPos->position->if->codePatchingAnnotationConsumer->new->OperandDataAnnotation->accept
+AMD64Assembler#movslq(Register, int)::: d64 assembler movslq:::prefixq->emitByte->emitModRM->emitInt
+AMD64Assembler#movdq(Register, AMD64Address)::: d64 assembler movdq:::emit
+AMD64Assembler#movdq(AMD64Address, Register)::: d64 assembler movdq:::emit
+AMD64Assembler#movdq(Register, Register)::: d64 assembler movdq:::if->inRC->inRC->emit->else->if->inRC->inRC->emit->else->throw->new->InternalError
+AMD64Assembler#movdl(Register, Register)::: d64 assembler movdl:::if->inRC->inRC->emit->else->if->inRC->inRC->emit->else->throw->new->InternalError
+AMD64Assembler#movdl(Register, AMD64Address)::: d64 assembler movdl:::emit
+AMD64Assembler#movddup(Register, Register)::: d64 assembler movddup:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#movdqu(Register, AMD64Address)::: d64 assembler movdqu:::simdPrefix->emitByte->emitOperandHelper
+AMD64Assembler#movdqu(Register, Register)::: d64 assembler movdqu:::simdPrefix->emitByte->emitModRM
+AMD64Assembler#movdqu(AMD64Address, Register)::: d64 assembler movdqu:::simdPrefix->emitByte->emitOperandHelper
+AMD64Assembler#movslq(AMD64Address, int)::: d64 assembler movslq:::prefixq->emitByte->emitOperandHelper->emitInt
+AMD64Assembler#movslq(Register, AMD64Address)::: d64 assembler movslq:::prefixq->emitByte->emitOperandHelper
+AMD64Assembler#movslq(Register, Register)::: d64 assembler movslq:::prefixq->emitByte->emitModRM
+AMD64Assembler#negq(Register)::: d64 assembler negq:::prefixq->emitByte->emitModRM
+AMD64Assembler#orq(Register, Register)::: d64 assembler orq:::emit
+AMD64Assembler#shlq(Register, int)::: d64 assembler shlq:::prefixq->if->emitByte->emitModRM->else->emitByte->emitModRM->emitByte
+AMD64Assembler#shlq(Register)::: d64 assembler shlq:::prefixq->emitByte->emitModRM
+AMD64Assembler#shrq(Register, int)::: d64 assembler shrq:::prefixq->if->emitByte->emitModRM->else->emitByte->emitModRM->emitByte
+AMD64Assembler#shrq(Register)::: d64 assembler shrq:::prefixq->emitByte->emitModRM
+AMD64Assembler#sarq(Register, int)::: d64 assembler sarq:::prefixq->if->emitByte->emitModRM->else->emitByte->emitModRM->emitByte
+AMD64Assembler#sbbq(Register, Register)::: d64 assembler sbbq:::emit
+AMD64Assembler#subq(Register, int)::: d64 assembler subq:::SUB->isByte->getMIOpcode->emit
+AMD64Assembler#subq(AMD64Address, int)::: d64 assembler subq:::SUB->isByte->getMIOpcode->emit
+AMD64Assembler#subqWide(Register, int)::: d64 assembler subq wide:::SUB->getMIOpcode->emit
+AMD64Assembler#subq(Register, Register)::: d64 assembler subq:::emit
+AMD64Assembler#testq(Register, Register)::: d64 assembler testq:::prefixq->emitByte->emitModRM
+AMD64Assembler#btrq(Register, int)::: d64 assembler btrq:::prefixq->emitByte->emitByte->emitModRM->emitByte
+AMD64Assembler#xaddb(AMD64Address, Register)::: d64 assembler xaddb:::prefixb->emitByte->emitByte->emitOperandHelper
+AMD64Assembler#xaddw(AMD64Address, Register)::: d64 assembler xaddw:::emitByte->prefix->emitByte->emitByte->emitOperandHelper
+AMD64Assembler#xaddl(AMD64Address, Register)::: d64 assembler xaddl:::prefix->emitByte->emitByte->emitOperandHelper
+AMD64Assembler#xaddq(AMD64Address, Register)::: d64 assembler xaddq:::prefixq->emitByte->emitByte->emitOperandHelper
+AMD64Assembler#xchgb(Register, AMD64Address)::: d64 assembler xchgb:::prefixb->emitByte->emitOperandHelper
+AMD64Assembler#xchgw(Register, AMD64Address)::: d64 assembler xchgw:::emitByte->prefix->emitByte->emitOperandHelper
+AMD64Assembler#xchgl(Register, AMD64Address)::: d64 assembler xchgl:::prefix->emitByte->emitOperandHelper
+AMD64Assembler#xchgq(Register, AMD64Address)::: d64 assembler xchgq:::prefixq->emitByte->emitOperandHelper
+AMD64Assembler#membar(int)::: d64 assembler membar:::if->if->lock->new->AMD64Address->addl
+AMD64Assembler#patchJumpTarget(int, int)::: d64 assembler patch jump target:::op->getByte->if->offsetToJumpTableBase->getShort->jumpTableBase->imm32->emitInt->else->if->imm8->GraalError->isByte->guarantee->emitByte->else->off->if->imm32->emitInt
+AMD64Assembler#nullCheck(AMD64Address)::: d64 assembler null check:::testl
+AMD64Assembler#align(int)::: d64 assembler align:::if->position->position->nop
 AMD64Assembler#call():::Emits a direct call instruction:::annotatePatchingImmediate->emitByte->emitInt
+AMD64Assembler#call(Register)::: d64 assembler call:::prefix->emitByte->emitModRM
+AMD64Assembler#int3()::: d64 assembler int3:::emitByte
+AMD64Assembler#pause()::: d64 assembler pause:::emitByte->emitByte
+AMD64Assembler#emitx87(int, int, int)::: d64 assembler emitx87:::emitByte->emitByte
+AMD64Assembler#fldd(AMD64Address)::: d64 assembler fldd:::emitByte->emitOperandHelper
+AMD64Assembler#flds(AMD64Address)::: d64 assembler flds:::emitByte->emitOperandHelper
+AMD64Assembler#fldln2()::: d64 assembler fldln2:::emitByte->emitByte
+AMD64Assembler#fldlg2()::: d64 assembler fldlg2:::emitByte->emitByte
+AMD64Assembler#fyl2x()::: d64 assembler fyl2x:::emitByte->emitByte
+AMD64Assembler#fstps(AMD64Address)::: d64 assembler fstps:::emitByte->emitOperandHelper
+AMD64Assembler#fstpd(AMD64Address)::: d64 assembler fstpd:::emitByte->emitOperandHelper
+AMD64Assembler#emitFPUArith(int, int, int)::: d64 assembler emit arith:::emitByte->emitByte
+AMD64Assembler#ffree(int)::: d64 assembler ffree:::emitFPUArith
+AMD64Assembler#fincstp()::: d64 assembler fincstp:::emitByte->emitByte
+AMD64Assembler#fxch(int)::: d64 assembler fxch:::emitFPUArith
+AMD64Assembler#fnstswAX()::: d64 assembler fnstsw x:::emitByte->emitByte
+AMD64Assembler#fwait()::: d64 assembler fwait:::emitByte
+AMD64Assembler#fprem()::: d64 assembler fprem:::emitByte->emitByte
+AMD64Assembler#fsin()::: d64 assembler fsin:::emitByte->emitByte
+AMD64Assembler#fcos()::: d64 assembler fcos:::emitByte->emitByte
+AMD64Assembler#fptan()::: d64 assembler fptan:::emitByte->emitByte
+AMD64Assembler#fstp(int)::: d64 assembler fstp:::emitx87
+AMD64Assembler#makeAddress(Register, int)::: d64 assembler make address:::return->new->AMD64Address
+AMD64Assembler#getPlaceholder(int)::: d64 assembler get placeholder:::return->new->AMD64Address
+AMD64Assembler#prefetchPrefix(AMD64Address)::: d64 assembler prefetch prefix:::prefix->emitByte
+AMD64Assembler#prefetchnta(AMD64Address)::: d64 assembler prefetchnta:::prefetchPrefix->emitByte->emitOperandHelper
+AMD64Assembler#prefetchr(AMD64Address)::: d64 assembler prefetchr:::prefetchPrefix->emitByte->emitOperandHelper
+AMD64Assembler#prefetcht0(AMD64Address)::: d64 assembler prefetcht0:::prefetchPrefix->emitByte->emitOperandHelper
+AMD64Assembler#prefetcht1(AMD64Address)::: d64 assembler prefetcht1:::prefetchPrefix->emitByte->emitOperandHelper
+AMD64Assembler#prefetcht2(AMD64Address)::: d64 assembler prefetcht2:::prefix->emitByte->emitByte->emitOperandHelper
+AMD64Assembler#prefetchw(AMD64Address)::: d64 assembler prefetchw:::prefix->emitByte->emitByte->emitOperandHelper
+AMD64Assembler#rdtsc()::: d64 assembler rdtsc:::emitByte->emitByte
 AMD64Assembler#illegal():::Emits an instruction which is considered to be illegal:::emitByte->emitByte
+AMD64Assembler#lfence()::: d64 assembler lfence:::emitByte->emitByte->emitByte
+AMD64Assembler#vptest(Register, Register)::: d64 assembler vptest:::emit
+AMD64Assembler#vpxor(Register, Register, Register)::: d64 assembler vpxor:::emit
+AMD64Assembler#vpxor(Register, Register, AMD64Address)::: d64 assembler vpxor:::emit
+AMD64Assembler#vmovdqu(Register, AMD64Address)::: d64 assembler vmovdqu:::emit
+AMD64Assembler#vmovdqu(AMD64Address, Register)::: d64 assembler vmovdqu:::emit
+AMD64Assembler#vpmovzxbw(Register, AMD64Address)::: d64 assembler vpmovzxbw:::emit
+AMD64Assembler#vzeroupper()::: d64 assembler vzeroupper:::emitVEX->emitByte
+AMD64Assembler#kortestd(Register, Register)::: d64 assembler kortestd:::vexPrefix->emitByte->emitModRM
+AMD64Assembler#kortestq(Register, Register)::: d64 assembler kortestq:::vexPrefix->emitByte->emitModRM
+AMD64Assembler#kmovd(Register, Register)::: d64 assembler kmovd:::if->inRC->if->inRC->vexPrefix->emitByte->emitModRM->else->vexPrefix->emitByte->emitModRM->else->if->inRC->vexPrefix->emitByte->emitModRM->else->throw->GraalError->shouldNotReachHere
+AMD64Assembler#kmovq(Register, Register)::: d64 assembler kmovq:::if->inRC->if->inRC->vexPrefix->emitByte->emitModRM->else->vexPrefix->emitByte->emitModRM->else->if->inRC->vexPrefix->emitByte->emitModRM->else->throw->GraalError->shouldNotReachHere
+AMD64Assembler#ktestd(Register, Register)::: d64 assembler ktestd:::vexPrefix->emitByte->emitModRM
+AMD64Assembler#evmovdqu64(Register, AMD64Address)::: d64 assembler evmovdqu64:::evexPrefix->emitByte->getDisp8ScalingFactor->emitEVEXOperandHelper
+AMD64Assembler#evpmovzxbw(Register, AMD64Address)::: d64 assembler evpmovzxbw:::evexPrefix->emitByte->getDisp8ScalingFactor->emitEVEXOperandHelper
+AMD64Assembler#evpcmpeqb(Register, Register, AMD64Address)::: d64 assembler evpcmpeqb:::evexPrefix->emitByte->getDisp8ScalingFactor->emitEVEXOperandHelper
+AMD64Assembler#evmovdqu16(Register, AMD64Address)::: d64 assembler evmovdqu16:::evexPrefix->emitByte->getDisp8ScalingFactor->emitEVEXOperandHelper
+AMD64Assembler#evmovdqu16(Register, Register, AMD64Address)::: d64 assembler evmovdqu16:::evexPrefix->emitByte->getDisp8ScalingFactor->emitEVEXOperandHelper
+AMD64Assembler#evmovdqu16(AMD64Address, Register)::: d64 assembler evmovdqu16:::evexPrefix->emitByte->getDisp8ScalingFactor->emitEVEXOperandHelper
+AMD64Assembler#evmovdqu16(AMD64Address, Register, Register)::: d64 assembler evmovdqu16:::evexPrefix->emitByte->getDisp8ScalingFactor->emitEVEXOperandHelper
+AMD64Assembler#evpbroadcastw(Register, Register)::: d64 assembler evpbroadcastw:::evexPrefix->emitByte->emitModRM
+AMD64Assembler#evpcmpuw(Register, Register, Register, int)::: d64 assembler evpcmpuw:::evexPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#evpcmpuw(Register, Register, Register, Register, int)::: d64 assembler evpcmpuw:::evexPrefix->emitByte->emitModRM->emitByte
+AMD64Assembler#evpmovwb(AMD64Address, Register)::: d64 assembler evpmovwb:::evexPrefix->emitByte->getDisp8ScalingFactor->emitEVEXOperandHelper
+AMD64Assembler#evpmovwb(AMD64Address, Register, Register)::: d64 assembler evpmovwb:::evexPrefix->emitByte->getDisp8ScalingFactor->emitEVEXOperandHelper
+AMD64Assembler#evpmovzxbw(Register, Register, AMD64Address)::: d64 assembler evpmovzxbw:::evexPrefix->emitByte->getDisp8ScalingFactor->emitEVEXOperandHelper
+AMD64BaseAssembler.OperandDataAnnotation#toString()::: operand data annotation to string:::return->getClass->getSimpleName
+AMD64BaseAssembler#annotatePatchingImmediate(int, int)::: d64 base assembler annotate patching immediate:::if->pos->position->codePatchingAnnotationConsumer->new->OperandDataAnnotation->accept
+AMD64BaseAssembler#supports(CPUFeature)::: d64 base assembler supports:::return->getFeatures->contains
+AMD64BaseAssembler#inRC(RegisterCategory, Register)::: d64 base assembler in c:::return->r->getRegisterCategory->equals
+AMD64BaseAssembler#encode(Register)::: d64 base assembler encode:::return
+AMD64BaseAssembler#rexw()::: d64 base assembler rexw:::emitByte
+AMD64BaseAssembler#prefix(Register)::: d64 base assembler prefix:::prefix
+AMD64BaseAssembler#prefix(Register, boolean)::: d64 base assembler prefix:::regEnc->if->emitByte->else->if->emitByte
+AMD64BaseAssembler#prefixq(Register)::: d64 base assembler prefixq:::if->emitByte->else->emitByte
+AMD64BaseAssembler#prefix(Register, Register)::: d64 base assembler prefix:::prefix
+AMD64BaseAssembler#prefix(Register, boolean, Register, boolean)::: d64 base assembler prefix:::dstEnc->srcEnc->if->if->emitByte->else->if->emitByte->else->if->emitByte->else->emitByte
 AMD64BaseAssembler#prefixq(Register, Register):::Creates prefix for the operands:::regEnc->rmEnc->if->if->emitByte->else->emitByte->else->if->emitByte->else->emitByte
+AMD64BaseAssembler#needsRex(Register)::: d64 base assembler needs rex:::return
+AMD64BaseAssembler#prefix(AMD64Address)::: d64 base assembler prefix:::if->adr->getBase->needsRex->if->adr->getIndex->needsRex->emitByte->else->emitByte->else->if->adr->getIndex->needsRex->emitByte
+AMD64BaseAssembler#prefixq(AMD64Address)::: d64 base assembler prefixq:::if->adr->getBase->needsRex->if->adr->getIndex->needsRex->emitByte->else->emitByte->else->if->adr->getIndex->needsRex->emitByte->else->emitByte
+AMD64BaseAssembler#prefixb(AMD64Address, Register)::: d64 base assembler prefixb:::prefix
+AMD64BaseAssembler#prefix(AMD64Address, Register)::: d64 base assembler prefix:::prefix
+AMD64BaseAssembler#prefix(AMD64Address, Register, boolean)::: d64 base assembler prefix:::if->if->adr->getBase->needsRex->if->adr->getIndex->needsRex->emitByte->else->emitByte->else->if->adr->getIndex->needsRex->emitByte->else->if->emitByte->else->if->adr->getBase->needsRex->if->adr->getIndex->needsRex->emitByte->else->emitByte->else->if->adr->getIndex->needsRex->emitByte->else->emitByte
+AMD64BaseAssembler#prefixq(AMD64Address, Register)::: d64 base assembler prefixq:::if->if->adr->getBase->needsRex->if->adr->getIndex->needsRex->emitByte->else->emitByte->else->if->adr->getIndex->needsRex->emitByte->else->emitByte->else->if->adr->getBase->needsRex->if->adr->getIndex->needsRex->emitByte->else->emitByte->else->if->adr->getIndex->needsRex->emitByte->else->emitByte
 AMD64BaseAssembler#getRXB(Register, Register):::Get RXB bits for register-register instruction:::rxb->return
 AMD64BaseAssembler#getRXB(Register, AMD64Address):::Get RXB bits for register-memory instruction:::rxb->if->rm->getIndex->equals->rm->getIndex->if->rm->getBase->equals->rm->getBase->return
 AMD64BaseAssembler#emitModRM(int, Register):::Emit the ModR/M byte for one register operand and an opcode extension in the R field:::emitByte
 AMD64BaseAssembler#emitModRM(Register, Register):::Emit the ModR/M byte for two register operands:::emitModRM
 AMD64BaseAssembler#emitOperandHelper(Register, AMD64Address, boolean, int):::Emits the ModR/M byte and optionally the SIB byte for one register and one memory operand.:::encode->emitOperandHelper
+AMD64BaseAssembler#emitOperandHelper(int, AMD64Address, int)::: d64 base assembler emit operand helper:::emitOperandHelper
+AMD64BaseAssembler#emitOperandHelper(Register, AMD64Address, int)::: d64 base assembler emit operand helper:::encode->emitOperandHelper
+AMD64BaseAssembler#emitEVEXOperandHelper(Register, AMD64Address, int, int)::: d64 base assembler emit operand helper:::encode->emitOperandHelper
+AMD64BaseAssembler#emitOperandHelper(int, AMD64Address, boolean, int, int):::Emits the ModR/M byte and optionally the SIB byte for one memory operand and an opcode extension in the R field.:::regenc->base->addr->getBase->index->addr->getIndex->scale->addr->getScale->disp->addr->getDisplacement->if->base->equals->emitByte->if->codePatchingAnnotationConsumer->position->position->new->OperandDataAnnotation->accept->emitInt->else->if->base->isValid->overriddenForce4Byte->baseenc->base->isValid->encode->if->index->isValid->indexenc->encode->if->base->equals->base->equals->emitByte->emitByte->else->if->if->newDisp->if->isByte->else->if->isByte->emitByte->emitByte->emitByte->else->emitByte->emitByte->emitInt->else->if->base->equals->base->equals->if->emitByte->emitByte->else->if->if->newDisp->if->isByte->else->if->isByte->emitByte->emitByte->emitByte->else->emitByte->emitByte->emitInt->else->if->base->equals->base->equals->emitByte->else->if->if->newDisp->if->isByte->else->if->isByte->emitByte->emitByte->else->emitByte->emitInt->else->if->index->isValid->indexenc->encode->emitByte->emitByte->emitInt->else->emitByte->emitByte->emitInt
+AMD64BaseAssembler.SIMDEncoder#simdPrefix(Register, Register, AMD64Address, int, int, boolean)::: encoder simd prefix:::
+AMD64BaseAssembler.SIMDEncoder#simdPrefix(Register, Register, Register, int, int, boolean)::: encoder simd prefix:::
+AMD64BaseAssembler.SSEEncoderImpl#simdPrefix(Register, Register, AMD64Address, int, int, boolean)::: encoder impl simd prefix:::if->emitByte->if->prefixq->else->prefix->if->emitShort->else->if->emitByte
+AMD64BaseAssembler.SSEEncoderImpl#simdPrefix(Register, Register, Register, int, int, boolean)::: encoder impl simd prefix:::if->emitByte->if->prefixq->else->prefix->if->emitShort->else->if->emitByte
+AMD64BaseAssembler.VEXEncoderImpl#sizePrefixToPP(int)::: encoder impl size prefix to p:::switch->return->return->return->return
+AMD64BaseAssembler.VEXEncoderImpl#opcodeEscapePrefixToMMMMM(int)::: encoder impl opcode escape prefix to m:::switch->return->return->return->return
+AMD64BaseAssembler.VEXEncoderImpl#simdPrefix(Register, Register, AMD64Address, int, int, boolean)::: encoder impl simd prefix:::sizePrefixToPP->opcodeEscapePrefixToMMMMM->getRXB->nds->isValid->emitVEX
+AMD64BaseAssembler.VEXEncoderImpl#simdPrefix(Register, Register, Register, int, int, boolean)::: encoder impl simd prefix:::sizePrefixToPP->opcodeEscapePrefixToMMMMM->getRXB->nds->isValid->emitVEX
+AMD64BaseAssembler#simdPrefix(Register, Register, AMD64Address, OperandSize, int, int, boolean)::: d64 base assembler simd prefix:::simdEncoder->simdPrefix
+AMD64BaseAssembler#simdPrefix(Register, Register, AMD64Address, OperandSize, int, boolean)::: d64 base assembler simd prefix:::simdEncoder->simdPrefix
+AMD64BaseAssembler#simdPrefix(Register, Register, Register, OperandSize, int, int, boolean)::: d64 base assembler simd prefix:::simdEncoder->simdPrefix
+AMD64BaseAssembler#simdPrefix(Register, Register, Register, OperandSize, int, boolean)::: d64 base assembler simd prefix:::simdEncoder->simdPrefix
 AMD64BaseAssembler#emitVEX(int, int, int, int, int, int, boolean):::Low-level function to encode and emit the VEX prefix:::rxb1s->vvvv1s->if->byte2->emitByte->emitByte->else->byte2->byte3->emitByte->emitByte->emitByte
+AMD64BaseAssembler#getLFlag(AVXSize)::: d64 base assembler get flag:::switch->return->return->return->return
+AMD64BaseAssembler#vexPrefix(Register, Register, Register, AVXSize, int, int, int, boolean)::: d64 base assembler vex prefix:::getLFlag->getRXB->nds->isValid->nds->encoding->emitVEX
+AMD64BaseAssembler#vexPrefix(Register, Register, AMD64Address, AVXSize, int, int, int, boolean)::: d64 base assembler vex prefix:::getLFlag->getRXB->nds->isValid->nds->encoding->emitVEX
+AMD64BaseAssembler#emitEVEX(int, int, int, int, int, int, int, int, int, int):::Low-level function to encode and emit the EVEX prefix:::emitByte->p1->emitByte->p2->emitByte->p3->emitByte
+AMD64BaseAssembler#getRXBForEVEX(Register, Register):::Get RXB bits for register-register instructions in EVEX-encoding, where ModRM.rm contains a register index:::rxb->return
 AMD64BaseAssembler#evexPrefix(Register, Register, Register, Register, AVXSize, int, int, int, int, int):::Helper method for emitting EVEX prefix in the form of RRRR.:::getLFlag->getRXBForEVEX->nds->isValid->nds->encoding->mask->isValid->emitEVEX
 AMD64BaseAssembler#evexPrefix(Register, Register, Register, AMD64Address, AVXSize, int, int, int, int, int):::Helper method for emitting EVEX prefix in the form of RRRM:::getLFlag->getRXB->nds->isValid->nds->encoding->mask->isValid->emitEVEX
+AMD64MacroAssembler#decrementq(Register, int)::: d64 macro assembler decrementq:::if->subq->return->if->incrementq->return->if->return->if->decq->else->subq
+AMD64MacroAssembler#decrementq(AMD64Address, int)::: d64 macro assembler decrementq:::if->subq->return->if->incrementq->return->if->return->if->decq->else->subq
+AMD64MacroAssembler#enter(int)::: d64 macro assembler enter:::if->NumUtil->isUShort->emitByte->emitShort->emitByte->else->push->movq->decrementq
+AMD64MacroAssembler#incrementq(Register, int)::: d64 macro assembler incrementq:::if->addq->return->if->decrementq->return->if->return->if->incq->else->addq
+AMD64MacroAssembler#incrementq(AMD64Address, int)::: d64 macro assembler incrementq:::if->addq->return->if->decrementq->return->if->return->if->incq->else->addq
+AMD64MacroAssembler#movptr(Register, AMD64Address)::: d64 macro assembler movptr:::movq
+AMD64MacroAssembler#movptr(AMD64Address, Register)::: d64 macro assembler movptr:::movq
+AMD64MacroAssembler#movptr(AMD64Address, int)::: d64 macro assembler movptr:::movslq
+AMD64MacroAssembler#cmpptr(Register, Register)::: d64 macro assembler cmpptr:::cmpq
+AMD64MacroAssembler#cmpptr(Register, AMD64Address)::: d64 macro assembler cmpptr:::cmpq
+AMD64MacroAssembler#decrementl(Register)::: d64 macro assembler decrementl:::decrementl
+AMD64MacroAssembler#decrementl(Register, int)::: d64 macro assembler decrementl:::if->subl->return->if->incrementl->return->if->return->if->decl->else->subl
+AMD64MacroAssembler#decrementl(AMD64Address, int)::: d64 macro assembler decrementl:::if->subl->return->if->incrementl->return->if->return->if->decl->else->subl
+AMD64MacroAssembler#incrementl(Register, int)::: d64 macro assembler incrementl:::if->addl->return->if->decrementl->return->if->return->if->incl->else->addl
+AMD64MacroAssembler#incrementl(AMD64Address, int)::: d64 macro assembler incrementl:::if->addl->return->if->decrementl->return->if->return->if->incl->else->addl
+AMD64MacroAssembler#movflt(Register, Register)::: d64 macro assembler movflt:::if->movaps->else->movss
+AMD64MacroAssembler#movflt(Register, AMD64Address)::: d64 macro assembler movflt:::movss
+AMD64MacroAssembler#movflt(AMD64Address, Register)::: d64 macro assembler movflt:::movss
+AMD64MacroAssembler#movdbl(Register, Register)::: d64 macro assembler movdbl:::if->movapd->else->movsd
+AMD64MacroAssembler#movdbl(Register, AMD64Address)::: d64 macro assembler movdbl:::if->movsd->else->movlpd
+AMD64MacroAssembler#movdbl(AMD64Address, Register)::: d64 macro assembler movdbl:::movsd
 AMD64MacroAssembler#movlong(AMD64Address, long):::Non-atomic write of a 64-bit constant to memory:::if->NumUtil->isInt->emit->else->high->dst->getBase->dst->getIndex->dst->getScale->dst->getDisplacement->new->AMD64Address->movl->movl
+AMD64MacroAssembler#setl(ConditionFlag, Register)::: d64 macro assembler setl:::setb->movzbl
+AMD64MacroAssembler#setq(ConditionFlag, Register)::: d64 macro assembler setq:::setb->movzbq
+AMD64MacroAssembler#flog(Register, Register, boolean)::: d64 macro assembler flog:::if->fldlg2->else->fldln2->tmp->trigPrologue->fyl2x->trigEpilogue
+AMD64MacroAssembler#fsin(Register, Register)::: d64 macro assembler fsin:::tmp->trigPrologue->fsin->trigEpilogue
+AMD64MacroAssembler#fcos(Register, Register)::: d64 macro assembler fcos:::tmp->trigPrologue->fcos->trigEpilogue
+AMD64MacroAssembler#ftan(Register, Register)::: d64 macro assembler ftan:::tmp->trigPrologue->fptan->fstp->trigEpilogue
+AMD64MacroAssembler#fpop()::: d64 macro assembler fpop:::ffree->fincstp
+AMD64MacroAssembler#trigPrologue(Register)::: d64 macro assembler trig prologue:::tmp->new->AMD64Address->getSizeInBytes->subq->movdbl->fldd->return
+AMD64MacroAssembler#trigEpilogue(Register, AMD64Address)::: d64 macro assembler trig epilogue:::fstpd->movdbl->getSizeInBytes->addq
+AVXKind#getRegisterSize(Value)::: kind get register size:::kind->a->getPlatformKind->if->kind->isXMM->return->getRegisterSize->else->return
+AVXKind#getDataSize(AMD64Kind)::: kind get data size:::switch->kind->getSizeInBytes->return->return->return->return->return->throw->GraalError->shouldNotReachHere
+AVXKind#getRegisterSize(AMD64Kind)::: kind get register size:::size->kind->getSizeInBytes->if->return->else->if->return->else->return
+AVXKind#changeSize(AMD64Kind, AVXSize)::: kind change size:::return->kind->getScalar->getAVXKind
+AVXKind#getAVXKind(AMD64Kind, AVXSize)::: kind get kind:::foreach->AMD64Kind->values->if->ret->getScalar->ret->getSizeInBytes->size->getBytes->return->throw->GraalError->String->format->shouldNotReachHere
+AVXKind#getAVXKind(AMD64Kind, int)::: kind get kind:::foreach->AMD64Kind->values->if->ret->getScalar->ret->getVectorLength->return->throw->GraalError->String->format->shouldNotReachHere

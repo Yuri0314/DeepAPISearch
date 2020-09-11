@@ -1,1 +1,33 @@
+LocationMarker#newLiveValueSet()::: location marker new live value set:::
+LocationMarker#shouldProcessValue(Value)::: location marker should process value:::
+LocationMarker#processState(LIRInstruction, LIRFrameState, S)::: location marker process state:::
+LocationMarker#build()::: location marker build:::blocks->lir->getControlFlowGraph->getBlocks->worklist->new->UniqueWorkList->for->i->foreach->lir->getControlFlowGraph->getBlocks->liveInMap->newLiveValueSet->put->while->worklist->isEmpty->block->worklist->poll->processBlock
+LocationMarker#updateOutBlock(AbstractBlockBase):::Merge outSet with in-set of successors.:::union->newLiveValueSet->foreach->block->getSuccessors->union->liveInMap->get->putAll->outSet->liveOutMap->get->if->union->equals->liveOutMap->put->return->return
+LocationMarker#processBlock(AbstractBlockBase, UniqueWorkList)::: location marker process block:::if->updateOutBlock->debug->lir->getDebug->try->indent->debug->logAndIndent->liveOutMap->get->copy->instructions->lir->getLIRforBlock->for->i->instructions->size->liveInMap->put->foreach->block->getPredecessors->worklist->add->catch->finally
+LocationMarker#processInstructionBottomUp(LIRInstruction):::Process all values of an instruction bottom-up, i.e:::debug->lir->getDebug->try->indent->debug->op->id->logAndIndent->op->visitEachTemp->op->visitEachOutput->if->op->destroysCallerSavedRegisters->foreach->frameMap->getRegisterConfig->getCallerSaveRegisters->kind->frameMap->getTarget->reg->getRegisterCategory->getLargestStorableKind->defConsumer->reg->LIRKind->value->asValue->visitValue->op->visitEachAlive->op->visitEachState->op->forEachState->op->visitEachInput->catch->finally
+LocationMarkerPhase#run(TargetDescription, LIRGenerationResult, AllocationContext)::: location marker phase run:::lirGenRes->getLIR->lirGenRes->getFrameMap->new->Marker->build
+LocationMarkerPhase.Marker#newLiveValueSet()::: marker new live value set:::return->new->RegStackValueSet
+LocationMarkerPhase.Marker#shouldProcessValue(Value)::: marker should process value:::if->isRegister->reg->asRegister->if->reg->mayContainReference->attributes->isAllocatable->return->else->if->isStackSlot->return->return->operand->getValueKind->equals
 LocationMarkerPhase.Marker#processState(LIRInstruction, LIRFrameState, RegStackValueSet):::This method does the actual marking.:::if->info->hasDebugInfo->info->op->destroysCallerSavedRegisters->frameMap->getRegisterConfig->areAllAllocatableRegistersCallerSaved->initDebugInfo->refMap->frameMap->newReferenceMapBuilder->values->addLiveValues->info->debugInfo->refMap->finish->setReferenceMap
+LocationMarkerPhase.Marker#attributes(Register):::Gets an object describing the attributes of a given register according to this register configuration.:::return
+MarkBasePointersPhase#run(TargetDescription, LIRGenerationResult, AllocationContext)::: mark base pointers phase run:::lirGenRes->getLIR->new->Marker->build
+MarkBasePointersPhase.Marker.BasePointersSet#copy()::: base pointers set copy:::return->new->BasePointersSet
+MarkBasePointersPhase.Marker.BasePointersSet#put(Value)::: base pointers set put:::base->v->getValueKind->getDerivedReferenceBase->variables->put
+MarkBasePointersPhase.Marker.BasePointersSet#putAll(BasePointersSet)::: base pointers set put all:::variables->putAll
+MarkBasePointersPhase.Marker.BasePointersSet#remove(Value)::: base pointers set remove:::base->v->getValueKind->getDerivedReferenceBase->variables->put
+MarkBasePointersPhase.Marker.BasePointersSet#equals(Object)::: base pointers set equals:::if->other->return->variables->equals->else->return
+MarkBasePointersPhase.Marker.BasePointersSet#hashCode()::: base pointers set hash code:::throw->new->UnsupportedOperationException
+MarkBasePointersPhase.Marker#newLiveValueSet()::: marker new live value set:::return->new->BasePointersSet
+MarkBasePointersPhase.Marker#shouldProcessValue(Value)::: marker should process value:::kind->operand->getValueKind->if->return->isDerivedReference->else->return
+MarkBasePointersPhase.Marker#processState(LIRInstruction, LIRFrameState, BasePointersSet)::: marker process state:::info->new->IndexedValueMap->setLiveBasePointers
+RegStackValueSet#copy()::: reg stack value set copy:::return->new->RegStackValueSet
+RegStackValueSet#put(Value)::: reg stack value set put:::if->shouldProcessValue->return->if->isRegister->index->asRegister->registers->put->else->if->isStackSlot->index->frameMap->asStackSlot->offsetForStackSlot->if->stack->put->else->if->new->HashSet<>->extraStack->add
+RegStackValueSet#putAll(RegStackValueSet)::: reg stack value set put all:::registers->putAll->stack->putAll->if->if->new->HashSet<>->extraStack->addAll
+RegStackValueSet#remove(Value)::: reg stack value set remove:::if->shouldProcessValue->return->if->isRegister->index->asRegister->registers->put->else->if->isStackSlot->index->frameMap->asStackSlot->offsetForStackSlot->if->stack->put->else->if->extraStack->remove
+RegStackValueSet#equals(Object)::: reg stack value set equals:::if->other->return->registers->equals->stack->equals->Objects->equals->else->return
+RegStackValueSet#hashCode()::: reg stack value set hash code:::throw->new->UnsupportedOperationException
+RegStackValueSet#shouldProcessValue(Value)::: reg stack value set should process value:::return->isRegister->LIRKind->isValue
+RegStackValueSet#addLiveValues(ReferenceMapBuilder)::: reg stack value set add live values:::addLiveValue->new->ValueConsumer->registers->visitEach->stack->visitEach->if->foreach->refMap->addLiveValue
+UniqueWorkList#poll()::: unique work list poll:::result->super->poll->if->valid->result->getId->set->return
+UniqueWorkList#add(AbstractBlockBase)::: unique work list add:::if->valid->pred->getId->get->valid->pred->getId->set->return->super->add->return
+UniqueWorkList#addAll(Collection>)::: unique work list add all:::changed->foreach->if->valid->element->getId->get->valid->element->getId->set->super->add->return

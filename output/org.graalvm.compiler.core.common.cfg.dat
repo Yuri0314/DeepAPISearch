@@ -1,9 +1,53 @@
+AbstractBlockBase#setDominatorNumber(int)::: abstract block base set dominator number:::
+AbstractBlockBase#setMaxChildDomNumber(int)::: abstract block base set max child dom number:::
+AbstractBlockBase#getDominatorNumber()::: abstract block base get dominator number:::return
+AbstractBlockBase#getMaxChildDominatorNumber()::: abstract block base get max child dominator number:::return
+AbstractBlockBase#getId()::: abstract block base get id:::return
+AbstractBlockBase#setId(int)::: abstract block base set id:::
+AbstractBlockBase#getPredecessors()::: abstract block base get predecessors:::return
+AbstractBlockBase#setPredecessors(T[])::: abstract block base set predecessors:::
+AbstractBlockBase#getSuccessors()::: abstract block base get successors:::return
+AbstractBlockBase#setSuccessors(T[])::: abstract block base set successors:::
+AbstractBlockBase#getDominator()::: abstract block base get dominator:::return
+AbstractBlockBase#setDominator(T)::: abstract block base set dominator:::
 AbstractBlockBase#getDominatorDepth():::Level in the dominator tree starting with 0 for the start block.:::return
+AbstractBlockBase#getFirstDominated()::: abstract block base get first dominated:::return
+AbstractBlockBase#setFirstDominated(T)::: abstract block base set first dominated:::
+AbstractBlockBase#getDominatedSibling()::: abstract block base get dominated sibling:::return
+AbstractBlockBase#setDominatedSibling(T)::: abstract block base set dominated sibling:::
+AbstractBlockBase#toString()::: abstract block base to string:::return
+AbstractBlockBase#getPredecessorCount()::: abstract block base get predecessor count:::return->getPredecessors
+AbstractBlockBase#getSuccessorCount()::: abstract block base get successor count:::return->getSuccessors
+AbstractBlockBase#getLinearScanNumber()::: abstract block base get linear scan number:::return
+AbstractBlockBase#setLinearScanNumber(int)::: abstract block base set linear scan number:::
+AbstractBlockBase#isAligned()::: abstract block base is aligned:::return
+AbstractBlockBase#setAlign(boolean)::: abstract block base set align:::
+AbstractBlockBase#isExceptionEntry()::: abstract block base is exception entry:::
+AbstractBlockBase#getLoop()::: abstract block base get loop:::
+AbstractBlockBase#getLoopDepth()::: abstract block base get loop depth:::
+AbstractBlockBase#delete()::: abstract block base delete:::
+AbstractBlockBase#isLoopEnd()::: abstract block base is loop end:::
+AbstractBlockBase#isLoopHeader()::: abstract block base is loop header:::
+AbstractBlockBase#getPostdominator()::: abstract block base get postdominator:::
+AbstractBlockBase#getRelativeFrequency()::: abstract block base get relative frequency:::
+AbstractBlockBase#getDominator(int)::: abstract block base get dominator:::
+AbstractBlockBase#hashCode()::: abstract block base hash code:::return
+AbstractBlockBase.BlockIdComparator#compare(AbstractBlockBase, AbstractBlockBase)::: block id comparator compare:::return->Integer->o1->getId->o2->getId->compare
 AbstractControlFlowGraph#getBlocks():::Returns the list blocks contained in this control flow graph:::
+AbstractControlFlowGraph#getLoops()::: abstract control flow graph get loops:::
+AbstractControlFlowGraph#getStartBlock()::: abstract control flow graph get start block:::
 AbstractControlFlowGraph#isDominatedBy(AbstractBlockBase, AbstractBlockBase):::True if block a is dominated by block b.:::domNumberA->a->getDominatorNumber->domNumberB->b->getDominatorNumber->return->b->getMaxChildDominatorNumber
 AbstractControlFlowGraph#strictlyDominates(AbstractBlockBase, AbstractBlockBase):::True if block a dominates block b and a is not identical block to b.:::return->dominates
 AbstractControlFlowGraph#dominates(AbstractBlockBase, AbstractBlockBase):::True if block a dominates block b.:::return->isDominatedBy
 AbstractControlFlowGraph#commonDominator(AbstractBlockBase, AbstractBlockBase):::Calculates the common dominator of two blocks:::if->return->else->if->return->else->if->return->else->aDomDepth->a->getDominatorDepth->bDomDepth->b->getDominatorDepth->aTemp->bTemp->if->else->return->commonDominatorHelper
+AbstractControlFlowGraph#commonDominatorHelper(AbstractBlockBase, AbstractBlockBase)::: abstract control flow graph common dominator helper:::domNumberA->a->getDominatorNumber->result->while->result->getDominatorNumber->result->getDominator->while->result->getMaxChildDominatorNumber->result->getDominator->return
+AbstractControlFlowGraph#commonDominatorTyped(T, T)::: abstract control flow graph common dominator typed:::return->commonDominator
+BlockMap#get(AbstractBlockBase)::: block map get:::return->block->getId
+BlockMap#put(AbstractBlockBase, T)::: block map put:::block->getId
+CFGVerifier#verify(C)::: verifier verify:::foreach->cfg->getBlocks->foreach->block->getPredecessors->foreach->block->getSuccessors->if->block->getDominator->domChild->block->getDominator->getFirstDominated->while->if->break->domChild->getDominatedSibling->dominated->block->getFirstDominated->while->dominated->getDominatedSibling->postDominatorBlock->block->getPostdominator->if->visitedBlocks->new->BlockMap<>->visitedBlocks->put->stack->new->ArrayDeque<>->foreach->block->getSuccessors->visitedBlocks->put->stack->push->while->stack->size->tos->stack->pop->if->continue->foreach->tos->getSuccessors->if->visitedBlocks->get->visitedBlocks->put->stack->push->if->cfg->getLoops->foreach->cfg->getLoops->foreach->loop->getBlocks->blockLoop->block->getLoop->while->blockLoop->getParent->if->block->isLoopHeader->block->getLoop->foreach->block->getPredecessors->if->loop->getBlocks->contains->return->foreach->loop->getLoopExits->blockLoop->block->getLoop->while->blockLoop->getParent->return
+DominatorOptimizationProblem#verify(AbstractBlockBase[])::: dominator optimization problem verify:::for->i->return
+DominatorOptimizationProblem#getBlocks()::: dominator optimization problem get blocks:::return
+DominatorOptimizationProblem#getBlockForId(int)::: dominator optimization problem get block for id:::block->return
 DominatorOptimizationProblem#set(E, AbstractBlockBase):::Sets a flag for a block.:::bitSet->flags->get->if->new->BitSet->flags->put->bitSet->block->getId->set
 DominatorOptimizationProblem#get(E, AbstractBlockBase):::Checks whether a flag is set for a block.:::bitSet->flags->get->return->bitSet->block->getId->get
 DominatorOptimizationProblem#stream(E):::Returns a Stream of blocks for which flag is set.:::return->Arrays->getBlocks->asList->stream->get->filter
@@ -13,7 +57,23 @@ DominatorOptimizationProblem#setDominatorPath(E, AbstractBlockBase):::Sets flag 
 DominatorOptimizationProblem#getFlagsForBlock(AbstractBlockBase):::Returns a Stream of flags associated with block.:::return->getFlags->stream->get->filter
 DominatorOptimizationProblem#getFlags():::Returns the Set of flags that can be set for this DominatorOptimizationProblem problem.:::return->flags->keySet
 DominatorOptimizationProblem#getName(E):::Returns the name of a flag.:::return->flag->toString
+Loop#numBackedges()::: loop num backedges:::
+Loop#toString()::: loop to string:::return->getDepth
+Loop#getParent()::: loop get parent:::return
+Loop#getChildren()::: loop get children:::return
+Loop#getDepth()::: loop get depth:::return
+Loop#getIndex()::: loop get index:::return
+Loop#getHeader()::: loop get header:::return
+Loop#getBlocks()::: loop get blocks:::return
 Loop#getLoopExits():::Returns the loop exits:::return
+Loop#isLoopExit(T)::: loop is loop exit:::return->Collections->binarySearch
 Loop#getNaturalExits():::Returns the natural exit points: these are the earliest block that are guaranteed to never reach a back-edge:::return
+Loop#isNaturalExit(T)::: loop is natural exit:::return->Collections->binarySearch
+Loop#isSorted(List)::: loop is sorted:::lastId->foreach->if->block->getId->return->block->getId->return
 Loop#transitiveParentLoop(Loop, Loop):::Determines if one loop is a transitive parent of another loop.:::curr->while->if->return->curr->getParent->return
+Loop#hashCode()::: loop hash code:::return
+Loop#equals(Object)::: loop equals:::return->super->equals
+PrintableCFG#getBlocks()::: printable g get blocks:::
 PrintableCFG#forEachPropertyPair(AbstractBlockBase, BiConsumer):::Applies action to all extra property pairs (name, value) of block.:::
+PrintableDominatorOptimizationProblem#forEachPropertyPair(AbstractBlockBase, BiConsumer)::: printable dominator optimization problem for each property pair:::getFlags->action->accept->getName->get->accept->forEach->cost->getCost->if->cost->action->accept->forEachProperty
+PropertyConsumable#forEachProperty(BiConsumer)::: property consumable for each property:::

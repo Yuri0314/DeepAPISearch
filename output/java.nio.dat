@@ -1,10 +1,22 @@
+Bits#swap(short)::: bits swap:::return->Short->reverseBytes
+Bits#swap(char)::: bits swap:::return->Character->reverseBytes
+Bits#swap(int)::: bits swap:::return->Integer->reverseBytes
+Bits#swap(long)::: bits swap:::return->Long->reverseBytes
+Bits#pageSize()::: bits page size:::if->UNSAFE->pageSize->return
+Bits#pageCount(long)::: bits page count:::return->pageSize->pageSize
+Bits#unaligned()::: bits unaligned:::return
+Bits#reserveMemory(long, int)::: bits reserve memory:::if->VM->initLevel->VM->maxDirectMemory->if->tryReserveMemory->return->jlra->SharedSecrets->getJavaLangRefAccess->interrupted->try->refprocActive->do->try->jlra->waitForReferenceProcessing->catch->finally->if->tryReserveMemory->return->while->System->gc->sleepTime->sleeps->while->if->tryReserveMemory->return->if->break->try->if->jlra->waitForReferenceProcessing->Thread->sleep->catch->finally->throw->new->OutOfMemoryError->catch->finally->if->Thread->currentThread->interrupt
+Bits#tryReserveMemory(long, int)::: bits try reserve memory:::totalCap->while->TOTAL_CAPACITY->get->if->TOTAL_CAPACITY->compareAndSet->RESERVED_MEMORY->addAndGet->COUNT->incrementAndGet->return->return
+Bits#unreserveMemory(long, int)::: bits unreserve memory:::cnt->COUNT->decrementAndGet->reservedMem->RESERVED_MEMORY->addAndGet->totalCap->TOTAL_CAPACITY->addAndGet
 Buffer#createSameBufferException():::Returns an IllegalArgumentException indicating that the source and target are the same Buffer:::return->new->IllegalArgumentException
 Buffer#createCapacityException(int):::Verify that the capacity is nonnegative.:::return->new->IllegalArgumentException
 Buffer#capacity():::Returns this buffer's capacity.:::return
 Buffer#position():::Returns this buffer's position.:::return
 Buffer#position(int):::Sets this buffer's position:::if->throw->createPositionException->if->return
+Buffer#createPositionException(int):::Verify that 0 < newPosition <= limit:::msg->if->else->return->new->IllegalArgumentException
 Buffer#limit():::Returns this buffer's limit.:::return
 Buffer#limit(int):::Sets this buffer's limit:::if->throw->createLimitException->if->if->return
+Buffer#createLimitException(int):::Verify that 0 < newLimit <= capacity:::msg->if->else->return->new->IllegalArgumentException
 Buffer#mark():::Sets this buffer's mark at its position.:::return
 Buffer#reset():::Resets this buffer's position to the previously-marked position:::m->if->throw->new->InvalidMarkException->return
 Buffer#clear():::Clears this buffer:::return
@@ -19,9 +31,25 @@ Buffer#arrayOffset():::Returns the offset within this buffer's backing array of 
 Buffer#isDirect():::Tells whether or not this buffer is direct.:::
 Buffer#slice():::Creates a new buffer whose content is a shared subsequence of this buffer's content:::
 Buffer#duplicate():::Creates a new buffer that shares this buffer's content:::
+Buffer#base()::: buffer base:::
 Buffer#nextGetIndex():::Checks the current position against the limit, throwing a BufferUnderflowException if it is not smaller than the limit, and then increments the position.:::if->throw->new->BufferUnderflowException->return
+Buffer#nextGetIndex(int)::: buffer next get index:::if->throw->new->BufferUnderflowException->p->return
 Buffer#nextPutIndex():::Checks the current position against the limit, throwing a BufferOverflowException if it is not smaller than the limit, and then increments the position.:::if->throw->new->BufferOverflowException->return
+Buffer#nextPutIndex(int)::: buffer next put index:::if->throw->new->BufferOverflowException->p->return
 Buffer#checkIndex(int):::Checks the given index against the limit, throwing an IndexOutOfBoundsException if it is not smaller than the limit or is smaller than zero.:::if->throw->new->IndexOutOfBoundsException->return
+Buffer#checkIndex(int, int)::: buffer check index:::if->throw->new->IndexOutOfBoundsException->return
+Buffer#markValue()::: buffer mark value:::return
+Buffer#truncate()::: buffer truncate:::
+Buffer#discardMark()::: buffer discard mark:::
+Buffer#checkBounds(int, int, int)::: buffer check bounds:::if->throw->new->IndexOutOfBoundsException
+BufferMismatch#mismatch(ByteBuffer, int, ByteBuffer, int, int)::: buffer mismatch mismatch:::i->if->if->a->get->b->get->return->ArraysSupport->a->base->b->base->vectorizedMismatch->if->return->for->return
+BufferMismatch#mismatch(CharBuffer, int, CharBuffer, int, int)::: buffer mismatch mismatch:::i->if->a->charRegionOrder->b->charRegionOrder->a->charRegionOrder->b->charRegionOrder->if->a->get->b->get->return->ArraysSupport->a->base->b->base->vectorizedMismatch->if->return->for->return
+BufferMismatch#mismatch(ShortBuffer, int, ShortBuffer, int, int)::: buffer mismatch mismatch:::i->if->a->order->b->order->if->a->get->b->get->return->ArraysSupport->a->base->b->base->vectorizedMismatch->if->return->for->return
+BufferMismatch#mismatch(IntBuffer, int, IntBuffer, int, int)::: buffer mismatch mismatch:::i->if->a->order->b->order->if->a->get->b->get->return->ArraysSupport->a->base->b->base->vectorizedMismatch->if->return->for->return
+BufferMismatch#mismatch(FloatBuffer, int, FloatBuffer, int, int)::: buffer mismatch mismatch:::i->if->a->order->b->order->if->Float->a->get->floatToRawIntBits->Float->b->get->floatToRawIntBits->ArraysSupport->a->base->b->base->vectorizedMismatch->if->av->a->get->bv->b->get->if->Float->isNaN->Float->isNaN->return->else->for->return
+BufferMismatch#mismatch(LongBuffer, int, LongBuffer, int, int)::: buffer mismatch mismatch:::i->if->a->order->b->order->if->a->get->b->get->return->ArraysSupport->a->base->b->base->vectorizedMismatch->return->for->return
+BufferMismatch#mismatch(DoubleBuffer, int, DoubleBuffer, int, int)::: buffer mismatch mismatch:::i->if->a->order->b->order->if->Double->a->get->doubleToRawLongBits->Double->b->get->doubleToRawLongBits->ArraysSupport->a->base->b->base->vectorizedMismatch->if->av->a->get->bv->b->get->if->Double->isNaN->Double->isNaN->return->else->return->for->return
+ByteBuffer#base()::: byte buffer base:::return
 ByteBuffer#allocateDirect(int):::Allocates a new direct byte buffer:::return->new->DirectByteBuffer
 ByteBuffer#allocate(int):::Allocates a new byte buffer:::if->throw->createCapacityException->return->new->HeapByteBuffer
 ByteBuffer#wrap(byte[], int, int):::Wraps a byte array into a buffer:::try->return->new->HeapByteBuffer->catch->throw->new->IndexOutOfBoundsException->finally
@@ -41,17 +69,26 @@ ByteBuffer#put(byte[]):::Relative bulk put method&nbsp;&nbsp;(optional operation
 ByteBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible byte array:::return
 ByteBuffer#array():::Returns the byte array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 ByteBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+ByteBuffer#position(int)::: byte buffer position:::super->position->return
+ByteBuffer#limit(int)::: byte buffer limit:::super->limit->return
+ByteBuffer#mark()::: byte buffer mark:::super->mark->return
+ByteBuffer#reset()::: byte buffer reset:::super->reset->return
+ByteBuffer#clear()::: byte buffer clear:::super->clear->return
+ByteBuffer#flip()::: byte buffer flip:::super->flip->return
+ByteBuffer#rewind()::: byte buffer rewind:::super->rewind->return
 ByteBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 ByteBuffer#isDirect():::Tells whether or not this byte buffer is direct.:::
 ByteBuffer#toString():::Returns a string summarizing the state of this buffer.:::sb->new->StringBuffer->sb->getClass->getName->append->sb->append->sb->position->append->sb->append->sb->limit->append->sb->append->sb->capacity->append->sb->append->return->sb->toString
 ByteBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
 ByteBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
 ByteBuffer#compareTo(ByteBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+ByteBuffer#compare(byte, byte)::: byte buffer compare:::return->Byte->compare
 ByteBuffer#mismatch(ByteBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
 ByteBuffer#order():::Retrieves this buffer's byte order:::return
 ByteBuffer#order(ByteOrder):::Modifies this buffer's byte order.:::ByteOrder->nativeOrder->return
 ByteBuffer#alignmentOffset(int, int):::Returns the memory address, pointing to the byte at the given index, modulus the given unit size:::if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->if->isDirect->throw->new->UnsupportedOperationException->return
 ByteBuffer#alignedSlice(int):::Creates a new byte buffer whose content is a shared and aligned subsequence of this buffer's content:::pos->position->lim->limit->pos_mod->alignmentOffset->lim_mod->alignmentOffset->aligned_pos->aligned_lim->if->return->slice
+ByteBuffer#slice(int, int)::: byte buffer slice:::
 ByteBuffer#getChar():::Relative get method for reading a char value:::
 ByteBuffer#putChar(char):::Relative put method for writing a char value&nbsp;&nbsp;(optional operation):::
 ByteBuffer#getChar(int):::Absolute get method for reading a char value:::
@@ -82,8 +119,311 @@ ByteBuffer#putDouble(double):::Relative put method for writing a double value&nb
 ByteBuffer#getDouble(int):::Absolute get method for reading a double value:::
 ByteBuffer#putDouble(int, double):::Absolute put method for writing a double value&nbsp;&nbsp;(optional operation):::
 ByteBuffer#asDoubleBuffer():::Creates a view of this byte buffer as a double buffer:::
+ByteBufferAsCharBufferB#base()::: byte buffer as char buffer b base:::return
+ByteBufferAsCharBufferB#slice()::: byte buffer as char buffer b slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsCharBufferB
+ByteBufferAsCharBufferB#duplicate()::: byte buffer as char buffer b duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsCharBufferB
+ByteBufferAsCharBufferB#asReadOnlyBuffer()::: byte buffer as char buffer b as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsCharBufferRB
+ByteBufferAsCharBufferB#ix(int)::: byte buffer as char buffer b ix:::off->return
+ByteBufferAsCharBufferB#byteOffset(long)::: byte buffer as char buffer b byte offset:::return
+ByteBufferAsCharBufferB#get()::: byte buffer as char buffer b get:::x->UNSAFE->nextGetIndex->byteOffset->getCharUnaligned->return
+ByteBufferAsCharBufferB#get(int)::: byte buffer as char buffer b get:::x->UNSAFE->checkIndex->byteOffset->getCharUnaligned->return
+ByteBufferAsCharBufferB#getUnchecked(int)::: byte buffer as char buffer b get unchecked:::x->UNSAFE->byteOffset->getCharUnaligned->return
+ByteBufferAsCharBufferB#put(char)::: byte buffer as char buffer b put:::y->UNSAFE->nextPutIndex->byteOffset->putCharUnaligned->return
+ByteBufferAsCharBufferB#put(int, char)::: byte buffer as char buffer b put:::y->UNSAFE->checkIndex->byteOffset->putCharUnaligned->return
+ByteBufferAsCharBufferB#compact()::: byte buffer as char buffer b compact:::pos->position->lim->limit->rem->db->bb->duplicate->db->ix->limit->db->ix->position->sb->db->slice->sb->position->sb->compact->position->capacity->limit->discardMark->return
+ByteBufferAsCharBufferB#isDirect()::: byte buffer as char buffer b is direct:::return->bb->isDirect
+ByteBufferAsCharBufferB#isReadOnly()::: byte buffer as char buffer b is read only:::return
+ByteBufferAsCharBufferB#toString(int, int)::: byte buffer as char buffer b to string:::if->limit->throw->new->IndexOutOfBoundsException->try->len->ca->new->charArr->cb->CharBuffer->wrap->db->this->duplicate->db->position->db->limit->cb->put->return->new->String->catch->throw->new->IndexOutOfBoundsException->finally
+ByteBufferAsCharBufferB#subSequence(int, int)::: byte buffer as char buffer b sub sequence:::pos->position->lim->limit->len->if->throw->new->IndexOutOfBoundsException->return->capacity->new->ByteBufferAsCharBufferB
+ByteBufferAsCharBufferB#order()::: byte buffer as char buffer b order:::return
+ByteBufferAsCharBufferB#charRegionOrder()::: byte buffer as char buffer b char region order:::return->order
+ByteBufferAsCharBufferL#base()::: byte buffer as char buffer l base:::return
+ByteBufferAsCharBufferL#slice()::: byte buffer as char buffer l slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsCharBufferL
+ByteBufferAsCharBufferL#duplicate()::: byte buffer as char buffer l duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsCharBufferL
+ByteBufferAsCharBufferL#asReadOnlyBuffer()::: byte buffer as char buffer l as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsCharBufferRL
+ByteBufferAsCharBufferL#ix(int)::: byte buffer as char buffer l ix:::off->return
+ByteBufferAsCharBufferL#byteOffset(long)::: byte buffer as char buffer l byte offset:::return
+ByteBufferAsCharBufferL#get()::: byte buffer as char buffer l get:::x->UNSAFE->nextGetIndex->byteOffset->getCharUnaligned->return
+ByteBufferAsCharBufferL#get(int)::: byte buffer as char buffer l get:::x->UNSAFE->checkIndex->byteOffset->getCharUnaligned->return
+ByteBufferAsCharBufferL#getUnchecked(int)::: byte buffer as char buffer l get unchecked:::x->UNSAFE->byteOffset->getCharUnaligned->return
+ByteBufferAsCharBufferL#put(char)::: byte buffer as char buffer l put:::y->UNSAFE->nextPutIndex->byteOffset->putCharUnaligned->return
+ByteBufferAsCharBufferL#put(int, char)::: byte buffer as char buffer l put:::y->UNSAFE->checkIndex->byteOffset->putCharUnaligned->return
+ByteBufferAsCharBufferL#compact()::: byte buffer as char buffer l compact:::pos->position->lim->limit->rem->db->bb->duplicate->db->ix->limit->db->ix->position->sb->db->slice->sb->position->sb->compact->position->capacity->limit->discardMark->return
+ByteBufferAsCharBufferL#isDirect()::: byte buffer as char buffer l is direct:::return->bb->isDirect
+ByteBufferAsCharBufferL#isReadOnly()::: byte buffer as char buffer l is read only:::return
+ByteBufferAsCharBufferL#toString(int, int)::: byte buffer as char buffer l to string:::if->limit->throw->new->IndexOutOfBoundsException->try->len->ca->new->charArr->cb->CharBuffer->wrap->db->this->duplicate->db->position->db->limit->cb->put->return->new->String->catch->throw->new->IndexOutOfBoundsException->finally
+ByteBufferAsCharBufferL#subSequence(int, int)::: byte buffer as char buffer l sub sequence:::pos->position->lim->limit->len->if->throw->new->IndexOutOfBoundsException->return->capacity->new->ByteBufferAsCharBufferL
+ByteBufferAsCharBufferL#order()::: byte buffer as char buffer l order:::return
+ByteBufferAsCharBufferL#charRegionOrder()::: byte buffer as char buffer l char region order:::return->order
+ByteBufferAsCharBufferRB#base()::: byte buffer as char buffer b base:::return
+ByteBufferAsCharBufferRB#slice()::: byte buffer as char buffer b slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsCharBufferRB
+ByteBufferAsCharBufferRB#duplicate()::: byte buffer as char buffer b duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsCharBufferRB
+ByteBufferAsCharBufferRB#asReadOnlyBuffer()::: byte buffer as char buffer b as read only buffer:::return->duplicate
+ByteBufferAsCharBufferRB#put(char)::: byte buffer as char buffer b put:::throw->new->ReadOnlyBufferException
+ByteBufferAsCharBufferRB#put(int, char)::: byte buffer as char buffer b put:::throw->new->ReadOnlyBufferException
+ByteBufferAsCharBufferRB#compact()::: byte buffer as char buffer b compact:::throw->new->ReadOnlyBufferException
+ByteBufferAsCharBufferRB#isDirect()::: byte buffer as char buffer b is direct:::return->bb->isDirect
+ByteBufferAsCharBufferRB#isReadOnly()::: byte buffer as char buffer b is read only:::return
+ByteBufferAsCharBufferRB#toString(int, int)::: byte buffer as char buffer b to string:::if->limit->throw->new->IndexOutOfBoundsException->try->len->ca->new->charArr->cb->CharBuffer->wrap->db->this->duplicate->db->position->db->limit->cb->put->return->new->String->catch->throw->new->IndexOutOfBoundsException->finally
+ByteBufferAsCharBufferRB#subSequence(int, int)::: byte buffer as char buffer b sub sequence:::pos->position->lim->limit->len->if->throw->new->IndexOutOfBoundsException->return->capacity->new->ByteBufferAsCharBufferRB
+ByteBufferAsCharBufferRB#order()::: byte buffer as char buffer b order:::return
+ByteBufferAsCharBufferRB#charRegionOrder()::: byte buffer as char buffer b char region order:::return->order
+ByteBufferAsCharBufferRL#base()::: byte buffer as char buffer l base:::return
+ByteBufferAsCharBufferRL#slice()::: byte buffer as char buffer l slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsCharBufferRL
+ByteBufferAsCharBufferRL#duplicate()::: byte buffer as char buffer l duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsCharBufferRL
+ByteBufferAsCharBufferRL#asReadOnlyBuffer()::: byte buffer as char buffer l as read only buffer:::return->duplicate
+ByteBufferAsCharBufferRL#put(char)::: byte buffer as char buffer l put:::throw->new->ReadOnlyBufferException
+ByteBufferAsCharBufferRL#put(int, char)::: byte buffer as char buffer l put:::throw->new->ReadOnlyBufferException
+ByteBufferAsCharBufferRL#compact()::: byte buffer as char buffer l compact:::throw->new->ReadOnlyBufferException
+ByteBufferAsCharBufferRL#isDirect()::: byte buffer as char buffer l is direct:::return->bb->isDirect
+ByteBufferAsCharBufferRL#isReadOnly()::: byte buffer as char buffer l is read only:::return
+ByteBufferAsCharBufferRL#toString(int, int)::: byte buffer as char buffer l to string:::if->limit->throw->new->IndexOutOfBoundsException->try->len->ca->new->charArr->cb->CharBuffer->wrap->db->this->duplicate->db->position->db->limit->cb->put->return->new->String->catch->throw->new->IndexOutOfBoundsException->finally
+ByteBufferAsCharBufferRL#subSequence(int, int)::: byte buffer as char buffer l sub sequence:::pos->position->lim->limit->len->if->throw->new->IndexOutOfBoundsException->return->capacity->new->ByteBufferAsCharBufferRL
+ByteBufferAsCharBufferRL#order()::: byte buffer as char buffer l order:::return
+ByteBufferAsCharBufferRL#charRegionOrder()::: byte buffer as char buffer l char region order:::return->order
+ByteBufferAsDoubleBufferB#base()::: byte buffer as double buffer b base:::return
+ByteBufferAsDoubleBufferB#slice()::: byte buffer as double buffer b slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsDoubleBufferB
+ByteBufferAsDoubleBufferB#duplicate()::: byte buffer as double buffer b duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsDoubleBufferB
+ByteBufferAsDoubleBufferB#asReadOnlyBuffer()::: byte buffer as double buffer b as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsDoubleBufferRB
+ByteBufferAsDoubleBufferB#ix(int)::: byte buffer as double buffer b ix:::off->return
+ByteBufferAsDoubleBufferB#byteOffset(long)::: byte buffer as double buffer b byte offset:::return
+ByteBufferAsDoubleBufferB#get()::: byte buffer as double buffer b get:::x->UNSAFE->nextGetIndex->byteOffset->getLongUnaligned->return->Double->longBitsToDouble
+ByteBufferAsDoubleBufferB#get(int)::: byte buffer as double buffer b get:::x->UNSAFE->checkIndex->byteOffset->getLongUnaligned->return->Double->longBitsToDouble
+ByteBufferAsDoubleBufferB#put(double)::: byte buffer as double buffer b put:::y->Double->doubleToRawLongBits->UNSAFE->nextPutIndex->byteOffset->putLongUnaligned->return
+ByteBufferAsDoubleBufferB#put(int, double)::: byte buffer as double buffer b put:::y->Double->doubleToRawLongBits->UNSAFE->checkIndex->byteOffset->putLongUnaligned->return
+ByteBufferAsDoubleBufferB#compact()::: byte buffer as double buffer b compact:::pos->position->lim->limit->rem->db->bb->duplicate->db->ix->limit->db->ix->position->sb->db->slice->sb->position->sb->compact->position->capacity->limit->discardMark->return
+ByteBufferAsDoubleBufferB#isDirect()::: byte buffer as double buffer b is direct:::return->bb->isDirect
+ByteBufferAsDoubleBufferB#isReadOnly()::: byte buffer as double buffer b is read only:::return
+ByteBufferAsDoubleBufferB#order()::: byte buffer as double buffer b order:::return
+ByteBufferAsDoubleBufferL#base()::: byte buffer as double buffer l base:::return
+ByteBufferAsDoubleBufferL#slice()::: byte buffer as double buffer l slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsDoubleBufferL
+ByteBufferAsDoubleBufferL#duplicate()::: byte buffer as double buffer l duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsDoubleBufferL
+ByteBufferAsDoubleBufferL#asReadOnlyBuffer()::: byte buffer as double buffer l as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsDoubleBufferRL
+ByteBufferAsDoubleBufferL#ix(int)::: byte buffer as double buffer l ix:::off->return
+ByteBufferAsDoubleBufferL#byteOffset(long)::: byte buffer as double buffer l byte offset:::return
+ByteBufferAsDoubleBufferL#get()::: byte buffer as double buffer l get:::x->UNSAFE->nextGetIndex->byteOffset->getLongUnaligned->return->Double->longBitsToDouble
+ByteBufferAsDoubleBufferL#get(int)::: byte buffer as double buffer l get:::x->UNSAFE->checkIndex->byteOffset->getLongUnaligned->return->Double->longBitsToDouble
+ByteBufferAsDoubleBufferL#put(double)::: byte buffer as double buffer l put:::y->Double->doubleToRawLongBits->UNSAFE->nextPutIndex->byteOffset->putLongUnaligned->return
+ByteBufferAsDoubleBufferL#put(int, double)::: byte buffer as double buffer l put:::y->Double->doubleToRawLongBits->UNSAFE->checkIndex->byteOffset->putLongUnaligned->return
+ByteBufferAsDoubleBufferL#compact()::: byte buffer as double buffer l compact:::pos->position->lim->limit->rem->db->bb->duplicate->db->ix->limit->db->ix->position->sb->db->slice->sb->position->sb->compact->position->capacity->limit->discardMark->return
+ByteBufferAsDoubleBufferL#isDirect()::: byte buffer as double buffer l is direct:::return->bb->isDirect
+ByteBufferAsDoubleBufferL#isReadOnly()::: byte buffer as double buffer l is read only:::return
+ByteBufferAsDoubleBufferL#order()::: byte buffer as double buffer l order:::return
+ByteBufferAsDoubleBufferRB#base()::: byte buffer as double buffer b base:::return
+ByteBufferAsDoubleBufferRB#slice()::: byte buffer as double buffer b slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsDoubleBufferRB
+ByteBufferAsDoubleBufferRB#duplicate()::: byte buffer as double buffer b duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsDoubleBufferRB
+ByteBufferAsDoubleBufferRB#asReadOnlyBuffer()::: byte buffer as double buffer b as read only buffer:::return->duplicate
+ByteBufferAsDoubleBufferRB#put(double)::: byte buffer as double buffer b put:::throw->new->ReadOnlyBufferException
+ByteBufferAsDoubleBufferRB#put(int, double)::: byte buffer as double buffer b put:::throw->new->ReadOnlyBufferException
+ByteBufferAsDoubleBufferRB#compact()::: byte buffer as double buffer b compact:::throw->new->ReadOnlyBufferException
+ByteBufferAsDoubleBufferRB#isDirect()::: byte buffer as double buffer b is direct:::return->bb->isDirect
+ByteBufferAsDoubleBufferRB#isReadOnly()::: byte buffer as double buffer b is read only:::return
+ByteBufferAsDoubleBufferRB#order()::: byte buffer as double buffer b order:::return
+ByteBufferAsDoubleBufferRL#base()::: byte buffer as double buffer l base:::return
+ByteBufferAsDoubleBufferRL#slice()::: byte buffer as double buffer l slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsDoubleBufferRL
+ByteBufferAsDoubleBufferRL#duplicate()::: byte buffer as double buffer l duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsDoubleBufferRL
+ByteBufferAsDoubleBufferRL#asReadOnlyBuffer()::: byte buffer as double buffer l as read only buffer:::return->duplicate
+ByteBufferAsDoubleBufferRL#put(double)::: byte buffer as double buffer l put:::throw->new->ReadOnlyBufferException
+ByteBufferAsDoubleBufferRL#put(int, double)::: byte buffer as double buffer l put:::throw->new->ReadOnlyBufferException
+ByteBufferAsDoubleBufferRL#compact()::: byte buffer as double buffer l compact:::throw->new->ReadOnlyBufferException
+ByteBufferAsDoubleBufferRL#isDirect()::: byte buffer as double buffer l is direct:::return->bb->isDirect
+ByteBufferAsDoubleBufferRL#isReadOnly()::: byte buffer as double buffer l is read only:::return
+ByteBufferAsDoubleBufferRL#order()::: byte buffer as double buffer l order:::return
+ByteBufferAsFloatBufferB#base()::: byte buffer as float buffer b base:::return
+ByteBufferAsFloatBufferB#slice()::: byte buffer as float buffer b slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsFloatBufferB
+ByteBufferAsFloatBufferB#duplicate()::: byte buffer as float buffer b duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsFloatBufferB
+ByteBufferAsFloatBufferB#asReadOnlyBuffer()::: byte buffer as float buffer b as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsFloatBufferRB
+ByteBufferAsFloatBufferB#ix(int)::: byte buffer as float buffer b ix:::off->return
+ByteBufferAsFloatBufferB#byteOffset(long)::: byte buffer as float buffer b byte offset:::return
+ByteBufferAsFloatBufferB#get()::: byte buffer as float buffer b get:::x->UNSAFE->nextGetIndex->byteOffset->getIntUnaligned->return->Float->intBitsToFloat
+ByteBufferAsFloatBufferB#get(int)::: byte buffer as float buffer b get:::x->UNSAFE->checkIndex->byteOffset->getIntUnaligned->return->Float->intBitsToFloat
+ByteBufferAsFloatBufferB#put(float)::: byte buffer as float buffer b put:::y->Float->floatToRawIntBits->UNSAFE->nextPutIndex->byteOffset->putIntUnaligned->return
+ByteBufferAsFloatBufferB#put(int, float)::: byte buffer as float buffer b put:::y->Float->floatToRawIntBits->UNSAFE->checkIndex->byteOffset->putIntUnaligned->return
+ByteBufferAsFloatBufferB#compact()::: byte buffer as float buffer b compact:::pos->position->lim->limit->rem->db->bb->duplicate->db->ix->limit->db->ix->position->sb->db->slice->sb->position->sb->compact->position->capacity->limit->discardMark->return
+ByteBufferAsFloatBufferB#isDirect()::: byte buffer as float buffer b is direct:::return->bb->isDirect
+ByteBufferAsFloatBufferB#isReadOnly()::: byte buffer as float buffer b is read only:::return
+ByteBufferAsFloatBufferB#order()::: byte buffer as float buffer b order:::return
+ByteBufferAsFloatBufferL#base()::: byte buffer as float buffer l base:::return
+ByteBufferAsFloatBufferL#slice()::: byte buffer as float buffer l slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsFloatBufferL
+ByteBufferAsFloatBufferL#duplicate()::: byte buffer as float buffer l duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsFloatBufferL
+ByteBufferAsFloatBufferL#asReadOnlyBuffer()::: byte buffer as float buffer l as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsFloatBufferRL
+ByteBufferAsFloatBufferL#ix(int)::: byte buffer as float buffer l ix:::off->return
+ByteBufferAsFloatBufferL#byteOffset(long)::: byte buffer as float buffer l byte offset:::return
+ByteBufferAsFloatBufferL#get()::: byte buffer as float buffer l get:::x->UNSAFE->nextGetIndex->byteOffset->getIntUnaligned->return->Float->intBitsToFloat
+ByteBufferAsFloatBufferL#get(int)::: byte buffer as float buffer l get:::x->UNSAFE->checkIndex->byteOffset->getIntUnaligned->return->Float->intBitsToFloat
+ByteBufferAsFloatBufferL#put(float)::: byte buffer as float buffer l put:::y->Float->floatToRawIntBits->UNSAFE->nextPutIndex->byteOffset->putIntUnaligned->return
+ByteBufferAsFloatBufferL#put(int, float)::: byte buffer as float buffer l put:::y->Float->floatToRawIntBits->UNSAFE->checkIndex->byteOffset->putIntUnaligned->return
+ByteBufferAsFloatBufferL#compact()::: byte buffer as float buffer l compact:::pos->position->lim->limit->rem->db->bb->duplicate->db->ix->limit->db->ix->position->sb->db->slice->sb->position->sb->compact->position->capacity->limit->discardMark->return
+ByteBufferAsFloatBufferL#isDirect()::: byte buffer as float buffer l is direct:::return->bb->isDirect
+ByteBufferAsFloatBufferL#isReadOnly()::: byte buffer as float buffer l is read only:::return
+ByteBufferAsFloatBufferL#order()::: byte buffer as float buffer l order:::return
+ByteBufferAsFloatBufferRB#base()::: byte buffer as float buffer b base:::return
+ByteBufferAsFloatBufferRB#slice()::: byte buffer as float buffer b slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsFloatBufferRB
+ByteBufferAsFloatBufferRB#duplicate()::: byte buffer as float buffer b duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsFloatBufferRB
+ByteBufferAsFloatBufferRB#asReadOnlyBuffer()::: byte buffer as float buffer b as read only buffer:::return->duplicate
+ByteBufferAsFloatBufferRB#put(float)::: byte buffer as float buffer b put:::throw->new->ReadOnlyBufferException
+ByteBufferAsFloatBufferRB#put(int, float)::: byte buffer as float buffer b put:::throw->new->ReadOnlyBufferException
+ByteBufferAsFloatBufferRB#compact()::: byte buffer as float buffer b compact:::throw->new->ReadOnlyBufferException
+ByteBufferAsFloatBufferRB#isDirect()::: byte buffer as float buffer b is direct:::return->bb->isDirect
+ByteBufferAsFloatBufferRB#isReadOnly()::: byte buffer as float buffer b is read only:::return
+ByteBufferAsFloatBufferRB#order()::: byte buffer as float buffer b order:::return
+ByteBufferAsFloatBufferRL#base()::: byte buffer as float buffer l base:::return
+ByteBufferAsFloatBufferRL#slice()::: byte buffer as float buffer l slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsFloatBufferRL
+ByteBufferAsFloatBufferRL#duplicate()::: byte buffer as float buffer l duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsFloatBufferRL
+ByteBufferAsFloatBufferRL#asReadOnlyBuffer()::: byte buffer as float buffer l as read only buffer:::return->duplicate
+ByteBufferAsFloatBufferRL#put(float)::: byte buffer as float buffer l put:::throw->new->ReadOnlyBufferException
+ByteBufferAsFloatBufferRL#put(int, float)::: byte buffer as float buffer l put:::throw->new->ReadOnlyBufferException
+ByteBufferAsFloatBufferRL#compact()::: byte buffer as float buffer l compact:::throw->new->ReadOnlyBufferException
+ByteBufferAsFloatBufferRL#isDirect()::: byte buffer as float buffer l is direct:::return->bb->isDirect
+ByteBufferAsFloatBufferRL#isReadOnly()::: byte buffer as float buffer l is read only:::return
+ByteBufferAsFloatBufferRL#order()::: byte buffer as float buffer l order:::return
+ByteBufferAsIntBufferB#base()::: byte buffer as int buffer b base:::return
+ByteBufferAsIntBufferB#slice()::: byte buffer as int buffer b slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsIntBufferB
+ByteBufferAsIntBufferB#duplicate()::: byte buffer as int buffer b duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsIntBufferB
+ByteBufferAsIntBufferB#asReadOnlyBuffer()::: byte buffer as int buffer b as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsIntBufferRB
+ByteBufferAsIntBufferB#ix(int)::: byte buffer as int buffer b ix:::off->return
+ByteBufferAsIntBufferB#byteOffset(long)::: byte buffer as int buffer b byte offset:::return
+ByteBufferAsIntBufferB#get()::: byte buffer as int buffer b get:::x->UNSAFE->nextGetIndex->byteOffset->getIntUnaligned->return
+ByteBufferAsIntBufferB#get(int)::: byte buffer as int buffer b get:::x->UNSAFE->checkIndex->byteOffset->getIntUnaligned->return
+ByteBufferAsIntBufferB#put(int)::: byte buffer as int buffer b put:::y->UNSAFE->nextPutIndex->byteOffset->putIntUnaligned->return
+ByteBufferAsIntBufferB#put(int, int)::: byte buffer as int buffer b put:::y->UNSAFE->checkIndex->byteOffset->putIntUnaligned->return
+ByteBufferAsIntBufferB#compact()::: byte buffer as int buffer b compact:::pos->position->lim->limit->rem->db->bb->duplicate->db->ix->limit->db->ix->position->sb->db->slice->sb->position->sb->compact->position->capacity->limit->discardMark->return
+ByteBufferAsIntBufferB#isDirect()::: byte buffer as int buffer b is direct:::return->bb->isDirect
+ByteBufferAsIntBufferB#isReadOnly()::: byte buffer as int buffer b is read only:::return
+ByteBufferAsIntBufferB#order()::: byte buffer as int buffer b order:::return
+ByteBufferAsIntBufferL#base()::: byte buffer as int buffer l base:::return
+ByteBufferAsIntBufferL#slice()::: byte buffer as int buffer l slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsIntBufferL
+ByteBufferAsIntBufferL#duplicate()::: byte buffer as int buffer l duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsIntBufferL
+ByteBufferAsIntBufferL#asReadOnlyBuffer()::: byte buffer as int buffer l as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsIntBufferRL
+ByteBufferAsIntBufferL#ix(int)::: byte buffer as int buffer l ix:::off->return
+ByteBufferAsIntBufferL#byteOffset(long)::: byte buffer as int buffer l byte offset:::return
+ByteBufferAsIntBufferL#get()::: byte buffer as int buffer l get:::x->UNSAFE->nextGetIndex->byteOffset->getIntUnaligned->return
+ByteBufferAsIntBufferL#get(int)::: byte buffer as int buffer l get:::x->UNSAFE->checkIndex->byteOffset->getIntUnaligned->return
+ByteBufferAsIntBufferL#put(int)::: byte buffer as int buffer l put:::y->UNSAFE->nextPutIndex->byteOffset->putIntUnaligned->return
+ByteBufferAsIntBufferL#put(int, int)::: byte buffer as int buffer l put:::y->UNSAFE->checkIndex->byteOffset->putIntUnaligned->return
+ByteBufferAsIntBufferL#compact()::: byte buffer as int buffer l compact:::pos->position->lim->limit->rem->db->bb->duplicate->db->ix->limit->db->ix->position->sb->db->slice->sb->position->sb->compact->position->capacity->limit->discardMark->return
+ByteBufferAsIntBufferL#isDirect()::: byte buffer as int buffer l is direct:::return->bb->isDirect
+ByteBufferAsIntBufferL#isReadOnly()::: byte buffer as int buffer l is read only:::return
+ByteBufferAsIntBufferL#order()::: byte buffer as int buffer l order:::return
+ByteBufferAsIntBufferRB#base()::: byte buffer as int buffer b base:::return
+ByteBufferAsIntBufferRB#slice()::: byte buffer as int buffer b slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsIntBufferRB
+ByteBufferAsIntBufferRB#duplicate()::: byte buffer as int buffer b duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsIntBufferRB
+ByteBufferAsIntBufferRB#asReadOnlyBuffer()::: byte buffer as int buffer b as read only buffer:::return->duplicate
+ByteBufferAsIntBufferRB#put(int)::: byte buffer as int buffer b put:::throw->new->ReadOnlyBufferException
+ByteBufferAsIntBufferRB#put(int, int)::: byte buffer as int buffer b put:::throw->new->ReadOnlyBufferException
+ByteBufferAsIntBufferRB#compact()::: byte buffer as int buffer b compact:::throw->new->ReadOnlyBufferException
+ByteBufferAsIntBufferRB#isDirect()::: byte buffer as int buffer b is direct:::return->bb->isDirect
+ByteBufferAsIntBufferRB#isReadOnly()::: byte buffer as int buffer b is read only:::return
+ByteBufferAsIntBufferRB#order()::: byte buffer as int buffer b order:::return
+ByteBufferAsIntBufferRL#base()::: byte buffer as int buffer l base:::return
+ByteBufferAsIntBufferRL#slice()::: byte buffer as int buffer l slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsIntBufferRL
+ByteBufferAsIntBufferRL#duplicate()::: byte buffer as int buffer l duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsIntBufferRL
+ByteBufferAsIntBufferRL#asReadOnlyBuffer()::: byte buffer as int buffer l as read only buffer:::return->duplicate
+ByteBufferAsIntBufferRL#put(int)::: byte buffer as int buffer l put:::throw->new->ReadOnlyBufferException
+ByteBufferAsIntBufferRL#put(int, int)::: byte buffer as int buffer l put:::throw->new->ReadOnlyBufferException
+ByteBufferAsIntBufferRL#compact()::: byte buffer as int buffer l compact:::throw->new->ReadOnlyBufferException
+ByteBufferAsIntBufferRL#isDirect()::: byte buffer as int buffer l is direct:::return->bb->isDirect
+ByteBufferAsIntBufferRL#isReadOnly()::: byte buffer as int buffer l is read only:::return
+ByteBufferAsIntBufferRL#order()::: byte buffer as int buffer l order:::return
+ByteBufferAsLongBufferB#base()::: byte buffer as long buffer b base:::return
+ByteBufferAsLongBufferB#slice()::: byte buffer as long buffer b slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsLongBufferB
+ByteBufferAsLongBufferB#duplicate()::: byte buffer as long buffer b duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsLongBufferB
+ByteBufferAsLongBufferB#asReadOnlyBuffer()::: byte buffer as long buffer b as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsLongBufferRB
+ByteBufferAsLongBufferB#ix(int)::: byte buffer as long buffer b ix:::off->return
+ByteBufferAsLongBufferB#byteOffset(long)::: byte buffer as long buffer b byte offset:::return
+ByteBufferAsLongBufferB#get()::: byte buffer as long buffer b get:::x->UNSAFE->nextGetIndex->byteOffset->getLongUnaligned->return
+ByteBufferAsLongBufferB#get(int)::: byte buffer as long buffer b get:::x->UNSAFE->checkIndex->byteOffset->getLongUnaligned->return
+ByteBufferAsLongBufferB#put(long)::: byte buffer as long buffer b put:::y->UNSAFE->nextPutIndex->byteOffset->putLongUnaligned->return
+ByteBufferAsLongBufferB#put(int, long)::: byte buffer as long buffer b put:::y->UNSAFE->checkIndex->byteOffset->putLongUnaligned->return
+ByteBufferAsLongBufferB#compact()::: byte buffer as long buffer b compact:::pos->position->lim->limit->rem->db->bb->duplicate->db->ix->limit->db->ix->position->sb->db->slice->sb->position->sb->compact->position->capacity->limit->discardMark->return
+ByteBufferAsLongBufferB#isDirect()::: byte buffer as long buffer b is direct:::return->bb->isDirect
+ByteBufferAsLongBufferB#isReadOnly()::: byte buffer as long buffer b is read only:::return
+ByteBufferAsLongBufferB#order()::: byte buffer as long buffer b order:::return
+ByteBufferAsLongBufferL#base()::: byte buffer as long buffer l base:::return
+ByteBufferAsLongBufferL#slice()::: byte buffer as long buffer l slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsLongBufferL
+ByteBufferAsLongBufferL#duplicate()::: byte buffer as long buffer l duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsLongBufferL
+ByteBufferAsLongBufferL#asReadOnlyBuffer()::: byte buffer as long buffer l as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsLongBufferRL
+ByteBufferAsLongBufferL#ix(int)::: byte buffer as long buffer l ix:::off->return
+ByteBufferAsLongBufferL#byteOffset(long)::: byte buffer as long buffer l byte offset:::return
+ByteBufferAsLongBufferL#get()::: byte buffer as long buffer l get:::x->UNSAFE->nextGetIndex->byteOffset->getLongUnaligned->return
+ByteBufferAsLongBufferL#get(int)::: byte buffer as long buffer l get:::x->UNSAFE->checkIndex->byteOffset->getLongUnaligned->return
+ByteBufferAsLongBufferL#put(long)::: byte buffer as long buffer l put:::y->UNSAFE->nextPutIndex->byteOffset->putLongUnaligned->return
+ByteBufferAsLongBufferL#put(int, long)::: byte buffer as long buffer l put:::y->UNSAFE->checkIndex->byteOffset->putLongUnaligned->return
+ByteBufferAsLongBufferL#compact()::: byte buffer as long buffer l compact:::pos->position->lim->limit->rem->db->bb->duplicate->db->ix->limit->db->ix->position->sb->db->slice->sb->position->sb->compact->position->capacity->limit->discardMark->return
+ByteBufferAsLongBufferL#isDirect()::: byte buffer as long buffer l is direct:::return->bb->isDirect
+ByteBufferAsLongBufferL#isReadOnly()::: byte buffer as long buffer l is read only:::return
+ByteBufferAsLongBufferL#order()::: byte buffer as long buffer l order:::return
+ByteBufferAsLongBufferRB#base()::: byte buffer as long buffer b base:::return
+ByteBufferAsLongBufferRB#slice()::: byte buffer as long buffer b slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsLongBufferRB
+ByteBufferAsLongBufferRB#duplicate()::: byte buffer as long buffer b duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsLongBufferRB
+ByteBufferAsLongBufferRB#asReadOnlyBuffer()::: byte buffer as long buffer b as read only buffer:::return->duplicate
+ByteBufferAsLongBufferRB#put(long)::: byte buffer as long buffer b put:::throw->new->ReadOnlyBufferException
+ByteBufferAsLongBufferRB#put(int, long)::: byte buffer as long buffer b put:::throw->new->ReadOnlyBufferException
+ByteBufferAsLongBufferRB#compact()::: byte buffer as long buffer b compact:::throw->new->ReadOnlyBufferException
+ByteBufferAsLongBufferRB#isDirect()::: byte buffer as long buffer b is direct:::return->bb->isDirect
+ByteBufferAsLongBufferRB#isReadOnly()::: byte buffer as long buffer b is read only:::return
+ByteBufferAsLongBufferRB#order()::: byte buffer as long buffer b order:::return
+ByteBufferAsLongBufferRL#base()::: byte buffer as long buffer l base:::return
+ByteBufferAsLongBufferRL#slice()::: byte buffer as long buffer l slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsLongBufferRL
+ByteBufferAsLongBufferRL#duplicate()::: byte buffer as long buffer l duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsLongBufferRL
+ByteBufferAsLongBufferRL#asReadOnlyBuffer()::: byte buffer as long buffer l as read only buffer:::return->duplicate
+ByteBufferAsLongBufferRL#put(long)::: byte buffer as long buffer l put:::throw->new->ReadOnlyBufferException
+ByteBufferAsLongBufferRL#put(int, long)::: byte buffer as long buffer l put:::throw->new->ReadOnlyBufferException
+ByteBufferAsLongBufferRL#compact()::: byte buffer as long buffer l compact:::throw->new->ReadOnlyBufferException
+ByteBufferAsLongBufferRL#isDirect()::: byte buffer as long buffer l is direct:::return->bb->isDirect
+ByteBufferAsLongBufferRL#isReadOnly()::: byte buffer as long buffer l is read only:::return
+ByteBufferAsLongBufferRL#order()::: byte buffer as long buffer l order:::return
+ByteBufferAsShortBufferB#base()::: byte buffer as short buffer b base:::return
+ByteBufferAsShortBufferB#slice()::: byte buffer as short buffer b slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsShortBufferB
+ByteBufferAsShortBufferB#duplicate()::: byte buffer as short buffer b duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsShortBufferB
+ByteBufferAsShortBufferB#asReadOnlyBuffer()::: byte buffer as short buffer b as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsShortBufferRB
+ByteBufferAsShortBufferB#ix(int)::: byte buffer as short buffer b ix:::off->return
+ByteBufferAsShortBufferB#byteOffset(long)::: byte buffer as short buffer b byte offset:::return
+ByteBufferAsShortBufferB#get()::: byte buffer as short buffer b get:::x->UNSAFE->nextGetIndex->byteOffset->getShortUnaligned->return
+ByteBufferAsShortBufferB#get(int)::: byte buffer as short buffer b get:::x->UNSAFE->checkIndex->byteOffset->getShortUnaligned->return
+ByteBufferAsShortBufferB#put(short)::: byte buffer as short buffer b put:::y->UNSAFE->nextPutIndex->byteOffset->putShortUnaligned->return
+ByteBufferAsShortBufferB#put(int, short)::: byte buffer as short buffer b put:::y->UNSAFE->checkIndex->byteOffset->putShortUnaligned->return
+ByteBufferAsShortBufferB#compact()::: byte buffer as short buffer b compact:::pos->position->lim->limit->rem->db->bb->duplicate->db->ix->limit->db->ix->position->sb->db->slice->sb->position->sb->compact->position->capacity->limit->discardMark->return
+ByteBufferAsShortBufferB#isDirect()::: byte buffer as short buffer b is direct:::return->bb->isDirect
+ByteBufferAsShortBufferB#isReadOnly()::: byte buffer as short buffer b is read only:::return
+ByteBufferAsShortBufferB#order()::: byte buffer as short buffer b order:::return
+ByteBufferAsShortBufferL#base()::: byte buffer as short buffer l base:::return
+ByteBufferAsShortBufferL#slice()::: byte buffer as short buffer l slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsShortBufferL
+ByteBufferAsShortBufferL#duplicate()::: byte buffer as short buffer l duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsShortBufferL
+ByteBufferAsShortBufferL#asReadOnlyBuffer()::: byte buffer as short buffer l as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsShortBufferRL
+ByteBufferAsShortBufferL#ix(int)::: byte buffer as short buffer l ix:::off->return
+ByteBufferAsShortBufferL#byteOffset(long)::: byte buffer as short buffer l byte offset:::return
+ByteBufferAsShortBufferL#get()::: byte buffer as short buffer l get:::x->UNSAFE->nextGetIndex->byteOffset->getShortUnaligned->return
+ByteBufferAsShortBufferL#get(int)::: byte buffer as short buffer l get:::x->UNSAFE->checkIndex->byteOffset->getShortUnaligned->return
+ByteBufferAsShortBufferL#put(short)::: byte buffer as short buffer l put:::y->UNSAFE->nextPutIndex->byteOffset->putShortUnaligned->return
+ByteBufferAsShortBufferL#put(int, short)::: byte buffer as short buffer l put:::y->UNSAFE->checkIndex->byteOffset->putShortUnaligned->return
+ByteBufferAsShortBufferL#compact()::: byte buffer as short buffer l compact:::pos->position->lim->limit->rem->db->bb->duplicate->db->ix->limit->db->ix->position->sb->db->slice->sb->position->sb->compact->position->capacity->limit->discardMark->return
+ByteBufferAsShortBufferL#isDirect()::: byte buffer as short buffer l is direct:::return->bb->isDirect
+ByteBufferAsShortBufferL#isReadOnly()::: byte buffer as short buffer l is read only:::return
+ByteBufferAsShortBufferL#order()::: byte buffer as short buffer l order:::return
+ByteBufferAsShortBufferRB#base()::: byte buffer as short buffer b base:::return
+ByteBufferAsShortBufferRB#slice()::: byte buffer as short buffer b slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsShortBufferRB
+ByteBufferAsShortBufferRB#duplicate()::: byte buffer as short buffer b duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsShortBufferRB
+ByteBufferAsShortBufferRB#asReadOnlyBuffer()::: byte buffer as short buffer b as read only buffer:::return->duplicate
+ByteBufferAsShortBufferRB#put(short)::: byte buffer as short buffer b put:::throw->new->ReadOnlyBufferException
+ByteBufferAsShortBufferRB#put(int, short)::: byte buffer as short buffer b put:::throw->new->ReadOnlyBufferException
+ByteBufferAsShortBufferRB#compact()::: byte buffer as short buffer b compact:::throw->new->ReadOnlyBufferException
+ByteBufferAsShortBufferRB#isDirect()::: byte buffer as short buffer b is direct:::return->bb->isDirect
+ByteBufferAsShortBufferRB#isReadOnly()::: byte buffer as short buffer b is read only:::return
+ByteBufferAsShortBufferRB#order()::: byte buffer as short buffer b order:::return
+ByteBufferAsShortBufferRL#base()::: byte buffer as short buffer l base:::return
+ByteBufferAsShortBufferRL#slice()::: byte buffer as short buffer l slice:::pos->this->position->lim->this->limit->rem->addr->byteOffset->return->new->ByteBufferAsShortBufferRL
+ByteBufferAsShortBufferRL#duplicate()::: byte buffer as short buffer l duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->ByteBufferAsShortBufferRL
+ByteBufferAsShortBufferRL#asReadOnlyBuffer()::: byte buffer as short buffer l as read only buffer:::return->duplicate
+ByteBufferAsShortBufferRL#put(short)::: byte buffer as short buffer l put:::throw->new->ReadOnlyBufferException
+ByteBufferAsShortBufferRL#put(int, short)::: byte buffer as short buffer l put:::throw->new->ReadOnlyBufferException
+ByteBufferAsShortBufferRL#compact()::: byte buffer as short buffer l compact:::throw->new->ReadOnlyBufferException
+ByteBufferAsShortBufferRL#isDirect()::: byte buffer as short buffer l is direct:::return->bb->isDirect
+ByteBufferAsShortBufferRL#isReadOnly()::: byte buffer as short buffer l is read only:::return
+ByteBufferAsShortBufferRL#order()::: byte buffer as short buffer l order:::return
 ByteOrder#nativeOrder():::Retrieves the native byte order of the underlying platform:::return
 ByteOrder#toString():::Constructs a string describing this object:::return
+CharBuffer#base()::: char buffer base:::return
 CharBuffer#allocate(int):::Allocates a new char buffer:::if->throw->createCapacityException->return->new->HeapCharBuffer
 CharBuffer#wrap(char[], int, int):::Wraps a char array into a buffer:::try->return->new->HeapCharBuffer->catch->throw->new->IndexOutOfBoundsException->finally
 CharBuffer#wrap(char[]):::Wraps a char array into a buffer:::return->wrap
@@ -96,6 +436,7 @@ CharBuffer#asReadOnlyBuffer():::Creates a new, read-only char buffer that shares
 CharBuffer#get():::Relative get method:::
 CharBuffer#put(char):::Relative put method&nbsp;&nbsp;(optional operation):::
 CharBuffer#get(int):::Absolute get method:::
+CharBuffer#getUnchecked(int)::: char buffer get unchecked:::
 CharBuffer#put(int, char):::Absolute put method&nbsp;&nbsp;(optional operation):::
 CharBuffer#get(char[], int, int):::Relative bulk get method:::checkBounds->if->remaining->throw->new->BufferUnderflowException->end->for->i->return
 CharBuffer#get(char[]):::Relative bulk get method:::return->get
@@ -107,13 +448,22 @@ CharBuffer#put(String):::Relative bulk put method&nbsp;&nbsp;(optional operation
 CharBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible char array:::return
 CharBuffer#array():::Returns the char array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 CharBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+CharBuffer#position(int)::: char buffer position:::super->position->return
+CharBuffer#limit(int)::: char buffer limit:::super->limit->return
+CharBuffer#mark()::: char buffer mark:::super->mark->return
+CharBuffer#reset()::: char buffer reset:::super->reset->return
+CharBuffer#clear()::: char buffer clear:::super->clear->return
+CharBuffer#flip()::: char buffer flip:::super->flip->return
+CharBuffer#rewind()::: char buffer rewind:::super->rewind->return
 CharBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 CharBuffer#isDirect():::Tells whether or not this char buffer is direct.:::
 CharBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
 CharBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
 CharBuffer#compareTo(CharBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+CharBuffer#compare(char, char)::: char buffer compare:::return->Character->compare
 CharBuffer#mismatch(CharBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
 CharBuffer#toString():::Returns a string containing the characters in this buffer:::return->position->limit->toString
+CharBuffer#toString(int, int)::: char buffer to string:::
 CharBuffer#length():::Returns the length of this character buffer:::return->remaining
 CharBuffer#charAt(int):::Reads the character at the given index relative to the current position.:::return->position->checkIndex->get
 CharBuffer#subSequence(int, int):::Creates a new character buffer that represents the specified subsequence of this buffer, relative to the current position:::
@@ -121,6 +471,498 @@ CharBuffer#append(CharSequence):::Appends the specified character sequence  to t
 CharBuffer#append(CharSequence, int, int):::Appends a subsequence of the  specified character sequence  to this buffer&nbsp;&nbsp;(optional operation):::cs->return->cs->subSequence->toString->put
 CharBuffer#append(char):::Appends the specified char  to this buffer&nbsp;&nbsp;(optional operation):::return->put
 CharBuffer#order():::Retrieves this buffer's byte order:::
+CharBuffer#charRegionOrder()::: char buffer char region order:::
+CharBuffer#chars()::: char buffer chars:::return->StreamSupport->new->CharBufferSpliterator->intStream
+CharBufferSpliterator#trySplit()::: char buffer spliterator try split:::lo->mid->return->new->CharBufferSpliterator
+CharBufferSpliterator#forEachRemaining(IntConsumer)::: char buffer spliterator for each remaining:::if->throw->new->NullPointerException->cb->i->hi->while->action->cb->getUnchecked->accept
+CharBufferSpliterator#tryAdvance(IntConsumer)::: char buffer spliterator try advance:::if->throw->new->NullPointerException->if->action->buffer->getUnchecked->accept->return->return
+CharBufferSpliterator#estimateSize()::: char buffer spliterator estimate size:::return
+CharBufferSpliterator#characteristics()::: char buffer spliterator characteristics:::return
+DirectByteBuffer#attachment()::: direct byte buffer attachment:::return
+DirectByteBuffer.Deallocator#run()::: deallocator run:::if->return->UNSAFE->freeMemory->Bits->unreserveMemory
+DirectByteBuffer#cleaner()::: direct byte buffer cleaner:::return
+DirectByteBuffer#base()::: direct byte buffer base:::return
+DirectByteBuffer#slice()::: direct byte buffer slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectByteBuffer
+DirectByteBuffer#slice(int, int)::: direct byte buffer slice:::rem->return->new->DirectByteBuffer
+DirectByteBuffer#duplicate()::: direct byte buffer duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectByteBuffer
+DirectByteBuffer#asReadOnlyBuffer()::: direct byte buffer as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectByteBufferR
+DirectByteBuffer#address()::: direct byte buffer address:::return
+DirectByteBuffer#ix(int)::: direct byte buffer ix:::return
+DirectByteBuffer#get()::: direct byte buffer get:::try->return->UNSAFE->nextGetIndex->ix->getByte->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#get(int)::: direct byte buffer get:::try->return->UNSAFE->checkIndex->ix->getByte->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#get(byte[], int, int)::: direct byte buffer get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectByteBuffer#put(byte)::: direct byte buffer put:::try->UNSAFE->nextPutIndex->ix->putByte->catch->finally->Reference->reachabilityFence->return
+DirectByteBuffer#put(int, byte)::: direct byte buffer put:::try->UNSAFE->checkIndex->ix->putByte->catch->finally->Reference->reachabilityFence->return
+DirectByteBuffer#put(ByteBuffer)::: direct byte buffer put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectByteBuffer#put(byte[], int, int)::: direct byte buffer put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectByteBuffer#compact()::: direct byte buffer compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectByteBuffer#isDirect()::: direct byte buffer is direct:::return
+DirectByteBuffer#isReadOnly()::: direct byte buffer is read only:::return
+DirectByteBuffer#getChar(long)::: direct byte buffer get char:::try->x->UNSAFE->getCharUnaligned->return->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#getChar()::: direct byte buffer get char:::try->return->nextGetIndex->ix->getChar->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#getChar(int)::: direct byte buffer get char:::try->return->checkIndex->ix->getChar->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#putChar(long, char)::: direct byte buffer put char:::try->y->UNSAFE->putCharUnaligned->catch->finally->Reference->reachabilityFence->return
+DirectByteBuffer#putChar(char)::: direct byte buffer put char:::nextPutIndex->ix->putChar->return
+DirectByteBuffer#putChar(int, char)::: direct byte buffer put char:::checkIndex->ix->putChar->return
+DirectByteBuffer#asCharBuffer()::: direct byte buffer as char buffer:::off->this->position->lim->this->limit->rem->size->if->return->new->ByteBufferAsCharBufferB->new->ByteBufferAsCharBufferL->else->return->new->DirectCharBufferU->new->DirectCharBufferS
+DirectByteBuffer#getShort(long)::: direct byte buffer get short:::try->x->UNSAFE->getShortUnaligned->return->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#getShort()::: direct byte buffer get short:::try->return->nextGetIndex->ix->getShort->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#getShort(int)::: direct byte buffer get short:::try->return->checkIndex->ix->getShort->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#putShort(long, short)::: direct byte buffer put short:::try->y->UNSAFE->putShortUnaligned->catch->finally->Reference->reachabilityFence->return
+DirectByteBuffer#putShort(short)::: direct byte buffer put short:::nextPutIndex->ix->putShort->return
+DirectByteBuffer#putShort(int, short)::: direct byte buffer put short:::checkIndex->ix->putShort->return
+DirectByteBuffer#asShortBuffer()::: direct byte buffer as short buffer:::off->this->position->lim->this->limit->rem->size->if->return->new->ByteBufferAsShortBufferB->new->ByteBufferAsShortBufferL->else->return->new->DirectShortBufferU->new->DirectShortBufferS
+DirectByteBuffer#getInt(long)::: direct byte buffer get int:::try->x->UNSAFE->getIntUnaligned->return->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#getInt()::: direct byte buffer get int:::try->return->nextGetIndex->ix->getInt->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#getInt(int)::: direct byte buffer get int:::try->return->checkIndex->ix->getInt->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#putInt(long, int)::: direct byte buffer put int:::try->y->UNSAFE->putIntUnaligned->catch->finally->Reference->reachabilityFence->return
+DirectByteBuffer#putInt(int)::: direct byte buffer put int:::nextPutIndex->ix->putInt->return
+DirectByteBuffer#putInt(int, int)::: direct byte buffer put int:::checkIndex->ix->putInt->return
+DirectByteBuffer#asIntBuffer()::: direct byte buffer as int buffer:::off->this->position->lim->this->limit->rem->size->if->return->new->ByteBufferAsIntBufferB->new->ByteBufferAsIntBufferL->else->return->new->DirectIntBufferU->new->DirectIntBufferS
+DirectByteBuffer#getLong(long)::: direct byte buffer get long:::try->x->UNSAFE->getLongUnaligned->return->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#getLong()::: direct byte buffer get long:::try->return->nextGetIndex->ix->getLong->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#getLong(int)::: direct byte buffer get long:::try->return->checkIndex->ix->getLong->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#putLong(long, long)::: direct byte buffer put long:::try->y->UNSAFE->putLongUnaligned->catch->finally->Reference->reachabilityFence->return
+DirectByteBuffer#putLong(long)::: direct byte buffer put long:::nextPutIndex->ix->putLong->return
+DirectByteBuffer#putLong(int, long)::: direct byte buffer put long:::checkIndex->ix->putLong->return
+DirectByteBuffer#asLongBuffer()::: direct byte buffer as long buffer:::off->this->position->lim->this->limit->rem->size->if->return->new->ByteBufferAsLongBufferB->new->ByteBufferAsLongBufferL->else->return->new->DirectLongBufferU->new->DirectLongBufferS
+DirectByteBuffer#getFloat(long)::: direct byte buffer get float:::try->x->UNSAFE->getIntUnaligned->return->Float->intBitsToFloat->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#getFloat()::: direct byte buffer get float:::try->return->nextGetIndex->ix->getFloat->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#getFloat(int)::: direct byte buffer get float:::try->return->checkIndex->ix->getFloat->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#putFloat(long, float)::: direct byte buffer put float:::try->y->Float->floatToRawIntBits->UNSAFE->putIntUnaligned->catch->finally->Reference->reachabilityFence->return
+DirectByteBuffer#putFloat(float)::: direct byte buffer put float:::nextPutIndex->ix->putFloat->return
+DirectByteBuffer#putFloat(int, float)::: direct byte buffer put float:::checkIndex->ix->putFloat->return
+DirectByteBuffer#asFloatBuffer()::: direct byte buffer as float buffer:::off->this->position->lim->this->limit->rem->size->if->return->new->ByteBufferAsFloatBufferB->new->ByteBufferAsFloatBufferL->else->return->new->DirectFloatBufferU->new->DirectFloatBufferS
+DirectByteBuffer#getDouble(long)::: direct byte buffer get double:::try->x->UNSAFE->getLongUnaligned->return->Double->longBitsToDouble->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#getDouble()::: direct byte buffer get double:::try->return->nextGetIndex->ix->getDouble->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#getDouble(int)::: direct byte buffer get double:::try->return->checkIndex->ix->getDouble->catch->finally->Reference->reachabilityFence
+DirectByteBuffer#putDouble(long, double)::: direct byte buffer put double:::try->y->Double->doubleToRawLongBits->UNSAFE->putLongUnaligned->catch->finally->Reference->reachabilityFence->return
+DirectByteBuffer#putDouble(double)::: direct byte buffer put double:::nextPutIndex->ix->putDouble->return
+DirectByteBuffer#putDouble(int, double)::: direct byte buffer put double:::checkIndex->ix->putDouble->return
+DirectByteBuffer#asDoubleBuffer()::: direct byte buffer as double buffer:::off->this->position->lim->this->limit->rem->size->if->return->new->ByteBufferAsDoubleBufferB->new->ByteBufferAsDoubleBufferL->else->return->new->DirectDoubleBufferU->new->DirectDoubleBufferS
+DirectByteBufferR#base()::: direct byte buffer r base:::return
+DirectByteBufferR#slice()::: direct byte buffer r slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectByteBufferR
+DirectByteBufferR#slice(int, int)::: direct byte buffer r slice:::rem->return->new->DirectByteBufferR
+DirectByteBufferR#duplicate()::: direct byte buffer r duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectByteBufferR
+DirectByteBufferR#asReadOnlyBuffer()::: direct byte buffer r as read only buffer:::return->duplicate
+DirectByteBufferR#put(byte)::: direct byte buffer r put:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#put(int, byte)::: direct byte buffer r put:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#put(ByteBuffer)::: direct byte buffer r put:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#put(byte[], int, int)::: direct byte buffer r put:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#compact()::: direct byte buffer r compact:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#isDirect()::: direct byte buffer r is direct:::return
+DirectByteBufferR#isReadOnly()::: direct byte buffer r is read only:::return
+DirectByteBufferR#putChar(long, char)::: direct byte buffer r put char:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#putChar(char)::: direct byte buffer r put char:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#putChar(int, char)::: direct byte buffer r put char:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#asCharBuffer()::: direct byte buffer r as char buffer:::off->this->position->lim->this->limit->rem->size->if->return->new->ByteBufferAsCharBufferRB->new->ByteBufferAsCharBufferRL->else->return->new->DirectCharBufferRU->new->DirectCharBufferRS
+DirectByteBufferR#putShort(long, short)::: direct byte buffer r put short:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#putShort(short)::: direct byte buffer r put short:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#putShort(int, short)::: direct byte buffer r put short:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#asShortBuffer()::: direct byte buffer r as short buffer:::off->this->position->lim->this->limit->rem->size->if->return->new->ByteBufferAsShortBufferRB->new->ByteBufferAsShortBufferRL->else->return->new->DirectShortBufferRU->new->DirectShortBufferRS
+DirectByteBufferR#putInt(long, int)::: direct byte buffer r put int:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#putInt(int)::: direct byte buffer r put int:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#putInt(int, int)::: direct byte buffer r put int:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#asIntBuffer()::: direct byte buffer r as int buffer:::off->this->position->lim->this->limit->rem->size->if->return->new->ByteBufferAsIntBufferRB->new->ByteBufferAsIntBufferRL->else->return->new->DirectIntBufferRU->new->DirectIntBufferRS
+DirectByteBufferR#putLong(long, long)::: direct byte buffer r put long:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#putLong(long)::: direct byte buffer r put long:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#putLong(int, long)::: direct byte buffer r put long:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#asLongBuffer()::: direct byte buffer r as long buffer:::off->this->position->lim->this->limit->rem->size->if->return->new->ByteBufferAsLongBufferRB->new->ByteBufferAsLongBufferRL->else->return->new->DirectLongBufferRU->new->DirectLongBufferRS
+DirectByteBufferR#putFloat(long, float)::: direct byte buffer r put float:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#putFloat(float)::: direct byte buffer r put float:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#putFloat(int, float)::: direct byte buffer r put float:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#asFloatBuffer()::: direct byte buffer r as float buffer:::off->this->position->lim->this->limit->rem->size->if->return->new->ByteBufferAsFloatBufferRB->new->ByteBufferAsFloatBufferRL->else->return->new->DirectFloatBufferRU->new->DirectFloatBufferRS
+DirectByteBufferR#putDouble(long, double)::: direct byte buffer r put double:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#putDouble(double)::: direct byte buffer r put double:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#putDouble(int, double)::: direct byte buffer r put double:::throw->new->ReadOnlyBufferException
+DirectByteBufferR#asDoubleBuffer()::: direct byte buffer r as double buffer:::off->this->position->lim->this->limit->rem->size->if->return->new->ByteBufferAsDoubleBufferRB->new->ByteBufferAsDoubleBufferRL->else->return->new->DirectDoubleBufferRU->new->DirectDoubleBufferRS
+DirectCharBufferRS#base()::: direct char buffer s base:::return
+DirectCharBufferRS#slice()::: direct char buffer s slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectCharBufferRS
+DirectCharBufferRS#duplicate()::: direct char buffer s duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectCharBufferRS
+DirectCharBufferRS#asReadOnlyBuffer()::: direct char buffer s as read only buffer:::return->duplicate
+DirectCharBufferRS#put(char)::: direct char buffer s put:::throw->new->ReadOnlyBufferException
+DirectCharBufferRS#put(int, char)::: direct char buffer s put:::throw->new->ReadOnlyBufferException
+DirectCharBufferRS#put(CharBuffer)::: direct char buffer s put:::throw->new->ReadOnlyBufferException
+DirectCharBufferRS#put(char[], int, int)::: direct char buffer s put:::throw->new->ReadOnlyBufferException
+DirectCharBufferRS#compact()::: direct char buffer s compact:::throw->new->ReadOnlyBufferException
+DirectCharBufferRS#isDirect()::: direct char buffer s is direct:::return
+DirectCharBufferRS#isReadOnly()::: direct char buffer s is read only:::return
+DirectCharBufferRS#toString(int, int)::: direct char buffer s to string:::if->limit->throw->new->IndexOutOfBoundsException->try->len->ca->new->charArr->cb->CharBuffer->wrap->db->this->duplicate->db->position->db->limit->cb->put->return->new->String->catch->throw->new->IndexOutOfBoundsException->finally
+DirectCharBufferRS#subSequence(int, int)::: direct char buffer s sub sequence:::pos->position->lim->limit->len->if->throw->new->IndexOutOfBoundsException->return->capacity->new->DirectCharBufferRS
+DirectCharBufferRS#order()::: direct char buffer s order:::return->ByteOrder->nativeOrder
+DirectCharBufferRS#charRegionOrder()::: direct char buffer s char region order:::return->order
+DirectCharBufferRU#base()::: direct char buffer u base:::return
+DirectCharBufferRU#slice()::: direct char buffer u slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectCharBufferRU
+DirectCharBufferRU#duplicate()::: direct char buffer u duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectCharBufferRU
+DirectCharBufferRU#asReadOnlyBuffer()::: direct char buffer u as read only buffer:::return->duplicate
+DirectCharBufferRU#put(char)::: direct char buffer u put:::throw->new->ReadOnlyBufferException
+DirectCharBufferRU#put(int, char)::: direct char buffer u put:::throw->new->ReadOnlyBufferException
+DirectCharBufferRU#put(CharBuffer)::: direct char buffer u put:::throw->new->ReadOnlyBufferException
+DirectCharBufferRU#put(char[], int, int)::: direct char buffer u put:::throw->new->ReadOnlyBufferException
+DirectCharBufferRU#compact()::: direct char buffer u compact:::throw->new->ReadOnlyBufferException
+DirectCharBufferRU#isDirect()::: direct char buffer u is direct:::return
+DirectCharBufferRU#isReadOnly()::: direct char buffer u is read only:::return
+DirectCharBufferRU#toString(int, int)::: direct char buffer u to string:::if->limit->throw->new->IndexOutOfBoundsException->try->len->ca->new->charArr->cb->CharBuffer->wrap->db->this->duplicate->db->position->db->limit->cb->put->return->new->String->catch->throw->new->IndexOutOfBoundsException->finally
+DirectCharBufferRU#subSequence(int, int)::: direct char buffer u sub sequence:::pos->position->lim->limit->len->if->throw->new->IndexOutOfBoundsException->return->capacity->new->DirectCharBufferRU
+DirectCharBufferRU#order()::: direct char buffer u order:::return->ByteOrder->nativeOrder
+DirectCharBufferRU#charRegionOrder()::: direct char buffer u char region order:::return->order
+DirectCharBufferS#attachment()::: direct char buffer s attachment:::return
+DirectCharBufferS#cleaner()::: direct char buffer s cleaner:::return
+DirectCharBufferS#base()::: direct char buffer s base:::return
+DirectCharBufferS#slice()::: direct char buffer s slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectCharBufferS
+DirectCharBufferS#duplicate()::: direct char buffer s duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectCharBufferS
+DirectCharBufferS#asReadOnlyBuffer()::: direct char buffer s as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectCharBufferRS
+DirectCharBufferS#address()::: direct char buffer s address:::return
+DirectCharBufferS#ix(int)::: direct char buffer s ix:::return
+DirectCharBufferS#get()::: direct char buffer s get:::try->return->Bits->UNSAFE->nextGetIndex->ix->getChar->swap->catch->finally->Reference->reachabilityFence
+DirectCharBufferS#get(int)::: direct char buffer s get:::try->return->Bits->UNSAFE->checkIndex->ix->getChar->swap->catch->finally->Reference->reachabilityFence
+DirectCharBufferS#getUnchecked(int)::: direct char buffer s get unchecked:::try->return->Bits->UNSAFE->ix->getChar->swap->catch->finally->Reference->reachabilityFence
+DirectCharBufferS#get(char[], int, int)::: direct char buffer s get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectCharBufferS#put(char)::: direct char buffer s put:::try->UNSAFE->nextPutIndex->ix->Bits->swap->putChar->catch->finally->Reference->reachabilityFence->return
+DirectCharBufferS#put(int, char)::: direct char buffer s put:::try->UNSAFE->checkIndex->ix->Bits->swap->putChar->catch->finally->Reference->reachabilityFence->return
+DirectCharBufferS#put(CharBuffer)::: direct char buffer s put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectCharBufferS#put(char[], int, int)::: direct char buffer s put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectCharBufferS#compact()::: direct char buffer s compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectCharBufferS#isDirect()::: direct char buffer s is direct:::return
+DirectCharBufferS#isReadOnly()::: direct char buffer s is read only:::return
+DirectCharBufferS#toString(int, int)::: direct char buffer s to string:::if->limit->throw->new->IndexOutOfBoundsException->try->len->ca->new->charArr->cb->CharBuffer->wrap->db->this->duplicate->db->position->db->limit->cb->put->return->new->String->catch->throw->new->IndexOutOfBoundsException->finally
+DirectCharBufferS#subSequence(int, int)::: direct char buffer s sub sequence:::pos->position->lim->limit->len->if->throw->new->IndexOutOfBoundsException->return->capacity->new->DirectCharBufferS
+DirectCharBufferS#order()::: direct char buffer s order:::return->ByteOrder->nativeOrder
+DirectCharBufferS#charRegionOrder()::: direct char buffer s char region order:::return->order
+DirectCharBufferU#attachment()::: direct char buffer u attachment:::return
+DirectCharBufferU#cleaner()::: direct char buffer u cleaner:::return
+DirectCharBufferU#base()::: direct char buffer u base:::return
+DirectCharBufferU#slice()::: direct char buffer u slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectCharBufferU
+DirectCharBufferU#duplicate()::: direct char buffer u duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectCharBufferU
+DirectCharBufferU#asReadOnlyBuffer()::: direct char buffer u as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectCharBufferRU
+DirectCharBufferU#address()::: direct char buffer u address:::return
+DirectCharBufferU#ix(int)::: direct char buffer u ix:::return
+DirectCharBufferU#get()::: direct char buffer u get:::try->return->UNSAFE->nextGetIndex->ix->getChar->catch->finally->Reference->reachabilityFence
+DirectCharBufferU#get(int)::: direct char buffer u get:::try->return->UNSAFE->checkIndex->ix->getChar->catch->finally->Reference->reachabilityFence
+DirectCharBufferU#getUnchecked(int)::: direct char buffer u get unchecked:::try->return->UNSAFE->ix->getChar->catch->finally->Reference->reachabilityFence
+DirectCharBufferU#get(char[], int, int)::: direct char buffer u get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectCharBufferU#put(char)::: direct char buffer u put:::try->UNSAFE->nextPutIndex->ix->putChar->catch->finally->Reference->reachabilityFence->return
+DirectCharBufferU#put(int, char)::: direct char buffer u put:::try->UNSAFE->checkIndex->ix->putChar->catch->finally->Reference->reachabilityFence->return
+DirectCharBufferU#put(CharBuffer)::: direct char buffer u put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectCharBufferU#put(char[], int, int)::: direct char buffer u put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectCharBufferU#compact()::: direct char buffer u compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectCharBufferU#isDirect()::: direct char buffer u is direct:::return
+DirectCharBufferU#isReadOnly()::: direct char buffer u is read only:::return
+DirectCharBufferU#toString(int, int)::: direct char buffer u to string:::if->limit->throw->new->IndexOutOfBoundsException->try->len->ca->new->charArr->cb->CharBuffer->wrap->db->this->duplicate->db->position->db->limit->cb->put->return->new->String->catch->throw->new->IndexOutOfBoundsException->finally
+DirectCharBufferU#subSequence(int, int)::: direct char buffer u sub sequence:::pos->position->lim->limit->len->if->throw->new->IndexOutOfBoundsException->return->capacity->new->DirectCharBufferU
+DirectCharBufferU#order()::: direct char buffer u order:::return->ByteOrder->nativeOrder
+DirectCharBufferU#charRegionOrder()::: direct char buffer u char region order:::return->order
+DirectDoubleBufferRS#base()::: direct double buffer s base:::return
+DirectDoubleBufferRS#slice()::: direct double buffer s slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectDoubleBufferRS
+DirectDoubleBufferRS#duplicate()::: direct double buffer s duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectDoubleBufferRS
+DirectDoubleBufferRS#asReadOnlyBuffer()::: direct double buffer s as read only buffer:::return->duplicate
+DirectDoubleBufferRS#put(double)::: direct double buffer s put:::throw->new->ReadOnlyBufferException
+DirectDoubleBufferRS#put(int, double)::: direct double buffer s put:::throw->new->ReadOnlyBufferException
+DirectDoubleBufferRS#put(DoubleBuffer)::: direct double buffer s put:::throw->new->ReadOnlyBufferException
+DirectDoubleBufferRS#put(double[], int, int)::: direct double buffer s put:::throw->new->ReadOnlyBufferException
+DirectDoubleBufferRS#compact()::: direct double buffer s compact:::throw->new->ReadOnlyBufferException
+DirectDoubleBufferRS#isDirect()::: direct double buffer s is direct:::return
+DirectDoubleBufferRS#isReadOnly()::: direct double buffer s is read only:::return
+DirectDoubleBufferRS#order()::: direct double buffer s order:::return->ByteOrder->nativeOrder
+DirectDoubleBufferRU#base()::: direct double buffer u base:::return
+DirectDoubleBufferRU#slice()::: direct double buffer u slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectDoubleBufferRU
+DirectDoubleBufferRU#duplicate()::: direct double buffer u duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectDoubleBufferRU
+DirectDoubleBufferRU#asReadOnlyBuffer()::: direct double buffer u as read only buffer:::return->duplicate
+DirectDoubleBufferRU#put(double)::: direct double buffer u put:::throw->new->ReadOnlyBufferException
+DirectDoubleBufferRU#put(int, double)::: direct double buffer u put:::throw->new->ReadOnlyBufferException
+DirectDoubleBufferRU#put(DoubleBuffer)::: direct double buffer u put:::throw->new->ReadOnlyBufferException
+DirectDoubleBufferRU#put(double[], int, int)::: direct double buffer u put:::throw->new->ReadOnlyBufferException
+DirectDoubleBufferRU#compact()::: direct double buffer u compact:::throw->new->ReadOnlyBufferException
+DirectDoubleBufferRU#isDirect()::: direct double buffer u is direct:::return
+DirectDoubleBufferRU#isReadOnly()::: direct double buffer u is read only:::return
+DirectDoubleBufferRU#order()::: direct double buffer u order:::return->ByteOrder->nativeOrder
+DirectDoubleBufferS#attachment()::: direct double buffer s attachment:::return
+DirectDoubleBufferS#cleaner()::: direct double buffer s cleaner:::return
+DirectDoubleBufferS#base()::: direct double buffer s base:::return
+DirectDoubleBufferS#slice()::: direct double buffer s slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectDoubleBufferS
+DirectDoubleBufferS#duplicate()::: direct double buffer s duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectDoubleBufferS
+DirectDoubleBufferS#asReadOnlyBuffer()::: direct double buffer s as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectDoubleBufferRS
+DirectDoubleBufferS#address()::: direct double buffer s address:::return
+DirectDoubleBufferS#ix(int)::: direct double buffer s ix:::return
+DirectDoubleBufferS#get()::: direct double buffer s get:::try->return->Double->Bits->UNSAFE->nextGetIndex->ix->getLong->swap->longBitsToDouble->catch->finally->Reference->reachabilityFence
+DirectDoubleBufferS#get(int)::: direct double buffer s get:::try->return->Double->Bits->UNSAFE->checkIndex->ix->getLong->swap->longBitsToDouble->catch->finally->Reference->reachabilityFence
+DirectDoubleBufferS#get(double[], int, int)::: direct double buffer s get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectDoubleBufferS#put(double)::: direct double buffer s put:::try->UNSAFE->nextPutIndex->ix->Bits->Double->doubleToRawLongBits->swap->putLong->catch->finally->Reference->reachabilityFence->return
+DirectDoubleBufferS#put(int, double)::: direct double buffer s put:::try->UNSAFE->checkIndex->ix->Bits->Double->doubleToRawLongBits->swap->putLong->catch->finally->Reference->reachabilityFence->return
+DirectDoubleBufferS#put(DoubleBuffer)::: direct double buffer s put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectDoubleBufferS#put(double[], int, int)::: direct double buffer s put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectDoubleBufferS#compact()::: direct double buffer s compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectDoubleBufferS#isDirect()::: direct double buffer s is direct:::return
+DirectDoubleBufferS#isReadOnly()::: direct double buffer s is read only:::return
+DirectDoubleBufferS#order()::: direct double buffer s order:::return->ByteOrder->nativeOrder
+DirectDoubleBufferU#attachment()::: direct double buffer u attachment:::return
+DirectDoubleBufferU#cleaner()::: direct double buffer u cleaner:::return
+DirectDoubleBufferU#base()::: direct double buffer u base:::return
+DirectDoubleBufferU#slice()::: direct double buffer u slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectDoubleBufferU
+DirectDoubleBufferU#duplicate()::: direct double buffer u duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectDoubleBufferU
+DirectDoubleBufferU#asReadOnlyBuffer()::: direct double buffer u as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectDoubleBufferRU
+DirectDoubleBufferU#address()::: direct double buffer u address:::return
+DirectDoubleBufferU#ix(int)::: direct double buffer u ix:::return
+DirectDoubleBufferU#get()::: direct double buffer u get:::try->return->UNSAFE->nextGetIndex->ix->getDouble->catch->finally->Reference->reachabilityFence
+DirectDoubleBufferU#get(int)::: direct double buffer u get:::try->return->UNSAFE->checkIndex->ix->getDouble->catch->finally->Reference->reachabilityFence
+DirectDoubleBufferU#get(double[], int, int)::: direct double buffer u get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectDoubleBufferU#put(double)::: direct double buffer u put:::try->UNSAFE->nextPutIndex->ix->putDouble->catch->finally->Reference->reachabilityFence->return
+DirectDoubleBufferU#put(int, double)::: direct double buffer u put:::try->UNSAFE->checkIndex->ix->putDouble->catch->finally->Reference->reachabilityFence->return
+DirectDoubleBufferU#put(DoubleBuffer)::: direct double buffer u put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectDoubleBufferU#put(double[], int, int)::: direct double buffer u put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectDoubleBufferU#compact()::: direct double buffer u compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectDoubleBufferU#isDirect()::: direct double buffer u is direct:::return
+DirectDoubleBufferU#isReadOnly()::: direct double buffer u is read only:::return
+DirectDoubleBufferU#order()::: direct double buffer u order:::return->ByteOrder->nativeOrder
+DirectFloatBufferRS#base()::: direct float buffer s base:::return
+DirectFloatBufferRS#slice()::: direct float buffer s slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectFloatBufferRS
+DirectFloatBufferRS#duplicate()::: direct float buffer s duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectFloatBufferRS
+DirectFloatBufferRS#asReadOnlyBuffer()::: direct float buffer s as read only buffer:::return->duplicate
+DirectFloatBufferRS#put(float)::: direct float buffer s put:::throw->new->ReadOnlyBufferException
+DirectFloatBufferRS#put(int, float)::: direct float buffer s put:::throw->new->ReadOnlyBufferException
+DirectFloatBufferRS#put(FloatBuffer)::: direct float buffer s put:::throw->new->ReadOnlyBufferException
+DirectFloatBufferRS#put(float[], int, int)::: direct float buffer s put:::throw->new->ReadOnlyBufferException
+DirectFloatBufferRS#compact()::: direct float buffer s compact:::throw->new->ReadOnlyBufferException
+DirectFloatBufferRS#isDirect()::: direct float buffer s is direct:::return
+DirectFloatBufferRS#isReadOnly()::: direct float buffer s is read only:::return
+DirectFloatBufferRS#order()::: direct float buffer s order:::return->ByteOrder->nativeOrder
+DirectFloatBufferRU#base()::: direct float buffer u base:::return
+DirectFloatBufferRU#slice()::: direct float buffer u slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectFloatBufferRU
+DirectFloatBufferRU#duplicate()::: direct float buffer u duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectFloatBufferRU
+DirectFloatBufferRU#asReadOnlyBuffer()::: direct float buffer u as read only buffer:::return->duplicate
+DirectFloatBufferRU#put(float)::: direct float buffer u put:::throw->new->ReadOnlyBufferException
+DirectFloatBufferRU#put(int, float)::: direct float buffer u put:::throw->new->ReadOnlyBufferException
+DirectFloatBufferRU#put(FloatBuffer)::: direct float buffer u put:::throw->new->ReadOnlyBufferException
+DirectFloatBufferRU#put(float[], int, int)::: direct float buffer u put:::throw->new->ReadOnlyBufferException
+DirectFloatBufferRU#compact()::: direct float buffer u compact:::throw->new->ReadOnlyBufferException
+DirectFloatBufferRU#isDirect()::: direct float buffer u is direct:::return
+DirectFloatBufferRU#isReadOnly()::: direct float buffer u is read only:::return
+DirectFloatBufferRU#order()::: direct float buffer u order:::return->ByteOrder->nativeOrder
+DirectFloatBufferS#attachment()::: direct float buffer s attachment:::return
+DirectFloatBufferS#cleaner()::: direct float buffer s cleaner:::return
+DirectFloatBufferS#base()::: direct float buffer s base:::return
+DirectFloatBufferS#slice()::: direct float buffer s slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectFloatBufferS
+DirectFloatBufferS#duplicate()::: direct float buffer s duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectFloatBufferS
+DirectFloatBufferS#asReadOnlyBuffer()::: direct float buffer s as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectFloatBufferRS
+DirectFloatBufferS#address()::: direct float buffer s address:::return
+DirectFloatBufferS#ix(int)::: direct float buffer s ix:::return
+DirectFloatBufferS#get()::: direct float buffer s get:::try->return->Float->Bits->UNSAFE->nextGetIndex->ix->getInt->swap->intBitsToFloat->catch->finally->Reference->reachabilityFence
+DirectFloatBufferS#get(int)::: direct float buffer s get:::try->return->Float->Bits->UNSAFE->checkIndex->ix->getInt->swap->intBitsToFloat->catch->finally->Reference->reachabilityFence
+DirectFloatBufferS#get(float[], int, int)::: direct float buffer s get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectFloatBufferS#put(float)::: direct float buffer s put:::try->UNSAFE->nextPutIndex->ix->Bits->Float->floatToRawIntBits->swap->putInt->catch->finally->Reference->reachabilityFence->return
+DirectFloatBufferS#put(int, float)::: direct float buffer s put:::try->UNSAFE->checkIndex->ix->Bits->Float->floatToRawIntBits->swap->putInt->catch->finally->Reference->reachabilityFence->return
+DirectFloatBufferS#put(FloatBuffer)::: direct float buffer s put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectFloatBufferS#put(float[], int, int)::: direct float buffer s put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectFloatBufferS#compact()::: direct float buffer s compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectFloatBufferS#isDirect()::: direct float buffer s is direct:::return
+DirectFloatBufferS#isReadOnly()::: direct float buffer s is read only:::return
+DirectFloatBufferS#order()::: direct float buffer s order:::return->ByteOrder->nativeOrder
+DirectFloatBufferU#attachment()::: direct float buffer u attachment:::return
+DirectFloatBufferU#cleaner()::: direct float buffer u cleaner:::return
+DirectFloatBufferU#base()::: direct float buffer u base:::return
+DirectFloatBufferU#slice()::: direct float buffer u slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectFloatBufferU
+DirectFloatBufferU#duplicate()::: direct float buffer u duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectFloatBufferU
+DirectFloatBufferU#asReadOnlyBuffer()::: direct float buffer u as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectFloatBufferRU
+DirectFloatBufferU#address()::: direct float buffer u address:::return
+DirectFloatBufferU#ix(int)::: direct float buffer u ix:::return
+DirectFloatBufferU#get()::: direct float buffer u get:::try->return->UNSAFE->nextGetIndex->ix->getFloat->catch->finally->Reference->reachabilityFence
+DirectFloatBufferU#get(int)::: direct float buffer u get:::try->return->UNSAFE->checkIndex->ix->getFloat->catch->finally->Reference->reachabilityFence
+DirectFloatBufferU#get(float[], int, int)::: direct float buffer u get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectFloatBufferU#put(float)::: direct float buffer u put:::try->UNSAFE->nextPutIndex->ix->putFloat->catch->finally->Reference->reachabilityFence->return
+DirectFloatBufferU#put(int, float)::: direct float buffer u put:::try->UNSAFE->checkIndex->ix->putFloat->catch->finally->Reference->reachabilityFence->return
+DirectFloatBufferU#put(FloatBuffer)::: direct float buffer u put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectFloatBufferU#put(float[], int, int)::: direct float buffer u put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectFloatBufferU#compact()::: direct float buffer u compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectFloatBufferU#isDirect()::: direct float buffer u is direct:::return
+DirectFloatBufferU#isReadOnly()::: direct float buffer u is read only:::return
+DirectFloatBufferU#order()::: direct float buffer u order:::return->ByteOrder->nativeOrder
+DirectIntBufferRS#base()::: direct int buffer s base:::return
+DirectIntBufferRS#slice()::: direct int buffer s slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectIntBufferRS
+DirectIntBufferRS#duplicate()::: direct int buffer s duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectIntBufferRS
+DirectIntBufferRS#asReadOnlyBuffer()::: direct int buffer s as read only buffer:::return->duplicate
+DirectIntBufferRS#put(int)::: direct int buffer s put:::throw->new->ReadOnlyBufferException
+DirectIntBufferRS#put(int, int)::: direct int buffer s put:::throw->new->ReadOnlyBufferException
+DirectIntBufferRS#put(IntBuffer)::: direct int buffer s put:::throw->new->ReadOnlyBufferException
+DirectIntBufferRS#put(int[], int, int)::: direct int buffer s put:::throw->new->ReadOnlyBufferException
+DirectIntBufferRS#compact()::: direct int buffer s compact:::throw->new->ReadOnlyBufferException
+DirectIntBufferRS#isDirect()::: direct int buffer s is direct:::return
+DirectIntBufferRS#isReadOnly()::: direct int buffer s is read only:::return
+DirectIntBufferRS#order()::: direct int buffer s order:::return->ByteOrder->nativeOrder
+DirectIntBufferRU#base()::: direct int buffer u base:::return
+DirectIntBufferRU#slice()::: direct int buffer u slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectIntBufferRU
+DirectIntBufferRU#duplicate()::: direct int buffer u duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectIntBufferRU
+DirectIntBufferRU#asReadOnlyBuffer()::: direct int buffer u as read only buffer:::return->duplicate
+DirectIntBufferRU#put(int)::: direct int buffer u put:::throw->new->ReadOnlyBufferException
+DirectIntBufferRU#put(int, int)::: direct int buffer u put:::throw->new->ReadOnlyBufferException
+DirectIntBufferRU#put(IntBuffer)::: direct int buffer u put:::throw->new->ReadOnlyBufferException
+DirectIntBufferRU#put(int[], int, int)::: direct int buffer u put:::throw->new->ReadOnlyBufferException
+DirectIntBufferRU#compact()::: direct int buffer u compact:::throw->new->ReadOnlyBufferException
+DirectIntBufferRU#isDirect()::: direct int buffer u is direct:::return
+DirectIntBufferRU#isReadOnly()::: direct int buffer u is read only:::return
+DirectIntBufferRU#order()::: direct int buffer u order:::return->ByteOrder->nativeOrder
+DirectIntBufferS#attachment()::: direct int buffer s attachment:::return
+DirectIntBufferS#cleaner()::: direct int buffer s cleaner:::return
+DirectIntBufferS#base()::: direct int buffer s base:::return
+DirectIntBufferS#slice()::: direct int buffer s slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectIntBufferS
+DirectIntBufferS#duplicate()::: direct int buffer s duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectIntBufferS
+DirectIntBufferS#asReadOnlyBuffer()::: direct int buffer s as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectIntBufferRS
+DirectIntBufferS#address()::: direct int buffer s address:::return
+DirectIntBufferS#ix(int)::: direct int buffer s ix:::return
+DirectIntBufferS#get()::: direct int buffer s get:::try->return->Bits->UNSAFE->nextGetIndex->ix->getInt->swap->catch->finally->Reference->reachabilityFence
+DirectIntBufferS#get(int)::: direct int buffer s get:::try->return->Bits->UNSAFE->checkIndex->ix->getInt->swap->catch->finally->Reference->reachabilityFence
+DirectIntBufferS#get(int[], int, int)::: direct int buffer s get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectIntBufferS#put(int)::: direct int buffer s put:::try->UNSAFE->nextPutIndex->ix->Bits->swap->putInt->catch->finally->Reference->reachabilityFence->return
+DirectIntBufferS#put(int, int)::: direct int buffer s put:::try->UNSAFE->checkIndex->ix->Bits->swap->putInt->catch->finally->Reference->reachabilityFence->return
+DirectIntBufferS#put(IntBuffer)::: direct int buffer s put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectIntBufferS#put(int[], int, int)::: direct int buffer s put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectIntBufferS#compact()::: direct int buffer s compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectIntBufferS#isDirect()::: direct int buffer s is direct:::return
+DirectIntBufferS#isReadOnly()::: direct int buffer s is read only:::return
+DirectIntBufferS#order()::: direct int buffer s order:::return->ByteOrder->nativeOrder
+DirectIntBufferU#attachment()::: direct int buffer u attachment:::return
+DirectIntBufferU#cleaner()::: direct int buffer u cleaner:::return
+DirectIntBufferU#base()::: direct int buffer u base:::return
+DirectIntBufferU#slice()::: direct int buffer u slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectIntBufferU
+DirectIntBufferU#duplicate()::: direct int buffer u duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectIntBufferU
+DirectIntBufferU#asReadOnlyBuffer()::: direct int buffer u as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectIntBufferRU
+DirectIntBufferU#address()::: direct int buffer u address:::return
+DirectIntBufferU#ix(int)::: direct int buffer u ix:::return
+DirectIntBufferU#get()::: direct int buffer u get:::try->return->UNSAFE->nextGetIndex->ix->getInt->catch->finally->Reference->reachabilityFence
+DirectIntBufferU#get(int)::: direct int buffer u get:::try->return->UNSAFE->checkIndex->ix->getInt->catch->finally->Reference->reachabilityFence
+DirectIntBufferU#get(int[], int, int)::: direct int buffer u get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectIntBufferU#put(int)::: direct int buffer u put:::try->UNSAFE->nextPutIndex->ix->putInt->catch->finally->Reference->reachabilityFence->return
+DirectIntBufferU#put(int, int)::: direct int buffer u put:::try->UNSAFE->checkIndex->ix->putInt->catch->finally->Reference->reachabilityFence->return
+DirectIntBufferU#put(IntBuffer)::: direct int buffer u put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectIntBufferU#put(int[], int, int)::: direct int buffer u put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectIntBufferU#compact()::: direct int buffer u compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectIntBufferU#isDirect()::: direct int buffer u is direct:::return
+DirectIntBufferU#isReadOnly()::: direct int buffer u is read only:::return
+DirectIntBufferU#order()::: direct int buffer u order:::return->ByteOrder->nativeOrder
+DirectLongBufferRS#base()::: direct long buffer s base:::return
+DirectLongBufferRS#slice()::: direct long buffer s slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectLongBufferRS
+DirectLongBufferRS#duplicate()::: direct long buffer s duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectLongBufferRS
+DirectLongBufferRS#asReadOnlyBuffer()::: direct long buffer s as read only buffer:::return->duplicate
+DirectLongBufferRS#put(long)::: direct long buffer s put:::throw->new->ReadOnlyBufferException
+DirectLongBufferRS#put(int, long)::: direct long buffer s put:::throw->new->ReadOnlyBufferException
+DirectLongBufferRS#put(LongBuffer)::: direct long buffer s put:::throw->new->ReadOnlyBufferException
+DirectLongBufferRS#put(long[], int, int)::: direct long buffer s put:::throw->new->ReadOnlyBufferException
+DirectLongBufferRS#compact()::: direct long buffer s compact:::throw->new->ReadOnlyBufferException
+DirectLongBufferRS#isDirect()::: direct long buffer s is direct:::return
+DirectLongBufferRS#isReadOnly()::: direct long buffer s is read only:::return
+DirectLongBufferRS#order()::: direct long buffer s order:::return->ByteOrder->nativeOrder
+DirectLongBufferRU#base()::: direct long buffer u base:::return
+DirectLongBufferRU#slice()::: direct long buffer u slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectLongBufferRU
+DirectLongBufferRU#duplicate()::: direct long buffer u duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectLongBufferRU
+DirectLongBufferRU#asReadOnlyBuffer()::: direct long buffer u as read only buffer:::return->duplicate
+DirectLongBufferRU#put(long)::: direct long buffer u put:::throw->new->ReadOnlyBufferException
+DirectLongBufferRU#put(int, long)::: direct long buffer u put:::throw->new->ReadOnlyBufferException
+DirectLongBufferRU#put(LongBuffer)::: direct long buffer u put:::throw->new->ReadOnlyBufferException
+DirectLongBufferRU#put(long[], int, int)::: direct long buffer u put:::throw->new->ReadOnlyBufferException
+DirectLongBufferRU#compact()::: direct long buffer u compact:::throw->new->ReadOnlyBufferException
+DirectLongBufferRU#isDirect()::: direct long buffer u is direct:::return
+DirectLongBufferRU#isReadOnly()::: direct long buffer u is read only:::return
+DirectLongBufferRU#order()::: direct long buffer u order:::return->ByteOrder->nativeOrder
+DirectLongBufferS#attachment()::: direct long buffer s attachment:::return
+DirectLongBufferS#cleaner()::: direct long buffer s cleaner:::return
+DirectLongBufferS#base()::: direct long buffer s base:::return
+DirectLongBufferS#slice()::: direct long buffer s slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectLongBufferS
+DirectLongBufferS#duplicate()::: direct long buffer s duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectLongBufferS
+DirectLongBufferS#asReadOnlyBuffer()::: direct long buffer s as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectLongBufferRS
+DirectLongBufferS#address()::: direct long buffer s address:::return
+DirectLongBufferS#ix(int)::: direct long buffer s ix:::return
+DirectLongBufferS#get()::: direct long buffer s get:::try->return->Bits->UNSAFE->nextGetIndex->ix->getLong->swap->catch->finally->Reference->reachabilityFence
+DirectLongBufferS#get(int)::: direct long buffer s get:::try->return->Bits->UNSAFE->checkIndex->ix->getLong->swap->catch->finally->Reference->reachabilityFence
+DirectLongBufferS#get(long[], int, int)::: direct long buffer s get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectLongBufferS#put(long)::: direct long buffer s put:::try->UNSAFE->nextPutIndex->ix->Bits->swap->putLong->catch->finally->Reference->reachabilityFence->return
+DirectLongBufferS#put(int, long)::: direct long buffer s put:::try->UNSAFE->checkIndex->ix->Bits->swap->putLong->catch->finally->Reference->reachabilityFence->return
+DirectLongBufferS#put(LongBuffer)::: direct long buffer s put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectLongBufferS#put(long[], int, int)::: direct long buffer s put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectLongBufferS#compact()::: direct long buffer s compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectLongBufferS#isDirect()::: direct long buffer s is direct:::return
+DirectLongBufferS#isReadOnly()::: direct long buffer s is read only:::return
+DirectLongBufferS#order()::: direct long buffer s order:::return->ByteOrder->nativeOrder
+DirectLongBufferU#attachment()::: direct long buffer u attachment:::return
+DirectLongBufferU#cleaner()::: direct long buffer u cleaner:::return
+DirectLongBufferU#base()::: direct long buffer u base:::return
+DirectLongBufferU#slice()::: direct long buffer u slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectLongBufferU
+DirectLongBufferU#duplicate()::: direct long buffer u duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectLongBufferU
+DirectLongBufferU#asReadOnlyBuffer()::: direct long buffer u as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectLongBufferRU
+DirectLongBufferU#address()::: direct long buffer u address:::return
+DirectLongBufferU#ix(int)::: direct long buffer u ix:::return
+DirectLongBufferU#get()::: direct long buffer u get:::try->return->UNSAFE->nextGetIndex->ix->getLong->catch->finally->Reference->reachabilityFence
+DirectLongBufferU#get(int)::: direct long buffer u get:::try->return->UNSAFE->checkIndex->ix->getLong->catch->finally->Reference->reachabilityFence
+DirectLongBufferU#get(long[], int, int)::: direct long buffer u get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectLongBufferU#put(long)::: direct long buffer u put:::try->UNSAFE->nextPutIndex->ix->putLong->catch->finally->Reference->reachabilityFence->return
+DirectLongBufferU#put(int, long)::: direct long buffer u put:::try->UNSAFE->checkIndex->ix->putLong->catch->finally->Reference->reachabilityFence->return
+DirectLongBufferU#put(LongBuffer)::: direct long buffer u put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectLongBufferU#put(long[], int, int)::: direct long buffer u put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectLongBufferU#compact()::: direct long buffer u compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectLongBufferU#isDirect()::: direct long buffer u is direct:::return
+DirectLongBufferU#isReadOnly()::: direct long buffer u is read only:::return
+DirectLongBufferU#order()::: direct long buffer u order:::return->ByteOrder->nativeOrder
+DirectShortBufferRS#base()::: direct short buffer s base:::return
+DirectShortBufferRS#slice()::: direct short buffer s slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectShortBufferRS
+DirectShortBufferRS#duplicate()::: direct short buffer s duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectShortBufferRS
+DirectShortBufferRS#asReadOnlyBuffer()::: direct short buffer s as read only buffer:::return->duplicate
+DirectShortBufferRS#put(short)::: direct short buffer s put:::throw->new->ReadOnlyBufferException
+DirectShortBufferRS#put(int, short)::: direct short buffer s put:::throw->new->ReadOnlyBufferException
+DirectShortBufferRS#put(ShortBuffer)::: direct short buffer s put:::throw->new->ReadOnlyBufferException
+DirectShortBufferRS#put(short[], int, int)::: direct short buffer s put:::throw->new->ReadOnlyBufferException
+DirectShortBufferRS#compact()::: direct short buffer s compact:::throw->new->ReadOnlyBufferException
+DirectShortBufferRS#isDirect()::: direct short buffer s is direct:::return
+DirectShortBufferRS#isReadOnly()::: direct short buffer s is read only:::return
+DirectShortBufferRS#order()::: direct short buffer s order:::return->ByteOrder->nativeOrder
+DirectShortBufferRU#base()::: direct short buffer u base:::return
+DirectShortBufferRU#slice()::: direct short buffer u slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectShortBufferRU
+DirectShortBufferRU#duplicate()::: direct short buffer u duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectShortBufferRU
+DirectShortBufferRU#asReadOnlyBuffer()::: direct short buffer u as read only buffer:::return->duplicate
+DirectShortBufferRU#put(short)::: direct short buffer u put:::throw->new->ReadOnlyBufferException
+DirectShortBufferRU#put(int, short)::: direct short buffer u put:::throw->new->ReadOnlyBufferException
+DirectShortBufferRU#put(ShortBuffer)::: direct short buffer u put:::throw->new->ReadOnlyBufferException
+DirectShortBufferRU#put(short[], int, int)::: direct short buffer u put:::throw->new->ReadOnlyBufferException
+DirectShortBufferRU#compact()::: direct short buffer u compact:::throw->new->ReadOnlyBufferException
+DirectShortBufferRU#isDirect()::: direct short buffer u is direct:::return
+DirectShortBufferRU#isReadOnly()::: direct short buffer u is read only:::return
+DirectShortBufferRU#order()::: direct short buffer u order:::return->ByteOrder->nativeOrder
+DirectShortBufferS#attachment()::: direct short buffer s attachment:::return
+DirectShortBufferS#cleaner()::: direct short buffer s cleaner:::return
+DirectShortBufferS#base()::: direct short buffer s base:::return
+DirectShortBufferS#slice()::: direct short buffer s slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectShortBufferS
+DirectShortBufferS#duplicate()::: direct short buffer s duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectShortBufferS
+DirectShortBufferS#asReadOnlyBuffer()::: direct short buffer s as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectShortBufferRS
+DirectShortBufferS#address()::: direct short buffer s address:::return
+DirectShortBufferS#ix(int)::: direct short buffer s ix:::return
+DirectShortBufferS#get()::: direct short buffer s get:::try->return->Bits->UNSAFE->nextGetIndex->ix->getShort->swap->catch->finally->Reference->reachabilityFence
+DirectShortBufferS#get(int)::: direct short buffer s get:::try->return->Bits->UNSAFE->checkIndex->ix->getShort->swap->catch->finally->Reference->reachabilityFence
+DirectShortBufferS#get(short[], int, int)::: direct short buffer s get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectShortBufferS#put(short)::: direct short buffer s put:::try->UNSAFE->nextPutIndex->ix->Bits->swap->putShort->catch->finally->Reference->reachabilityFence->return
+DirectShortBufferS#put(int, short)::: direct short buffer s put:::try->UNSAFE->checkIndex->ix->Bits->swap->putShort->catch->finally->Reference->reachabilityFence->return
+DirectShortBufferS#put(ShortBuffer)::: direct short buffer s put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectShortBufferS#put(short[], int, int)::: direct short buffer s put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectShortBufferS#compact()::: direct short buffer s compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectShortBufferS#isDirect()::: direct short buffer s is direct:::return
+DirectShortBufferS#isReadOnly()::: direct short buffer s is read only:::return
+DirectShortBufferS#order()::: direct short buffer s order:::return->ByteOrder->nativeOrder
+DirectShortBufferU#attachment()::: direct short buffer u attachment:::return
+DirectShortBufferU#cleaner()::: direct short buffer u cleaner:::return
+DirectShortBufferU#base()::: direct short buffer u base:::return
+DirectShortBufferU#slice()::: direct short buffer u slice:::pos->this->position->lim->this->limit->rem->off->return->new->DirectShortBufferU
+DirectShortBufferU#duplicate()::: direct short buffer u duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectShortBufferU
+DirectShortBufferU#asReadOnlyBuffer()::: direct short buffer u as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->DirectShortBufferRU
+DirectShortBufferU#address()::: direct short buffer u address:::return
+DirectShortBufferU#ix(int)::: direct short buffer u ix:::return
+DirectShortBufferU#get()::: direct short buffer u get:::try->return->UNSAFE->nextGetIndex->ix->getShort->catch->finally->Reference->reachabilityFence
+DirectShortBufferU#get(int)::: direct short buffer u get:::try->return->UNSAFE->checkIndex->ix->getShort->catch->finally->Reference->reachabilityFence
+DirectShortBufferU#get(short[], int, int)::: direct short buffer u get:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferUnderflowException->dstOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->get->return
+DirectShortBufferU#put(short)::: direct short buffer u put:::try->UNSAFE->nextPutIndex->ix->putShort->catch->finally->Reference->reachabilityFence->return
+DirectShortBufferU#put(int, short)::: direct short buffer u put:::try->UNSAFE->checkIndex->ix->putShort->catch->finally->Reference->reachabilityFence->return
+DirectShortBufferU#put(ShortBuffer)::: direct short buffer u put:::if->if->throw->createSameBufferException->sb->spos->sb->position->slim->sb->limit->srem->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->try->UNSAFE->sb->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->Reference->reachabilityFence->sb->position->position->else->if->spos->src->position->slim->src->limit->srem->put->src->position->else->super->put->return
+DirectShortBufferU#put(short[], int, int)::: direct short buffer u put:::if->checkBounds->pos->position->lim->limit->rem->if->throw->new->BufferOverflowException->srcOffset->try->if->order->ByteOrder->nativeOrder->UNSAFE->ix->copySwapMemory->else->UNSAFE->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->else->super->put->return
+DirectShortBufferU#compact()::: direct short buffer u compact:::pos->position->lim->limit->rem->try->UNSAFE->ix->ix->copyMemory->catch->finally->Reference->reachabilityFence->position->capacity->limit->discardMark->return
+DirectShortBufferU#isDirect()::: direct short buffer u is direct:::return
+DirectShortBufferU#isReadOnly()::: direct short buffer u is read only:::return
+DirectShortBufferU#order()::: direct short buffer u order:::return->ByteOrder->nativeOrder
+DoubleBuffer#base()::: double buffer base:::return
 DoubleBuffer#allocate(int):::Allocates a new double buffer:::if->throw->createCapacityException->return->new->HeapDoubleBuffer
 DoubleBuffer#wrap(double[], int, int):::Wraps a double array into a buffer:::try->return->new->HeapDoubleBuffer->catch->throw->new->IndexOutOfBoundsException->finally
 DoubleBuffer#wrap(double[]):::Wraps a double array into a buffer:::return->wrap
@@ -139,14 +981,23 @@ DoubleBuffer#put(double[]):::Relative bulk put method&nbsp;&nbsp;(optional opera
 DoubleBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible double array:::return
 DoubleBuffer#array():::Returns the double array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 DoubleBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+DoubleBuffer#position(int)::: double buffer position:::super->position->return
+DoubleBuffer#limit(int)::: double buffer limit:::super->limit->return
+DoubleBuffer#mark()::: double buffer mark:::super->mark->return
+DoubleBuffer#reset()::: double buffer reset:::super->reset->return
+DoubleBuffer#clear()::: double buffer clear:::super->clear->return
+DoubleBuffer#flip()::: double buffer flip:::super->flip->return
+DoubleBuffer#rewind()::: double buffer rewind:::super->rewind->return
 DoubleBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 DoubleBuffer#isDirect():::Tells whether or not this double buffer is direct.:::
 DoubleBuffer#toString():::Returns a string summarizing the state of this buffer.:::sb->new->StringBuffer->sb->getClass->getName->append->sb->append->sb->position->append->sb->append->sb->limit->append->sb->append->sb->capacity->append->sb->append->return->sb->toString
 DoubleBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
 DoubleBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
 DoubleBuffer#compareTo(DoubleBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+DoubleBuffer#compare(double, double)::: double buffer compare:::return->Double->isNaN->Double->isNaN
 DoubleBuffer#mismatch(DoubleBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
 DoubleBuffer#order():::Retrieves this buffer's byte order:::
+FloatBuffer#base()::: float buffer base:::return
 FloatBuffer#allocate(int):::Allocates a new float buffer:::if->throw->createCapacityException->return->new->HeapFloatBuffer
 FloatBuffer#wrap(float[], int, int):::Wraps a float array into a buffer:::try->return->new->HeapFloatBuffer->catch->throw->new->IndexOutOfBoundsException->finally
 FloatBuffer#wrap(float[]):::Wraps a float array into a buffer:::return->wrap
@@ -165,14 +1016,258 @@ FloatBuffer#put(float[]):::Relative bulk put method&nbsp;&nbsp;(optional operati
 FloatBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible float array:::return
 FloatBuffer#array():::Returns the float array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 FloatBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+FloatBuffer#position(int)::: float buffer position:::super->position->return
+FloatBuffer#limit(int)::: float buffer limit:::super->limit->return
+FloatBuffer#mark()::: float buffer mark:::super->mark->return
+FloatBuffer#reset()::: float buffer reset:::super->reset->return
+FloatBuffer#clear()::: float buffer clear:::super->clear->return
+FloatBuffer#flip()::: float buffer flip:::super->flip->return
+FloatBuffer#rewind()::: float buffer rewind:::super->rewind->return
 FloatBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 FloatBuffer#isDirect():::Tells whether or not this float buffer is direct.:::
 FloatBuffer#toString():::Returns a string summarizing the state of this buffer.:::sb->new->StringBuffer->sb->getClass->getName->append->sb->append->sb->position->append->sb->append->sb->limit->append->sb->append->sb->capacity->append->sb->append->return->sb->toString
 FloatBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
 FloatBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
 FloatBuffer#compareTo(FloatBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+FloatBuffer#compare(float, float)::: float buffer compare:::return->Float->isNaN->Float->isNaN
 FloatBuffer#mismatch(FloatBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
 FloatBuffer#order():::Retrieves this buffer's byte order:::
+HeapByteBuffer#slice()::: heap byte buffer slice:::pos->this->position->lim->this->limit->rem->return->new->HeapByteBuffer
+HeapByteBuffer#slice(int, int)::: heap byte buffer slice:::rem->return->new->HeapByteBuffer
+HeapByteBuffer#duplicate()::: heap byte buffer duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapByteBuffer
+HeapByteBuffer#asReadOnlyBuffer()::: heap byte buffer as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapByteBufferR
+HeapByteBuffer#ix(int)::: heap byte buffer ix:::return
+HeapByteBuffer#byteOffset(long)::: heap byte buffer byte offset:::return
+HeapByteBuffer#get()::: heap byte buffer get:::return->nextGetIndex->ix
+HeapByteBuffer#get(int)::: heap byte buffer get:::return->checkIndex->ix
+HeapByteBuffer#get(byte[], int, int)::: heap byte buffer get:::checkBounds->if->remaining->throw->new->BufferUnderflowException->System->position->ix->arraycopy->position->position->return
+HeapByteBuffer#isDirect()::: heap byte buffer is direct:::return
+HeapByteBuffer#isReadOnly()::: heap byte buffer is read only:::return
+HeapByteBuffer#put(byte)::: heap byte buffer put:::nextPutIndex->ix->return
+HeapByteBuffer#put(int, byte)::: heap byte buffer put:::checkIndex->ix->return
+HeapByteBuffer#put(byte[], int, int)::: heap byte buffer put:::checkBounds->if->remaining->throw->new->BufferOverflowException->System->position->ix->arraycopy->position->position->return
+HeapByteBuffer#put(ByteBuffer)::: heap byte buffer put:::if->if->throw->createSameBufferException->sb->n->sb->remaining->if->remaining->throw->new->BufferOverflowException->System->sb->sb->position->ix->position->ix->arraycopy->sb->sb->position->position->position->position->else->if->src->isDirect->n->src->remaining->if->remaining->throw->new->BufferOverflowException->src->position->ix->get->position->position->else->super->put->return
+HeapByteBuffer#compact()::: heap byte buffer compact:::System->position->ix->ix->remaining->arraycopy->remaining->position->capacity->limit->discardMark->return
+HeapByteBuffer#_get(int)::: heap byte buffer _get:::return
+HeapByteBuffer#_put(int, byte)::: heap byte buffer _put:::
+HeapByteBuffer#getChar()::: heap byte buffer get char:::return->UNSAFE->nextGetIndex->byteOffset->getCharUnaligned
+HeapByteBuffer#getChar(int)::: heap byte buffer get char:::return->UNSAFE->checkIndex->byteOffset->getCharUnaligned
+HeapByteBuffer#putChar(char)::: heap byte buffer put char:::UNSAFE->nextPutIndex->byteOffset->putCharUnaligned->return
+HeapByteBuffer#putChar(int, char)::: heap byte buffer put char:::UNSAFE->checkIndex->byteOffset->putCharUnaligned->return
+HeapByteBuffer#asCharBuffer()::: heap byte buffer as char buffer:::size->this->remaining->addr->position->return->new->ByteBufferAsCharBufferB->new->ByteBufferAsCharBufferL
+HeapByteBuffer#getShort()::: heap byte buffer get short:::return->UNSAFE->nextGetIndex->byteOffset->getShortUnaligned
+HeapByteBuffer#getShort(int)::: heap byte buffer get short:::return->UNSAFE->checkIndex->byteOffset->getShortUnaligned
+HeapByteBuffer#putShort(short)::: heap byte buffer put short:::UNSAFE->nextPutIndex->byteOffset->putShortUnaligned->return
+HeapByteBuffer#putShort(int, short)::: heap byte buffer put short:::UNSAFE->checkIndex->byteOffset->putShortUnaligned->return
+HeapByteBuffer#asShortBuffer()::: heap byte buffer as short buffer:::size->this->remaining->addr->position->return->new->ByteBufferAsShortBufferB->new->ByteBufferAsShortBufferL
+HeapByteBuffer#getInt()::: heap byte buffer get int:::return->UNSAFE->nextGetIndex->byteOffset->getIntUnaligned
+HeapByteBuffer#getInt(int)::: heap byte buffer get int:::return->UNSAFE->checkIndex->byteOffset->getIntUnaligned
+HeapByteBuffer#putInt(int)::: heap byte buffer put int:::UNSAFE->nextPutIndex->byteOffset->putIntUnaligned->return
+HeapByteBuffer#putInt(int, int)::: heap byte buffer put int:::UNSAFE->checkIndex->byteOffset->putIntUnaligned->return
+HeapByteBuffer#asIntBuffer()::: heap byte buffer as int buffer:::size->this->remaining->addr->position->return->new->ByteBufferAsIntBufferB->new->ByteBufferAsIntBufferL
+HeapByteBuffer#getLong()::: heap byte buffer get long:::return->UNSAFE->nextGetIndex->byteOffset->getLongUnaligned
+HeapByteBuffer#getLong(int)::: heap byte buffer get long:::return->UNSAFE->checkIndex->byteOffset->getLongUnaligned
+HeapByteBuffer#putLong(long)::: heap byte buffer put long:::UNSAFE->nextPutIndex->byteOffset->putLongUnaligned->return
+HeapByteBuffer#putLong(int, long)::: heap byte buffer put long:::UNSAFE->checkIndex->byteOffset->putLongUnaligned->return
+HeapByteBuffer#asLongBuffer()::: heap byte buffer as long buffer:::size->this->remaining->addr->position->return->new->ByteBufferAsLongBufferB->new->ByteBufferAsLongBufferL
+HeapByteBuffer#getFloat()::: heap byte buffer get float:::x->UNSAFE->nextGetIndex->byteOffset->getIntUnaligned->return->Float->intBitsToFloat
+HeapByteBuffer#getFloat(int)::: heap byte buffer get float:::x->UNSAFE->checkIndex->byteOffset->getIntUnaligned->return->Float->intBitsToFloat
+HeapByteBuffer#putFloat(float)::: heap byte buffer put float:::y->Float->floatToRawIntBits->UNSAFE->nextPutIndex->byteOffset->putIntUnaligned->return
+HeapByteBuffer#putFloat(int, float)::: heap byte buffer put float:::y->Float->floatToRawIntBits->UNSAFE->checkIndex->byteOffset->putIntUnaligned->return
+HeapByteBuffer#asFloatBuffer()::: heap byte buffer as float buffer:::size->this->remaining->addr->position->return->new->ByteBufferAsFloatBufferB->new->ByteBufferAsFloatBufferL
+HeapByteBuffer#getDouble()::: heap byte buffer get double:::x->UNSAFE->nextGetIndex->byteOffset->getLongUnaligned->return->Double->longBitsToDouble
+HeapByteBuffer#getDouble(int)::: heap byte buffer get double:::x->UNSAFE->checkIndex->byteOffset->getLongUnaligned->return->Double->longBitsToDouble
+HeapByteBuffer#putDouble(double)::: heap byte buffer put double:::y->Double->doubleToRawLongBits->UNSAFE->nextPutIndex->byteOffset->putLongUnaligned->return
+HeapByteBuffer#putDouble(int, double)::: heap byte buffer put double:::y->Double->doubleToRawLongBits->UNSAFE->checkIndex->byteOffset->putLongUnaligned->return
+HeapByteBuffer#asDoubleBuffer()::: heap byte buffer as double buffer:::size->this->remaining->addr->position->return->new->ByteBufferAsDoubleBufferB->new->ByteBufferAsDoubleBufferL
+HeapByteBufferR#slice()::: heap byte buffer r slice:::pos->this->position->lim->this->limit->rem->return->new->HeapByteBufferR
+HeapByteBufferR#slice(int, int)::: heap byte buffer r slice:::rem->return->new->HeapByteBufferR
+HeapByteBufferR#duplicate()::: heap byte buffer r duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapByteBufferR
+HeapByteBufferR#asReadOnlyBuffer()::: heap byte buffer r as read only buffer:::return->duplicate
+HeapByteBufferR#isReadOnly()::: heap byte buffer r is read only:::return
+HeapByteBufferR#put(byte)::: heap byte buffer r put:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#put(int, byte)::: heap byte buffer r put:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#put(byte[], int, int)::: heap byte buffer r put:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#put(ByteBuffer)::: heap byte buffer r put:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#compact()::: heap byte buffer r compact:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#_get(int)::: heap byte buffer r _get:::return
+HeapByteBufferR#_put(int, byte)::: heap byte buffer r _put:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#putChar(char)::: heap byte buffer r put char:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#putChar(int, char)::: heap byte buffer r put char:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#asCharBuffer()::: heap byte buffer r as char buffer:::size->this->remaining->addr->position->return->new->ByteBufferAsCharBufferRB->new->ByteBufferAsCharBufferRL
+HeapByteBufferR#putShort(short)::: heap byte buffer r put short:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#putShort(int, short)::: heap byte buffer r put short:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#asShortBuffer()::: heap byte buffer r as short buffer:::size->this->remaining->addr->position->return->new->ByteBufferAsShortBufferRB->new->ByteBufferAsShortBufferRL
+HeapByteBufferR#putInt(int)::: heap byte buffer r put int:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#putInt(int, int)::: heap byte buffer r put int:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#asIntBuffer()::: heap byte buffer r as int buffer:::size->this->remaining->addr->position->return->new->ByteBufferAsIntBufferRB->new->ByteBufferAsIntBufferRL
+HeapByteBufferR#putLong(long)::: heap byte buffer r put long:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#putLong(int, long)::: heap byte buffer r put long:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#asLongBuffer()::: heap byte buffer r as long buffer:::size->this->remaining->addr->position->return->new->ByteBufferAsLongBufferRB->new->ByteBufferAsLongBufferRL
+HeapByteBufferR#putFloat(float)::: heap byte buffer r put float:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#putFloat(int, float)::: heap byte buffer r put float:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#asFloatBuffer()::: heap byte buffer r as float buffer:::size->this->remaining->addr->position->return->new->ByteBufferAsFloatBufferRB->new->ByteBufferAsFloatBufferRL
+HeapByteBufferR#putDouble(double)::: heap byte buffer r put double:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#putDouble(int, double)::: heap byte buffer r put double:::throw->new->ReadOnlyBufferException
+HeapByteBufferR#asDoubleBuffer()::: heap byte buffer r as double buffer:::size->this->remaining->addr->position->return->new->ByteBufferAsDoubleBufferRB->new->ByteBufferAsDoubleBufferRL
+HeapCharBuffer#slice()::: heap char buffer slice:::pos->this->position->lim->this->limit->rem->return->new->HeapCharBuffer
+HeapCharBuffer#duplicate()::: heap char buffer duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapCharBuffer
+HeapCharBuffer#asReadOnlyBuffer()::: heap char buffer as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapCharBufferR
+HeapCharBuffer#ix(int)::: heap char buffer ix:::return
+HeapCharBuffer#get()::: heap char buffer get:::return->nextGetIndex->ix
+HeapCharBuffer#get(int)::: heap char buffer get:::return->checkIndex->ix
+HeapCharBuffer#getUnchecked(int)::: heap char buffer get unchecked:::return->ix
+HeapCharBuffer#get(char[], int, int)::: heap char buffer get:::checkBounds->if->remaining->throw->new->BufferUnderflowException->System->position->ix->arraycopy->position->position->return
+HeapCharBuffer#isDirect()::: heap char buffer is direct:::return
+HeapCharBuffer#isReadOnly()::: heap char buffer is read only:::return
+HeapCharBuffer#put(char)::: heap char buffer put:::nextPutIndex->ix->return
+HeapCharBuffer#put(int, char)::: heap char buffer put:::checkIndex->ix->return
+HeapCharBuffer#put(char[], int, int)::: heap char buffer put:::checkBounds->if->remaining->throw->new->BufferOverflowException->System->position->ix->arraycopy->position->position->return
+HeapCharBuffer#put(CharBuffer)::: heap char buffer put:::if->if->throw->createSameBufferException->sb->n->sb->remaining->if->remaining->throw->new->BufferOverflowException->System->sb->sb->position->ix->position->ix->arraycopy->sb->sb->position->position->position->position->else->if->src->isDirect->n->src->remaining->if->remaining->throw->new->BufferOverflowException->src->position->ix->get->position->position->else->super->put->return
+HeapCharBuffer#compact()::: heap char buffer compact:::System->position->ix->ix->remaining->arraycopy->remaining->position->capacity->limit->discardMark->return
+HeapCharBuffer#toString(int, int)::: heap char buffer to string:::try->return->new->String->catch->throw->new->IndexOutOfBoundsException->finally
+HeapCharBuffer#subSequence(int, int)::: heap char buffer sub sequence:::if->length->throw->new->IndexOutOfBoundsException->pos->position->return->capacity->new->HeapCharBuffer
+HeapCharBuffer#order()::: heap char buffer order:::return->ByteOrder->nativeOrder
+HeapCharBuffer#charRegionOrder()::: heap char buffer char region order:::return->order
+HeapCharBufferR#slice()::: heap char buffer r slice:::pos->this->position->lim->this->limit->rem->return->new->HeapCharBufferR
+HeapCharBufferR#duplicate()::: heap char buffer r duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapCharBufferR
+HeapCharBufferR#asReadOnlyBuffer()::: heap char buffer r as read only buffer:::return->duplicate
+HeapCharBufferR#isReadOnly()::: heap char buffer r is read only:::return
+HeapCharBufferR#put(char)::: heap char buffer r put:::throw->new->ReadOnlyBufferException
+HeapCharBufferR#put(int, char)::: heap char buffer r put:::throw->new->ReadOnlyBufferException
+HeapCharBufferR#put(char[], int, int)::: heap char buffer r put:::throw->new->ReadOnlyBufferException
+HeapCharBufferR#put(CharBuffer)::: heap char buffer r put:::throw->new->ReadOnlyBufferException
+HeapCharBufferR#compact()::: heap char buffer r compact:::throw->new->ReadOnlyBufferException
+HeapCharBufferR#toString(int, int)::: heap char buffer r to string:::try->return->new->String->catch->throw->new->IndexOutOfBoundsException->finally
+HeapCharBufferR#subSequence(int, int)::: heap char buffer r sub sequence:::if->length->throw->new->IndexOutOfBoundsException->pos->position->return->capacity->new->HeapCharBufferR
+HeapCharBufferR#order()::: heap char buffer r order:::return->ByteOrder->nativeOrder
+HeapCharBufferR#charRegionOrder()::: heap char buffer r char region order:::return->order
+HeapDoubleBuffer#slice()::: heap double buffer slice:::pos->this->position->lim->this->limit->rem->return->new->HeapDoubleBuffer
+HeapDoubleBuffer#duplicate()::: heap double buffer duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapDoubleBuffer
+HeapDoubleBuffer#asReadOnlyBuffer()::: heap double buffer as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapDoubleBufferR
+HeapDoubleBuffer#ix(int)::: heap double buffer ix:::return
+HeapDoubleBuffer#get()::: heap double buffer get:::return->nextGetIndex->ix
+HeapDoubleBuffer#get(int)::: heap double buffer get:::return->checkIndex->ix
+HeapDoubleBuffer#get(double[], int, int)::: heap double buffer get:::checkBounds->if->remaining->throw->new->BufferUnderflowException->System->position->ix->arraycopy->position->position->return
+HeapDoubleBuffer#isDirect()::: heap double buffer is direct:::return
+HeapDoubleBuffer#isReadOnly()::: heap double buffer is read only:::return
+HeapDoubleBuffer#put(double)::: heap double buffer put:::nextPutIndex->ix->return
+HeapDoubleBuffer#put(int, double)::: heap double buffer put:::checkIndex->ix->return
+HeapDoubleBuffer#put(double[], int, int)::: heap double buffer put:::checkBounds->if->remaining->throw->new->BufferOverflowException->System->position->ix->arraycopy->position->position->return
+HeapDoubleBuffer#put(DoubleBuffer)::: heap double buffer put:::if->if->throw->createSameBufferException->sb->n->sb->remaining->if->remaining->throw->new->BufferOverflowException->System->sb->sb->position->ix->position->ix->arraycopy->sb->sb->position->position->position->position->else->if->src->isDirect->n->src->remaining->if->remaining->throw->new->BufferOverflowException->src->position->ix->get->position->position->else->super->put->return
+HeapDoubleBuffer#compact()::: heap double buffer compact:::System->position->ix->ix->remaining->arraycopy->remaining->position->capacity->limit->discardMark->return
+HeapDoubleBuffer#order()::: heap double buffer order:::return->ByteOrder->nativeOrder
+HeapDoubleBufferR#slice()::: heap double buffer r slice:::pos->this->position->lim->this->limit->rem->return->new->HeapDoubleBufferR
+HeapDoubleBufferR#duplicate()::: heap double buffer r duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapDoubleBufferR
+HeapDoubleBufferR#asReadOnlyBuffer()::: heap double buffer r as read only buffer:::return->duplicate
+HeapDoubleBufferR#isReadOnly()::: heap double buffer r is read only:::return
+HeapDoubleBufferR#put(double)::: heap double buffer r put:::throw->new->ReadOnlyBufferException
+HeapDoubleBufferR#put(int, double)::: heap double buffer r put:::throw->new->ReadOnlyBufferException
+HeapDoubleBufferR#put(double[], int, int)::: heap double buffer r put:::throw->new->ReadOnlyBufferException
+HeapDoubleBufferR#put(DoubleBuffer)::: heap double buffer r put:::throw->new->ReadOnlyBufferException
+HeapDoubleBufferR#compact()::: heap double buffer r compact:::throw->new->ReadOnlyBufferException
+HeapDoubleBufferR#order()::: heap double buffer r order:::return->ByteOrder->nativeOrder
+HeapFloatBuffer#slice()::: heap float buffer slice:::pos->this->position->lim->this->limit->rem->return->new->HeapFloatBuffer
+HeapFloatBuffer#duplicate()::: heap float buffer duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapFloatBuffer
+HeapFloatBuffer#asReadOnlyBuffer()::: heap float buffer as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapFloatBufferR
+HeapFloatBuffer#ix(int)::: heap float buffer ix:::return
+HeapFloatBuffer#get()::: heap float buffer get:::return->nextGetIndex->ix
+HeapFloatBuffer#get(int)::: heap float buffer get:::return->checkIndex->ix
+HeapFloatBuffer#get(float[], int, int)::: heap float buffer get:::checkBounds->if->remaining->throw->new->BufferUnderflowException->System->position->ix->arraycopy->position->position->return
+HeapFloatBuffer#isDirect()::: heap float buffer is direct:::return
+HeapFloatBuffer#isReadOnly()::: heap float buffer is read only:::return
+HeapFloatBuffer#put(float)::: heap float buffer put:::nextPutIndex->ix->return
+HeapFloatBuffer#put(int, float)::: heap float buffer put:::checkIndex->ix->return
+HeapFloatBuffer#put(float[], int, int)::: heap float buffer put:::checkBounds->if->remaining->throw->new->BufferOverflowException->System->position->ix->arraycopy->position->position->return
+HeapFloatBuffer#put(FloatBuffer)::: heap float buffer put:::if->if->throw->createSameBufferException->sb->n->sb->remaining->if->remaining->throw->new->BufferOverflowException->System->sb->sb->position->ix->position->ix->arraycopy->sb->sb->position->position->position->position->else->if->src->isDirect->n->src->remaining->if->remaining->throw->new->BufferOverflowException->src->position->ix->get->position->position->else->super->put->return
+HeapFloatBuffer#compact()::: heap float buffer compact:::System->position->ix->ix->remaining->arraycopy->remaining->position->capacity->limit->discardMark->return
+HeapFloatBuffer#order()::: heap float buffer order:::return->ByteOrder->nativeOrder
+HeapFloatBufferR#slice()::: heap float buffer r slice:::pos->this->position->lim->this->limit->rem->return->new->HeapFloatBufferR
+HeapFloatBufferR#duplicate()::: heap float buffer r duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapFloatBufferR
+HeapFloatBufferR#asReadOnlyBuffer()::: heap float buffer r as read only buffer:::return->duplicate
+HeapFloatBufferR#isReadOnly()::: heap float buffer r is read only:::return
+HeapFloatBufferR#put(float)::: heap float buffer r put:::throw->new->ReadOnlyBufferException
+HeapFloatBufferR#put(int, float)::: heap float buffer r put:::throw->new->ReadOnlyBufferException
+HeapFloatBufferR#put(float[], int, int)::: heap float buffer r put:::throw->new->ReadOnlyBufferException
+HeapFloatBufferR#put(FloatBuffer)::: heap float buffer r put:::throw->new->ReadOnlyBufferException
+HeapFloatBufferR#compact()::: heap float buffer r compact:::throw->new->ReadOnlyBufferException
+HeapFloatBufferR#order()::: heap float buffer r order:::return->ByteOrder->nativeOrder
+HeapIntBuffer#slice()::: heap int buffer slice:::pos->this->position->lim->this->limit->rem->return->new->HeapIntBuffer
+HeapIntBuffer#duplicate()::: heap int buffer duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapIntBuffer
+HeapIntBuffer#asReadOnlyBuffer()::: heap int buffer as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapIntBufferR
+HeapIntBuffer#ix(int)::: heap int buffer ix:::return
+HeapIntBuffer#get()::: heap int buffer get:::return->nextGetIndex->ix
+HeapIntBuffer#get(int)::: heap int buffer get:::return->checkIndex->ix
+HeapIntBuffer#get(int[], int, int)::: heap int buffer get:::checkBounds->if->remaining->throw->new->BufferUnderflowException->System->position->ix->arraycopy->position->position->return
+HeapIntBuffer#isDirect()::: heap int buffer is direct:::return
+HeapIntBuffer#isReadOnly()::: heap int buffer is read only:::return
+HeapIntBuffer#put(int)::: heap int buffer put:::nextPutIndex->ix->return
+HeapIntBuffer#put(int, int)::: heap int buffer put:::checkIndex->ix->return
+HeapIntBuffer#put(int[], int, int)::: heap int buffer put:::checkBounds->if->remaining->throw->new->BufferOverflowException->System->position->ix->arraycopy->position->position->return
+HeapIntBuffer#put(IntBuffer)::: heap int buffer put:::if->if->throw->createSameBufferException->sb->n->sb->remaining->if->remaining->throw->new->BufferOverflowException->System->sb->sb->position->ix->position->ix->arraycopy->sb->sb->position->position->position->position->else->if->src->isDirect->n->src->remaining->if->remaining->throw->new->BufferOverflowException->src->position->ix->get->position->position->else->super->put->return
+HeapIntBuffer#compact()::: heap int buffer compact:::System->position->ix->ix->remaining->arraycopy->remaining->position->capacity->limit->discardMark->return
+HeapIntBuffer#order()::: heap int buffer order:::return->ByteOrder->nativeOrder
+HeapIntBufferR#slice()::: heap int buffer r slice:::pos->this->position->lim->this->limit->rem->return->new->HeapIntBufferR
+HeapIntBufferR#duplicate()::: heap int buffer r duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapIntBufferR
+HeapIntBufferR#asReadOnlyBuffer()::: heap int buffer r as read only buffer:::return->duplicate
+HeapIntBufferR#isReadOnly()::: heap int buffer r is read only:::return
+HeapIntBufferR#put(int)::: heap int buffer r put:::throw->new->ReadOnlyBufferException
+HeapIntBufferR#put(int, int)::: heap int buffer r put:::throw->new->ReadOnlyBufferException
+HeapIntBufferR#put(int[], int, int)::: heap int buffer r put:::throw->new->ReadOnlyBufferException
+HeapIntBufferR#put(IntBuffer)::: heap int buffer r put:::throw->new->ReadOnlyBufferException
+HeapIntBufferR#compact()::: heap int buffer r compact:::throw->new->ReadOnlyBufferException
+HeapIntBufferR#order()::: heap int buffer r order:::return->ByteOrder->nativeOrder
+HeapLongBuffer#slice()::: heap long buffer slice:::pos->this->position->lim->this->limit->rem->return->new->HeapLongBuffer
+HeapLongBuffer#duplicate()::: heap long buffer duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapLongBuffer
+HeapLongBuffer#asReadOnlyBuffer()::: heap long buffer as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapLongBufferR
+HeapLongBuffer#ix(int)::: heap long buffer ix:::return
+HeapLongBuffer#get()::: heap long buffer get:::return->nextGetIndex->ix
+HeapLongBuffer#get(int)::: heap long buffer get:::return->checkIndex->ix
+HeapLongBuffer#get(long[], int, int)::: heap long buffer get:::checkBounds->if->remaining->throw->new->BufferUnderflowException->System->position->ix->arraycopy->position->position->return
+HeapLongBuffer#isDirect()::: heap long buffer is direct:::return
+HeapLongBuffer#isReadOnly()::: heap long buffer is read only:::return
+HeapLongBuffer#put(long)::: heap long buffer put:::nextPutIndex->ix->return
+HeapLongBuffer#put(int, long)::: heap long buffer put:::checkIndex->ix->return
+HeapLongBuffer#put(long[], int, int)::: heap long buffer put:::checkBounds->if->remaining->throw->new->BufferOverflowException->System->position->ix->arraycopy->position->position->return
+HeapLongBuffer#put(LongBuffer)::: heap long buffer put:::if->if->throw->createSameBufferException->sb->n->sb->remaining->if->remaining->throw->new->BufferOverflowException->System->sb->sb->position->ix->position->ix->arraycopy->sb->sb->position->position->position->position->else->if->src->isDirect->n->src->remaining->if->remaining->throw->new->BufferOverflowException->src->position->ix->get->position->position->else->super->put->return
+HeapLongBuffer#compact()::: heap long buffer compact:::System->position->ix->ix->remaining->arraycopy->remaining->position->capacity->limit->discardMark->return
+HeapLongBuffer#order()::: heap long buffer order:::return->ByteOrder->nativeOrder
+HeapLongBufferR#slice()::: heap long buffer r slice:::pos->this->position->lim->this->limit->rem->return->new->HeapLongBufferR
+HeapLongBufferR#duplicate()::: heap long buffer r duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapLongBufferR
+HeapLongBufferR#asReadOnlyBuffer()::: heap long buffer r as read only buffer:::return->duplicate
+HeapLongBufferR#isReadOnly()::: heap long buffer r is read only:::return
+HeapLongBufferR#put(long)::: heap long buffer r put:::throw->new->ReadOnlyBufferException
+HeapLongBufferR#put(int, long)::: heap long buffer r put:::throw->new->ReadOnlyBufferException
+HeapLongBufferR#put(long[], int, int)::: heap long buffer r put:::throw->new->ReadOnlyBufferException
+HeapLongBufferR#put(LongBuffer)::: heap long buffer r put:::throw->new->ReadOnlyBufferException
+HeapLongBufferR#compact()::: heap long buffer r compact:::throw->new->ReadOnlyBufferException
+HeapLongBufferR#order()::: heap long buffer r order:::return->ByteOrder->nativeOrder
+HeapShortBuffer#slice()::: heap short buffer slice:::pos->this->position->lim->this->limit->rem->return->new->HeapShortBuffer
+HeapShortBuffer#duplicate()::: heap short buffer duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapShortBuffer
+HeapShortBuffer#asReadOnlyBuffer()::: heap short buffer as read only buffer:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapShortBufferR
+HeapShortBuffer#ix(int)::: heap short buffer ix:::return
+HeapShortBuffer#get()::: heap short buffer get:::return->nextGetIndex->ix
+HeapShortBuffer#get(int)::: heap short buffer get:::return->checkIndex->ix
+HeapShortBuffer#get(short[], int, int)::: heap short buffer get:::checkBounds->if->remaining->throw->new->BufferUnderflowException->System->position->ix->arraycopy->position->position->return
+HeapShortBuffer#isDirect()::: heap short buffer is direct:::return
+HeapShortBuffer#isReadOnly()::: heap short buffer is read only:::return
+HeapShortBuffer#put(short)::: heap short buffer put:::nextPutIndex->ix->return
+HeapShortBuffer#put(int, short)::: heap short buffer put:::checkIndex->ix->return
+HeapShortBuffer#put(short[], int, int)::: heap short buffer put:::checkBounds->if->remaining->throw->new->BufferOverflowException->System->position->ix->arraycopy->position->position->return
+HeapShortBuffer#put(ShortBuffer)::: heap short buffer put:::if->if->throw->createSameBufferException->sb->n->sb->remaining->if->remaining->throw->new->BufferOverflowException->System->sb->sb->position->ix->position->ix->arraycopy->sb->sb->position->position->position->position->else->if->src->isDirect->n->src->remaining->if->remaining->throw->new->BufferOverflowException->src->position->ix->get->position->position->else->super->put->return
+HeapShortBuffer#compact()::: heap short buffer compact:::System->position->ix->ix->remaining->arraycopy->remaining->position->capacity->limit->discardMark->return
+HeapShortBuffer#order()::: heap short buffer order:::return->ByteOrder->nativeOrder
+HeapShortBufferR#slice()::: heap short buffer r slice:::pos->this->position->lim->this->limit->rem->return->new->HeapShortBufferR
+HeapShortBufferR#duplicate()::: heap short buffer r duplicate:::return->this->markValue->this->position->this->limit->this->capacity->new->HeapShortBufferR
+HeapShortBufferR#asReadOnlyBuffer()::: heap short buffer r as read only buffer:::return->duplicate
+HeapShortBufferR#isReadOnly()::: heap short buffer r is read only:::return
+HeapShortBufferR#put(short)::: heap short buffer r put:::throw->new->ReadOnlyBufferException
+HeapShortBufferR#put(int, short)::: heap short buffer r put:::throw->new->ReadOnlyBufferException
+HeapShortBufferR#put(short[], int, int)::: heap short buffer r put:::throw->new->ReadOnlyBufferException
+HeapShortBufferR#put(ShortBuffer)::: heap short buffer r put:::throw->new->ReadOnlyBufferException
+HeapShortBufferR#compact()::: heap short buffer r compact:::throw->new->ReadOnlyBufferException
+HeapShortBufferR#order()::: heap short buffer r order:::return->ByteOrder->nativeOrder
+IntBuffer#base()::: int buffer base:::return
 IntBuffer#allocate(int):::Allocates a new int buffer:::if->throw->createCapacityException->return->new->HeapIntBuffer
 IntBuffer#wrap(int[], int, int):::Wraps an int array into a buffer:::try->return->new->HeapIntBuffer->catch->throw->new->IndexOutOfBoundsException->finally
 IntBuffer#wrap(int[]):::Wraps an int array into a buffer:::return->wrap
@@ -191,14 +1286,23 @@ IntBuffer#put(int[]):::Relative bulk put method&nbsp;&nbsp;(optional operation):
 IntBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible int array:::return
 IntBuffer#array():::Returns the int array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 IntBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+IntBuffer#position(int)::: int buffer position:::super->position->return
+IntBuffer#limit(int)::: int buffer limit:::super->limit->return
+IntBuffer#mark()::: int buffer mark:::super->mark->return
+IntBuffer#reset()::: int buffer reset:::super->reset->return
+IntBuffer#clear()::: int buffer clear:::super->clear->return
+IntBuffer#flip()::: int buffer flip:::super->flip->return
+IntBuffer#rewind()::: int buffer rewind:::super->rewind->return
 IntBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 IntBuffer#isDirect():::Tells whether or not this int buffer is direct.:::
 IntBuffer#toString():::Returns a string summarizing the state of this buffer.:::sb->new->StringBuffer->sb->getClass->getName->append->sb->append->sb->position->append->sb->append->sb->limit->append->sb->append->sb->capacity->append->sb->append->return->sb->toString
 IntBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
 IntBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
 IntBuffer#compareTo(IntBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+IntBuffer#compare(int, int)::: int buffer compare:::return->Integer->compare
 IntBuffer#mismatch(IntBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
 IntBuffer#order():::Retrieves this buffer's byte order:::
+LongBuffer#base()::: long buffer base:::return
 LongBuffer#allocate(int):::Allocates a new long buffer:::if->throw->createCapacityException->return->new->HeapLongBuffer
 LongBuffer#wrap(long[], int, int):::Wraps a long array into a buffer:::try->return->new->HeapLongBuffer->catch->throw->new->IndexOutOfBoundsException->finally
 LongBuffer#wrap(long[]):::Wraps a long array into a buffer:::return->wrap
@@ -217,17 +1321,39 @@ LongBuffer#put(long[]):::Relative bulk put method&nbsp;&nbsp;(optional operation
 LongBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible long array:::return
 LongBuffer#array():::Returns the long array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 LongBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+LongBuffer#position(int)::: long buffer position:::super->position->return
+LongBuffer#limit(int)::: long buffer limit:::super->limit->return
+LongBuffer#mark()::: long buffer mark:::super->mark->return
+LongBuffer#reset()::: long buffer reset:::super->reset->return
+LongBuffer#clear()::: long buffer clear:::super->clear->return
+LongBuffer#flip()::: long buffer flip:::super->flip->return
+LongBuffer#rewind()::: long buffer rewind:::super->rewind->return
 LongBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 LongBuffer#isDirect():::Tells whether or not this long buffer is direct.:::
 LongBuffer#toString():::Returns a string summarizing the state of this buffer.:::sb->new->StringBuffer->sb->getClass->getName->append->sb->append->sb->position->append->sb->append->sb->limit->append->sb->append->sb->capacity->append->sb->append->return->sb->toString
 LongBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
 LongBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
 LongBuffer#compareTo(LongBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+LongBuffer#compare(long, long)::: long buffer compare:::return->Long->compare
 LongBuffer#mismatch(LongBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
 LongBuffer#order():::Retrieves this buffer's byte order:::
+MappedByteBuffer#mappingOffset()::: mapped byte buffer mapping offset:::ps->Bits->pageSize->offset->return
+MappedByteBuffer#mappingAddress(long)::: mapped byte buffer mapping address:::return
+MappedByteBuffer#mappingLength(long)::: mapped byte buffer mapping length:::return->capacity
 MappedByteBuffer#isLoaded():::Tells whether or not this buffer's content is resident in physical memory:::if->return->if->capacity->return->offset->mappingOffset->length->mappingLength->return->mappingAddress->Bits->pageCount->isLoaded0
 MappedByteBuffer#load():::Loads this buffer's content into physical memory:::if->return->if->capacity->return->offset->mappingOffset->length->mappingLength->mappingAddress->load0->unsafe->Unsafe->getUnsafe->ps->Bits->pageSize->count->Bits->pageCount->a->mappingAddress->x->try->for->i->catch->finally->Reference->reachabilityFence->if->return
 MappedByteBuffer#force():::Forces any changes made to this buffer's content to be written to the storage device containing the mapped file:::if->return->if->capacity->offset->mappingOffset->mappingAddress->mappingLength->force0->return
+MappedByteBuffer#isLoaded0(long, long, int)::: mapped byte buffer is loaded0:::
+MappedByteBuffer#load0(long, long)::: mapped byte buffer load0:::
+MappedByteBuffer#force0(FileDescriptor, long, long)::: mapped byte buffer force0:::
+MappedByteBuffer#position(int)::: mapped byte buffer position:::super->position->return
+MappedByteBuffer#limit(int)::: mapped byte buffer limit:::super->limit->return
+MappedByteBuffer#mark()::: mapped byte buffer mark:::super->mark->return
+MappedByteBuffer#reset()::: mapped byte buffer reset:::super->reset->return
+MappedByteBuffer#clear()::: mapped byte buffer clear:::super->clear->return
+MappedByteBuffer#flip()::: mapped byte buffer flip:::super->flip->return
+MappedByteBuffer#rewind()::: mapped byte buffer rewind:::super->rewind->return
+ShortBuffer#base()::: short buffer base:::return
 ShortBuffer#allocate(int):::Allocates a new short buffer:::if->throw->createCapacityException->return->new->HeapShortBuffer
 ShortBuffer#wrap(short[], int, int):::Wraps a short array into a buffer:::try->return->new->HeapShortBuffer->catch->throw->new->IndexOutOfBoundsException->finally
 ShortBuffer#wrap(short[]):::Wraps a short array into a buffer:::return->wrap
@@ -246,11 +1372,36 @@ ShortBuffer#put(short[]):::Relative bulk put method&nbsp;&nbsp;(optional operati
 ShortBuffer#hasArray():::Tells whether or not this buffer is backed by an accessible short array:::return
 ShortBuffer#array():::Returns the short array that backs this buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
 ShortBuffer#arrayOffset():::Returns the offset within this buffer's backing array of the first element of the buffer&nbsp;&nbsp;(optional operation):::if->throw->new->UnsupportedOperationException->if->throw->new->ReadOnlyBufferException->return
+ShortBuffer#position(int)::: short buffer position:::super->position->return
+ShortBuffer#limit(int)::: short buffer limit:::super->limit->return
+ShortBuffer#mark()::: short buffer mark:::super->mark->return
+ShortBuffer#reset()::: short buffer reset:::super->reset->return
+ShortBuffer#clear()::: short buffer clear:::super->clear->return
+ShortBuffer#flip()::: short buffer flip:::super->flip->return
+ShortBuffer#rewind()::: short buffer rewind:::super->rewind->return
 ShortBuffer#compact():::Compacts this buffer&nbsp;&nbsp;(optional operation):::
 ShortBuffer#isDirect():::Tells whether or not this short buffer is direct.:::
 ShortBuffer#toString():::Returns a string summarizing the state of this buffer.:::sb->new->StringBuffer->sb->getClass->getName->append->sb->append->sb->position->append->sb->append->sb->limit->append->sb->append->sb->capacity->append->sb->append->return->sb->toString
 ShortBuffer#hashCode():::Returns the current hash code of this buffer:::h->p->position->for->i->limit->return
 ShortBuffer#equals(Object):::Tells whether or not this buffer is equal to another object:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
 ShortBuffer#compareTo(ShortBuffer):::Compares this buffer to another:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining
+ShortBuffer#compare(short, short)::: short buffer compare:::return->Short->compare
 ShortBuffer#mismatch(ShortBuffer):::Finds and returns the relative index of the first mismatch between this buffer and a given buffer:::length->Math->this->remaining->that->remaining->min->r->BufferMismatch->this->position->that->position->mismatch->return->this->remaining->that->remaining
 ShortBuffer#order():::Retrieves this buffer's byte order:::
+StringCharBuffer#slice()::: string char buffer slice:::pos->this->position->lim->this->limit->rem->return->new->StringCharBuffer
+StringCharBuffer#duplicate()::: string char buffer duplicate:::return->markValue->position->limit->capacity->new->StringCharBuffer
+StringCharBuffer#asReadOnlyBuffer()::: string char buffer as read only buffer:::return->duplicate
+StringCharBuffer#get()::: string char buffer get:::return->str->nextGetIndex->charAt
+StringCharBuffer#get(int)::: string char buffer get:::return->str->checkIndex->charAt
+StringCharBuffer#getUnchecked(int)::: string char buffer get unchecked:::return->str->charAt
+StringCharBuffer#put(char)::: string char buffer put:::throw->new->ReadOnlyBufferException
+StringCharBuffer#put(int, char)::: string char buffer put:::throw->new->ReadOnlyBufferException
+StringCharBuffer#compact()::: string char buffer compact:::throw->new->ReadOnlyBufferException
+StringCharBuffer#isReadOnly()::: string char buffer is read only:::return
+StringCharBuffer#toString(int, int)::: string char buffer to string:::return->str->subSequence->toString
+StringCharBuffer#subSequence(int, int)::: string char buffer sub sequence:::try->pos->position->return->checkIndex->checkIndex->capacity->new->StringCharBuffer->catch->throw->new->IndexOutOfBoundsException->finally
+StringCharBuffer#isDirect()::: string char buffer is direct:::return
+StringCharBuffer#order()::: string char buffer order:::return->ByteOrder->nativeOrder
+StringCharBuffer#charRegionOrder()::: string char buffer char region order:::return
+StringCharBuffer#equals(Object)::: string char buffer equals:::if->return->if->return->that->if->this->remaining->that->remaining->return->return->BufferMismatch->this->position->that->position->this->remaining->mismatch
+StringCharBuffer#compareTo(CharBuffer)::: string char buffer compare to:::i->BufferMismatch->this->position->that->position->Math->this->remaining->that->remaining->min->mismatch->if->return->Character->this->this->position->get->that->that->position->get->compare->return->this->remaining->that->remaining

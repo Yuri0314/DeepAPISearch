@@ -1,7 +1,295 @@
+SPARCAddress#toString()::: address to string:::s->new->StringBuilder->s->append->sep->if->getBase->equals->s->getBase->append->if->getIndex->equals->s->append->getIndex->append->else->if->getDisplacement->s->append->getDisplacement->append->else->if->getDisplacement->s->append->getDisplacement->append->s->append->return->s->toString
+SPARCAddress#getBase()::: address get base:::return
+SPARCAddress#getIndex()::: address get index:::return
+SPARCAddress#hasIndex()::: address has index:::return->getIndex->equals
 SPARCAddress#getDisplacement():::This method adds the stack-bias to the displacement if the base register is either SPARC#sp or SPARC#fp.:::if->hasIndex->throw->new->InternalError->if->getBase->equals->getBase->equals->return->return
+SPARCAssembler.BitSpec#isSignExtend()::: bit spec is sign extend:::return
+SPARCAssembler.BitSpec#setBits(int, int)::: bit spec set bits:::
+SPARCAssembler.BitSpec#getBits(int)::: bit spec get bits:::
+SPARCAssembler.BitSpec#getWidth()::: bit spec get width:::
+SPARCAssembler.BitSpec#valueFits(int)::: bit spec value fits:::
+SPARCAssembler.ContinousBitSpec#setBits(int, int)::: continous bit spec set bits:::return
+SPARCAssembler.ContinousBitSpec#getBits(int)::: continous bit spec get bits:::if->return->else->return
+SPARCAssembler.ContinousBitSpec#getWidth()::: continous bit spec get width:::return
+SPARCAssembler.ContinousBitSpec#toString()::: continous bit spec to string:::return->String->format
+SPARCAssembler.ContinousBitSpec#valueFits(int)::: continous bit spec value fits:::if->return->getWidth->isSimm->else->return->getWidth->isImm
+SPARCAssembler.CompositeBitSpec#getBits(int)::: composite bit spec get bits:::l->left->getBits->r->right->getBits->return
+SPARCAssembler.CompositeBitSpec#setBits(int, int)::: composite bit spec set bits:::l->leftBits->r->rightBits->return->left->right->setBits->setBits
+SPARCAssembler.CompositeBitSpec#leftBits(int)::: composite bit spec left bits:::return->getBits
+SPARCAssembler.CompositeBitSpec#rightBits(int)::: composite bit spec right bits:::return->getBits
+SPARCAssembler.CompositeBitSpec#getWidth()::: composite bit spec get width:::return
+SPARCAssembler.CompositeBitSpec#toString()::: composite bit spec to string:::return->String->format
+SPARCAssembler.CompositeBitSpec#valueFits(int)::: composite bit spec value fits:::l->leftBits->r->rightBits->return->left->valueFits->right->valueFits
+SPARCAssembler.CompositeBitSpec#getBits(int, int, int, boolean)::: composite bit spec get bits:::shifted->if->return->else->return
+SPARCAssembler.BitKey#toString()::: bit key to string:::return->String->format
+SPARCAssembler.BitKeyIndex#addOp(List, SPARCOp):::Adds operation to the index.:::firstKeys->keys->get->foreach->node->if->keys->size->if->nodes->containsKey->nodes->get->else->new->BitKeyIndex->else->nodes->get->next->keys->get->if->for->i->new->BitKeyIndex->node->keys->keys->size->subList->addOp->nodes->put
 SPARCAssembler.BitKeyIndex#find(int):::Finds the best matching SPARCOp for this instruction.:::if->key->spec->getBits->sub->nodes->get->if->if->return->else->throw->String->format->new->RuntimeException->return->sub->find->else->return
+SPARCAssembler.BitKeyIndex#toString()::: bit key index to string:::return->toString
+SPARCAssembler#getSPARCOp(int)::: assembler get op:::return->INDEX->find
+SPARCAssembler.SPARCOp#setBits(int)::: op set bits:::return->setBits
+SPARCAssembler.SPARCOp#match(int)::: op match:::foreach->foreach->if->getBits->return->return
+SPARCAssembler.SPARCOp#getKeys()::: op get keys:::if->new->ArrayList<>->keyFields->new->BitKeyArr->add->return
+SPARCAssembler.SPARCOp#getOp(int)::: op get op:::return->getBits
+SPARCAssembler.SPARCOp#toString()::: op to string:::name->getClass->getName->name->name->lastIndexOf->substring->return
+SPARCAssembler.ControlTransferOp#hasDelaySlot()::: control transfer op has delay slot:::return
+SPARCAssembler.ControlTransferOp#setBits(int)::: control transfer op set bits:::return->super->setBits->setBits
+SPARCAssembler.ControlTransferOp#setDisp(int, SPARCMacroAssembler, Label)::: control transfer op set disp:::if->lab->isBound->d->lab->position->masm->position->return->setDisp->else->masm->patchUnbound->return
+SPARCAssembler.ControlTransferOp#setDisp(int, int)::: control transfer op set disp:::if->isValidDisp->throw->new->BranchTargetOutOfBoundsException->return->setBits
+SPARCAssembler.ControlTransferOp#isValidDisp(int)::: control transfer op is valid disp:::return->valueFits
+SPARCAssembler.ControlTransferOp#setAnnul(int, boolean)::: control transfer op set annul:::return->setBits
+SPARCAssembler.ControlTransferOp#getKeys()::: control transfer op get keys:::keys->super->getKeys->keys->add->return
+SPARCAssembler.ControlTransferOp#getDisp(int)::: control transfer op get disp:::return->getBits
+SPARCAssembler.ControlTransferOp#isAnnulable(int)::: control transfer op is annulable:::
+SPARCAssembler.ControlTransferOp#isConditional(int)::: control transfer op is conditional:::
+SPARCAssembler.Bpcc#emit(SPARCMacroAssembler, CC, ConditionFlag, Annul, BranchPredict, Label)::: bpcc emit:::inst->setBits->setBits->setBits->setBits->setBits->masm->insertNopAfterCBCond->masm->setDisp->emitInt
+SPARCAssembler.Bpcc#isAnnulable(int)::: bpcc is annulable:::return->isConditional
+SPARCAssembler.Bpcc#isConditional(int)::: bpcc is conditional:::cond->getBits->return
+SPARCAssembler.Br#isAnnulable(int)::: br is annulable:::return->isConditional
+SPARCAssembler.Br#isConditional(int)::: br is conditional:::cond->getBits->return
+SPARCAssembler.Br#emit(SPARCMacroAssembler, ConditionFlag, Annul, Label)::: br emit:::inst->setBits->setBits->setBits->masm->insertNopAfterCBCond->masm->setDisp->emitInt
+SPARCAssembler.Bpr#emit(SPARCMacroAssembler, RCondition, Annul, BranchPredict, Register, Label)::: bpr emit:::inst->setBits->setBits->setBits->setBits->setBits->masm->insertNopAfterCBCond->masm->setDisp->emitInt
+SPARCAssembler.Bpr#getKeys()::: bpr get keys:::keys->super->getKeys->keys->new->BitKeyArr->add->return
+SPARCAssembler.Bpr#isAnnulable(int)::: bpr is annulable:::return->isConditional
+SPARCAssembler.Bpr#isConditional(int)::: bpr is conditional:::cond->getBits->return
+SPARCAssembler.CBCond#getKeys()::: cond get keys:::keys->super->getKeys->keys->new->BitKeyArr->add->return
+SPARCAssembler.CBCond#emit(SPARCMacroAssembler, ConditionFlag, boolean, Register, Register, Label)::: cond emit:::inst->setBits->setBits->setBits->masm->insertNopAfterCBCond->emit
+SPARCAssembler.CBCond#emit(SPARCMacroAssembler, ConditionFlag, boolean, Register, int, Label)::: cond emit:::inst->setBits->setBits->setBits->emit
+SPARCAssembler.CBCond#emit(SPARCMacroAssembler, Label, int)::: cond emit:::inst->masm->insertNopAfterCBCond->masm->setDisp->emitInt
+SPARCAssembler.CBCond#setBits(int, ConditionFlag, boolean, Register)::: cond set bits:::inst->super->setBits->setBits->setBits->setBits->return->setBits
+SPARCAssembler.CBCond#isAnnulable(int)::: cond is annulable:::return
+SPARCAssembler.CBCond#isConditional(int)::: cond is conditional:::return
+SPARCAssembler.Op2Op#setBits(int)::: op2 op set bits:::result->super->setBits->return->setBits
+SPARCAssembler.Op2Op#getKeys()::: op2 op get keys:::keys->super->getKeys->keys->new->BitKeyArr->add->return
+SPARCAssembler.Sethi#getRS1(int)::: sethi get s1:::regNum->getBits->return->get
+SPARCAssembler.Sethi#getImm22(int)::: sethi get imm22:::return->getBits
+SPARCAssembler.Sethi#isNop(int)::: sethi is nop:::return->getRS1->equals->getImm22
+SPARCAssembler.Op3Op#getOp3(int)::: op3 op get op3:::return->getBits
+SPARCAssembler.Op3Op#emit(SPARCMacroAssembler, Op3s, Register, Register, Register)::: op3 op emit:::instruction->setBits->setBits->setBits->masm->emitInt
+SPARCAssembler.Op3Op#emit(SPARCMacroAssembler, Op3s, Register, int, Register)::: op3 op emit:::instruction->setBits->setBits->immediateSpec->switch->break->break->break->immediateSpec->setBits->masm->emitInt
+SPARCAssembler.Op3Op#setBits(int, Op3s, Register, Register)::: op3 op set bits:::tmp->setBits->switch->setBits->break->setBits->setBits->return->setBits
+SPARCAssembler.CMOV#emit(SPARCMacroAssembler, ConditionFlag, CC, Register, Register)::: v emit:::
+SPARCAssembler.CMOV#emit(SPARCMacroAssembler, ConditionFlag, CC, int, Register)::: v emit:::
+SPARCAssembler.MOVicc#emit(SPARCMacroAssembler, ConditionFlag, CC, Register, Register)::: vicc emit:::inst->setBits->rs2->encoding->setBits->masm->emitInt
+SPARCAssembler.MOVicc#emit(SPARCMacroAssembler, ConditionFlag, CC, int, Register)::: vicc emit:::inst->setBits->setBits->setBits->masm->emitInt
+SPARCAssembler.MOVicc#setBits(int, ConditionFlag, CC, Register)::: vicc set bits:::inst->super->setBits->rd->encoding->setBits->setBits->setBits->setBits->return->setBits
+SPARCAssembler.MOVicc#getKeys()::: vicc get keys:::keys->super->getKeys->keys->new->BitKeyArr->new->BitKey->add->return
+SPARCAssembler.FMOVcc#emit(SPARCMacroAssembler, ConditionFlag, CC, Register, Register)::: vcc emit:::inst->setBits->rd->encoding->setBits->setBits->setBits->setBits->setBits->rs2->encoding->setBits->masm->emitInt
+SPARCAssembler.FMOVcc#emit(SPARCMacroAssembler, ConditionFlag, CC, int, Register)::: vcc emit:::throw->new->IllegalArgumentException
+SPARCAssembler.FMOVcc#getKeys()::: vcc get keys:::keys->super->getKeys->keys->new->BitKeyArr->new->BitKey->add->keys->new->BitKeyArr->new->BitKey->add->return
+SPARCAssembler.OpfOp#emit(SPARCMacroAssembler, Opfs, Register, Register, Register)::: opf op emit:::instruction->setBits->setBits->setBits->masm->emitInt
+SPARCAssembler.OpfOp#emitFcmp(SPARCMacroAssembler, Opfs, CC, Register, Register)::: opf op emit fcmp:::instruction->setBits->setBits->masm->emitInt
+SPARCAssembler.OpfOp#setBits(int, Opfs, Register, Register)::: opf op set bits:::tmp->setBits->setBits->setBits->setBits->return->setBits
+SPARCAssembler.OpfOp#getKeys()::: opf op get keys:::keys->super->getKeys->keys->add->return
+SPARCAssembler#isCPURegister(Register...)::: assembler is register:::foreach->if->isCPURegister->return->return
+SPARCAssembler#isCPURegister(Register)::: assembler is register:::return->r->getRegisterCategory->equals
+SPARCAssembler#isGlobalRegister(Register)::: assembler is global register:::return->isCPURegister
+SPARCAssembler#isSingleFloatRegister(Register)::: assembler is single float register:::return->r->getRegisterCategory->equals
+SPARCAssembler#isDoubleFloatRegister(Register)::: assembler is double float register:::return->r->getRegisterCategory->equals
+SPARCAssembler#hasFeature(CPUFeature)::: assembler has feature:::return->contains
+SPARCAssembler#simm(int, int)::: assembler simm:::return
+SPARCAssembler#isImm(int, int)::: assembler is imm:::return->simm
 SPARCAssembler#minSimm(long):::Minimum value for signed immediate ranges.:::return
 SPARCAssembler#maxSimm(long):::Maximum value for signed immediate ranges.:::return
 SPARCAssembler#isSimm(long, int):::Test if imm is within signed immediate range for nbits.:::return->minSimm->maxSimm
+SPARCAssembler#isSimm10(long)::: assembler is simm10:::return->isSimm
+SPARCAssembler#isSimm11(long)::: assembler is simm11:::return->isSimm
+SPARCAssembler#isSimm11(JavaConstant)::: assembler is simm11:::return->constant->isNull->constant->asLong->isSimm11
+SPARCAssembler#isSimm5(JavaConstant)::: assembler is simm5:::return->constant->isNull->constant->asLong->isSimm
+SPARCAssembler#isSimm5(long)::: assembler is simm5:::return->isSimm
+SPARCAssembler#isSimm13(int)::: assembler is simm13:::return->isSimm
+SPARCAssembler#isSimm13(JavaConstant)::: assembler is simm13:::bits->switch->constant->getJavaKind->Double->constant->asDouble->doubleToRawLongBits->break->Float->constant->asFloat->floatToRawIntBits->break->return->constant->isNull->constant->asLong->break->return->constant->isNull->isSimm13
+SPARCAssembler#isSimm13(long)::: assembler is simm13:::return->NumUtil->isInt->isSimm
+SPARCAssembler#isWordDisp30(long)::: assembler is word disp30:::return->isSimm
+SPARCAssembler#hi22(int)::: assembler hi22:::return
+SPARCAssembler#lo10(int)::: assembler lo10:::return
+SPARCAssembler#fmt00(int, int, int)::: assembler fmt00:::word->setBits->setBits->setBits->setBits->emitInt
+SPARCAssembler#op3(Op3s, Opfs, Register, Register, Register)::: assembler op3:::b->fmt
+SPARCAssembler#op3(Op3s, Register, Register, Register)::: assembler op3:::b->xBit->getXBit->fmt
+SPARCAssembler#op3(Op3s, Register, int, Register)::: assembler op3:::i->simm13WithX->getXBit->fmt
+SPARCAssembler#insertNopAfterCBCond()::: assembler insert nop after cond:::pos->position->if->return->inst->getInt->if->CBCOND->match->nop
+SPARCAssembler#patchUnbound(Label)::: assembler patch unbound:::label->position->addPatchAt->return
+SPARCAssembler#nop()::: assembler nop:::emitInt
+SPARCAssembler#sethi(int, Register)::: assembler sethi:::fmt00
+SPARCAssembler#call(int)::: assembler call:::insertNopAfterCBCond->before->position->instr->emitInt->return
+SPARCAssembler#add(Register, Register, Register)::: assembler add:::op3
+SPARCAssembler#add(Register, int, Register)::: assembler add:::op3
+SPARCAssembler#addc(Register, Register, Register)::: assembler addc:::op3
+SPARCAssembler#addc(Register, int, Register)::: assembler addc:::op3
+SPARCAssembler#addcc(Register, Register, Register)::: assembler addcc:::op3
+SPARCAssembler#addcc(Register, int, Register)::: assembler addcc:::op3
+SPARCAssembler#and(Register, Register, Register)::: assembler and:::op3
+SPARCAssembler#and(Register, int, Register)::: assembler and:::op3
+SPARCAssembler#andcc(Register, Register, Register)::: assembler andcc:::op3
+SPARCAssembler#andcc(Register, int, Register)::: assembler andcc:::op3
+SPARCAssembler#andn(Register, Register, Register)::: assembler andn:::op3
+SPARCAssembler#andn(Register, int, Register)::: assembler andn:::op3
+SPARCAssembler#andncc(Register, Register, Register)::: assembler andncc:::op3
+SPARCAssembler#andncc(Register, int, Register)::: assembler andncc:::op3
+SPARCAssembler#movwtos(Register, Register)::: assembler movwtos:::op3
+SPARCAssembler#umulxhi(Register, Register, Register)::: assembler umulxhi:::op3
+SPARCAssembler#fdtos(Register, Register)::: assembler fdtos:::op3
+SPARCAssembler#movstouw(Register, Register)::: assembler movstouw:::op3
+SPARCAssembler#movstosw(Register, Register)::: assembler movstosw:::op3
+SPARCAssembler#movdtox(Register, Register)::: assembler movdtox:::op3
+SPARCAssembler#movxtod(Register, Register)::: assembler movxtod:::op3
+SPARCAssembler#fadds(Register, Register, Register)::: assembler fadds:::op3
+SPARCAssembler#faddd(Register, Register, Register)::: assembler faddd:::op3
+SPARCAssembler#fdivs(Register, Register, Register)::: assembler fdivs:::op3
+SPARCAssembler#fdivd(Register, Register, Register)::: assembler fdivd:::op3
+SPARCAssembler#fmovs(Register, Register)::: assembler fmovs:::op3
+SPARCAssembler#fmovd(Register, Register)::: assembler fmovd:::op3
+SPARCAssembler#fsrc2s(Register, Register)::: assembler fsrc2s:::op3
+SPARCAssembler#fsrc2d(Register, Register)::: assembler fsrc2d:::op3
+SPARCAssembler#fmuls(Register, Register, Register)::: assembler fmuls:::op3
+SPARCAssembler#fsmuld(Register, Register, Register)::: assembler fsmuld:::op3
+SPARCAssembler#fmuld(Register, Register, Register)::: assembler fmuld:::op3
+SPARCAssembler#fnegs(Register, Register)::: assembler fnegs:::op3
+SPARCAssembler#fnegd(Register, Register)::: assembler fnegd:::op3
+SPARCAssembler#getXBit(Op3s):::Helper method to determine if the instruction needs the X bit set.:::switch->return->return
+SPARCAssembler#fstoi(Register, Register)::: assembler fstoi:::op3
+SPARCAssembler#fstox(Register, Register)::: assembler fstox:::op3
+SPARCAssembler#fdtox(Register, Register)::: assembler fdtox:::op3
+SPARCAssembler#fstod(Register, Register)::: assembler fstod:::op3
+SPARCAssembler#fdtoi(Register, Register)::: assembler fdtoi:::op3
+SPARCAssembler#fitos(Register, Register)::: assembler fitos:::op3
+SPARCAssembler#fitod(Register, Register)::: assembler fitod:::op3
+SPARCAssembler#fxtos(Register, Register)::: assembler fxtos:::op3
+SPARCAssembler#fxtod(Register, Register)::: assembler fxtod:::op3
+SPARCAssembler#fzeros(Register)::: assembler fzeros:::op3
+SPARCAssembler#fzerod(Register)::: assembler fzerod:::op3
+SPARCAssembler#flushw()::: assembler flushw:::op3
+SPARCAssembler#fsqrtd(Register, Register)::: assembler fsqrtd:::op3
+SPARCAssembler#fsqrts(Register, Register)::: assembler fsqrts:::op3
+SPARCAssembler#fabss(Register, Register)::: assembler fabss:::op3
+SPARCAssembler#fabsd(Register, Register)::: assembler fabsd:::op3
+SPARCAssembler#fsubs(Register, Register, Register)::: assembler fsubs:::op3
+SPARCAssembler#fsubd(Register, Register, Register)::: assembler fsubd:::op3
+SPARCAssembler#fcmp(CC, Opfs, Register, Register)::: assembler fcmp:::a->b->delaySlotOptimizationPoints->position->add->fmt10
+SPARCAssembler#fmt10(int, int, int, int)::: assembler fmt10:::fmt
+SPARCAssembler#fmt(int, int, int, int, int)::: assembler fmt:::instr->emitInt
+SPARCAssembler#illtrap(int)::: assembler illtrap:::fmt00
+SPARCAssembler#jmpl(Register, Register, Register)::: assembler jmpl:::insertNopAfterCBCond->op3
+SPARCAssembler#jmpl(Register, int, Register)::: assembler jmpl:::insertNopAfterCBCond->before->position->op3->return
+SPARCAssembler#fmovdcc(ConditionFlag, CC, Register, Register)::: assembler fmovdcc:::fmovcc
+SPARCAssembler#fmovscc(ConditionFlag, CC, Register, Register)::: assembler fmovscc:::fmovcc
+SPARCAssembler#fmovcc(ConditionFlag, CC, Register, Register, int)::: assembler fmovcc:::opfCC->a->fmt10
+SPARCAssembler#movcc(ConditionFlag, CC, Register, Register)::: assembler movcc:::movcc
+SPARCAssembler#movcc(ConditionFlag, CC, int, Register)::: assembler movcc:::movcc
+SPARCAssembler#movcc(ConditionFlag, CC, int, int, Register)::: assembler movcc:::cc01->cc2->a->b->fmt10
+SPARCAssembler#mulx(Register, Register, Register)::: assembler mulx:::op3
+SPARCAssembler#mulx(Register, int, Register)::: assembler mulx:::op3
+SPARCAssembler#or(Register, Register, Register)::: assembler or:::op3
+SPARCAssembler#or(Register, int, Register)::: assembler or:::op3
+SPARCAssembler#popc(Register, Register)::: assembler popc:::op3
+SPARCAssembler#popc(int, Register)::: assembler popc:::op3
+SPARCAssembler#prefetch(SPARCAddress, Fcn)::: assembler prefetch:::rs1->addr->getBase->if->addr->getIndex->equals->dis->addr->getDisplacement->fmt->else->rs2->addr->getIndex->fmt
+SPARCAssembler#rdpc(Register)::: assembler rdpc:::op3
+SPARCAssembler#restore(Register, Register, Register)::: assembler restore:::op3
+SPARCAssembler#save(Register, Register, Register)::: assembler save:::op3
+SPARCAssembler#save(Register, int, Register)::: assembler save:::op3
+SPARCAssembler#sdivx(Register, Register, Register)::: assembler sdivx:::op3
+SPARCAssembler#sdivx(Register, int, Register)::: assembler sdivx:::op3
+SPARCAssembler#udivx(Register, Register, Register)::: assembler udivx:::op3
+SPARCAssembler#udivx(Register, int, Register)::: assembler udivx:::op3
+SPARCAssembler#sll(Register, Register, Register)::: assembler sll:::op3
+SPARCAssembler#sll(Register, int, Register)::: assembler sll:::op3
+SPARCAssembler#sllx(Register, Register, Register)::: assembler sllx:::op3
+SPARCAssembler#sllx(Register, int, Register)::: assembler sllx:::op3
+SPARCAssembler#sra(Register, Register, Register)::: assembler sra:::op3
+SPARCAssembler#sra(Register, int, Register)::: assembler sra:::op3
+SPARCAssembler#srax(Register, Register, Register)::: assembler srax:::op3
+SPARCAssembler#srax(Register, int, Register)::: assembler srax:::op3
+SPARCAssembler#srl(Register, Register, Register)::: assembler srl:::op3
+SPARCAssembler#srl(Register, int, Register)::: assembler srl:::op3
+SPARCAssembler#srlx(Register, Register, Register)::: assembler srlx:::op3
+SPARCAssembler#srlx(Register, int, Register)::: assembler srlx:::op3
+SPARCAssembler#sub(Register, Register, Register)::: assembler sub:::op3
+SPARCAssembler#sub(Register, int, Register)::: assembler sub:::op3
+SPARCAssembler#subcc(Register, Register, Register)::: assembler subcc:::op3
+SPARCAssembler#subcc(Register, int, Register)::: assembler subcc:::op3
+SPARCAssembler#ta(int)::: assembler ta:::tcc
+SPARCAssembler#pause()::: assembler pause:::GraalError->unimplemented
+SPARCAssembler#tcc(CC, ConditionFlag, int)::: assembler tcc:::b->getValue->fmt10
+SPARCAssembler#wrccr(Register, Register)::: assembler wrccr:::op3
+SPARCAssembler#wrccr(Register, int)::: assembler wrccr:::op3
+SPARCAssembler#xor(Register, Register, Register)::: assembler xor:::op3
+SPARCAssembler#xor(Register, int, Register)::: assembler xor:::op3
+SPARCAssembler#xorcc(Register, Register, Register)::: assembler xorcc:::op3
+SPARCAssembler#xorcc(Register, int, Register)::: assembler xorcc:::op3
+SPARCAssembler#xnor(Register, Register, Register)::: assembler xnor:::op3
+SPARCAssembler#xnor(Register, int, Register)::: assembler xnor:::op3
+SPARCAssembler#ld(Op3s, SPARCAddress, Register, Asi)::: assembler ld:::rs1->addr->getBase->if->addr->getIndex->equals->rs2->addr->getIndex->if->b->fmt->else->op3->else->imm->addr->getDisplacement->op3
+SPARCAssembler#ld(Op3s, SPARCAddress, Register)::: assembler ld:::ld
+SPARCAssembler#lddf(SPARCAddress, Register)::: assembler lddf:::ld
+SPARCAssembler#ldf(SPARCAddress, Register)::: assembler ldf:::ld
+SPARCAssembler#lduh(SPARCAddress, Register)::: assembler lduh:::ld
+SPARCAssembler#ldsh(SPARCAddress, Register)::: assembler ldsh:::ld
+SPARCAssembler#ld(SPARCAddress, Register, int, boolean)::: assembler ld:::if->isCPURegister->if->switch->ld->break->ld->break->ld->break->ld->break->throw->new->InternalError->else->switch->ld->break->ld->break->ld->break->ld->break->throw->new->InternalError->else->if->isDoubleFloatRegister->ld->else->if->isSingleFloatRegister->ld->else->throw->String->format->new->InternalError
+SPARCAssembler#st(Register, SPARCAddress, int)::: assembler st:::if->isCPURegister->switch->st->break->st->break->st->break->st->break->throw->Integer->toString->new->InternalError->else->if->isDoubleFloatRegister->st->else->if->isSingleFloatRegister->st->else->throw->String->format->new->InternalError
+SPARCAssembler#ldub(SPARCAddress, Register)::: assembler ldub:::ld
+SPARCAssembler#ldsb(SPARCAddress, Register)::: assembler ldsb:::ld
+SPARCAssembler#lduw(SPARCAddress, Register)::: assembler lduw:::ld
+SPARCAssembler#ldsw(SPARCAddress, Register)::: assembler ldsw:::ld
+SPARCAssembler#ldx(SPARCAddress, Register)::: assembler ldx:::ld
+SPARCAssembler#ldxa(Register, Register, Register, Asi)::: assembler ldxa:::new->SPARCAddress->ld
+SPARCAssembler#lduwa(Register, Register, Register, Asi)::: assembler lduwa:::new->SPARCAddress->ld
+SPARCAssembler#stxa(Register, Register, Register, Asi)::: assembler stxa:::new->SPARCAddress->ld
+SPARCAssembler#st(Op3s, Register, SPARCAddress)::: assembler st:::ld
+SPARCAssembler#stdf(Register, SPARCAddress)::: assembler stdf:::st
+SPARCAssembler#stf(Register, SPARCAddress)::: assembler stf:::st
+SPARCAssembler#stb(Register, SPARCAddress)::: assembler stb:::st
+SPARCAssembler#sth(Register, SPARCAddress)::: assembler sth:::st
+SPARCAssembler#stw(Register, SPARCAddress)::: assembler stw:::st
+SPARCAssembler#stx(Register, SPARCAddress)::: assembler stx:::st
+SPARCAssembler#membar(int)::: assembler membar:::op3
+SPARCAssembler#casa(Register, Register, Register, Asi)::: assembler casa:::new->SPARCAddress->ld
+SPARCAssembler#casxa(Register, Register, Register, Asi)::: assembler casxa:::new->SPARCAddress->ld
+SPARCAssembler#getInstructionCounter()::: assembler get instruction counter:::return->new->SPARCInstructionCounter
+SPARCAssembler#patchAddImmediate(int, int)::: assembler patch add immediate:::inst->getInt->emitInt
+SPARCAssembler#fpadd32(Register, Register, Register)::: assembler fpadd32:::op3
 SPARCAssembler#peephole():::Does peephole optimization on code generated by this assembler:::foreach->optimizeDelaySlot
+SPARCAssembler#optimizeDelaySlot(int):::Optimizes branch instruction b</t> which has a nop in the delay slot:::delaySlotAbsolute->nextInst->getInt->nextOp->getSPARCOp->if->Sethi->isNop->inst->getInt->op->getSPARCOp->if->hasDelaySlot->isAnnulable->ctOp->disp->ctOp->getDisp->branchTargetAbsolute->branchTargetInst->getInt->branchTargetOp->getSPARCOp->if->op3->getOp3->if->op3->throwsException->ctOp->setDisp->ctOp->setAnnul->emitInt->emitInt->else->if->isConditional->branchTargetOpBranch->btDisp->branchTargetOpBranch->getDisp->newDisp->if->ctOp->isValidDisp->instAfter->ctOp->setDisp->ctOp->setAnnul->getInt->getSPARCOp->if->getOp3->throwsException->emitInt->emitInt
+SPARCInstructionCounter#countInstructions(String[], int, int)::: instruction counter count instructions:::matchers->new->SPARCInstructionMatchArr->for->i->return->countBetween
+SPARCInstructionCounter#countBetween(SPARCInstructionMatch[], int, int)::: instruction counter count between:::counts->new->intArr->for->p->return
+SPARCInstructionCounter#getSupportedInstructionTypes()::: instruction counter get supported instruction types:::return->INSTRUCTION_MATCHER->keySet->new->StringArr->toArray
+SPARCInstructionCounter.OP3LowBitsMatcher#matches(int)::: p3 low bits matcher matches:::if->return->op3lo->foreach->if->return->return
+SPARCInstructionCounter.SPARCInstructionMatch#matches(int)::: instruction match matches:::foreach->if->return->return
+SPARCMacroAssembler#setImmediateConstantLoad(boolean)::: macro assembler set immediate constant load:::
+SPARCMacroAssembler#align(int)::: macro assembler align:::while->position->nop
+SPARCMacroAssembler#jmp(Label)::: macro assembler jmp:::BPCC->emit->nop
+SPARCMacroAssembler#bz(Label)::: macro assembler bz:::BPCC->emit
+SPARCMacroAssembler#patchJumpTarget(int, int)::: macro assembler patch jump target:::disp->inst->getInt->op->getSPARCOp->newInst->op->setDisp->emitInt
+SPARCMacroAssembler#makeAddress(Register, int)::: macro assembler make address:::return->new->SPARCAddress
+SPARCMacroAssembler#getPlaceholder(int)::: macro assembler get placeholder:::return
+SPARCMacroAssembler#ensureUniquePC()::: macro assembler ensure unique c:::nop
+SPARCMacroAssembler#cas(Register, Register, Register)::: macro assembler cas:::casa
+SPARCMacroAssembler#casx(Register, Register, Register)::: macro assembler casx:::casxa
+SPARCMacroAssembler#clr(Register)::: macro assembler clr:::or
+SPARCMacroAssembler#clrb(SPARCAddress)::: macro assembler clrb:::stb
+SPARCMacroAssembler#clrh(SPARCAddress)::: macro assembler clrh:::sth
+SPARCMacroAssembler#clrx(SPARCAddress)::: macro assembler clrx:::stx
+SPARCMacroAssembler#cmp(Register, Register)::: macro assembler cmp:::subcc
+SPARCMacroAssembler#cmp(Register, int)::: macro assembler cmp:::subcc
+SPARCMacroAssembler#dec(Register)::: macro assembler dec:::sub
+SPARCMacroAssembler#dec(int, Register)::: macro assembler dec:::sub
+SPARCMacroAssembler#jmp(SPARCAddress)::: macro assembler jmp:::address->getBase->address->getDisplacement->jmpl
+SPARCMacroAssembler#jmp(Register)::: macro assembler jmp:::jmpl
+SPARCMacroAssembler#neg(Register, Register)::: macro assembler neg:::sub
+SPARCMacroAssembler#neg(Register)::: macro assembler neg:::sub
+SPARCMacroAssembler#mov(Register, Register)::: macro assembler mov:::or
+SPARCMacroAssembler#mov(int, Register)::: macro assembler mov:::or
+SPARCMacroAssembler#not(Register, Register)::: macro assembler not:::xnor
+SPARCMacroAssembler#not(Register)::: macro assembler not:::xnor
+SPARCMacroAssembler#restoreWindow()::: macro assembler restore window:::restore
+SPARCMacroAssembler#ret()::: macro assembler ret:::jmpl
 SPARCMacroAssembler#setw(int, Register, boolean):::Generates sethi hi22(value), dst; or dst, lo10(value), dst; code.:::if->isSimm13->or->else->hi22->sethi->lo10->or
+SPARCMacroAssembler#setx(long, Register, boolean)::: macro assembler setx:::lo->sethix->if->lo10->lo10->add
+SPARCMacroAssembler#sethix(long, Register, boolean)::: macro assembler sethix:::hi->lo->startPc->position->if->hi22->sethi->else->if->hi22->sethi->lo10->xor->else->shiftcnt->shiftcnt2->hi22->sethi->if->or->if->if->sllx->or->else->if->sllx->or->else->sllx->else->sllx->if->while->position->nop
+SPARCMacroAssembler#signx(Register, Register)::: macro assembler signx:::sra
+SPARCMacroAssembler#signx(Register)::: macro assembler signx:::sra
+SPARCMacroAssembler#isImmediateConstantLoad()::: macro assembler is immediate constant load:::return
+SPARCMacroAssembler#getScratchRegister()::: macro assembler get scratch register:::return
+SPARCMacroAssembler.ScratchRegister#getRegister()::: scratch register get register:::return
+SPARCMacroAssembler.ScratchRegister#close()::: scratch register close:::
+SPARCMacroAssembler#compareBranch(Register, Register, ConditionFlag, CC, Label, BranchPredict, Runnable)::: macro assembler compare branch:::if->hasFeature->if->delaySlotInstruction->run->CBCOND->emit->else->if->rs1->equals->BPR->emit->else->cmp->BPCC->emit->if->positionBefore->position->delaySlotInstruction->run->positionAfter->position->else->nop
+SPARCMacroAssembler#compareBranch(Register, int, ConditionFlag, CC, Label, BranchPredict, Runnable)::: macro assembler compare branch:::if->hasFeature->if->delaySlotInstruction->run->CBCOND->emit->else->if->BPR->emit->else->cmp->BPCC->emit->if->positionBefore->position->delaySlotInstruction->run->positionAfter->position->else->nop

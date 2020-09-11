@@ -11,6 +11,7 @@ FileSystemView#getSystemDisplayName(File):::Name of a file, directory, or folder
 FileSystemView#getSystemTypeDescription(File):::Type description for a file, directory, or folder as it would be displayed in a system file browser:::return
 FileSystemView#getSystemIcon(File):::Icon for a file, directory, or folder as it would be displayed in a system file browser:::if->return->sf->try->getShellFolder->catch->return->finally->img->sf->getIcon->if->return->sf->getFolderType->new->ImageIcon->else->return->UIManager->f->isDirectory->getIcon
 FileSystemView#isParent(File, File):::On Windows, a file can appear in multiple folders, other than its parent directory in the filesystem:::if->return->else->if->parent->file->getParentFile->if->parent->equals->return->children->getFiles->foreach->if->file->equals->return->return->else->return->folder->file->getParentFile->equals
+FileSystemView#getChild(File, String)::: file system view get child:::if->children->getFiles->foreach->if->child->getName->equals->return->return->createFileObject
 FileSystemView#isFileSystem(File):::Checks if f represents a real directory or file as opposed to a special folder such as "Desktop":::if->sf->return->sf->isFileSystem->sf->isLink->sf->isDirectory->else->return
 FileSystemView#createNewFolder(File):::Creates a new folder with a default folder name.:::
 FileSystemView#isHiddenFile(File):::Returns whether a file is hidden or not.:::return->f->isHidden
@@ -30,10 +31,22 @@ FileSystemView#isLink(File):::Returns whether the specified file denotes a shell
 FileSystemView#getLinkLocation(File):::Returns the regular file referenced by the specified link file if the specified file is a shell interpreted link:::if->throw->new->NullPointerException->shellFolder->try->ShellFolder->getShellFolder->catch->return->finally->return->shellFolder->isLink->shellFolder->getLinkLocation
 FileSystemView#getShellFolder(File):::Throws FileNotFoundException if file not found or current thread was interrupted:::if->isFileSystemRoot->createFileSystemRoot->try->return->ShellFolder->getShellFolder->catch->println->e->printStackTrace->return->finally
 FileSystemView#createFileSystemRoot(File):::Creates a new File object for f with correct behavior for a file system root directory.:::return->new->FileSystemRoot
+FileSystemView.FileSystemRoot#isDirectory()::: file system root is directory:::return
+FileSystemView.FileSystemRoot#getName()::: file system root get name:::return->getPath
 UnixFileSystemView#createNewFolder(File):::Creates a new folder with a default folder name.:::if->throw->new->IOException->newFolder->createFileObject->i->while->newFolder->exists->MessageFormat->format->createFileObject->if->newFolder->exists->throw->newFolder->getAbsolutePath->new->IOException->else->if->newFolder->mkdirs->throw->newFolder->getAbsolutePath->new->IOException->return
+UnixFileSystemView#isFileSystemRoot(File)::: unix file system view is file system root:::return->dir->getAbsolutePath->equals
+UnixFileSystemView#isDrive(File)::: unix file system view is drive:::return->isFloppyDrive
+UnixFileSystemView#isFloppyDrive(File)::: unix file system view is floppy drive:::return
+UnixFileSystemView#isComputerNode(File)::: unix file system view is computer node:::if->parent->dir->getParent->if->parent->equals->return->return
+WindowsFileSystemView#isTraversable(File)::: windows file system view is traversable:::return->Boolean->isFileSystemRoot->isComputerNode->f->isDirectory->valueOf
+WindowsFileSystemView#getChild(File, String)::: windows file system view get child:::if->fileName->startsWith->fileName->startsWith->isFileSystem->path->parent->getAbsolutePath->if->path->length->path->charAt->Character->path->charAt->isLetter->return->path->substring->createFileObject->return->super->getChild
 WindowsFileSystemView#getSystemTypeDescription(File):::Type description for a file, directory, or folder as it would be displayed in a system file browser:::if->return->try->return->getShellFolder->getFolderType->catch->return->finally
+WindowsFileSystemView#getHomeDirectory()::: windows file system view get home directory:::roots->getRoots->return
 WindowsFileSystemView#createNewFolder(File):::Creates a new folder with a default folder name.:::if->throw->new->IOException->newFolder->createFileObject->i->while->newFolder->exists->MessageFormat->format->createFileObject->if->newFolder->exists->throw->newFolder->getAbsolutePath->new->IOException->else->if->newFolder->mkdirs->throw->newFolder->getAbsolutePath->new->IOException->return
+WindowsFileSystemView#isDrive(File)::: windows file system view is drive:::return->isFileSystemRoot
+WindowsFileSystemView#isFloppyDrive(File)::: windows file system view is floppy drive:::path->AccessController->new->PrivilegedAction<String>->doPrivileged->return->path->equals->path->equals
 WindowsFileSystemView#createFileObject(String):::Returns a File object constructed from the given path string.:::if->path->length->path->charAt->Character->path->charAt->isLetter->if->path->length->else->if->path->charAt->path->substring->path->substring->return->super->createFileObject
+WindowsFileSystemView#createFileSystemRoot(File)::: windows file system view create file system root:::return->new->FileSystemRoot
 GenericFileSystemView#createNewFolder(File):::Creates a new folder with a default folder name.:::if->throw->new->IOException->newFolder->createFileObject->if->newFolder->exists->throw->newFolder->getAbsolutePath->new->IOException->else->if->newFolder->mkdirs->throw->newFolder->getAbsolutePath->new->IOException->return
 FileView#getName(File):::The name of the file:::return
 FileView#getDescription(File):::A human readable description of the file:::return

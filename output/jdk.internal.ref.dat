@@ -1,3 +1,5 @@
+Cleaner#add(Cleaner)::: cleaner add:::if->return
+Cleaner#remove(Cleaner)::: cleaner remove:::if->return->if->if->else->if->if->return
 Cleaner#create(Object, Runnable):::Creates a new cleaner.:::if->return->return->new->Cleaner->add
 Cleaner#clean():::Runs this cleaner, if it has not been run before.:::if->remove->return->try->thunk->run->catch->AccessController->new->PrivilegedAction<>->doPrivileged->finally
 CleanerFactory#cleaner():::Cleaner for use within system modules:::return
@@ -5,24 +7,36 @@ CleanerImpl#setCleanerImplAccess(Function):::Called by Cleaner static initializa
 CleanerImpl#getCleanerImpl(Cleaner):::Called to get the CleanerImpl for a Cleaner.:::return->cleanerImplAccess->apply
 CleanerImpl#start(Cleaner, ThreadFactory):::Starts the Cleaner implementation:::if->getCleanerImpl->throw->new->AssertionError->new->CleanerCleanable->if->factory->thread->threadFactory->newThread->thread->setDaemon->thread->start
 CleanerImpl#run():::Process queued Cleanables as long as the cleanable lists are not empty:::t->Thread->currentThread->mlThread->while->phantomCleanableList->isListEmpty->weakCleanableList->isListEmpty->softCleanableList->isListEmpty->if->mlThread->eraseThreadLocals->try->ref->queue->remove->if->ref->clean->catch->finally
+CleanerImpl.PhantomCleanableRef#performCleanup()::: phantom cleanable ref perform cleanup:::action->run
 CleanerImpl.PhantomCleanableRef#get():::Prevent access to referent even when it is still alive.:::throw->new->UnsupportedOperationException
 CleanerImpl.PhantomCleanableRef#clear():::Direct clearing of the referent is not supported.:::throw->new->UnsupportedOperationException
+CleanerImpl.WeakCleanableRef#performCleanup()::: weak cleanable ref perform cleanup:::action->run
 CleanerImpl.WeakCleanableRef#get():::Prevent access to referent even when it is still alive.:::throw->new->UnsupportedOperationException
 CleanerImpl.WeakCleanableRef#clear():::Direct clearing of the referent is not supported.:::throw->new->UnsupportedOperationException
+CleanerImpl.SoftCleanableRef#performCleanup()::: soft cleanable ref perform cleanup:::action->run
 CleanerImpl.SoftCleanableRef#get():::Prevent access to referent even when it is still alive.:::throw->new->UnsupportedOperationException
 CleanerImpl.SoftCleanableRef#clear():::Direct clearing of the referent is not supported.:::throw->new->UnsupportedOperationException
+CleanerImpl.InnocuousThreadFactory#factory()::: innocuous thread factory factory:::return
+CleanerImpl.InnocuousThreadFactory#newThread(Runnable)::: innocuous thread factory new thread:::return->AccessController->new->PrivilegedAction<>->doPrivileged
+CleanerImpl.CleanerCleanable#performCleanup()::: cleaner cleanable perform cleanup:::
+PhantomCleanable#insert():::Insert this PhantomCleanable after the list head.:::synchronized
+PhantomCleanable#remove():::Remove this PhantomCleanable from the list.:::synchronized->if->return->return
 PhantomCleanable#isListEmpty():::Returns true if the list's next reference refers to itself.:::synchronized->return
 PhantomCleanable#clean():::Unregister this PhantomCleanable and invoke #performCleanup(), ensuring at-most-once semantics.:::if->remove->super->clear->performCleanup
 PhantomCleanable#clear():::Unregister this PhantomCleanable and clear the reference:::if->remove->super->clear
 PhantomCleanable#performCleanup():::The performCleanup abstract method is overridden to implement the cleaning logic:::
 PhantomCleanable#isEnqueued():::This method always throws UnsupportedOperationException:::throw->new->UnsupportedOperationException
 PhantomCleanable#enqueue():::This method always throws UnsupportedOperationException:::throw->new->UnsupportedOperationException
+SoftCleanable#insert():::Insert this SoftCleanableReference after the list head.:::synchronized
+SoftCleanable#remove():::Remove this SoftCleanableReference from the list.:::synchronized->if->return->return
 SoftCleanable#isListEmpty():::Returns true if the list's next reference refers to itself.:::synchronized->return
 SoftCleanable#clean():::Unregister this SoftCleanable reference and invoke #performCleanup(), ensuring at-most-once semantics.:::if->remove->super->clear->performCleanup
 SoftCleanable#clear():::Unregister this SoftCleanable and clear the reference:::if->remove->super->clear
 SoftCleanable#performCleanup():::The performCleanup abstract method is overridden to implement the cleaning logic:::
 SoftCleanable#isEnqueued():::This method always throws UnsupportedOperationException:::throw->new->UnsupportedOperationException
 SoftCleanable#enqueue():::This method always throws UnsupportedOperationException:::throw->new->UnsupportedOperationException
+WeakCleanable#insert():::Insert this WeakCleanableReference after the list head.:::synchronized
+WeakCleanable#remove():::Remove this WeakCleanableReference from the list.:::synchronized->if->return->return
 WeakCleanable#isListEmpty():::Returns true if the list's next reference refers to itself.:::synchronized->return
 WeakCleanable#clean():::Unregister this WeakCleanable reference and invoke #performCleanup(), ensuring at-most-once semantics.:::if->remove->super->clear->performCleanup
 WeakCleanable#clear():::Unregister this WeakCleanable and clear the reference:::if->remove->super->clear

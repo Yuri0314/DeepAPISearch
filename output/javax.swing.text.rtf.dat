@@ -1,20 +1,107 @@
 AbstractFilter#readFromStream(InputStream):::A convenience method that reads text from a FileInputStream and writes it to the receiver:::buf->count->new->byteArr->while->in->read->if->break->this->write
+AbstractFilter#readFromReader(Reader)::: abstract filter read from reader:::buf->count->new->charArr->while->in->read->if->break->for->i
 AbstractFilter#write(int):::Implements the abstract method of OutputStream, of which this class is a subclass.:::if->if->writeSpecial->else->ch->if->write
 AbstractFilter#write(byte[], int, int):::Implements the buffer-at-a-time write method for greater efficiency:::accumulator->while->b->if->if->if->accumulator->toString->write->writeSpecial->else->ch->if->if->new->StringBuilder->accumulator->append->if->accumulator->toString->write
 AbstractFilter#write(String):::Hopefully, all subclasses will override this method to accept strings of text, but if they don't, AbstractFilter's implementation will spoon-feed them via write(char).:::index->length->s->length->for
 AbstractFilter#write(char):::Subclasses must provide an implementation of this method which accepts a single (non-special) character.:::
 AbstractFilter#writeSpecial(int):::Subclasses must provide an implementation of this method which accepts a single special byte:::
+MockAttributeSet#isEmpty()::: mock attribute set is empty:::return->backing->isEmpty
+MockAttributeSet#getAttributeCount()::: mock attribute set get attribute count:::return->backing->size
+MockAttributeSet#isDefined(Object)::: mock attribute set is defined:::return->backing->get
+MockAttributeSet#isEqual(AttributeSet)::: mock attribute set is equal:::throw->new->InternalError
+MockAttributeSet#copyAttributes()::: mock attribute set copy attributes:::throw->new->InternalError
+MockAttributeSet#getAttribute(Object)::: mock attribute set get attribute:::return->backing->get
+MockAttributeSet#addAttribute(Object, Object)::: mock attribute set add attribute:::backing->put
+MockAttributeSet#addAttributes(AttributeSet)::: mock attribute set add attributes:::as->attr->getAttributeNames->while->as->hasMoreElements->el->as->nextElement->backing->attr->getAttribute->put
+MockAttributeSet#removeAttribute(Object)::: mock attribute set remove attribute:::backing->remove
+MockAttributeSet#removeAttributes(AttributeSet)::: mock attribute set remove attributes:::throw->new->InternalError
+MockAttributeSet#removeAttributes(Enumeration)::: mock attribute set remove attributes:::throw->new->InternalError
+MockAttributeSet#setResolveParent(AttributeSet)::: mock attribute set set resolve parent:::throw->new->InternalError
+MockAttributeSet#getAttributeNames()::: mock attribute set get attribute names:::return->backing->keys
+MockAttributeSet#containsAttribute(Object, Object)::: mock attribute set contains attribute:::throw->new->InternalError
+MockAttributeSet#containsAttributes(AttributeSet)::: mock attribute set contains attributes:::throw->new->InternalError
+MockAttributeSet#getResolveParent()::: mock attribute set get resolve parent:::throw->new->InternalError
+RTFAttribute#domain()::: attribute domain:::
+RTFAttribute#swingName()::: attribute swing name:::
+RTFAttribute#rtfName()::: attribute rtf name:::
+RTFAttribute#set(MutableAttributeSet)::: attribute set:::
+RTFAttribute#set(MutableAttributeSet, int)::: attribute set:::
+RTFAttribute#setDefault(MutableAttributeSet)::: attribute set default:::
+RTFAttribute#write(AttributeSet, RTFGenerator, boolean)::: attribute write:::
+RTFAttribute#writeValue(Object, RTFGenerator, boolean)::: attribute write value:::
+RTFAttributes#attributesByKeyword()::: attributes attributes by keyword:::d->new->Hashtable<String,RTFAttribute>->foreach->d->attribute->rtfName->put->return
+RTFAttributes.GenericAttribute#domain()::: generic attribute domain:::return
+RTFAttributes.GenericAttribute#swingName()::: generic attribute swing name:::return
+RTFAttributes.GenericAttribute#rtfName()::: generic attribute rtf name:::return
+RTFAttributes.GenericAttribute#set(MutableAttributeSet)::: generic attribute set:::
+RTFAttributes.GenericAttribute#set(MutableAttributeSet, int)::: generic attribute set:::
+RTFAttributes.GenericAttribute#setDefault(MutableAttributeSet)::: generic attribute set default:::
+RTFAttributes.GenericAttribute#write(AttributeSet, RTFGenerator, boolean)::: generic attribute write:::return->source->getAttribute->writeValue
+RTFAttributes.GenericAttribute#writeValue(Object, RTFGenerator, boolean)::: generic attribute write value:::return
+RTFAttributes.BooleanAttribute#set(MutableAttributeSet)::: boolean attribute set:::target->addAttribute->return
+RTFAttributes.BooleanAttribute#set(MutableAttributeSet, int)::: boolean attribute set:::value->target->addAttribute->return
+RTFAttributes.BooleanAttribute#setDefault(MutableAttributeSet)::: boolean attribute set default:::if->target->getAttribute->target->Boolean->valueOf->addAttribute->return
+RTFAttributes.BooleanAttribute#writeValue(Object, RTFGenerator, boolean)::: boolean attribute write value:::val->if->Boolean->valueOf->else->if->val->booleanValue->if->val->booleanValue->target->writeControlWord->else->target->writeControlWord->return
+RTFAttributes.AssertiveAttribute#set(MutableAttributeSet)::: assertive attribute set:::if->target->removeAttribute->else->target->addAttribute->return
+RTFAttributes.AssertiveAttribute#set(MutableAttributeSet, int)::: assertive attribute set:::return
+RTFAttributes.AssertiveAttribute#setDefault(MutableAttributeSet)::: assertive attribute set default:::target->removeAttribute->return
+RTFAttributes.AssertiveAttribute#writeValue(Object, RTFGenerator, boolean)::: assertive attribute write value:::if->return->if->value->equals->target->writeControlWord->return->return
+RTFAttributes.NumericAttribute#NewTwips(int, Object, String, float, int)::: numeric attribute  new twips:::return->Float->valueOf->new->NumericAttribute
+RTFAttributes.NumericAttribute#NewTwips(int, Object, String, int)::: numeric attribute  new twips:::return->new->NumericAttribute
+RTFAttributes.NumericAttribute#set(MutableAttributeSet)::: numeric attribute set:::return
+RTFAttributes.NumericAttribute#set(MutableAttributeSet, int)::: numeric attribute set:::swingValue->if->Integer->valueOf->else->Float->valueOf->target->addAttribute->return
+RTFAttributes.NumericAttribute#setDefault(MutableAttributeSet)::: numeric attribute set default:::old->target->getAttribute->if->if->old->intValue->Math->old->floatValue->round->return->set->return
+RTFAttributes.NumericAttribute#writeValue(Object, RTFGenerator, boolean)::: numeric attribute write value:::value->if->if->return->int_value->Math->value->floatValue->round->if->target->writeControlWord->return
 RTFEditorKit#getContentType():::Get the MIME type of the data that this kit represents support for:::return
 RTFEditorKit#read(InputStream, Document, int):::Insert content from the given stream which is expected to be in a format appropriate for this kind of content handler.:::if->rdr->new->RTFReader->rdr->readFromStream->rdr->close->else->super->read
 RTFEditorKit#write(OutputStream, Document, int, int):::Write content from a document to the given stream in a format appropriate for this kind of content handler.:::RTFGenerator->writeDocument
 RTFEditorKit#read(Reader, Document, int):::Insert content from the given stream, which will be treated as plain text.:::if->rdr->new->RTFReader->rdr->readFromReader->rdr->close->else->super->read
 RTFEditorKit#write(Writer, Document, int, int):::Write content from a document to the given stream as plain text.:::throw->new->IOException
+RTFGenerator#writeDocument(Document, OutputStream)::: generator write document:::gen->new->RTFGenerator->root->d->getDefaultRootElement->gen->examineElement->gen->writeRTFHeader->gen->writeDocumentProperties->max->root->getElementCount->for->idx->gen->writeRTFTrailer
+RTFGenerator#examineElement(Element)::: generator examine element:::a->el->getAttributes->fontName->foregroundColor->backgroundColor->tallyStyles->if->StyleConstants->getForeground->if->colorTable->get->colorTable->put->a->getAttribute->if->colorTable->get->colorTable->put->StyleConstants->getFontFamily->if->if->fontTable->get->fontTable->put->el_count->el->getElementCount->for->el_idx
+RTFGenerator#tallyStyles(AttributeSet)::: generator tally styles:::while->if->aNum->styleTable->get->if->styleTable->put->a->getResolveParent
+RTFGenerator#findStyle(AttributeSet)::: generator find style:::while->if->aNum->styleTable->get->if->return->a->getResolveParent->return
+RTFGenerator#findStyleNumber(AttributeSet, String)::: generator find style number:::while->if->aNum->styleTable->get->if->if->domain->a->getAttribute->equals->return->a->getResolveParent->return
+RTFGenerator#attrDiff(MutableAttributeSet, AttributeSet, Object, Object)::: generator attr diff:::oldValue->newValue->oldAttrs->getAttribute->newAttrs->getAttribute->if->return->if->oldAttrs->removeAttribute->if->dfl->equals->return->else->return->if->equalArraysOK->oldAttrs->addAttribute->return->return
+RTFGenerator#equalArraysOK(Object, Object)::: generator equal arrays k:::aa->bb->if->return->if->return->if->a->equals->return->if->a->getClass->isArray->b->getClass->isArray->return->if->return->i->l->for->return
+RTFGenerator#writeLineBreak()::: generator write line break:::writeRawString
+RTFGenerator#writeRTFHeader()::: generator write header:::index->writeBegingroup->writeControlWord->writeControlWord->outputConversionForName->writeLineBreak->sortedFontTable->new->StringArr->fonts->fontTable->keys->font->while->fonts->hasMoreElements->fonts->nextElement->num->fontTable->get->num->intValue->writeBegingroup->writeControlWord->for->writeEndgroup->writeLineBreak->if->sortedColorTable->new->ColorArr->colors->colorTable->keys->color->while->colors->hasMoreElements->colors->nextElement->num->colorTable->get->num->intValue->writeBegingroup->writeControlWord->for->writeEndgroup->writeLineBreak->if->writeBegingroup->writeControlWord->styles->styleTable->keys->while->styles->hasMoreElements->style->styles->nextElement->styleNumber->styleTable->get->intValue->writeBegingroup->styleType->style->getAttribute->if->if->styleType->equals->writeControlWord->writeControlWord->else->if->styleType->equals->writeControlWord->writeControlWord->else->writeControlWord->basis->style->getResolveParent->goat->if->new->SimpleAttributeSet->else->new->SimpleAttributeSet->updateSectionAttributes->updateParagraphAttributes->updateCharacterAttributes->style->getResolveParent->if->basedOn->styleTable->get->if->basedOn->intValue->writeControlWord->nextStyle->style->getAttribute->if->nextNum->styleTable->get->if->nextNum->intValue->writeControlWord->hidden->style->getAttribute->if->hidden->booleanValue->writeControlWord->additive->style->getAttribute->if->additive->booleanValue->writeControlWord->style->getName->writeText->writeText->writeEndgroup->writeEndgroup->writeLineBreak->new->SimpleAttributeSet
+RTFGenerator#writeDocumentProperties(Document)::: generator write document properties:::i->wroteSomething->for->if->writeLineBreak
+RTFGenerator#writeRTFTrailer()::: generator write trailer:::writeEndgroup->writeLineBreak
+RTFGenerator#checkNumericControlWord(MutableAttributeSet, AttributeSet, Object, String, float, float)::: generator check numeric control word:::parm->if->attrDiff->targ->if->else->floatValue->Math->round->writeControlWord
+RTFGenerator#checkControlWord(MutableAttributeSet, AttributeSet, RTFAttribute)::: generator check control word:::parm->if->word->swingName->attrDiff->if->if->word->writeValue->currentAttributes->word->swingName->removeAttribute
+RTFGenerator#checkControlWords(MutableAttributeSet, AttributeSet, RTFAttribute[], int)::: generator check control words:::wordIndex->wordCount->for
+RTFGenerator#updateSectionAttributes(MutableAttributeSet, AttributeSet, boolean)::: generator update section attributes:::if->oldStyle->current->getAttribute->newStyle->findStyleNumber->if->if->resetSectionAttributes->if->intValue->writeControlWord->current->addAttribute->else->current->removeAttribute->checkControlWords
+RTFGenerator#resetSectionAttributes(MutableAttributeSet)::: generator reset section attributes:::writeControlWord->wordIndex->wordCount->for->currentAttributes->removeAttribute
+RTFGenerator#updateParagraphAttributes(MutableAttributeSet, AttributeSet, boolean)::: generator update paragraph attributes:::parm->oldStyle->newStyle->if->current->getAttribute->findStyleNumber->if->if->resetParagraphAttributes->else->oldTabs->current->getAttribute->newTabs->newAttributes->getAttribute->if->if->resetParagraphAttributes->if->intValue->writeControlWord->current->addAttribute->checkControlWords->if->tabs->index->for->current->addAttribute
+RTFGenerator#writeParagraphElement(Element)::: generator write paragraph element:::el->getAttributes->updateParagraphAttributes->sub_count->el->getElementCount->for->idx->writeControlWord->writeLineBreak
+RTFGenerator#resetParagraphAttributes(MutableAttributeSet)::: generator reset paragraph attributes:::writeControlWord->currentAttributes->Integer->valueOf->addAttribute->wordIndex->wordCount->for->currentAttributes->removeAttribute->currentAttributes->removeAttribute
+RTFGenerator#updateCharacterAttributes(MutableAttributeSet, AttributeSet, boolean)::: generator update character attributes:::parm->if->oldStyle->current->getAttribute->newStyle->findStyleNumber->if->if->resetCharacterAttributes->if->intValue->writeControlWord->current->addAttribute->else->current->removeAttribute->if->attrDiff->fontNum->fontTable->get->fontNum->intValue->writeControlWord->checkNumericControlWord->checkControlWords->checkNumericControlWord->if->attrDiff->colorNum->if->else->colorTable->get->intValue->writeControlWord->if->attrDiff->colorNum->if->else->colorTable->get->intValue->writeControlWord
+RTFGenerator#resetCharacterAttributes(MutableAttributeSet)::: generator reset character attributes:::writeControlWord->wordIndex->wordCount->for->StyleConstants->setFontFamily->currentAttributes->removeAttribute->currentAttributes->removeAttribute->currentAttributes->removeAttribute->currentAttributes->removeAttribute->currentAttributes->removeAttribute
+RTFGenerator#writeTextElement(Element)::: generator write text element:::el->getAttributes->updateCharacterAttributes->if->el->isLeaf->try->el->getDocument->el->getStartOffset->el->getEndOffset->el->getStartOffset->getText->catch->ble->printStackTrace->throw->ble->getMessage->new->InternalError->finally->writeText->else->sub_count->el->getElementCount->for->idx
+RTFGenerator#writeText(Segment)::: generator write text:::pos->end->array->for
+RTFGenerator#writeText(String)::: generator write text:::pos->end->s->length->for
+RTFGenerator#writeRawString(String)::: generator write raw string:::strlen->str->length->for->offset
+RTFGenerator#writeControlWord(String)::: generator write control word:::outputStream->write->writeRawString
+RTFGenerator#writeControlWord(String, int)::: generator write control word:::outputStream->write->writeRawString->String->valueOf->writeRawString
+RTFGenerator#writeBegingroup()::: generator write begingroup:::outputStream->write
+RTFGenerator#writeEndgroup()::: generator write endgroup:::outputStream->write
+RTFGenerator#writeCharacter(char)::: generator write character:::if->outputStream->write->outputStream->write->return->if->writeControlWord->return->if->return->b->convertCharacter->if->i->for->approximation->approximationForUnicode->if->approximation->length->approximation->length->writeControlWord->writeControlWord->writeRawString->writeRawString->return->if->nybble->outputStream->write->outputStream->write->outputStream->write->outputStream->write->return->switch->outputStream->write->if->outputStream->write->outputStream->write->break
+RTFGenerator#approximationForUnicode(char)::: generator approximation for unicode:::return
+RTFGenerator#outputConversionFromTranslationTable(char[])::: generator output conversion from translation table:::conversion->new->intArr->index->for->return
+RTFGenerator#outputConversionForName(String)::: generator output conversion for name:::table->RTFReader->getCharacterSet->return->outputConversionFromTranslationTable
+RTFGenerator#convertCharacter(int[], char)::: generator convert character:::index->for->return
 RTFParser#handleKeyword(String):::Implemented by subclasses to interpret a parameter-less RTF keyword:::
 RTFParser#handleKeyword(String, int):::Implemented by subclasses to interpret a keyword with a parameter.:::
 RTFParser#handleText(String):::Implemented by subclasses to interpret text from the RTF stream.:::
+RTFParser#handleText(char)::: parser handle text:::String->valueOf->handleText
 RTFParser#handleBinaryBlob(byte[]):::Implemented by subclasses to handle the contents of the \bin keyword.:::
 RTFParser#begingroup():::Implemented by subclasses to react to an increase  in the nesting level.:::
 RTFParser#endgroup():::Implemented by subclasses to react to the end of a group.:::
+RTFParser#writeSpecial(int)::: parser write special:::write
+RTFParser#warning(String)::: parser warning:::if->warnings->println
+RTFParser#write(String)::: parser write:::if->index->length->s->length->while->s->charAt->write->if->return->s->substring->if->currentCharacters->length->currentCharacters->append->else->handleText
+RTFParser#write(char)::: parser write:::ok->switch->if->break->else->if->if->currentCharacters->length->currentCharacters->toString->handleText->new->StringBuffer->begingroup->else->if->if->currentCharacters->length->currentCharacters->toString->handleText->new->StringBuffer->if->throw->new->IOException->endgroup->else->if->if->currentCharacters->length->currentCharacters->toString->handleText->new->StringBuffer->else->currentCharacters->append->break->if->break->if->Character->isLetter->newstring->new->charArr->if->new->String->handleKeyword->warning->break->if->Character->isLetter->currentCharacters->append->else->currentCharacters->toString->new->StringBuffer->if->Character->isDigit->currentCharacters->append->else->handleKeyword->if->warning->if->Character->isWhitespace->write->break->if->Character->isDigit->currentCharacters->append->else->if->pendingKeyword->equals->parameter->Long->currentCharacters->toString->parseLong->if->new->ByteArrayOutputStream->else->new->ByteArrayOutputStream->break->parameter->Integer->currentCharacters->toString->parseInt->handleKeyword->if->warning->new->StringBuffer->if->Character->isWhitespace->write->break->if->Character->digit->else->Character->digit->break->if->Character->digit->Character->digit->if->handleText->break->binaryBuf->write->if->binaryBuf->toByteArray->handleBinaryBlob
 RTFParser#flush():::Flushes any buffered but not yet written characters:::super->flush->if->currentCharacters->length->currentCharacters->toString->handleText->new->StringBuffer
 RTFParser#close():::Closes the parser:::flush->if->warning->while->endgroup->super->close
 RTFReader#handleBinaryBlob(byte[]):::Called when the RTFParser encounters a bin keyword in the  RTF stream.:::if->return
@@ -22,13 +109,58 @@ RTFReader#handleText(String):::Handles any pure text (containing no control char
 RTFReader#defaultColor():::The default color for text which has no specified color.:::return
 RTFReader#begingroup():::Called by the superclass when a new RTF group is begun:::if->oldSaveState->parserState->get->if->parserState->remove->saveState->clone->if->saveState->put->parserState->put->if->rtfDestination->begingroup
 RTFReader#endgroup():::Called by the superclass when the current RTF group is closed:::if->restoredState->parserState->get->restoredDestination->restoredState->get->if->rtfDestination->close->oldParserState->if->rtfDestination->endgroup
+RTFReader#setRTFDestination(Destination)::: reader set destination:::previousState->parserState->get->if->if->previousState->get->warning->rtfDestination->close->parserState->put
 RTFReader#close():::Called by the user when there is no more input (i.e., at the end of the RTF file.):::docProps->documentAttributes->getAttributeNames->while->docProps->hasMoreElements->propName->docProps->nextElement->target->documentAttributes->getAttribute->putProperty->warning->super->close
 RTFReader#handleKeyword(String):::Handles a parameterless RTF keyword:::item->ignoreGroupIfUnknownKeywordSave->if->return->if->textKeywords->get->handleText->return->if->keyword->equals->new->FonttblDestination->setRTFDestination->return->if->keyword->equals->new->ColortblDestination->setRTFDestination->return->if->keyword->equals->new->StylesheetDestination->setRTFDestination->return->if->keyword->equals->new->InfoDestination->setRTFDestination->return->if->keyword->equals->setCharacterSet->return->if->keyword->equals->if->setCharacterSet->else->setCharacterSet->return->if->keyword->equals->setCharacterSet->return->if->keyword->equals->setCharacterSet->return->if->keyword->equals->setCharacterSet->return->if->keyword->equals->return->if->if->rtfDestination->handleKeyword->return->if->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->keyword->equals->if->new->DiscardingDestination->setRTFDestination->return
 RTFReader#handleKeyword(String, int):::Handles an RTF keyword and its integer parameter:::ignoreGroupIfUnknownKeywordSave->if->return->if->keyword->equals->parserState->Integer->valueOf->put->return->if->keyword->equals->if->handleText->skip->parserState->get->if->skip->intValue->else->return->if->keyword->equals->new->DocumentDestination->setRTFDestination->return->if->keyword->startsWith->keyword->equals->if->if->rtfDestination->handleKeyword->return->if->new->DiscardingDestination->setRTFDestination->return
+RTFReader#setTargetAttribute(String, Object)::: reader set target attribute:::
 RTFReader#setCharacterSet(String):::setCharacterSet sets the current translation table to correspond with the named character set:::set->try->getCharacterSet->catch->warning->finally->if->else->warning->if->name->equals->try->getCharacterSet->catch->throw->new->InternalError->finally->setTargetAttribute
 RTFReader#defineCharacterSet(String, char[]):::Adds a character set to the RTFReader's list  of known character sets:::if->throw->new->IllegalArgumentException->characterSets->put
 RTFReader#getCharacterSet(String):::Looks up a named character set:::set->characterSets->get->if->charsetStream->AccessController->new->PrivilegedAction<InputStream>->doPrivileged->readCharset->defineCharacterSet->return
 RTFReader#readCharset(InputStream):::Parses a character set from an InputStream:::values->new->charArr->i->in->new->InputStreamReader->new->BufferedReader->new->StreamTokenizer->in->eolIsSignificant->in->commentChar->in->slashSlashComments->in->slashStarComments->while->ttype->try->in->nextToken->catch->throw->new->IOException->finally->if->throw->new->IOException->return
+RTFReader#readCharset(java.net.URL)::: reader read charset:::return->href->openStream->readCharset
+RTFReader.Destination#handleBinaryBlob(byte[])::: destination handle binary blob:::
+RTFReader.Destination#handleText(String)::: destination handle text:::
+RTFReader.Destination#handleKeyword(String)::: destination handle keyword:::
+RTFReader.Destination#handleKeyword(String, int)::: destination handle keyword:::
+RTFReader.Destination#begingroup()::: destination begingroup:::
+RTFReader.Destination#endgroup(Dictionary)::: destination endgroup:::
+RTFReader.Destination#close()::: destination close:::
+RTFReader.DiscardingDestination#handleBinaryBlob(byte[])::: discarding destination handle binary blob:::
+RTFReader.DiscardingDestination#handleText(String)::: discarding destination handle text:::
+RTFReader.DiscardingDestination#handleKeyword(String)::: discarding destination handle keyword:::return
+RTFReader.DiscardingDestination#handleKeyword(String, int)::: discarding destination handle keyword:::return
+RTFReader.DiscardingDestination#begingroup()::: discarding destination begingroup:::
+RTFReader.DiscardingDestination#endgroup(Dictionary)::: discarding destination endgroup:::
+RTFReader.DiscardingDestination#close()::: discarding destination close:::
+RTFReader.FonttblDestination#handleBinaryBlob(byte[])::: fonttbl destination handle binary blob:::
+RTFReader.FonttblDestination#handleText(String)::: fonttbl destination handle text:::semicolon->text->indexOf->fontName->if->text->substring->else->if->fontTable->get->else->Integer->valueOf->fontTable->put
+RTFReader.FonttblDestination#handleKeyword(String)::: fonttbl destination handle keyword:::if->keyword->charAt->keyword->substring->return->return
+RTFReader.FonttblDestination#handleKeyword(String, int)::: fonttbl destination handle keyword:::if->keyword->equals->return->return
+RTFReader.FonttblDestination#begingroup()::: fonttbl destination begingroup:::
+RTFReader.FonttblDestination#endgroup(Dictionary)::: fonttbl destination endgroup:::
+RTFReader.FonttblDestination#close()::: fonttbl destination close:::nums->fontTable->keys->warning->while->nums->hasMoreElements->num->nums->nextElement->fontTable->get->warning
+RTFReader.ColortblDestination#handleText(String)::: colortbl destination handle text:::index->for->text->length
+RTFReader.ColortblDestination#close()::: colortbl destination close:::count->proTemTable->size->warning->new->ColorArr->proTemTable->copyInto
+RTFReader.ColortblDestination#handleKeyword(String, int)::: colortbl destination handle keyword:::if->keyword->equals->else->if->keyword->equals->else->if->keyword->equals->else->return->return
+RTFReader.ColortblDestination#handleKeyword(String)::: colortbl destination handle keyword:::return
+RTFReader.ColortblDestination#begingroup()::: colortbl destination begingroup:::
+RTFReader.ColortblDestination#endgroup(Dictionary)::: colortbl destination endgroup:::
+RTFReader.ColortblDestination#handleBinaryBlob(byte[])::: colortbl destination handle binary blob:::
+RTFReader.StylesheetDestination#begingroup()::: stylesheet destination begingroup:::new->StyleDefiningDestination->setRTFDestination
+RTFReader.StylesheetDestination#close()::: stylesheet destination close:::chrStyles->new->Vector<Style>->pgfStyles->new->Vector<Style>->secStyles->new->Vector<Style>->styles->definedStyles->elements->while->styles->hasMoreElements->style->defined->styles->nextElement->style->realize->warning->stype->defined->getAttribute->toSet->if->stype->equals->else->if->stype->equals->else->if->toSet->size->toSet->setSize->toSet->setElementAt->if->chrStyles->isEmpty->styleArray->chrStyles->size->new->StyleArr->chrStyles->copyInto->if->pgfStyles->isEmpty->styleArray->pgfStyles->size->new->StyleArr->pgfStyles->copyInto->if->secStyles->isEmpty->styleArray->secStyles->size->new->StyleArr->secStyles->copyInto
+RTFReader.StylesheetDestination.StyleDefiningDestination#handleText(String)::: style defining destination handle text:::if->else
+RTFReader.StylesheetDestination.StyleDefiningDestination#close()::: style defining destination close:::semicolon->styleName->indexOf->if->styleName->substring->definedStyles->Integer->valueOf->put->super->close
+RTFReader.StylesheetDestination.StyleDefiningDestination#handleKeyword(String)::: style defining destination handle keyword:::if->keyword->equals->return->if->keyword->equals->return->return->super->handleKeyword
+RTFReader.StylesheetDestination.StyleDefiningDestination#handleKeyword(String, int)::: style defining destination handle keyword:::if->keyword->equals->else->if->keyword->equals->else->if->keyword->equals->else->if->keyword->equals->else->if->keyword->equals->else->return->super->handleKeyword->return
+RTFReader.StylesheetDestination.StyleDefiningDestination#realize()::: style defining destination realize:::basis->next->if->return->if->styleDest->definedStyles->Integer->valueOf->get->if->styleDest->realize->target->addStyle->if->realizedStyle->currentTextAttributes->addAttributes->realizedStyle->addAttribute->else->if->realizedStyle->currentSectionAttributes->addAttributes->realizedStyle->addAttribute->else->realizedStyle->currentParagraphAttributes->addAttributes->realizedStyle->addAttribute->if->styleDest->definedStyles->Integer->valueOf->get->if->styleDest->realize->if->realizedStyle->addAttribute->realizedStyle->Boolean->valueOf->addAttribute->realizedStyle->Boolean->valueOf->addAttribute->return
+RTFReader.AttributeTrackingDestination#handleText(String)::: attribute tracking destination handle text:::
+RTFReader.AttributeTrackingDestination#handleBinaryBlob(byte[])::: attribute tracking destination handle binary blob:::warning
+RTFReader.AttributeTrackingDestination#begingroup()::: attribute tracking destination begingroup:::characterParent->currentTextAttributes->paragraphParent->currentParagraphAttributes->sectionParent->currentSectionAttributes->new->SimpleAttributeSet->characterAttributes->addAttributes->parserState->put->new->SimpleAttributeSet->paragraphAttributes->addAttributes->parserState->put->new->SimpleAttributeSet->sectionAttributes->addAttributes->parserState->put
+RTFReader.AttributeTrackingDestination#endgroup(Dictionary)::: attribute tracking destination endgroup:::parserState->get->parserState->get->parserState->get
+RTFReader.AttributeTrackingDestination#close()::: attribute tracking destination close:::
+RTFReader.AttributeTrackingDestination#handleKeyword(String)::: attribute tracking destination handle keyword:::if->keyword->equals->return->handleKeyword->attr->straightforwardAttributes->get->if->ok->switch->attr->domain->attr->set->break->attr->set->break->attr->set->break->attr->set->break->attr->set->break->break->if->return->if->keyword->equals->resetCharacterAttributes->return->if->keyword->equals->resetParagraphAttributes->return->if->keyword->equals->resetSectionAttributes->return->return
+RTFReader.AttributeTrackingDestination#handleKeyword(String, int)::: attribute tracking destination handle keyword:::booleanParameter->if->keyword->equals->if->keyword->equals->parserState->Integer->valueOf->put->return->if->keyword->equals->parserState->Integer->valueOf->put->return->attr->straightforwardAttributes->get->if->ok->switch->attr->domain->attr->set->break->attr->set->break->attr->set->break->attr->set->break->attr->set->break->break->if->return->if->keyword->equals->StyleConstants->setFontSize->return->if->keyword->equals->if->characterAttributes->removeAttribute->else->StyleConstants->setLineSpacing->return->if->keyword->equals->keyword->equals->tabPosition->tabAlignment->tabLeader->item->parserState->get->if->item->intValue->parserState->get->if->item->intValue->if->keyword->equals->parserState->remove->parserState->remove->newStop->new->TabStop->tabs->stopCount->tmp->parserState->get->if->new->Hashtable<Object,Object>->parserState->put->Integer->valueOf->else->tabs->get->Integer->stopCount->intValue->valueOf->tabs->put->tabs->put->parserState->remove->return->if->keyword->equals->parserState->put->return->if->keyword->equals->parserState->put->return->if->keyword->equals->parserState->put->return->return
 RTFReader.AttributeTrackingDestination#rootCharacterAttributes():::Returns a new MutableAttributeSet containing the  default character attributes:::set->new->SimpleAttributeSet->StyleConstants->setItalic->StyleConstants->setBold->StyleConstants->setUnderline->StyleConstants->defaultColor->setForeground->return
 RTFReader.AttributeTrackingDestination#rootParagraphAttributes():::Returns a new MutableAttributeSet containing the  default paragraph attributes:::set->new->SimpleAttributeSet->StyleConstants->setLeftIndent->StyleConstants->setRightIndent->StyleConstants->setFirstLineIndent->set->target->getStyle->setResolveParent->return
 RTFReader.AttributeTrackingDestination#rootSectionAttributes():::Returns a new MutableAttributeSet containing the  default section attributes:::set->new->SimpleAttributeSet->return
@@ -38,3 +170,14 @@ RTFReader.AttributeTrackingDestination#currentSectionAttributes():::Calculates t
 RTFReader.AttributeTrackingDestination#resetCharacterAttributes():::Resets the filter's internal notion of the current character  attributes to their default values:::handleKeyword->handleKeyword->handleKeyword->attributes->straightforwardAttributes->elements->while->attributes->hasMoreElements->attr->attributes->nextElement->if->attr->domain->attr->setDefault->handleKeyword->parserState->remove
 RTFReader.AttributeTrackingDestination#resetParagraphAttributes():::Resets the filter's internal notion of the current paragraph's  attributes to their default values:::parserState->remove->parserState->remove->parserState->remove->StyleConstants->setAlignment->attributes->straightforwardAttributes->elements->while->attributes->hasMoreElements->attr->attributes->nextElement->if->attr->domain->attr->setDefault
 RTFReader.AttributeTrackingDestination#resetSectionAttributes():::Resets the filter's internal notion of the current section's  attributes to their default values:::attributes->straightforwardAttributes->elements->while->attributes->hasMoreElements->attr->attributes->nextElement->if->attr->domain->attr->setDefault->parserState->remove
+RTFReader.TextHandlingDestination#handleText(String)::: text handling destination handle text:::if->beginParagraph->currentTextAttributes->deliverText
+RTFReader.TextHandlingDestination#deliverText(String, AttributeSet)::: text handling destination deliver text:::
+RTFReader.TextHandlingDestination#close()::: text handling destination close:::if->endParagraph->super->close
+RTFReader.TextHandlingDestination#handleKeyword(String)::: text handling destination handle keyword:::if->keyword->equals->keyword->equals->if->keyword->equals->endParagraph->return->if->keyword->equals->endSection->return->return->super->handleKeyword
+RTFReader.TextHandlingDestination#beginParagraph()::: text handling destination begin paragraph:::
+RTFReader.TextHandlingDestination#endParagraph()::: text handling destination end paragraph:::pgfAttributes->currentParagraphAttributes->chrAttributes->currentTextAttributes->finishParagraph
+RTFReader.TextHandlingDestination#finishParagraph(AttributeSet, AttributeSet)::: text handling destination finish paragraph:::
+RTFReader.TextHandlingDestination#endSection()::: text handling destination end section:::
+RTFReader.DocumentDestination#deliverText(String, AttributeSet)::: document destination deliver text:::try->target->target->getLength->currentTextAttributes->insertString->catch->throw->ble->getMessage->new->InternalError->finally
+RTFReader.DocumentDestination#finishParagraph(AttributeSet, AttributeSet)::: document destination finish paragraph:::pgfEndPosition->target->getLength->try->target->insertString->target->setParagraphAttributes->catch->throw->ble->getMessage->new->InternalError->finally
+RTFReader.DocumentDestination#endSection()::: document destination end section:::

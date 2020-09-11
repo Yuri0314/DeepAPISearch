@@ -20,6 +20,8 @@ BoolStack#peek():::Looks at the object at the top of this stack without removing
 BoolStack#peekOrFalse():::Looks at the object at the top of this stack without removing it from the stack:::return
 BoolStack#peekOrTrue():::Looks at the object at the top of this stack without removing it from the stack:::return
 BoolStack#isEmpty():::Tests if this stack is empty.:::return
+BoolStack#grow():::Grows the size of the stack:::newVector->new->booleanArr->System->arraycopy
+BoolStack#clone()::: bool stack clone:::return->super->clone
 CharKey#setChar(char):::Get the hash value of the character.:::
 CharKey#hashCode():::Get the hash value of the character.:::return
 CharKey#equals(Object):::Override of equals() for this object:::return
@@ -29,11 +31,17 @@ DefaultErrorHandler#fatalError(SAXParseException):::Receive notification of a no
 DefaultErrorHandler#warning(TransformerException):::Receive notification of a warning:::printLocation->m_pw->exception->getMessage->println
 DefaultErrorHandler#error(TransformerException):::Receive notification of a recoverable error:::if->throw->else->printLocation->m_pw->exception->getMessage->println
 DefaultErrorHandler#fatalError(TransformerException):::Receive notification of a non-recoverable error:::if->throw->else->printLocation->m_pw->exception->getMessage->println
+DefaultErrorHandler#ensureLocationSet(TransformerException)::: default error handler ensure location set:::locator->cause->do->if->new->SAXSourceLocator->else->if->causeLocator->getLocator->if->if->getCause->else->if->getException->else->while->exception->setLocator
+DefaultErrorHandler#printLocation(PrintStream, TransformerException)::: default error handler print location:::new->PrintWriter->printLocation
+DefaultErrorHandler#printLocation(java.io.PrintStream, org.xml.sax.SAXParseException)::: default error handler print location:::new->PrintWriter->printLocation
+DefaultErrorHandler#printLocation(PrintWriter, Throwable)::: default error handler print location:::locator->cause->do->if->new->SAXSourceLocator->else->if->causeLocator->getLocator->if->if->getCause->else->if->getException->else->if->getException->else->while->if->id->locator->getPublicId->locator->getPublicId->locator->getSystemId->locator->getSystemId->XMLMessages->createXMLMessage->pw->XMLMessages->createXMLMessage->locator->getLineNumber->XMLMessages->createXMLMessage->locator->getColumnNumber->print->else->pw->XMLMessages->createXMLMessage->print
 DOM2Helper#getLocalNameOfNode(Node):::Returns the local name of the given node, as defined by the XML Namespaces specification:::name->n->getLocalName->return->getLocalNameOfNodeFallback
+DOM2Helper#getLocalNameOfNodeFallback(Node):::Returns the local name of the given node:::qname->n->getNodeName->index->qname->indexOf->return->qname->substring
 DOM2Helper#getNamespaceOfNode(Node):::Returns the Namespace Name (Namespace URI) for the given node:::return->n->getNamespaceURI
 DOM2Helper#isNodeAfter(Node, Node):::Figure out whether node2 should be considered as being later in the document than node1, in Document Order as defined by the XPath model:::if->isNodeTheSame->return->isNodeAfter->parent1->getParentOfNode->parent2->getParentOfNode->if->isNodeTheSame->if->isNodeAfterSibling->else->nParents1->nParents2->while->getParentOfNode->while->getParentOfNode->startNode1->startNode2->if->adjust->for->i->else->if->adjust->for->i->prevChild1->prevChild2->while->if->isNodeTheSame->if->break->else->isNodeAfterSibling->break->getParentOfNode->getParentOfNode->return
 DOM2Helper#isNodeTheSame(Node, Node):::Use DTMNodeProxy to determine whether two nodes are the same.:::if->return->equals->else->return
 DOM2Helper#getParentOfNode(Node):::Get the XPath-model parent of a node:::parent->node->getParentNode->if->node->getNodeType->getOwnerElement->return
+DOM2Helper#isNodeAfterSibling(Node, Node, Node):::Figure out if child2 is after child1 in document order:::isNodeAfterSibling->child1type->child1->getNodeType->child2type->child2->getNodeType->if->else->if->else->if->children->parent->getAttributes->nNodes->children->getLength->found1->found2->for->i->else->child->parent->getFirstChild->found1->found2->while->if->isNodeTheSame->if->break->else->if->isNodeTheSame->if->break->child->getNextSibling->return
 DOMBuilder#getRootDocument():::Get the root document or DocumentFragment of the DOM being created.:::return
 DOMBuilder#getRootNode():::Get the root node of the DOM tree.:::return
 DOMBuilder#getCurrentNode():::Get the node currently being processed.:::return
@@ -53,6 +61,7 @@ DOMBuilder#startEntity(String):::Report the beginning of an entity:::
 DOMBuilder#endEntity(String):::Report the end of an entity.:::
 DOMBuilder#entityReference(String):::Receive notivication of a entityReference.:::m_doc->createEntityReference->append
 DOMBuilder#ignorableWhitespace(char[], int, int):::Receive notification of ignorable whitespace in element content:::if->isOutsideDocElem->return->s->new->String->m_doc->createTextNode->append
+DOMBuilder#isOutsideDocElem():::Tell if the current node is outside the document element.:::return->m_elemStack->size->m_currentNode->getNodeType
 DOMBuilder#processingInstruction(String, String):::Receive notification of a processing instruction:::m_doc->createProcessingInstruction->append
 DOMBuilder#comment(char[], int, int):::Report an XML comment anywhere in the document:::m_doc->new->String->createComment->append
 DOMBuilder#startCDATA():::Report the start of a CDATA section.:::m_doc->createCDATASection->append
@@ -70,12 +79,17 @@ FastStringBuffer#size():::Get the length of the list:::return
 FastStringBuffer#length():::Get the length of the list:::return
 FastStringBuffer#reset():::Discard the content of the FastStringBuffer, and most of the memory that was allocated by it, restoring the initial state:::innermost->while->new->charArrs->new->charArr
 FastStringBuffer#setLength(int):::Directly set how much of the FastStringBuffer's storage is to be considered part of its content:::if->m_innerFSB->setLength->else->if
+FastStringBuffer#setLength(int, FastStringBuffer):::Subroutine for the public setLength() method:::if->m_innerFSB->setLength->else
 FastStringBuffer#toString():::Note that this operation has been somewhat deoptimized by the shift to a chunked array, as there is no factory method to produce a String object directly from an array of arrays and hence a double copy is needed:::length->return->new->StringBuffer->getString->toString
 FastStringBuffer#append(char):::Append a single character onto the FastStringBuffer, growing the storage if necessary:::chunk->lastchunk->if->else->i->if->newarray->new->charArrs->System->arraycopy->if->if->new->FastStringBuffer->new->charArr
 FastStringBuffer#append(String):::Append the contents of a String onto the FastStringBuffer, growing the storage if necessary:::if->return->strlen->value->length->if->return->copyfrom->chunk->available->while->if->value->getChars->if->i->if->newarray->new->charArrs->System->arraycopy->if->if->new->FastStringBuffer->new->charArr
 FastStringBuffer#append(StringBuffer):::Append the contents of a StringBuffer onto the FastStringBuffer, growing the storage if necessary:::if->return->strlen->value->length->if->return->copyfrom->chunk->available->while->if->value->getChars->if->i->if->newarray->new->charArrs->System->arraycopy->if->if->new->FastStringBuffer->new->charArr
 FastStringBuffer#append(char[], int, int):::Append part of the contents of a Character Array onto the FastStringBuffer,  growing the storage if necessary:::strlen->if->return->copyfrom->chunk->available->while->if->System->arraycopy->if->i->if->newarray->new->charArrs->System->arraycopy->if->if->new->FastStringBuffer->new->charArr
 FastStringBuffer#append(FastStringBuffer):::Append the contents of another FastStringBuffer onto this FastStringBuffer, growing the storage if necessary:::if->return->strlen->value->length->if->return->copyfrom->chunk->available->while->if->sourcechunk->sourcecolumn->runlength->if->System->arraycopy->if->System->arraycopy->if->i->if->newarray->new->charArrs->System->arraycopy->if->if->new->FastStringBuffer->new->charArr
+FastStringBuffer#isWhitespace(int, int)::: fast string buffer is whitespace:::sourcechunk->sourcecolumn->available->chunkOK->while->runlength->if->m_innerFSB->isWhitespace->else->isWhiteSpace->if->return->return
+FastStringBuffer#getString(int, int)::: fast string buffer get string:::startColumn->startChunk->if->return->getOneChunkString->return->new->StringBuffer->getString->toString
+FastStringBuffer#getOneChunkString(int, int, int)::: fast string buffer get one chunk string:::return->new->String
+FastStringBuffer#getString(StringBuffer, int, int)::: fast string buffer get string:::return->getString
 FastStringBuffer#getString(StringBuffer, int, int, int):::Internal support for toString() and getString():::stop->stopChunk->stopColumn->for->i->if->m_innerFSB->getString->else->if->sb->append->return
 FastStringBuffer#charAt(int):::Get a single character from the string buffer.:::startChunk->if->return->m_innerFSB->charAt->else->return
 FastStringBuffer#sendSAXcharacters(org.xml.sax.ContentHandler, int, int):::Sends the specified range of characters as one or more SAX characters() events:::startChunk->startColumn->if->ch->characters->return->stop->stopChunk->stopColumn->for->i->if->m_innerFSB->sendSAXcharacters->else->if->ch->characters
@@ -83,8 +97,10 @@ FastStringBuffer#sendNormalizedSAXcharacters(org.xml.sax.ContentHandler, int, in
 FastStringBuffer#sendNormalizedSAXcharacters(char[], int, int, org.xml.sax.ContentHandler, int):::Internal method to directly normalize and dispatch the character array:::processingLeadingWhitespace->seenWhitespace->suppressTrailingWhitespace->currPos->limit->if->for->XMLCharacterRecognizer->isWhiteSpace->if->return->while->startNonWhitespace->for->XMLCharacterRecognizer->isWhiteSpace->if->if->handler->characters->handler->characters->startWhitespace->for->XMLCharacterRecognizer->isWhiteSpace->if->return
 FastStringBuffer#sendNormalizedSAXcharacters(char[], int, int, org.xml.sax.ContentHandler):::Directly normalize and dispatch the character array.:::sendNormalizedSAXcharacters
 FastStringBuffer#sendSAXComment(org.xml.sax.ext.LexicalHandler, int, int):::Sends the specified range of characters as sax Comment:::comment->getString->ch->comment->toCharArray->comment
+FastStringBuffer#getChars(int, int, char[], int):::Copies characters from this string into the destination character array.:::
 IntStack#push(int):::Pushes an item onto the top of this stack.:::if->newMap->new->intArr->System->arraycopy->return
 IntStack#pop():::Removes the object at the top of this stack and returns that object as the value of this function.:::return
+IntStack#quickPop(int)::: int stack quick pop:::
 IntStack#peek():::Looks at the object at the top of this stack without removing it from the stack.:::try->return->catch->throw->new->EmptyStackException->finally
 IntStack#peek(int):::Looks at the object at the position the stack counting down n items.:::try->return->catch->throw->new->EmptyStackException->finally
 IntStack#setTop(int):::Sets an object at a the top of the statck:::try->catch->throw->new->EmptyStackException->finally
@@ -122,6 +138,7 @@ ListingErrorHandler#setThrowOnError(boolean):::User-settable behavior: when to r
 ListingErrorHandler#getThrowOnError():::User-settable behavior: when to re-throw exceptions.:::return
 ListingErrorHandler#setThrowOnFatalError(boolean):::User-settable behavior: when to re-throw exceptions:::
 ListingErrorHandler#getThrowOnFatalError():::User-settable behavior: when to re-throw exceptions.:::return
+LocaleUtility#langToLocale(String)::: locale utility lang to locale:::if->lang->equals->return->Locale->getDefault->language->country->variant->i1->lang->indexOf->if->else->lang->substring->i2->lang->indexOf->if->lang->substring->else->lang->substring->lang->substring->if->language->length->language->toLowerCase->else->if->country->length->country->toUpperCase->else->if->variant->length->language->length->country->length->variant->toUpperCase->else->return->new->Locale
 MutableAttrListImpl#addAttribute(String, String, String, String, String):::Add an attribute to the end of the list:::if->index->this->getIndex->if->this->setAttribute->else->super->addAttribute
 MutableAttrListImpl#addAttributes(Attributes):::Add the contents of the attribute list to this list.:::nAtts->atts->getLength->for->i
 MutableAttrListImpl#contains(String):::Return true if list contains the given (raw) attribute name.:::return->getValue
@@ -159,6 +176,7 @@ ObjectPool#getInstance():::Get an instance of the given object in this pool:::if
 ObjectPool#freeInstance(Object):::Add an instance of the given object to the pool:::freeStack->add
 ObjectStack#push(Object):::Pushes an item onto the top of this stack.:::if->newMap->new->ObjectArr->System->arraycopy->return
 ObjectStack#pop():::Removes the object at the top of this stack and returns that object as the value of this function.:::val->return
+ObjectStack#quickPop(int)::: object stack quick pop:::
 ObjectStack#peek():::Looks at the object at the top of this stack without removing it from the stack.:::try->return->catch->throw->new->EmptyStackException->finally
 ObjectStack#peek(int):::Looks at the object at the position the stack counting down n items.:::try->return->catch->throw->new->EmptyStackException->finally
 ObjectStack#setTop(Object):::Sets an object at a the top of the statck:::try->catch->throw->new->EmptyStackException->finally
@@ -180,13 +198,16 @@ ObjectVector#contains(Object):::Tell if the table contains the given Object.:::f
 ObjectVector#indexOf(Object, int):::Searches for the first occurence of the given argument, beginning the search at index, and testing for equality using the equals method.:::for->i->return
 ObjectVector#indexOf(Object):::Searches for the first occurence of the given argument, beginning the search at index, and testing for equality using the equals method.:::for->i->return
 ObjectVector#lastIndexOf(Object):::Searches for the first occurence of the given argument, beginning the search at index, and testing for equality using the equals method.:::for->i->return
+ObjectVector#setToSize(int)::: object vector set to size:::newMap->new->ObjectArr->System->arraycopy
 ObjectVector#clone():::Returns clone of current ObjectVector:::return->new->ObjectVector
 PrefixResolver#getNamespaceForPrefix(String):::Given a namespace, get the corrisponding prefix:::
 PrefixResolver#getNamespaceForPrefix(String, org.w3c.dom.Node):::Given a namespace, get the corresponding prefix, based on the context node.:::
 PrefixResolver#getBaseIdentifier():::Return the base identifier.:::
+PrefixResolver#handlesNullPrefixes()::: prefix resolver handles null prefixes:::
 PrefixResolverDefault#getNamespaceForPrefix(String):::Given a namespace, get the corrisponding prefix:::return->getNamespaceForPrefix
 PrefixResolverDefault#getNamespaceForPrefix(String, org.w3c.dom.Node):::Given a namespace, get the corrisponding prefix:::parent->namespace->if->prefix->equals->else->type->while->parent->getNodeType->if->if->parent->getNodeName->indexOf->return->parent->getNamespaceURI->nnm->parent->getAttributes->for->i->nnm->getLength->parent->getParentNode->return
 PrefixResolverDefault#getBaseIdentifier():::Return the base identifier.:::return
+PrefixResolverDefault#handlesNullPrefixes()::: prefix resolver default handles null prefixes:::return
 QName#getNamespaceURI():::Returns the namespace URI:::return
 QName#getPrefix():::Returns the namespace prefix:::return
 QName#getLocalName():::Returns the local part of the qualified name.:::return
@@ -203,6 +224,7 @@ QName#getPrefixFromXMLNSDecl(String):::This function tells if a raw attribute na
 QName#getLocalPart(String):::Returns the local name of the given node.:::index->qname->indexOf->return->qname->substring
 QName#getPrefixPart(String):::Returns the local name of the given node.:::index->qname->indexOf->return->qname->substring
 RawCharacterHandler#charactersRaw(char[], int, int):::Serialize the characters without escaping.:::
+SafeThread#run()::: safe thread run:::if->Thread->currentThread->throw->new->IllegalStateException->synchronized->if->else->throw->new->IllegalStateException->super->run
 SafeThread#eraseThreadLocals():::Drops all thread locals (and inherited thread locals).:::UNSAFE->putObject->UNSAFE->putObject
 SAXSourceLocator#getPublicId():::Return the public identifier for the current document event:::return->super->getPublicId->m_locator->getPublicId
 SAXSourceLocator#getSystemId():::Return the system identifier for the current document event:::return->super->getSystemId->m_locator->getSystemId
@@ -218,6 +240,13 @@ SerializableLocatorImpl#setLineNumber(int):::Set the line number for this locato
 SerializableLocatorImpl#setColumnNumber(int):::Set the column number for this locator (1-based).:::
 StringBufferPool#get():::Get the first free instance of a string buffer, or create one if there are no free instances.:::return->m_stringBufPool->getInstance
 StringBufferPool#free(FastStringBuffer):::Return a string buffer back to the pool.:::sb->setLength->m_stringBufPool->freeInstance
+StringComparable#getComparator(String, Locale, Collator, String)::: string comparable get comparator:::if->caseOrder->length->return->getCollationKey->else->return->new->StringComparable
+StringComparable#toString()::: string comparable to string:::return
+StringComparable#compareTo(StringComparable)::: string comparable compare to:::pattern->o->toString->if->m_text->equals->return->savedStrength->m_collator->getStrength->comp->if->m_collator->compare->else->m_collator->setStrength->m_collator->compare->m_collator->setStrength->if->return->getCaseDiff->if->return->else->return->m_collator->compare
+StringComparable#getCaseDiff(String, String)::: string comparable get case diff:::savedStrength->m_collator->getStrength->savedDecomposition->m_collator->getDecomposition->m_collator->setStrength->m_collator->setDecomposition->diff->getFirstCaseDiff->m_collator->setStrength->m_collator->setDecomposition->if->if->equals->if->return->else->return->else->if->return->else->return->else->return
+StringComparable#getFirstCaseDiff(String, String, Locale)::: string comparable get first case diff:::targIter->m_collator->getCollationElementIterator->patIter->m_collator->getCollationElementIterator->startTarg->endTarg->startPatt->endPatt->done->getElement->patternElement->targetElement->getPattern->getTarget->while->if->patIter->getOffset->patIter->next->getElement->patIter->getOffset->if->targIter->getOffset->targIter->next->getElement->targIter->getOffset->if->return->else->if->else->if->else->if->if->subText->text->substring->subPatt->pattern->substring->subTextUp->subText->toUpperCase->subPattUp->subPatt->toUpperCase->if->m_collator->compare->continue->diff->if->m_collator->compare->else->if->m_collator->subText->toLowerCase->compare->if->m_collator->compare->else->if->m_collator->subPatt->toLowerCase->compare->if->return->else->continue->else->continue
+StringComparable#getMask(int)::: string comparable get mask:::switch->return->return->return
+StringComparable#getElement(int)::: string comparable get element:::return
 StringToIntTable#getLength():::Get the length of the list.:::return
 StringToIntTable#put(String, int):::Append a string onto the vector.:::if->newMap->new->StringArr->System->arraycopy->newValues->new->intArr->System->arraycopy
 StringToIntTable#get(String):::Tell if the table contains the given string.:::for->i->return
@@ -256,28 +285,49 @@ StylesheetPIHandler#getAssociatedStylesheet():::Return the last stylesheet found
 StylesheetPIHandler#processingInstruction(String, String):::Handle the xml-stylesheet processing instruction.:::if->target->equals->href->type->title->media->charset->alternate->tokenizer->new->StringTokenizer->lookedAhead->source->token->while->tokenizer->hasMoreTokens->if->tokenizer->nextToken->else->if->tokenizer->hasMoreTokens->token->equals->token->equals->token->equals->continue->name->if->name->equals->tokenizer->nextToken->while->tokenizer->hasMoreTokens->token->equals->token->equals->token->equals->tokenizer->nextToken->token->token->length->substring->else->if->name->equals->tokenizer->nextToken->while->tokenizer->hasMoreTokens->token->equals->token->equals->token->equals->tokenizer->nextToken->if->tokenizer->hasMoreTokens->tokenizer->nextToken->while->token->equals->tokenizer->hasMoreTokens->tokenizer->nextToken->if->tokenizer->hasMoreTokens->tokenizer->nextToken->else->break->href->href->length->substring->try->if->m_uriResolver->resolve->else->SystemIDResolver->getAbsoluteURI->new->InputSource->new->SAXSource->catch->throw->new->org.xml.sax.SAXException->finally->else->if->name->equals->tokenizer->nextToken->while->tokenizer->hasMoreTokens->token->equals->token->equals->token->equals->tokenizer->nextToken->token->token->length->substring->else->if->name->equals->tokenizer->nextToken->while->tokenizer->hasMoreTokens->token->equals->token->equals->token->equals->tokenizer->nextToken->token->token->length->substring->else->if->name->equals->tokenizer->nextToken->while->tokenizer->hasMoreTokens->token->equals->token->equals->token->equals->tokenizer->nextToken->token->token->length->substring->else->if->name->equals->tokenizer->nextToken->while->tokenizer->hasMoreTokens->token->equals->token->equals->token->equals->tokenizer->nextToken->token->token->length->substring->equals->if->type->equals->type->equals->type->equals->if->if->if->media->equals->return->else->return->if->if->if->charset->equals->return->else->return->if->if->if->title->equals->return->else->return->m_stylesheets->add
 StylesheetPIHandler#startElement(String, String, String, Attributes):::The spec notes that "The xml-stylesheet processing instruction is allowed only in the prolog of an XML document.", so, at least for right now, I'm going to go ahead an throw a TransformerException in order to stop the parse.:::throw->new->StopParseException
 StylesheetPIHandler#setBaseId(String):::Added additional getter and setter methods for the Base Id to fix bugzilla bug 24187:::
+StylesheetPIHandler#getBaseId()::: stylesheet handler get base id:::return
 SuballocatedByteVector#size():::Get the length of the list.:::return
+SuballocatedByteVector#setSize(int):::Set the length of the list.:::if
 SuballocatedByteVector#addElement(byte):::Append a byte onto the vector.:::if->else->index->offset->if->newsize->newMap->new->byteArrs->System->arraycopy->block->if->new->byteArr
+SuballocatedByteVector#addElements(byte, int):::Append several byte values onto the vector.:::if->for->i->else->index->offset->while->if->newsize->newMap->new->byteArrs->System->arraycopy->block->if->new->byteArr->copied->while
+SuballocatedByteVector#addElements(int):::Append several slots onto the vector, but do not set the values:::newlen->if->index->newindex->for->i
+SuballocatedByteVector#insertElementAt(byte, int):::Inserts the specified node in this vector at the specified index:::if->addElement->else->if->index->if->newsize->newMap->new->byteArrs->System->arraycopy->block->if->new->byteArr->offset->else->index->maxindex->offset->push->while->copylen->block->if->new->byteArr->else->System->arraycopy
 SuballocatedByteVector#removeAllElements():::Wipe it out.:::
+SuballocatedByteVector#removeElement(byte):::Removes the first occurrence of the argument from this vector:::at->indexOf->if->return->removeElementAt->return
+SuballocatedByteVector#removeElementAt(int):::Deletes the component at the specified index:::if->index->maxindex->offset->while->copylen->block->if->new->byteArr->else->System->arraycopy->if->next->if->else
 SuballocatedByteVector#setElementAt(byte, int):::Sets the component at the specified index of this vector to be the specified object:::if->return->index->offset->if->newsize->newMap->new->byteArrs->System->arraycopy->block->if->new->byteArr->if
 SuballocatedByteVector#elementAt(int):::Get the nth element:::if->return->return
+SuballocatedByteVector#contains(byte):::Tell if the table contains the given node.:::return->indexOf
 SuballocatedByteVector#indexOf(byte, int):::Searches for the first occurence of the given argument, beginning the search at index, and testing for equality using the equals method.:::if->return->bindex->boffset->maxindex->block->for->maxoffset->for->offset->return
 SuballocatedByteVector#indexOf(byte):::Searches for the first occurence of the given argument, beginning the search at index, and testing for equality using the equals method.:::return->indexOf
+SuballocatedByteVector#lastIndexOf(byte):::Searches for the first occurence of the given argument, beginning the search at index, and testing for equality using the equals method.:::boffset->for->index->return
 SuballocatedIntVector#size():::Get the length of the list.:::return
 SuballocatedIntVector#setSize(int):::Set the length of the list:::if
 SuballocatedIntVector#addElement(int):::Append a int onto the vector.:::indexRelativeToCache->if->else->index->offset->if->newsize->newMap->new->intArrs->System->arraycopy->block->if->new->intArr
+SuballocatedIntVector#addElements(int, int):::Append several int values onto the vector.:::if->for->i->else->index->offset->while->if->newsize->newMap->new->intArrs->System->arraycopy->block->if->new->intArr->copied->while
+SuballocatedIntVector#addElements(int):::Append several slots onto the vector, but do not set the values:::newlen->if->index->newindex->for->i
+SuballocatedIntVector#insertElementAt(int, int):::Inserts the specified node in this vector at the specified index:::if->addElement->else->if->index->if->newsize->newMap->new->intArrs->System->arraycopy->block->if->new->intArr->offset->else->index->maxindex->offset->push->while->copylen->block->if->new->intArr->else->System->arraycopy
 SuballocatedIntVector#removeAllElements():::Wipe it out:::
+SuballocatedIntVector#removeElement(int):::Removes the first occurrence of the argument from this vector:::at->indexOf->if->return->removeElementAt->return
+SuballocatedIntVector#removeElementAt(int):::Deletes the component at the specified index:::if->index->maxindex->offset->while->copylen->block->if->new->intArr->else->System->arraycopy->if->next->if->else
 SuballocatedIntVector#setElementAt(int, int):::Sets the component at the specified index of this vector to be the specified object:::if->else->index->offset->if->newsize->newMap->new->intArrs->System->arraycopy->block->if->new->intArr->if
 SuballocatedIntVector#elementAt(int):::Get the nth element:::if->return->return
+SuballocatedIntVector#contains(int):::Tell if the table contains the given node.:::return->indexOf
 SuballocatedIntVector#indexOf(int, int):::Searches for the first occurence of the given argument, beginning the search at index, and testing for equality using the equals method.:::if->return->bindex->boffset->maxindex->block->for->maxoffset->for->offset->return
 SuballocatedIntVector#indexOf(int):::Searches for the first occurence of the given argument, beginning the search at index, and testing for equality using the equals method.:::return->indexOf
+SuballocatedIntVector#lastIndexOf(int):::Searches for the first occurence of the given argument, beginning the search at index, and testing for equality using the equals method.:::boffset->for->index->return
 SuballocatedIntVector#getMap0():::Return the internal m_map0 array:::return
 SuballocatedIntVector#getMap():::Return the m_map double array:::return
 SystemIDResolver#getAbsoluteURIFromRelative(String):::Get an absolute URI from a given relative URI (local path):::if->localPath->length->return->absolutePath->if->isAbsolutePath->try->getAbsolutePathFromRelativePath->catch->return->finally->urlString->if->if->absolutePath->startsWith->else->else->return->replaceChars
+SystemIDResolver#getAbsolutePathFromRelativePath(String):::Return an absolute path from a relative path.:::return->new->File->getAbsolutePath
 SystemIDResolver#isAbsoluteURI(String):::Return true if the systemId denotes an absolute URI .:::if->isWindowsAbsolutePath->return->fragmentIndex->systemId->indexOf->queryIndex->systemId->indexOf->slashIndex->systemId->indexOf->colonIndex->systemId->indexOf->index->systemId->length->if->if->if->return
 SystemIDResolver#isAbsolutePath(String):::Return true if the local path is an absolute path.:::if->return->file->new->File->return->file->isAbsolute
+SystemIDResolver#isWindowsAbsolutePath(String):::Return true if the local path is a Windows absolute path.:::if->isAbsolutePath->return->if->systemId->length->systemId->charAt->Character->systemId->charAt->isLetter->systemId->charAt->systemId->charAt->return->else->return
+SystemIDResolver#replaceChars(String):::Replace spaces with "%20" and backslashes with forward slashes in the input string to generate a well-formed URI string.:::buf->new->StringBuffer->length->buf->length->for->i->return->buf->toString
 SystemIDResolver#getAbsoluteURI(String):::Take a SystemID string and try to turn it into a good absolute URI.:::absoluteURI->if->isAbsoluteURI->if->systemId->startsWith->str->systemId->substring->if->str->startsWith->if->str->startsWith->str->startsWith->secondColonIndex->systemId->indexOf->if->localPath->systemId->substring->try->if->isAbsolutePath->systemId->substring->getAbsolutePathFromRelativePath->catch->return->finally->else->return->systemId->substring->getAbsoluteURIFromRelative->return->replaceChars->else->return->else->return->getAbsoluteURIFromRelative
 SystemIDResolver#getAbsoluteURI(String, String):::Take a SystemID string and try to turn it into a good absolute URI.:::if->return->getAbsoluteURI->absoluteBase->getAbsoluteURI->uri->try->baseURI->new->URI->new->URI->catch->throw->new->TransformerException->finally->return->uri->toString->replaceChars
+ThreadControllerWrapper#runThread(Runnable, int)::: thread controller wrapper run thread:::return->m_tpool->run
+ThreadControllerWrapper#waitThread(Thread, Runnable)::: thread controller wrapper wait thread:::m_tpool->waitThread
 ThreadControllerWrapper.ThreadController#run(Runnable, int):::Will get a thread from the pool, execute the task and return the thread to the pool:::t->new->SafeThread->t->start->return
 ThreadControllerWrapper.ThreadController#waitThread(Thread, Runnable):::Wait until the task is completed on the worker thread.:::worker->join
 TreeWalker#getContentHandler():::Get the ContentHandler used for the tree walk.:::return
@@ -285,6 +335,7 @@ TreeWalker#setContentHandler(ContentHandler):::Get the ContentHandler used for t
 TreeWalker#traverse(Node):::Perform a pre-order traversal non-recursive style:::startDocument->traverseFragment->endDocument
 TreeWalker#traverseFragment(Node):::Perform a pre-order traversal non-recursive style:::top->while->startNode->nextNode->pos->getFirstChild->while->endNode->if->top->equals->break->pos->getNextSibling->if->pos->getParentNode->if->top->equals->if->endNode->break
 TreeWalker#traverse(Node, Node):::Perform a pre-order traversal non-recursive style:::startDocument->while->startNode->nextNode->pos->getFirstChild->while->endNode->if->top->equals->break->pos->getNextSibling->if->pos->getParentNode->if->top->equals->break->endDocument
+TreeWalker#dispatachChars(Node):::Optimized dispatch of characters.:::if->characters->else->data->getData->data->toCharArray->data->length->characters
 TreeWalker#startNode(Node):::Start processing given node:::if->setOriginatingNode->if->loc->m_locator->loc->getColumnNumber->setColumnNumber->m_locator->loc->getLineNumber->setLineNumber->m_locator->loc->getPublicId->setPublicId->m_locator->loc->getSystemId->setSystemId->else->m_locator->setColumnNumber->m_locator->setLineNumber->switch->node->getNodeType->data->getData->if->lh->lh->data->toCharArray->data->length->comment->break->break->break->atts->getAttributes->nAttrs->atts->getLength->for->i->ns->DOM2Helper->getNamespaceOfNode->if->DOM2Helper->getLocalNameOfNode->node->getNodeName->new->AttList->startElement->break->pi->name->pi->getNodeName->if->name->equals->else->pi->getNodeName->pi->getData->processingInstruction->break->isLexH->lh->if->lh->startCDATA->dispatachChars->if->lh->endCDATA->break->if->m_contentHandler->processingInstruction->dispatachChars->m_contentHandler->processingInstruction->else->dispatachChars->break->eref->if->eref->getNodeName->startEntity->else->break
 TreeWalker#endNode(Node):::End processing of given node:::switch->node->getNodeType->break->ns->DOM2Helper->getNamespaceOfNode->if->DOM2Helper->getLocalNameOfNode->node->getNodeName->endElement->atts->getAttributes->nAttrs->atts->getLength->for->i->break->break->eref->if->lh->lh->eref->getNodeName->endEntity->break
 Trie#put(String, Object):::Put an object into the trie for lookup.:::len->key->length->if->new->charArr->node->for->i->ret->return
@@ -368,6 +419,7 @@ UnImplNode#getStrictErrorChecking():::EXPERIMENTAL! Based on the Document Object
 UnImplNode#setStrictErrorChecking(boolean):::EXPERIMENTAL! Based on the Document Object Model (DOM) Level 3 Core Working Draft of 5 June 2001.:::error
 UnImplNode#getVersion():::EXPERIMENTAL! Based on the Document Object Model (DOM) Level 3 Core Working Draft of 5 June 2001.:::error->return
 UnImplNode#setVersion(String):::EXPERIMENTAL! Based on the Document Object Model (DOM) Level 3 Core Working Draft of 5 June 2001.:::error
+UnImplNode#setUserData(String, Object, UserDataHandler)::: un impl node set user data:::return->getOwnerDocument->setUserData
 UnImplNode#getUserData(String):::Retrieves the object associated to a key on a this node:::return->getOwnerDocument->getUserData
 UnImplNode#getFeature(String, String)::: This method returns a specialized object which implements the specialized APIs of the specified feature and version:::return->isSupported
 UnImplNode#isEqualNode(Node):::Tests whether two nodes are equal:::if->return->if->arg->getNodeType->getNodeType->return->if->getNodeName->if->arg->getNodeName->return->else->if->getNodeName->arg->getNodeName->equals->return->if->getLocalName->if->arg->getLocalName->return->else->if->getLocalName->arg->getLocalName->equals->return->if->getNamespaceURI->if->arg->getNamespaceURI->return->else->if->getNamespaceURI->arg->getNamespaceURI->equals->return->if->getPrefix->if->arg->getPrefix->return->else->if->getPrefix->arg->getPrefix->equals->return->if->getNodeValue->if->arg->getNodeValue->return->else->if->getNodeValue->arg->getNodeValue->equals->return->return
@@ -394,6 +446,18 @@ UnImplNode#setIdAttribute(String, boolean):::DOM Level 3: register the given att
 UnImplNode#setIdAttributeNode(Attr, boolean):::DOM Level 3: register the given attribute node as an ID attribute:::
 UnImplNode#setIdAttributeNS(String, String, boolean):::DOM Level 3: register the given attribute node as an ID attribute:::
 UnImplNode#getSchemaTypeInfo():::Method getSchemaTypeInfo.:::return
+UnImplNode#isId()::: un impl node is id:::return
+UnImplNode#getXmlEncoding()::: un impl node get xml encoding:::return
+UnImplNode#setXmlEncoding(String)::: un impl node set xml encoding:::
+UnImplNode#getXmlStandalone()::: un impl node get xml standalone:::return
+UnImplNode#setXmlStandalone(boolean)::: un impl node set xml standalone:::
+UnImplNode#getXmlVersion()::: un impl node get xml version:::return
+UnImplNode#setXmlVersion(String)::: un impl node set xml version:::
+URI#initialize(URI):::Initialize all fields of this URI from another URI.:::p_other->getScheme->p_other->getUserinfo->p_other->getHost->p_other->getPort->p_other->getPath->p_other->getQueryString->p_other->getFragment
+URI#initialize(URI, String):::Initializes this URI from a base URI and a URI specification string:::if->p_uriSpec->trim->length->throw->XMLMessages->createXMLMessage->new->MalformedURIException->if->p_uriSpec->trim->length->initialize->return->uriSpec->p_uriSpec->trim->uriSpecLen->uriSpec->length->index->colonIndex->uriSpec->indexOf->if->if->throw->XMLMessages->new->ObjectArr->createXMLMessage->new->MalformedURIException->else->initializeScheme->uriSpec->substring->if->if->uriSpec->startsWith->m_scheme->equals->p_base->getSchemeSpecificPart->startsWith->uriSpec->length->if->uriSpec->substring->startsWith->startPos->testChar->while->uriSpec->charAt->if->break->if->uriSpec->substring->initializeAuthority->else->uriSpec->substring->initializePath->if->if->m_path->length->p_base->getScheme->p_base->getUserinfo->p_base->getHost->p_base->getPort->p_base->getPath->if->p_base->getQueryString->return->if->p_base->getScheme->if->p_base->getUserinfo->p_base->getHost->p_base->getPort->else->return->if->m_path->length->m_path->startsWith->return->path->basePath->p_base->getPath->if->lastSlash->basePath->lastIndexOf->if->basePath->substring->path->concat->while->path->indexOf->path->substring->path->substring->concat->if->path->endsWith->path->path->length->substring->segIndex->tempString->while->path->indexOf->path->path->indexOf->substring->tempString->lastIndexOf->if->if->tempString->substring->equals->path->substring->path->substring->concat->if->path->endsWith->path->path->length->substring->tempString->lastIndexOf->if->path->substring
+URI#initializeScheme(String):::Initialize the scheme for this URI from a URI string spec.:::uriSpecLen->p_uriSpec->length->index->scheme->testChar->while->p_uriSpec->charAt->if->break->p_uriSpec->substring->if->scheme->length->throw->XMLMessages->createXMLMessage->new->MalformedURIException->else->setScheme
+URI#initializeAuthority(String):::Initialize the authority (userinfo, host and port) for this URI from a URI string spec.:::index->start->end->p_uriSpec->length->testChar->userinfo->if->p_uriSpec->indexOf->while->p_uriSpec->charAt->if->break->p_uriSpec->substring->host->while->p_uriSpec->charAt->if->break->p_uriSpec->substring->port->if->host->length->if->while->portStr->p_uriSpec->substring->if->portStr->length->for->i->portStr->length->try->Integer->parseInt->catch->finally->setHost->setPort->setUserinfo
+URI#initializePath(String):::Initialize the path for this URI from a URI string spec.:::if->throw->new->MalformedURIException->index->start->end->p_uriSpec->length->testChar->while->p_uriSpec->charAt->if->break->if->if->p_uriSpec->charAt->isHex->p_uriSpec->charAt->isHex->throw->XMLMessages->createXMLMessage->new->MalformedURIException->else->if->isReservedCharacter->isUnreservedCharacter->if->throw->XMLMessages->new->ObjectArr->String->valueOf->createXMLMessage->new->MalformedURIException->p_uriSpec->substring->if->while->p_uriSpec->charAt->if->break->if->if->p_uriSpec->charAt->isHex->p_uriSpec->charAt->isHex->throw->new->MalformedURIException->else->if->isReservedCharacter->isUnreservedCharacter->throw->new->MalformedURIException->p_uriSpec->substring->if->while->p_uriSpec->charAt->if->if->p_uriSpec->charAt->isHex->p_uriSpec->charAt->isHex->throw->new->MalformedURIException->else->if->isReservedCharacter->isUnreservedCharacter->throw->new->MalformedURIException->p_uriSpec->substring
 URI#getScheme():::Get the scheme for this URI.:::return
 URI#getSchemeSpecificPart():::Get the scheme-specific part for this URI (everything following the scheme and the first colon):::schemespec->new->StringBuilder->if->schemespec->append->if->schemespec->append->schemespec->append->if->schemespec->append->if->schemespec->append->schemespec->append->if->schemespec->append->if->schemespec->append->schemespec->append->if->schemespec->append->schemespec->append->return->schemespec->toString
 URI#getUserinfo():::Get the userinfo for this URI.:::return
@@ -412,10 +476,18 @@ URI#appendPath(String):::Append to the end of the path of this URI:::if->p_addTo
 URI#setQueryString(String):::Set the query string for this URI:::if->else->if->isGenericURI->throw->new->MalformedURIException->else->if->getPath->throw->new->MalformedURIException->else->if->isURIString->throw->new->MalformedURIException->else
 URI#setFragment(String):::Set the fragment for this URI:::if->else->if->isGenericURI->throw->XMLMessages->createXMLMessage->new->MalformedURIException->else->if->getPath->throw->XMLMessages->createXMLMessage->new->MalformedURIException->else->if->isURIString->throw->XMLMessages->createXMLMessage->new->MalformedURIException->else
 URI#equals(Object):::Determines if the passed-in Object is equivalent to this URI.:::if->testURI->if->m_scheme->equals->m_userinfo->equals->m_host->equals->m_path->equals->m_queryString->equals->m_fragment->equals->return->return
+URI#hashCode()::: i hash code:::hash->Objects->hashCode->Objects->hashCode->Objects->hashCode->Objects->hashCode->Objects->hashCode->Objects->hashCode->return
 URI#toString():::Get the URI as a string specification:::uriSpecString->new->StringBuilder->if->uriSpecString->append->uriSpecString->append->uriSpecString->getSchemeSpecificPart->append->return->uriSpecString->toString
 URI#isGenericURI():::Get the indicator as to whether this URI uses the "generic URI" syntax.:::return
 URI#isConformantSchemeName(String):::Determine whether a scheme conforms to the rules for a scheme name:::if->p_scheme->trim->length->return->if->p_scheme->charAt->isAlpha->return->testChar->for->i->p_scheme->length->return
 URI#isWellFormedAddress(String):::Determine whether a string is syntactically capable of representing a valid IPv4 address or the domain name of a network host:::if->return->address->p_address->trim->addrLength->address->length->if->return->if->address->startsWith->address->startsWith->return->index->address->lastIndexOf->if->address->endsWith->address->substring->lastIndexOf->if->p_address->charAt->isDigit->testChar->numDots->for->i->if->return->else->testChar->for->i->return
+URI#isDigit(char):::Determine whether a char is a digit.:::return
+URI#isHex(char):::Determine whether a character is a hexadecimal character.:::return->isDigit
+URI#isAlpha(char):::Determine whether a char is an alphabetic character: a-z or A-Z:::return
+URI#isAlphanum(char):::Determine whether a char is an alphanumeric: 0-9, a-z or A-Z:::return->isAlpha->isDigit
+URI#isReservedCharacter(char):::Determine whether a character is a reserved character: ';', '/', '?', ':', '@', '&', '=', '+', '$' or ',':::return->RESERVED_CHARACTERS->indexOf
+URI#isUnreservedCharacter(char):::Determine whether a char is an unreserved character.:::return->isAlphanum->MARK_CHARACTERS->indexOf
+URI#isURIString(String):::Determine whether a given string contains only URI characters (also called "uric" in RFC 2396):::if->return->end->p_uric->length->testChar->for->i->return
 WrappedRuntimeException#getException():::Get the checked exception that this runtime exception wraps.:::return
 XML11Char#isXML11Space(int):::Returns true if the specified character is a space character as amdended in the XML 1.1 specification.:::return
 XML11Char#isXML11Valid(int):::Returns true if the specified character is valid:::return

@@ -1,42 +1,323 @@
 AllocatedNativeObject#free():::Frees the native memory area associated with this object.:::if->unsafe->freeMemory
+AsynchronousChannelGroupImpl#executor()::: asynchronous channel group impl executor:::return->pool->executor
+AsynchronousChannelGroupImpl#isFixedThreadPool()::: asynchronous channel group impl is fixed thread pool:::return->pool->isFixedThreadPool
+AsynchronousChannelGroupImpl#fixedThreadCount()::: asynchronous channel group impl fixed thread count:::if->isFixedThreadPool->return->pool->poolSize->else->return->pool->poolSize
+AsynchronousChannelGroupImpl#bindToGroup(Runnable)::: asynchronous channel group impl bind to group:::thisGroup->return->new->Runnable
+AsynchronousChannelGroupImpl#startInternalThread(Runnable)::: asynchronous channel group impl start internal thread:::AccessController->new->PrivilegedAction<>->doPrivileged
+AsynchronousChannelGroupImpl#startThreads(Runnable)::: asynchronous channel group impl start threads:::if->isFixedThreadPool->for->i->if->pool->poolSize->bindToGroup->try->for->i->pool->poolSize->catch->finally
+AsynchronousChannelGroupImpl#threadCount()::: asynchronous channel group impl thread count:::return->threadCount->get
 AsynchronousChannelGroupImpl#threadExit(Runnable, boolean):::Invoked by tasks as they terminate:::if->try->if->Invoker->isBoundToAnyGroup->pool->executor->bindToGroup->execute->else->startInternalThread->return->threadCount->get->catch->finally->return->threadCount->decrementAndGet
 AsynchronousChannelGroupImpl#executeOnHandlerTask(Runnable):::Wakes up a thread waiting for I/O events to execute the given task.:::
 AsynchronousChannelGroupImpl#executeOnPooledThread(Runnable):::For a fixed thread pool the task is queued to a thread waiting on I/O events:::if->isFixedThreadPool->executeOnHandlerTask->else->pool->executor->bindToGroup->execute
+AsynchronousChannelGroupImpl#offerTask(Runnable)::: asynchronous channel group impl offer task:::taskQueue->offer
+AsynchronousChannelGroupImpl#pollTask()::: asynchronous channel group impl poll task:::return->taskQueue->poll
+AsynchronousChannelGroupImpl#schedule(Runnable, long, TimeUnit)::: asynchronous channel group impl schedule:::try->return->timeoutExecutor->schedule->catch->if->return->throw->new->AssertionError->finally
+AsynchronousChannelGroupImpl#isShutdown()::: asynchronous channel group impl is shutdown:::return->shutdown->get
+AsynchronousChannelGroupImpl#isTerminated()::: asynchronous channel group impl is terminated:::return->pool->executor->isTerminated
 AsynchronousChannelGroupImpl#isEmpty():::Returns true if there are no channels in the group:::
 AsynchronousChannelGroupImpl#attachForeignChannel(Channel, FileDescriptor):::Attaches a foreign channel to this group.:::
 AsynchronousChannelGroupImpl#detachForeignChannel(Object):::Detaches a foreign channel from this group.:::
 AsynchronousChannelGroupImpl#closeAllChannels():::Closes all channels in the group:::
 AsynchronousChannelGroupImpl#shutdownHandlerTasks():::Shutdown all tasks waiting for I/O events.:::
+AsynchronousChannelGroupImpl#shutdownExecutors()::: asynchronous channel group impl shutdown executors:::AccessController->new->PrivilegedAction<>->new->RuntimePermission->doPrivileged
+AsynchronousChannelGroupImpl#shutdown()::: asynchronous channel group impl shutdown:::if->shutdown->getAndSet->return->if->isEmpty->return->synchronized->if->shutdownHandlerTasks->shutdownExecutors
+AsynchronousChannelGroupImpl#shutdownNow()::: asynchronous channel group impl shutdown now:::shutdown->set->synchronized->if->closeAllChannels->shutdownHandlerTasks->shutdownExecutors
 AsynchronousChannelGroupImpl#detachFromThreadPool():::For use by AsynchronousFileChannel to release resources without shutting down the thread pool.:::if->shutdown->getAndSet->throw->new->AssertionError->if->isEmpty->throw->new->AssertionError->shutdownHandlerTasks
+AsynchronousChannelGroupImpl#awaitTermination(long, TimeUnit)::: asynchronous channel group impl await termination:::return->pool->executor->awaitTermination
 AsynchronousChannelGroupImpl#execute(Runnable):::Executes the given command on one of the channel group's pooled threads.:::sm->System->getSecurityManager->if->acc->AccessController->getContext->delegate->new->Runnable->executeOnPooledThread
+AsynchronousFileChannelImpl#executor()::: asynchronous file channel impl executor:::return
+AsynchronousFileChannelImpl#isOpen()::: asynchronous file channel impl is open:::return
 AsynchronousFileChannelImpl#begin():::Marks the beginning of an I/O operation.:::closeLock->readLock->lock->if->throw->new->ClosedChannelException
 AsynchronousFileChannelImpl#end():::Marks the end of an I/O operation.:::closeLock->readLock->unlock
 AsynchronousFileChannelImpl#end(boolean):::Marks end of I/O operation:::end->if->isOpen->throw->new->AsynchronousCloseException
+AsynchronousFileChannelImpl#implLock(long, long, boolean, A, CompletionHandler)::: asynchronous file channel impl impl lock:::
+AsynchronousFileChannelImpl#lock(long, long, boolean)::: asynchronous file channel impl lock:::return->implLock
+AsynchronousFileChannelImpl#lock(long, long, boolean, A, CompletionHandler)::: asynchronous file channel impl lock:::if->throw->new->NullPointerException->implLock
+AsynchronousFileChannelImpl#ensureFileLockTableInitialized()::: asynchronous file channel impl ensure file lock table initialized:::if->synchronized->if->new->FileLockTable
+AsynchronousFileChannelImpl#invalidateAllLocks()::: asynchronous file channel impl invalidate all locks:::if->foreach->fileLockTable->removeAll->synchronized->if->fl->isValid->fli->implRelease->fli->invalidate
 AsynchronousFileChannelImpl#addToFileLockTable(long, long, boolean):::Adds region to lock table:::fli->try->closeLock->readLock->lock->if->return->try->ensureFileLockTableInitialized->catch->throw->new->AssertionError->finally->new->FileLockImpl->fileLockTable->add->catch->finally->end->return
+AsynchronousFileChannelImpl#removeFromFileLockTable(FileLockImpl)::: asynchronous file channel impl remove from file lock table:::fileLockTable->remove
 AsynchronousFileChannelImpl#implRelease(FileLockImpl):::Releases the given file lock.:::
 AsynchronousFileChannelImpl#release(FileLockImpl):::Invoked by FileLockImpl to release the given file lock and remove it from the lock table.:::try->begin->implRelease->removeFromFileLockTable->catch->finally->end
+AsynchronousFileChannelImpl#implRead(ByteBuffer, long, A, CompletionHandler)::: asynchronous file channel impl impl read:::
+AsynchronousFileChannelImpl#read(ByteBuffer, long)::: asynchronous file channel impl read:::return->implRead
+AsynchronousFileChannelImpl#read(ByteBuffer, long, A, CompletionHandler)::: asynchronous file channel impl read:::if->throw->new->NullPointerException->implRead
+AsynchronousFileChannelImpl#implWrite(ByteBuffer, long, A, CompletionHandler)::: asynchronous file channel impl impl write:::
+AsynchronousFileChannelImpl#write(ByteBuffer, long)::: asynchronous file channel impl write:::return->implWrite
+AsynchronousFileChannelImpl#write(ByteBuffer, long, A, CompletionHandler)::: asynchronous file channel impl write:::if->throw->new->NullPointerException->implWrite
+AsynchronousServerSocketChannelImpl#isOpen()::: asynchronous server socket channel impl is open:::return
 AsynchronousServerSocketChannelImpl#begin():::Marks beginning of access to file descriptor/handle:::closeLock->readLock->lock->if->isOpen->throw->new->ClosedChannelException
 AsynchronousServerSocketChannelImpl#end():::Marks end of access to file descriptor/handle:::closeLock->readLock->unlock
 AsynchronousServerSocketChannelImpl#implClose():::Invoked to close file descriptor/handle.:::
+AsynchronousServerSocketChannelImpl#close()::: asynchronous server socket channel impl close:::closeLock->writeLock->lock->try->if->return->catch->finally->closeLock->writeLock->unlock->implClose
 AsynchronousServerSocketChannelImpl#implAccept(Object, CompletionHandler):::Invoked by accept to accept connection:::
+AsynchronousServerSocketChannelImpl#accept()::: asynchronous server socket channel impl accept:::return->implAccept
+AsynchronousServerSocketChannelImpl#accept(A, CompletionHandler)::: asynchronous server socket channel impl accept:::if->throw->new->NullPointerException->implAccept
+AsynchronousServerSocketChannelImpl#isAcceptKilled()::: asynchronous server socket channel impl is accept killed:::return
+AsynchronousServerSocketChannelImpl#onCancel(PendingFuture)::: asynchronous server socket channel impl on cancel:::
+AsynchronousServerSocketChannelImpl#bind(SocketAddress, int)::: asynchronous server socket channel impl bind:::isa->new->InetSocketAddress->Net->checkAddress->sm->System->getSecurityManager->if->sm->isa->getPort->checkListen->try->begin->synchronized->if->throw->new->AlreadyBoundException->NetHooks->isa->getAddress->isa->getPort->beforeTcpBind->Net->isa->getAddress->isa->getPort->bind->Net->listen->Net->localAddress->catch->finally->end->return
+AsynchronousServerSocketChannelImpl#getLocalAddress()::: asynchronous server socket channel impl get local address:::if->isOpen->throw->new->ClosedChannelException->return->Net->getRevealedLocalAddress
+AsynchronousServerSocketChannelImpl#setOption(SocketOption, T)::: asynchronous server socket channel impl set option:::if->throw->new->NullPointerException->if->supportedOptions->contains->throw->new->UnsupportedOperationException->try->begin->if->Net->useExclusiveBind->else->Net->setSocketOption->return->catch->finally->end
+AsynchronousServerSocketChannelImpl#getOption(SocketOption)::: asynchronous server socket channel impl get option:::if->throw->new->NullPointerException->if->supportedOptions->contains->throw->new->UnsupportedOperationException->try->begin->if->Net->useExclusiveBind->return->Boolean->valueOf->return->Net->getSocketOption->catch->finally->end
+AsynchronousServerSocketChannelImpl.DefaultOptionsHolder#defaultOptions()::: default options holder default options:::set->new->HashSet<>->set->add->set->add->if->Net->isReusePortAvailable->set->add->set->ExtendedSocketOptions->options->addAll->return->Collections->unmodifiableSet
+AsynchronousServerSocketChannelImpl#supportedOptions()::: asynchronous server socket channel impl supported options:::return
+AsynchronousServerSocketChannelImpl#toString()::: asynchronous server socket channel impl to string:::sb->new->StringBuilder->sb->this->getClass->getName->append->sb->append->if->isOpen->sb->append->else->if->sb->append->else->sb->Net->getRevealedLocalAddressAsString->append->sb->append->return->sb->toString
+AsynchronousSocketChannelImpl#isOpen()::: asynchronous socket channel impl is open:::return
 AsynchronousSocketChannelImpl#begin():::Marks beginning of access to file descriptor/handle:::closeLock->readLock->lock->if->isOpen->throw->new->ClosedChannelException
 AsynchronousSocketChannelImpl#end():::Marks end of access to file descriptor/handle:::closeLock->readLock->unlock
 AsynchronousSocketChannelImpl#implClose():::Invoked to close socket and release other resources.:::
+AsynchronousSocketChannelImpl#close()::: asynchronous socket channel impl close:::closeLock->writeLock->lock->try->if->return->catch->finally->closeLock->writeLock->unlock->implClose
+AsynchronousSocketChannelImpl#enableReading(boolean)::: asynchronous socket channel impl enable reading:::synchronized->if
+AsynchronousSocketChannelImpl#enableReading()::: asynchronous socket channel impl enable reading:::enableReading
+AsynchronousSocketChannelImpl#enableWriting(boolean)::: asynchronous socket channel impl enable writing:::synchronized->if
+AsynchronousSocketChannelImpl#enableWriting()::: asynchronous socket channel impl enable writing:::enableWriting
+AsynchronousSocketChannelImpl#killReading()::: asynchronous socket channel impl kill reading:::synchronized
+AsynchronousSocketChannelImpl#killWriting()::: asynchronous socket channel impl kill writing:::synchronized
+AsynchronousSocketChannelImpl#killConnect()::: asynchronous socket channel impl kill connect:::killReading->killWriting
 AsynchronousSocketChannelImpl#implConnect(SocketAddress, A, CompletionHandler):::Invoked by connect to initiate the connect operation.:::
+AsynchronousSocketChannelImpl#connect(SocketAddress)::: asynchronous socket channel impl connect:::return->implConnect
+AsynchronousSocketChannelImpl#connect(SocketAddress, A, CompletionHandler)::: asynchronous socket channel impl connect:::if->throw->new->NullPointerException->implConnect
 AsynchronousSocketChannelImpl#implRead(boolean, ByteBuffer, ByteBuffer[], long, TimeUnit, A, CompletionHandler):::Invoked by read to initiate the I/O operation.:::
+AsynchronousSocketChannelImpl#read(boolean, ByteBuffer, ByteBuffer[], long, TimeUnit, A, CompletionHandler)::: asynchronous socket channel impl read:::if->isOpen->e->new->ClosedChannelException->if->return->CompletedFuture->withFailure->Invoker->invoke->return->if->throw->new->NotYetConnectedException->hasSpaceToRead->dst->hasRemaining->shutdown->synchronized->if->throw->new->IllegalStateException->if->throw->new->ReadPendingException->if->else->if->if->result->if->Long->valueOf->Long->valueOf->else->if->return->CompletedFuture->withResult->Invoker->invoke->return->return->implRead
+AsynchronousSocketChannelImpl#read(ByteBuffer)::: asynchronous socket channel impl read:::if->dst->isReadOnly->throw->new->IllegalArgumentException->return->read
+AsynchronousSocketChannelImpl#read(ByteBuffer, long, TimeUnit, A, CompletionHandler)::: asynchronous socket channel impl read:::if->throw->new->NullPointerException->if->dst->isReadOnly->throw->new->IllegalArgumentException->read
+AsynchronousSocketChannelImpl#read(ByteBuffer[], int, int, long, TimeUnit, A, CompletionHandler)::: asynchronous socket channel impl read:::if->throw->new->NullPointerException->if->throw->new->IndexOutOfBoundsException->bufs->Util->subsequence->for->i->read
 AsynchronousSocketChannelImpl#implWrite(boolean, ByteBuffer, ByteBuffer[], long, TimeUnit, A, CompletionHandler):::Invoked by write to initiate the I/O operation.:::
+AsynchronousSocketChannelImpl#write(boolean, ByteBuffer, ByteBuffer[], long, TimeUnit, A, CompletionHandler)::: asynchronous socket channel impl write:::hasDataToWrite->src->hasRemaining->closed->if->isOpen->if->throw->new->NotYetConnectedException->synchronized->if->throw->new->IllegalStateException->if->throw->new->WritePendingException->if->else->if->else->if->e->new->ClosedChannelException->if->return->CompletedFuture->withFailure->Invoker->invoke->return->if->result->if->return->CompletedFuture->withResult->Invoker->invoke->return->return->implWrite
+AsynchronousSocketChannelImpl#write(ByteBuffer)::: asynchronous socket channel impl write:::return->write
+AsynchronousSocketChannelImpl#write(ByteBuffer, long, TimeUnit, A, CompletionHandler)::: asynchronous socket channel impl write:::if->throw->new->NullPointerException->write
+AsynchronousSocketChannelImpl#write(ByteBuffer[], int, int, long, TimeUnit, A, CompletionHandler)::: asynchronous socket channel impl write:::if->throw->new->NullPointerException->if->throw->new->IndexOutOfBoundsException->Util->subsequence->write
+AsynchronousSocketChannelImpl#bind(SocketAddress)::: asynchronous socket channel impl bind:::try->begin->synchronized->if->throw->new->ConnectionPendingException->if->throw->new->AlreadyBoundException->isa->new->InetSocketAddress->Net->checkAddress->sm->System->getSecurityManager->if->sm->isa->getPort->checkListen->NetHooks->isa->getAddress->isa->getPort->beforeTcpBind->Net->isa->getAddress->isa->getPort->bind->Net->localAddress->catch->finally->end->return
+AsynchronousSocketChannelImpl#getLocalAddress()::: asynchronous socket channel impl get local address:::if->isOpen->throw->new->ClosedChannelException->return->Net->getRevealedLocalAddress
+AsynchronousSocketChannelImpl#setOption(SocketOption, T)::: asynchronous socket channel impl set option:::if->throw->new->NullPointerException->if->supportedOptions->contains->throw->new->UnsupportedOperationException->try->begin->if->throw->new->IOException->if->Net->useExclusiveBind->else->Net->setSocketOption->return->catch->finally->end
+AsynchronousSocketChannelImpl#getOption(SocketOption)::: asynchronous socket channel impl get option:::if->throw->new->NullPointerException->if->supportedOptions->contains->throw->new->UnsupportedOperationException->try->begin->if->Net->useExclusiveBind->return->Boolean->valueOf->return->Net->getSocketOption->catch->finally->end
+AsynchronousSocketChannelImpl.DefaultOptionsHolder#defaultOptions()::: default options holder default options:::set->new->HashSet<>->set->add->set->add->set->add->set->add->if->Net->isReusePortAvailable->set->add->set->add->set->ExtendedSocketOptions->options->addAll->return->Collections->unmodifiableSet
+AsynchronousSocketChannelImpl#supportedOptions()::: asynchronous socket channel impl supported options:::return
+AsynchronousSocketChannelImpl#getRemoteAddress()::: asynchronous socket channel impl get remote address:::if->isOpen->throw->new->ClosedChannelException->return
+AsynchronousSocketChannelImpl#shutdownInput()::: asynchronous socket channel impl shutdown input:::try->begin->if->throw->new->NotYetConnectedException->synchronized->if->Net->shutdown->catch->finally->end->return
+AsynchronousSocketChannelImpl#shutdownOutput()::: asynchronous socket channel impl shutdown output:::try->begin->if->throw->new->NotYetConnectedException->synchronized->if->Net->shutdown->catch->finally->end->return
+AsynchronousSocketChannelImpl#toString()::: asynchronous socket channel impl to string:::sb->new->StringBuilder->sb->this->getClass->getName->append->sb->append->synchronized->if->isOpen->sb->append->else->switch->sb->append->break->sb->append->break->sb->append->if->sb->append->if->sb->append->break->if->sb->append->sb->Net->getRevealedLocalAddressAsString->append->if->sb->append->sb->remoteAddress->toString->append->sb->append->return->sb->toString
 Cancellable#onCancel(PendingFuture):::Invoked to notify channel that cancel has been invoked while holding the Future's lock.:::
+ChannelInputStream#read(ReadableByteChannel, ByteBuffer, boolean)::: channel input stream read:::if->sc->synchronized->sc->blockingLock->bm->sc->isBlocking->if->throw->new->IllegalBlockingModeException->if->sc->configureBlocking->n->ch->read->if->sc->configureBlocking->return->else->return->ch->read
+ChannelInputStream#read()::: channel input stream read:::if->new->byteArr->n->this->read->if->return->return
+ChannelInputStream#read(byte[], int, int)::: channel input stream read:::if->throw->new->IndexOutOfBoundsException->else->if->return->bb->ByteBuffer->wrap->bb->Math->bb->capacity->min->limit->bb->position->return->read
+ChannelInputStream#read(ByteBuffer)::: channel input stream read:::return->ChannelInputStream->read
+ChannelInputStream#available()::: channel input stream available:::if->sbc->rem->Math->sbc->size->sbc->position->max->return->return
+ChannelInputStream#close()::: channel input stream close:::ch->close
+CompletedFuture#withResult(V)::: completed future with result:::return->new->CompletedFuture<V>
+CompletedFuture#withFailure(Throwable)::: completed future with failure:::if->new->IOException->return->new->CompletedFuture<V>
+CompletedFuture#withResult(V, Throwable)::: completed future with result:::if->return->withResult->else->return->withFailure
+CompletedFuture#get()::: completed future get:::if->throw->new->ExecutionException->return
+CompletedFuture#get(long, TimeUnit)::: completed future get:::if->throw->new->NullPointerException->if->throw->new->ExecutionException->return
+CompletedFuture#isCancelled()::: completed future is cancelled:::return
+CompletedFuture#isDone()::: completed future is done:::return
+CompletedFuture#cancel(boolean)::: completed future cancel:::return
+DatagramChannelImpl#ensureOpen()::: datagram channel impl ensure open:::if->isOpen->throw->new->ClosedChannelException
+DatagramChannelImpl#socket()::: datagram channel impl socket:::synchronized->if->DatagramSocketAdaptor->create->return
+DatagramChannelImpl#getLocalAddress()::: datagram channel impl get local address:::synchronized->ensureOpen->return->Net->getRevealedLocalAddress
+DatagramChannelImpl#getRemoteAddress()::: datagram channel impl get remote address:::synchronized->ensureOpen->return
+DatagramChannelImpl#setOption(SocketOption, T)::: datagram channel impl set option:::Objects->requireNonNull->if->supportedOptions->contains->throw->new->UnsupportedOperationException->synchronized->ensureOpen->if->Net->setSocketOption->return->if->if->throw->new->IllegalArgumentException->interf->if->index->interf->getIndex->if->throw->new->IOException->Net->setInterface6->else->target->Net->anyInet4Address->if->throw->new->IOException->targetAddress->Net->inet4AsInt->Net->setInterface4->return->if->Net->useExclusiveBind->Net->setSocketOption->return
+DatagramChannelImpl#getOption(SocketOption)::: datagram channel impl get option:::Objects->requireNonNull->if->supportedOptions->contains->throw->new->UnsupportedOperationException->synchronized->ensureOpen->if->return->Net->getSocketOption->if->if->address->Net->getInterface4->if->return->ia->Net->inet4FromInt->ni->NetworkInterface->getByInetAddress->if->throw->new->IOException->return->else->index->Net->getInterface6->if->return->ni->NetworkInterface->getByIndex->if->throw->new->IOException->return->if->return->Boolean->valueOf->return->Net->getSocketOption
+DatagramChannelImpl.DefaultOptionsHolder#defaultOptions()::: default options holder default options:::set->new->HashSet<>->set->add->set->add->set->add->if->Net->isReusePortAvailable->set->add->set->add->set->add->set->add->set->add->set->add->set->ExtendedSocketOptions->options->addAll->return->Collections->unmodifiableSet
+DatagramChannelImpl#supportedOptions()::: datagram channel impl supported options:::return
+DatagramChannelImpl#beginRead(boolean, boolean):::Marks the beginning of a read operation that might block.:::if->begin->remote->synchronized->ensureOpen->if->throw->new->NotYetConnectedException->if->bindInternal->if->NativeThread->current->return
+DatagramChannelImpl#endRead(boolean, boolean):::Marks the end of a read operation that may have blocked.:::if->synchronized->if->stateLock->notifyAll->end
+DatagramChannelImpl#receive(ByteBuffer)::: datagram channel impl receive:::if->dst->isReadOnly->throw->new->IllegalArgumentException->readLock->lock->try->blocking->isBlocking->n->bb->try->remote->beginRead->connected->sm->System->getSecurityManager->if->do->receive->while->isOpen->if->return->else->Util->dst->remaining->getTemporaryDirectBuffer->for->return->catch->finally->if->Util->releaseTemporaryDirectBuffer->endRead->catch->finally->readLock->unlock
+DatagramChannelImpl#receive(FileDescriptor, ByteBuffer, boolean)::: datagram channel impl receive:::pos->dst->position->lim->dst->limit->rem->if->return->receiveIntoNativeBuffer->newSize->Math->max->bb->Util->getTemporaryDirectBuffer->try->n->receiveIntoNativeBuffer->bb->flip->if->dst->put->return->catch->finally->Util->releaseTemporaryDirectBuffer
+DatagramChannelImpl#receiveIntoNativeBuffer(FileDescriptor, ByteBuffer, int, int, boolean)::: datagram channel impl receive into native buffer:::n->address->receive0->if->bb->position->return
+DatagramChannelImpl#send(ByteBuffer, SocketAddress)::: datagram channel impl send:::Objects->requireNonNull->isa->Net->checkAddress->writeLock->lock->try->blocking->isBlocking->n->try->remote->beginWrite->if->if->target->equals->throw->new->AlreadyConnectedException->do->IOUtil->write->while->isOpen->else->sm->System->getSecurityManager->if->ia->isa->getAddress->if->ia->isMulticastAddress->sm->checkMulticast->else->sm->ia->getHostAddress->isa->getPort->checkConnect->do->send->while->isOpen->catch->finally->endWrite->return->IOStatus->normalize->catch->finally->writeLock->unlock
+DatagramChannelImpl#send(FileDescriptor, ByteBuffer, InetSocketAddress)::: datagram channel impl send:::if->return->sendFromNativeBuffer->pos->src->position->lim->src->limit->rem->bb->Util->getTemporaryDirectBuffer->try->bb->put->bb->flip->src->position->n->sendFromNativeBuffer->if->src->position->return->catch->finally->Util->releaseTemporaryDirectBuffer
+DatagramChannelImpl#sendFromNativeBuffer(FileDescriptor, ByteBuffer, InetSocketAddress)::: datagram channel impl send from native buffer:::pos->bb->position->lim->bb->limit->rem->preferIPv6->written->try->address->target->getAddress->target->getPort->send0->catch->if->isConnected->throw->finally->if->bb->position->return
+DatagramChannelImpl#read(ByteBuffer)::: datagram channel impl read:::Objects->requireNonNull->readLock->lock->try->blocking->isBlocking->n->try->beginRead->do->IOUtil->read->while->isOpen->catch->finally->endRead->return->IOStatus->normalize->catch->finally->readLock->unlock
+DatagramChannelImpl#read(ByteBuffer[], int, int)::: datagram channel impl read:::Objects->checkFromIndexSize->readLock->lock->try->blocking->isBlocking->n->try->beginRead->do->IOUtil->read->while->isOpen->catch->finally->endRead->return->IOStatus->normalize->catch->finally->readLock->unlock
+DatagramChannelImpl#beginWrite(boolean, boolean):::Marks the beginning of a write operation that might block.:::if->begin->remote->synchronized->ensureOpen->if->throw->new->NotYetConnectedException->if->bindInternal->if->NativeThread->current->return
+DatagramChannelImpl#endWrite(boolean, boolean):::Marks the end of a write operation that may have blocked.:::if->synchronized->if->stateLock->notifyAll->end
+DatagramChannelImpl#write(ByteBuffer)::: datagram channel impl write:::Objects->requireNonNull->writeLock->lock->try->blocking->isBlocking->n->try->beginWrite->do->IOUtil->write->while->isOpen->catch->finally->endWrite->return->IOStatus->normalize->catch->finally->writeLock->unlock
+DatagramChannelImpl#write(ByteBuffer[], int, int)::: datagram channel impl write:::Objects->checkFromIndexSize->writeLock->lock->try->blocking->isBlocking->n->try->beginWrite->do->IOUtil->write->while->isOpen->catch->finally->endWrite->return->IOStatus->normalize->catch->finally->writeLock->unlock
+DatagramChannelImpl#implConfigureBlocking(boolean)::: datagram channel impl impl configure blocking:::readLock->lock->try->writeLock->lock->try->synchronized->ensureOpen->IOUtil->configureBlocking->catch->finally->writeLock->unlock->catch->finally->readLock->unlock
+DatagramChannelImpl#localAddress()::: datagram channel impl local address:::synchronized->return
+DatagramChannelImpl#remoteAddress()::: datagram channel impl remote address:::synchronized->return
+DatagramChannelImpl#bind(SocketAddress)::: datagram channel impl bind:::readLock->lock->try->writeLock->lock->try->synchronized->ensureOpen->if->throw->new->AlreadyBoundException->bindInternal->catch->finally->writeLock->unlock->catch->finally->readLock->unlock->return
+DatagramChannelImpl#bindInternal(SocketAddress)::: datagram channel impl bind internal:::isa->if->if->InetAddress->getByName->new->InetSocketAddress->else->new->InetSocketAddress->else->Net->checkAddress->sm->System->getSecurityManager->if->sm->isa->getPort->checkListen->Net->isa->getAddress->isa->getPort->bind->Net->localAddress
+DatagramChannelImpl#isConnected()::: datagram channel impl is connected:::synchronized->return
+DatagramChannelImpl#connect(SocketAddress)::: datagram channel impl connect:::isa->Net->checkAddress->sm->System->getSecurityManager->if->ia->isa->getAddress->if->ia->isMulticastAddress->sm->checkMulticast->else->sm->ia->getHostAddress->isa->getPort->checkConnect->sm->ia->getHostAddress->isa->getPort->checkAccept->readLock->lock->try->writeLock->lock->try->synchronized->ensureOpen->if->throw->new->AlreadyConnectedException->n->Net->isa->getAddress->isa->getPort->connect->if->throw->new->Error->Net->localAddress->blocking->isBlocking->if->IOUtil->configureBlocking->try->buf->ByteBuffer->allocate->while->receive->buf->clear->catch->finally->if->IOUtil->configureBlocking->catch->finally->writeLock->unlock->catch->finally->readLock->unlock->return
+DatagramChannelImpl#disconnect()::: datagram channel impl disconnect:::readLock->lock->try->writeLock->lock->try->synchronized->if->isOpen->return->isIPv6->disconnect0->Net->localAddress->catch->finally->writeLock->unlock->catch->finally->readLock->unlock->return
+DatagramChannelImpl#innerJoin(InetAddress, NetworkInterface, InetAddress):::Joins channel's socket to the given group/interface and optional source address.:::if->group->isMulticastAddress->throw->new->IllegalArgumentException->if->if->Net->canIPv6SocketJoinIPv4Group->throw->new->IllegalArgumentException->else->if->if->throw->new->IllegalArgumentException->else->throw->new->IllegalArgumentException->if->if->source->isAnyLocalAddress->throw->new->IllegalArgumentException->if->source->isMulticastAddress->throw->new->IllegalArgumentException->if->source->getClass->group->getClass->throw->new->IllegalArgumentException->sm->System->getSecurityManager->if->sm->checkMulticast->synchronized->ensureOpen->if->new->MembershipRegistry->else->key->registry->checkMembership->if->return->key->if->Net->canJoin6WithIPv4Group->index->interf->getIndex->if->throw->new->IOException->groupAddress->Net->inet6AsByteArray->sourceAddress->Net->inet6AsByteArray->n->Net->join6->if->throw->new->UnsupportedOperationException->new->MembershipKeyImpl.Type6->else->target->Net->anyInet4Address->if->throw->new->IOException->groupAddress->Net->inet4AsInt->targetAddress->Net->inet4AsInt->sourceAddress->Net->inet4AsInt->n->Net->join4->if->throw->new->UnsupportedOperationException->new->MembershipKeyImpl.Type4->registry->add->return
+DatagramChannelImpl#join(InetAddress, NetworkInterface)::: datagram channel impl join:::return->innerJoin
+DatagramChannelImpl#join(InetAddress, NetworkInterface, InetAddress)::: datagram channel impl join:::Objects->requireNonNull->return->innerJoin
+DatagramChannelImpl#drop(MembershipKeyImpl)::: datagram channel impl drop:::synchronized->if->key->isValid->return->try->if->key6->Net->key6->groupAddress->key6->index->key6->source->drop6->else->key4->Net->key4->groupAddress->key4->interfaceAddress->key4->source->drop4->catch->throw->new->AssertionError->finally->key->invalidate->registry->remove
 DatagramChannelImpl#block(MembershipKeyImpl, InetAddress):::Block datagrams from given source if a memory to receive all datagrams.:::synchronized->if->key->isValid->throw->new->IllegalStateException->if->source->isAnyLocalAddress->throw->new->IllegalArgumentException->if->source->isMulticastAddress->throw->new->IllegalArgumentException->if->source->getClass->key->group->getClass->throw->new->IllegalArgumentException->n->if->key6->Net->key6->groupAddress->key6->index->Net->inet6AsByteArray->block6->else->key4->Net->key4->groupAddress->key4->interfaceAddress->Net->inet4AsInt->block4->if->throw->new->UnsupportedOperationException
 DatagramChannelImpl#unblock(MembershipKeyImpl, InetAddress):::Unblock given source.:::synchronized->if->key->isValid->throw->new->IllegalStateException->try->if->key6->Net->key6->groupAddress->key6->index->Net->inet6AsByteArray->unblock6->else->key4->Net->key4->groupAddress->key4->interfaceAddress->Net->inet4AsInt->unblock4->catch->throw->new->AssertionError->finally
 DatagramChannelImpl#implCloseSelectableChannel():::Invoked by implCloseChannel to close the channel:::blocking->interrupted->synchronized->isBlocking->if->registry->invalidateAll->if->synchronized->reader->writer->if->nd->preClose->if->NativeThread->signal->if->NativeThread->signal->while->try->stateLock->wait->catch->finally->else->readLock->lock->try->writeLock->lock->writeLock->unlock->catch->finally->readLock->unlock->synchronized->if->isRegistered->kill->if->Thread->currentThread->interrupt
+DatagramChannelImpl#kill()::: datagram channel impl kill:::synchronized->if->try->nd->close->catch->finally->ResourceManager->afterUdpClose
+DatagramChannelImpl#finalize()::: datagram channel impl finalize:::if->close
 DatagramChannelImpl#translateReadyOps(int, int, SelectionKeyImpl):::Translates native poll revent set into a ready operation set:::intOps->ski->nioInterestOps->oldOps->ski->nioReadyOps->newOps->if->return->if->ski->nioReadyOps->return->if->if->ski->nioReadyOps->return
+DatagramChannelImpl#translateAndUpdateReadyOps(int, SelectionKeyImpl)::: datagram channel impl translate and update ready ops:::return->ski->nioReadyOps->translateReadyOps
+DatagramChannelImpl#translateAndSetReadyOps(int, SelectionKeyImpl)::: datagram channel impl translate and set ready ops:::return->translateReadyOps
 DatagramChannelImpl#pollRead(long):::Poll this channel's socket for reading up to the given timeout.:::blocking->isBlocking->readLock->lock->try->polled->try->beginRead->events->Net->poll->catch->finally->endRead->return->catch->finally->readLock->unlock
 DatagramChannelImpl#translateInterestOps(int):::Translates an interest operation set into a native poll event set:::newOps->if->if->if->return
+DatagramChannelImpl#getFD()::: datagram channel impl get d:::return
+DatagramChannelImpl#getFDVal()::: datagram channel impl get val:::return
+DatagramChannelImpl#initIDs()::: datagram channel impl init ds:::
+DatagramChannelImpl#disconnect0(FileDescriptor, boolean)::: datagram channel impl disconnect0:::
+DatagramChannelImpl#receive0(FileDescriptor, long, int, boolean)::: datagram channel impl receive0:::
+DatagramChannelImpl#send0(boolean, FileDescriptor, long, int, InetAddress, int)::: datagram channel impl send0:::
+DatagramDispatcher#read(FileDescriptor, long, int)::: datagram dispatcher read:::return->read0
+DatagramDispatcher#readv(FileDescriptor, long, int)::: datagram dispatcher readv:::return->readv0
+DatagramDispatcher#write(FileDescriptor, long, int)::: datagram dispatcher write:::return->write0
+DatagramDispatcher#writev(FileDescriptor, long, int)::: datagram dispatcher writev:::return->writev0
+DatagramDispatcher#close(FileDescriptor)::: datagram dispatcher close:::SocketDispatcher->close0
+DatagramDispatcher#read0(FileDescriptor, long, int)::: datagram dispatcher read0:::
+DatagramDispatcher#readv0(FileDescriptor, long, int)::: datagram dispatcher readv0:::
+DatagramDispatcher#write0(FileDescriptor, long, int)::: datagram dispatcher write0:::
+DatagramDispatcher#writev0(FileDescriptor, long, int)::: datagram dispatcher writev0:::
+DatagramSocketAdaptor#create(DatagramChannelImpl)::: datagram socket adaptor create:::try->return->new->DatagramSocketAdaptor->catch->throw->new->Error->finally
+DatagramSocketAdaptor#connectInternal(SocketAddress)::: datagram socket adaptor connect internal:::isa->Net->asInetSocketAddress->port->isa->getPort->if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->try->dc->connect->catch->Net->translateToSocketException->finally
+DatagramSocketAdaptor#bind(SocketAddress)::: datagram socket adaptor bind:::try->if->new->InetSocketAddress->dc->bind->catch->Net->translateToSocketException->finally
+DatagramSocketAdaptor#connect(InetAddress, int)::: datagram socket adaptor connect:::try->new->InetSocketAddress->connectInternal->catch->finally
+DatagramSocketAdaptor#connect(SocketAddress)::: datagram socket adaptor connect:::Objects->requireNonNull->connectInternal
+DatagramSocketAdaptor#disconnect()::: datagram socket adaptor disconnect:::try->dc->disconnect->catch->throw->new->Error->finally
+DatagramSocketAdaptor#isBound()::: datagram socket adaptor is bound:::return->dc->localAddress
+DatagramSocketAdaptor#isConnected()::: datagram socket adaptor is connected:::return->dc->remoteAddress
+DatagramSocketAdaptor#getInetAddress()::: datagram socket adaptor get inet address:::remote->dc->remoteAddress->return->remote->getAddress
+DatagramSocketAdaptor#getPort()::: datagram socket adaptor get port:::remote->dc->remoteAddress->return->remote->getPort
+DatagramSocketAdaptor#getLocalSocketAddress()::: datagram socket adaptor get local socket address:::local->dc->localAddress->if->isClosed->return->addr->local->getAddress->if->addr->isAnyLocalAddress->return->sm->System->getSecurityManager->if->try->sm->addr->getHostAddress->checkConnect->catch->return->local->getPort->new->InetSocketAddress->finally->return
+DatagramSocketAdaptor#send(DatagramPacket)::: datagram socket adaptor send:::synchronized->dc->blockingLock->if->dc->isBlocking->throw->new->IllegalBlockingModeException->try->synchronized->bb->ByteBuffer->p->getData->p->getOffset->p->getLength->wrap->if->dc->isConnected->if->p->getAddress->isa->dc->remoteAddress->p->isa->getPort->setPort->p->isa->getAddress->setAddress->dc->write->else->dc->p->getSocketAddress->send->else->dc->p->getSocketAddress->send->catch->Net->translateException->finally
+DatagramSocketAdaptor#receive(ByteBuffer)::: datagram socket adaptor receive:::to->if->return->dc->receive->else->for
+DatagramSocketAdaptor#receive(DatagramPacket)::: datagram socket adaptor receive:::synchronized->dc->blockingLock->if->dc->isBlocking->throw->new->IllegalBlockingModeException->try->synchronized->bb->ByteBuffer->p->getData->p->getOffset->p->getLength->wrap->sender->receive->p->setSocketAddress->p->bb->position->p->getOffset->setLength->catch->Net->translateException->finally
+DatagramSocketAdaptor#getLocalAddress()::: datagram socket adaptor get local address:::if->isClosed->return->local->dc->localAddress->if->new->InetSocketAddress->result->local->getAddress->sm->System->getSecurityManager->if->try->sm->result->getHostAddress->checkConnect->catch->return->new->InetSocketAddress->getAddress->finally->return
+DatagramSocketAdaptor#getLocalPort()::: datagram socket adaptor get local port:::if->isClosed->return->try->local->dc->localAddress->if->return->local->getPort->catch->finally->return
+DatagramSocketAdaptor#setSoTimeout(int)::: datagram socket adaptor set so timeout:::
+DatagramSocketAdaptor#getSoTimeout()::: datagram socket adaptor get so timeout:::return
+DatagramSocketAdaptor#setBooleanOption(SocketOption, boolean)::: datagram socket adaptor set boolean option:::try->dc->setOption->catch->Net->translateToSocketException->finally
+DatagramSocketAdaptor#setIntOption(SocketOption, int)::: datagram socket adaptor set int option:::try->dc->setOption->catch->Net->translateToSocketException->finally
+DatagramSocketAdaptor#getBooleanOption(SocketOption)::: datagram socket adaptor get boolean option:::try->return->dc->getOption->booleanValue->catch->Net->translateToSocketException->return->finally
+DatagramSocketAdaptor#getIntOption(SocketOption)::: datagram socket adaptor get int option:::try->return->dc->getOption->intValue->catch->Net->translateToSocketException->return->finally
+DatagramSocketAdaptor#setSendBufferSize(int)::: datagram socket adaptor set send buffer size:::if->throw->new->IllegalArgumentException->setIntOption
+DatagramSocketAdaptor#getSendBufferSize()::: datagram socket adaptor get send buffer size:::return->getIntOption
+DatagramSocketAdaptor#setReceiveBufferSize(int)::: datagram socket adaptor set receive buffer size:::if->throw->new->IllegalArgumentException->setIntOption
+DatagramSocketAdaptor#getReceiveBufferSize()::: datagram socket adaptor get receive buffer size:::return->getIntOption
+DatagramSocketAdaptor#setReuseAddress(boolean)::: datagram socket adaptor set reuse address:::setBooleanOption
+DatagramSocketAdaptor#getReuseAddress()::: datagram socket adaptor get reuse address:::return->getBooleanOption
+DatagramSocketAdaptor#setBroadcast(boolean)::: datagram socket adaptor set broadcast:::setBooleanOption
+DatagramSocketAdaptor#getBroadcast()::: datagram socket adaptor get broadcast:::return->getBooleanOption
+DatagramSocketAdaptor#setTrafficClass(int)::: datagram socket adaptor set traffic class:::setIntOption
+DatagramSocketAdaptor#getTrafficClass()::: datagram socket adaptor get traffic class:::return->getIntOption
+DatagramSocketAdaptor#close()::: datagram socket adaptor close:::try->dc->close->catch->throw->new->Error->finally
+DatagramSocketAdaptor#isClosed()::: datagram socket adaptor is closed:::return->dc->isOpen
+DatagramSocketAdaptor#getChannel()::: datagram socket adaptor get channel:::return
 DefaultAsynchronousChannelProvider#create():::Returns the default AsynchronousChannelProvider.:::return->new->WindowsAsynchronousChannelProvider
 DefaultSelectorProvider#create():::Returns the default SelectorProvider.:::return->new->sun.nio.ch.WindowsSelectorProvider
+DirectBuffer#address()::: direct buffer address:::
+DirectBuffer#attachment()::: direct buffer attachment:::
+DirectBuffer#cleaner()::: direct buffer cleaner:::
+FileChannelImpl.Closer#run()::: closer run:::try->fdAccess->close->catch->throw->new->UncheckedIOException->finally
+FileChannelImpl#open(FileDescriptor, String, boolean, boolean, boolean, Object)::: file channel impl open:::return->new->FileChannelImpl
+FileChannelImpl#ensureOpen()::: file channel impl ensure open:::if->isOpen->throw->new->ClosedChannelException
+FileChannelImpl#setUninterruptible()::: file channel impl set uninterruptible:::
+FileChannelImpl#beginBlocking()::: file channel impl begin blocking:::if->begin
+FileChannelImpl#endBlocking(boolean)::: file channel impl end blocking:::if->end
+FileChannelImpl#implCloseChannel()::: file channel impl impl close channel:::if->fd->valid->return->if->foreach->fileLockTable->removeAll->synchronized->if->fl->isValid->nd->fl->position->fl->size->release->invalidate->threads->signalAndWait->if->close->else->if->try->closer->clean->catch->throw->uioe->getCause->finally->else->fdAccess->close
+FileChannelImpl#read(ByteBuffer)::: file channel impl read:::ensureOpen->if->throw->new->NonReadableChannelException->synchronized->if->Util->position->checkChannelPositionAligned->n->ti->try->beginBlocking->threads->add->if->isOpen->return->do->IOUtil->read->while->isOpen->return->IOStatus->normalize->catch->finally->threads->remove->endBlocking
+FileChannelImpl#read(ByteBuffer[], int, int)::: file channel impl read:::if->throw->new->IndexOutOfBoundsException->ensureOpen->if->throw->new->NonReadableChannelException->synchronized->if->Util->position->checkChannelPositionAligned->n->ti->try->beginBlocking->threads->add->if->isOpen->return->do->IOUtil->read->while->isOpen->return->IOStatus->normalize->catch->finally->threads->remove->endBlocking
+FileChannelImpl#write(ByteBuffer)::: file channel impl write:::ensureOpen->if->throw->new->NonWritableChannelException->synchronized->if->Util->position->checkChannelPositionAligned->n->ti->try->beginBlocking->threads->add->if->isOpen->return->do->IOUtil->write->while->isOpen->return->IOStatus->normalize->catch->finally->threads->remove->endBlocking
+FileChannelImpl#write(ByteBuffer[], int, int)::: file channel impl write:::if->throw->new->IndexOutOfBoundsException->ensureOpen->if->throw->new->NonWritableChannelException->synchronized->if->Util->position->checkChannelPositionAligned->n->ti->try->beginBlocking->threads->add->if->isOpen->return->do->IOUtil->write->while->isOpen->return->IOStatus->normalize->catch->finally->threads->remove->endBlocking
+FileChannelImpl#position()::: file channel impl position:::ensureOpen->synchronized->p->ti->try->beginBlocking->threads->add->if->isOpen->return->append->fdAccess->getAppend->do->nd->size->nd->seek->while->isOpen->return->IOStatus->normalize->catch->finally->threads->remove->endBlocking
+FileChannelImpl#position(long)::: file channel impl position:::ensureOpen->if->throw->new->IllegalArgumentException->synchronized->p->ti->try->beginBlocking->threads->add->if->isOpen->return->do->nd->seek->while->isOpen->return->catch->finally->threads->remove->endBlocking
+FileChannelImpl#size()::: file channel impl size:::ensureOpen->synchronized->s->ti->try->beginBlocking->threads->add->if->isOpen->return->do->nd->size->while->isOpen->return->IOStatus->normalize->catch->finally->threads->remove->endBlocking
+FileChannelImpl#truncate(long)::: file channel impl truncate:::ensureOpen->if->throw->new->IllegalArgumentException->if->throw->new->NonWritableChannelException->synchronized->rv->p->ti->rp->try->beginBlocking->threads->add->if->isOpen->return->size->do->nd->size->while->isOpen->if->isOpen->return->do->nd->seek->while->isOpen->if->isOpen->return->if->do->nd->truncate->while->isOpen->if->isOpen->return->if->do->nd->seek->while->isOpen->return->catch->finally->threads->remove->endBlocking
+FileChannelImpl#force(boolean)::: file channel impl force:::ensureOpen->rv->ti->try->beginBlocking->threads->add->if->isOpen->return->do->nd->force->while->isOpen->catch->finally->threads->remove->endBlocking
+FileChannelImpl#transferToDirectlyInternal(long, int, WritableByteChannel, FileDescriptor)::: file channel impl transfer to directly internal:::n->ti->try->beginBlocking->threads->add->if->isOpen->return->do->transferTo0->while->isOpen->if->if->if->return->if->return->return->IOStatus->normalize->catch->finally->threads->remove->end
+FileChannelImpl#transferToDirectly(long, int, WritableByteChannel)::: file channel impl transfer to directly:::if->return->targetFD->if->if->return->else->if->if->return->sc->if->nd->canTransferToDirectly->return->getFD->if->return->thisFDVal->IOUtil->fdVal->targetFDVal->IOUtil->fdVal->if->return->if->nd->transferToDirectlyNeedsPositionLock->synchronized->pos->position->try->return->transferToDirectlyInternal->catch->finally->position->else->return->transferToDirectlyInternal
+FileChannelImpl#transferToTrustedChannel(long, long, WritableByteChannel)::: file channel impl transfer to trusted channel:::isSelChImpl->if->return->remaining->while->size->Math->min->try->dbb->map->try->n->target->write->if->break->catch->finally->unmap->catch->try->close->catch->e->addSuppressed->finally->throw->if->throw->break->finally->return
+FileChannelImpl#transferToArbitraryChannel(long, int, WritableByteChannel)::: file channel impl transfer to arbitrary channel:::c->Math->min->bb->ByteBuffer->allocate->tw->pos->try->while->bb->Math->min->limit->nr->read->if->break->bb->flip->nw->target->write->if->break->bb->clear->return->catch->if->return->throw->finally
+FileChannelImpl#transferTo(long, long, WritableByteChannel)::: file channel impl transfer to:::ensureOpen->if->target->isOpen->throw->new->ClosedChannelException->if->throw->new->NonReadableChannelException->if->throw->new->NonWritableChannelException->if->throw->new->IllegalArgumentException->sz->size->if->return->icount->Math->min->if->n->if->transferToDirectly->return->if->transferToTrustedChannel->return->return->transferToArbitraryChannel
+FileChannelImpl#transferFromFileChannel(FileChannelImpl, long, long)::: file channel impl transfer from file channel:::if->throw->new->NonReadableChannelException->synchronized->pos->src->position->max->Math->src->size->min->remaining->p->while->size->Math->min->bb->src->map->try->n->write->catch->if->throw->break->finally->unmap->nwritten->src->position->return
+FileChannelImpl#transferFromArbitraryChannel(ReadableByteChannel, long, long)::: file channel impl transfer from arbitrary channel:::c->Math->min->bb->ByteBuffer->allocate->tw->pos->try->while->bb->Math->min->limit->nr->src->read->if->break->bb->flip->nw->write->if->break->bb->clear->return->catch->if->return->throw->finally
+FileChannelImpl#transferFrom(ReadableByteChannel, long, long)::: file channel impl transfer from:::ensureOpen->if->src->isOpen->throw->new->ClosedChannelException->if->throw->new->NonWritableChannelException->if->throw->new->IllegalArgumentException->if->size->return->if->return->transferFromFileChannel->return->transferFromArbitraryChannel
+FileChannelImpl#read(ByteBuffer, long)::: file channel impl read:::if->throw->new->NullPointerException->if->throw->new->IllegalArgumentException->if->throw->new->NonReadableChannelException->if->Util->checkChannelPositionAligned->ensureOpen->if->nd->needsPositionLock->synchronized->return->readInternal->else->return->readInternal
+FileChannelImpl#readInternal(ByteBuffer, long)::: file channel impl read internal:::n->ti->try->beginBlocking->threads->add->if->isOpen->return->do->IOUtil->read->while->isOpen->return->IOStatus->normalize->catch->finally->threads->remove->endBlocking
+FileChannelImpl#write(ByteBuffer, long)::: file channel impl write:::if->throw->new->NullPointerException->if->throw->new->IllegalArgumentException->if->throw->new->NonWritableChannelException->if->Util->checkChannelPositionAligned->ensureOpen->if->nd->needsPositionLock->synchronized->return->writeInternal->else->return->writeInternal
+FileChannelImpl#writeInternal(ByteBuffer, long)::: file channel impl write internal:::n->ti->try->beginBlocking->threads->add->if->isOpen->return->do->IOUtil->write->while->isOpen->return->IOStatus->normalize->catch->finally->threads->remove->endBlocking
+FileChannelImpl.Unmapper#run()::: unmapper run:::if->return->unmap0->if->fd->valid->try->nd->close->catch->finally->synchronized
+FileChannelImpl#unmap(MappedByteBuffer)::: file channel impl unmap:::cl->cleaner->if->cl->clean
+FileChannelImpl#map(MapMode, long, long)::: file channel impl map:::ensureOpen->if->throw->new->NullPointerException->if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->imode->if->else->if->else->if->if->throw->new->NonWritableChannelException->if->throw->new->NonReadableChannelException->addr->ti->try->beginBlocking->threads->add->if->isOpen->return->mapSize->pagePosition->synchronized->filesize->do->nd->size->while->isOpen->if->isOpen->return->if->if->throw->new->IOException->rv->do->nd->truncate->while->isOpen->if->isOpen->return->if->dummy->new->FileDescriptor->if->return->Util->newMappedByteBufferR->else->return->Util->newMappedByteBuffer->mapPosition->try->map0->catch->System->gc->try->Thread->sleep->catch->Thread->currentThread->interrupt->finally->try->map0->catch->throw->new->IOException->finally->finally->mfd->try->nd->duplicateForMapping->catch->unmap0->throw->finally->isize->um->new->Unmapper->if->return->Util->newMappedByteBufferR->else->return->Util->newMappedByteBuffer->catch->finally->threads->remove->IOStatus->checkAll->endBlocking
 FileChannelImpl#getMappedBufferPool():::Invoked by sun.management.ManagementFactoryHelper to create the management interface for mapped buffers.:::return->new->JavaNioAccess.BufferPool
+FileChannelImpl#fileLockTable()::: file channel impl file lock table:::if->synchronized->if->ti->threads->add->try->ensureOpen->new->FileLockTable->catch->finally->threads->remove->return
+FileChannelImpl#lock(long, long, boolean)::: file channel impl lock:::ensureOpen->if->throw->new->NonReadableChannelException->if->throw->new->NonWritableChannelException->fli->new->FileLockImpl->flt->fileLockTable->flt->add->completed->ti->try->beginBlocking->threads->add->if->isOpen->return->n->do->nd->lock->while->isOpen->if->isOpen->if->fli2->new->FileLockImpl->flt->replace->catch->finally->if->flt->remove->threads->remove->try->endBlocking->catch->throw->new->FileLockInterruptionException->finally->return
+FileChannelImpl#tryLock(long, long, boolean)::: file channel impl try lock:::ensureOpen->if->throw->new->NonReadableChannelException->if->throw->new->NonWritableChannelException->fli->new->FileLockImpl->flt->fileLockTable->flt->add->result->ti->threads->add->try->try->ensureOpen->nd->lock->catch->flt->remove->throw->finally->if->flt->remove->return->if->fli2->new->FileLockImpl->flt->replace->return->return->catch->finally->threads->remove
+FileChannelImpl#release(FileLockImpl)::: file channel impl release:::ti->threads->add->try->ensureOpen->nd->fli->position->fli->size->release->catch->finally->threads->remove->fileLockTable->remove
+FileChannelImpl#map0(int, long, long)::: file channel impl map0:::
+FileChannelImpl#unmap0(long, long)::: file channel impl unmap0:::
+FileChannelImpl#transferTo0(FileDescriptor, long, long, FileDescriptor)::: file channel impl transfer to0:::
+FileChannelImpl#initIDs()::: file channel impl init ds:::
 FileDispatcher#seek(FileDescriptor, long):::Sets or reports this file's position If offset is -1, the current position is returned otherwise the position is set to offset.:::
+FileDispatcher#force(FileDescriptor, boolean)::: file dispatcher force:::
+FileDispatcher#truncate(FileDescriptor, long)::: file dispatcher truncate:::
+FileDispatcher#size(FileDescriptor)::: file dispatcher size:::
+FileDispatcher#lock(FileDescriptor, boolean, long, long, boolean)::: file dispatcher lock:::
+FileDispatcher#release(FileDescriptor, long, long)::: file dispatcher release:::
 FileDispatcher#duplicateForMapping(FileDescriptor):::Returns a dup of fd if a file descriptor is required for memory-mapping operations, otherwise returns an invalid FileDescriptor (meaning a newly allocated FileDescriptor):::
+FileDispatcher#canTransferToDirectly(SelectableChannel)::: file dispatcher can transfer to directly:::
+FileDispatcher#transferToDirectlyNeedsPositionLock()::: file dispatcher transfer to directly needs position lock:::
+FileDispatcher#setDirectIO(FileDescriptor, String)::: file dispatcher set direct o:::
+FileDispatcherImpl#needsPositionLock()::: file dispatcher impl needs position lock:::return
+FileDispatcherImpl#read(FileDescriptor, long, int)::: file dispatcher impl read:::return->read0
+FileDispatcherImpl#pread(FileDescriptor, long, int, long)::: file dispatcher impl pread:::return->pread0
+FileDispatcherImpl#readv(FileDescriptor, long, int)::: file dispatcher impl readv:::return->readv0
+FileDispatcherImpl#write(FileDescriptor, long, int)::: file dispatcher impl write:::return->fdAccess->getAppend->write0
+FileDispatcherImpl#pwrite(FileDescriptor, long, int, long)::: file dispatcher impl pwrite:::return->pwrite0
+FileDispatcherImpl#writev(FileDescriptor, long, int)::: file dispatcher impl writev:::return->fdAccess->getAppend->writev0
+FileDispatcherImpl#seek(FileDescriptor, long)::: file dispatcher impl seek:::return->seek0
+FileDispatcherImpl#force(FileDescriptor, boolean)::: file dispatcher impl force:::return->force0
+FileDispatcherImpl#truncate(FileDescriptor, long)::: file dispatcher impl truncate:::return->truncate0
+FileDispatcherImpl#size(FileDescriptor)::: file dispatcher impl size:::return->size0
+FileDispatcherImpl#lock(FileDescriptor, boolean, long, long, boolean)::: file dispatcher impl lock:::return->lock0
+FileDispatcherImpl#release(FileDescriptor, long, long)::: file dispatcher impl release:::release0
+FileDispatcherImpl#close(FileDescriptor)::: file dispatcher impl close:::fdAccess->close
+FileDispatcherImpl#duplicateForMapping(FileDescriptor)::: file dispatcher impl duplicate for mapping:::result->new->FileDescriptor->handle->fdAccess->getHandle->duplicateHandle->fdAccess->setHandle->fdAccess->registerCleanup->return
+FileDispatcherImpl#canTransferToDirectly(java.nio.channels.SelectableChannel)::: file dispatcher impl can transfer to directly:::return->sc->isBlocking
+FileDispatcherImpl#transferToDirectlyNeedsPositionLock()::: file dispatcher impl transfer to directly needs position lock:::return
+FileDispatcherImpl#setDirectIO(FileDescriptor, String)::: file dispatcher impl set direct o:::result->filePath->path->path->lastIndexOf->substring->buffer->CharBuffer->filePath->length->allocate->buffer->put->try->setDirect0->catch->throw->new->UnsupportedOperationException->finally->return
+FileDispatcherImpl#isFastFileTransferRequested()::: file dispatcher impl is fast file transfer requested:::fileTransferProp->GetPropertyAction->privilegedGetProperty->enable->if->equals->else->Boolean->parseBoolean->return
+FileDispatcherImpl#read0(FileDescriptor, long, int)::: file dispatcher impl read0:::
+FileDispatcherImpl#pread0(FileDescriptor, long, int, long)::: file dispatcher impl pread0:::
+FileDispatcherImpl#readv0(FileDescriptor, long, int)::: file dispatcher impl readv0:::
+FileDispatcherImpl#write0(FileDescriptor, long, int, boolean)::: file dispatcher impl write0:::
+FileDispatcherImpl#pwrite0(FileDescriptor, long, int, long)::: file dispatcher impl pwrite0:::
+FileDispatcherImpl#writev0(FileDescriptor, long, int, boolean)::: file dispatcher impl writev0:::
+FileDispatcherImpl#seek0(FileDescriptor, long)::: file dispatcher impl seek0:::
+FileDispatcherImpl#force0(FileDescriptor, boolean)::: file dispatcher impl force0:::
+FileDispatcherImpl#truncate0(FileDescriptor, long)::: file dispatcher impl truncate0:::
+FileDispatcherImpl#size0(FileDescriptor)::: file dispatcher impl size0:::
+FileDispatcherImpl#lock0(FileDescriptor, boolean, long, long, boolean)::: file dispatcher impl lock0:::
+FileDispatcherImpl#release0(FileDescriptor, long, long)::: file dispatcher impl release0:::
+FileDispatcherImpl#close0(FileDescriptor)::: file dispatcher impl close0:::
+FileDispatcherImpl#duplicateHandle(long)::: file dispatcher impl duplicate handle:::
+FileDispatcherImpl#setDirect0(FileDescriptor, CharBuffer)::: file dispatcher impl set direct0:::
+FileKey#create(FileDescriptor)::: file key create:::fk->new->FileKey->fk->init->return
+FileKey#hashCode()::: file key hash code:::return
+FileKey#equals(Object)::: file key equals:::if->return->if->return->other->if->return->return
+FileKey#init(FileDescriptor)::: file key init:::
+FileKey#initIDs()::: file key init ds:::
+FileLockImpl#isValid()::: file lock impl is valid:::return
+FileLockImpl#invalidate()::: file lock impl invalidate:::
+FileLockImpl#release()::: file lock impl release:::ch->acquiredBy->if->ch->isOpen->throw->new->ClosedChannelException->if->isValid->if->release->else->if->release->else->throw->new->AssertionError->invalidate
+FileLockTable.FileLockReference#fileKey()::: file lock reference file key:::return
+FileLockTable#add(FileLock)::: file lock table add:::list->lockMap->get->for->removeStaleEntries
+FileLockTable#removeKeyIfEmpty(FileKey, List)::: file lock table remove key if empty:::if->list->isEmpty->lockMap->remove
+FileLockTable#remove(FileLock)::: file lock table remove:::list->lockMap->get->if->return->synchronized->index->while->list->size->ref->list->get->lock->ref->get->if->ref->clear->list->remove->locks->remove->break
+FileLockTable#removeAll()::: file lock table remove all:::result->new->ArrayList<FileLock>->list->lockMap->get->if->synchronized->index->while->list->size->ref->list->get->lock->ref->get->if->lock->acquiredBy->ref->clear->list->remove->result->add->else->removeKeyIfEmpty->locks->clear->return
+FileLockTable#replace(FileLock, FileLock)::: file lock table replace:::list->lockMap->get->synchronized->for->index->list->size
+FileLockTable#checkList(List, long, long)::: file lock table check list:::foreach->fl->ref->get->if->fl->overlaps->throw->new->OverlappingFileLockException
+FileLockTable#removeStaleEntries()::: file lock table remove stale entries:::ref->while->queue->poll->fk->ref->fileKey->list->lockMap->get->if->synchronized->list->remove->removeKeyIfEmpty
+Groupable#group()::: groupable group:::
+Interruptible#interrupt(Thread)::: interruptible interrupt:::
+Invoker.GroupAndInvokeCount#group()::: group and invoke count group:::return
+Invoker.GroupAndInvokeCount#invokeCount()::: group and invoke count invoke count:::return
+Invoker.GroupAndInvokeCount#setInvokeCount(int)::: group and invoke count set invoke count:::
+Invoker.GroupAndInvokeCount#resetInvokeCount()::: group and invoke count reset invoke count:::
+Invoker.GroupAndInvokeCount#incrementInvokeCount()::: group and invoke count increment invoke count:::
 Invoker#bindToGroup(AsynchronousChannelGroupImpl):::Binds this thread to the given group:::myGroupAndInvokeCount->new->GroupAndInvokeCount->set
 Invoker#getGroupAndInvokeCount():::Returns the GroupAndInvokeCount object for this thread.:::return->myGroupAndInvokeCount->get
 Invoker#isBoundToAnyGroup():::Returns true if the current thread is in a channel group's thread pool:::return->myGroupAndInvokeCount->get
@@ -50,22 +331,106 @@ Invoker#invokeOnThreadInThreadPool(Groupable, Runnable):::Invokes the given task
 Invoker#invokeUnchecked(PendingFuture):::Invoke handler with completed result:::handler->future->handler->if->future->attachment->future->value->future->exception->invokeUnchecked
 Invoker#invoke(PendingFuture):::Invoke handler with completed result:::handler->future->handler->if->future->channel->future->attachment->future->value->future->exception->invoke
 Invoker#invokeIndirectly(PendingFuture):::Invoke handler with completed result:::handler->future->handler->if->future->channel->future->attachment->future->value->future->exception->invokeIndirectly
+Iocp#start()::: iocp start:::new->EventHandlerTask->startThreads->return
 Iocp.OverlappedChannel#getByOverlapped(long):::Returns a reference to the pending I/O result.:::
+Iocp#implClose()::: iocp impl close:::synchronized->if->return->close0->synchronized->foreach->unsafe->freeMemory->staleIoSet->clear
+Iocp#isEmpty()::: iocp is empty:::keyToChannelLock->writeLock->lock->try->return->keyToChannel->isEmpty->catch->finally->keyToChannelLock->writeLock->unlock
+Iocp#attachForeignChannel(Channel, FileDescriptor)::: iocp attach foreign channel:::key->new->OverlappedChannel->associate->return->Integer->valueOf
+Iocp#detachForeignChannel(Object)::: iocp detach foreign channel:::disassociate
+Iocp#closeAllChannels()::: iocp close all channels:::MAX_BATCH_SIZE->channels->new->OverlappedChannelArr->count->do->keyToChannelLock->writeLock->lock->try->foreach->keyToChannel->keySet->keyToChannel->get->if->break->catch->finally->keyToChannelLock->writeLock->unlock->for->i->while
+Iocp#wakeup()::: iocp wakeup:::try->postQueuedCompletionStatus->catch->throw->new->AssertionError->finally
+Iocp#executeOnHandlerTask(Runnable)::: iocp execute on handler task:::synchronized->if->throw->new->RejectedExecutionException->offerTask->wakeup
+Iocp#shutdownHandlerTasks()::: iocp shutdown handler tasks:::nThreads->threadCount->while->wakeup
 Iocp#associate(OverlappedChannel, long):::Associate the given handle with this group:::keyToChannelLock->writeLock->lock->key->try->if->isShutdown->throw->new->ShutdownChannelGroupException->do->while->keyToChannel->containsKey->if->createIoCompletionPort->keyToChannel->put->catch->finally->keyToChannelLock->writeLock->unlock->return
 Iocp#disassociate(int):::Disassociate channel from the group.:::checkForShutdown->keyToChannelLock->writeLock->lock->try->keyToChannel->remove->if->keyToChannel->isEmpty->catch->finally->keyToChannelLock->writeLock->unlock->if->isShutdown->try->shutdownNow->catch->finally
 Iocp#makeStale(Long):::Invoked when a channel associated with this port is closed before notifications for all outstanding I/O operations have been received.:::synchronized->staleIoSet->add
+Iocp#checkIfStale(long):::Checks if the given OVERLAPPED is stale and if so, releases it.:::synchronized->removed->staleIoSet->remove->if->unsafe->freeMemory
 Iocp.ResultHandler#completed(int, boolean):::Invoked if the I/O operation completes successfully.:::
 Iocp.ResultHandler#failed(int, IOException):::Invoked if the I/O operation fails.:::
+Iocp#translateErrorToIOException(int)::: iocp translate error to exception:::msg->getErrorMessage->if->Integer->toHexString->return->new->IOException
+Iocp.EventHandlerTask#run()::: event handler task run:::myGroupAndInvokeCount->Invoker->getGroupAndInvokeCount->canInvokeDirect->ioResult->new->CompletionStatus->replaceMe->try->for->catch->finally->remaining->threadExit->if->isShutdown->implClose
+Iocp.CompletionStatus#error()::: completion status error:::return
+Iocp.CompletionStatus#bytesTransferred()::: completion status bytes transferred:::return
+Iocp.CompletionStatus#completionKey()::: completion status completion key:::return
+Iocp.CompletionStatus#overlapped()::: completion status overlapped:::return
+Iocp#initIDs()::: iocp init ds:::
+Iocp#createIoCompletionPort(long, long, int, int)::: iocp create io completion port:::
+Iocp#close0(long)::: iocp close0:::
+Iocp#getQueuedCompletionStatus(long, CompletionStatus)::: iocp get queued completion status:::
+Iocp#postQueuedCompletionStatus(long, int)::: iocp post queued completion status:::
+Iocp#getErrorMessage(int)::: iocp get error message:::
+IOStatus#normalize(int)::: status normalize:::if->return->return
+IOStatus#check(int)::: status check:::return
+IOStatus#normalize(long)::: status normalize:::if->return->return
+IOStatus#check(long)::: status check:::return
+IOStatus#checkAll(long)::: status check all:::return
+IOUtil#write(FileDescriptor, ByteBuffer, long, NativeDispatcher)::: util write:::return->write
+IOUtil#write(FileDescriptor, ByteBuffer, long, boolean, int, NativeDispatcher)::: util write:::if->return->writeFromNativeBuffer->pos->src->position->lim->src->limit->rem->bb->if->Util->checkRemainingBufferSizeAligned->Util->getTemporaryAlignedDirectBuffer->else->Util->getTemporaryDirectBuffer->try->bb->put->bb->flip->src->position->n->writeFromNativeBuffer->if->src->position->return->catch->finally->Util->offerFirstTemporaryDirectBuffer
+IOUtil#writeFromNativeBuffer(FileDescriptor, ByteBuffer, long, boolean, int, NativeDispatcher)::: util write from native buffer:::pos->bb->position->lim->bb->limit->rem->if->Util->checkBufferPositionAligned->Util->checkRemainingBufferSizeAligned->written->if->return->if->nd->address->pwrite->else->nd->address->write->if->bb->position->return
+IOUtil#write(FileDescriptor, ByteBuffer[], NativeDispatcher)::: util write:::return->write
+IOUtil#write(FileDescriptor, ByteBuffer[], int, int, NativeDispatcher)::: util write:::return->write
+IOUtil#write(FileDescriptor, ByteBuffer[], int, int, boolean, int, NativeDispatcher)::: util write:::vec->IOVecWrapper->get->completed->iov_len->try->count->i->while->buf->pos->buf->position->lim->buf->limit->rem->if->Util->checkRemainingBufferSizeAligned->if->vec->setBuffer->if->shadow->if->Util->getTemporaryAlignedDirectBuffer->else->Util->getTemporaryDirectBuffer->shadow->put->shadow->flip->vec->setShadow->buf->position->shadow->position->vec->address->putBase->vec->putLen->if->return->bytesWritten->nd->writev->left->for->j->return->catch->finally->if->for->j
+IOUtil#read(FileDescriptor, ByteBuffer, long, NativeDispatcher)::: util read:::return->read
+IOUtil#read(FileDescriptor, ByteBuffer, long, boolean, int, NativeDispatcher)::: util read:::if->dst->isReadOnly->throw->new->IllegalArgumentException->if->return->readIntoNativeBuffer->bb->rem->dst->remaining->if->Util->checkRemainingBufferSizeAligned->Util->getTemporaryAlignedDirectBuffer->else->Util->getTemporaryDirectBuffer->try->n->readIntoNativeBuffer->bb->flip->if->dst->put->return->catch->finally->Util->offerFirstTemporaryDirectBuffer
+IOUtil#readIntoNativeBuffer(FileDescriptor, ByteBuffer, long, boolean, int, NativeDispatcher)::: util read into native buffer:::pos->bb->position->lim->bb->limit->rem->if->Util->checkBufferPositionAligned->Util->checkRemainingBufferSizeAligned->if->return->n->if->nd->address->pread->else->nd->address->read->if->bb->position->return
+IOUtil#read(FileDescriptor, ByteBuffer[], NativeDispatcher)::: util read:::return->read
+IOUtil#read(FileDescriptor, ByteBuffer[], int, int, NativeDispatcher)::: util read:::return->read
+IOUtil#read(FileDescriptor, ByteBuffer[], int, int, boolean, int, NativeDispatcher)::: util read:::vec->IOVecWrapper->get->completed->iov_len->try->count->i->while->buf->if->buf->isReadOnly->throw->new->IllegalArgumentException->pos->buf->position->lim->buf->limit->rem->if->Util->checkRemainingBufferSizeAligned->if->vec->setBuffer->if->shadow->if->Util->getTemporaryAlignedDirectBuffer->else->Util->getTemporaryDirectBuffer->vec->setShadow->shadow->position->vec->address->putBase->vec->putLen->if->return->bytesRead->nd->readv->left->for->j->return->catch->finally->if->for->j
+IOUtil#newFD(int)::: util new d:::fd->new->FileDescriptor->setfdVal->return
+IOUtil#randomBytes(byte[])::: util random bytes:::
 IOUtil#makePipe(boolean):::Returns two file descriptors for a pipe encoded in a long:::
+IOUtil#write1(int, byte)::: util write1:::
 IOUtil#drain(int):::Read and discard all bytes.:::
 IOUtil#drain1(int):::Read and discard at most one byte:::
+IOUtil#configureBlocking(FileDescriptor, boolean)::: util configure blocking:::
+IOUtil#fdVal(FileDescriptor)::: util fd val:::
+IOUtil#setfdVal(FileDescriptor, int)::: util setfd val:::
+IOUtil#fdLimit()::: util fd limit:::
+IOUtil#iovMax()::: util iov max:::
+IOUtil#initIDs()::: util init ds:::
 IOUtil#load():::Used to trigger loading of native libraries:::
+IOVecWrapper.Deallocator#run()::: deallocator run:::obj->free
+IOVecWrapper#get(int)::: vec wrapper get:::wrapper->cached->get->if->free->if->new->IOVecWrapper->CleanerFactory->cleaner->new->Deallocator->register->cached->set->return
+IOVecWrapper#setBuffer(int, ByteBuffer, int, int)::: vec wrapper set buffer:::
+IOVecWrapper#setShadow(int, ByteBuffer)::: vec wrapper set shadow:::
+IOVecWrapper#getBuffer(int)::: vec wrapper get buffer:::return
+IOVecWrapper#getPosition(int)::: vec wrapper get position:::return
+IOVecWrapper#getRemaining(int)::: vec wrapper get remaining:::return
+IOVecWrapper#getShadow(int)::: vec wrapper get shadow:::return
+IOVecWrapper#clearRefs(int)::: vec wrapper clear refs:::
+IOVecWrapper#putBase(int, long)::: vec wrapper put base:::offset->if->vecArray->putInt->else->vecArray->putLong
+IOVecWrapper#putLen(int, long)::: vec wrapper put len:::offset->if->vecArray->putInt->else->vecArray->putLong
+MembershipKeyImpl.Type4#groupAddress()::: type4 group address:::return
+MembershipKeyImpl.Type4#interfaceAddress()::: type4 interface address:::return
+MembershipKeyImpl.Type4#source()::: type4 source:::return
+MembershipKeyImpl.Type6#groupAddress()::: type6 group address:::return
+MembershipKeyImpl.Type6#index()::: type6 index:::return
+MembershipKeyImpl.Type6#source()::: type6 source:::return
+MembershipKeyImpl#isValid()::: membership key impl is valid:::return
+MembershipKeyImpl#invalidate()::: membership key impl invalidate:::
+MembershipKeyImpl#drop()::: membership key impl drop:::drop
+MembershipKeyImpl#channel()::: membership key impl channel:::return
+MembershipKeyImpl#group()::: membership key impl group:::return
+MembershipKeyImpl#networkInterface()::: membership key impl network interface:::return
+MembershipKeyImpl#sourceAddress()::: membership key impl source address:::return
+MembershipKeyImpl#block(InetAddress)::: membership key impl block:::if->throw->new->IllegalStateException->synchronized->if->blockedSet->contains->return->block->if->new->HashSet<>->blockedSet->add->return
+MembershipKeyImpl#unblock(InetAddress)::: membership key impl unblock:::synchronized->if->blockedSet->contains->throw->new->IllegalStateException->unblock->blockedSet->remove->return
+MembershipKeyImpl#toString()::: membership key impl to string:::sb->new->StringBuilder->sb->append->sb->group->getHostAddress->append->sb->append->sb->interf->getName->append->if->sb->append->sb->source->getHostAddress->append->sb->append->return->sb->toString
 MembershipRegistry#checkMembership(InetAddress, NetworkInterface, InetAddress):::Checks registry for membership of the group on the given network interface.:::if->keys->groups->get->if->foreach->if->key->networkInterface->equals->if->if->key->sourceAddress->return->throw->new->IllegalStateException->if->key->sourceAddress->throw->new->IllegalStateException->if->source->key->sourceAddress->equals->return->return
 MembershipRegistry#add(MembershipKeyImpl):::Add membership to the registry, returning a new membership key.:::group->key->group->keys->if->new->HashMap<>->else->groups->get->if->new->LinkedList<>->groups->put->keys->add
 MembershipRegistry#remove(MembershipKeyImpl):::Remove a key from the registry:::group->key->group->keys->groups->get->if->i->keys->iterator->while->i->hasNext->if->i->next->i->remove->break->if->keys->isEmpty->groups->remove
 MembershipRegistry#invalidateAll():::Invalidate all keys in the registry:::if->foreach->groups->keySet->foreach->groups->get->key->invalidate
+NativeDispatcher#read(FileDescriptor, long, int)::: native dispatcher read:::
 NativeDispatcher#needsPositionLock():::Returns true if pread/pwrite needs to be synchronized with position sensitive methods.:::return
+NativeDispatcher#pread(FileDescriptor, long, int, long)::: native dispatcher pread:::throw->new->IOException
+NativeDispatcher#readv(FileDescriptor, long, int)::: native dispatcher readv:::
+NativeDispatcher#write(FileDescriptor, long, int)::: native dispatcher write:::
+NativeDispatcher#pwrite(FileDescriptor, long, int, long)::: native dispatcher pwrite:::throw->new->IOException
+NativeDispatcher#writev(FileDescriptor, long, int)::: native dispatcher writev:::
+NativeDispatcher#close(FileDescriptor)::: native dispatcher close:::
+NativeDispatcher#preClose(FileDescriptor)::: native dispatcher pre close:::
 NativeObject#address():::Returns the native base address of this native object.:::return
+NativeObject#allocationAddress()::: native object allocation address:::return
 NativeObject#subObject(int):::Creates a new native object starting at the given offset from the base of this native object.:::return->new->NativeObject
 NativeObject#getObject(int):::Reads an address from this native object at the given offset and constructs a native object using that address.:::newAddress->switch->addressSize->unsafe->getLong->break->unsafe->getInt->break->throw->new->InternalError->return->new->NativeObject
 NativeObject#putObject(int, NativeObject):::Writes the base address of the given native object at the given offset of this native object.:::switch->addressSize->putLong->break->putInt->break->throw->new->InternalError
@@ -86,56 +451,531 @@ NativeObject#putDouble(int, double):::Writes a double at the specified offset fr
 NativeObject#addressSize():::Returns the native architecture's address size in bytes.:::return->unsafe->addressSize
 NativeObject#byteOrder():::Returns the byte order of the underlying hardware.:::if->return->a->unsafe->allocateMemory->try->unsafe->putLong->b->unsafe->getByte->switch->break->break->catch->finally->unsafe->freeMemory->return
 NativeObject#pageSize():::Returns the page size of the underlying hardware.:::value->if->unsafe->pageSize->return
+NativeThread#current()::: native thread current:::return
+NativeThread#signal(long)::: native thread signal:::
+NativeThreadSet#add()::: native thread set add:::th->NativeThread->current->if->synchronized->start->if->on->nn->nelts->new->longArr->System->arraycopy->for->i->return
+NativeThreadSet#remove(int)::: native thread set remove:::synchronized->if->notifyAll
+NativeThreadSet#signalAndWait()::: native thread set signal and wait:::interrupted->while->u->n->for->i->try->wait->catch->finally->if->Thread->currentThread->interrupt
 Net#isIPv6Available():::Tells whether dual-IPv4/IPv6 sockets should be used.:::if->isIPv6Available0->return
 Net#isReusePortAvailable():::Tells whether SO_REUSEPORT is supported.:::if->isReusePortAvailable0->return
 Net#useExclusiveBind():::Returns true if exclusive binding is on:::return
 Net#canIPv6SocketJoinIPv4Group():::Tells whether IPv6 sockets can join IPv4 multicast groups:::return->canIPv6SocketJoinIPv4Group0
 Net#canJoin6WithIPv4Group():::Tells whether #join6 can be used to join an IPv4 multicast group (IPv4 group as IPv4-mapped IPv6 address):::return->canJoin6WithIPv4Group0
+Net#checkAddress(SocketAddress)::: net check address:::if->throw->new->NullPointerException->if->throw->new->UnsupportedAddressTypeException->isa->if->isa->isUnresolved->throw->new->UnresolvedAddressException->addr->isa->getAddress->if->throw->new->IllegalArgumentException->return
+Net#checkAddress(SocketAddress, ProtocolFamily)::: net check address:::isa->checkAddress->if->addr->isa->getAddress->if->throw->new->UnsupportedAddressTypeException->return
+Net#asInetSocketAddress(SocketAddress)::: net as inet socket address:::if->throw->new->UnsupportedAddressTypeException->return
+Net#translateToSocketException(Exception)::: net translate to socket exception:::if->throw->nx->if->new->SocketException->else->if->new->SocketException->else->if->new->SocketException->else->if->new->SocketException->else->if->new->SocketException->else->if->new->SocketException->if->nx->initCause->if->throw->else->if->throw->else->throw->new->Error
+Net#translateException(Exception, boolean)::: net translate exception:::if->throw->if->throw->new->UnknownHostException->translateToSocketException
+Net#translateException(Exception)::: net translate exception:::translateException
 Net#getRevealedLocalAddress(InetSocketAddress):::Returns the local address after performing a SecurityManager#checkConnect.:::sm->System->getSecurityManager->if->return->try->sm->addr->getAddress->getHostAddress->checkConnect->catch->addr->getPort->getLoopbackAddress->finally->return
+Net#getRevealedLocalAddressAsString(InetSocketAddress)::: net get revealed local address as string:::return->System->getSecurityManager->addr->toString->addr->getPort->getLoopbackAddress->toString
+Net#getLoopbackAddress(int)::: net get loopback address:::return->InetAddress->getLoopbackAddress->new->InetSocketAddress
 Net#anyInet4Address(NetworkInterface):::Returns any IPv4 address of the given network interface, or null if the interface does not have any IPv4 addresses.:::return->AccessController->new->PrivilegedAction<Inet4Address>->doPrivileged
 Net#inet4AsInt(InetAddress):::Returns an IPv4 address as an int.:::if->addr->ia->getAddress->address->return->throw->new->AssertionError
 Net#inet4FromInt(int):::Returns an InetAddress from the given IPv4 address represented as an int.:::addr->new->byteArr->try->return->InetAddress->getByAddress->catch->throw->new->AssertionError->finally
 Net#inet6AsByteArray(InetAddress):::Returns an IPv6 address as a byte array:::if->return->ia->getAddress->if->ip4address->ia->getAddress->address->new->byteArr->return->throw->new->AssertionError
+Net#setSocketOption(FileDescriptor, ProtocolFamily, SocketOption, Object)::: net set socket option:::if->throw->new->IllegalArgumentException->type->name->type->if->extendedOptions->isOptionSupported->extendedOptions->setOption->return->if->throw->new->AssertionError->if->i->intValue->if->throw->new->IllegalArgumentException->if->i->intValue->if->Integer->valueOf->if->Integer->valueOf->if->i->intValue->if->throw->new->IllegalArgumentException->if->i->intValue->if->throw->new->IllegalArgumentException->key->SocketOptionRegistry->findOption->if->throw->new->AssertionError->arg->if->intValue->else->b->booleanValue->mayNeedConversion->isIPv6->key->level->key->name->setIntOption0
+Net#getSocketOption(FileDescriptor, ProtocolFamily, SocketOption)::: net get socket option:::type->name->type->if->extendedOptions->isOptionSupported->return->extendedOptions->getOption->if->throw->new->AssertionError->key->SocketOptionRegistry->findOption->if->throw->new->AssertionError->mayNeedConversion->value->key->level->key->name->getIntOption0->if->return->Integer->valueOf->else->return
+Net#isFastTcpLoopbackRequested()::: net is fast tcp loopback requested:::loopbackProp->GetPropertyAction->privilegedGetProperty->enable->if->equals->else->Boolean->parseBoolean->return
+Net#isIPv6Available0()::: net is pv6 available0:::
+Net#isReusePortAvailable0()::: net is reuse port available0:::
+Net#isExclusiveBindAvailable()::: net is exclusive bind available:::
+Net#canIPv6SocketJoinIPv4Group0()::: net can pv6 socket join pv4 group0:::
+Net#canJoin6WithIPv4Group0()::: net can join6 with pv4 group0:::
+Net#socket(boolean)::: net socket:::return->socket
+Net#socket(ProtocolFamily, boolean)::: net socket:::preferIPv6->isIPv6Available->return->IOUtil->socket0->newFD
+Net#serverSocket(boolean)::: net server socket:::return->IOUtil->isIPv6Available->socket0->newFD
+Net#socket0(boolean, boolean, boolean, boolean)::: net socket0:::
+Net#bind(FileDescriptor, InetAddress, int)::: net bind:::bind
+Net#bind(ProtocolFamily, FileDescriptor, InetAddress, int)::: net bind:::preferIPv6->isIPv6Available->bind0
+Net#bind0(FileDescriptor, boolean, boolean, InetAddress, int)::: net bind0:::
+Net#listen(FileDescriptor, int)::: net listen:::
+Net#connect(FileDescriptor, InetAddress, int)::: net connect:::return->connect
+Net#connect(ProtocolFamily, FileDescriptor, InetAddress, int)::: net connect:::preferIPv6->isIPv6Available->return->connect0
+Net#connect0(boolean, FileDescriptor, InetAddress, int)::: net connect0:::
+Net#shutdown(FileDescriptor, int)::: net shutdown:::
+Net#localPort(FileDescriptor)::: net local port:::
+Net#localInetAddress(FileDescriptor)::: net local inet address:::
+Net#localAddress(FileDescriptor)::: net local address:::return->localInetAddress->localPort->new->InetSocketAddress
+Net#remotePort(FileDescriptor)::: net remote port:::
+Net#remoteInetAddress(FileDescriptor)::: net remote inet address:::
+Net#remoteAddress(FileDescriptor)::: net remote address:::return->remoteInetAddress->remotePort->new->InetSocketAddress
+Net#getIntOption0(FileDescriptor, boolean, int, int)::: net get int option0:::
+Net#setIntOption0(FileDescriptor, boolean, int, int, int, boolean)::: net set int option0:::
+Net#poll(FileDescriptor, int, long)::: net poll:::
 Net#join4(FileDescriptor, int, int, int):::Join IPv4 multicast group:::return->joinOrDrop4
 Net#drop4(FileDescriptor, int, int, int):::Drop membership of IPv4 multicast group:::joinOrDrop4
+Net#joinOrDrop4(boolean, FileDescriptor, int, int, int)::: net join or drop4:::
 Net#block4(FileDescriptor, int, int, int):::Block IPv4 source:::return->blockOrUnblock4
 Net#unblock4(FileDescriptor, int, int, int):::Unblock IPv6 source:::blockOrUnblock4
+Net#blockOrUnblock4(boolean, FileDescriptor, int, int, int)::: net block or unblock4:::
 Net#join6(FileDescriptor, byte[], int, byte[]):::Join IPv6 multicast group:::return->joinOrDrop6
 Net#drop6(FileDescriptor, byte[], int, byte[]):::Drop membership of IPv6 multicast group:::joinOrDrop6
+Net#joinOrDrop6(boolean, FileDescriptor, byte[], int, byte[])::: net join or drop6:::
 Net#block6(FileDescriptor, byte[], int, byte[]):::Block IPv6 source:::return->blockOrUnblock6
 Net#unblock6(FileDescriptor, byte[], int, byte[]):::Unblock IPv6 source:::blockOrUnblock6
+Net#blockOrUnblock6(boolean, FileDescriptor, byte[], int, byte[])::: net block or unblock6:::
+Net#setInterface4(FileDescriptor, int)::: net set interface4:::
+Net#getInterface4(FileDescriptor)::: net get interface4:::
+Net#setInterface6(FileDescriptor, int)::: net set interface6:::
+Net#getInterface6(FileDescriptor)::: net get interface6:::
+Net#initIDs()::: net init ds:::
+Net#pollinValue()::: net pollin value:::
+Net#polloutValue()::: net pollout value:::
+Net#pollerrValue()::: net pollerr value:::
+Net#pollhupValue()::: net pollhup value:::
+Net#pollnvalValue()::: net pollnval value:::
+Net#pollconnValue()::: net pollconn value:::
+OptionKey#level()::: option key level:::return
+OptionKey#name()::: option key name:::return
+PendingFuture#channel()::: pending future channel:::return
+PendingFuture#handler()::: pending future handler:::return
+PendingFuture#attachment()::: pending future attachment:::return
+PendingFuture#setContext(Object)::: pending future set context:::
+PendingFuture#getContext()::: pending future get context:::return
+PendingFuture#setTimeoutTask(Future)::: pending future set timeout task:::synchronized->if->task->cancel->else
+PendingFuture#prepareForWait()::: pending future prepare for wait:::synchronized->if->return->else->if->new->CountDownLatch->return
 PendingFuture#setResult(V):::Sets the result, or a no-op if the result or exception is already set.:::synchronized->if->return->if->timeoutTask->cancel->if->latch->countDown
 PendingFuture#setFailure(Throwable):::Sets the result, or a no-op if the result or exception is already set.:::if->new->IOException->synchronized->if->return->if->timeoutTask->cancel->if->latch->countDown
 PendingFuture#setResult(V, Throwable):::Sets the result:::if->setResult->else->setFailure
+PendingFuture#get()::: pending future get:::if->needToWait->prepareForWait->if->latch->await->if->if->throw->new->CancellationException->throw->new->ExecutionException->return
+PendingFuture#get(long, TimeUnit)::: pending future get:::if->needToWait->prepareForWait->if->if->latch->await->throw->new->TimeoutException->if->if->throw->new->CancellationException->throw->new->ExecutionException->return
+PendingFuture#exception()::: pending future exception:::return
+PendingFuture#value()::: pending future value:::return
+PendingFuture#isCancelled()::: pending future is cancelled:::return
+PendingFuture#isDone()::: pending future is done:::return
+PendingFuture#cancel(boolean)::: pending future cancel:::synchronized->if->return->if->channel->channel->onCancel->new->CancellationException->if->timeoutTask->cancel->if->try->channel->close->catch->finally->if->latch->countDown->return
+PendingIoCache#dependsArch(int, int)::: pending io cache depends arch:::return
+PendingIoCache#add(PendingFuture)::: pending io cache add:::synchronized->if->throw->new->AssertionError->ov->if->else->unsafe->allocateMemory->pendingIoMap->put->return
+PendingIoCache#remove(long)::: pending io cache remove:::synchronized->res->pendingIoMap->remove->if->if->else->unsafe->freeMemory->if->this->notifyAll->return
+PendingIoCache#close()::: pending io cache close:::synchronized->if->return->if->pendingIoMap->isEmpty->clearPendingIoMap->while->unsafe->freeMemory
+PendingIoCache#clearPendingIoMap()::: pending io cache clear pending io map:::try->this->wait->catch->Thread->currentThread->interrupt->finally->if->pendingIoMap->isEmpty->return->foreach->pendingIoMap->keySet->result->pendingIoMap->get->iocp->result->channel->group->iocp->makeStale->rh->result->getContext->task->new->Runnable->iocp->executeOnPooledThread->pendingIoMap->clear
+PipeImpl.Initializer#run()::: initializer run:::connector->new->LoopbackConnector->connector->run->if->connThread->new->Thread->connThread->start->for->Thread->currentThread->interrupt->if->throw->new->IOException->return
+PipeImpl.Initializer.LoopbackConnector#run()::: loopback connector run:::ssc->sc1->sc2->try->secret->ByteBuffer->allocate->bb->ByteBuffer->allocate->lb->InetAddress->getLoopbackAddress->sa->for->new->SourceChannelImpl->new->SinkChannelImpl->catch->try->if->sc1->close->if->sc2->close->catch->finally->finally->try->if->ssc->close->catch->finally
+PipeImpl#source()::: pipe impl source:::return
+PipeImpl#sink()::: pipe impl sink:::return
+PollArrayWrapper#putEntry(int, SelectionKeyImpl)::: poll array wrapper put entry:::ski->getFDVal->putDescriptor->putEventOps
+PollArrayWrapper#replaceEntry(PollArrayWrapper, int, PollArrayWrapper, int)::: poll array wrapper replace entry:::target->source->getDescriptor->putDescriptor->target->source->getEventOps->putEventOps
+PollArrayWrapper#grow(int)::: poll array wrapper grow:::temp->new->PollArrayWrapper->for->i->pollArray->free->pollArray->address
+PollArrayWrapper#free()::: poll array wrapper free:::pollArray->free
+PollArrayWrapper#putDescriptor(int, int)::: poll array wrapper put descriptor:::pollArray->putInt
+PollArrayWrapper#putEventOps(int, int)::: poll array wrapper put event ops:::pollArray->putShort
+PollArrayWrapper#getEventOps(int)::: poll array wrapper get event ops:::return->pollArray->getShort
+PollArrayWrapper#getDescriptor(int)::: poll array wrapper get descriptor:::return->pollArray->getInt
+PollArrayWrapper#addWakeupSocket(int, int)::: poll array wrapper add wakeup socket:::putDescriptor->putEventOps
+Reflect#setAccessible(AccessibleObject)::: reflect set accessible:::AccessController->new->PrivilegedAction<Void>->doPrivileged
+Reflect#lookupConstructor(String, Class[])::: reflect lookup constructor:::try->cl->Class->forName->c->cl->getDeclaredConstructor->setAccessible->return->catch->throw->new->ReflectionError->finally
+Reflect#invoke(Constructor, Object[])::: reflect invoke:::try->return->c->newInstance->catch->throw->new->ReflectionError->finally
+Reflect#lookupMethod(String, String, Class...)::: reflect lookup method:::try->cl->Class->forName->m->cl->getDeclaredMethod->setAccessible->return->catch->throw->new->ReflectionError->finally
+Reflect#invoke(Method, Object, Object[])::: reflect invoke:::try->return->m->invoke->catch->throw->new->ReflectionError->finally
+Reflect#invokeIO(Method, Object, Object[])::: reflect invoke o:::try->return->m->invoke->catch->throw->new->ReflectionError->if->x->getCause->isInstance->throw->x->getCause->throw->new->ReflectionError->finally
+Reflect#lookupField(String, String)::: reflect lookup field:::try->cl->Class->forName->f->cl->getDeclaredField->setAccessible->return->catch->throw->new->ReflectionError->finally
+Reflect#get(Object, Field)::: reflect get:::try->return->f->get->catch->throw->new->ReflectionError->finally
+Reflect#get(Field)::: reflect get:::return->get
+Reflect#set(Object, Field, Object)::: reflect set:::try->f->set->catch->throw->new->ReflectionError->finally
+Reflect#setInt(Object, Field, int)::: reflect set int:::try->f->setInt->catch->throw->new->ReflectionError->finally
+Reflect#setBoolean(Object, Field, boolean)::: reflect set boolean:::try->f->setBoolean->catch->throw->new->ReflectionError->finally
+Secrets#provider()::: secrets provider:::p->SelectorProvider->provider->if->throw->new->UnsupportedOperationException->return
+Secrets#newSocketChannel(FileDescriptor)::: secrets new socket channel:::try->return->provider->new->SocketChannelImpl->catch->throw->new->AssertionError->finally
+Secrets#newServerSocketChannel(FileDescriptor)::: secrets new server socket channel:::try->return->provider->new->ServerSocketChannelImpl->catch->throw->new->AssertionError->finally
+SelChImpl#getFD()::: sel ch impl get d:::
+SelChImpl#getFDVal()::: sel ch impl get val:::
 SelChImpl#translateAndUpdateReadyOps(int, SelectionKeyImpl):::Adds the specified ops if present in interestOps:::
 SelChImpl#translateAndSetReadyOps(int, SelectionKeyImpl):::Sets the specified ops if present in interestOps:::
 SelChImpl#translateInterestOps(int):::Translates an interest operation set into a native event set:::
+SelChImpl#kill()::: sel ch impl kill:::
+SelectionKeyImpl#ensureValid()::: selection key impl ensure valid:::if->isValid->throw->new->CancelledKeyException
+SelectionKeyImpl#getFDVal()::: selection key impl get val:::return->channel->getFDVal
+SelectionKeyImpl#channel()::: selection key impl channel:::return
+SelectionKeyImpl#selector()::: selection key impl selector:::return
+SelectionKeyImpl#interestOps()::: selection key impl interest ops:::ensureValid->return
+SelectionKeyImpl#interestOps(int)::: selection key impl interest ops:::ensureValid->if->channel->validOps->throw->new->IllegalArgumentException->oldOps->INTERESTOPS->getAndSet->if->selector->setEventOps->return
+SelectionKeyImpl#interestOpsOr(int)::: selection key impl interest ops or:::ensureValid->if->channel->validOps->throw->new->IllegalArgumentException->oldVal->INTERESTOPS->getAndBitwiseOr->if->selector->setEventOps->return
+SelectionKeyImpl#interestOpsAnd(int)::: selection key impl interest ops and:::ensureValid->oldVal->INTERESTOPS->getAndBitwiseAnd->if->selector->setEventOps->return
+SelectionKeyImpl#readyOps()::: selection key impl ready ops:::ensureValid->return
+SelectionKeyImpl#nioReadyOps(int)::: selection key impl nio ready ops:::
+SelectionKeyImpl#nioReadyOps()::: selection key impl nio ready ops:::return
+SelectionKeyImpl#nioInterestOps(int)::: selection key impl nio interest ops:::if->channel->validOps->throw->new->IllegalArgumentException->selector->setEventOps->return
+SelectionKeyImpl#nioInterestOps()::: selection key impl nio interest ops:::return
+SelectionKeyImpl#translateInterestOps()::: selection key impl translate interest ops:::return->channel->translateInterestOps
+SelectionKeyImpl#translateAndSetReadyOps(int)::: selection key impl translate and set ready ops:::return->channel->translateAndSetReadyOps
+SelectionKeyImpl#translateAndUpdateReadyOps(int)::: selection key impl translate and update ready ops:::return->channel->translateAndUpdateReadyOps
+SelectionKeyImpl#registeredEvents(int)::: selection key impl registered events:::
+SelectionKeyImpl#registeredEvents()::: selection key impl registered events:::return
+SelectionKeyImpl#getIndex()::: selection key impl get index:::return
+SelectionKeyImpl#setIndex(int)::: selection key impl set index:::
+SelectionKeyImpl#toString()::: selection key impl to string:::sb->new->StringBuilder->sb->append->append->append->append->if->isValid->sb->append->append->append->append->else->sb->append->return->sb->toString
+SelectorImpl#ensureOpen()::: selector impl ensure open:::if->isOpen->throw->new->ClosedSelectorException
+SelectorImpl#keys()::: selector impl keys:::ensureOpen->return
+SelectorImpl#selectedKeys()::: selector impl selected keys:::ensureOpen->return
 SelectorImpl#begin(boolean):::Marks the beginning of a select operation that might block:::if->begin
 SelectorImpl#end(boolean):::Marks the end of a select operation that may have blocked:::if->end
 SelectorImpl#doSelect(Consumer, long):::Selects the keys for channels that are ready for I/O operations.:::
+SelectorImpl#lockAndDoSelect(Consumer, long)::: selector impl lock and do select:::synchronized->ensureOpen->if->throw->new->IllegalStateException->try->synchronized->return->doSelect->catch->finally
+SelectorImpl#select(long)::: selector impl select:::if->throw->new->IllegalArgumentException->return->lockAndDoSelect
+SelectorImpl#select()::: selector impl select:::return->lockAndDoSelect
+SelectorImpl#selectNow()::: selector impl select now:::return->lockAndDoSelect
+SelectorImpl#select(Consumer, long)::: selector impl select:::Objects->requireNonNull->if->throw->new->IllegalArgumentException->return->lockAndDoSelect
+SelectorImpl#select(Consumer)::: selector impl select:::Objects->requireNonNull->return->lockAndDoSelect
+SelectorImpl#selectNow(Consumer)::: selector impl select now:::Objects->requireNonNull->return->lockAndDoSelect
 SelectorImpl#implClose():::Invoked by implCloseSelector to close the selector.:::
+SelectorImpl#implCloseSelector()::: selector impl impl close selector:::wakeup->synchronized->implClose->synchronized->i->keys->iterator->while->i->hasNext->ski->i->next->deregister->selch->ski->channel->if->selch->isOpen->selch->isRegistered->kill->selectedKeys->remove->i->remove
+SelectorImpl#register(AbstractSelectableChannel, int, Object)::: selector impl register:::if->throw->new->IllegalSelectorException->k->new->SelectionKeyImpl->k->attach->implRegister->keys->add->try->k->interestOps->catch->keys->remove->k->cancel->throw->finally->return
 SelectorImpl#implRegister(SelectionKeyImpl):::Register the key in the selector:::ensureOpen
 SelectorImpl#implDereg(SelectionKeyImpl):::Removes the key from the selector:::
 SelectorImpl#processDeregisterQueue():::Invoked by selection operations to process the cancelled-key set:::cks->cancelledKeys->synchronized->if->cks->isEmpty->i->cks->iterator->while->i->hasNext->ski->i->next->i->remove->implDereg->selectedKeys->remove->keys->remove->deregister->ch->ski->channel->if->ch->isOpen->ch->isRegistered->kill
 SelectorImpl#processReadyEvents(int, SelectionKeyImpl, Consumer):::Invoked by selection operations to handle ready events:::if->ski->translateAndSetReadyOps->if->ski->nioReadyOps->ski->nioInterestOps->action->accept->ensureOpen->return->else->if->selectedKeys->contains->if->ski->translateAndUpdateReadyOps->return->else->ski->translateAndSetReadyOps->if->ski->nioReadyOps->ski->nioInterestOps->selectedKeys->add->return->return
 SelectorImpl#setEventOps(SelectionKeyImpl):::Invoked by interestOps to ensure the interest ops are updated at the next selection operation.:::
+SelectorProviderImpl#openDatagramChannel()::: selector provider impl open datagram channel:::return->new->DatagramChannelImpl
+SelectorProviderImpl#openDatagramChannel(ProtocolFamily)::: selector provider impl open datagram channel:::return->new->DatagramChannelImpl
+SelectorProviderImpl#openPipe()::: selector provider impl open pipe:::return->new->PipeImpl
+SelectorProviderImpl#openSelector()::: selector provider impl open selector:::
+SelectorProviderImpl#openServerSocketChannel()::: selector provider impl open server socket channel:::return->new->ServerSocketChannelImpl
+SelectorProviderImpl#openSocketChannel()::: selector provider impl open socket channel:::return->new->SocketChannelImpl
+ServerSocketAdaptor#create(ServerSocketChannelImpl)::: server socket adaptor create:::try->return->new->ServerSocketAdaptor->catch->throw->new->Error->finally
+ServerSocketAdaptor#bind(SocketAddress)::: server socket adaptor bind:::bind
+ServerSocketAdaptor#bind(SocketAddress, int)::: server socket adaptor bind:::if->new->InetSocketAddress->try->ssc->bind->catch->Net->translateException->finally
+ServerSocketAdaptor#getInetAddress()::: server socket adaptor get inet address:::local->ssc->localAddress->if->return->else->return->Net->getRevealedLocalAddress->getAddress
+ServerSocketAdaptor#getLocalPort()::: server socket adaptor get local port:::local->ssc->localAddress->if->return->else->return->local->getPort
+ServerSocketAdaptor#accept()::: server socket adaptor accept:::synchronized->ssc->blockingLock->try->if->ssc->isBound->throw->new->NotYetBoundException->to->if->sc->ssc->accept->if->ssc->isBlocking->throw->new->IllegalBlockingModeException->return->sc->socket->if->ssc->isBlocking->throw->new->IllegalBlockingModeException->for->catch->Net->translateException->return->finally
+ServerSocketAdaptor#close()::: server socket adaptor close:::ssc->close
+ServerSocketAdaptor#getChannel()::: server socket adaptor get channel:::return
+ServerSocketAdaptor#isBound()::: server socket adaptor is bound:::return->ssc->isBound
+ServerSocketAdaptor#isClosed()::: server socket adaptor is closed:::return->ssc->isOpen
+ServerSocketAdaptor#setSoTimeout(int)::: server socket adaptor set so timeout:::
+ServerSocketAdaptor#getSoTimeout()::: server socket adaptor get so timeout:::return
+ServerSocketAdaptor#setReuseAddress(boolean)::: server socket adaptor set reuse address:::try->ssc->setOption->catch->Net->translateToSocketException->finally
+ServerSocketAdaptor#getReuseAddress()::: server socket adaptor get reuse address:::try->return->ssc->getOption->booleanValue->catch->Net->translateToSocketException->return->finally
+ServerSocketAdaptor#toString()::: server socket adaptor to string:::if->isBound->return->return->getInetAddress->getLocalPort
+ServerSocketAdaptor#setReceiveBufferSize(int)::: server socket adaptor set receive buffer size:::if->throw->new->IllegalArgumentException->try->ssc->setOption->catch->Net->translateToSocketException->finally
+ServerSocketAdaptor#getReceiveBufferSize()::: server socket adaptor get receive buffer size:::try->return->ssc->getOption->intValue->catch->Net->translateToSocketException->return->finally
+ServerSocketChannelImpl#ensureOpen()::: server socket channel impl ensure open:::if->isOpen->throw->new->ClosedChannelException
+ServerSocketChannelImpl#socket()::: server socket channel impl socket:::synchronized->if->ServerSocketAdaptor->create->return
+ServerSocketChannelImpl#getLocalAddress()::: server socket channel impl get local address:::synchronized->ensureOpen->return->Net->getRevealedLocalAddress
+ServerSocketChannelImpl#setOption(SocketOption, T)::: server socket channel impl set option:::Objects->requireNonNull->if->supportedOptions->contains->throw->new->UnsupportedOperationException->synchronized->ensureOpen->if->family->Net->isIPv6Available->Net->setSocketOption->return->if->Net->useExclusiveBind->else->Net->setSocketOption->return
+ServerSocketChannelImpl#getOption(SocketOption)::: server socket channel impl get option:::Objects->requireNonNull->if->supportedOptions->contains->throw->new->UnsupportedOperationException->synchronized->ensureOpen->if->Net->useExclusiveBind->return->Boolean->valueOf->return->Net->getSocketOption
+ServerSocketChannelImpl.DefaultOptionsHolder#defaultOptions()::: default options holder default options:::set->new->HashSet<>->set->add->set->add->if->Net->isReusePortAvailable->set->add->set->add->set->ExtendedSocketOptions->options->addAll->return->Collections->unmodifiableSet
+ServerSocketChannelImpl#supportedOptions()::: server socket channel impl supported options:::return
+ServerSocketChannelImpl#bind(SocketAddress, int)::: server socket channel impl bind:::synchronized->ensureOpen->if->throw->new->AlreadyBoundException->isa->new->InetSocketAddress->Net->checkAddress->sm->System->getSecurityManager->if->sm->isa->getPort->checkListen->NetHooks->isa->getAddress->isa->getPort->beforeTcpBind->Net->isa->getAddress->isa->getPort->bind->Net->listen->Net->localAddress->return
+ServerSocketChannelImpl#begin(boolean):::Marks the beginning of an I/O operation that might block.:::if->begin->synchronized->ensureOpen->if->throw->new->NotYetBoundException->if->NativeThread->current
+ServerSocketChannelImpl#end(boolean, boolean):::Marks the end of an I/O operation that may have blocked.:::if->synchronized->if->stateLock->notifyAll->end
+ServerSocketChannelImpl#accept()::: server socket channel impl accept:::acceptLock->lock->try->n->newfd->new->FileDescriptor->isaa->new->InetSocketAddressArr->blocking->isBlocking->try->begin->do->accept->while->isOpen->catch->finally->end->if->return->IOUtil->configureBlocking->isa->sc->provider->new->SocketChannelImpl->sm->System->getSecurityManager->if->try->sm->isa->getAddress->getHostAddress->isa->getPort->checkAccept->catch->sc->close->throw->finally->return->catch->finally->acceptLock->unlock
+ServerSocketChannelImpl#implConfigureBlocking(boolean)::: server socket channel impl impl configure blocking:::acceptLock->lock->try->synchronized->ensureOpen->IOUtil->configureBlocking->catch->finally->acceptLock->unlock
 ServerSocketChannelImpl#implCloseSelectableChannel():::Invoked by implCloseChannel to close the channel:::interrupted->blocking->synchronized->isBlocking->if->synchronized->th->if->nd->preClose->NativeThread->signal->while->try->stateLock->wait->catch->finally->else->acceptLock->lock->acceptLock->unlock->synchronized->if->isRegistered->kill->if->Thread->currentThread->interrupt
+ServerSocketChannelImpl#kill()::: server socket channel impl kill:::synchronized->if->nd->close
 ServerSocketChannelImpl#isBound():::Returns true if channel's socket is bound:::synchronized->return
 ServerSocketChannelImpl#localAddress():::Returns the local address, or null if not bound:::synchronized->return
 ServerSocketChannelImpl#pollAccept(long):::Poll this channel's socket for a new connection up to the given timeout.:::acceptLock->lock->try->polled->try->begin->events->Net->poll->catch->finally->end->return->catch->finally->acceptLock->unlock
 ServerSocketChannelImpl#translateReadyOps(int, int, SelectionKeyImpl):::Translates native poll revent set into a ready operation set:::intOps->ski->nioInterestOps->oldOps->ski->nioReadyOps->newOps->if->return->if->ski->nioReadyOps->return->if->ski->nioReadyOps->return
+ServerSocketChannelImpl#translateAndUpdateReadyOps(int, SelectionKeyImpl)::: server socket channel impl translate and update ready ops:::return->ski->nioReadyOps->translateReadyOps
+ServerSocketChannelImpl#translateAndSetReadyOps(int, SelectionKeyImpl)::: server socket channel impl translate and set ready ops:::return->translateReadyOps
 ServerSocketChannelImpl#translateInterestOps(int):::Translates an interest operation set into a native poll event set:::newOps->if->return
+ServerSocketChannelImpl#getFD()::: server socket channel impl get d:::return
+ServerSocketChannelImpl#getFDVal()::: server socket channel impl get val:::return
+ServerSocketChannelImpl#toString()::: server socket channel impl to string:::sb->new->StringBuilder->sb->this->getClass->getName->append->sb->append->if->isOpen->sb->append->else->synchronized->addr->if->sb->append->else->sb->Net->getRevealedLocalAddressAsString->append->sb->append->return->sb->toString
+ServerSocketChannelImpl#accept(FileDescriptor, FileDescriptor, InetSocketAddress[]):::Accept a connection on a socket.:::return->accept0
+ServerSocketChannelImpl#accept0(FileDescriptor, FileDescriptor, InetSocketAddress[])::: server socket channel impl accept0:::
+ServerSocketChannelImpl#initIDs()::: server socket channel impl init ds:::
+SimpleAsynchronousFileChannelImpl#open(FileDescriptor, boolean, boolean, ThreadPool)::: simple asynchronous file channel impl open:::executor->pool->executor->return->new->SimpleAsynchronousFileChannelImpl
+SimpleAsynchronousFileChannelImpl#close()::: simple asynchronous file channel impl close:::synchronized->if->return->invalidateAllLocks->threads->signalAndWait->closeLock->writeLock->lock->try->catch->finally->closeLock->writeLock->unlock->nd->close
+SimpleAsynchronousFileChannelImpl#size()::: simple asynchronous file channel impl size:::ti->threads->add->try->n->try->begin->do->nd->size->while->isOpen->return->catch->finally->end->catch->finally->threads->remove
+SimpleAsynchronousFileChannelImpl#truncate(long)::: simple asynchronous file channel impl truncate:::if->throw->new->IllegalArgumentException->if->throw->new->NonWritableChannelException->ti->threads->add->try->n->try->begin->do->nd->size->while->isOpen->if->isOpen->do->nd->truncate->while->isOpen->return->catch->finally->end->catch->finally->threads->remove
+SimpleAsynchronousFileChannelImpl#force(boolean)::: simple asynchronous file channel impl force:::ti->threads->add->try->n->try->begin->do->nd->force->while->isOpen->catch->finally->end->catch->finally->threads->remove
+SimpleAsynchronousFileChannelImpl#implLock(long, long, boolean, A, CompletionHandler)::: simple asynchronous file channel impl impl lock:::if->throw->new->NonReadableChannelException->if->throw->new->NonWritableChannelException->fli->addToFileLockTable->if->exc->new->ClosedChannelException->if->return->CompletedFuture->withFailure->Invoker->invokeIndirectly->return->result->new->PendingFuture<FileLock,A>->task->new->Runnable->executed->try->executor->execute->catch->finally->if->removeFromFileLockTable->return
+SimpleAsynchronousFileChannelImpl#tryLock(long, long, boolean)::: simple asynchronous file channel impl try lock:::if->throw->new->NonReadableChannelException->if->throw->new->NonWritableChannelException->fli->addToFileLockTable->if->throw->new->ClosedChannelException->ti->threads->add->gotLock->try->begin->n->do->nd->lock->while->isOpen->if->isOpen->return->if->return->if->throw->new->AsynchronousCloseException->throw->new->AssertionError->catch->finally->if->removeFromFileLockTable->end->threads->remove
+SimpleAsynchronousFileChannelImpl#implRelease(FileLockImpl)::: simple asynchronous file channel impl impl release:::nd->fli->position->fli->size->release
+SimpleAsynchronousFileChannelImpl#implRead(ByteBuffer, long, A, CompletionHandler)::: simple asynchronous file channel impl impl read:::if->throw->new->IllegalArgumentException->if->throw->new->NonReadableChannelException->if->dst->isReadOnly->throw->new->IllegalArgumentException->if->isOpen->dst->remaining->exc->isOpen->new->ClosedChannelException->if->return->CompletedFuture->withResult->Invoker->invokeIndirectly->return->result->new->PendingFuture<Integer,A>->task->new->Runnable->executor->execute->return
+SimpleAsynchronousFileChannelImpl#implWrite(ByteBuffer, long, A, CompletionHandler)::: simple asynchronous file channel impl impl write:::if->throw->new->IllegalArgumentException->if->throw->new->NonWritableChannelException->if->isOpen->src->remaining->exc->isOpen->new->ClosedChannelException->if->return->CompletedFuture->withResult->Invoker->invokeIndirectly->return->result->new->PendingFuture<Integer,A>->task->new->Runnable->executor->execute->return
+SinkChannelImpl#getFD()::: sink channel impl get d:::return->getFD
+SinkChannelImpl#getFDVal()::: sink channel impl get val:::return->getFDVal
+SinkChannelImpl#implCloseSelectableChannel()::: sink channel impl impl close selectable channel:::if->isRegistered->kill
+SinkChannelImpl#kill()::: sink channel impl kill:::sc->close
+SinkChannelImpl#implConfigureBlocking(boolean)::: sink channel impl impl configure blocking:::sc->configureBlocking
+SinkChannelImpl#translateReadyOps(int, int, SelectionKeyImpl)::: sink channel impl translate ready ops:::intOps->ski->nioInterestOps->oldOps->ski->nioReadyOps->newOps->if->throw->new->Error->if->ski->nioReadyOps->return->if->ski->nioReadyOps->return
+SinkChannelImpl#translateAndUpdateReadyOps(int, SelectionKeyImpl)::: sink channel impl translate and update ready ops:::return->ski->nioReadyOps->translateReadyOps
+SinkChannelImpl#translateAndSetReadyOps(int, SelectionKeyImpl)::: sink channel impl translate and set ready ops:::return->translateReadyOps
+SinkChannelImpl#translateInterestOps(int)::: sink channel impl translate interest ops:::newOps->if->return
+SinkChannelImpl#write(ByteBuffer)::: sink channel impl write:::try->return->sc->write->catch->close->throw->finally
+SinkChannelImpl#write(ByteBuffer[])::: sink channel impl write:::try->return->sc->write->catch->close->throw->finally
+SinkChannelImpl#write(ByteBuffer[], int, int)::: sink channel impl write:::if->throw->new->IndexOutOfBoundsException->try->return->Util->subsequence->write->catch->close->throw->finally
+SocketAdaptor#create(SocketChannelImpl)::: socket adaptor create:::try->return->new->SocketAdaptor->catch->throw->new->InternalError->finally
+SocketAdaptor#getChannel()::: socket adaptor get channel:::return
+SocketAdaptor#connect(SocketAddress)::: socket adaptor connect:::connect
+SocketAdaptor#connect(SocketAddress, int)::: socket adaptor connect:::if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->synchronized->sc->blockingLock->if->sc->isBlocking->throw->new->IllegalBlockingModeException->try->if->sc->connect->return->sc->configureBlocking->try->if->sc->connect->return->catch->finally->try->sc->configureBlocking->catch->finally->timeoutNanos->NANOSECONDS->convert->to->for->catch->Net->translateException->finally
+SocketAdaptor#bind(SocketAddress)::: socket adaptor bind:::try->sc->bind->catch->Net->translateException->finally
+SocketAdaptor#getInetAddress()::: socket adaptor get inet address:::remote->sc->remoteAddress->if->return->else->return->remote->getAddress
+SocketAdaptor#getLocalAddress()::: socket adaptor get local address:::if->sc->isOpen->local->sc->localAddress->if->return->Net->getRevealedLocalAddress->getAddress->return->new->InetSocketAddress->getAddress
+SocketAdaptor#getPort()::: socket adaptor get port:::remote->sc->remoteAddress->if->return->else->return->remote->getPort
+SocketAdaptor#getLocalPort()::: socket adaptor get local port:::local->sc->localAddress->if->return->else->return->local->getPort
+SocketAdaptor.SocketInputStream#read(ByteBuffer)::: socket input stream read:::synchronized->sc->blockingLock->if->sc->isBlocking->throw->new->IllegalBlockingModeException->to->if->return->sc->read->timeoutNanos->NANOSECONDS->convert->for
+SocketAdaptor#getInputStream()::: socket adaptor get input stream:::if->sc->isOpen->throw->new->SocketException->if->sc->isConnected->throw->new->SocketException->if->sc->isInputOpen->throw->new->SocketException->if->try->AccessController->new->PrivilegedExceptionAction<InputStream>->doPrivileged->catch->throw->e->getException->finally->return
+SocketAdaptor#getOutputStream()::: socket adaptor get output stream:::if->sc->isOpen->throw->new->SocketException->if->sc->isConnected->throw->new->SocketException->if->sc->isOutputOpen->throw->new->SocketException->os->try->AccessController->new->PrivilegedExceptionAction<OutputStream>->doPrivileged->catch->throw->e->getException->finally->return
+SocketAdaptor#setBooleanOption(SocketOption, boolean)::: socket adaptor set boolean option:::try->sc->setOption->catch->Net->translateToSocketException->finally
+SocketAdaptor#setIntOption(SocketOption, int)::: socket adaptor set int option:::try->sc->setOption->catch->Net->translateToSocketException->finally
+SocketAdaptor#getBooleanOption(SocketOption)::: socket adaptor get boolean option:::try->return->sc->getOption->booleanValue->catch->Net->translateToSocketException->return->finally
+SocketAdaptor#getIntOption(SocketOption)::: socket adaptor get int option:::try->return->sc->getOption->intValue->catch->Net->translateToSocketException->return->finally
+SocketAdaptor#setTcpNoDelay(boolean)::: socket adaptor set tcp no delay:::setBooleanOption
+SocketAdaptor#getTcpNoDelay()::: socket adaptor get tcp no delay:::return->getBooleanOption
+SocketAdaptor#setSoLinger(boolean, int)::: socket adaptor set so linger:::if->setIntOption
+SocketAdaptor#getSoLinger()::: socket adaptor get so linger:::return->getIntOption
+SocketAdaptor#sendUrgentData(int)::: socket adaptor send urgent data:::n->sc->sendOutOfBandData->if->throw->new->IOException
+SocketAdaptor#setOOBInline(boolean)::: socket adaptor set inline:::setBooleanOption
+SocketAdaptor#getOOBInline()::: socket adaptor get inline:::return->getBooleanOption
+SocketAdaptor#setSoTimeout(int)::: socket adaptor set so timeout:::if->throw->new->IllegalArgumentException
+SocketAdaptor#getSoTimeout()::: socket adaptor get so timeout:::return
+SocketAdaptor#setSendBufferSize(int)::: socket adaptor set send buffer size:::if->throw->new->IllegalArgumentException->setIntOption
+SocketAdaptor#getSendBufferSize()::: socket adaptor get send buffer size:::return->getIntOption
+SocketAdaptor#setReceiveBufferSize(int)::: socket adaptor set receive buffer size:::if->throw->new->IllegalArgumentException->setIntOption
+SocketAdaptor#getReceiveBufferSize()::: socket adaptor get receive buffer size:::return->getIntOption
+SocketAdaptor#setKeepAlive(boolean)::: socket adaptor set keep alive:::setBooleanOption
+SocketAdaptor#getKeepAlive()::: socket adaptor get keep alive:::return->getBooleanOption
+SocketAdaptor#setTrafficClass(int)::: socket adaptor set traffic class:::setIntOption
+SocketAdaptor#getTrafficClass()::: socket adaptor get traffic class:::return->getIntOption
+SocketAdaptor#setReuseAddress(boolean)::: socket adaptor set reuse address:::setBooleanOption
+SocketAdaptor#getReuseAddress()::: socket adaptor get reuse address:::return->getBooleanOption
+SocketAdaptor#close()::: socket adaptor close:::sc->close
+SocketAdaptor#shutdownInput()::: socket adaptor shutdown input:::try->sc->shutdownInput->catch->Net->translateException->finally
+SocketAdaptor#shutdownOutput()::: socket adaptor shutdown output:::try->sc->shutdownOutput->catch->Net->translateException->finally
+SocketAdaptor#toString()::: socket adaptor to string:::if->sc->isConnected->return->getInetAddress->getPort->getLocalPort->return
+SocketAdaptor#isConnected()::: socket adaptor is connected:::return->sc->isConnected
+SocketAdaptor#isBound()::: socket adaptor is bound:::return->sc->localAddress
+SocketAdaptor#isClosed()::: socket adaptor is closed:::return->sc->isOpen
+SocketAdaptor#isInputShutdown()::: socket adaptor is input shutdown:::return->sc->isInputOpen
+SocketAdaptor#isOutputShutdown()::: socket adaptor is output shutdown:::return->sc->isOutputOpen
+SocketChannelImpl#ensureOpen():::Checks that the channel is open.:::if->isOpen->throw->new->ClosedChannelException
+SocketChannelImpl#ensureOpenAndConnected():::Checks that the channel is open and connected.:::state->if->throw->new->NotYetConnectedException->else->if->throw->new->ClosedChannelException
+SocketChannelImpl#socket()::: socket channel impl socket:::synchronized->if->SocketAdaptor->create->return
+SocketChannelImpl#getLocalAddress()::: socket channel impl get local address:::synchronized->ensureOpen->return->Net->getRevealedLocalAddress
+SocketChannelImpl#getRemoteAddress()::: socket channel impl get remote address:::synchronized->ensureOpen->return
+SocketChannelImpl#setOption(SocketOption, T)::: socket channel impl set option:::Objects->requireNonNull->if->supportedOptions->contains->throw->new->UnsupportedOperationException->synchronized->ensureOpen->if->family->Net->isIPv6Available->Net->setSocketOption->return->if->Net->useExclusiveBind->return->Net->setSocketOption->return
+SocketChannelImpl#getOption(SocketOption)::: socket channel impl get option:::Objects->requireNonNull->if->supportedOptions->contains->throw->new->UnsupportedOperationException->synchronized->ensureOpen->if->Net->useExclusiveBind->return->Boolean->valueOf->if->family->Net->isIPv6Available->return->Net->getSocketOption->return->Net->getSocketOption
+SocketChannelImpl.DefaultOptionsHolder#defaultOptions()::: default options holder default options:::set->new->HashSet<>->set->add->set->add->set->add->set->add->if->Net->isReusePortAvailable->set->add->set->add->set->add->set->add->set->add->set->ExtendedSocketOptions->options->addAll->return->Collections->unmodifiableSet
+SocketChannelImpl#supportedOptions()::: socket channel impl supported options:::return
+SocketChannelImpl#beginRead(boolean):::Marks the beginning of a read operation that might block.:::if->begin->synchronized->ensureOpenAndConnected->NativeThread->current->else->ensureOpenAndConnected
+SocketChannelImpl#endRead(boolean, boolean):::Marks the end of a read operation that may have blocked.:::if->synchronized->if->stateLock->notifyAll->end
+SocketChannelImpl#read(ByteBuffer)::: socket channel impl read:::Objects->requireNonNull->readLock->lock->try->blocking->isBlocking->n->try->beginRead->if->return->if->do->IOUtil->read->while->isOpen->else->IOUtil->read->catch->finally->endRead->if->return->return->IOStatus->normalize->catch->finally->readLock->unlock
+SocketChannelImpl#read(ByteBuffer[], int, int)::: socket channel impl read:::Objects->checkFromIndexSize->readLock->lock->try->blocking->isBlocking->n->try->beginRead->if->return->if->do->IOUtil->read->while->isOpen->else->IOUtil->read->catch->finally->endRead->if->return->return->IOStatus->normalize->catch->finally->readLock->unlock
+SocketChannelImpl#beginWrite(boolean):::Marks the beginning of a write operation that might block.:::if->begin->synchronized->ensureOpenAndConnected->if->throw->new->ClosedChannelException->NativeThread->current->else->ensureOpenAndConnected
+SocketChannelImpl#endWrite(boolean, boolean):::Marks the end of a write operation that may have blocked.:::if->synchronized->if->stateLock->notifyAll->end
+SocketChannelImpl#write(ByteBuffer)::: socket channel impl write:::Objects->requireNonNull->writeLock->lock->try->blocking->isBlocking->n->try->beginWrite->if->do->IOUtil->write->while->isOpen->else->IOUtil->write->catch->finally->endWrite->if->throw->new->AsynchronousCloseException->return->IOStatus->normalize->catch->finally->writeLock->unlock
+SocketChannelImpl#write(ByteBuffer[], int, int)::: socket channel impl write:::Objects->checkFromIndexSize->writeLock->lock->try->blocking->isBlocking->n->try->beginWrite->if->do->IOUtil->write->while->isOpen->else->IOUtil->write->catch->finally->endWrite->if->throw->new->AsynchronousCloseException->return->IOStatus->normalize->catch->finally->writeLock->unlock
 SocketChannelImpl#sendOutOfBandData(byte):::Writes a byte of out of band data.:::writeLock->lock->try->blocking->isBlocking->n->try->beginWrite->if->do->sendOutOfBandData->while->isOpen->else->sendOutOfBandData->catch->finally->endWrite->if->throw->new->AsynchronousCloseException->return->IOStatus->normalize->catch->finally->writeLock->unlock
+SocketChannelImpl#implConfigureBlocking(boolean)::: socket channel impl impl configure blocking:::readLock->lock->try->writeLock->lock->try->synchronized->ensureOpen->IOUtil->configureBlocking->catch->finally->writeLock->unlock->catch->finally->readLock->unlock
 SocketChannelImpl#localAddress():::Returns the local address, or null if not bound:::synchronized->return
 SocketChannelImpl#remoteAddress():::Returns the remote address, or null if not connected:::synchronized->return
+SocketChannelImpl#bind(SocketAddress)::: socket channel impl bind:::readLock->lock->try->writeLock->lock->try->synchronized->ensureOpen->if->throw->new->ConnectionPendingException->if->throw->new->AlreadyBoundException->isa->new->InetSocketAddress->Net->checkAddress->sm->System->getSecurityManager->if->sm->isa->getPort->checkListen->NetHooks->isa->getAddress->isa->getPort->beforeTcpBind->Net->isa->getAddress->isa->getPort->bind->Net->localAddress->catch->finally->writeLock->unlock->catch->finally->readLock->unlock->return
+SocketChannelImpl#isConnected()::: socket channel impl is connected:::return
+SocketChannelImpl#isConnectionPending()::: socket channel impl is connection pending:::return
+SocketChannelImpl#beginConnect(boolean, InetSocketAddress):::Marks the beginning of a connect operation that might block.:::if->begin->synchronized->ensureOpen->state->if->throw->new->AlreadyConnectedException->if->throw->new->ConnectionPendingException->if->NetHooks->isa->getAddress->isa->getPort->beforeTcpConnect->if->NativeThread->current
+SocketChannelImpl#endConnect(boolean, boolean):::Marks the end of a connect operation that may have blocked.:::endRead->if->synchronized->if->Net->localAddress
+SocketChannelImpl#connect(SocketAddress)::: socket channel impl connect:::isa->Net->checkAddress->sm->System->getSecurityManager->if->sm->isa->getAddress->getHostAddress->isa->getPort->checkConnect->ia->isa->getAddress->if->ia->isAnyLocalAddress->InetAddress->getLocalHost->try->readLock->lock->try->writeLock->lock->try->n->blocking->isBlocking->try->beginConnect->do->Net->isa->getPort->connect->while->isOpen->catch->finally->endConnect->return->catch->finally->writeLock->unlock->catch->finally->readLock->unlock->catch->close->throw->SocketExceptions->of->finally
+SocketChannelImpl#beginFinishConnect(boolean):::Marks the beginning of a finishConnect operation that might block.:::if->begin->synchronized->ensureOpen->if->throw->new->NoConnectionPendingException->if->NativeThread->current
+SocketChannelImpl#endFinishConnect(boolean, boolean):::Marks the end of a finishConnect operation that may have blocked.:::endRead->if->synchronized->if->Net->localAddress
+SocketChannelImpl#finishConnect()::: socket channel impl finish connect:::try->readLock->lock->try->writeLock->lock->try->if->isConnected->return->blocking->isBlocking->connected->try->beginFinishConnect->n->if->do->checkConnect->while->isOpen->else->checkConnect->catch->finally->endFinishConnect->return->catch->finally->writeLock->unlock->catch->finally->readLock->unlock->catch->close->throw->SocketExceptions->of->finally
 SocketChannelImpl#implCloseSelectableChannel():::Invoked by implCloseChannel to close the channel:::blocking->connected->interrupted->synchronized->isBlocking->if->synchronized->reader->writer->if->nd->preClose->if->NativeThread->signal->if->NativeThread->signal->while->try->stateLock->wait->catch->finally->else->readLock->lock->try->writeLock->lock->writeLock->unlock->catch->finally->readLock->unlock->synchronized->if->isRegistered->try->opt->interval->Net->getSocketOption->if->if->Net->setSocketOption->Net->shutdown->catch->finally->if->isRegistered->kill->if->Thread->currentThread->interrupt
+SocketChannelImpl#kill()::: socket channel impl kill:::synchronized->if->nd->close
+SocketChannelImpl#shutdownInput()::: socket channel impl shutdown input:::synchronized->ensureOpen->if->isConnected->throw->new->NotYetConnectedException->if->Net->shutdown->thread->if->NativeThread->signal->return
+SocketChannelImpl#shutdownOutput()::: socket channel impl shutdown output:::synchronized->ensureOpen->if->isConnected->throw->new->NotYetConnectedException->if->Net->shutdown->thread->if->NativeThread->signal->return
+SocketChannelImpl#isInputOpen()::: socket channel impl is input open:::return
+SocketChannelImpl#isOutputOpen()::: socket channel impl is output open:::return
 SocketChannelImpl#pollRead(long):::Poll this channel's socket for reading up to the given timeout.:::blocking->isBlocking->readLock->lock->try->polled->try->beginRead->events->Net->poll->catch->finally->endRead->return->catch->finally->readLock->unlock
 SocketChannelImpl#pollConnected(long):::Poll this channel's socket for a connection, up to the given timeout.:::blocking->isBlocking->readLock->lock->try->writeLock->lock->try->polled->try->beginFinishConnect->events->Net->poll->catch->finally->endFinishConnect->return->catch->finally->writeLock->unlock->catch->finally->readLock->unlock
 SocketChannelImpl#translateReadyOps(int, int, SelectionKeyImpl):::Translates native poll revent ops into a ready operation ops:::intOps->ski->nioInterestOps->oldOps->ski->nioReadyOps->newOps->if->return->if->ski->nioReadyOps->return->connected->isConnected->if->if->isConnectionPending->if->ski->nioReadyOps->return
+SocketChannelImpl#translateAndUpdateReadyOps(int, SelectionKeyImpl)::: socket channel impl translate and update ready ops:::return->ski->nioReadyOps->translateReadyOps
+SocketChannelImpl#translateAndSetReadyOps(int, SelectionKeyImpl)::: socket channel impl translate and set ready ops:::return->translateReadyOps
 SocketChannelImpl#translateInterestOps(int):::Translates an interest operation set into a native poll event set:::newOps->if->if->if->return
+SocketChannelImpl#getFD()::: socket channel impl get d:::return
+SocketChannelImpl#getFDVal()::: socket channel impl get val:::return
+SocketChannelImpl#toString()::: socket channel impl to string:::sb->new->StringBuilder->sb->this->getClass->getSuperclass->getName->append->sb->append->if->isOpen->sb->append->else->synchronized->switch->sb->append->break->sb->append->break->sb->append->if->sb->append->if->sb->append->break->addr->localAddress->if->sb->append->sb->Net->getRevealedLocalAddressAsString->append->if->remoteAddress->sb->append->sb->remoteAddress->toString->append->sb->append->return->sb->toString
+SocketChannelImpl#checkConnect(FileDescriptor, boolean)::: socket channel impl check connect:::
+SocketChannelImpl#sendOutOfBandData(FileDescriptor, byte)::: socket channel impl send out of band data:::
+SocketDispatcher#read(FileDescriptor, long, int)::: socket dispatcher read:::return->read0
+SocketDispatcher#readv(FileDescriptor, long, int)::: socket dispatcher readv:::return->readv0
+SocketDispatcher#write(FileDescriptor, long, int)::: socket dispatcher write:::return->write0
+SocketDispatcher#writev(FileDescriptor, long, int)::: socket dispatcher writev:::return->writev0
+SocketDispatcher#preClose(FileDescriptor)::: socket dispatcher pre close:::preClose0
+SocketDispatcher#close(FileDescriptor)::: socket dispatcher close:::close0
+SocketDispatcher#read0(FileDescriptor, long, int)::: socket dispatcher read0:::
+SocketDispatcher#readv0(FileDescriptor, long, int)::: socket dispatcher readv0:::
+SocketDispatcher#write0(FileDescriptor, long, int)::: socket dispatcher write0:::
+SocketDispatcher#writev0(FileDescriptor, long, int)::: socket dispatcher writev0:::
+SocketDispatcher#preClose0(FileDescriptor)::: socket dispatcher pre close0:::
+SocketDispatcher#close0(FileDescriptor)::: socket dispatcher close0:::
+SocketOptionRegistry.RegistryKey#hashCode()::: registry key hash code:::return->name->hashCode->family->hashCode
+SocketOptionRegistry.RegistryKey#equals(Object)::: registry key equals:::if->return->if->return->other->if->return->if->return->return
+SocketOptionRegistry.LazyInitialization#options()::: lazy initialization options:::map->new->HashMap<RegistryKey,OptionKey>->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->map->new->RegistryKey->new->OptionKey->put->return
+SocketOptionRegistry#findOption(SocketOption, ProtocolFamily)::: socket option registry find option:::key->new->RegistryKey->return->get
+SourceChannelImpl#getFD()::: source channel impl get d:::return->getFD
+SourceChannelImpl#getFDVal()::: source channel impl get val:::return->getFDVal
+SourceChannelImpl#implCloseSelectableChannel()::: source channel impl impl close selectable channel:::if->isRegistered->kill
+SourceChannelImpl#kill()::: source channel impl kill:::sc->close
+SourceChannelImpl#implConfigureBlocking(boolean)::: source channel impl impl configure blocking:::sc->configureBlocking
+SourceChannelImpl#translateReadyOps(int, int, SelectionKeyImpl)::: source channel impl translate ready ops:::intOps->ski->nioInterestOps->oldOps->ski->nioReadyOps->newOps->if->throw->new->Error->if->ski->nioReadyOps->return->if->ski->nioReadyOps->return
+SourceChannelImpl#translateAndUpdateReadyOps(int, SelectionKeyImpl)::: source channel impl translate and update ready ops:::return->ski->nioReadyOps->translateReadyOps
+SourceChannelImpl#translateAndSetReadyOps(int, SelectionKeyImpl)::: source channel impl translate and set ready ops:::return->translateReadyOps
+SourceChannelImpl#translateInterestOps(int)::: source channel impl translate interest ops:::newOps->if->return
+SourceChannelImpl#read(ByteBuffer)::: source channel impl read:::try->return->sc->read->catch->close->throw->finally
+SourceChannelImpl#read(ByteBuffer[], int, int)::: source channel impl read:::if->throw->new->IndexOutOfBoundsException->try->return->Util->subsequence->read->catch->close->throw->finally
+SourceChannelImpl#read(ByteBuffer[])::: source channel impl read:::try->return->sc->read->catch->close->throw->finally
+ThreadPool#executor()::: thread pool executor:::return
+ThreadPool#isFixedThreadPool()::: thread pool is fixed thread pool:::return
+ThreadPool#poolSize()::: thread pool pool size:::return
+ThreadPool#defaultThreadFactory()::: thread pool default thread factory:::if->System->getSecurityManager->return->t->new->Thread->t->setDaemon->return->else->return->action->t->InnocuousThread->newThread->t->setDaemon->return->return->AccessController->doPrivileged
+ThreadPool#getDefault()::: thread pool get default:::return
+ThreadPool#createDefault()::: thread pool create default:::initialSize->getDefaultThreadPoolInitialSize->if->Runtime->getRuntime->availableProcessors->threadFactory->getDefaultThreadPoolThreadFactory->if->defaultThreadFactory->executor->Executors->newCachedThreadPool->return->new->ThreadPool
+ThreadPool#create(int, ThreadFactory)::: thread pool create:::if->throw->new->IllegalArgumentException->executor->Executors->newFixedThreadPool->return->new->ThreadPool
+ThreadPool#wrap(ExecutorService, int)::: thread pool wrap:::if->throw->new->NullPointerException->if->max->getMaximumPoolSize->if->if->Runtime->getRuntime->availableProcessors->else->else->if->return->new->ThreadPool
+ThreadPool#getDefaultThreadPoolInitialSize()::: thread pool get default thread pool initial size:::propValue->AccessController->new->GetPropertyAction->doPrivileged->if->try->return->Integer->parseInt->catch->throw->new->Error->finally->return
+ThreadPool#getDefaultThreadPoolThreadFactory()::: thread pool get default thread pool thread factory:::propValue->AccessController->new->GetPropertyAction->doPrivileged->if->try->tmp->Class->ClassLoader->getSystemClassLoader->forName->newInstance->return->catch->throw->new->Error->finally->return
+Util#getMaxCachedBufferSize():::Returns the max size allowed for a cached temp buffers, in bytes:::s->GetPropertyAction->privilegedGetProperty->if->try->m->Long->parseLong->if->return->else->catch->finally->return
+Util#isBufferTooLarge(int):::Returns true if a buffer of this size is too large to be added to the buffer cache, false otherwise.:::return
+Util#isBufferTooLarge(ByteBuffer):::Returns true if the buffer is too large to be added to the buffer cache, false otherwise.:::return->buf->capacity->isBufferTooLarge
+Util.BufferCache#next(int)::: buffer cache next:::return
+Util.BufferCache#get(int):::Removes and returns a buffer from the cache of at least the given size (or null if no suitable buffer is found).:::if->return->buffers->buf->if->buf->capacity->i->while->next->bb->if->break->if->bb->capacity->break->if->return->next->buf->rewind->buf->limit->return
+Util.BufferCache#offerFirst(ByteBuffer)::: buffer cache offer first:::if->return->else->return
+Util.BufferCache#offerLast(ByteBuffer)::: buffer cache offer last:::if->return->else->next->return
+Util.BufferCache#isEmpty()::: buffer cache is empty:::return
+Util.BufferCache#removeFirst()::: buffer cache remove first:::buf->next->return
 Util#getTemporaryDirectBuffer(int):::Returns a temporary buffer of at least the given size:::if->isBufferTooLarge->return->ByteBuffer->allocateDirect->cache->bufferCache->get->buf->cache->get->if->return->else->if->cache->isEmpty->cache->removeFirst->free->return->ByteBuffer->allocateDirect
 Util#getTemporaryAlignedDirectBuffer(int, int):::Returns a temporary buffer of at least the given size and aligned to the alignment:::if->isBufferTooLarge->return->ByteBuffer->allocateDirect->alignedSlice->cache->bufferCache->get->buf->cache->get->if->if->buf->alignmentOffset->return->else->if->cache->isEmpty->cache->removeFirst->free->return->ByteBuffer->allocateDirect->alignedSlice
 Util#releaseTemporaryDirectBuffer(ByteBuffer):::Releases a temporary buffer by returning to the cache or freeing it.:::offerFirstTemporaryDirectBuffer
 Util#offerFirstTemporaryDirectBuffer(ByteBuffer):::Releases a temporary buffer by returning to the cache or freeing it:::if->isBufferTooLarge->free->return->cache->bufferCache->get->if->cache->offerFirst->free
 Util#offerLastTemporaryDirectBuffer(ByteBuffer):::Releases a temporary buffer by returning to the cache or freeing it:::if->isBufferTooLarge->free->return->cache->bufferCache->get->if->cache->offerLast->free
+Util#free(ByteBuffer):::Frees the memory for the given direct buffer:::cleaner->clean
+Util#subsequence(ByteBuffer[], int, int)::: util subsequence:::if->return->n->bs2->new->ByteBufferArr->for->i->return
+Util#ungrowableSet(Set)::: util ungrowable set:::return->new->Set<E>
+Util#_get(long)::: util _get:::return->unsafe->getByte
+Util#_put(long, byte)::: util _put:::unsafe->putByte
+Util#erase(ByteBuffer)::: util erase:::unsafe->address->bb->capacity->setMemory
+Util#unsafe()::: util unsafe:::return
+Util#pageSize()::: util page size:::if->unsafe->pageSize->return
+Util#initDBBConstructor()::: util init constructor:::AccessController->new->PrivilegedAction<Void>->doPrivileged
+Util#newMappedByteBuffer(int, long, FileDescriptor, Runnable)::: util new mapped byte buffer:::dbb->if->initDBBConstructor->try->directByteBufferConstructor->new->ObjectArr->newInstance->catch->throw->new->InternalError->finally->return
+Util#initDBBRConstructor()::: util init constructor:::AccessController->new->PrivilegedAction<Void>->doPrivileged
+Util#newMappedByteBufferR(int, long, FileDescriptor, Runnable)::: util new mapped byte buffer r:::dbb->if->initDBBRConstructor->try->directByteBufferRConstructor->new->ObjectArr->newInstance->catch->throw->new->InternalError->finally->return
+Util#checkBufferPositionAligned(ByteBuffer, int, int)::: util check buffer position aligned:::if->bb->alignmentOffset->throw->new->IOException
+Util#checkRemainingBufferSizeAligned(int, int)::: util check remaining buffer size aligned:::if->throw->new->IOException
+Util#checkChannelPositionAligned(long, int)::: util check channel position aligned:::if->throw->new->IOException
+WindowsAsynchronousChannelProvider#defaultIocp()::: windows asynchronous channel provider default iocp:::if->synchronized->if->ThreadPool->getDefault->new->Iocp->start->return
+WindowsAsynchronousChannelProvider#openAsynchronousChannelGroup(int, ThreadFactory)::: windows asynchronous channel provider open asynchronous channel group:::return->ThreadPool->create->new->Iocp->start
+WindowsAsynchronousChannelProvider#openAsynchronousChannelGroup(ExecutorService, int)::: windows asynchronous channel provider open asynchronous channel group:::return->ThreadPool->wrap->new->Iocp->start
+WindowsAsynchronousChannelProvider#toIocp(AsynchronousChannelGroup)::: windows asynchronous channel provider to iocp:::if->return->defaultIocp->else->if->throw->new->IllegalChannelGroupException->return
+WindowsAsynchronousChannelProvider#openAsynchronousServerSocketChannel(AsynchronousChannelGroup)::: windows asynchronous channel provider open asynchronous server socket channel:::return->toIocp->new->WindowsAsynchronousServerSocketChannelImpl
+WindowsAsynchronousChannelProvider#openAsynchronousSocketChannel(AsynchronousChannelGroup)::: windows asynchronous channel provider open asynchronous socket channel:::return->toIocp->new->WindowsAsynchronousSocketChannelImpl
+WindowsAsynchronousFileChannelImpl.DefaultIocpHolder#defaultIocp()::: default iocp holder default iocp:::try->return->ThreadPool->createDefault->new->Iocp->start->catch->throw->new->InternalError->finally
+WindowsAsynchronousFileChannelImpl#open(FileDescriptor, boolean, boolean, ThreadPool)::: windows asynchronous file channel impl open:::iocp->isDefaultIocp->if->else->new->Iocp->start->try->return->new->WindowsAsynchronousFileChannelImpl->catch->if->iocp->implClose->throw->finally
+WindowsAsynchronousFileChannelImpl#getByOverlapped(long)::: windows asynchronous file channel impl get by overlapped:::return->ioCache->remove
+WindowsAsynchronousFileChannelImpl#close()::: windows asynchronous file channel impl close:::closeLock->writeLock->lock->try->if->return->catch->finally->closeLock->writeLock->unlock->invalidateAllLocks->nd->close->ioCache->close->iocp->disassociate->if->iocp->detachFromThreadPool
+WindowsAsynchronousFileChannelImpl#group()::: windows asynchronous file channel impl group:::return
+WindowsAsynchronousFileChannelImpl#toIOException(Throwable):::Translates Throwable to IOException:::if->if->new->AsynchronousCloseException->return->return->new->IOException
+WindowsAsynchronousFileChannelImpl#size()::: windows asynchronous file channel impl size:::try->begin->return->nd->size->catch->finally->end
+WindowsAsynchronousFileChannelImpl#truncate(long)::: windows asynchronous file channel impl truncate:::if->throw->new->IllegalArgumentException->if->throw->new->NonWritableChannelException->try->begin->if->nd->size->return->nd->truncate->catch->finally->end->return
+WindowsAsynchronousFileChannelImpl#force(boolean)::: windows asynchronous file channel impl force:::try->begin->nd->force->catch->finally->end
+WindowsAsynchronousFileChannelImpl.LockTask#run()::: lock task run:::overlapped->pending->try->begin->ioCache->add->synchronized->n->fli->size->fli->isShared->lockFile->if->return->result->setResult->catch->removeFromFileLockTable->result->toIOException->setFailure->finally->if->ioCache->remove->end->Invoker->invoke
+WindowsAsynchronousFileChannelImpl.LockTask#completed(int, boolean)::: lock task completed:::result->setResult->if->Invoker->invokeUnchecked->else->Invoker->invoke
+WindowsAsynchronousFileChannelImpl.LockTask#failed(int, IOException)::: lock task failed:::removeFromFileLockTable->if->isOpen->result->setFailure->else->result->new->AsynchronousCloseException->setFailure->Invoker->invoke
+WindowsAsynchronousFileChannelImpl#implLock(long, long, boolean, A, CompletionHandler)::: windows asynchronous file channel impl impl lock:::if->throw->new->NonReadableChannelException->if->throw->new->NonWritableChannelException->fli->addToFileLockTable->if->exc->new->ClosedChannelException->if->return->CompletedFuture->withFailure->Invoker->invoke->return->result->new->PendingFuture<FileLock,A>->lockTask->new->LockTask<A>->result->setContext->lockTask->run->return
+WindowsAsynchronousFileChannelImpl#tryLock(long, long, boolean)::: windows asynchronous file channel impl try lock:::if->throw->new->NonReadableChannelException->if->throw->new->NonWritableChannelException->fli->addToFileLockTable->if->throw->new->ClosedChannelException->gotLock->try->begin->res->nd->lock->if->return->return->catch->finally->if->removeFromFileLockTable->end
+WindowsAsynchronousFileChannelImpl#implRelease(FileLockImpl)::: windows asynchronous file channel impl impl release:::nd->fli->position->fli->size->release
+WindowsAsynchronousFileChannelImpl.ReadTask#releaseBufferIfSubstituted()::: read task release buffer if substituted:::if->Util->releaseTemporaryDirectBuffer
+WindowsAsynchronousFileChannelImpl.ReadTask#updatePosition(int)::: read task update position:::if->if->try->dst->position->catch->finally->else->buf->position->flip->try->dst->put->catch->finally
+WindowsAsynchronousFileChannelImpl.ReadTask#run()::: read task run:::n->overlapped->address->if->address->else->Util->getTemporaryDirectBuffer->address->pending->try->begin->ioCache->add->readFile->if->return->else->if->result->setResult->else->throw->new->InternalError->catch->result->toIOException->setFailure->finally->if->if->ioCache->remove->releaseBufferIfSubstituted->end->Invoker->invoke
+WindowsAsynchronousFileChannelImpl.ReadTask#completed(int, boolean):::Executed when the I/O has completed:::updatePosition->releaseBufferIfSubstituted->result->setResult->if->Invoker->invokeUnchecked->else->Invoker->invoke
+WindowsAsynchronousFileChannelImpl.ReadTask#failed(int, IOException)::: read task failed:::if->completed->else->releaseBufferIfSubstituted->if->isOpen->result->setFailure->else->result->new->AsynchronousCloseException->setFailure->Invoker->invoke
+WindowsAsynchronousFileChannelImpl#implRead(ByteBuffer, long, A, CompletionHandler)::: windows asynchronous file channel impl impl read:::if->throw->new->NonReadableChannelException->if->throw->new->IllegalArgumentException->if->dst->isReadOnly->throw->new->IllegalArgumentException->if->isOpen->exc->new->ClosedChannelException->if->return->CompletedFuture->withFailure->Invoker->invoke->return->pos->dst->position->lim->dst->limit->rem->if->if->return->CompletedFuture->withResult->Invoker->invoke->return->result->new->PendingFuture<Integer,A>->readTask->new->ReadTask<A>->result->setContext->readTask->run->return
+WindowsAsynchronousFileChannelImpl.WriteTask#releaseBufferIfSubstituted()::: write task release buffer if substituted:::if->Util->releaseTemporaryDirectBuffer
+WindowsAsynchronousFileChannelImpl.WriteTask#updatePosition(int)::: write task update position:::if->try->src->position->catch->finally
+WindowsAsynchronousFileChannelImpl.WriteTask#run()::: write task run:::n->overlapped->address->if->address->else->Util->getTemporaryDirectBuffer->buf->put->buf->flip->src->position->address->try->begin->ioCache->add->writeFile->if->return->else->throw->new->InternalError->catch->result->toIOException->setFailure->if->ioCache->remove->releaseBufferIfSubstituted->finally->end->Invoker->invoke
+WindowsAsynchronousFileChannelImpl.WriteTask#completed(int, boolean):::Executed when the I/O has completed:::updatePosition->releaseBufferIfSubstituted->result->setResult->if->Invoker->invokeUnchecked->else->Invoker->invoke
+WindowsAsynchronousFileChannelImpl.WriteTask#failed(int, IOException)::: write task failed:::releaseBufferIfSubstituted->if->isOpen->result->setFailure->else->result->new->AsynchronousCloseException->setFailure->Invoker->invoke
+WindowsAsynchronousFileChannelImpl#implWrite(ByteBuffer, long, A, CompletionHandler)::: windows asynchronous file channel impl impl write:::if->throw->new->NonWritableChannelException->if->throw->new->IllegalArgumentException->if->isOpen->exc->new->ClosedChannelException->if->return->CompletedFuture->withFailure->Invoker->invoke->return->pos->src->position->lim->src->limit->rem->if->if->return->CompletedFuture->withResult->Invoker->invoke->return->result->new->PendingFuture<Integer,A>->writeTask->new->WriteTask<A>->result->setContext->writeTask->run->return
+WindowsAsynchronousFileChannelImpl#readFile(long, long, int, long, long)::: windows asynchronous file channel impl read file:::
+WindowsAsynchronousFileChannelImpl#writeFile(long, long, int, long, long)::: windows asynchronous file channel impl write file:::
+WindowsAsynchronousFileChannelImpl#lockFile(long, long, long, boolean, long)::: windows asynchronous file channel impl lock file:::
+WindowsAsynchronousServerSocketChannelImpl#getByOverlapped(long)::: windows asynchronous server socket channel impl get by overlapped:::return->ioCache->remove
+WindowsAsynchronousServerSocketChannelImpl#implClose()::: windows asynchronous server socket channel impl impl close:::closesocket0->ioCache->close->iocp->disassociate->unsafe->freeMemory
+WindowsAsynchronousServerSocketChannelImpl#group()::: windows asynchronous server socket channel impl group:::return
+WindowsAsynchronousServerSocketChannelImpl.AcceptTask#enableAccept()::: accept task enable accept:::accepting->set
+WindowsAsynchronousServerSocketChannelImpl.AcceptTask#closeChildChannel()::: accept task close child channel:::try->channel->close->catch->finally
+WindowsAsynchronousServerSocketChannelImpl.AcceptTask#finishAccept()::: accept task finish accept:::channel->handle->updateAcceptContext->local->Net->localAddress->remote->Net->remoteAddress->channel->setConnected->if->AccessController->new->PrivilegedAction<Void>->doPrivileged
+WindowsAsynchronousServerSocketChannelImpl.AcceptTask#run():::Initiates the accept operation.:::overlapped->try->begin->try->channel->begin->synchronized->ioCache->add->n->channel->handle->accept0->if->return->finishAccept->enableAccept->result->setResult->catch->finally->channel->end->catch->if->ioCache->remove->closeChildChannel->if->new->AsynchronousCloseException->if->new->IOException->enableAccept->result->setFailure->finally->end->if->result->isCancelled->closeChildChannel->Invoker->invokeIndirectly
+WindowsAsynchronousServerSocketChannelImpl.AcceptTask#completed(int, boolean):::Executed when the I/O has completed:::try->if->iocp->isShutdown->throw->new->ShutdownChannelGroupException->new->IOException->try->begin->try->channel->begin->finishAccept->catch->finally->channel->end->catch->finally->end->enableAccept->result->setResult->catch->enableAccept->closeChildChannel->if->new->AsynchronousCloseException->if->new->IOException->result->setFailure->finally->if->result->isCancelled->closeChildChannel->Invoker->invokeIndirectly
+WindowsAsynchronousServerSocketChannelImpl.AcceptTask#failed(int, IOException)::: accept task failed:::enableAccept->closeChildChannel->if->isOpen->result->setFailure->else->result->new->AsynchronousCloseException->setFailure->Invoker->invokeIndirectly
+WindowsAsynchronousServerSocketChannelImpl#implAccept(Object, CompletionHandler)::: windows asynchronous server socket channel impl impl accept:::if->isOpen->exc->new->ClosedChannelException->if->return->CompletedFuture->withFailure->Invoker->invokeIndirectly->return->if->isAcceptKilled->throw->new->RuntimeException->if->throw->new->NotYetBoundException->ch->ioe->try->begin->new->WindowsAsynchronousSocketChannelImpl->catch->finally->end->if->if->return->CompletedFuture->withFailure->Invoker->invokeIndirectly->return->acc->System->getSecurityManager->AccessController->getContext->result->new->PendingFuture<AsynchronousSocketChannel,Object>->task->new->AcceptTask->result->setContext->if->accepting->compareAndSet->throw->new->AcceptPendingException->task->run->return
+WindowsAsynchronousServerSocketChannelImpl#initIDs()::: windows asynchronous server socket channel impl init ds:::
+WindowsAsynchronousServerSocketChannelImpl#accept0(long, long, long, long)::: windows asynchronous server socket channel impl accept0:::
+WindowsAsynchronousServerSocketChannelImpl#updateAcceptContext(long, long)::: windows asynchronous server socket channel impl update accept context:::
+WindowsAsynchronousServerSocketChannelImpl#closesocket0(long)::: windows asynchronous server socket channel impl closesocket0:::
+WindowsAsynchronousSocketChannelImpl#dependsArch(int, int)::: windows asynchronous socket channel impl depends arch:::return
+WindowsAsynchronousSocketChannelImpl#group()::: windows asynchronous socket channel impl group:::return
 WindowsAsynchronousSocketChannelImpl#getByOverlapped(long):::Invoked by Iocp when an I/O operation competes.:::return->ioCache->remove
+WindowsAsynchronousSocketChannelImpl#handle()::: windows asynchronous socket channel impl handle:::return
+WindowsAsynchronousSocketChannelImpl#setConnected(InetSocketAddress, InetSocketAddress)::: windows asynchronous socket channel impl set connected:::synchronized
+WindowsAsynchronousSocketChannelImpl#implClose()::: windows asynchronous socket channel impl impl close:::closesocket0->ioCache->close->unsafe->freeMemory->unsafe->freeMemory->if->iocp->disassociate
+WindowsAsynchronousSocketChannelImpl#onCancel(PendingFuture)::: windows asynchronous socket channel impl on cancel:::if->task->getContext->killConnect->if->task->getContext->killReading->if->task->getContext->killWriting
+WindowsAsynchronousSocketChannelImpl.ConnectTask#closeChannel()::: connect task close channel:::try->close->catch->finally
+WindowsAsynchronousSocketChannelImpl.ConnectTask#toIOException(Throwable)::: connect task to exception:::if->if->new->AsynchronousCloseException->return->return->new->IOException
+WindowsAsynchronousSocketChannelImpl.ConnectTask#afterConnect():::Invoke after a connection is successfully established.:::updateConnectContext->synchronized
+WindowsAsynchronousSocketChannelImpl.ConnectTask#run():::Task to initiate a connection.:::overlapped->exc->try->begin->synchronized->ioCache->add->n->Net->isIPv6Available->remote->getAddress->remote->getPort->connect0->if->return->afterConnect->result->setResult->catch->if->ioCache->remove->finally->end->if->closeChannel->SocketExceptions->toIOException->of->result->setFailure->Invoker->invoke
+WindowsAsynchronousSocketChannelImpl.ConnectTask#completed(int, boolean):::Invoked by handler thread when connection established.:::exc->try->begin->afterConnect->result->setResult->catch->finally->end->if->closeChannel->ee->toIOException->SocketExceptions->of->result->setFailure->if->Invoker->invokeUnchecked->else->Invoker->invoke
+WindowsAsynchronousSocketChannelImpl.ConnectTask#failed(int, IOException):::Invoked by handler thread when failed to establish connection.:::SocketExceptions->of->if->isOpen->closeChannel->result->setFailure->else->SocketExceptions->new->AsynchronousCloseException->of->result->setFailure->Invoker->invoke
+WindowsAsynchronousSocketChannelImpl#doPrivilegedBind(SocketAddress)::: windows asynchronous socket channel impl do privileged bind:::try->AccessController->new->PrivilegedExceptionAction<Void>->doPrivileged->catch->throw->e->getException->finally
+WindowsAsynchronousSocketChannelImpl#implConnect(SocketAddress, A, CompletionHandler)::: windows asynchronous socket channel impl impl connect:::if->isOpen->exc->new->ClosedChannelException->if->return->CompletedFuture->withFailure->Invoker->invoke->return->isa->Net->checkAddress->sm->System->getSecurityManager->if->sm->isa->getAddress->getHostAddress->isa->getPort->checkConnect->bindException->synchronized->if->throw->new->AlreadyConnectedException->if->throw->new->ConnectionPendingException->if->try->any->new->InetSocketAddress->if->bind->else->doPrivilegedBind->catch->finally->if->if->try->close->catch->finally->if->return->CompletedFuture->withFailure->Invoker->invoke->return->result->new->PendingFuture<Void,A>->task->new->ConnectTask<A>->result->setContext->task->run->return
+WindowsAsynchronousSocketChannelImpl.ReadTask#prepareBuffers():::Invoked prior to read to prepare the WSABUF array:::new->ByteBufferArr->address->for->i
+WindowsAsynchronousSocketChannelImpl.ReadTask#updateBuffers(int):::Invoked after a read has completed to update the buffer positions and release any substituted buffers.:::for->i->for->i
+WindowsAsynchronousSocketChannelImpl.ReadTask#releaseBuffers()::: read task release buffers:::for->i
+WindowsAsynchronousSocketChannelImpl.ReadTask#run()::: read task run:::overlapped->prepared->pending->try->begin->prepareBuffers->ioCache->add->n->read0->if->return->if->enableReading->if->result->Long->valueOf->setResult->else->result->Integer->valueOf->setResult->else->throw->new->InternalError->catch->enableReading->if->new->AsynchronousCloseException->if->new->IOException->result->setFailure->finally->if->if->ioCache->remove->if->releaseBuffers->end->Invoker->invoke
+WindowsAsynchronousSocketChannelImpl.ReadTask#completed(int, boolean):::Executed when the I/O has completed:::if->else->updateBuffers->releaseBuffers->synchronized->if->result->isDone->return->enableReading->if->result->Long->valueOf->setResult->else->result->Integer->valueOf->setResult->if->Invoker->invokeUnchecked->else->Invoker->invoke
+WindowsAsynchronousSocketChannelImpl.ReadTask#failed(int, IOException)::: read task failed:::releaseBuffers->if->isOpen->new->AsynchronousCloseException->synchronized->if->result->isDone->return->enableReading->result->setFailure->Invoker->invoke
+WindowsAsynchronousSocketChannelImpl.ReadTask#timeout():::Invoked if timeout expires before it is cancelled:::synchronized->if->result->isDone->return->enableReading->result->new->InterruptedByTimeoutException->setFailure->Invoker->invoke
+WindowsAsynchronousSocketChannelImpl#implRead(boolean, ByteBuffer, ByteBuffer[], long, TimeUnit, A, CompletionHandler)::: windows asynchronous socket channel impl impl read:::result->new->PendingFuture<V,A>->bufs->if->else->new->ByteBufferArr->readTask->new->ReadTask<V,A>->result->setContext->if->timeoutTask->iocp->new->Runnable->schedule->result->setTimeoutTask->readTask->run->return
+WindowsAsynchronousSocketChannelImpl.WriteTask#prepareBuffers():::Invoked prior to write to prepare the WSABUF array:::new->ByteBufferArr->address->for->i
+WindowsAsynchronousSocketChannelImpl.WriteTask#updateBuffers(int):::Invoked after a write has completed to update the buffer positions and release any substituted buffers.:::for->i
+WindowsAsynchronousSocketChannelImpl.WriteTask#releaseBuffers()::: write task release buffers:::for->i
+WindowsAsynchronousSocketChannelImpl.WriteTask#run()::: write task run:::overlapped->prepared->pending->shutdown->try->begin->prepareBuffers->ioCache->add->n->write0->if->return->if->throw->new->ClosedChannelException->throw->new->InternalError->catch->enableWriting->if->new->AsynchronousCloseException->if->new->IOException->result->setFailure->finally->if->if->ioCache->remove->if->releaseBuffers->end->Invoker->invoke
+WindowsAsynchronousSocketChannelImpl.WriteTask#completed(int, boolean):::Executed when the I/O has completed:::updateBuffers->releaseBuffers->synchronized->if->result->isDone->return->enableWriting->if->result->Long->valueOf->setResult->else->result->Integer->valueOf->setResult->if->Invoker->invokeUnchecked->else->Invoker->invoke
+WindowsAsynchronousSocketChannelImpl.WriteTask#failed(int, IOException)::: write task failed:::releaseBuffers->if->isOpen->new->AsynchronousCloseException->synchronized->if->result->isDone->return->enableWriting->result->setFailure->Invoker->invoke
+WindowsAsynchronousSocketChannelImpl.WriteTask#timeout():::Invoked if timeout expires before it is cancelled:::synchronized->if->result->isDone->return->enableWriting->result->new->InterruptedByTimeoutException->setFailure->Invoker->invoke
+WindowsAsynchronousSocketChannelImpl#implWrite(boolean, ByteBuffer, ByteBuffer[], long, TimeUnit, A, CompletionHandler)::: windows asynchronous socket channel impl impl write:::result->new->PendingFuture<V,A>->bufs->if->else->new->ByteBufferArr->writeTask->new->WriteTask<V,A>->result->setContext->if->timeoutTask->iocp->new->Runnable->schedule->result->setTimeoutTask->writeTask->run->return
+WindowsAsynchronousSocketChannelImpl#initIDs()::: windows asynchronous socket channel impl init ds:::
+WindowsAsynchronousSocketChannelImpl#connect0(long, boolean, InetAddress, int, long)::: windows asynchronous socket channel impl connect0:::
+WindowsAsynchronousSocketChannelImpl#updateConnectContext(long)::: windows asynchronous socket channel impl update connect context:::
+WindowsAsynchronousSocketChannelImpl#read0(long, int, long, long)::: windows asynchronous socket channel impl read0:::
+WindowsAsynchronousSocketChannelImpl#write0(long, int, long, long)::: windows asynchronous socket channel impl write0:::
+WindowsAsynchronousSocketChannelImpl#shutdown0(long, int)::: windows asynchronous socket channel impl shutdown0:::
+WindowsAsynchronousSocketChannelImpl#closesocket0(long)::: windows asynchronous socket channel impl closesocket0:::
+WindowsSelectorImpl.FdMap#get(int)::: fd map get:::return->Integer->valueOf->get
+WindowsSelectorImpl.FdMap#put(SelectionKeyImpl)::: fd map put:::return->Integer->ski->getFDVal->valueOf->new->MapEntry->put
+WindowsSelectorImpl.FdMap#remove(SelectionKeyImpl)::: fd map remove:::fd->Integer->ski->getFDVal->valueOf->x->get->if->channel->ski->channel->return->remove->return
+WindowsSelectorImpl#ensureOpen()::: windows selector impl ensure open:::if->isOpen->throw->new->ClosedSelectorException
+WindowsSelectorImpl#doSelect(Consumer, long)::: windows selector impl do select:::processUpdateQueue->processDeregisterQueue->if->resetWakeupSocket->return->adjustThreadsCount->finishLock->reset->startLock->startThreads->try->begin->try->subSelector->poll->catch->finishLock->setException->finally->if->threads->size->finishLock->waitForHelperThreads->catch->finally->end->finishLock->checkForException->processDeregisterQueue->updated->updateSelectedKeys->resetWakeupSocket->return
+WindowsSelectorImpl#processUpdateQueue():::Process new registrations and changes to the interest ops.:::synchronized->ski->while->newKeys->pollFirst->if->ski->isValid->growIfNeeded->ski->setIndex->pollWrapper->putEntry->previous->fdMap->put->while->updateKeys->pollFirst->events->ski->translateInterestOps->fd->ski->getFDVal->if->ski->isValid->fdMap->containsKey->index->ski->getIndex->pollWrapper->putEventOps
+WindowsSelectorImpl.StartLock#startThreads()::: start lock start threads:::notifyAll
+WindowsSelectorImpl.StartLock#waitForStart(SelectThread)::: start lock wait for start:::while->while->try->startLock->wait->catch->Thread->currentThread->interrupt->finally->if->thread->isZombie->return->else->return
+WindowsSelectorImpl.FinishLock#reset()::: finish lock reset:::threads->size
+WindowsSelectorImpl.FinishLock#threadFinished()::: finish lock thread finished:::if->threads->size->wakeup->if->notify
+WindowsSelectorImpl.FinishLock#waitForHelperThreads()::: finish lock wait for helper threads:::if->threads->size->wakeup->while->try->finishLock->wait->catch->Thread->currentThread->interrupt->finally
+WindowsSelectorImpl.FinishLock#setException(IOException)::: finish lock set exception:::
+WindowsSelectorImpl.FinishLock#checkForException()::: finish lock check for exception:::if->return->message->new->StringBuffer->message->append->message->append->throw->message->toString->new->IOException
+WindowsSelectorImpl.SubSelector#poll()::: sub selector poll:::return->Math->min->poll0
+WindowsSelectorImpl.SubSelector#poll(int)::: sub selector poll:::return->Math->min->poll0
+WindowsSelectorImpl.SubSelector#poll0(long, int, int[], int[], int[], long)::: sub selector poll0:::
+WindowsSelectorImpl.SubSelector#processSelectedKeys(long, Consumer)::: sub selector process selected keys:::numKeysUpdated->processFDSet->processFDSet->processFDSet->return
+WindowsSelectorImpl.SubSelector#processFDSet(long, Consumer, int[], int, boolean):::updateCount is used to tell if a key has been counted as updated in this select operation:::numKeysUpdated->for->i->return
+WindowsSelectorImpl.SelectThread#makeZombie()::: select thread make zombie:::
+WindowsSelectorImpl.SelectThread#isZombie()::: select thread is zombie:::return
+WindowsSelectorImpl.SelectThread#run()::: select thread run:::while->if->startLock->waitForStart->return->try->subSelector->poll->catch->finishLock->setException->finally->finishLock->threadFinished
+WindowsSelectorImpl#adjustThreadsCount()::: windows selector impl adjust threads count:::if->threads->size->for->i->threads->size->else->if->threads->size->for->i->threads->size
+WindowsSelectorImpl#setWakeupSocket()::: windows selector impl set wakeup socket:::setWakeupSocket0
+WindowsSelectorImpl#setWakeupSocket0(int)::: windows selector impl set wakeup socket0:::
+WindowsSelectorImpl#resetWakeupSocket()::: windows selector impl reset wakeup socket:::synchronized->if->return->resetWakeupSocket0
+WindowsSelectorImpl#resetWakeupSocket0(int)::: windows selector impl reset wakeup socket0:::
+WindowsSelectorImpl#discardUrgentData(int)::: windows selector impl discard urgent data:::
+WindowsSelectorImpl#updateSelectedKeys(Consumer)::: windows selector impl update selected keys:::numKeysUpdated->subSelector->processSelectedKeys->foreach->processSelectedKeys->return
+WindowsSelectorImpl#implClose()::: windows selector impl impl close:::synchronized->wakeupPipe->sink->close->wakeupPipe->source->close->pollWrapper->free->foreach->t->makeZombie->startLock->startThreads
+WindowsSelectorImpl#implRegister(SelectionKeyImpl)::: windows selector impl impl register:::ensureOpen->synchronized->newKeys->addLast
+WindowsSelectorImpl#growIfNeeded()::: windows selector impl grow if needed:::if->newSize->temp->new->SelectionKeyImplArr->System->arraycopy->pollWrapper->grow->if->pollWrapper->addWakeupSocket
+WindowsSelectorImpl#implDereg(SelectionKeyImpl)::: windows selector impl impl dereg:::if->fdMap->remove->i->ski->getIndex->if->endChannel->endChannel->setIndex->pollWrapper->replaceEntry->ski->setIndex->if
+WindowsSelectorImpl#setEventOps(SelectionKeyImpl)::: windows selector impl set event ops:::ensureOpen->synchronized->updateKeys->addLast
+WindowsSelectorImpl#wakeup()::: windows selector impl wakeup:::synchronized->if->setWakeupSocket->return
+WindowsSelectorProvider#openSelector()::: windows selector provider open selector:::return->new->WindowsSelectorImpl

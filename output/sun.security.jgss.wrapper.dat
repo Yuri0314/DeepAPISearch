@@ -1,1 +1,126 @@
+GSSCredElement#doServicePermCheck()::: cred element do service perm check:::if->GSSUtil->cStub->getMech->isKerberosMech->if->System->getSecurityManager->if->isInitiatorCredential->tgsName->Krb5Util->getTGSName->Krb5Util->checkServicePermission->if->isAcceptorCredential->krbName->name->getKrbName->Krb5Util->checkServicePermission
+GSSCredElement#getProvider()::: cred element get provider:::return
+GSSCredElement#dispose()::: cred element dispose:::if->cStub->releaseCred
+GSSCredElement#getName()::: cred element get name:::return
+GSSCredElement#getInitLifetime()::: cred element get init lifetime:::if->isInitiatorCredential->return->cStub->getCredTime->else->return
+GSSCredElement#getAcceptLifetime()::: cred element get accept lifetime:::if->isAcceptorCredential->return->cStub->getCredTime->else->return
+GSSCredElement#isInitiatorCredential()::: cred element is initiator credential:::return
+GSSCredElement#isAcceptorCredential()::: cred element is acceptor credential:::return
+GSSCredElement#getMechanism()::: cred element get mechanism:::return->cStub->getMech
+GSSCredElement#toString()::: cred element to string:::return
+GSSCredElement#finalize()::: cred element finalize:::dispose
+GSSCredElement#impersonate(GSSNameSpi)::: cred element impersonate:::throw->new->GSSException
 GSSLibStub#init(String, boolean):::Initialization routine to dynamically load function pointers.:::
+GSSLibStub#getMechPtr(byte[])::: lib stub get mech ptr:::
+GSSLibStub#indicateMechs()::: lib stub indicate mechs:::
+GSSLibStub#inquireNamesForMech()::: lib stub inquire names for mech:::
+GSSLibStub#releaseName(long)::: lib stub release name:::
+GSSLibStub#importName(byte[], Oid)::: lib stub import name:::
+GSSLibStub#compareName(long, long)::: lib stub compare name:::
+GSSLibStub#canonicalizeName(long)::: lib stub canonicalize name:::
+GSSLibStub#exportName(long)::: lib stub export name:::
+GSSLibStub#displayName(long)::: lib stub display name:::
+GSSLibStub#acquireCred(long, int, int)::: lib stub acquire cred:::
+GSSLibStub#releaseCred(long)::: lib stub release cred:::
+GSSLibStub#getCredName(long)::: lib stub get cred name:::
+GSSLibStub#getCredTime(long)::: lib stub get cred time:::
+GSSLibStub#getCredUsage(long)::: lib stub get cred usage:::
+GSSLibStub#importContext(byte[])::: lib stub import context:::
+GSSLibStub#initContext(long, long, ChannelBinding, byte[], NativeGSSContext)::: lib stub init context:::
+GSSLibStub#acceptContext(long, ChannelBinding, byte[], NativeGSSContext)::: lib stub accept context:::
+GSSLibStub#inquireContext(long)::: lib stub inquire context:::
+GSSLibStub#getContextMech(long)::: lib stub get context mech:::
+GSSLibStub#getContextName(long, boolean)::: lib stub get context name:::
+GSSLibStub#getContextTime(long)::: lib stub get context time:::
+GSSLibStub#deleteContext(long)::: lib stub delete context:::
+GSSLibStub#wrapSizeLimit(long, int, int, int)::: lib stub wrap size limit:::
+GSSLibStub#exportContext(long)::: lib stub export context:::
+GSSLibStub#getMic(long, int, byte[])::: lib stub get mic:::
+GSSLibStub#verifyMic(long, byte[], byte[], MessageProp)::: lib stub verify mic:::
+GSSLibStub#wrap(long, byte[], MessageProp)::: lib stub wrap:::
+GSSLibStub#unwrap(long, byte[], MessageProp)::: lib stub unwrap:::
+GSSLibStub#getInstance(Oid)::: lib stub get instance:::s->table->get->if->new->GSSLibStub->table->put->return
+GSSLibStub#equals(Object)::: lib stub equals:::if->return->if->return->return->mech->getMech->equals
+GSSLibStub#hashCode()::: lib stub hash code:::return->mech->hashCode
+GSSLibStub#getMech()::: lib stub get mech:::return
+GSSNameElement#getNativeNameType(Oid, GSSLibStub)::: name element get native name type:::if->equals->supportedNTs->try->stub->inquireNamesForMech->catch->if->ge->getMajor->GSSUtil->stub->getMech->isSpNegoMech->try->GSSLibStub->getInstance->stub->inquireNamesForMech->catch->SunNativeProvider->ge2->getMajorString->debug->finally->else->SunNativeProvider->ge->getMajorString->debug->finally->if->for->i->SunNativeProvider->debug->return->return
+GSSNameElement#setPrintables()::: name element set printables:::printables->cStub->displayName->if
+GSSNameElement#getKrbName()::: name element get krb name:::mName->stub->if->GSSUtil->cStub->getMech->isKerberosMech->GSSLibStub->getInstance->stub->canonicalizeName->printables2->stub->displayName->stub->releaseName->SunNativeProvider->debug->return
+GSSNameElement#getProvider()::: name element get provider:::return
+GSSNameElement#equals(GSSNameSpi)::: name element equals:::if->return->return->cStub->compareName
+GSSNameElement#equals(Object)::: name element equals:::if->return->try->return->equals->catch->return->finally
+GSSNameElement#hashCode()::: name element hash code:::return->Long->hashCode
+GSSNameElement#export()::: name element export:::nameVal->cStub->exportName->pos->if->throw->new->GSSException->mechOidLen->temp->try->din->new->DerInputStream->new->ObjectIdentifier->catch->throw->new->GSSExceptionImpl->finally->mech2->temp->toString->new->Oid->mechPortionLen->if->throw->new->GSSException->mechPortion->new->byteArr->System->arraycopy->return
+GSSNameElement#getMechanism()::: name element get mechanism:::return->cStub->getMech
+GSSNameElement#toString()::: name element to string:::return
+GSSNameElement#getStringNameType()::: name element get string name type:::return
+GSSNameElement#isAnonymousName()::: name element is anonymous name:::return->equals
+GSSNameElement#dispose()::: name element dispose:::if->cStub->releaseName
+GSSNameElement#finalize()::: name element finalize:::dispose
+Krb5Util#getTGSName(GSSNameElement)::: krb5 util get name:::krbPrinc->name->getKrbName->atIndex->krbPrinc->indexOf->realm->krbPrinc->substring->sb->new->StringBuilder->sb->append->append->append->return->sb->toString
+Krb5Util#checkServicePermission(String, String)::: krb5 util check service permission:::sm->System->getSecurityManager->if->SunNativeProvider->debug->perm->new->ServicePermission->sm->checkPermission
+NativeGSSContext#getMechFromSpNegoToken(byte[], boolean)::: native context get mech from sp nego token:::mech->if->header->try->new->ByteArrayInputStream->new->GSSHeader->catch->throw->new->GSSExceptionImpl->finally->negTokenLen->header->getMechTokenLength->negToken->new->byteArr->System->arraycopy->ntok->new->NegTokenInit->if->ntok->getMechToken->mechList->ntok->getMechTypeList->else->ntok->new->NegTokenTarg->ntok->getSupportedMech->return
+NativeGSSContext#doServicePermCheck()::: native context do service perm check:::if->System->getSecurityManager->action->if->GSSUtil->cStub->getMech->isSpNegoMech->if->tempCred->GSSLibStub->getInstance->new->GSSCredElement->tempCred->dispose->else->tgsName->Krb5Util->getTGSName->Krb5Util->checkServicePermission->targetStr->targetName->getKrbName->Krb5Util->checkServicePermission
+NativeGSSContext#doDelegPermCheck()::: native context do deleg perm check:::sm->System->getSecurityManager->if->targetStr->targetName->getKrbName->tgsStr->Krb5Util->getTGSName->sb->new->StringBuilder->sb->append->append->sb->append->append->krbPrincPair->sb->toString->SunNativeProvider->debug->perm->new->DelegationPermission->sm->checkPermission
+NativeGSSContext#retrieveToken(InputStream, int)::: native context retrieve token:::try->result->if->SunNativeProvider->debug->gssHeader->cStub->getMech->toString->new->ObjectIdentifier->new->GSSHeader->baos->new->ByteArrayOutputStream->mechToken->new->byteArr->len->is->read->gssHeader->encode->baos->write->baos->toByteArray->else->dv->new->DerValue->dv->toByteArray->SunNativeProvider->debug->return->catch->throw->new->GSSExceptionImpl->finally
+NativeGSSContext#getProvider()::: native context get provider:::return
+NativeGSSContext#initSecContext(InputStream, int)::: native context init sec context:::outToken->if->inToken->if->retrieveToken->SunNativeProvider->debug->if->getCredDelegState->if->GSSUtil->cStub->getMech->isKerberosMech->doDelegPermCheck->pCred->cStub->initContext->SunNativeProvider->debug->if->GSSUtil->cStub->getMech->isSpNegoMech->getMechFromSpNegoToken->if->GSSUtil->isKerberosMech->if->doServicePermCheck->if->doDelegPermCheck->if->if->cStub->getContextName->new->GSSNameElement->if->new->GSSCredElement->return
+NativeGSSContext#acceptSecContext(InputStream, int)::: native context accept sec context:::outToken->if->inToken->retrieveToken->SunNativeProvider->debug->pCred->cStub->acceptContext->SunNativeProvider->debug->if->cStub->getContextName->new->GSSNameElement->if->cred->dispose->new->GSSCredElement->if->GSSUtil->cStub->getMech->isSpNegoMech->if->GSSUtil->getMechFromSpNegoToken->isKerberosMech->doServicePermCheck->return
+NativeGSSContext#isEstablished()::: native context is established:::return
+NativeGSSContext#dispose()::: native context dispose:::if->cStub->deleteContext
+NativeGSSContext#getWrapSizeLimit(int, boolean, int)::: native context get wrap size limit:::return->cStub->wrapSizeLimit
+NativeGSSContext#wrap(byte[], int, int, MessageProp)::: native context wrap:::data->if->new->byteArr->System->arraycopy->return->cStub->wrap
+NativeGSSContext#wrap(byte[], int, int, OutputStream, MessageProp)::: native context wrap:::try->result->wrap->os->write->catch->throw->new->GSSExceptionImpl->finally
+NativeGSSContext#wrap(byte[], int, int, byte[], int, MessageProp)::: native context wrap:::result->wrap->System->arraycopy->return
+NativeGSSContext#wrap(InputStream, OutputStream, MessageProp)::: native context wrap:::try->data->inStream->available->new->byteArr->length->inStream->read->token->wrap->outStream->write->catch->throw->new->GSSExceptionImpl->finally
+NativeGSSContext#unwrap(byte[], int, int, MessageProp)::: native context unwrap:::if->temp->new->byteArr->System->arraycopy->return->cStub->unwrap->else->return->cStub->unwrap
+NativeGSSContext#unwrap(byte[], int, int, byte[], int, MessageProp)::: native context unwrap:::result->if->temp->new->byteArr->System->arraycopy->cStub->unwrap->else->cStub->unwrap->System->arraycopy->return
+NativeGSSContext#unwrap(InputStream, OutputStream, MessageProp)::: native context unwrap:::try->wrapped->inStream->available->new->byteArr->wLength->inStream->read->data->unwrap->outStream->write->outStream->flush->catch->throw->new->GSSExceptionImpl->finally
+NativeGSSContext#unwrap(InputStream, byte[], int, MessageProp)::: native context unwrap:::wrapped->wLength->try->inStream->available->new->byteArr->inStream->read->result->unwrap->catch->throw->new->GSSExceptionImpl->finally->result->unwrap->System->arraycopy->return
+NativeGSSContext#getMIC(byte[], int, int, MessageProp)::: native context get c:::qop->msgProp->getQOP->inMsg->if->new->byteArr->System->arraycopy->return->cStub->getMic
+NativeGSSContext#getMIC(InputStream, OutputStream, MessageProp)::: native context get c:::try->length->msg->inStream->available->new->byteArr->inStream->read->msgToken->getMIC->if->outStream->write->catch->throw->new->GSSExceptionImpl->finally
+NativeGSSContext#verifyMIC(byte[], int, int, byte[], int, int, MessageProp)::: native context verify c:::token->msg->if->new->byteArr->System->arraycopy->if->new->byteArr->System->arraycopy->cStub->verifyMic
+NativeGSSContext#verifyMIC(InputStream, InputStream, MessageProp)::: native context verify c:::try->msg->msgStream->available->new->byteArr->mLength->msgStream->read->tok->tokStream->available->new->byteArr->tLength->tokStream->read->verifyMIC->catch->throw->new->GSSExceptionImpl->finally
+NativeGSSContext#export()::: native context export:::result->cStub->exportContext->return
+NativeGSSContext#changeFlags(int, boolean)::: native context change flags:::if->if->else
+NativeGSSContext#requestMutualAuth(boolean)::: native context request mutual auth:::changeFlags
+NativeGSSContext#requestReplayDet(boolean)::: native context request replay det:::changeFlags
+NativeGSSContext#requestSequenceDet(boolean)::: native context request sequence det:::changeFlags
+NativeGSSContext#requestCredDeleg(boolean)::: native context request cred deleg:::changeFlags
+NativeGSSContext#requestAnonymity(boolean)::: native context request anonymity:::changeFlags
+NativeGSSContext#requestConf(boolean)::: native context request conf:::changeFlags
+NativeGSSContext#requestInteg(boolean)::: native context request integ:::changeFlags
+NativeGSSContext#requestDelegPolicy(boolean)::: native context request deleg policy:::
+NativeGSSContext#requestLifetime(int)::: native context request lifetime:::if
+NativeGSSContext#setChannelBinding(ChannelBinding)::: native context set channel binding:::if
+NativeGSSContext#checkFlags(int)::: native context check flags:::return
+NativeGSSContext#getCredDelegState()::: native context get cred deleg state:::return->checkFlags
+NativeGSSContext#getMutualAuthState()::: native context get mutual auth state:::return->checkFlags
+NativeGSSContext#getReplayDetState()::: native context get replay det state:::return->checkFlags
+NativeGSSContext#getSequenceDetState()::: native context get sequence det state:::return->checkFlags
+NativeGSSContext#getAnonymityState()::: native context get anonymity state:::return->checkFlags
+NativeGSSContext#isTransferable()::: native context is transferable:::return->checkFlags
+NativeGSSContext#isProtReady()::: native context is prot ready:::return->checkFlags
+NativeGSSContext#getConfState()::: native context get conf state:::return->checkFlags
+NativeGSSContext#getIntegState()::: native context get integ state:::return->checkFlags
+NativeGSSContext#getDelegPolicyState()::: native context get deleg policy state:::return
+NativeGSSContext#getLifetime()::: native context get lifetime:::return->cStub->getContextTime
+NativeGSSContext#getSrcName()::: native context get src name:::return
+NativeGSSContext#getTargName()::: native context get targ name:::return
+NativeGSSContext#getMech()::: native context get mech:::if->return->else->return->cStub->getMech
+NativeGSSContext#getDelegCred()::: native context get deleg cred:::return
+NativeGSSContext#isInitiator()::: native context is initiator:::return
+NativeGSSContext#finalize()::: native context finalize:::dispose
+NativeGSSContext#inquireSecContext(String)::: native context inquire sec context:::throw->new->GSSException
+NativeGSSFactory#getCredFromSubject(GSSNameElement, boolean)::: native factory get cred from subject:::mech->cStub->getMech->creds->GSSUtil->searchSubject->if->creds->isEmpty->if->GSSUtil->useSubjectCredsOnly->throw->new->GSSException->result->creds->isEmpty->creds->firstElement->if->result->doServicePermCheck->return
+NativeGSSFactory#setMech(Oid)::: native factory set mech:::GSSLibStub->getInstance
+NativeGSSFactory#getNameElement(String, Oid)::: native factory get name element:::try->nameBytes->nameStr->getBytes->return->new->GSSNameElement->catch->throw->new->GSSExceptionImpl->finally
+NativeGSSFactory#getNameElement(byte[], Oid)::: native factory get name element:::return->new->GSSNameElement
+NativeGSSFactory#getCredentialElement(GSSNameSpi, int, int, int)::: native factory get credential element:::nname->if->name->toString->name->getStringNameType->getNameElement->else->if->credElement->getCredFromSubject->if->if->new->GSSCredElement->else->if->if->new->GSSCredElement->else->throw->new->GSSException->return
+NativeGSSFactory#getMechanismContext(GSSNameSpi, GSSCredentialSpi, int)::: native factory get mechanism context:::if->throw->new->GSSException->else->if->peer->toString->peer->getStringNameType->getNameElement->if->getCredFromSubject->else->if->throw->new->GSSException->return->new->NativeGSSContext
+NativeGSSFactory#getMechanismContext(GSSCredentialSpi)::: native factory get mechanism context:::if->getCredFromSubject->else->if->throw->new->GSSException->return->new->NativeGSSContext
+NativeGSSFactory#getMechanismContext(byte[])::: native factory get mechanism context:::return->cStub->importContext
+NativeGSSFactory#getMechanismOid()::: native factory get mechanism oid:::return->cStub->getMech
+NativeGSSFactory#getProvider()::: native factory get provider:::return
+NativeGSSFactory#getNameTypes()::: native factory get name types:::return->cStub->inquireNamesForMech
+SunNativeProvider#debug(String)::: sun native provider debug:::if->if->throw->new->NullPointerException->println

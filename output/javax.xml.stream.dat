@@ -2,10 +2,13 @@ EventFilter#accept(XMLEvent):::Tests whether this event is part of this stream::
 FactoryConfigurationError#getException():::Return the nested exception (if any):::return
 FactoryConfigurationError#getCause():::use the exception chaining mechanism of JDK1.4:::return
 FactoryConfigurationError#getMessage():::Report the message associated with this error:::msg->super->getMessage->if->return->if->nested->getMessage->if->nested->getClass->toString->return
+FactoryFinder#dPrint(Supplier)::: factory finder d print:::if->msgGen->get->println
+FactoryFinder#getProviderClass(String, ClassLoader, boolean, boolean):::Attempt to load a class using the class loader supplied:::try->if->if->return->Class->getClassLoader->forName->else->SecuritySupport->getContextClassLoader->if->throw->new->ClassNotFoundException->else->return->Class->forName->else->return->Class->forName->catch->if->return->Class->getClassLoader->forName->else->throw->finally
 FactoryFinder#newInstance(Class, String, ClassLoader, boolean):::Create an instance of a class:::return->newInstance
 FactoryFinder#newInstance(Class, String, ClassLoader, boolean, boolean):::Create an instance of a class:::if->System->getSecurityManager->if->className->startsWith->try->providerClass->getProviderClass->if->type->isAssignableFrom->throw->type->getName->new->ClassCastException->instance->providerClass->getConstructor->newInstance->clD->dPrint->return->type->cast->catch->throw->new->FactoryConfigurationError->throw->new->FactoryConfigurationError->finally
 FactoryFinder#find(Class, String):::Finds the implementation Class object in the specified order.:::return->type->getName->find
 FactoryFinder#find(Class, String, ClassLoader, String):::Finds the implementation Class object in the specified order:::dPrint->try->systemProp->if->type->getName->equals->SecuritySupport->getSystemProperty->else->System->getProperty->if->dPrint->return->newInstance->catch->throw->new->FactoryConfigurationError->finally->configFile->try->if->synchronized->if->SecuritySupport->getSystemProperty->fStax->new->File->if->SecuritySupport->doesFileExist->dPrint->cacheProps->SecuritySupport->getFileInputStream->load->else->SecuritySupport->getSystemProperty->fJaxp->new->File->if->SecuritySupport->doesFileExist->dPrint->cacheProps->SecuritySupport->getFileInputStream->load->factoryClassName->cacheProps->getProperty->if->foundIn->dPrint->return->newInstance->catch->if->ex->printStackTrace->finally->if->type->getName->equals->provider->findServiceProvider->if->return->else->if->throw->new->FactoryConfigurationError->dPrint->return->newInstance
+FactoryFinder#findServiceProvider(Class, ClassLoader)::: factory finder find service provider:::try->return->AccessController->new->PrivilegedAction<T>->doPrivileged->catch->x->new->RuntimeException->error->x->getMessage->new->FactoryConfigurationError->throw->finally
 Location#getLineNumber():::Return the line number where the current event ends, returns -1 if none is available.:::
 Location#getColumnNumber():::Return the column number where the current event ends, returns -1 if none is available.:::
 Location#getCharacterOffset():::Return the byte or character offset into the input source this location is pointing to:::
@@ -53,6 +56,7 @@ XMLEventReader#close():::Frees any resources associated with this Reader:::
 XMLEventWriter#flush():::Writes any cached events to the underlying output mechanism:::
 XMLEventWriter#close():::Frees any resources associated with this stream:::
 XMLEventWriter#add(XMLEvent):::Add an event to the output stream Adding a START_ELEMENT will open a new namespace scope that will be closed when the corresponding END_ELEMENT is written:::
+XMLEventWriter#add(XMLEventReader)::: event writer add:::
 XMLEventWriter#getPrefix(String):::Gets the prefix the uri is bound to:::
 XMLEventWriter#setPrefix(String, String):::Sets the prefix the uri is bound to:::
 XMLEventWriter#setDefaultNamespace(String):::Binds a URI to the default namespace This URI is bound in the scope of the current START_ELEMENT / END_ELEMENT pair:::
@@ -163,6 +167,7 @@ XMLStreamWriter#writeEndDocument():::Closes any start tags and writes correspond
 XMLStreamWriter#close():::Close this writer and free any resources associated with the writer:::
 XMLStreamWriter#flush():::Write any cached data to the underlying output mechanism.:::
 XMLStreamWriter#writeAttribute(String, String):::Writes an attribute to the output stream without a prefix.:::
+XMLStreamWriter#writeAttribute(String, String, String, String)::: stream writer write attribute:::
 XMLStreamWriter#writeAttribute(String, String, String):::Writes an attribute to the output stream:::
 XMLStreamWriter#writeNamespace(String, String):::Writes a namespace to the output stream If the prefix argument to this method is the empty string, "xmlns", or null this method will delegate to writeDefaultNamespace:::
 XMLStreamWriter#writeDefaultNamespace(String):::Writes the default namespace to the stream:::

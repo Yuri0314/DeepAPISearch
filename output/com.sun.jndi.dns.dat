@@ -1,4 +1,192 @@
+DnsClient#getDatagramSocket()::: dns client get datagram socket:::try->return->factory->open->catch->ne->new->ConfigurationException->ne->setRootCause->throw->finally
+DnsClient#finalize()::: dns client finalize:::close
+DnsClient#close()::: dns client close:::synchronized->reqs->clear->resps->clear
+DnsClient#query(DnsName, int, int, boolean, boolean)::: dns client query:::xid->pkt->collision->do->random->nextInt->makeQueryPacket->reqs->pkt->getData->pkt->length->new->ResourceRecord->putIfAbsent->while->caughtException->doNotRetry->new->booleanArr->try->for->retry->catch->finally->reqs->remove->if->throw->ne->new->CommunicationException->ne->setRootCause->throw
+DnsClient#queryZone(DnsName, int, boolean)::: dns client query zone:::xid->random->nextInt->pkt->makeQueryPacket->caughtException->for->i->if->throw->ne->new->CommunicationException->ne->setRootCause->throw
+DnsClient#doUdpQuery(Packet, InetAddress, int, int, int):::Tries to retrieve a UDP packet matching the given xid received within the timeout:::minTimeout->synchronized->try->udpSocket->getDatagramSocket->opkt->pkt->getData->pkt->length->new->DatagramPacket->ipkt->new->byteArr->new->DatagramPacket->udpSocket->connect->pktTimeout->try->udpSocket->send->timeoutLeft->cnt->do->if->dprint->udpSocket->setSoTimeout->start->System->currentTimeMillis->udpSocket->receive->end->System->currentTimeMillis->data->ipkt->getData->if->isMatchResponse->return->while->catch->finally->udpSocket->disconnect->return->catch->finally
+DnsClient#doTcpQuery(Tcp, Packet)::: dns client do tcp query:::len->pkt->length->write->write->pkt->getData->write->flush->msg->continueTcpQuery->if->throw->new->IOException->return
+DnsClient#continueTcpQuery(Tcp)::: dns client continue tcp query:::lenHi->read->if->return->lenLo->read->if->throw->new->IOException->len->msg->new->byteArr->pos->while->n->read->if->throw->new->IOException->return
+DnsClient#makeQueryPacket(DnsName, int, int, int, boolean)::: dns client make query packet:::qnameLen->fqdn->getOctets->pktLen->pkt->new->Packet->flags->pkt->putShort->pkt->putShort->pkt->putShort->pkt->putShort->pkt->putInt->makeQueryName->pkt->putShort->pkt->putShort->return
+DnsClient#makeQueryName(DnsName, Packet, int)::: dns client make query name:::for->i->fqdn->size->if->fqdn->hasRootLabel->pkt->putByte
+DnsClient#lookupResponse(Integer)::: dns client lookup response:::if->dprint->pkt->if->resps->get->new->Header->checkResponseCode->synchronized->resps->remove->reqs->remove->if->Thread->currentThread->dprint->return
+DnsClient#isMatchResponse(byte[], int)::: dns client is match response:::hdr->new->Header->if->throw->new->CommunicationException->if->reqs->containsKey->return->if->if->dprint->checkResponseCode->if->rr->new->ResourceRecord->query->reqs->get->qtype->query->getType->qclass->query->getRrclass->qname->query->getName->if->rr->getType->rr->getRrclass->qname->rr->getName->equals->if->dprint->synchronized->resps->remove->reqs->remove->return->else->if->dprint->return->synchronized->if->reqs->containsKey->resps->put->if->reqs->size->dprint->return
+DnsClient#checkResponseCode(Header)::: dns client check response code:::rcode->if->return->msg->switch->throw->new->ServiceUnavailableException->throw->new->NameNotFoundException->throw->new->OperationNotSupportedException->throw->new->NamingException
+DnsClient#dprint(String)::: dns client dprint:::if->println
+Tcp#close()::: tcp close:::sock->close
+Packet#putInt(int, int)::: packet put int:::
+Packet#putShort(int, int)::: packet put short:::
+Packet#putByte(int, int)::: packet put byte:::
+Packet#putBytes(byte[], int, int, int)::: packet put bytes:::System->arraycopy
+Packet#length()::: packet length:::return
+Packet#getData()::: packet get data:::return
+DnsContext#close()::: dns context close:::if->resolver->close
+DnsContext#p_getEnvironment()::: dns context p_get environment:::return
+DnsContext#getEnvironment()::: dns context get environment:::return->environment->clone
+DnsContext#addToEnvironment(String, Object)::: dns context add to environment:::if->propName->equals->getLookupCT->else->if->propName->equals->equalsIgnoreCase->else->if->propName->equals->equalsIgnoreCase->else->if->propName->equals->val->Integer->parseInt->if->else->if->propName->equals->val->Integer->parseInt->if->if->return->environment->put->else->if->environment->get->environment->clone->return->environment->put->else->return
+DnsContext#removeFromEnvironment(String)::: dns context remove from environment:::if->propName->equals->getLookupCT->else->if->propName->equals->else->if->propName->equals->else->if->propName->equals->if->else->if->propName->equals->if->if->return->environment->remove->else->if->environment->get->environment->clone->return->environment->remove->else->return
+DnsContext#setProviderUrl(String)::: dns context set provider url:::environment->put
+DnsContext#initFromEnvironment()::: dns context init from environment:::environment->get->getLookupCT->environment->get->equalsIgnoreCase->val->environment->get->equalsIgnoreCase->environment->get->Integer->parseInt->environment->get->Integer->parseInt
+DnsContext#getLookupCT(String)::: dns context get lookup t:::return->new->CT->fromAttrId
+DnsContext#c_lookup(Name, Continuation)::: dns context c_lookup:::cont->setSuccess->if->name->isEmpty->ctx->new->DnsContext->new->Resolver->return->try->fqdn->fullyQualify->rrs->getResolver->query->attrs->rrsToAttrs->ctx->new->DnsContext->return->DirectoryManager->getObjectInstance->catch->cont->setError->throw->cont->fillInException->cont->setError->ne->new->NamingException->ne->setRootCause->throw->cont->fillInException->finally
+DnsContext#c_lookupLink(Name, Continuation)::: dns context c_lookup link:::return->c_lookup
+DnsContext#c_list(Name, Continuation)::: dns context c_list:::cont->setSuccess->try->fqdn->fullyQualify->nnode->getNameNode->ctx->new->DnsContext->return->nnode->getChildren->new->NameClassPairEnumeration->catch->cont->setError->throw->cont->fillInException->finally
+DnsContext#c_listBindings(Name, Continuation)::: dns context c_list bindings:::cont->setSuccess->try->fqdn->fullyQualify->nnode->getNameNode->ctx->new->DnsContext->return->nnode->getChildren->new->BindingEnumeration->catch->cont->setError->throw->cont->fillInException->finally
+DnsContext#c_bind(Name, Object, Continuation)::: dns context c_bind:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#c_rebind(Name, Object, Continuation)::: dns context c_rebind:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#c_unbind(Name, Continuation)::: dns context c_unbind:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#c_rename(Name, Name, Continuation)::: dns context c_rename:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#c_createSubcontext(Name, Continuation)::: dns context c_create subcontext:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#c_destroySubcontext(Name, Continuation)::: dns context c_destroy subcontext:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#c_getNameParser(Name, Continuation)::: dns context c_get name parser:::cont->setSuccess->return
+DnsContext#c_bind(Name, Object, Attributes, Continuation)::: dns context c_bind:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#c_rebind(Name, Object, Attributes, Continuation)::: dns context c_rebind:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#c_createSubcontext(Name, Attributes, Continuation)::: dns context c_create subcontext:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#c_getAttributes(Name, String[], Continuation)::: dns context c_get attributes:::cont->setSuccess->try->fqdn->fullyQualify->cts->attrIdsToClassesAndTypes->ct->getClassAndTypeToQuery->rrs->getResolver->query->return->rrsToAttrs->catch->cont->setError->throw->cont->fillInException->finally
+DnsContext#c_modifyAttributes(Name, int, Attributes, Continuation)::: dns context c_modify attributes:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#c_modifyAttributes(Name, ModificationItem[], Continuation)::: dns context c_modify attributes:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#c_search(Name, Attributes, String[], Continuation)::: dns context c_search:::throw->new->OperationNotSupportedException
+DnsContext#c_search(Name, String, SearchControls, Continuation)::: dns context c_search:::throw->new->OperationNotSupportedException
+DnsContext#c_search(Name, String, Object[], SearchControls, Continuation)::: dns context c_search:::throw->new->OperationNotSupportedException
+DnsContext#c_getSchema(Name, Continuation)::: dns context c_get schema:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#c_getSchemaClassDefinition(Name, Continuation)::: dns context c_get schema class definition:::cont->setError->throw->cont->new->OperationNotSupportedException->fillInException
+DnsContext#getNameInNamespace()::: dns context get name in namespace:::return->domain->toString
+DnsContext#composeName(Name, Name)::: dns context compose name:::result->if->new->DnsName->addAll->if->new->DnsName->addAll->if->prefix->clone->result->addAll->return->new->CompositeName->result->toString->add->prefixC->new->CompositeName->prefix->toString->add->nameC->new->CompositeName->name->toString->add->prefixLast->prefixC->size->if->nameC->isEmpty->nameC->get->equals->prefixC->isEmpty->prefixC->get->equals->return->super->composeName->prefixC->clone->result->addAll->if->dnsComp->prefix->clone->prefixC->get->new->DnsName->dnsComp->nameC->get->new->DnsName->addAll->result->remove->result->remove->result->dnsComp->toString->add->return
+DnsContext#getResolver()::: dns context get resolver:::if->new->Resolver->return
+DnsContext#fullyQualify(Name)::: dns context fully qualify:::if->name->isEmpty->return->dnsName->name->get->new->DnsName->new->DnsName->addAll->if->dnsName->hasRootLabel->if->domain->size->return->else->throw->new->InvalidNameException->return->dnsName->addAll
+DnsContext#rrsToAttrs(ResourceRecords, CT[])::: dns context rrs to attrs:::attrs->new->BasicAttributes->for->i->size->return
+DnsContext#classAndTypeMatch(int, int, CT[])::: dns context class and type match:::if->return->for->i->return
+DnsContext#toAttrId(int, int)::: dns context to attr id:::attrId->ResourceRecord->getTypeName->if->ResourceRecord->getRrclassName->return
+DnsContext#fromAttrId(String)::: dns context from attr id:::if->attrId->equals->throw->new->InvalidAttributeIdentifierException->rrclass->rrtype->space->attrId->indexOf->if->else->className->attrId->substring->ResourceRecord->getRrclass->if->throw->new->InvalidAttributeIdentifierException->typeName->attrId->substring->ResourceRecord->getType->if->throw->new->InvalidAttributeIdentifierException->return->new->CT
+DnsContext#attrIdsToClassesAndTypes(String[])::: dns context attr ids to classes and types:::if->return->cts->new->CTArr->for->i->return
+DnsContext#getClassAndTypeToQuery(CT[])::: dns context get class and type to query:::rrclass->rrtype->if->else->if->else->for->i->return->new->CT
+DnsContext#getNameNode(DnsName)::: dns context get name node:::dprint->znode->zone->synchronized->zoneTree->getDeepestPopulated->znode->getLabel->dprint->topOfZone->nnode->if->synchronized->znode->getContents->if->topOfZone->znode->depth->get->if->nnode->isZoneCut->dprint->fqdn->znode->depth->getPrefix->current->isZoneCurrent->restart->synchronized->if->znode->getContents->else->if->znode->depopulate->else->return->dprint->if->return->getNameNode->dprint->getResolver->findZoneName->dprint->synchronized->zoneTree->add->synchronized->znode->isPopulated->znode->getContents->populateZone->topOfZone->zone->size->get->if->throw->new->ConfigurationException->dprint->return
+DnsContext#populateZone(ZoneNode, DnsName)::: dns context populate zone:::dprint->rrs->getResolver->queryZone->size->dprint->return->znode->populate
+DnsContext#isZoneCurrent(ZoneNode, DnsName)::: dns context is zone current:::if->znode->isPopulated->return->soa->getResolver->findSoa->synchronized->if->znode->depopulate->return->znode->isPopulated->znode->compareSerialNumberTo
+DnsContext#dprint(String)::: dns context dprint:::if->println
+BaseNameClassPairEnumeration#close()::: base name class pair enumeration close:::
+BaseNameClassPairEnumeration#hasMore()::: base name class pair enumeration has more:::more->nodes->hasMoreElements->if->close->return
+BaseNameClassPairEnumeration#hasMoreElements()::: base name class pair enumeration has more elements:::return->hasMore
+BaseNameClassPairEnumeration#next()::: base name class pair enumeration next:::
+BaseNameClassPairEnumeration#nextElement()::: base name class pair enumeration next element:::try->return->next->catch->nsee->new->java.util.NoSuchElementException->nsee->initCause->throw->finally
+NameClassPairEnumeration#next()::: name class pair enumeration next:::if->hasMore->throw->new->java.util.NoSuchElementException->nnode->nodes->nextElement->className->nnode->isZoneCut->nnode->getChildren->label->nnode->getLabel->compName->new->DnsName->add->cname->new->CompositeName->compName->toString->add->ncp->cname->toString->new->NameClassPair->ncp->ctx->fullyQualify->toString->setNameInNamespace->return
+BindingEnumeration#next()::: binding enumeration next:::if->hasMore->throw->new->java.util.NoSuchElementException->nnode->nodes->nextElement->label->nnode->getLabel->compName->new->DnsName->add->compNameStr->compName->toString->cname->new->CompositeName->add->cnameStr->cname->toString->fqdn->ctx->fullyQualify->child->new->DnsContext->try->obj->DirectoryManager->getObjectInstance->binding->new->Binding->binding->ctx->fullyQualify->toString->setNameInNamespace->return->catch->ne->new->NamingException->ne->setRootCause->throw->finally
+DnsContextFactory#getInitialContext(Hashtable)::: dns context factory get initial context:::if->new->Hashtable<>->return->getInitCtxUrl->urlToContext
+DnsContextFactory#getContext(String, String[], Hashtable)::: dns context factory get context:::return->new->DnsContext
+DnsContextFactory#getContext(String, DnsUrl[], Hashtable)::: dns context factory get context:::servers->serversForUrls->ctx->getContext->if->platformServersUsed->ctx->constructProviderUrl->setProviderUrl->return
+DnsContextFactory#platformServersAvailable()::: dns context factory platform servers available:::return->ResolverConfiguration->open->nameservers->filterNameServers->isEmpty
+DnsContextFactory#urlToContext(String, Hashtable)::: dns context factory url to context:::urls->try->DnsUrl->fromList->catch->throw->e->getMessage->new->ConfigurationException->finally->if->throw->new->ConfigurationException->domain->getDomain->for->i->return->getContext
+DnsContextFactory#serversForUrls(DnsUrl[])::: dns context factory servers for urls:::if->throw->new->ConfigurationException->servers->new->ArrayList<>->for->i->return->servers->servers->size->new->StringArr->toArray
+DnsContextFactory#platformServersUsed(DnsUrl[])::: dns context factory platform servers used:::if->platformServersAvailable->return->for->i->return
+DnsContextFactory#constructProviderUrl(String, String[])::: dns context factory construct provider url:::path->if->domain->equals->try->UrlUtil->encode->catch->finally->sb->new->StringBuilder->for->i->return->sb->toString
+DnsContextFactory#getInitCtxUrl(Hashtable)::: dns context factory get init ctx url:::url->env->get->return
+DnsContextFactory#filterNameServers(List, boolean):::Removes any DNS server that's not permitted to access:::security->System->getSecurityManager->if->input->isEmpty->return->else->output->new->ArrayList<>->foreach->colon->platformServer->platformServer->indexOf->indexOf->p->Integer->platformServer->substring->parseInt->s->platformServer->substring->try->security->checkConnect->output->add->if->return->catch->continue->finally->return
+DNSDatagramSocketFactory.PortHistory#contains(int)::: port history contains:::p->for->i->return
+DNSDatagramSocketFactory.PortHistory#add(int)::: port history add:::if->random->nextInt->else->if->return
+DNSDatagramSocketFactory.PortHistory#offer(int)::: port history offer:::if->contains->return->else->return->add
 DNSDatagramSocketFactory#open():::Opens a datagram socket listening to the wildcard address on a random port:::lastseen->s->thresholdCrossed->if->openRandom->if->return->openDefault->s->getLocalPort->if->history->offer->return->farEnough->Integer->bitCount->Math->abs->recycled->history->contains->suitable->if->history->add->if->if->else->if->return->ss->openRandom->if->return->s->close->return
+DNSDatagramSocketFactory#openDefault()::: datagram socket factory open default:::if->try->c->DatagramChannel->open->try->s->c->socket->s->bind->return->catch->c->close->throw->finally->catch->throw->e->x->getMessage->new->SocketException->e->initCause->throw->finally->return->new->DatagramSocket
+DNSDatagramSocketFactory#isUsingNativePortRandomization()::: datagram socket factory is using native port randomization:::return
+DNSDatagramSocketFactory#isUsingJavaPortRandomization()::: datagram socket factory is using java port randomization:::return
+DNSDatagramSocketFactory#isUndecided()::: datagram socket factory is undecided:::return->isUsingJavaPortRandomization->isUsingNativePortRandomization
+DNSDatagramSocketFactory#openRandom()::: datagram socket factory open random:::maxtries->while->port->random->nextInt->try->if->c->DatagramChannel->open->try->s->c->socket->s->new->InetSocketAddress->bind->return->catch->c->close->throw->finally->return->new->DatagramSocket->catch->finally->return
+DnsName#toString()::: dns name to string:::if->buf->new->StringBuilder->foreach->if->buf->length->label->length->buf->append->escape->buf->toString->return
 DnsName#isHostName():::Does this domain name follow host name syntax?:::foreach->if->isHostNameLabel->return->return
+DnsName#getOctets()::: dns name get octets:::return
+DnsName#size()::: dns name size:::return->labels->size
+DnsName#isEmpty()::: dns name is empty:::return->size
+DnsName#hashCode()::: dns name hash code:::h->for->i->size->return
+DnsName#equals(Object)::: dns name equals:::if->return->n->return->size->n->size->compareTo
+DnsName#compareTo(Object)::: dns name compare to:::n->return->size->compareRange
+DnsName#startsWith(Name)::: dns name starts with:::return->size->n->size->n->size->compareRange
+DnsName#endsWith(Name)::: dns name ends with:::return->size->n->size->size->n->size->size->compareRange
+DnsName#get(int)::: dns name get:::if->size->throw->new->ArrayIndexOutOfBoundsException->i->size->return->labels->get
+DnsName#getAll()::: dns name get all:::return->new->Enumeration<String>
+DnsName#getPrefix(int)::: dns name get prefix:::return->new->DnsName
+DnsName#getSuffix(int)::: dns name get suffix:::return->size->new->DnsName
+DnsName#clone()::: dns name clone:::return->size->new->DnsName
+DnsName#remove(int)::: dns name remove:::if->size->throw->new->ArrayIndexOutOfBoundsException->i->size->label->labels->remove->len->label->length->if->return
+DnsName#add(String)::: dns name add:::return->size->add
+DnsName#add(int, String)::: dns name add:::if->size->throw->new->ArrayIndexOutOfBoundsException->len->comp->length->if->hasRootLabel->throw->new->InvalidNameException->if->if->throw->new->InvalidNameException->i->size->verifyLabel->labels->add->return
+DnsName#addAll(Name)::: dns name add all:::return->size->addAll
+DnsName#addAll(int, Name)::: dns name add all:::if->dn->if->dn->isEmpty->return->if->dn->hasRootLabel->hasRootLabel->throw->new->InvalidNameException->newOctets->if->throw->new->InvalidNameException->i->size->labels->addAll->if->isEmpty->else->if->else->if->equals->else->if->size->domain->equals->else->else->if->else->for->i->n->size->return
+DnsName#hasRootLabel()::: dns name has root label:::return->isEmpty->get->equals
+DnsName#compareRange(int, int, Name)::: dns name compare range:::if->minSize->Math->n->size->min->for->i->return->n->size
+DnsName#getKey(int)::: dns name get key:::return->get->keyForLabel
+DnsName#parse(String)::: dns name parse:::label->new->StringBuilder->for->i->name->length->if->name->equals->name->equals->label->toString->add
+DnsName#getEscapedOctet(String, int)::: dns name get escaped octet:::try->c1->name->charAt->if->isDigit->c2->name->charAt->c3->name->charAt->if->isDigit->isDigit->return->else->throw->new->InvalidNameException->else->return->catch->throw->new->InvalidNameException->finally
+DnsName#verifyLabel(String)::: dns name verify label:::if->label->length->throw->new->InvalidNameException->for->i->label->length
+DnsName#isHostNameLabel(String)::: dns name is host name label:::for->i->label->length->return->label->startsWith->label->endsWith
+DnsName#isHostNameChar(char)::: dns name is host name char:::return
+DnsName#isDigit(char)::: dns name is digit:::return
+DnsName#escape(StringBuilder, String)::: dns name escape:::for->i->label->length
+DnsName#compareLabels(String, String)::: dns name compare labels:::min->Math->label1->length->label2->length->min->for->i->return->label1->length->label2->length
+DnsName#keyForLabel(String)::: dns name key for label:::sb->label->length->new->StringBuilder->for->i->label->length->return->sb->toString
+DnsName#writeObject(java.io.ObjectOutputStream):::Serializes only the domain name string, for compactness and to avoid any implementation dependency.:::s->toString->writeObject
+DnsName#readObject(java.io.ObjectInputStream)::: dns name read object:::try->s->readObject->parse->catch->throw->new->java.io.StreamCorruptedException->finally
+DnsNameParser#parse(String)::: dns name parser parse:::return->new->DnsName
+DnsNameParser#equals(Object)::: dns name parser equals:::return
+DnsNameParser#hashCode()::: dns name parser hash code:::return->hashCode
 DnsUrl#fromList(String):::Given a space-separated list of DNS URLs, returns an array of DnsUrl objects.:::urls->urlList->length->new->DnsUrlArr->i->st->new->StringTokenizer->while->st->hasMoreTokens->st->nextToken->new->DnsUrl->trimmed->new->DnsUrlArr->System->arraycopy->return
 DnsUrl#getDomain():::Returns the domain of this URL, or "." if none is provided:::return
+Header#decode(byte[], int)::: header decode:::try->pos->if->throw->new->CommunicationException->getShort->flags->getShort->getShort->getShort->getShort->getShort->catch->throw->new->CommunicationException->finally
+Header#getShort(byte[], int)::: header get short:::return
+NameNode#newNameNode(String)::: name node new name node:::return->new->NameNode
+NameNode#getLabel()::: name node get label:::return
+NameNode#depth()::: name node depth:::return
+NameNode#isZoneCut()::: name node is zone cut:::return
+NameNode#setZoneCut(boolean)::: name node set zone cut:::
+NameNode#getChildren()::: name node get children:::return
+NameNode#get(String)::: name node get:::return->children->get
+NameNode#get(DnsName, int)::: name node get:::node->for->i->name->size->return
+NameNode#add(DnsName, int)::: name node add:::node->for->i->name->size->return
+Resolver#close()::: resolver close:::dnsClient->close
+Resolver#query(DnsName, int, int, boolean, boolean)::: resolver query:::return->dnsClient->query
+Resolver#queryZone(DnsName, int, boolean)::: resolver query zone:::cl->findNameServers->new->DnsClient->try->return->cl->queryZone->catch->finally->cl->close
+Resolver#findZoneName(DnsName, int, boolean)::: resolver find zone name:::fqdn->clone->while->fqdn->size->rrs->try->query->catch->throw->finally->if->if->size->return->for->i->size->fqdn->fqdn->size->remove->return
+Resolver#findSoa(DnsName, int, boolean)::: resolver find soa:::rrs->query->for->i->size->return
+Resolver#findNameServers(DnsName, boolean)::: resolver find name servers:::rrs->query->ns->size->new->StringArr->for->i->return
+ResourceRecord#toString()::: resource record to string:::text->if->return
+ResourceRecord#getName()::: resource record get name:::return
+ResourceRecord#size()::: resource record size:::return
+ResourceRecord#getType()::: resource record get type:::return
+ResourceRecord#getRrclass()::: resource record get rrclass:::return
+ResourceRecord#getRdata()::: resource record get rdata:::return
+ResourceRecord#getTypeName(int)::: resource record get type name:::return->valueToName
+ResourceRecord#getType(String)::: resource record get type:::return->nameToValue
+ResourceRecord#getRrclassName(int)::: resource record get rrclass name:::return->valueToName
+ResourceRecord#getRrclass(String)::: resource record get rrclass:::return->nameToValue
+ResourceRecord#valueToName(int, String[])::: resource record value to name:::name->if->else->if->if->Integer->toString->return
+ResourceRecord#nameToValue(String, String[])::: resource record name to value:::if->name->equals->return->else->if->name->equals->return->if->Character->name->charAt->isDigit->try->return->Integer->parseInt->catch->finally->for->i->return
+ResourceRecord#compareSerialNumbers(long, long)::: resource record compare serial numbers:::diff->if->return->else->if->return->else->return
+ResourceRecord#decode(boolean)::: resource record decode:::pos->new->DnsName->decodeName->getUShort->if->Integer->toString->getUShort->if->Integer->toString->if->getInt->getUShort->decodeRdata->if->rdata->toString
+ResourceRecord#getUByte(int)::: resource record get byte:::return
+ResourceRecord#getUShort(int)::: resource record get short:::return
+ResourceRecord#getInt(int)::: resource record get int:::return->getUShort->getUShort
+ResourceRecord#getUInt(int)::: resource record get int:::return->getInt
+ResourceRecord#decodeName(int)::: resource record decode name:::n->new->DnsName->decodeName->return
+ResourceRecord#decodeName(int, DnsName)::: resource record decode name:::endPos->level->try->while->if->throw->new->IOException->typeAndLen->if->n->add->break->else->if->n->new->String->add->else->if->ppos->if->getUShort->if->dprint->else->throw->new->IOException->catch->ce->new->CommunicationException->ce->initCause->throw->finally->if->return
+ResourceRecord#decodeRdata(int)::: resource record decode rdata:::if->switch->return->decodeA->return->decodeAAAA->return->decodeName->return->decodeMx->return->decodeSoa->return->decodeSrv->return->decodeNaptr->return->decodeTxt->return->decodeHinfo->if->dprint->rd->new->byteArr->System->arraycopy->return
+ResourceRecord#decodeMx(int)::: resource record decode mx:::preference->getUShort->name->decodeName->return
+ResourceRecord#decodeSoa(int)::: resource record decode soa:::mname->new->DnsName->decodeName->rname->new->DnsName->decodeName->serial->getUInt->refresh->getUInt->retry->getUInt->expire->getUInt->minimum->getUInt->return
+ResourceRecord#decodeSrv(int)::: resource record decode srv:::priority->getUShort->weight->getUShort->port->getUShort->target->decodeName->return
+ResourceRecord#decodeNaptr(int)::: resource record decode naptr:::order->getUShort->preference->getUShort->flags->new->StringBuffer->decodeCharString->services->new->StringBuffer->decodeCharString->regexp->new->StringBuffer->decodeCharString->replacement->decodeName->return
+ResourceRecord#decodeTxt(int)::: resource record decode txt:::buf->new->StringBuffer->end->while->decodeCharString->if->buf->append->return->buf->toString
+ResourceRecord#decodeHinfo(int)::: resource record decode hinfo:::buf->new->StringBuffer->decodeCharString->buf->append->decodeCharString->return->buf->toString
+ResourceRecord#decodeCharString(int, StringBuffer)::: resource record decode char string:::start->buf->length->len->getUByte->quoted->for->i->if->buf->insert->buf->append->return
+ResourceRecord#decodeA(int)::: resource record decode a:::return
+ResourceRecord#decodeAAAA(int)::: resource record decode a:::addr6->new->intArr->for->i->curBase->curLen->bestBase->bestLen->for->i->if->if->return->decodeA->else->if->return->decodeA->compress->sb->new->StringBuilder->if->sb->append->for->i->return->sb->toString
+ResourceRecord#dprint(String)::: resource record dprint:::if->println
+ResourceRecords#getFirstAnsType()::: resource records get first ans type:::if->answer->size->return->return->answer->firstElement->getType
+ResourceRecords#getLastAnsType()::: resource records get last ans type:::if->answer->size->return->return->answer->lastElement->getType
+ResourceRecords#add(byte[], int, Header)::: resource records add:::rr->pos->try->for->i->for->i->if->return->for->i->catch->throw->new->CommunicationException->finally
+ZoneNode#newNameNode(String)::: zone node new name node:::return->new->ZoneNode
+ZoneNode#depopulate()::: zone node depopulate:::
+ZoneNode#isPopulated()::: zone node is populated:::return->getContents
+ZoneNode#getContents()::: zone node get contents:::return->contentsRef->get
+ZoneNode#isExpired()::: zone node is expired:::return->expiration->new->Date->before
+ZoneNode#getDeepestPopulated(DnsName)::: zone node get deepest populated:::znode->popNode->isPopulated->for->i->fqdn->size->return
+ZoneNode#populate(DnsName, ResourceRecords)::: zone node populate:::newContents->new->NameNode->for->i->size->soa->firstElement->synchronized->new->SoftReference<NameNode>->getSerialNumber->getMinimumTtl->setExpiration->return
+ZoneNode#setExpiration(long)::: zone node set expiration:::System->currentTimeMillis->new->Date
+ZoneNode#getMinimumTtl(ResourceRecord)::: zone node get minimum ttl:::rdata->soa->getRdata->pos->rdata->lastIndexOf->return->Long->rdata->substring->parseLong
+ZoneNode#compareSerialNumberTo(ResourceRecord)::: zone node compare serial number to:::return->ResourceRecord->getSerialNumber->compareSerialNumbers
+ZoneNode#getSerialNumber(ResourceRecord)::: zone node get serial number:::rdata->soa->getRdata->beg->rdata->length->end->for->i->return->Long->rdata->substring->parseLong

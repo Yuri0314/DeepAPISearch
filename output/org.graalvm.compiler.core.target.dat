@@ -1,9 +1,25 @@
+Backend#addCodeInstallationTask(CodeInstallationTaskFactory)::: backend add code installation task:::add
+Backend#getProviders()::: backend get providers:::return
+Backend#getCodeCache()::: backend get code cache:::return->providers->getCodeCache
+Backend#getMetaAccess()::: backend get meta access:::return->providers->getMetaAccess
+Backend#getConstantReflection()::: backend get constant reflection:::return->providers->getConstantReflection
+Backend#getForeignCalls()::: backend get foreign calls:::return->providers->getForeignCalls
+Backend#getSuites()::: backend get suites:::
+Backend#getTarget()::: backend get target:::return->providers->getCodeCache->getTarget
+Backend#getValueKind(JavaKind)::: backend get value kind:::return->LIRKind->getTarget->fromJavaKind
 Backend#newRegisterAllocationConfig(RegisterConfig, String[]):::Creates a new configuration for register allocation.:::
 Backend#createCompiledCode(ResolvedJavaMethod, CompilationRequest, CompilationResult, boolean, OptionValues):::Turns a Graal CompilationResult into a CompiledCode object that can be passed to the VM for code installation.:::
+Backend#createInstalledCode(DebugContext, ResolvedJavaMethod, CompilationResult, InstalledCode, boolean)::: backend create installed code:::return->createInstalledCode
+Backend#createInstalledCode(DebugContext, ResolvedJavaMethod, CompilationRequest, CompilationResult, InstalledCode, boolean)::: backend create installed code:::return->createInstalledCode
 Backend#createInstalledCode(DebugContext, ResolvedJavaMethod, CompilationRequest, CompilationResult, InstalledCode, boolean, Object[]):::Installs code based on a given compilation result.:::debugContext->new->ObjectArr->getProviders->getCodeCache->tasks->synchronized->codeInstallationTaskFactories->size->new->CodeInstallationTaskArr->for->i->codeInstallationTaskFactories->size->try->s2->debug->scope->a->debug->activate->installedCode->try->preCodeInstallationTasks->compiledCode->debug->getOptions->createCompiledCode->getProviders->getCodeCache->compilationResult->getSpeculationLog->installCode->catch->failCodeInstallationTasks->throw->finally->postCodeInstallationTasks->return->catch->throw->debug->handle->finally
+Backend#failCodeInstallationTasks(CodeInstallationTask[], Throwable)::: backend fail code installation tasks:::foreach->task->installFailed
+Backend#preCodeInstallationTasks(CodeInstallationTask[], CompilationResult)::: backend pre code installation tasks:::foreach->task->preProcess
+Backend#postCodeInstallationTasks(CodeInstallationTask[], CompilationResult, InstalledCode)::: backend post code installation tasks:::try->foreach->task->postProcess->catch->installedCode->invalidate->throw->finally
 Backend#addInstalledCode(DebugContext, ResolvedJavaMethod, CompilationRequest, CompilationResult):::Installs code based on a given compilation result.:::return->createInstalledCode
 Backend#createDefaultInstalledCode(DebugContext, ResolvedJavaMethod, CompilationResult):::Installs code based on a given compilation result and sets it as the default code to be used when method is invoked.:::return->createInstalledCode
 Backend#getCompilationIdentifier(ResolvedJavaMethod):::Gets the compilation id for a given ResolvedJavaMethod:::return
+Backend#emitBackEnd(StructuredGraph, Object, ResolvedJavaMethod, CompilationResult, CompilationResultBuilderFactory, RegisterConfig, LIRSuites)::: backend emit back end:::LIRCompilerBackend->emitBackEnd
 Backend.CodeInstallationTask#preProcess(CompilationResult):::Task to run before code installation.:::
 Backend.CodeInstallationTask#postProcess(CompilationResult, InstalledCode):::Task to run after the code is installed.:::
 Backend.CodeInstallationTask#installFailed(Throwable):::Invoked after #preProcess when code installation fails.:::
+Backend.CodeInstallationTaskFactory#create()::: code installation task factory create:::

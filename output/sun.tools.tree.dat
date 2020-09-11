@@ -1,25 +1,43 @@
 AddExpression#selectType(Environment, Context, int):::Select the type:::if->isType->return->else->if->isType->return->super->selectType
+AddExpression#isNonNull()::: add expression is non null:::return
 AddExpression#eval(int, int):::Evaluate:::return->new->IntExpression
+AddExpression#eval(long, long)::: add expression eval:::return->new->LongExpression
+AddExpression#eval(float, float)::: add expression eval:::return->new->FloatExpression
+AddExpression#eval(double, double)::: add expression eval:::return->new->DoubleExpression
+AddExpression#eval(String, String)::: add expression eval:::return->new->StringExpression
 AddExpression#inlineValue(Environment, Context):::Inline the value of an AddExpression:::if->isConstant->buffer->new->StringBuffer->inlineValueSB->if->return->buffer->toString->new->StringExpression->return->super->inlineValue
 AddExpression#inlineValueSB(Environment, Context, StringBuffer):::Attempt to evaluate this expression:::if->return->super->inlineValueSB->left->inlineValueSB->if->right->inlineValueSB->return
 AddExpression#simplify():::Simplify:::if->type->isType->if->type->inMask->if->left->equals->return->if->right->equals->return->else->if->isType->new->StringExpression->else->if->isType->new->StringExpression->return
 AddExpression#costInline(int, Environment, Context):::The cost of inlining this expression:::return->type->isType->left->costInline->right->costInline
 AddExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->type->getTypeCodeOffset->add
 AddExpression#codeAppend(Environment, Context, Assembler, ClassDeclaration, boolean):::Convert this expression to a string and append it to the string buffer on the top of the stack:::if->type->isType->left->codeAppend->right->codeAppend->else->super->codeAppend
+AddExpression#codeValue(Environment, Context, Assembler)::: add expression code value:::if->type->isType->try->if->left->equals->right->codeValue->right->ensureString->return->if->right->equals->left->codeValue->left->ensureString->return->sbClass->env->getClassDeclaration->sourceClass->getClassDefinition->codeAppend->f->sbClass->getClassDefinition->matchMethod->asm->add->catch->throw->new->CompilerError->throw->new->CompilerError->finally->else->super->codeValue
+AndExpression#checkCondition(Environment, Context, Vset, Hashtable, ConditionVars)::: and expression check condition:::left->checkCondition->convert->vsTrue->copy->vsFalse->copy->right->checkCondition->convert->join
 AndExpression#eval(boolean, boolean):::Evaluate:::return->new->BooleanExpression
 AndExpression#simplify():::Simplify:::if->left->equals->return->if->right->equals->return->new->CommaExpression->simplify->if->right->equals->return->if->left->equals->return->return
 AndExpression#codeBranch(Environment, Context, Assembler, Label, boolean):::Code:::if->lbl2->new->Label->left->codeBranch->right->codeBranch->asm->add->else->left->codeBranch->right->codeBranch
 ArrayAccessExpression#checkValue(Environment, Context, Vset, Hashtable):::Check expression type:::right->checkValue->if->env->error->return->index->checkValue->convert->if->isType->if->isType->env->error->return->getElementType->return
+ArrayAccessExpression#checkAmbigName(Environment, Context, Vset, Hashtable, UnaryExpression)::: array access expression check ambig name:::if->right->checkAmbigName->if->FieldExpression->reportFailedPackagePrefix->return->if->atype->Type->tArray->new->TypeExpression->return->env->error->return->return->super->checkAmbigName
+ArrayAccessExpression#checkLHS(Environment, Context, Vset, Hashtable)::: array access expression check s:::return->checkValue
+ArrayAccessExpression#checkAssignOp(Environment, Context, Vset, Hashtable, Expression)::: array access expression check assign op:::return->checkValue
 ArrayAccessExpression#getAssigner(Environment, Context):::An array access expression never requires the use of an access method to perform an assignment to an array element, though an access method may be required to fetch the array object itself.:::return
 ArrayAccessExpression#getUpdater(Environment, Context):::An array access expression never requires a field updater.:::return
 ArrayAccessExpression#toType(Environment, Context):::Convert to a type:::return->right->toType->toType
+ArrayAccessExpression#toType(Environment, Type)::: array access expression to type:::if->env->error->return->Type->tArray
 ArrayAccessExpression#inline(Environment, Context):::Inline:::right->inlineValue->index->inlineValue->return
+ArrayAccessExpression#inlineValue(Environment, Context)::: array access expression inline value:::right->inlineValue->index->inlineValue->return
+ArrayAccessExpression#inlineLHS(Environment, Context)::: array access expression inline s:::return->inlineValue
 ArrayAccessExpression#copyInline(Context):::Create a copy of the expression for method inlining:::e->clone->right->copyInline->if->else->index->copyInline->return
 ArrayAccessExpression#costInline(int, Environment, Context):::The cost of inlining this expression:::return->right->costInline->index->costInline
 ArrayAccessExpression#codeLValue(Environment, Context, Assembler):::Code:::right->codeValue->index->codeValue->return
+ArrayAccessExpression#codeLoad(Environment, Context, Assembler)::: array access expression code load:::switch->type->getTypeCode->asm->add->break->asm->add->break->asm->add->break->asm->type->getTypeCodeOffset->add
+ArrayAccessExpression#codeStore(Environment, Context, Assembler)::: array access expression code store:::switch->type->getTypeCode->asm->add->break->asm->add->break->asm->add->break->asm->type->getTypeCodeOffset->add
+ArrayAccessExpression#codeValue(Environment, Context, Assembler)::: array access expression code value:::codeLValue->codeLoad
 ArrayAccessExpression#print(PrintStream):::Print:::out->print->right->print->out->print->if->index->print->else->out->print->out->print
 ArrayExpression#checkValue(Environment, Context, Vset, Hashtable):::Check expression type:::env->error->return
+ArrayExpression#checkInitializer(Environment, Context, Vset, Type, Hashtable)::: array expression check initializer:::if->t->isType->if->t->isType->env->error->return->t->getElementType->for->i->return
 ArrayExpression#inline(Environment, Context):::Inline:::e->for->i->return
+ArrayExpression#inlineValue(Environment, Context)::: array expression inline value:::for->i->return
 ArrayExpression#codeValue(Environment, Context, Assembler):::Code:::t->asm->add->switch->type->getElementType->getTypeCode->asm->add->break->asm->add->break->asm->add->break->asm->add->break->asm->add->break->asm->add->break->asm->add->break->asm->add->break->asm->type->getElementType->add->break->asm->env->type->getElementType->getClassDeclaration->add->break->throw->new->CompilerError->for->i
 AssignAddExpression#costInline(int, Environment, Context):::The cost of inlining this statement:::return->type->isType->super->costInline
 AssignAddExpression#code(Environment, Context, Assembler, boolean):::Code:::if->itype->isType->try->argTypes->c->env->getClassDeclaration->if->asm->add->asm->add->depth->left->codeLValue->codeDup->left->codeLoad->left->ensureString->sourceClass->getClassDefinition->f->c->getClassDefinition->matchMethod->asm->add->right->codeAppend->c->getClassDefinition->matchMethod->asm->add->if->stackSize->codeDup->left->codeStore->else->updater->startUpdate->left->ensureString->asm->add->asm->add->asm->add->sourceClass->getClassDefinition->f->c->getClassDefinition->matchMethod->asm->add->right->codeAppend->c->getClassDefinition->matchMethod->asm->add->updater->finishUpdate->catch->throw->new->CompilerError->throw->new->CompilerError->finally->else->super->code
@@ -33,6 +51,7 @@ AssignExpression#inlineValue(Environment, Context):::Inline:::if->return->implem
 AssignExpression#copyInline(Context):::Create a copy of the expression for method inlining:::if->return->implementation->copyInline->e->clone->left->copyInline->right->copyInline->if->updater->copyInline->return
 AssignExpression#costInline(int, Environment, Context):::The cost of inlining this expression:::return->right->costInline->updater->costInline->right->costInline->left->costInline
 AssignExpression#codeValue(Environment, Context, Assembler):::Code:::if->depth->left->codeLValue->right->codeValue->stackSize->codeDup->left->codeStore->else->updater->startAssign->right->codeValue->updater->finishAssign
+AssignExpression#code(Environment, Context, Assembler)::: assign expression code:::if->left->codeLValue->right->codeValue->left->codeStore->else->updater->startAssign->right->codeValue->updater->finishAssign
 AssignMultiplyExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->itype->getTypeCodeOffset->add
 AssignOpExpression#selectType(Environment, Context, int):::Select the type:::rtype->switch->if->if->env->error->else->return->if->else->if->else->if->else->break->if->else->if->else->break->if->inMask->new->ConvertExpression->if->else->break->throw->new->CompilerError->if->convert
 AssignOpExpression#getIncrement():::Get the increment, return NOINC if an increment is not possible:::if->type->isType->if->if->isLocal->val->if->if->return->return
@@ -41,6 +60,8 @@ AssignOpExpression#inlineValue(Environment, Context):::Inline:::left->inlineValu
 AssignOpExpression#copyInline(Context):::Create a copy of the expression for method inlining:::e->clone->left->copyInline->right->copyInline->if->updater->copyInline->return
 AssignOpExpression#costInline(int, Environment, Context):::The cost of inlining this statement:::if->return->getIncrement->right->costInline->left->costInline->else->return->right->costInline->updater->costInline
 AssignOpExpression#code(Environment, Context, Assembler, boolean):::Code:::val->getIncrement->if->v->operands->asm->add->if->left->codeValue->return->if->depth->left->codeLValue->codeDup->left->codeLoad->codeConversion->right->codeValue->codeOperation->codeConversion->if->type->stackSize->codeDup->left->codeStore->else->updater->startUpdate->codeConversion->right->codeValue->codeOperation->codeConversion->updater->finishUpdate
+AssignOpExpression#codeValue(Environment, Context, Assembler)::: assign op expression code value:::code
+AssignOpExpression#code(Environment, Context, Assembler)::: assign op expression code:::code
 AssignOpExpression#print(PrintStream):::Print:::out->print->left->print->out->print->right->print->out->print
 AssignRemainderExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->itype->getTypeCodeOffset->add
 AssignShiftLeftExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->itype->getTypeCodeOffset->add
@@ -48,9 +69,13 @@ AssignShiftRightExpression#codeOperation(Environment, Context, Assembler):::Code
 AssignSubtractExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->itype->getTypeCodeOffset->add
 AssignUnsignedShiftRightExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->itype->getTypeCodeOffset->add
 BinaryArithmeticExpression#selectType(Environment, Context, int):::Select the type:::if->else->if->else->if->else->convert->convert
+BinaryAssignExpression#getImplementation()::: binary assign expression get implementation:::if->return->return
 BinaryAssignExpression#order():::Order the expression based on precedence:::if->precedence->left->precedence->e->order->return->return
 BinaryAssignExpression#check(Environment, Context, Vset, Hashtable):::Check void expression:::return->checkValue
 BinaryAssignExpression#inline(Environment, Context):::Inline:::if->return->implementation->inline->return->inlineValue
+BinaryAssignExpression#inlineValue(Environment, Context)::: binary assign expression inline value:::if->return->implementation->inlineValue->left->inlineLHS->right->inlineValue->return
+BinaryAssignExpression#copyInline(Context)::: binary assign expression copy inline:::if->return->implementation->copyInline->return->super->copyInline
+BinaryAssignExpression#costInline(int, Environment, Context)::: binary assign expression cost inline:::if->return->implementation->costInline->return->super->costInline
 BinaryBitExpression#selectType(Environment, Context, int):::Select the type:::if->else->if->else->convert->convert
 BinaryBitExpression#codeValue(Environment, Context, Assembler):::Code:::left->codeValue->right->codeValue->codeOperation
 BinaryCompareExpression#selectType(Environment, Context, int):::Select the type:::t->if->else->if->else->if->convert->convert
@@ -59,32 +84,50 @@ BinaryExpression#order():::Order the expression based on precedence:::if->preced
 BinaryExpression#checkValue(Environment, Context, Vset, Hashtable):::Check a binary expression:::left->checkValue->right->checkValue->tm->getTypeMask->getTypeMask->if->return->selectType->if->type->isType->env->error->return
 BinaryExpression#isConstant():::Check if constant:::switch->return->left->isConstant->right->isConstant->return
 BinaryExpression#eval(int, int):::Evaluate:::return
+BinaryExpression#eval(long, long)::: binary expression eval:::return
+BinaryExpression#eval(float, float)::: binary expression eval:::return
+BinaryExpression#eval(double, double)::: binary expression eval:::return
+BinaryExpression#eval(boolean, boolean)::: binary expression eval:::return
+BinaryExpression#eval(String, String)::: binary expression eval:::return
+BinaryExpression#eval()::: binary expression eval:::if->switch->return->eval->return->eval->return->eval->return->eval->return->eval->return->eval->return
 BinaryExpression#inline(Environment, Context):::Inline:::left->inline->right->inline->return->new->CommaExpression
+BinaryExpression#inlineValue(Environment, Context)::: binary expression inline value:::left->inlineValue->right->inlineValue->try->return->eval->simplify->catch->return->finally
 BinaryExpression#copyInline(Context):::Create a copy of the expression for method inlining:::e->clone->if->left->copyInline->if->right->copyInline->return
 BinaryExpression#costInline(int, Environment, Context):::The cost of inlining this expression:::return->left->costInline->right->costInline
 BinaryExpression#codeOperation(Environment, Context, Assembler):::Code:::throw->new->CompilerError
+BinaryExpression#codeValue(Environment, Context, Assembler)::: binary expression code value:::if->type->isType->l1->new->Label->l2->new->Label->codeBranch->asm->add->asm->add->asm->add->asm->add->asm->add->else->left->codeValue->right->codeValue->codeOperation
 BinaryExpression#print(PrintStream):::Print:::out->print->if->left->print->else->out->print->out->print->if->right->print->else->out->print->out->print
 BinaryLogicalExpression#checkValue(Environment, Context, Vset, Hashtable):::Check a binary expression:::cvars->new->ConditionVars->checkCondition->return->join
+BinaryLogicalExpression#checkCondition(Environment, Context, Vset, Hashtable, ConditionVars)::: binary logical expression check condition:::
 BinaryLogicalExpression#inline(Environment, Context):::Inline:::left->inlineValue->right->inlineValue->return
 BinaryShiftExpression#eval():::Evaluate the expression:::if->return->eval->return->super->eval
 BinaryShiftExpression#selectType(Environment, Context, int):::Select the type:::if->else->if->inMask->convert->else->if->inMask->new->ConvertExpression->else->convert
 BitAndExpression#eval(boolean, boolean):::Evaluate:::return->new->BooleanExpression
+BitAndExpression#eval(int, int)::: bit and expression eval:::return->new->IntExpression
+BitAndExpression#eval(long, long)::: bit and expression eval:::return->new->LongExpression
 BitAndExpression#simplify():::Simplify:::if->left->equals->return->if->right->equals->return->if->left->equals->left->equals->return->new->CommaExpression->simplify->if->right->equals->right->equals->return->new->CommaExpression->simplify->return
 BitAndExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->type->getTypeCodeOffset->add
 BitNotExpression#selectType(Environment, Context, int):::Select the type of the expression:::if->else->convert
 BitNotExpression#eval(int):::Evaluate:::return->new->IntExpression
+BitNotExpression#eval(long)::: bit not expression eval:::return->new->LongExpression
 BitNotExpression#simplify():::Simplify:::if->return->return
 BitNotExpression#codeValue(Environment, Context, Assembler):::Code:::right->codeValue->if->type->isType->asm->add->asm->add->else->asm->add->asm->add
 BitOrExpression#eval(boolean, boolean):::Evaluate:::return->new->BooleanExpression
+BitOrExpression#eval(int, int)::: bit or expression eval:::return->new->IntExpression
+BitOrExpression#eval(long, long)::: bit or expression eval:::return->new->LongExpression
 BitOrExpression#simplify():::Simplify:::if->left->equals->left->equals->return->if->right->equals->right->equals->return->if->left->equals->return->new->CommaExpression->simplify->if->right->equals->return->new->CommaExpression->simplify->return
 BitOrExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->type->getTypeCodeOffset->add
 BitXorExpression#eval(boolean, boolean):::Evaluate:::return->new->BooleanExpression
+BitXorExpression#eval(int, int)::: bit xor expression eval:::return->new->IntExpression
+BitXorExpression#eval(long, long)::: bit xor expression eval:::return->new->LongExpression
 BitXorExpression#simplify():::Simplify:::if->left->equals->return->new->NotExpression->if->right->equals->return->new->NotExpression->if->left->equals->left->equals->return->if->right->equals->right->equals->return->return
 BitXorExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->type->getTypeCodeOffset->add
 BooleanExpression#getValue():::Get the value:::return
 BooleanExpression#equals(boolean):::Check if the expression is equal to a value:::return
 BooleanExpression#equalsDefault():::Check if the expression is equal to its default static value:::return
+BooleanExpression#checkCondition(Environment, Context, Vset, Hashtable, ConditionVars)::: boolean expression check condition:::if->else
 BooleanExpression#codeBranch(Environment, Context, Assembler, Label, boolean):::Code:::if->asm->add
+BooleanExpression#codeValue(Environment, Context, Assembler)::: boolean expression code value:::asm->add
 BooleanExpression#print(PrintStream):::Print:::out->print
 BreakStatement#check(Environment, Context, Vset, Hashtable):::Check statement:::reach->checkLabel->destctx->new->CheckContext->getBreakContext->if->if->env->error->join->else->if->env->error->else->env->error->exitctx->ctx->getTryExitContext->if->join->return
 BreakStatement#costInline(int, Environment, Context):::The cost of inlining this statement:::return
@@ -97,6 +140,8 @@ CaseStatement#print(PrintStream, int):::Print:::super->print->if->out->print->el
 CastExpression#checkValue(Environment, Context, Vset, Hashtable):::Check the expression:::left->toType->right->checkValue->if->type->isType->isType->return->if->type->equals->return->try->if->env->explicitCast->new->ConvertExpression->return->catch->env->error->finally->env->error->return
 CastExpression#isConstant():::Check if constant:::if->type->inMask->type->equals->return->return->right->isConstant
 CastExpression#inline(Environment, Context):::Inline:::return->right->inline
+CastExpression#inlineValue(Environment, Context)::: cast expression inline value:::return->right->inlineValue
+CastExpression#costInline(int, Environment, Context)::: cast expression cost inline:::if->return->right->costInline->sourceClass->getClassDefinition->try->if->isType->sourceClass->env->getClassDeclaration->permitInlinedAccess->return->right->costInline->catch->finally->return
 CastExpression#print(PrintStream):::Print:::out->print->if->type->isType->left->print->else->out->print->out->print->right->print->out->print
 CatchStatement#check(Environment, Context, Vset, Hashtable):::Check statement:::reach->new->Context->type->texpr->toType->try->if->ctx->getLocalField->env->error->if->type->isType->else->if->type->isType->env->error->else->def->env->getClassDefinition->if->def->env->getClassDeclaration->subClassOf->env->error->getClassDefinition->new->LocalMember->ctx->declare->vset->addVar->return->body->check->catch->env->error->return->finally
 CatchStatement#inline(Environment, Context):::Inline:::new->Context->if->field->isUsed->ctx->declare->if->body->inline->return
@@ -109,7 +154,12 @@ CommaExpression#check(Environment, Context, Vset, Hashtable):::Check void expres
 CommaExpression#selectType(Environment, Context, int):::Select the type:::
 CommaExpression#simplify():::Simplify:::if->return->if->return->return
 CommaExpression#inline(Environment, Context):::Inline:::if->left->inline->if->right->inline->return->simplify
+CommaExpression#inlineValue(Environment, Context)::: comma expression inline value:::if->left->inline->if->right->inlineValue->return->simplify
 CommaExpression#codeLValue(Environment, Context, Assembler):::Code:::if->return->super->codeLValue->else->if->left->code->return->right->codeLValue
+CommaExpression#codeLoad(Environment, Context, Assembler)::: comma expression code load:::if->super->codeLoad->else->right->codeLoad
+CommaExpression#codeStore(Environment, Context, Assembler)::: comma expression code store:::if->super->codeStore->else->right->codeStore
+CommaExpression#codeValue(Environment, Context, Assembler)::: comma expression code value:::if->left->code->right->codeValue
+CommaExpression#code(Environment, Context, Assembler)::: comma expression code:::if->left->code->if->right->code
 CompoundStatement#insertStatement(Statement):::Insert a new statement at the front:::newargs->new->StatementArr->for->i
 CompoundStatement#check(Environment, Context, Vset, Hashtable):::Check statement:::checkLabel->if->reach->newctx->new->CheckContext->newenv->Context->newEnvironment->for->i->vset->join->return->ctx->removeAdditionalVars
 CompoundStatement#inline(Environment, Context):::Inline:::new->Context->expand->count->for->i->switch->return->for->i->break->if->newArgs->new->StatementArr->for->i->return
@@ -120,27 +170,34 @@ CompoundStatement#firstConstructor():::Check if the first thing is a constructor
 CompoundStatement#print(PrintStream, int):::Print:::super->print->out->print->for->i->printIndent->out->print
 ConditionalExpression#order():::Order the expression based on precedence:::if->precedence->cond->precedence->e->order->return->return
 ConditionalExpression#checkValue(Environment, Context, Vset, Hashtable):::Check the expression:::cvars->cond->checkCondition->left->checkValue->right->checkValue->join->convert->tm->getTypeMask->getTypeMask->if->return->if->equals->else->if->else->if->else->if->else->if->try->env->implicitCast->catch->finally->else->if->left->fitsType->right->fitsType->else->if->left->fitsType->right->fitsType->else->if->left->fitsType->right->fitsType->else->convert->convert->return
+ConditionalExpression#check(Environment, Context, Vset, Hashtable)::: conditional expression check:::cond->checkValue->convert->return->left->vset->copy->check->right->check->join
 ConditionalExpression#isConstant():::Check if constant:::return->cond->isConstant->left->isConstant->right->isConstant
 ConditionalExpression#simplify():::Simplify:::if->cond->equals->return->if->cond->equals->return->return
 ConditionalExpression#inline(Environment, Context):::Inline:::left->inline->right->inline->if->return->cond->inline->if->new->NotExpression->cond->inlineValue->return->simplify
+ConditionalExpression#inlineValue(Environment, Context)::: conditional expression inline value:::cond->inlineValue->left->inlineValue->right->inlineValue->return->simplify
 ConditionalExpression#costInline(int, Environment, Context):::The cost of inlining this expression:::return->cond->costInline->left->costInline->right->costInline
 ConditionalExpression#copyInline(Context):::Create a copy of the expression for method inlining:::e->clone->cond->copyInline->left->copyInline->right->copyInline->return
 ConditionalExpression#codeValue(Environment, Context, Assembler):::Code:::l1->new->Label->l2->new->Label->cond->codeBranch->left->codeValue->asm->add->asm->add->right->codeValue->asm->add
+ConditionalExpression#code(Environment, Context, Assembler)::: conditional expression code:::l1->new->Label->cond->codeBranch->left->code->if->l2->new->Label->asm->add->asm->add->right->code->asm->add->else->asm->add
 ConditionalExpression#print(PrintStream):::Print:::out->print->cond->print->out->print->left->print->out->print->if->right->print->else->out->print->out->print
 ConstantExpression#isConstant():::Return true if constant:::return
 Context#declare(Environment, LocalMember):::Declare local:::if->idThis->local->getName->equals->if->local->isInnerClass->return->local->getType->stackSize->return
 Context#getLocalField(Identifier):::Get a local variable by name:::for->f->return
 Context#getScopeNumber(ClassDefinition):::Get the scope number for a reference to a member of this class (Larger scope numbers are more deeply nested.):::for->ctx->return
+Context#getFieldCommon(Environment, Identifier, boolean)::: context get field common:::lf->getLocalField->ls->thisClass->field->getClassDefinition->for->c->c->getOuterClass->return
 Context#declareFieldNumber(MemberDefinition):::Assign a number to a class field:::return->new->LocalMember->declare
 Context#getFieldNumber(MemberDefinition):::Retrieve a number previously assigned by declareMember():::for->f->return
 Context#getElement(int):::Return the local field or member field corresponding to a number:::for->f->return
 Context#getLocalClass(Identifier):::Get a local class by name:::for->f->return
+Context#getClassCommon(Environment, Identifier, boolean)::: context get class common:::lf->getLocalClass->ls->for->c->field->getClassDefinition->c->getOuterClass->return
 Context#getField(Environment, Identifier):::Get either a local variable, or a field in a current class:::return->getFieldCommon
 Context#getApparentField(Environment, Identifier):::Like getField, except that it skips over inherited fields:::return->getFieldCommon
 Context#isInScope(LocalMember):::Check if the given field is active in this context.:::for->f->return
 Context#noteReference(Environment, LocalMember):::Notice a reference (usually an uplevel one):::targetScopeNumber->isInScope->res->currentFrameNumber->for->refctx->return
 Context#makeReference(Environment, LocalMember):::Implement a reference (usually an uplevel one):::r->noteReference->if->return->r->makeLocalReference->else->if->idThis->target->getName->equals->return->new->ThisExpression->else->return->new->IdentifierExpression
 Context#findOuterLink(Environment, long, MemberDefinition):::Return a local expression which can serve as the base reference for the given field:::fc->f->getClassDefinition->reqc->f->isStatic->f->isConstructor->fc->isTopLevel->fc->getOuterClass->if->return->return->findOuterLink
+Context#match(Environment, ClassDefinition, ClassDefinition)::: context match:::try->return->reqc->thisc->getClassDeclaration->implementedBy->catch->return->finally
+Context#findOuterLink(Environment, long, ClassDefinition, MemberDefinition, boolean)::: context find outer link:::if->field->isStatic->if->nm->reqc->getName->getFlatName->getName->env->Identifier->lookup->error->else->if->f->isConstructor->env->f->getClassDeclaration->error->else->if->f->isMethod->env->f->getClassDeclaration->error->else->env->f->getName->f->getClassDeclaration->error->e->new->ThisExpression->reqc->getType->return->lp->thise->root->thisc->conCls->if->field->isConstructor->field->getClassDefinition->if->field->isMethod->field->getClassDefinition->new->ThisExpression->while->if->while->idThis->lp->getName->equals->if->break->new->ThisExpression->lp->getClassDefinition->if->match->break->outerMember->thisc->findOuterMember->if->continue->prevc->prevc->getOuterClass->if->nm->outerMember->getName->arg->new->IdentifierExpression->arg->bind->else->new->FieldExpression->if->return->if->nm->reqc->getName->getFlatName->getName->env->Identifier->lookup->error->else->if->f->isConstructor->env->f->getClassDefinition->error->else->env->error->e->new->ThisExpression->reqc->getType->return
 Context#outerLinkExists(Environment, ClassDefinition, ClassDefinition):::Is there a "this" of type reqc in scope?:::while->match->if->thisc->isTopLevel->return->thisc->getOuterClass->return
 Context#findScope(Environment, ClassDefinition):::From which enclosing class do members of this type come?:::thisc->field->getClassDefinition->while->match->thisc->getOuterClass->return
 Context#resolveName(Environment, Identifier):::Resolve a type name from within a local scope.:::if->name->isQualified->rhead->name->getHead->resolveName->if->rhead->hasAmbigPrefix->return->if->env->classExists->return->env->resolvePackageQualifiedName->try->return->env->getClassDefinition->name->getTail->resolveInnerClass->catch->return->Identifier->name->getTail->lookupInner->finally->try->f->getClassCommon->if->return->f->getInnerClass->getName->catch->finally->return->env->resolveName
@@ -155,25 +212,33 @@ Context#getTryExitContext():::Get the context of the innermost surrounding try-b
 Context#getInlineContext():::Get the nearest inlined context:::for->ctx->return
 Context#getInlineMemberContext(MemberDefinition):::Get the context of a field that is being inlined:::for->ctx->return
 Context#removeAdditionalVars(Vset):::Remove variables from the vset set  that are no longer part of this context.:::return->vset->removeAdditionalVars
+Context#getVarNumber()::: context get var number:::return
 Context#getThisNumber():::Return the number of the innermost current instance reference.:::thisf->getLocalField->if->thisf->getClassDefinition->field->getClassDefinition->return->return
 Context#getField():::Return the field containing the present context.:::return
 Context#newEnvironment(Environment, Context):::Extend an environment with the given context:::return->new->ContextEnvironment
+ContextEnvironment#resolveName(Identifier)::: context environment resolve name:::return->ctx->resolveName
+ContinueStatement#check(Environment, Context, Vset, Hashtable)::: continue statement check:::checkLabel->reach->destctx->new->CheckContext->getContinueContext->if->switch->if->env->error->join->break->env->error->else->if->env->error->else->env->error->exitctx->ctx->getTryExitContext->if->join->return
 ContinueStatement#costInline(int, Environment, Context):::The cost of inlining this statement:::return
 ContinueStatement#code(Environment, Context, Assembler):::Code:::destctx->ctx->getContinueContext->codeFinally->asm->add
 ContinueStatement#print(PrintStream, int):::Print:::super->print->out->print->if->out->print->out->print
 ConvertExpression#checkValue(Environment, Context, Vset, Hashtable):::Check the value:::return->right->checkValue
 ConvertExpression#simplify():::Simplify:::switch->value->switch->type->getTypeCode->return->new->ByteExpression->return->new->CharExpression->return->new->ShortExpression->return->new->IntExpression->return->new->LongExpression->return->new->FloatExpression->return->new->DoubleExpression->break->value->switch->type->getTypeCode->return->new->ByteExpression->return->new->CharExpression->return->new->ShortExpression->return->new->IntExpression->return->new->FloatExpression->return->new->DoubleExpression->break->value->switch->type->getTypeCode->return->new->ByteExpression->return->new->CharExpression->return->new->ShortExpression->return->new->IntExpression->return->new->LongExpression->return->new->DoubleExpression->break->value->switch->type->getTypeCode->return->new->ByteExpression->return->new->CharExpression->return->new->ShortExpression->return->new->IntExpression->return->new->LongExpression->return->new->FloatExpression->break->return
 ConvertExpression#equals(int):::Check if the expression is equal to a value:::return->right->equals
+ConvertExpression#equals(boolean)::: convert expression equals:::return->right->equals
 ConvertExpression#inline(Environment, Context):::Inline:::if->inMask->type->inMask->try->if->env->implicitCast->return->inlineValue->catch->throw->new->CompilerError->finally->return->super->inline
 ConvertExpression#codeValue(Environment, Context, Assembler):::Code:::right->codeValue->codeConversion
 ConvertExpression#print(PrintStream):::Print:::out->type->toString->print->right->print->out->print
 DeclarationStatement#check(Environment, Context, Vset, Hashtable):::Check statement Report an error unless the call is checkBlockStatement.:::env->error->return->checkBlockStatement
+DeclarationStatement#checkBlockStatement(Environment, Context, Vset, Hashtable)::: declaration statement check block statement:::if->env->error->reach->t->type->toType->for->i->return
 DeclarationStatement#inline(Environment, Context):::Inline:::n->for->i->return
 DeclarationStatement#copyInline(Context, boolean):::Create a copy of the statement for method inlining:::s->clone->if->type->copyInline->new->StatementArr->for->i->return
 DeclarationStatement#costInline(int, Environment, Context):::The cost of inlining this statement:::cost->for->i->return
 DeclarationStatement#code(Environment, Context, Assembler):::Code:::for->i
 DeclarationStatement#print(PrintStream, int):::Print:::out->print->super->print->type->print->out->print->for->i->out->print
 DivideExpression#eval(int, int):::Evaluate:::return->new->IntExpression
+DivideExpression#eval(long, long)::: divide expression eval:::return->new->LongExpression
+DivideExpression#eval(float, float)::: divide expression eval:::return->new->FloatExpression
+DivideExpression#eval(double, double)::: divide expression eval:::return->new->DoubleExpression
 DivideExpression#simplify():::Simplify:::if->right->equals->return->return
 DivideExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->type->getTypeCodeOffset->add
 DivRemExpression#inline(Environment, Context):::Inline:::if->type->inMask->right->inlineValue->if->right->isConstant->right->equals->left->inline->return->else->left->inlineValue->try->return->eval->simplify->catch->env->error->return->finally->else->return->super->inline
@@ -189,31 +254,55 @@ DoubleExpression#equalsDefault():::Check if the expression is equal to its defau
 DoubleExpression#codeValue(Environment, Context, Assembler):::Code:::asm->new->Double->add
 DoubleExpression#print(PrintStream):::Print:::out->print
 EqualExpression#eval(int, int):::Evaluate:::return->new->BooleanExpression
+EqualExpression#eval(long, long)::: equal expression eval:::return->new->BooleanExpression
+EqualExpression#eval(float, float)::: equal expression eval:::return->new->BooleanExpression
+EqualExpression#eval(double, double)::: equal expression eval:::return->new->BooleanExpression
+EqualExpression#eval(boolean, boolean)::: equal expression eval:::return->new->BooleanExpression
 EqualExpression#simplify():::Simplify:::if->left->isConstant->right->isConstant->return->new->EqualExpression->return
 EqualExpression#codeBranch(Environment, Context, Assembler, Label, boolean):::Code:::left->codeValue->switch->getTypeCode->if->right->equals->right->codeValue->asm->add->return->break->right->codeValue->asm->add->break->right->codeValue->asm->add->break->right->codeValue->asm->add->break->if->right->equals->asm->add->else->right->codeValue->asm->add->return->throw->new->CompilerError->asm->add
 Expression#getImplementation():::Type checking may assign a more complex implementation to an innocuous-looking expression (like an identifier):::return
+Expression#getType()::: expression get type:::return
 Expression#precedence():::Return the precedence of the operator:::return
 Expression#order():::Order the expression based on precedence:::return
 Expression#isConstant():::Return true if constant, according to JLS 15.27:::return
 Expression#getValue():::Return the constant value.:::return
 Expression#equals(int):::Check if the expression is known to be equal to a given value:::return
+Expression#equals(boolean)::: expression equals:::return
+Expression#equals(Identifier)::: expression equals:::return
+Expression#equals(String)::: expression equals:::return
 Expression#isNull():::Check if the expression must be a null reference.:::return
 Expression#isNonNull():::Check if the expression cannot be a null reference.:::return
 Expression#equalsDefault():::Check if the expression is equal to its default static value:::return
 Expression#toType(Environment, Context):::Convert an expresion to a type:::env->error->return
 Expression#fitsType(Environment, Context, Type):::See if this expression fits in the given type:::try->if->env->isMoreSpecific->return->if->isType->this->isConstant->n->this->inlineValue->if->return->n->fitsType->return->catch->return->finally
+Expression#fitsType(Environment, Type)::: expression fits type:::return->fitsType
 Expression#checkValue(Environment, Context, Vset, Hashtable):::Check an expression:::return
+Expression#checkInitializer(Environment, Context, Vset, Type, Hashtable)::: expression check initializer:::return->checkValue
+Expression#check(Environment, Context, Vset, Hashtable)::: expression check:::throw->new->CompilerError
+Expression#checkLHS(Environment, Context, Vset, Hashtable)::: expression check s:::env->error->return
+Expression#getAssigner(Environment, Context)::: expression get assigner:::throw->new->CompilerError
+Expression#getUpdater(Environment, Context)::: expression get updater:::throw->new->CompilerError
+Expression#checkAssignOp(Environment, Context, Vset, Hashtable, Expression)::: expression check assign op:::if->env->error->else->env->error->return
 Expression#checkAmbigName(Environment, Context, Vset, Hashtable, UnaryExpression):::Check something that might be an AmbiguousName (refman 6.5.2):::return->checkValue
 Expression#checkCondition(Environment, Context, Vset, Hashtable):::Check a condition:::cvars->new->ConditionVars->checkCondition->return
+Expression#checkCondition(Environment, Context, Vset, Hashtable, ConditionVars)::: expression check condition:::checkValue->copy
 Expression#eval():::Evaluate:::return
 Expression#simplify():::Simplify:::return
 Expression#inline(Environment, Context):::Inline:::return
+Expression#inlineValue(Environment, Context)::: expression inline value:::return
 Expression#inlineValueSB(Environment, Context, StringBuffer):::Attempt to evaluate this expression:::inlined->inlineValue->val->inlined->getValue->if->inlined->isNull->return->if->buffer->intValue->append->else->if->buffer->intValue->append->else->buffer->append->return
+Expression#inlineLHS(Environment, Context)::: expression inline s:::return
 Expression#costInline(int, Environment, Context):::The cost of inlining this expression:::return
 Expression#codeBranch(Environment, Context, Assembler, Label, boolean):::Code:::if->type->isType->codeValue->asm->add->else->throw->new->CompilerError
+Expression#codeValue(Environment, Context, Assembler)::: expression code value:::if->type->isType->l1->new->Label->l2->new->Label->codeBranch->asm->add->asm->add->asm->add->asm->add->asm->add->else->throw->new->CompilerError
+Expression#code(Environment, Context, Assembler)::: expression code:::codeValue->switch->type->getTypeCode->break->asm->add->break->asm->add->break
+Expression#codeLValue(Environment, Context, Assembler)::: expression code value:::print->throw->new->CompilerError
+Expression#codeLoad(Environment, Context, Assembler)::: expression code load:::print->throw->new->CompilerError
+Expression#codeStore(Environment, Context, Assembler)::: expression code store:::print->throw->new->CompilerError
 Expression#ensureString(Environment, Context, Assembler):::Convert this expression to a string.:::if->isNonNull->return->sourceClass->getClassDefinition->stClass->env->getClassDeclaration->stClsDef->stClass->getClassDefinition->if->type->inMask->if->argType1->f1->stClsDef->matchMethod->asm->add->if->type->inMask->argType2->f2->stClsDef->matchMethod->asm->add->else->argType->f->stClsDef->matchMethod->asm->add
 Expression#codeAppend(Environment, Context, Assembler, ClassDeclaration, boolean):::Convert this expression to a string and append it to the string buffer on the top of the stack:::sourceClass->getClassDefinition->sbClsDef->sbClass->getClassDefinition->f->if->asm->add->asm->add->if->equals->sbClsDef->matchMethod->else->codeValue->ensureString->argType->sbClsDef->matchMethod->asm->add->else->codeValue->argType->type->inMask->sbClsDef->matchMethod->asm->add
 Expression#codeDup(Environment, Context, Assembler, int, int):::Code:::switch->return->switch->asm->add->return->asm->add->return->asm->add->return->break->switch->asm->add->return->asm->add->return->asm->add->return->break->throw->new->CompilerError
+Expression#codeConversion(Environment, Context, Assembler, Type, Type)::: expression code conversion:::from->f->getTypeCode->to->t->getTypeCode->switch->if->break->return->if->codeConversion->asm->add->return->if->codeConversion->asm->add->return->if->codeConversion->asm->add->return->switch->return->asm->add->return->asm->add->return->asm->add->return->break->switch->asm->add->return->return->asm->add->return->asm->add->return->break->switch->asm->add->return->asm->add->return->return->asm->add->return->break->switch->asm->add->return->asm->add->return->asm->add->return->return->break->switch->return->try->if->env->implicitCast->asm->env->getClassDeclaration->add->catch->throw->new->CompilerError->finally->return->break->switch->return->try->if->env->implicitCast->asm->add->return->catch->throw->new->CompilerError->finally->break->throw->new->CompilerError
 Expression#firstConstructor():::Check if the first thing is a constructor invocation:::return
 Expression#copyInline(Context):::Create a copy of the expression for method inlining:::return->clone
 Expression#print(PrintStream):::Print:::out->print
@@ -227,18 +316,52 @@ ExpressionStatement#print(PrintStream, int):::Print:::super->print->if->expr->pr
 ExprExpression#checkCondition(Environment, Context, Vset, Hashtable, ConditionVars):::Check a condition:::right->checkCondition
 ExprExpression#checkAssignOp(Environment, Context, Vset, Hashtable, Expression):::Check the expression if it appears as an lvalue:::right->checkAssignOp->return
 ExprExpression#getUpdater(Environment, Context):::Delegate to our subexpression:::return->right->getUpdater
+ExprExpression#isNull()::: expr expression is null:::return->right->isNull
+ExprExpression#isNonNull()::: expr expression is non null:::return->right->isNonNull
+ExprExpression#getValue()::: expr expression get value:::return->right->getValue
 ExprExpression#inlineValueSB(Environment, Context, StringBuffer):::Delegate to our subexpression:::return->right->inlineValueSB
 ExprExpression#selectType(Environment, Context, int):::Select the type of the expression:::
 ExprExpression#simplify():::Simplify:::return
+FieldExpression#getImplementation()::: field expression get implementation:::if->return->return
+FieldExpression#isQualSuper():::Return true if the field is being selected from a qualified 'super'.:::return
 FieldExpression#toIdentifier(Expression):::Convert an '.' expression to a qualified identifier:::sb->new->StringBuilder->while->fe->if->return->sb->insert->sb->insert->if->return->sb->insert->return->Identifier->sb->toString->lookup
+FieldExpression#toType(Environment, Context)::: field expression to type:::id->toIdentifier->if->env->error->return->t->Type->ctx->resolveName->tClass->if->env->getClassDefinition->resolve->return->return
+FieldExpression#checkAmbigName(Environment, Context, Vset, Hashtable, UnaryExpression)::: field expression check ambig name:::if->return->checkCommon
+FieldExpression#checkValue(Environment, Context, Vset, Hashtable)::: field expression check value:::checkCommon->if->env->error->return
+FieldExpression#reportFailedPackagePrefix(Environment, Expression)::: field expression report failed package prefix:::reportFailedPackagePrefix
+FieldExpression#reportFailedPackagePrefix(Environment, Expression, boolean)::: field expression report failed package prefix:::idp->while->ie->try->env->resolve->catch->env->error->return->finally->if->if->env->error->else->env->error->else->if->env->error->else->env->error
+FieldExpression#implementFieldAccess(Environment, Context, Expression, boolean)::: field expression implement field access:::abase->accessBase->if->if->field->isFinal->e->field->getValue->if->e->isConstant->return->e->copyInline->af->abase->isQualSuper->getAccessMember->if->if->field->isStatic->args->call->new->MethodExpression->return->new->CommaExpression->else->args->return->new->MethodExpression->return
+FieldExpression#accessBase(Environment, Context):::Determine if an access method is required, and, if so, return the class in which it should appear, else return null.:::if->field->isPrivate->cdef->field->getClassDefinition->ctxClass->getClassDefinition->if->return->return->else->if->field->isProtected->if->return->cdef->field->getClassDefinition->ctxClass->getClassDefinition->if->cdef->inSamePackage->return->return->else->return
 FieldExpression#isTypeAccessible(long, Environment, Type, ClassDefinition):::Determine if a type is accessible from a given class.:::switch->t->getTypeCode->try->nm->t->getClassName->def->env->getClassDefinition->return->c->def->getClassDeclaration->canAccess->catch->finally->return->return->t->getElementType->isTypeAccessible->return
+FieldExpression#checkCommon(Environment, Context, Vset, Hashtable, UnaryExpression, boolean)::: field expression check common:::if->t->right->toType->if->t->isType->t->isType->if->t->isType->return->wrc->switch->t->getTypeCode->break->break->break->break->break->break->break->break->break->env->error->return->wid->Identifier->lookup->wcls->Type->tClass->new->TypeExpression->new->FieldExpression->implementation->checkValue->return->if->t->isVoidArray->env->error->return->fwhere->getWhere->fcls->getClassDefinition->lookup->fcls->getClassLiteralLookup->sig->t->getTypeSignature->className->if->t->isType->sig->sig->length->substring->replace->else->sig->replace->if->fcls->isInterface->makeClassLiteralInlineRef->else->inClass->lookup->getClassDefinition->cfld->getClassLiteralCache->makeClassLiteralCacheRef->implementation->checkValue->return->if->implementFieldAccess->return->right->checkAmbigName->right->checkAmbigName->if->if->FieldExpression->reportFailedPackagePrefix->return->nm->toIdentifier->if->env->classExists->Type->tClass->new->TypeExpression->ctxClass->getClassDefinition->env->resolve->return->return->ctxClass->getClassDefinition->staticRef->try->if->isType->if->isType->id->equals->if->FieldExpression->isTypeAccessible->cdecl->ctxClass->getClassDeclaration->if->env->toString->error->else->env->toString->error->new->LengthExpression->return->if->isType->env->error->return->sourceClass->if->id->if->else->if->env->getClassDefinition->if->if->env->error->if->isSynthetic->throw->new->CompilerError->ctx->findOuterLink->implementation->checkValue->if->clazz->getSuperClass->getType->else->clazz->getType->return->clazz->getVariable->if->clazz->getInnerClass->if->return->checkInnerClass->if->if->clazz->findAnyMethod->env->field->getClassDeclaration->error->else->env->error->return->if->FieldExpression->isTypeAccessible->cdecl->sourceClass->getClassDeclaration->if->env->toString->error->else->env->toString->error->field->getType->if->sourceClass->canAccess->env->sourceClass->getClassDeclaration->error->return->if->field->isStatic->env->error->return->else->implementFieldAccess->if->field->isProtected->sourceClass->protectedAccess->env->field->getName->field->getClassDeclaration->error->return->if->field->isStatic->vset->ctx->getThisNumber->testVar->env->error->if->field->reportDeprecated->env->field->getClassDefinition->error->if->declarer->field->getClassDefinition->if->declarer->isPackagePrivate->declarer->getName->getQualifier->sourceClass->getName->getQualifier->equals->MemberDefinition->makeProxyMember->sourceClass->field->getClassDeclaration->addDependency->catch->env->error->env->getClassDeclaration->getClassDeclaration->error->finally->return
+FieldExpression#getAssigner(Environment, Context)::: field expression get assigner:::if->return->abase->accessBase->if->setter->abase->isQualSuper->getUpdateMember->base->right->copyInline->return->new->FieldUpdater->return
+FieldExpression#getUpdater(Environment, Context)::: field expression get updater:::if->return->abase->accessBase->if->getter->abase->isQualSuper->getAccessMember->setter->abase->isQualSuper->getUpdateMember->base->right->copyInline->return->new->FieldUpdater->return
+FieldExpression#checkInnerClass(Environment, Context, Vset, Hashtable, UnaryExpression):::This field expression is an inner class reference:::inner->field->getInnerClass->inner->getType->if->inner->isTopLevel->env->inner->getName->error->te->new->TypeExpression->ctxClass->getClassDefinition->try->if->ctxClass->canAccess->clazz->env->getClassDefinition->env->ctxClass->getClassDeclaration->error->return->if->field->isProtected->ctxClass->protectedAccess->env->field->getName->field->getClassDeclaration->error->return->inner->noteUsedBy->catch->env->error->finally->ctxClass->field->getClassDeclaration->addDependency->if->return->te->checkValue->return
 FieldExpression#checkLHS(Environment, Context, Vset, Hashtable):::Check the expression if it appears on the LHS of an assignment:::hadField->checkCommon->if->return->super->checkLHS->if->field->isFinal->if->field->isBlankFinal->if->field->isStatic->if->env->error->else->if->env->field->getName->error->return->checkFinalAssign->else->env->error->return
 FieldExpression#checkAssignOp(Environment, Context, Vset, Hashtable, Expression):::Check the expression if it appears on the LHS of an op= expression:::checkCommon->if->return->super->checkLHS->if->field->isFinal->env->error->return
+FieldExpression#checkFinalAssign(Environment, Context, Vset, long, MemberDefinition)::: field expression check final assign:::if->field->isBlankFinal->field->getClassDefinition->getClassDefinition->number->ctx->getFieldNumber->if->vset->testVarUnassigned->vset->addVar->else->id->field->getName->env->error->else->id->field->getName->env->error->return
+FieldExpression#getClassLiteralCache(Environment, Context, String, ClassDefinition)::: field expression get class literal cache:::lname->if->className->startsWith->className->replace->else->className->substring->lname->replace->if->className->endsWith->lname->lname->length->substring->lname->replace->fname->Identifier->lookup->cfld->try->c->getVariable->catch->return->return->finally->if->cfld->getClassDefinition->return->return->env->c->getWhere->makeMemberDefinition
+FieldExpression#makeClassLiteralCacheRef(Environment, Context, MemberDefinition, MemberDefinition, String)::: field expression make class literal cache ref:::ccls->cfld->getClassDefinition->getType->new->TypeExpression->cache->new->FieldExpression->cacheOK->cache->copyInline->new->NullExpression->new->NotEqualExpression->lcls->lookup->getClassDefinition->getType->new->TypeExpression->name->new->StringExpression->namearg->setCache->new->MethodExpression->cache->copyInline->new->AssignExpression->return->new->ConditionalExpression
+FieldExpression#makeClassLiteralInlineRef(Environment, Context, MemberDefinition, String)::: field expression make class literal inline ref:::lcls->lookup->getClassDefinition->getType->new->TypeExpression->name->new->StringExpression->namearg->getClass->new->MethodExpression->return
 FieldExpression#isConstant():::Check if constant:  Will it inline away?:::if->return->implementation->isConstant->if->return->field->isConstant->return
 FieldExpression#inline(Environment, Context):::Inline:::if->return->implementation->inline->e->inlineValue->if->fe->if->return->return
+FieldExpression#inlineValue(Environment, Context)::: field expression inline value:::if->return->implementation->inlineValue->try->if->return->if->field->isFinal->e->field->getValue->if->e->isConstant->e->copyInline->return->new->CommaExpression->inlineValue->if->if->field->isStatic->e->right->inline->if->return->new->CommaExpression->else->right->inlineValue->return->catch->throw->new->CompilerError->finally
+FieldExpression#inlineLHS(Environment, Context)::: field expression inline s:::if->return->implementation->inlineLHS->if->if->field->isStatic->e->right->inline->if->return->new->CommaExpression->else->right->inlineValue->return
+FieldExpression#copyInline(Context)::: field expression copy inline:::if->return->implementation->copyInline->return->super->copyInline
 FieldExpression#costInline(int, Environment, Context):::The cost of inlining this expression:::if->return->implementation->costInline->if->return->right->costInline->ctxClass->getClassDefinition->try->if->ctxClass->field->getClassDeclaration->permitInlinedAccess->ctxClass->permitInlinedAccess->if->return->else->rt->env->getClassDeclaration->if->ctxClass->permitInlinedAccess->return->right->costInline->catch->finally->return
 FieldExpression#codeLValue(Environment, Context, Assembler):::Code:::if->throw->new->CompilerError->if->field->isStatic->if->right->code->return->return->right->codeValue->return
+FieldExpression#codeLoad(Environment, Context, Assembler)::: field expression code load:::if->throw->new->CompilerError->if->field->isStatic->asm->add->else->asm->add
+FieldExpression#codeStore(Environment, Context, Assembler)::: field expression code store:::if->field->isStatic->asm->add->else->asm->add
+FieldExpression#codeValue(Environment, Context, Assembler)::: field expression code value:::codeLValue->codeLoad
 FieldExpression#print(PrintStream):::Print:::out->print->if->right->print->else->out->print->out->print->if->out->print->implementation->print
+FieldUpdater#inline(Environment, Context)::: field updater inline:::if->if->field->isStatic->base->inline->else->base->inlineValue->return
+FieldUpdater#copyInline(Context)::: field updater copy inline:::return->base->copyInline->new->FieldUpdater
+FieldUpdater#costInline(int, Environment, Context, boolean)::: field updater cost inline:::cost->if->field->isStatic->base->costInline->return
+FieldUpdater#codeDup(Assembler, int, int)::: field updater code dup:::switch->return->switch->asm->add->return->asm->add->return->asm->add->return->break->switch->asm->add->return->asm->add->return->asm->add->return->break->throw->new->CompilerError
+FieldUpdater#startUpdate(Environment, Context, Assembler, boolean)::: field updater start update:::if->getter->isStatic->setter->isStatic->throw->new->CompilerError->if->field->isStatic->base->codeValue->else->if->base->code->codeDup->asm->add->if->field->getType->stackSize->codeDup
+FieldUpdater#finishUpdate(Environment, Context, Assembler, boolean)::: field updater finish update:::if->field->getType->stackSize->codeDup->asm->add
+FieldUpdater#startAssign(Environment, Context, Assembler)::: field updater start assign:::if->setter->isStatic->throw->new->CompilerError->if->field->isStatic->base->codeValue->else->if->base->code
+FieldUpdater#finishAssign(Environment, Context, Assembler, boolean)::: field updater finish assign:::if->field->getType->stackSize->codeDup->asm->add
 FinallyStatement#check(Environment, Context, Vset, Hashtable):::Check statement:::reach->newexp->new->Hashtable<>->newctx1->new->CheckContext->vset1->body->vset->copy->check->join->newctx2->new->CheckContext->vset2->finalbody->check->vset2->isDeadEnd->vset2->join->if->for->e->newexp->keys->e->hasMoreElements->return->ctx->vset1->addDAandJoinDU->removeAdditionalVars
 FinallyStatement#inline(Environment, Context):::Inline:::if->new->Context->ctx->declare->if->init->inline->if->body->inline->if->finalbody->inline->if->return->eliminate->if->return->eliminate->return
 FinallyStatement#copyInline(Context, boolean):::Create a copy of the statement for method inlining:::s->clone->if->tryTemp->copyInline->if->init->copyInline->if->body->copyInline->if->finalbody->copyInline->return
@@ -257,12 +380,21 @@ ForStatement#costInline(int, Environment, Context):::The cost of inlining this s
 ForStatement#code(Environment, Context, Assembler):::Code:::newctx->new->CodeContext->if->init->code->l1->new->Label->l2->new->Label->asm->add->asm->add->if->body->code->asm->add->if->inc->code->asm->add->if->cond->codeBranch->else->asm->add->asm->add
 ForStatement#print(PrintStream, int):::Print:::super->print->out->print->if->init->print->out->print->else->out->print->if->cond->print->out->print->out->print->if->inc->print->out->print->if->body->print->else->out->print
 GreaterExpression#eval(int, int):::Evaluate:::return->new->BooleanExpression
+GreaterExpression#eval(long, long)::: greater expression eval:::return->new->BooleanExpression
+GreaterExpression#eval(float, float)::: greater expression eval:::return->new->BooleanExpression
+GreaterExpression#eval(double, double)::: greater expression eval:::return->new->BooleanExpression
 GreaterExpression#simplify():::Simplify:::if->left->isConstant->right->isConstant->return->new->LessExpression->return
 GreaterExpression#codeBranch(Environment, Context, Assembler, Label, boolean):::Code:::left->codeValue->switch->getTypeCode->if->right->equals->right->codeValue->asm->add->return->break->right->codeValue->asm->add->break->right->codeValue->asm->add->break->right->codeValue->asm->add->break->throw->new->CompilerError->asm->add
 GreaterOrEqualExpression#eval(int, int):::Evaluate:::return->new->BooleanExpression
+GreaterOrEqualExpression#eval(long, long)::: greater or equal expression eval:::return->new->BooleanExpression
+GreaterOrEqualExpression#eval(float, float)::: greater or equal expression eval:::return->new->BooleanExpression
+GreaterOrEqualExpression#eval(double, double)::: greater or equal expression eval:::return->new->BooleanExpression
 GreaterOrEqualExpression#simplify():::Simplify:::if->left->isConstant->right->isConstant->return->new->LessOrEqualExpression->return
 GreaterOrEqualExpression#codeBranch(Environment, Context, Assembler, Label, boolean):::Code:::left->codeValue->switch->getTypeCode->if->right->equals->right->codeValue->asm->add->return->break->right->codeValue->asm->add->break->right->codeValue->asm->add->break->right->codeValue->asm->add->break->throw->new->CompilerError->asm->add
+IdentifierExpression#getImplementation()::: identifier expression get implementation:::if->return->return
 IdentifierExpression#equals(Identifier):::Check if the expression is equal to a value:::return->equals
+IdentifierExpression#assign(Environment, Context, Vset):::Assign a value to this identifier:::if->field->isLocal->local->if->env->error->if->local->isFinal->if->local->isBlankFinal->env->error->else->if->vset->testVarUnassigned->env->error->vset->addVar->else->if->field->isFinal->FieldExpression->checkFinalAssign->return
+IdentifierExpression#get(Environment, Context, Vset):::Get the value of this identifier:::if->field->isLocal->local->if->local->isFinal->env->error->if->vset->testVar->env->error->vset->addVar->else->if->field->isStatic->if->vset->ctx->getThisNumber->testVar->env->error->if->field->isBlankFinal->number->ctx->getFieldNumber->if->vset->testVar->env->error->return
 IdentifierExpression#bind(Environment, Context):::Bind to a field:::try->ctx->getField->if->for->cdef->getClassDefinition->cdef->getOuterClass->env->error->return->field->getType->if->getClassDefinition->canAccess->env->field->getClassDeclaration->getClassDeclaration->error->return->if->field->isLocal->local->if->ctx->makeReference->else->f->if->f->reportDeprecated->env->f->getClassDefinition->error->fclass->f->getClassDefinition->if->getClassDefinition->f2->ctx->getApparentField->if->c->ctx->findScope->if->f->getClassDefinition->if->f2->isLocal->env->c->getClassDeclaration->error->else->env->c->getClassDeclaration->f2->getClassDeclaration->error->if->f->isStatic->base->f->getClassDeclaration->getType->new->TypeExpression->new->FieldExpression->else->base->ctx->findOuterLink->if->new->FieldExpression->if->ctx->canReach->env->field->getClassDeclaration->error->return->return->catch->env->error->env->getClassDeclaration->getClassDeclaration->error->finally->return
 IdentifierExpression#checkValue(Environment, Context, Vset, Hashtable):::Check expression:::if->return->if->bind->get->getClassDefinition->field->getClassDeclaration->addDependency->if->implementation->checkValue->return
 IdentifierExpression#checkLHS(Environment, Context, Vset, Hashtable):::Check the expression if it appears on the LHS of an assignment:::if->bind->return->assign->if->implementation->checkValue->return
@@ -270,10 +402,18 @@ IdentifierExpression#checkAssignOp(Environment, Context, Vset, Hashtable, Expres
 IdentifierExpression#getAssigner(Environment, Context):::Return an accessor if one is needed for assignments to this expression.:::if->return->implementation->getAssigner->return
 IdentifierExpression#getUpdater(Environment, Context):::Return an updater if one is needed for assignments to this expression.:::if->return->implementation->getUpdater->return
 IdentifierExpression#checkAmbigName(Environment, Context, Vset, Hashtable, UnaryExpression):::Check if the present name is part of a scoping prefix.:::try->if->ctx->getField->return->checkValue->catch->finally->c->toResolvedType->if->c->getType->new->TypeExpression->return->return
+IdentifierExpression#toResolvedType(Environment, Context, boolean):::Convert an identifier to a known type, or null.:::rid->ctx->resolveName->t->Type->tClass->if->env->classExists->return->if->env->getClassDefinition->resolve->try->c->env->getClassDefinition->if->c->isMember->sc->ctx->c->getOuterClass->findScope->if->c->getOuterClass->rid2->ctx->getApparentClassName->if->rid2->equals->rid2->equals->env->sc->getClassDeclaration->error->if->c->getLocalName->id->getFlatName->getName->equals->env->error->return->catch->finally->return
 IdentifierExpression#toType(Environment, Context):::Convert an identifier to a type:::c->toResolvedType->if->return->c->getType->return
 IdentifierExpression#isConstant():::Check if constant:  Will it inline away?:::if->return->implementation->isConstant->if->return->field->isConstant->return
 IdentifierExpression#inline(Environment, Context):::Inline:::return
+IdentifierExpression#inlineValue(Environment, Context)::: identifier expression inline value:::if->return->implementation->inlineValue->if->return->try->if->field->isLocal->if->field->isInlineable->e->field->getValue->return->e->inlineValue->return->return->catch->throw->new->CompilerError->finally
+IdentifierExpression#inlineLHS(Environment, Context)::: identifier expression inline s:::if->return->implementation->inlineLHS->return
+IdentifierExpression#copyInline(Context)::: identifier expression copy inline:::if->return->implementation->copyInline->e->super->copyInline->if->field->isLocal->getCurrentInlineCopy->return
+IdentifierExpression#costInline(int, Environment, Context)::: identifier expression cost inline:::if->return->implementation->costInline->return->super->costInline
 IdentifierExpression#codeLValue(Environment, Context, Assembler):::Code local vars (object fields have been inlined away):::return
+IdentifierExpression#codeLoad(Environment, Context, Assembler)::: identifier expression code load:::asm->type->getTypeCodeOffset->add
+IdentifierExpression#codeStore(Environment, Context, Assembler)::: identifier expression code store:::local->asm->type->getTypeCodeOffset->new->LocalVariable->add
+IdentifierExpression#codeValue(Environment, Context, Assembler)::: identifier expression code value:::codeLValue->codeLoad
 IdentifierExpression#print(PrintStream):::Print:::out->field->hashCode->print->if->out->print->implementation->print
 IfStatement#check(Environment, Context, Vset, Hashtable):::Check statement:::checkLabel->newctx->new->CheckContext->cvars->cond->reach->checkCondition->convert->vsTrue->clearDeadEnd->vsFalse->clearDeadEnd->ifTrue->check->if->ifFalse->check->vsTrue->vsFalse->join->join->return->ctx->removeAdditionalVars
 IfStatement#inline(Environment, Context):::Inline:::new->Context->cond->inlineValue->if->ifTrue->inline->if->ifFalse->inline->if->cond->equals->return->eliminate->if->cond->equals->return->eliminate->if->return->new->ExpressionStatement->inline->eliminate->if->new->NotExpression->inlineValue->return->new->IfStatement->eliminate->return
@@ -284,13 +424,22 @@ IfStatement#print(PrintStream, int):::Print:::super->print->out->print->cond->pr
 IncDecExpression#checkValue(Environment, Context, Vset, Hashtable):::Check an increment or decrement expression:::right->checkAssignOp->if->inMask->else->if->isType->env->error->right->getUpdater->return
 IncDecExpression#check(Environment, Context, Vset, Hashtable):::Check void expression:::return->checkValue
 IncDecExpression#inline(Environment, Context):::Inline:::return->inlineValue
+IncDecExpression#inlineValue(Environment, Context)::: inc dec expression inline value:::right->inlineValue->if->updater->inline->return
+IncDecExpression#costInline(int, Environment, Context)::: inc dec expression cost inline:::if->if->type->isType->isLocal->return->return->right->costInline->else->return->updater->costInline
+IncDecExpression#codeIncDecOp(Assembler, boolean)::: inc dec expression code inc dec op:::switch->type->getTypeCode->asm->add->asm->add->asm->add->break->asm->add->asm->add->asm->add->break->asm->add->asm->add->asm->add->break->asm->add->asm->add->break->asm->add->asm->add->break->asm->new->Float->add->asm->add->break->asm->new->Double->add->asm->add->break->throw->new->CompilerError
+IncDecExpression#codeIncDec(Environment, Context, Assembler, boolean, boolean, boolean)::: inc dec expression code inc dec:::if->type->isType->isLocal->if->right->codeLoad->v->operands->asm->add->if->right->codeLoad->return->if->depth->right->codeLValue->codeDup->right->codeLoad->if->type->stackSize->codeDup->codeIncDecOp->if->type->stackSize->codeDup->right->codeStore->else->updater->startUpdate->codeIncDecOp->updater->finishUpdate
 InlineMethodExpression#inline(Environment, Context):::Inline:::body->new->Context->inline->if->return->else->if->expr->if->type->isType->throw->new->CompilerError->return->else->return
+InlineMethodExpression#inlineValue(Environment, Context)::: inline method expression inline value:::return->inline
 InlineMethodExpression#copyInline(Context):::Create a copy of the expression for method inlining:::e->clone->if->body->copyInline->return
 InlineMethodExpression#code(Environment, Context, Assembler):::Code:::super->code
+InlineMethodExpression#codeValue(Environment, Context, Assembler)::: inline method expression code value:::newctx->new->CodeContext->body->code->asm->add
 InlineMethodExpression#print(PrintStream):::Print:::out->print->body->print->out->print
 InlineNewInstanceExpression#inline(Environment, Context):::Inline:::return->inlineValue
+InlineNewInstanceExpression#inlineValue(Environment, Context)::: inline new instance expression inline value:::if->v->field->getArguments->elementAt->newctx->new->Context->newctx->declare->body->inline->if->return
 InlineNewInstanceExpression#copyInline(Context):::Create a copy of the expression for method inlining:::e->clone->body->copyInline->return
 InlineNewInstanceExpression#code(Environment, Context, Assembler):::Code:::codeCommon
+InlineNewInstanceExpression#codeValue(Environment, Context, Assembler)::: inline new instance expression code value:::codeCommon
+InlineNewInstanceExpression#codeCommon(Environment, Context, Assembler, boolean)::: inline new instance expression code common:::asm->field->getClassDeclaration->add->if->v->field->getArguments->elementAt->newctx->new->CodeContext->newctx->declare->asm->add->body->code->asm->add->if->asm->add
 InlineNewInstanceExpression#print(PrintStream):::Print:::v->field->getArguments->elementAt->out->v->hashCode->field->hashCode->println->if->body->print->else->out->print->out->print
 InlineReturnStatement#getDestination(Context):::Get the destination context of a break:::for->return
 InlineReturnStatement#inline(Environment, Context):::Inline:::if->expr->inlineValue->return
@@ -300,7 +449,11 @@ InlineReturnStatement#code(Environment, Context, Assembler):::Code:::if->expr->c
 InlineReturnStatement#print(PrintStream, int):::Print:::super->print->out->print->if->out->print->expr->print->out->print
 InstanceOfExpression#checkValue(Environment, Context, Vset, Hashtable):::Check the expression:::left->checkValue->right->toType->new->TypeExpression->if->isType->isType->return->if->inMask->env->error->return->try->if->env->explicitCast->env->error->catch->env->error->finally->return
 InstanceOfExpression#inline(Environment, Context):::Inline:::return->left->inline
+InstanceOfExpression#inlineValue(Environment, Context)::: instance of expression inline value:::left->inlineValue->return
+InstanceOfExpression#costInline(int, Environment, Context)::: instance of expression cost inline:::if->return->left->costInline->sourceClass->getClassDefinition->try->if->isType->sourceClass->env->getClassDeclaration->permitInlinedAccess->return->left->costInline->catch->finally->return
 InstanceOfExpression#codeValue(Environment, Context, Assembler):::Code:::left->codeValue->if->isType->asm->env->getClassDeclaration->add->else->asm->add
+InstanceOfExpression#codeBranch(Environment, Context, Assembler, Label, boolean)::: instance of expression code branch:::codeValue->asm->add
+InstanceOfExpression#code(Environment, Context, Assembler)::: instance of expression code:::left->code
 InstanceOfExpression#print(PrintStream):::Print:::out->print->left->print->out->print->if->out->toString->print->else->right->print->out->print
 IntegerExpression#fitsType(Environment, Context, Type):::See if this number fits in the given type.:::if->isType->return->super->fitsType->switch->t->getTypeCode->return->return->return->return->super->fitsType
 IntegerExpression#getValue():::Get the value:::return
@@ -313,9 +466,15 @@ IntExpression#print(PrintStream):::Print:::out->print
 LengthExpression#checkValue(Environment, Context, Vset, Hashtable):::Select the type of the expression:::right->checkValue->if->isType->env->error->return
 LengthExpression#codeValue(Environment, Context, Assembler):::Code:::right->codeValue->asm->add
 LessExpression#eval(int, int):::Evaluate:::return->new->BooleanExpression
+LessExpression#eval(long, long)::: less expression eval:::return->new->BooleanExpression
+LessExpression#eval(float, float)::: less expression eval:::return->new->BooleanExpression
+LessExpression#eval(double, double)::: less expression eval:::return->new->BooleanExpression
 LessExpression#simplify():::Simplify:::if->left->isConstant->right->isConstant->return->new->GreaterExpression->return
 LessExpression#codeBranch(Environment, Context, Assembler, Label, boolean):::Code:::left->codeValue->switch->getTypeCode->if->right->equals->right->codeValue->asm->add->return->break->right->codeValue->asm->add->break->right->codeValue->asm->add->break->right->codeValue->asm->add->break->throw->new->CompilerError->asm->add
 LessOrEqualExpression#eval(int, int):::Evaluate:::return->new->BooleanExpression
+LessOrEqualExpression#eval(long, long)::: less or equal expression eval:::return->new->BooleanExpression
+LessOrEqualExpression#eval(float, float)::: less or equal expression eval:::return->new->BooleanExpression
+LessOrEqualExpression#eval(double, double)::: less or equal expression eval:::return->new->BooleanExpression
 LessOrEqualExpression#simplify():::Simplify:::if->left->isConstant->right->isConstant->return->new->GreaterOrEqualExpression->return
 LessOrEqualExpression#codeBranch(Environment, Context, Assembler, Label, boolean):::Code:::left->codeValue->switch->getTypeCode->if->right->equals->right->codeValue->asm->add->return->break->right->codeValue->asm->add->break->right->codeValue->asm->add->break->right->codeValue->asm->add->break->throw->new->CompilerError->asm->add
 LocalMember#getScopeNumber():::Return current nesting level, i.e., the value of 'scopeNumber':::return
@@ -327,6 +486,10 @@ LocalMember#copyArguments(Context, MemberDefinition):::May inline copies of all 
 LocalMember#doneWithArguments(Context, LocalMember[]):::Call this when finished with the result of a copyArguments() call.:::for->i
 LocalMember#isInlineable(Environment, boolean):::Is this local variable's value stable and simple enough to be directly substituted for occurrences of the variable itself? (This decision is made by VarDeclarationStatement.inline().):::return->getModifiers
 LocalMember#isUsed():::Check if used:::return
+LocalMember#getAccessVar()::: local member get access var:::return
+LocalMember#setAccessVar(LocalMember)::: local member set access var:::
+LocalMember#getAccessVarMember()::: local member get access var member:::return
+LocalMember#setAccessVarMember(MemberDefinition)::: local member set access var member:::
 LocalMember#getValue(Environment):::Return value:::return->getValue
 LocalMember#getNumber(Context):::Value number for vsets, or -1 if none.:::return
 LongExpression#getValue():::Get the value:::return
@@ -334,13 +497,23 @@ LongExpression#equals(int):::Check if the expression is equal to a value:::retur
 LongExpression#equalsDefault():::Check if the expression is equal to its default static value:::return
 LongExpression#codeValue(Environment, Context, Assembler):::Code:::asm->add
 LongExpression#print(PrintStream):::Print:::out->print
+MethodExpression#getImplementation()::: method expression get implementation:::if->return->return
 MethodExpression#checkValue(Environment, Context, Vset, Hashtable):::Check expression type:::c->isArray->staticRef->implMethod->ctxClass->getClassDefinition->args->if->id->equals->conCls->try->conOuter->if->conCls->getSuperClass->getClassDefinition->else->if->NewInstanceExpression->insertOuterLink->catch->finally->argTypes->new->TypeArr->sourceClass->try->if->isStatic->cdef->m->for->cdef->getOuterClass->if->getClassDeclaration->else->cdef->getClassDeclaration->if->m->getClassDefinition->cdef2->while->cdef2->getOuterClass->m2->cdef2->findAnyMethod->if->m2->getClassDefinition->env->cdef->getClassDeclaration->cdef2->getClassDeclaration->error->break->else->if->id->equals->thisN->ctx->getThisNumber->if->isConstructor->env->error->return->vset->addVar->if->vset->isReallyDeadEnd->vset->testVar->env->error->return->vset->addVar->if->right->checkAmbigName->else->right->checkValue->else->right->checkAmbigName->if->FieldExpression->reportFailedPackagePrefix->return->if->if->isType->env->getClassDeclaration->else->if->isType->env->getClassDeclaration->else->if->isType->env->error->return->if->id->if->else->if->else->if->if->if->FieldExpression->isTypeAccessible->cdecl->sourceClass->getClassDeclaration->if->env->toString->error->else->env->toString->error->hasErrors->if->id->equals->vset->ctx->getThisNumber->clearVar->for->i->if->id->equals->vset->ctx->getThisNumber->addVar->if->return->c->getClassDefinition->if->clazz->matchMethod->if->if->id->equals->if->diagnoseMismatch->return->sig->clazz->getName->getName->toString->Type->tMethod->typeString->env->error->return->sig->id->toString->Type->tMethod->typeString->if->clazz->findAnyMethod->if->ctx->getField->env->error->else->env->error->else->if->diagnoseMismatch->else->env->error->return->field->getType->getReturnType->if->field->isStatic->env->field->getClassDeclaration->error->return->if->field->isProtected->sourceClass->protectedAccess->env->field->getName->field->getClassDeclaration->error->return->if->if->field->isPrivate->if->sourceClass->getAccessMember->if->field->isPrivate->cdef->field->getClassDefinition->if->cdef->getAccessMember->if->field->isAbstract->env->field->getClassDeclaration->error->return->if->field->reportDeprecated->if->field->isConstructor->env->error->else->env->field->getClassDefinition->error->if->field->isConstructor->equals->env->error->if->declarer->field->getClassDefinition->if->field->isConstructor->declarer->isPackagePrivate->declarer->getName->getQualifier->sourceClass->getName->getQualifier->equals->MemberDefinition->makeProxyMember->sourceClass->field->getClassDeclaration->addDependency->if->ctxClass->field->getClassDeclaration->addDependency->catch->env->error->return->env->error->return->finally->if->field->isStatic->ctx->findOuterLink->right->checkValue->field->getType->getArgumentTypes->for->i->if->field->isConstructor->m->if->nargs->newargs->if->rightI->if->new->SuperExpression->else->if->new->ThisExpression->else->throw->new->CompilerError->if->new->ExpressionArr->new->ExpressionArr->new->NullExpression->for->i->else->for->i->new->MethodExpression->else->if->new->ExpressionArr->new->NullExpression->for->i->new->MethodExpression->else->if->throw->new->CompilerError->if->oldargs->if->field->isStatic->call->new->MethodExpression->new->CommaExpression->else->nargs->newargs->new->ExpressionArr->for->i->new->MethodExpression->if->isConstructor->field->isConstructor->e->makeVarInits->if->if->this->clone->new->CommaExpression->exceptions->field->getExceptions->if->field->getName->field->getType->getArgumentTypes->new->ClassDeclarationArr->for->p->for->i->if->isConstructor->field->isConstructor->cls->field->getClassDefinition->for->f->cls->getFirstMember->f->getNextMember->return
 MethodExpression#check(Environment, Context, Vset, Hashtable):::Check void expression:::return->checkValue
 MethodExpression#diagnoseMismatch(Environment, Expression[], Type[]):::We're about to report a "unmatched method" error:::margType->new->TypeArr->saidSomething->start->while->code->clazz->diagnoseMismatch->opName->id->equals->if->env->error->if->break->i->castOK->ambig->targetType->ttype->if->env->error->else->env->error->return
+MethodExpression#inlineMethod(Environment, Context, Statement, boolean)::: method expression inline method:::if->env->dump->println->v->LocalMember->copyArguments->body->new->StatementArr->n->if->field->isStatic->new->ExpressionStatement->else->if->new->ThisExpression->new->VarDeclarationStatement->for->i->s->copyInline->LocalMember->doneWithArguments->type->e->new->CompoundStatement->new->InlineMethodExpression->return->e->inlineValue->e->inline
+MethodExpression#inline(Environment, Context)::: method expression inline:::if->return->implementation->inline->try->if->field->isStatic->right->inline->right->inlineValue->for->i->ctxClass->getClassDefinition->e->if->env->opt->field->clazz->isFinal->isInlineable->field->isStatic->ctxClass->field->getClassDeclaration->permitInlinedAccess->ctxClass->permitInlinedAccess->ctxClass->env->getClassDeclaration->permitInlinedAccess->id->equals->isInitializer->isMethod->ctx->getInlineMemberContext->s->field->getValue->if->s->costInline->inlineMethod->return->catch->throw->new->CompilerError->finally
+MethodExpression#inlineValue(Environment, Context)::: method expression inline value:::if->return->implementation->inlineValue->try->if->field->isStatic->right->inline->right->inlineValue->if->field->getName->equals->refc->field->getClassDefinition->r->refc->getReferencesFrozen->if->r->willCodeArguments->for->i->ctxClass->getClassDefinition->if->env->opt->field->clazz->isFinal->isInlineable->field->isStatic->ctxClass->field->getClassDeclaration->permitInlinedAccess->ctxClass->permitInlinedAccess->ctxClass->env->getClassDeclaration->permitInlinedAccess->isInitializer->isMethod->ctx->getInlineMemberContext->s->field->getValue->if->s->costInline->return->inlineMethod->return->catch->throw->new->CompilerError->finally
+MethodExpression#copyInline(Context)::: method expression copy inline:::if->return->implementation->copyInline->return->super->copyInline
+MethodExpression#costInline(int, Environment, Context)::: method expression cost inline:::if->return->implementation->costInline->if->return->return->super->costInline
+MethodExpression#makeVarInits(Environment, Context)::: method expression make var inits:::clazz->getClassDefinition->e->for->f->clazz->getFirstMember->f->getNextMember->return
 MethodExpression#codeValue(Environment, Context, Assembler):::Code:::if->throw->new->CompilerError->i->if->field->isStatic->if->right->code->else->if->asm->add->else->if->right->codeValue->if->idInit->equals->refc->field->getClassDefinition->r->refc->getReferencesFrozen->if->if->r->isClientOuterField->codeValue->r->codeArguments->else->right->codeValue->for->if->field->isStatic->asm->add->else->if->field->isConstructor->field->isPrivate->asm->add->else->if->field->getClassDefinition->isInterface->asm->add->else->asm->add->if->idInit->equals->refc->getClassDefinition->r->refc->getReferencesFrozen->if->r->codeInitialization
 MethodExpression#firstConstructor():::Check if the first thing is a constructor invocation:::return->id->equals
 MethodExpression#print(PrintStream):::Print:::out->print->if->out->print->right->print->out->print->for->i->out->print->if->out->print->implementation->print
 MultiplyExpression#eval(int, int):::Evaluate:::return->new->IntExpression
+MultiplyExpression#eval(long, long)::: multiply expression eval:::return->new->LongExpression
+MultiplyExpression#eval(float, float)::: multiply expression eval:::return->new->FloatExpression
+MultiplyExpression#eval(double, double)::: multiply expression eval:::return->new->DoubleExpression
 MultiplyExpression#simplify():::Simplify:::if->left->equals->return->if->right->equals->return->return
 MultiplyExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->type->getTypeCodeOffset->add
 NaryExpression#copyInline(Context):::Create a copy of the expression for method inlining:::e->clone->if->right->copyInline->new->ExpressionArr->for->i->return
@@ -348,42 +521,71 @@ NaryExpression#costInline(int, Environment, Context):::The cost of inlining this
 NaryExpression#print(PrintStream):::Print:::out->hashCode->print->if->out->print->right->print->for->i->out->print
 NegativeExpression#selectType(Environment, Context, int):::Select the type of the expression:::if->else->if->else->if->else->convert
 NegativeExpression#eval(int):::Evaluate:::return->new->IntExpression
+NegativeExpression#eval(long)::: negative expression eval:::return->new->LongExpression
+NegativeExpression#eval(float)::: negative expression eval:::return->new->FloatExpression
+NegativeExpression#eval(double)::: negative expression eval:::return->new->DoubleExpression
 NegativeExpression#simplify():::Simplify:::if->return->return
 NegativeExpression#codeValue(Environment, Context, Assembler):::Code:::right->codeValue->asm->type->getTypeCodeOffset->add
 NewArrayExpression#checkValue(Environment, Context, Vset, Hashtable):::Check:::right->toType->flag->for->i->if->init->checkInitializer->convert->return
+NewArrayExpression#copyInline(Context)::: new array expression copy inline:::e->super->copyInline->if->init->copyInline->return
 NewArrayExpression#inline(Environment, Context):::Inline:::e->for->i->if->new->CommaExpression->return->e->inline
+NewArrayExpression#inlineValue(Environment, Context)::: new array expression inline value:::if->return->init->inlineValue->for->i->return
 NewArrayExpression#codeValue(Environment, Context, Assembler):::Code:::t->for->i->if->asm->new->ArrayData->add->return->switch->type->getElementType->getTypeCode->asm->add->break->asm->add->break->asm->add->break->asm->add->break->asm->add->break->asm->add->break->asm->add->break->asm->add->break->asm->type->getElementType->add->break->asm->env->type->getElementType->getClassDeclaration->add->break->throw->new->CompilerError
 NewInstanceExpression#getOuterArg():::From the "new" in an expression of the form outer.new InnerCls(...), return the "outer" expression, or null if there is none.:::return
+NewInstanceExpression#precedence()::: new instance expression precedence:::return
+NewInstanceExpression#order()::: new instance expression order:::if->outerArg->precedence->e->order->return->return
 NewInstanceExpression#checkValue(Environment, Context, Vset, Hashtable):::Check expression type:::def->alreadyChecked->try->if->outerArg->checkValue->typeName->FieldExpression->toIdentifier->if->typeName->isQualified->env->error->if->isType->if->isType->env->error->else->oc->env->getClassDefinition->nm->oc->resolveInnerClass->Type->tClass->new->TypeExpression->env->getClassDefinition->resolve->if->right->toType->new->TypeExpression->if->isType->env->getClassDefinition->catch->env->error->env->error->finally->t->hasErrors->t->isType->if->t->isType->if->env->error->if->return->args->NewInstanceExpression->insertOuterLink->if->else->if->new->CommaExpression->argTypes->new->TypeArr->for->i->try->if->return->sourceClass->getClassDefinition->c->env->getClassDeclaration->if->packageName->sourceClass->getName->getQualifier->superDef->if->def->isInterface->env->getClassDefinition->else->constructor->superDef->matchAnonConstructor->if->if->env->dtEvent->body->constructor->getType->getArgumentTypes->checkLocalClass->body->getClassDeclaration->getType->else->if->def->isInterface->env->error->return->if->def->mustBeAbstract->env->error->return->def->matchMethod->if->anyInit->def->findAnyMethod->if->new->MethodExpression->diagnoseMismatch->return->sig->c->getName->getName->toString->Type->tMethod->typeString->env->error->return->if->field->isPrivate->cdef->field->getClassDefinition->if->cdef->getAccessMember->if->def->mustBeAbstract->env->error->return->if->field->reportDeprecated->env->field->getClassDefinition->error->if->field->isProtected->sourceClass->getName->getQualifier->field->getClassDeclaration->getName->getQualifier->equals->env->error->catch->env->error->return->env->error->return->finally->field->getType->getArgumentTypes->for->i->if->for->i->exceptions->field->getExceptions->for->i->return
 NewInstanceExpression#insertOuterLink(Environment, Context, long, ClassDefinition, Expression, Expression[]):::Given a list of arguments for a constructor, return a possibly modified list which includes the hidden argument which initializes the uplevel self pointer.:::if->def->isTopLevel->def->isLocal->args2->new->ExpressionArr->System->arraycopy->try->if->ctx->def->findAnyMethod->findOuterLink->catch->finally->return
 NewInstanceExpression#check(Environment, Context, Vset, Hashtable):::Check void expression:::return->checkValue
+NewInstanceExpression#copyInline(Context)::: new instance expression copy inline:::e->super->copyInline->if->outerArg->copyInline->return
+NewInstanceExpression#inlineNewInstance(Environment, Context, Statement)::: new instance expression inline new instance:::if->env->dump->println->v->LocalMember->copyArguments->body->new->StatementArr->o->if->isType->new->VarDeclarationStatement->else->if->new->ExpressionStatement->for->i->s->copyInline->LocalMember->doneWithArguments->return->new->CompoundStatement->new->InlineNewInstanceExpression->inline
+NewInstanceExpression#inline(Environment, Context)::: new instance expression inline:::return->inlineValue
+NewInstanceExpression#inlineValue(Environment, Context)::: new instance expression inline value:::if->body->inlineLocalClass->refc->field->getClassDefinition->r->refc->getReferencesFrozen->if->r->willCodeArguments->try->if->if->isType->outerArg->inline->else->outerArg->inlineValue->for->i->if->env->opt->field->isInlineable->isInitializer->isMethod->ctx->getInlineMemberContext->s->field->getValue->if->s->costInline->return->inlineNewInstance->catch->throw->new->CompilerError->finally->if->isType->e->return->new->CommaExpression->return
+NewInstanceExpression#costInline(int, Environment, Context)::: new instance expression cost inline:::if->return->if->return->super->costInline->sourceClass->getClassDefinition->try->if->sourceClass->field->getClassDeclaration->permitInlinedAccess->sourceClass->permitInlinedAccess->return->super->costInline->catch->finally->return
 NewInstanceExpression#code(Environment, Context, Assembler):::Code:::codeCommon
+NewInstanceExpression#codeValue(Environment, Context, Assembler)::: new instance expression code value:::codeCommon
+NewInstanceExpression#codeCommon(Environment, Context, Assembler, boolean)::: new instance expression code common:::asm->field->getClassDeclaration->add->if->asm->add->refc->field->getClassDefinition->r->refc->getReferencesFrozen->if->r->codeArguments->if->outerArg->codeValue->switch->break->f->if->f->isNeverNull->break->try->c->env->getClassDefinition->getc->c->getFirstMatch->asm->add->asm->add->asm->add->catch->finally->if->asm->add->for->i->asm->add
 Node#getOp():::Get the operator:::return
 Node#getWhere():::Get where:::return
 Node#convert(Environment, Context, Type, Expression):::Implicit conversions:::if->isType->t->isType->return->if->equals->return->try->if->e->fitsType->return->new->ConvertExpression->if->env->explicitCast->env->error->return->new->ConvertExpression->catch->env->error->finally->env->error->return->new->ConvertExpression
 Node#print(PrintStream):::Print:::throw->new->CompilerError
 Node#clone():::Clone this object.:::try->return->super->clone->catch->throw->new->InternalError->initCause->finally
+Node#toString()::: node to string:::bos->new->ByteArrayOutputStream->new->PrintStream->print->return->bos->toString
 NotEqualExpression#eval(int, int):::Evaluate:::return->new->BooleanExpression
+NotEqualExpression#eval(long, long)::: not equal expression eval:::return->new->BooleanExpression
+NotEqualExpression#eval(float, float)::: not equal expression eval:::return->new->BooleanExpression
+NotEqualExpression#eval(double, double)::: not equal expression eval:::return->new->BooleanExpression
+NotEqualExpression#eval(boolean, boolean)::: not equal expression eval:::return->new->BooleanExpression
 NotEqualExpression#simplify():::Simplify:::if->left->isConstant->right->isConstant->return->new->NotEqualExpression->return
 NotEqualExpression#codeBranch(Environment, Context, Assembler, Label, boolean):::Code:::left->codeValue->switch->getTypeCode->if->right->equals->right->codeValue->asm->add->return->break->right->codeValue->asm->add->break->right->codeValue->asm->add->break->right->codeValue->asm->add->break->if->right->equals->asm->add->else->right->codeValue->asm->add->return->throw->new->CompilerError->asm->add
 NotExpression#selectType(Environment, Context, int):::Select the type of the expression:::convert
+NotExpression#checkCondition(Environment, Context, Vset, Hashtable, ConditionVars)::: not expression check condition:::right->checkCondition->convert->temp
 NotExpression#eval(boolean):::Evaluate:::return->new->BooleanExpression
 NotExpression#simplify():::Simplify:::switch->return->break->return->bin->if->inMask->return->switch->return->new->NotEqualExpression->return->new->EqualExpression->return->new->GreaterOrEqualExpression->return->new->GreaterExpression->return->new->LessOrEqualExpression->return->new->LessExpression->return
 NotExpression#codeBranch(Environment, Context, Assembler, Label, boolean):::Code:::right->codeBranch
 NotExpression#codeValue(Environment, Context, Assembler):::Instead of relying on the default code generation which uses conditional branching, generate a simpler stream using XOR.:::right->codeValue->asm->add->asm->add
 NullExpression#equals(int):::Check if the expression is equal to a value:::return
+NullExpression#isNull()::: null expression is null:::return
 NullExpression#codeValue(Environment, Context, Assembler):::Code:::asm->add
 NullExpression#print(PrintStream):::Print:::out->print
+OrExpression#checkCondition(Environment, Context, Vset, Hashtable, ConditionVars)::: or expression check condition:::left->checkCondition->convert->vsTrue->copy->vsFalse->copy->right->checkCondition->convert->join
 OrExpression#eval(boolean, boolean):::Evaluate:::return->new->BooleanExpression
 OrExpression#simplify():::Simplify:::if->right->equals->return->if->left->equals->return->if->left->equals->return->if->right->equals->return->new->CommaExpression->simplify->return
 OrExpression#codeBranch(Environment, Context, Assembler, Label, boolean):::Code:::if->left->codeBranch->right->codeBranch->else->lbl2->new->Label->left->codeBranch->right->codeBranch->asm->add
 PositiveExpression#selectType(Environment, Context, int):::Select the type of the expression:::if->else->if->else->if->else->convert
 PositiveExpression#simplify():::Simplify:::return
 PostDecExpression#codeValue(Environment, Context, Assembler):::Code:::codeIncDec
+PostDecExpression#code(Environment, Context, Assembler)::: post dec expression code:::codeIncDec
 PostIncExpression#codeValue(Environment, Context, Assembler):::Code:::codeIncDec
+PostIncExpression#code(Environment, Context, Assembler)::: post inc expression code:::codeIncDec
 PreDecExpression#codeValue(Environment, Context, Assembler):::Code:::codeIncDec
+PreDecExpression#code(Environment, Context, Assembler)::: pre dec expression code:::codeIncDec
 PreIncExpression#codeValue(Environment, Context, Assembler):::Code:::codeIncDec
+PreIncExpression#code(Environment, Context, Assembler)::: pre inc expression code:::codeIncDec
 RemainderExpression#eval(int, int):::Evaluate:::return->new->IntExpression
+RemainderExpression#eval(long, long)::: remainder expression eval:::return->new->LongExpression
+RemainderExpression#eval(float, float)::: remainder expression eval:::return->new->FloatExpression
+RemainderExpression#eval(double, double)::: remainder expression eval:::return->new->DoubleExpression
 RemainderExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->type->getTypeCodeOffset->add
 ReturnStatement#check(Environment, Context, Vset, Hashtable):::Check statement:::checkLabel->reach->if->expr->checkValue->if->isInitializer->env->error->return->if->getType->getReturnType->isType->if->if->isConstructor->env->error->else->env->error->else->if->env->error->else->getType->getReturnType->convert->mctx->ctx->getReturnContext->if->join->exitctx->ctx->getTryExitContext->if->join->if->outerFinallyNode->for->c->if->if->else->return
 ReturnStatement#inline(Environment, Context):::Inline:::if->expr->inlineValue->return
@@ -392,34 +594,49 @@ ReturnStatement#copyInline(Context, boolean):::Create a copy of the statement fo
 ReturnStatement#code(Environment, Context, Assembler):::Code:::if->codeFinally->asm->add->else->expr->codeValue->codeFinally->asm->getTypeCodeOffset->add
 ReturnStatement#print(PrintStream, int):::Print:::super->print->out->print->if->out->print->expr->print->out->print
 ShiftLeftExpression#eval(int, int):::Evaluate:::return->new->IntExpression
+ShiftLeftExpression#eval(long, long)::: shift left expression eval:::return->new->LongExpression
 ShiftLeftExpression#simplify():::Simplify:::if->right->equals->return->if->left->equals->return->new->CommaExpression->simplify->return
 ShiftLeftExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->type->getTypeCodeOffset->add
 ShiftRightExpression#eval(int, int):::Evaluate:::return->new->IntExpression
+ShiftRightExpression#eval(long, long)::: shift right expression eval:::return->new->LongExpression
 ShiftRightExpression#simplify():::Simplify:::if->right->equals->return->if->left->equals->return->new->CommaExpression->simplify->return
 ShiftRightExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->type->getTypeCodeOffset->add
 ShortExpression#print(PrintStream):::Print:::out->print
 Statement#insertStatement(Statement, Statement):::Insert a bit of code at the front of a statement:::if->else->if->insertStatement->else->body->s1->getWhere->new->CompoundStatement->return
 Statement#setLabel(Environment, Expression):::Set the label of a statement:::if->if->new->IdentifierArr->else->newLabels->new->IdentifierArr->System->arraycopy->else->env->error
 Statement#checkMethod(Environment, Context, Vset, Hashtable):::Check a statement:::mctx->new->Statement->new->CheckContext->check->if->getType->getReturnType->isType->if->vset->isDeadEnd->env->getWhere->error->vset->join->return
+Statement#checkDeclaration(Environment, Context, Vset, int, Type, Hashtable)::: statement check declaration:::throw->new->CompilerError
 Statement#checkLabel(Environment, Context):::Make sure the labels on this statement do not duplicate the labels on any enclosing statement:::if->for->i
+Statement#check(Environment, Context, Vset, Hashtable)::: statement check:::throw->new->CompilerError
 Statement#checkBlockStatement(Environment, Context, Vset, Hashtable):::This is called in contexts where declarations are valid.:::return->check
+Statement#reach(Environment, Vset)::: statement reach:::if->vset->isDeadEnd->env->error->vset->clearDeadEnd->return
 Statement#inline(Environment, Context):::Inline:::return
 Statement#eliminate(Environment, Statement):::Eliminate this statement, which is only possible if it has no label.:::if->args->new->CompoundStatement->return
 Statement#code(Environment, Context, Assembler):::Code:::throw->new->CompilerError
 Statement#codeFinally(Environment, Context, Assembler, Context, Type):::Generate the code to call all finally's for a break, continue, or return statement:::num->haveCleanup->haveNonLocalFinally->for->c->if->return->if->def->getClassDefinition->if->lf->ctx->getLocalField->asm->save->getTypeCodeOffset->add->else->switch->getType->getReturnType->getTypeCode->break->asm->add->break->asm->add->break->for->c->if->asm->save->getTypeCodeOffset->add
+Statement#hasLabel(Identifier)::: statement has label:::labels->if->for->i->return
 Statement#firstConstructor():::Check if the first thing is a constructor invocation:::return
 Statement#copyInline(Context, boolean):::Create a copy of the statement for method inlining:::return->clone
+Statement#costInline(int, Environment, Context)::: statement cost inline:::return
 Statement#printIndent(PrintStream, int):::Print:::for->i
+Statement#print(PrintStream, int)::: statement print:::if->for->i
+Statement#print(PrintStream)::: statement print:::print
+StringExpression#equals(String)::: string expression equals:::return->value->equals
+StringExpression#isNonNull()::: string expression is non null:::return
 StringExpression#codeValue(Environment, Context, Assembler):::Code:::asm->add
 StringExpression#getValue():::Get the value:::return
 StringExpression#hashCode():::Hashcode:::return->value->hashCode
 StringExpression#equals(Object):::Equality:::if->return->value->equals->return
 StringExpression#print(PrintStream):::Print:::out->print
 SubtractExpression#eval(int, int):::Evaluate:::return->new->IntExpression
+SubtractExpression#eval(long, long)::: subtract expression eval:::return->new->LongExpression
+SubtractExpression#eval(float, float)::: subtract expression eval:::return->new->FloatExpression
+SubtractExpression#eval(double, double)::: subtract expression eval:::return->new->DoubleExpression
 SubtractExpression#simplify():::Simplify:::if->type->inMask->if->left->equals->return->new->NegativeExpression->if->right->equals->return->return
 SubtractExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->type->getTypeCodeOffset->add
 SuperExpression#checkValue(Environment, Context, Vset, Hashtable):::Check expression:::checkCommon->if->env->error->return
 SuperExpression#checkAmbigName(Environment, Context, Vset, Hashtable, UnaryExpression):::Check if the present name is part of a scoping prefix.:::return->checkCommon
+SuperExpression#checkCommon(Environment, Context, Vset, Hashtable):::Common code for checkValue and checkAmbigName:::superClass->getClassDefinition->getSuperClass->if->env->error->return->super->checkValue->superClass->getType->return
 SwitchStatement#check(Environment, Context, Vset, Hashtable):::Check statement:::checkLabel->newctx->new->CheckContext->expr->reach->checkValue->switchType->convert->tab->new->Hashtable<>->hasDefault->vs->for->i->if->vs->isDeadEnd->join->if->return->ctx->removeAdditionalVars
 SwitchStatement#inline(Environment, Context):::Inline:::new->Context->expr->inlineValue->for->i->return
 SwitchStatement#copyInline(Context, boolean):::Create a copy of the statement for method inlining:::s->clone->expr->copyInline->new->StatementArr->for->i->return
@@ -432,8 +649,12 @@ SynchronizedStatement#copyInline(Context, boolean):::Create a copy of the statem
 SynchronizedStatement#costInline(int, Environment, Context):::Compute cost of inlining this statement:::cost->if->expr->costInline->if->return->if->body->costInline->return
 SynchronizedStatement#code(Environment, Context, Assembler):::Code:::clazz->getClassDefinition->expr->codeValue->new->Context->if->returnType->getType->getReturnType->localfield->new->LocalMember->ctx->declare->Environment->debugOutput->f1->new->LocalMember->f2->new->LocalMember->num1->ctx->declare->num2->ctx->declare->endLabel->new->Label->td->new->TryData->td->add->asm->add->asm->add->asm->add->bodyctx->new->CodeContext->asm->add->if->body->code->else->asm->add->asm->add->asm->td->getEndLabel->add->asm->add->asm->add->asm->add->cd->td->getCatch->asm->cd->getLabel->add->asm->add->asm->add->asm->add->asm->add->asm->add->asm->add->asm->add->asm->add->asm->add
 SynchronizedStatement#print(PrintStream, int):::Print:::super->print->out->print->expr->print->out->print->if->body->print->else->out->print
+ThisExpression#getImplementation()::: this expression get implementation:::if->return->return
 ThisExpression#getOuterArg():::From the 'this' in an expression of the form outer.this(...), or the 'super' in an expression of the form outer.super(...), return the "outer" expression, or null if there is none.:::return
 ThisExpression#checkValue(Environment, Context, Vset, Hashtable):::Check expression:::if->isStatic->env->error->return->if->ctx->getLocalField->if->ctx->makeReference->if->vset->testVar->env->error->if->getClassDeclaration->getType->else->field->getType->return
+ThisExpression#isNonNull()::: this expression is non null:::return
+ThisExpression#getAssigner(Environment, Context)::: this expression get assigner:::return
+ThisExpression#getUpdater(Environment, Context)::: this expression get updater:::return
 ThisExpression#inlineValue(Environment, Context):::Inline:::if->return->implementation->inlineValue->if->field->isInlineable->e->field->getValue->if->e->copyInline->return->return
 ThisExpression#copyInline(Context):::Create a copy of the expression for method inlining:::if->return->implementation->copyInline->e->clone->if->ctx->getLocalField->else->field->getCurrentInlineCopy->if->outerArg->copyInline->return
 ThisExpression#codeValue(Environment, Context, Assembler):::Code:::asm->add
@@ -452,17 +673,27 @@ TryStatement#code(Environment, Context, Assembler):::Code:::newctx->new->CodeCon
 TryStatement#print(PrintStream, int):::Print:::super->print->out->print->if->body->print->else->out->print->for->i
 TypeExpression#toType(Environment, Context):::Convert to a type:::return
 TypeExpression#checkValue(Environment, Context, Vset, Hashtable):::Check an expression:::env->error->return
+TypeExpression#checkAmbigName(Environment, Context, Vset, Hashtable, UnaryExpression)::: type expression check ambig name:::return
+TypeExpression#inline(Environment, Context)::: type expression inline:::return
 TypeExpression#print(PrintStream):::Print:::out->type->toString->print
 UnaryExpression#order():::Order the expression based on precedence:::if->precedence->right->precedence->e->order->return->return
 UnaryExpression#selectType(Environment, Context, int):::Select the type of the expression:::throw->new->CompilerError
 UnaryExpression#checkValue(Environment, Context, Vset, Hashtable):::Check a unary expression:::right->checkValue->tm->getTypeMask->selectType->if->type->isType->env->error->return
 UnaryExpression#isConstant():::Check if constant:::switch->return->right->isConstant->return
 UnaryExpression#eval(int):::Evaluate:::return
+UnaryExpression#eval(long)::: unary expression eval:::return
+UnaryExpression#eval(float)::: unary expression eval:::return
+UnaryExpression#eval(double)::: unary expression eval:::return
+UnaryExpression#eval(boolean)::: unary expression eval:::return
+UnaryExpression#eval(String)::: unary expression eval:::return
+UnaryExpression#eval()::: unary expression eval:::switch->return->eval->return->eval->return->eval->return->eval->return->eval->return->eval->return
 UnaryExpression#inline(Environment, Context):::Inline:::return->right->inline
+UnaryExpression#inlineValue(Environment, Context)::: unary expression inline value:::right->inlineValue->try->return->eval->simplify->catch->return->finally
 UnaryExpression#copyInline(Context):::Create a copy of the expression for method inlining:::e->clone->if->right->copyInline->return
 UnaryExpression#costInline(int, Environment, Context):::The cost of inlining this expression:::return->right->costInline
 UnaryExpression#print(PrintStream):::Print:::out->print->right->print->out->print
 UnsignedShiftRightExpression#eval(int, int):::Evaluate:::return->new->IntExpression
+UnsignedShiftRightExpression#eval(long, long)::: unsigned shift right expression eval:::return->new->LongExpression
 UnsignedShiftRightExpression#simplify():::Simplify:::if->right->equals->return->if->left->equals->return->new->CommaExpression->simplify->return
 UnsignedShiftRightExpression#codeOperation(Environment, Context, Assembler):::Code:::asm->type->getTypeCodeOffset->add
 UplevelReference#insertInto(UplevelReference):::Insert self into a list of references:::if->isEarlierThan->return->else->prev->while->isEarlierThan->return
@@ -476,11 +707,13 @@ UplevelReference#getNext():::the next reference in the client's list:::return
 UplevelReference#isClientOuterField():::Tell if this uplevel reference is the up-level "this" pointer of an inner class:::outerf->client->findOuterMember->return
 UplevelReference#localArgumentAvailable(Environment, Context):::Tell if my local argument is directly available in this context:::reff->if->reff->getClassDefinition->throw->new->CompilerError->return->reff->isConstructor->reff->isVariable->reff->isInitializer
 UplevelReference#noteReference(Environment, Context):::Process an uplevel reference:::if->localArgumentAvailable->makeLocalField
+UplevelReference#makeLocalField(Environment)::: uplevel reference make local field:::client->referencesMustNotBeFrozen->mod->env->localArgument->getWhere->localArgument->getType->localArgument->getName->makeMemberDefinition
 UplevelReference#makeLocalReference(Environment, Context):::Assuming noteReference() is all taken care of, build an uplevel reference:::if->getClassDefinition->throw->new->CompilerError->if->localArgumentAvailable->return->new->IdentifierExpression->else->return->makeFieldReference
 UplevelReference#makeFieldReference(Environment, Context):::As with makeLocalReference(), build a locally-usable reference:::e->ctx->findOuterLink->return->new->FieldExpression
 UplevelReference#willCodeArguments(Environment, Context):::During the inline phase, call this on a list of references for which the code phase will later emit arguments:::if->isClientOuterField->ctx->noteReference->if->next->willCodeArguments
 UplevelReference#codeArguments(Environment, Context, Assembler, long, MemberDefinition):::Code is being generated for a call to a constructor of the client class:::if->isClientOuterField->e->ctx->makeReference->e->codeValue->if->next->codeArguments
 UplevelReference#codeInitialization(Environment, Context, Assembler, long, MemberDefinition):::Code is being generated for a constructor of the client class:::if->isClientOuterField->e->ctx->makeReference->f->makeFieldReference->e->getWhere->new->AssignExpression->localField->getType->e->code->if->next->codeInitialization
+UplevelReference#toString()::: uplevel reference to string:::return
 VarDeclarationStatement#checkDeclaration(Environment, Context, Vset, int, Type, Hashtable):::Check statement:::if->env->error->if->if->ctx->field->getName->getLocalClass->field->isInnerClass->env->field->getName->error->ctx->declare->if->field->isInnerClass->body->field->getInnerClass->try->body->checkLocalClass->catch->env->error->finally->return->vset->addVar->return->expr->checkValue->e->if->else->declError->t->isType->while->array->if->env->error->Type->tArray->if->id->if->ctx->getLocalField->env->error->getClassDefinition->new->LocalMember->ctx->declare->if->expr->checkInitializer->convert->field->setValue->if->field->isConstant->field->addModifiers->vset->addVar->else->if->vset->addVar->else->vset->addVarUnassigned->return->env->error->return
 VarDeclarationStatement#inline(Environment, Context):::Inline:::if->field->isInnerClass->body->field->getInnerClass->body->inlineLocalClass->return->if->env->opt->field->isUsed->return->new->ExpressionStatement->inline->ctx->declare->if->expr->inlineValue->field->setValue->if->env->opt->if->e->if->isLocal->ctx->getInlineContext->field->setValue->field->addModifiers->if->expr->isConstant->field->setValue->field->addModifiers->return
 VarDeclarationStatement#copyInline(Context, boolean):::Create a copy of the statement for method inlining:::s->clone->if->expr->copyInline->return
@@ -488,6 +721,8 @@ VarDeclarationStatement#costInline(int, Environment, Context):::The cost of inli
 VarDeclarationStatement#code(Environment, Context, Assembler):::Code:::if->isType->ctx->declare->expr->codeValue->asm->field->getType->getTypeCodeOffset->new->LocalVariable->add->else->ctx->declare->if->expr->code
 VarDeclarationStatement#print(PrintStream, int):::Print:::out->print->if->out->field->hashCode->print->if->out->print->expr->print->else->expr->print->out->print
 Vset#copy():::Create an copy of the given Vset:::if->return->vs->new->Vset->if->vs->growX->return
+Vset#growX(int)::: vset grow x:::newX->new->longArr->oldX->for->i
+Vset#isDeadEnd()::: vset is dead end:::return
 Vset#isReallyDeadEnd():::Ask if this is a vset for a dead end:::return
 Vset#clearDeadEnd():::Replace canonical DEAD_END with a distinct but equivalent Vset:::if->return->new->Vset->return
 Vset#testVar(int):::Ask if a var is definitely assigned.:::bit->if->i->if->return->return->else->return
@@ -496,8 +731,11 @@ Vset#addVar(int):::Note that a var is definitely assigned:::if->return->bit->if-
 Vset#addVarUnassigned(int):::Note that a var is definitely un-assigned:::if->return->bit->if->i->if->growX->else->return
 Vset#clearVar(int):::Retract any assertion about the var:::if->return->bit->if->i->if->return->if->else->return
 Vset#join(Vset):::Join with another vset:::if->return->other->copy->if->return->if->return->other->copy->if->return->if->else->otherX->selfLength->limit->for->i->for->i->return
+Vset#addDAandJoinDU(Vset)::: vset add aand join u:::if->return->if->return->if->return->if->return->other->copy->selfLength->otherX->otherLength->if->if->growX->i->while->if->break->for->i->return
+Vset#firstDAandSecondDU(Vset, Vset)::: vset first aand second u:::if->return->sourceDA->copy->sourceDAx->lenDA->sourceDUx->lenDU->limit->x->if->new->longArr->for->i->for->i->return->new->Vset
 Vset#removeAdditionalVars(int):::Remove variables from the vset that are no longer part of a context:::if->return->bit->if->i->if->if->while->else->if->return
 Vset#varLimit():::Return one larger than the highest bit set.:::vset->result->for->i->if->break->else->return->while->return
+Vset#toString()::: vset to string:::if->return->sb->new->StringBuilder->maxVar->for->i->if->sb->append->sb->append->return->sb->toString
 WhileStatement#check(Environment, Context, Vset, Hashtable):::Check a while statement:::checkLabel->newctx->new->CheckContext->vsEntry->vset->copy->cvars->cond->reach->checkCondition->convert->body->check->vset->join->ctx->checkBackBranch->join->return->ctx->removeAdditionalVars
 WhileStatement#inline(Environment, Context):::Inline:::new->Context->cond->inlineValue->if->body->inline->return
 WhileStatement#costInline(int, Environment, Context):::The cost of inlining this statement:::return->cond->costInline->body->costInline

@@ -1,7 +1,13 @@
 AppContext#getAppContexts():::Returns a set containing all AppContexts.:::synchronized->return->threadGroup2appContext->values->new->HashSet<AppContext>
+AppContext#isDisposed()::: app context is disposed:::return
+AppContext#initMainAppContext()::: app context init main app context:::AccessController->new->PrivilegedAction<Void>->doPrivileged
 AppContext#getAppContext():::Returns the appropriate AppContext for the caller, as determined by its ThreadGroup:::if->numAppContexts->get->return->appContext->threadAppContext->get->if->AccessController->new->PrivilegedAction<AppContext>->doPrivileged->return
 AppContext#isMainContext(AppContext):::Returns true if the specified AppContext is the main AppContext.:::return
+AppContext#getExecutionAppContext()::: app context get execution app context:::securityManager->System->getSecurityManager->if->awtSecMgr->secAppContext->awtSecMgr->getAppContext->return->return
 AppContext#dispose():::Disposes of this AppContext, all of its top-level Frames, and all Threads and ThreadGroups contained within it:::if->Thread->currentThread->getThreadGroup->parentOf->throw->new->IllegalThreadStateException->synchronized->if->return->changeSupport->if->changeSupport->firePropertyChange->notificationLock->new->Object->runnable->new->Runnable->synchronized->SunToolkit->Toolkit->getDefaultToolkit->new->InvocationEvent->postEvent->try->notificationLock->wait->catch->finally->new->Runnable->synchronized->SunToolkit->Toolkit->getDefaultToolkit->new->InvocationEvent->postEvent->try->notificationLock->wait->catch->finally->synchronized->interrupt->startTime->System->currentTimeMillis->endTime->while->activeCount->System->currentTimeMillis->try->Thread->sleep->catch->finally->AccessController->threadGroup->stop->return->doPrivileged->System->currentTimeMillis->while->activeCount->System->currentTimeMillis->try->Thread->sleep->catch->finally->numSubGroups->activeGroupCount->if->subGroups->new->ThreadGroupArr->enumerate->for->subGroup->threadGroup2appContext->remove->threadAppContext->set->try->destroy->catch->finally->synchronized->clear->numAppContexts->decrementAndGet
+AppContext.PostShutdownEventRunnable#run()::: post shutdown event runnable run:::eq->appContext->get->if->eq->AWTAutoShutdown->getShutdownEvent->postEvent
+AppContext.CreateThreadAction#run()::: create thread action run:::t->appContext->getThreadGroup->new->Thread->t->appContext->getContextClassLoader->setContextClassLoader->t->setPriority->t->setDaemon->return
+AppContext#stopEventDispatchThreads()::: app context stop event dispatch threads:::foreach->getAppContexts->if->appContext->isDisposed->continue->r->new->PostShutdownEventRunnable->if->AppContext->getAppContext->action->new->CreateThreadAction->thread->AccessController->doPrivileged->thread->start->else->r->run
 AppContext#get(Object):::Returns the value to which the specified key is mapped in this context.:::synchronized->recent->if->return->value->table->get->if->new->MostRecentKeyValue->new->MostRecentKeyValue->else->auxKeyValue->shadowMostRecentKeyValue->setPair->return
 AppContext#put(Object, Object):::Maps the specified key to the specified value in this AppContext:::synchronized->recent->if->return->table->put
 AppContext#remove(Object):::Removes the key (and its corresponding value) from this AppContext:::synchronized->recent->if->return->table->remove
@@ -12,7 +18,14 @@ AppContext#getPropertyChangeListeners():::Returns an array of all the property c
 AppContext#addPropertyChangeListener(String, PropertyChangeListener):::Adds a PropertyChangeListener to the listener list for a specific property:::if->return->if->new->PropertyChangeSupport->changeSupport->addPropertyChangeListener
 AppContext#removePropertyChangeListener(String, PropertyChangeListener):::Removes a PropertyChangeListener from the listener list for a specific property:::if->return->changeSupport->removePropertyChangeListener
 AppContext#getPropertyChangeListeners(String):::Returns an array of all the listeners which have been associated with the named property.:::if->return->new->PropertyChangeListenerArr->return->changeSupport->getPropertyChangeListeners
+AppContext#getSoftReferenceValue(Object, Supplier)::: app context get soft reference value:::appContext->AppContext->getAppContext->ref->appContext->get->if->object->ref->get->if->return->object->supplier->get->new->SoftReference<>->appContext->put->return
+MostRecentKeyValue#setPair(Object, Object)::: most recent key value set pair:::
+AWTAccessor.ComponentAccessor#setBackgroundEraseDisabled(Component, boolean)::: component accessor set background erase disabled:::
+AWTAccessor.ComponentAccessor#getBackgroundEraseDisabled(Component)::: component accessor get background erase disabled:::
+AWTAccessor.ComponentAccessor#getBounds(Component)::: component accessor get bounds:::
 AWTAccessor.ComponentAccessor#setGraphicsConfiguration(Component, GraphicsConfiguration):::Sets GraphicsConfiguration value for the component.:::
+AWTAccessor.ComponentAccessor#requestFocus(Component, Cause)::: component accessor request focus:::
+AWTAccessor.ComponentAccessor#canBeFocusOwner(Component)::: component accessor can be focus owner:::
 AWTAccessor.ComponentAccessor#isVisible(Component):::Returns whether the component is visible without invoking any client code.:::
 AWTAccessor.ComponentAccessor#setRequestFocusController(RequestFocusController):::Sets the RequestFocusController.:::
 AWTAccessor.ComponentAccessor#getAppContext(Component):::Returns the appContext of the component.:::
@@ -38,6 +51,7 @@ AWTAccessor.ComponentAccessor#getBackground(Component):::Gets the background col
 AWTAccessor.ComponentAccessor#setBackground(Component, Color):::Sets the background of this component to the specified color.:::
 AWTAccessor.ComponentAccessor#getFont(Component):::Gets the font of the component.:::
 AWTAccessor.ComponentAccessor#processEvent(Component, AWTEvent):::Processes events occurring on this component.:::
+AWTAccessor.ComponentAccessor#getAccessControlContext(Component)::: component accessor get access control context:::
 AWTAccessor.ComponentAccessor#revalidateSynchronously(Component):::Revalidates the component synchronously.:::
 AWTAccessor.ComponentAccessor#createBufferStrategy(Component, int, BufferCapabilities):::Creates a new strategy for multi-buffering on this component.:::
 AWTAccessor.ComponentAccessor#getBufferStrategy(Component):::returns the buffer strategy used by this component.:::
@@ -45,6 +59,7 @@ AWTAccessor.ContainerAccessor#validateUnconditionally(Container):::Validates the
 AWTAccessor.ContainerAccessor#findComponentAt(Container, int, int, boolean):::Access to the private version of findComponentAt method which has a controllable behavior:::
 AWTAccessor.ContainerAccessor#startLWModal(Container):::Starts LW Modal.:::
 AWTAccessor.ContainerAccessor#stopLWModal(Container):::Starts LW Modal.:::
+AWTAccessor.WindowAccessor#updateWindow(Window)::: window accessor update window:::
 AWTAccessor.WindowAccessor#getSecurityWarningSize(Window):::Get the size of the security warning.:::
 AWTAccessor.WindowAccessor#setSecurityWarningSize(Window, int, int):::Set the size of the security warning.:::
 AWTAccessor.WindowAccessor#setSecurityWarningPosition(Window, Point2D, float, float):::Set the position of the security warning.:::
@@ -60,8 +75,14 @@ AWTAccessor.AWTEventAccessor#isSystemGenerated(AWTEvent):::Indicates whether thi
 AWTAccessor.AWTEventAccessor#getAccessControlContext(AWTEvent):::Returns the acc this event was constructed with.:::
 AWTAccessor.AWTEventAccessor#getBData(AWTEvent):::Returns binary data associated with this event;:::
 AWTAccessor.AWTEventAccessor#setBData(AWTEvent, byte[]):::Associates binary data with this event;:::
+AWTAccessor.InputEventAccessor#getButtonDownMasks()::: input event accessor get button down masks:::
+AWTAccessor.InputEventAccessor#canAccessSystemClipboard(InputEvent)::: input event accessor can access system clipboard:::
+AWTAccessor.InputEventAccessor#setCanAccessSystemClipboard(InputEvent, boolean)::: input event accessor set can access system clipboard:::
 AWTAccessor.MouseEventAccessor#isCausedByTouchEvent(MouseEvent):::Indicates whether the event is a result of a touch event.:::
 AWTAccessor.MouseEventAccessor#setCausedByTouchEvent(MouseEvent, boolean):::Sets whether the event is a result of a touch event.:::
+AWTAccessor.FrameAccessor#setExtendedState(Frame, int)::: frame accessor set extended state:::
+AWTAccessor.FrameAccessor#getExtendedState(Frame)::: frame accessor get extended state:::
+AWTAccessor.FrameAccessor#getMaximizedBounds(Frame)::: frame accessor get maximized bounds:::
 AWTAccessor.KeyboardFocusManagerAccessor#shouldNativelyFocusHeavyweight(Component, Component, boolean, boolean, long, Cause):::Indicates whether the native implementation should proceed with a pending focus request for the heavyweight.:::
 AWTAccessor.KeyboardFocusManagerAccessor#processSynchronousLightweightTransfer(Component, Component, boolean, boolean, long):::Delivers focus for the lightweight descendant of the heavyweight synchronously.:::
 AWTAccessor.KeyboardFocusManagerAccessor#removeLastFocusRequest(Component):::Removes the last focus request for the heavyweight from the queue.:::
@@ -83,6 +104,12 @@ AWTAccessor.EventQueueAccessor#wakeup(EventQueue, boolean):::Called from PostEve
 AWTAccessor.EventQueueAccessor#invokeAndWait(Object, Runnable):::Static in EventQueue:::
 AWTAccessor.EventQueueAccessor#setFwDispatcher(EventQueue, FwDispatcher):::Sets the delegate for the EventQueue used by FX/AWT single threaded mode:::
 AWTAccessor.EventQueueAccessor#getMostRecentEventTime(EventQueue):::Gets most recent event time in the EventQueue:::
+AWTAccessor.PopupMenuAccessor#isTrayIconPopup(PopupMenu)::: popup menu accessor is tray icon popup:::
+AWTAccessor.FileDialogAccessor#setFiles(FileDialog, File[])::: file dialog accessor set files:::
+AWTAccessor.FileDialogAccessor#setFile(FileDialog, String)::: file dialog accessor set file:::
+AWTAccessor.FileDialogAccessor#setDirectory(FileDialog, String)::: file dialog accessor set directory:::
+AWTAccessor.FileDialogAccessor#isMultipleMode(FileDialog)::: file dialog accessor is multiple mode:::
+AWTAccessor.ScrollPaneAdjustableAccessor#setTypedValue(ScrollPaneAdjustable, int, int)::: scroll pane adjustable accessor set typed value:::
 AWTAccessor.CheckboxMenuItemAccessor#getState(CheckboxMenuItem):::Returns whether menu item is checked:::
 AWTAccessor.CursorAccessor#getPData(Cursor):::Returns pData of the Cursor class:::
 AWTAccessor.CursorAccessor#setPData(Cursor, long):::Sets pData to the Cursor class:::
@@ -102,9 +129,49 @@ AWTAccessor.KeyEventAccessor#getOriginalSource(KeyEvent):::Gets original source 
 AWTAccessor.KeyEventAccessor#isProxyActive(KeyEvent):::Gets isProxyActive field for KeyEvent:::
 AWTAccessor.ClientPropertyKeyAccessor#getJComponent_TRANSFER_HANDLER():::Retrieves JComponent_TRANSFER_HANDLER enum object:::
 AWTAccessor.SystemTrayAccessor#firePropertyChange(SystemTray, String, Object, Object):::Support for reporting bound property changes for Object properties.:::
+AWTAccessor.TrayIconAccessor#addNotify(TrayIcon)::: tray icon accessor add notify:::
+AWTAccessor.TrayIconAccessor#removeNotify(TrayIcon)::: tray icon accessor remove notify:::
+AWTAccessor.DefaultKeyboardFocusManagerAccessor#consumeNextKeyTyped(DefaultKeyboardFocusManager, KeyEvent)::: default keyboard focus manager accessor consume next key typed:::
+AWTAccessor.SequencedEventAccessor#getNested(AWTEvent)::: sequenced event accessor get nested:::
+AWTAccessor.SequencedEventAccessor#isSequencedEvent(AWTEvent)::: sequenced event accessor is sequenced event:::
+AWTAccessor.SequencedEventAccessor#create(AWTEvent)::: sequenced event accessor create:::
+AWTAccessor.ToolkitAccessor#setPlatformResources(ResourceBundle)::: toolkit accessor set platform resources:::
+AWTAccessor.InvocationEventAccessor#dispose(InvocationEvent)::: invocation event accessor dispose:::
+AWTAccessor.SystemColorAccessor#updateSystemColors()::: system color accessor update system colors:::
+AWTAccessor.AccessibleContextAccessor#setAppContext(AccessibleContext, AppContext)::: accessible context accessor set app context:::
+AWTAccessor.AccessibleContextAccessor#getAppContext(AccessibleContext)::: accessible context accessor get app context:::
+AWTAccessor.AccessibleContextAccessor#getNativeAXResource(AccessibleContext)::: accessible context accessor get native resource:::
+AWTAccessor.AccessibleContextAccessor#setNativeAXResource(AccessibleContext, Object)::: accessible context accessor set native resource:::
+AWTAccessor.AccessibleBundleAccessor#getKey(AccessibleBundle)::: accessible bundle accessor get key:::
 AWTAccessor.DragSourceContextAccessor#getPeer(DragSourceContext):::Returns the peer of the DragSourceContext.:::
 AWTAccessor.DropTargetContextAccessor#reset(DropTargetContext):::Resets the DropTargetContext.:::
 AWTAccessor.DropTargetContextAccessor#setDropTargetContextPeer(DropTargetContext, DropTargetContextPeer):::Sets the DropTargetContextPeer:::
+AWTAccessor#setComponentAccessor(ComponentAccessor)::: accessor set component accessor:::
+AWTAccessor#getComponentAccessor()::: accessor get component accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setContainerAccessor(ContainerAccessor)::: accessor set container accessor:::
+AWTAccessor#getContainerAccessor()::: accessor get container accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setWindowAccessor(WindowAccessor)::: accessor set window accessor:::
+AWTAccessor#getWindowAccessor()::: accessor get window accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setAWTEventAccessor(AWTEventAccessor)::: accessor set event accessor:::
+AWTAccessor#getAWTEventAccessor()::: accessor get event accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setInputEventAccessor(InputEventAccessor)::: accessor set input event accessor:::
+AWTAccessor#getInputEventAccessor()::: accessor get input event accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setMouseEventAccessor(MouseEventAccessor)::: accessor set mouse event accessor:::
+AWTAccessor#getMouseEventAccessor()::: accessor get mouse event accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setFrameAccessor(FrameAccessor)::: accessor set frame accessor:::
+AWTAccessor#getFrameAccessor()::: accessor get frame accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setKeyboardFocusManagerAccessor(KeyboardFocusManagerAccessor)::: accessor set keyboard focus manager accessor:::
+AWTAccessor#getKeyboardFocusManagerAccessor()::: accessor get keyboard focus manager accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setMenuComponentAccessor(MenuComponentAccessor)::: accessor set menu component accessor:::
+AWTAccessor#getMenuComponentAccessor()::: accessor get menu component accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setEventQueueAccessor(EventQueueAccessor)::: accessor set event queue accessor:::
+AWTAccessor#getEventQueueAccessor()::: accessor get event queue accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setPopupMenuAccessor(PopupMenuAccessor)::: accessor set popup menu accessor:::
+AWTAccessor#getPopupMenuAccessor()::: accessor get popup menu accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setFileDialogAccessor(FileDialogAccessor)::: accessor set file dialog accessor:::
+AWTAccessor#getFileDialogAccessor()::: accessor get file dialog accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setScrollPaneAdjustableAccessor(ScrollPaneAdjustableAccessor)::: accessor set scroll pane adjustable accessor:::
+AWTAccessor#getScrollPaneAdjustableAccessor()::: accessor get scroll pane adjustable accessor:::if->unsafe->ensureClassInitialized->return
 AWTAccessor#setCheckboxMenuItemAccessor(CheckboxMenuItemAccessor):::Set an accessor object for the java.awt.CheckboxMenuItem class.:::
 AWTAccessor#getCheckboxMenuItemAccessor():::Retrieve the accessor object for the java.awt.CheckboxMenuItem class.:::if->unsafe->ensureClassInitialized->return
 AWTAccessor#setCursorAccessor(CursorAccessor):::Set an accessor object for the java.awt.Cursor class.:::
@@ -125,14 +192,57 @@ AWTAccessor#setTrayIconAccessor(TrayIconAccessor):::Set an accessor object for t
 AWTAccessor#getTrayIconAccessor():::Retrieve the accessor object for the java.awt.TrayIcon class.:::if->unsafe->ensureClassInitialized->return
 AWTAccessor#setDefaultKeyboardFocusManagerAccessor(DefaultKeyboardFocusManagerAccessor):::Set an accessor object for the java.awt.DefaultKeyboardFocusManager class.:::
 AWTAccessor#getDefaultKeyboardFocusManagerAccessor():::Retrieve the accessor object for the java.awt.DefaultKeyboardFocusManager class.:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setSequencedEventAccessor(SequencedEventAccessor)::: accessor set sequenced event accessor:::
+AWTAccessor#getSequencedEventAccessor()::: accessor get sequenced event accessor:::if->try->unsafe->Class->forName->ensureClassInitialized->catch->finally->return
+AWTAccessor#setToolkitAccessor(ToolkitAccessor)::: accessor set toolkit accessor:::
+AWTAccessor#getToolkitAccessor()::: accessor get toolkit accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setInvocationEventAccessor(InvocationEventAccessor)::: accessor set invocation event accessor:::
+AWTAccessor#getInvocationEventAccessor()::: accessor get invocation event accessor:::return
+AWTAccessor#getSystemColorAccessor()::: accessor get system color accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setSystemColorAccessor(SystemColorAccessor)::: accessor set system color accessor:::
+AWTAccessor#getAccessibleContextAccessor()::: accessor get accessible context accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setAccessibleBundleAccessor(AccessibleBundleAccessor)::: accessor set accessible bundle accessor:::
+AWTAccessor#getAccessibleBundleAccessor()::: accessor get accessible bundle accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setAccessibleContextAccessor(AccessibleContextAccessor)::: accessor set accessible context accessor:::
+AWTAccessor#getDragSourceContextAccessor()::: accessor get drag source context accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setDragSourceContextAccessor(DragSourceContextAccessor)::: accessor set drag source context accessor:::
+AWTAccessor#getDropTargetContextAccessor()::: accessor get drop target context accessor:::if->unsafe->ensureClassInitialized->return
+AWTAccessor#setDropTargetContextAccessor(DropTargetContextAccessor)::: accessor set drop target context accessor:::
 AWTAutoShutdown#getInstance():::Returns reference to a single AWTAutoShutdown instance.:::return
 AWTAutoShutdown#notifyToolkitThreadBusy():::Notify that the toolkit thread is not waiting for a native event to appear in its queue.:::getInstance->setToolkitBusy
 AWTAutoShutdown#notifyToolkitThreadFree():::Notify that the toolkit thread is waiting for a native event to appear in its queue.:::getInstance->setToolkitBusy
 AWTAutoShutdown#notifyThreadBusy(Thread):::Add a specified thread to the set of busy event dispatch threads:::if->return->synchronized->synchronized->if->activateBlockerThread->else->if->isReadyToShutdown->mainLock->notifyAll->busyThreadSet->add
 AWTAutoShutdown#notifyThreadFree(Thread):::Remove a specified thread from the set of busy event dispatch threads:::if->return->synchronized->synchronized->busyThreadSet->remove->if->isReadyToShutdown->mainLock->notifyAll
 AWTAutoShutdown#notifyPeerMapUpdated():::Notify that the peermap has been updated, that means a new peer has been created or some existing peer has been disposed.:::synchronized->synchronized->if->isReadyToShutdown->activateBlockerThread->else->mainLock->notifyAll
+AWTAutoShutdown#isReadyToShutdown():::Determine whether AWT is currently in ready-to-shutdown state:::return->peerMap->isEmpty->busyThreadSet->isEmpty
+AWTAutoShutdown#setToolkitBusy(boolean):::Notify about the toolkit thread state change.:::if->synchronized->synchronized->if->if->if->activateBlockerThread->else->if->isReadyToShutdown->mainLock->notifyAll->else->if->isReadyToShutdown->mainLock->notifyAll
 AWTAutoShutdown#run():::Implementation of the Runnable interface:::currentThread->Thread->currentThread->interrupted->synchronized->try->mainLock->notifyAll->while->mainLock->wait->while->isReadyToShutdown->if->break->mainLock->wait->catch->finally->if->if->AppContext->stopEventDispatchThreads
+AWTAutoShutdown#getShutdownEvent()::: auto shutdown get shutdown event:::return->getInstance->new->AWTEvent
+AWTAutoShutdown#activateBlockerThread():::Creates and starts a new blocker thread:::AccessController->name->thread->ThreadGroupUtils->getRootThreadGroup->new->Thread->thread->setContextClassLoader->thread->setDaemon->return->doPrivileged->start->try->mainLock->wait->catch->println->e->printStackTrace->finally
+AWTAutoShutdown#registerPeer(Object, Object)::: auto shutdown register peer:::synchronized->synchronized->peerMap->put->notifyPeerMapUpdated
+AWTAutoShutdown#unregisterPeer(Object, Object)::: auto shutdown unregister peer:::synchronized->synchronized->if->peerMap->get->peerMap->remove->notifyPeerMapUpdated
+AWTAutoShutdown#getPeer(Object)::: auto shutdown get peer:::synchronized->synchronized->return->peerMap->get
+AWTAutoShutdown#dumpPeers(PlatformLogger)::: auto shutdown dump peers:::if->aLog->isLoggable->synchronized->synchronized->aLog->fine->foreach->peerMap->keySet->aLog->peerMap->get->fine
+AWTCharset#contains(Charset)::: charset contains:::if->return->return->javaCs->contains
+AWTCharset#newEncoder()::: charset new encoder:::if->throw->new->Error->return->javaCs->newEncoder->new->Encoder
+AWTCharset#newDecoder()::: charset new decoder:::if->throw->new->Error->return->javaCs->newDecoder->new->Decoder
+AWTCharset.Encoder#canEncode(char)::: encoder can encode:::return->enc->canEncode
+AWTCharset.Encoder#canEncode(CharSequence)::: encoder can encode:::return->enc->canEncode
+AWTCharset.Encoder#encodeLoop(CharBuffer, ByteBuffer)::: encoder encode loop:::return->enc->encode
+AWTCharset.Encoder#implFlush(ByteBuffer)::: encoder impl flush:::return->enc->flush
+AWTCharset.Encoder#implReset()::: encoder impl reset:::enc->reset
+AWTCharset.Encoder#implReplaceWith(byte[])::: encoder impl replace with:::if->enc->replaceWith
+AWTCharset.Encoder#implOnMalformedInput(CodingErrorAction)::: encoder impl on malformed input:::enc->onMalformedInput
+AWTCharset.Encoder#implOnUnmappableCharacter(CodingErrorAction)::: encoder impl on unmappable character:::enc->onUnmappableCharacter
+AWTCharset.Encoder#isLegalReplacement(byte[])::: encoder is legal replacement:::return
+AWTCharset.Decoder#decodeLoop(ByteBuffer, CharBuffer)::: decoder decode loop:::return->dec->decode
+AWTCharset.Decoder#implFlush(CharBuffer)::: decoder impl flush:::dec->decode->return->dec->flush
+AWTCharset.Decoder#implReset()::: decoder impl reset:::dec->reset
+AWTCharset.Decoder#implReplaceWith(String)::: decoder impl replace with:::if->dec->replaceWith
+AWTCharset.Decoder#implOnMalformedInput(CodingErrorAction)::: decoder impl on malformed input:::dec->onMalformedInput
+AWTCharset.Decoder#implOnUnmappableCharacter(CodingErrorAction)::: decoder impl on unmappable character:::dec->onUnmappableCharacter
 AWTSecurityManager#getAppContext():::Get the AppContext corresponding to the current context:::return
+CausedFocusEvent#readResolve()::: caused focus event read resolve:::newCause->switch->break->break->break->break->break->break->break->break->break->break->break->focusEvent->getID->isTemporary->getOppositeComponent->new->FocusEvent->focusEvent->setSource->try->consumedField->getField->AccessController->new->PrivilegedAction<Object>->doPrivileged->catch->finally->accessor->AWTAccessor->getAWTEventAccessor->accessor->accessor->getBData->setBData->return
 ComponentFactory#createComponent(Component):::Creates a peer for a component or container:::return
 ComponentFactory#createDesktopPeer(Desktop):::Creates this toolkit's implementation of the Desktop using the specified peer interface.:::throw->new->HeadlessException
 ComponentFactory#createTaskbarPeer(Taskbar):::Creates this toolkit's implementation of the Taskbar using the specified peer interface.:::throw->new->HeadlessException
@@ -158,15 +268,34 @@ ComponentFactory#createFileDialog(FileDialog):::Creates this toolkit's implement
 ComponentFactory#createCheckboxMenuItem(CheckboxMenuItem):::Creates this toolkit's implementation of CheckboxMenuItem using the specified peer interface.:::throw->new->HeadlessException
 ComponentFactory#createDragSourceContextPeer(DragGestureEvent):::Creates the peer for a DragSourceContext:::throw->new->InvalidDnDOperationException
 ComponentFactory#getFontPeer(String, int):::Creates this toolkit's implementation of Font using the specified peer interface.:::return
+ComponentFactory#createRobot(Robot, GraphicsDevice)::: component factory create robot:::throw->new->HeadlessException
+ComponentFactory#getDataTransferer()::: component factory get data transferer:::return
 ComponentFactory#getMouseInfoPeer():::Obtains this toolkit's implementation of helper class for MouseInfo operations.:::throw->new->UnsupportedOperationException
 ConstrainableGraphics#constrain(int, int, int, int):::Constrain this graphics object to have a permanent device space origin of (x, y) and a permanent maximum clip of (x,y,w,h):::
+CustomCursor#createNativeCursor(Image, int[], int, int, int, int)::: custom cursor create native cursor:::
+DebugSettings#init()::: debug settings init:::if->isEmpty->return->NativeLibLoader->loadLibraries->instance->loadProperties->instance->loadNativeSettings
+DebugSettings#getInstance()::: debug settings get instance:::return
+DebugSettings#loadProperties()::: debug settings load properties:::new->java.security.PrivilegedAction<Void>->doPrivileged->if->log->isLoggable->log->fine
+DebugSettings#toString()::: debug settings to string:::bout->new->ByteArrayOutputStream->pout->new->PrintStream->foreach->props->stringPropertyNames->value->props->getProperty->pout->println->return->bout->toByteArray->new->String
+DebugSettings#loadDefaultProperties()::: debug settings load default properties:::try->for->nprop->catch->finally
+DebugSettings#loadFileProperties()::: debug settings load file properties:::propPath->fileProps->System->getProperty->if->propPath->equals->System->getProperty->propFile->new->File->try->propFile->getCanonicalPath->println->fin->new->FileInputStream->props->load->fin->close->catch->println->ioe->getMessage->println->finally
+DebugSettings#loadSystemProperties()::: debug settings load system properties:::sysProps->System->getProperties->foreach->sysProps->stringPropertyNames->value->sysProps->getProperty->if->key->startsWith->props->setProperty
 DebugSettings#getBoolean(String, boolean):::Gets named boolean property:::value->String->valueOf->getString->return->value->equalsIgnoreCase
 DebugSettings#getInt(String, int):::Gets named integer property:::value->String->valueOf->getString->return->Integer->parseInt
 DebugSettings#getString(String, String):::Gets named String property:::actualKeyName->value->props->getProperty->return
+DebugSettings#getPropertyNames()::: debug settings get property names:::propNames->new->LinkedList<>->foreach->props->stringPropertyNames->propName->PREFIX->length->substring->propNames->add->return
+DebugSettings#println(Object)::: debug settings println:::if->log->isLoggable->log->object->toString->finer
+DebugSettings#setCTracingOn(boolean)::: debug settings set tracing on:::
+DebugSettings#setCTracingOn(boolean, String)::: debug settings set tracing on:::
+DebugSettings#setCTracingOn(boolean, String, int)::: debug settings set tracing on:::
+DebugSettings#loadNativeSettings()::: debug settings load native settings:::ctracingOn->getBoolean->setCTracingOn->traces->new->LinkedList<>->foreach->getPropertyNames->if->key->startsWith->key->length->traces->add->Collections->sort->foreach->trace->key->substring->filespec->linespec->delim->trace->indexOf->enabled->trace->substring->trace->substring->getBoolean->if->linespec->length->setCTracingOn->else->linenum->Integer->parseInt->setCTracingOn
 DisplayChangedListener#displayChanged():::Invoked when the display mode has changed.:::
 DisplayChangedListener#paletteChanged():::Invoked when the palette has changed.:::
+EmbeddedFrame#supportsXEmbed()::: embedded frame supports embed:::return->SunToolkit->needsXEmbed
 EmbeddedFrame#getParent():::Block introspection of a parent window by this child.:::return
 EmbeddedFrame#propertyChange(PropertyChangeEvent):::Needed to track which KeyboardFocusManager is current:::if->evt->getPropertyName->equals->return->if->evt->getNewValue->return->evt->getSource->removeTraversingOutListeners->KeyboardFocusManager->getCurrentKeyboardFocusManager->if->isVisible->addTraversingOutListeners
+EmbeddedFrame#addTraversingOutListeners(KeyboardFocusManager):::Register us as KeyEventDispatcher and property "managingFocus" listeners.:::kfm->addKeyEventDispatcher->kfm->addPropertyChangeListener
+EmbeddedFrame#removeTraversingOutListeners(KeyboardFocusManager):::Deregister us as KeyEventDispatcher and property "managingFocus" listeners.:::kfm->removeKeyEventDispatcher->kfm->removePropertyChangeListener
 EmbeddedFrame#registerListeners():::Because there may be many AppContexts, and we can't be sure where this EmbeddedFrame is first created or shown, we can't automatically determine the correct KeyboardFocusManager to attach to as KeyEventDispatcher:::if->removeTraversingOutListeners->KeyboardFocusManager->getCurrentKeyboardFocusManager->if->isVisible->addTraversingOutListeners
 EmbeddedFrame#show():::Needed to avoid memory leak: we register this EmbeddedFrame as a listener with KeyboardFocusManager of applet's AppContext:::if->addTraversingOutListeners->super->show
 EmbeddedFrame#hide():::Needed to avoid memory leak: we register this EmbeddedFrame as a listener with KeyboardFocusManager of applet's AppContext:::if->removeTraversingOutListeners->super->hide
@@ -174,45 +303,303 @@ EmbeddedFrame#dispatchKeyEvent(KeyEvent):::Need this method to detect when the f
 EmbeddedFrame#traverseIn(boolean):::This method is called by the embedder when we should receive focus as element of the traversal chain:::comp->if->getFocusTraversalPolicy->getFirstComponent->else->getFocusTraversalPolicy->getLastComponent->if->AWTAccessor->getKeyboardFocusManagerAccessor->setMostRecentFocusOwner->synthesizeWindowActivation->return
 EmbeddedFrame#traverseOut(boolean):::This method is called from dispatchKeyEvent in the following two cases: 1:::return
 EmbeddedFrame#setTitle(String):::Block modifying any frame attributes, since they aren't applicable for EmbeddedFrames.:::
+EmbeddedFrame#setIconImage(Image)::: embedded frame set icon image:::
+EmbeddedFrame#setIconImages(java.util.List)::: embedded frame set icon images:::
+EmbeddedFrame#setMenuBar(MenuBar)::: embedded frame set menu bar:::
+EmbeddedFrame#setResizable(boolean)::: embedded frame set resizable:::
+EmbeddedFrame#remove(MenuComponent)::: embedded frame remove:::
+EmbeddedFrame#isResizable()::: embedded frame is resizable:::return
+EmbeddedFrame#addNotify()::: embedded frame add notify:::synchronized->getTreeLock->if->isDisplayable->new->NullEmbeddedFramePeer->setPeer->super->addNotify
+EmbeddedFrame#setCursorAllowed(boolean)::: embedded frame set cursor allowed:::peer->AWTAccessor->getComponentAccessor->getPeer->peer->updateCursorImmediately
+EmbeddedFrame#isCursorAllowed()::: embedded frame is cursor allowed:::return
+EmbeddedFrame#getCursor()::: embedded frame get cursor:::return->super->getCursor->Cursor->getPredefinedCursor
+EmbeddedFrame#setPeer(ComponentPeer)::: embedded frame set peer:::AWTAccessor->getComponentAccessor->setPeer
 EmbeddedFrame#synthesizeWindowActivation(boolean):::Synthesize native message to activate or deactivate EmbeddedFrame window depending on the value of parameter b:::
 EmbeddedFrame#setLocationPrivate(int, int):::Moves this embedded frame to a new location:::size->getSize->setBoundsPrivate
 EmbeddedFrame#getLocationPrivate():::Gets the location of this embedded frame as a point specifying the top-left corner relative to parent component:::bounds->getBoundsPrivate->return->new->Point
 EmbeddedFrame#setBoundsPrivate(int, int, int, int):::Moves and resizes this embedded frame:::peer->AWTAccessor->getComponentAccessor->getPeer->if->peer->setBoundsPrivate
 EmbeddedFrame#getBoundsPrivate():::Gets the bounds of this embedded frame as a rectangle specifying the width, height and location relative to the native parent component:::peer->AWTAccessor->getComponentAccessor->getPeer->if->return->peer->getBoundsPrivate->else->return->getBounds
+EmbeddedFrame#toFront()::: embedded frame to front:::
+EmbeddedFrame#toBack()::: embedded frame to back:::
+EmbeddedFrame#registerAccelerator(AWTKeyStroke)::: embedded frame register accelerator:::
+EmbeddedFrame#unregisterAccelerator(AWTKeyStroke)::: embedded frame unregister accelerator:::
 EmbeddedFrame#getAppletIfAncestorOf(Component):::Checks if the component is in an EmbeddedFrame:::parent->comp->getParent->applet->while->if->parent->getParent->return
 EmbeddedFrame#notifyModalBlocked(Dialog, boolean):::This method should be overriden in subclasses:::
+EmbeddedFrame.NullEmbeddedFramePeer#setTitle(String)::: null embedded frame peer set title:::
+EmbeddedFrame.NullEmbeddedFramePeer#setIconImage(Image)::: null embedded frame peer set icon image:::
+EmbeddedFrame.NullEmbeddedFramePeer#updateIconImages()::: null embedded frame peer update icon images:::
+EmbeddedFrame.NullEmbeddedFramePeer#setMenuBar(MenuBar)::: null embedded frame peer set menu bar:::
+EmbeddedFrame.NullEmbeddedFramePeer#setResizable(boolean)::: null embedded frame peer set resizable:::
+EmbeddedFrame.NullEmbeddedFramePeer#setState(int)::: null embedded frame peer set state:::
+EmbeddedFrame.NullEmbeddedFramePeer#getState()::: null embedded frame peer get state:::return
+EmbeddedFrame.NullEmbeddedFramePeer#setMaximizedBounds(Rectangle)::: null embedded frame peer set maximized bounds:::
+EmbeddedFrame.NullEmbeddedFramePeer#toFront()::: null embedded frame peer to front:::
+EmbeddedFrame.NullEmbeddedFramePeer#toBack()::: null embedded frame peer to back:::
+EmbeddedFrame.NullEmbeddedFramePeer#updateFocusableWindowState()::: null embedded frame peer update focusable window state:::
+EmbeddedFrame.NullEmbeddedFramePeer#updateAlwaysOnTop()::: null embedded frame peer update always on top:::
+EmbeddedFrame.NullEmbeddedFramePeer#updateAlwaysOnTopState()::: null embedded frame peer update always on top state:::
+EmbeddedFrame.NullEmbeddedFramePeer#getGlobalHeavyweightFocusOwner()::: null embedded frame peer get global heavyweight focus owner:::return
+EmbeddedFrame.NullEmbeddedFramePeer#setBoundsPrivate(int, int, int, int)::: null embedded frame peer set bounds private:::setBounds
+EmbeddedFrame.NullEmbeddedFramePeer#getBoundsPrivate()::: null embedded frame peer get bounds private:::return->getBounds
+EmbeddedFrame.NullEmbeddedFramePeer#setModalBlocked(Dialog, boolean)::: null embedded frame peer set modal blocked:::
+EmbeddedFrame.NullEmbeddedFramePeer#restack()::: null embedded frame peer restack:::throw->new->UnsupportedOperationException
+EmbeddedFrame.NullEmbeddedFramePeer#isRestackSupported()::: null embedded frame peer is restack supported:::return
+EmbeddedFrame.NullEmbeddedFramePeer#requestWindowFocus()::: null embedded frame peer request window focus:::return
+EmbeddedFrame.NullEmbeddedFramePeer#updateMinimumSize()::: null embedded frame peer update minimum size:::
+EmbeddedFrame.NullEmbeddedFramePeer#setOpacity(float)::: null embedded frame peer set opacity:::
+EmbeddedFrame.NullEmbeddedFramePeer#setOpaque(boolean)::: null embedded frame peer set opaque:::
+EmbeddedFrame.NullEmbeddedFramePeer#updateWindow()::: null embedded frame peer update window:::
+EmbeddedFrame.NullEmbeddedFramePeer#repositionSecurityWarning()::: null embedded frame peer reposition security warning:::
+EmbeddedFrame.NullEmbeddedFramePeer#emulateActivation(boolean)::: null embedded frame peer emulate activation:::
+ExtendedKeyCodes#getExtendedKeyCodeForChar(int)::: extended key codes get extended key code for char:::uc->Character->toUpperCase->lc->Character->toLowerCase->if->regularKeyCodesMap->containsKey->if->regularKeyCodesMap->containsKey->return->regularKeyCodesMap->get->return->regularKeyCodesMap->get->if->extendedKeyCodesSet->contains->return->else->if->extendedKeyCodesSet->contains->return->return
+FontConfiguration#init()::: font configuration init:::if->setFontConfiguration->readFontConfigFile->initFontConfig->return
 FontConfiguration#setOsNameAndVersion():::Fills in this instance's osVersion and osName members:::System->getProperty->System->getProperty
+FontConfiguration#setEncoding()::: font configuration set encoding:::Charset->defaultCharset->name->SunToolkit->getStartupLocale
+FontConfiguration#foundOsSpecificFile()::: font configuration found os specific file:::return
+FontConfiguration#fontFilesArePresent()::: font configuration font files are present:::init->fontNameID->fileNameID->getComponentFileID->fileName->getComponentFileName->mapFileName->exists->new->java.security.PrivilegedAction<Boolean>->doPrivileged->return->exists->booleanValue
+FontConfiguration#findFontConfigFile()::: font configuration find font config file:::javaHome->System->getProperty->if->throw->new->Error->javaConfFonts->userConfigFile->System->getProperty->if->new->File->else->findFontConfigFile->if->findFontConfigFile
+FontConfiguration#readFontConfigFile(File)::: font configuration read font config file:::getInstalledFallbackFonts->if->try->in->f->getPath->new->FileInputStream->if->loadProperties->else->loadBinary->in->close->if->FontUtilities->debugFonts->logger->config->catch->if->FontUtilities->debugFonts->logger->config->finally->version->getVersion->if->equals->FontUtilities->debugFonts->logger->config
+FontConfiguration#getInstalledFallbackFonts(String)::: font configuration get installed fallback fonts:::fallbackDirName->fallbackDir->new->File->if->fallbackDir->exists->fallbackDir->isDirectory->ttfs->fallbackDir->fontManager->getTrueTypeFilter->list->t1s->fallbackDir->fontManager->getType1Filter->list->numTTFs->numT1s->len->if->return->new->StringArr->for->i->for->i->fontManager->registerFontsInDir
+FontConfiguration#findImpl(String)::: font configuration find impl:::f->new->File->if->FontUtilities->debugFonts->logger->info->if->f->canRead->if->FontUtilities->debugFonts->logger->info->return->new->File->if->FontUtilities->debugFonts->logger->info->if->f->canRead->if->FontUtilities->debugFonts->logger->info->return->return
+FontConfiguration#findFontConfigFile(String)::: font configuration find font config file:::if->new->File->exists->return->baseName->configFile->osMajorVersion->if->findImpl->if->return->decimalPointIndex->osVersion->indexOf->if->osVersion->osVersion->indexOf->substring->findImpl->if->return->if->findImpl->if->return->if->findImpl->if->return->if->findImpl->if->return->findImpl->if->return->if->FontUtilities->debugFonts->logger->info->return
+FontConfiguration#loadBinary(InputStream)::: font configuration load binary:::in->new->DataInputStream->readShortTable->tableSizes->new->intArr->for->i->readShortTable->readShortTable->readShortTable->readShortTable->readShortTable->readShortTable->readShortTable->readShortTable->readShortTable->readShortTable->readShortTable->readShortTable->readShortTable->new->StringArr->len->bb->new->byteArr->new->charArr->in->read->i->j->while->if->dump
+FontConfiguration#saveBinary(OutputStream)::: font configuration save binary:::sanityCheck->dataOut->new->DataOutputStream->writeShortTable->writeShortTable->writeShortTable->writeShortTable->writeShortTable->writeShortTable->writeShortTable->writeShortTable->writeShortTable->writeShortTable->writeShortTable->writeShortTable->writeShortTable->writeShortTable->dataOut->new->String->writeChars->out->close->if->dump
+FontConfiguration#loadProperties(InputStream)::: font configuration load properties:::new->shortArr->new->StringBuilder->if->PlatformLogger->getLogger->new->PropertiesHandler->load
+FontConfiguration#initFontConfig()::: set initLocale, initEncoding and initELC for this FontConfig object  currently we just simply use the startup locale and encoding:::if->willReorderForStartupLocale->getInitELC->initAllComponentFonts
+FontConfiguration#getInitELC()::: font configuration get init c:::if->return->elcIDs->new->HashMap<String,Integer>->for->i->language->initLocale->getLanguage->country->initLocale->getCountry->elc->if->elcIDs->containsKey->elcIDs->containsKey->elcIDs->containsKey->elcIDs->get->shortValue->else->elcIDs->get->shortValue->i->while->if->getString->return->return
+FontConfiguration#initAllComponentFonts()::: font configuration init all component fonts:::fallbackScripts->getFallbackScripts->for->fontIndex
+FontConfiguration#remapLocaleMap(int, int, short, short)::: font configuration remap locale map:::scriptName->getString->value->localeMap->get->if->fontName->styleName->localeMap->get->if->return->for->i->return
+FontConfiguration#hasMonoToPropMap()::: font configuration has mono to prop map:::return
+FontConfiguration#remapProportional(int, short)::: font configuration remap proportional:::if->i->while->if->return->return
 FontConfiguration#isLogicalFontFamilyName(String):::Checks whether the given font family name is a valid logical font name:::return->fontName->toLowerCase->isLogicalFontFamilyNameLC
 FontConfiguration#isLogicalFontFamilyNameLC(String):::Checks whether the given font family name is a valid logical font name:::for->i->return
+FontConfiguration#isLogicalFontStyleName(String):::Checks whether the given style name is a valid logical font style name.:::for->i->return
 FontConfiguration#isLogicalFontFaceName(String):::Checks whether the given font face name is a valid logical font name:::return->fontName->toLowerCase->isLogicalFontFaceNameLC
 FontConfiguration#isLogicalFontFaceNameLC(String):::Checks whether the given font face name is a valid logical font name:::period->fontName->indexOf->if->familyName->fontName->substring->styleName->fontName->substring->return->isLogicalFontFamilyName->isLogicalFontStyleName->else->return->isLogicalFontFamilyName
+FontConfiguration#getFontIndex(String)::: font configuration get font index:::return->getArrayIndex
+FontConfiguration#getStyleIndex(String)::: font configuration get style index:::return->getArrayIndex
+FontConfiguration#getArrayIndex(String[], String)::: font configuration get array index:::for->i->return
+FontConfiguration#getStyleIndex(int)::: font configuration get style index:::switch->return->return->return->return->return
+FontConfiguration#getFontName(int)::: font configuration get font name:::return
+FontConfiguration#getStyleName(int)::: font configuration get style name:::return
 FontConfiguration#getLogicalFontFaceName(String, int):::Returns the font face name for the given logical font family name and style:::return->familyName->toLowerCase->getStyleString
 FontConfiguration#getStyleString(int):::Returns the string typically used in properties files for the given style:::return->getStyleIndex->getStyleName
 FontConfiguration#getFallbackFamilyName(String, String):::Returns a fallback name for the given font name:::
 FontConfiguration#getCompatibilityFamilyName(String):::Returns the 1.1 equivalent for some old 1.0 font family names for which we need to maintain compatibility in some configurations:::fontName->toLowerCase->if->fontName->equals->return->else->if->fontName->equals->return->else->if->fontName->equals->return->return
 FontConfiguration#mapFileName(String):::Maps a file name given in the font configuration file to a format appropriate for the platform.:::return
+FontConfiguration#initReorderMap()::: font configuration init reorder map:::
+FontConfiguration#shuffle(String[], int, int)::: font configuration shuffle:::if->return->tmp->for->i
+FontConfiguration#willReorderForStartupLocale()::: font configuration will reorder for startup locale:::return->getReorderSequence
+FontConfiguration#getReorderSequence()::: font configuration get reorder sequence:::if->fontConfig->initReorderMap->reorderMap->language->startupLocale->getLanguage->country->startupLocale->getCountry->val->reorderMap->get->if->reorderMap->get->if->reorderMap->get->return
+FontConfiguration#reorderSequenceForLocale(String[])::: font configuration reorder sequence for locale:::val->getReorderSequence->if->for->i->else->if->fontLangs->for->l
+FontConfiguration#splitSequence(String)::: font configuration split sequence:::parts->new->Vector<>->start->end->while->sequence->indexOf->parts->sequence->substring->add->if->sequence->length->parts->sequence->sequence->length->substring->add->return
+FontConfiguration#split(String)::: font configuration split:::v->splitSequence->return->v->new->StringArr->toArray
 FontConfiguration#getFontDescriptors(String, int):::Returns FontDescriptors describing the physical fonts used for the given logical font name and style:::fontName->toLowerCase->fontIndex->getFontIndex->styleIndex->getStyleIndex->return->getFontDescriptors
+FontConfiguration#getFontDescriptors(int, int)::: font configuration get font descriptors:::descriptors->if->buildFontDescriptors->return
+FontConfiguration#buildFontDescriptors(int, int)::: font configuration build font descriptors:::fontName->styleName->scriptIDs->getCoreScripts->nameIDs->sequence->new->StringArr->names->new->StringArr->for->i->fontExclusionRanges->descriptors->new->FontDescriptorArr->for->i->return
 FontConfiguration#makeAWTFontName(String, String):::Returns the AWT font name for the given platform font name and character subset.:::return
 FontConfiguration#getEncoding(String, String):::Returns the java.io name of the platform character encoding for the given AWT font name and character subset:::
+FontConfiguration#getFontCharsetEncoder(String, String)::: font configuration get font charset encoder:::fc->if->charsetName->equals->charsetRegistry->get->else->charsetRegistry->get->if->return->fc->newEncoder->if->charsetName->startsWith->charsetName->equals->Charset->forName->else->fcc->AccessController->new->PrivilegedAction<Class<?>>->doPrivileged->if->try->fcc->getDeclaredConstructor->newInstance->catch->finally->if->getDefaultFontCharset->if->charsetName->equals->charsetRegistry->put->else->charsetRegistry->put->return->fc->newEncoder
+FontConfiguration#getDefaultFontCharset(String)::: font configuration get default font charset:::
+FontConfiguration#getAWTFontPathSet()::: font configuration get font path set:::return
 FontConfiguration#get2DCompositeFontInfo():::Returns an array of composite font descriptors for all logical font faces.:::result->new->CompositeFontDescriptorArr->defaultFontFile->fontManager->getDefaultFontFile->defaultFontFaceName->fontManager->getDefaultFontFaceName->for->fontIndex->return
+FontConfiguration#getFaceNameFromComponentFontName(String)::: font configuration get face name from component font name:::
+FontConfiguration#getFileNameFromComponentFontName(String)::: font configuration get file name from component font name:::
+FontConfiguration#needToSearchForFile(String)::: font configuration need to search for file:::if->return->else->if->new->HashMap<String,Boolean>->exists->existsMap->get->if->getNumberCoreFonts->if->coreFontFileNames->contains->else->Boolean->new->File->exists->valueOf->existsMap->put->if->FontUtilities->debugFonts->logger->warning->return
+FontConfiguration#getNumberCoreFonts()::: font configuration get number core fonts:::if->coreFontNameIDs->size->emptyShortArray->new->ShortArr->core->coreFontNameIDs->toArray->fallback->fallbackFontNameIDs->toArray->numFallbackFonts->i->for->new->StringArr->filename->for->for->j->return
+FontConfiguration#getPlatformFontNames()::: font configuration get platform font names:::if->getNumberCoreFonts->return
 FontConfiguration#getFileNameFromPlatformName(String):::Returns a file name for the physical font represented by this platform font name, if the font configuration has such information available, or null if the information is unavailable:::return->filenamesMap->get
 FontConfiguration#getExtraFontPath():::Returns a configuration specific path to be appended to the font search path.:::return->getString
+FontConfiguration#getVersion()::: font configuration get version:::return->getString
+FontConfiguration#getFontConfiguration()::: font configuration get font configuration:::return
+FontConfiguration#setFontConfiguration()::: font configuration set font configuration:::
+FontConfiguration#sanityCheck():::Checks consistencies of complied fontconfig data:::errors->osName->new->java.security.PrivilegedAction<String>->doPrivileged->for->ii->for->ii->if->equals->for->ii->if->println->System->exit
+FontConfiguration#isEmpty(short[])::: font configuration is empty:::foreach->if->return->return
+FontConfiguration#dump()::: font configuration dump:::println->for->ii->println->printTable->println->for->ii->for->ii->println->printTable->println->for->ii->println->printTable->println->printTable->println->for->ii->println->for->ii->println->for->ii->i->println->while->getString->getString->println->println->println->println->println->fbsIDs->getShortArray->for->ii->println->getString->println->println->getString->println
+FontConfiguration#getComponentFontID(short, int, int)::: font configuration get component font d:::fid->if->return->else->return
+FontConfiguration#getComponentFontIDMotif(short, int, int)::: font configuration get component font motif:::if->return->fid->if->return->else->return
+FontConfiguration#getExclusionRanges(short)::: font configuration get exclusion ranges:::exID->if->return->else->exChar->getString->toCharArray->exInt->new->intArr->i->for->j->return
+FontConfiguration#contains(short[], short, int)::: font configuration contains:::for->i->return
+FontConfiguration#getComponentFontName(short)::: font configuration get component font name:::if->return->return->getString
+FontConfiguration#getComponentFileName(short)::: font configuration get component file name:::if->return->return->getString
+FontConfiguration#getComponentFileID(short)::: font configuration get component file d:::return
+FontConfiguration#getScriptName(short)::: font configuration get script name:::return->getString
+FontConfiguration#getCoreScripts(int)::: font configuration get core scripts:::elc->getInitELC->scripts->getShortArray->if->if->new->HashMap<String,Short>->ss->new->StringArr->for->i->reorderSequenceForLocale->for->i->return
+FontConfiguration#getFallbackScripts()::: font configuration get fallback scripts:::return->getShortArray
+FontConfiguration#printTable(short[], int)::: font configuration print table:::for->i
+FontConfiguration#readShortTable(DataInputStream, int)::: font configuration read short table:::if->return->data->new->shortArr->bb->new->byteArr->in->read->i->j->while->return
+FontConfiguration#writeShortTable(DataOutputStream, short[])::: font configuration write short table:::foreach->out->writeShort
+FontConfiguration#toList(HashMap)::: font configuration to list:::list->map->size->new->shortArr->Arrays->fill->foreach->map->entrySet->entry->getKey->getStringID->entry->getValue->return
+FontConfiguration#getString(short)::: font configuration get string:::if->return->if->new->String->return
+FontConfiguration#getShortArray(short)::: font configuration get short array:::s->getString->cc->s->toCharArray->ss->new->shortArr->for->i->return
+FontConfiguration#getStringID(String)::: font configuration get string d:::if->return->pos0->stringTable->length->stringTable->append->pos1->stringTable->length->if->tmp->new->shortArr->System->arraycopy->return
+FontConfiguration#getShortArrayID(short[])::: font configuration get short array d:::cc->new->charArr->for->i->s->new->String->return->getStringID
+FontConfiguration.PropertiesHandler#load(InputStream)::: properties handler load:::initLogicalNameStyle->initHashMaps->fp->new->FontProperties->fp->load->initBinaryTable
+FontConfiguration.PropertiesHandler#initBinaryTable()::: properties handler init binary table:::new->shortArr->toList->len->scriptFonts->size->new->shortArr->foreach->scriptAllfonts->entrySet->entry->getValue->entry->getKey->intValue->off->foreach->scriptFonts->entrySet->entry->getKey->intValue->v->entry->getValue->for->i->toList->elcIDs->size->new->shortArr->foreach->sequences->entrySet->k->entry->getKey->intValue->v->entry->getValue->if->for->i->else->for->i->toList->toList->new->shortArr->Arrays->fill->foreach->filenames->entrySet->entry->getValue->entry->getKey->new->shortArr->foreach->awtfontpaths->entrySet->entry->getValue->entry->getKey->scriptIDs->size->new->shortArr->foreach->exclusions->entrySet->exI->entry->getValue->exC->new->charArr->j->for->i->new->String->getStringID->entry->getKey->proportionals->size->new->shortArr->j->foreach->proportionals->entrySet->entry->getKey->entry->getValue->if->scriptAllfontsMotif->size->scriptFontsMotif->size->scriptFontsMotif->size->new->shortArr->foreach->scriptAllfontsMotif->entrySet->entry->getValue->entry->getKey->intValue->foreach->scriptFontsMotif->entrySet->entry->getKey->intValue->v->entry->getValue->i->while->if->else->else->alphabeticSuffix->size->new->shortArr->foreach->alphabeticSuffix->entrySet->entry->getKey->entry->getValue->getShortArrayID->getStringID->getStringID->new->shortArr->System->arraycopy->stringTable->toString->toCharArray->stringTable->length->new->StringArr
+FontConfiguration.PropertiesHandler#initLogicalNameStyle()::: properties handler init logical name style:::new->HashMap<String,Integer>->new->HashMap<String,Integer>->logicalFontIDs->put->logicalFontIDs->put->logicalFontIDs->put->logicalFontIDs->put->logicalFontIDs->put->fontStyleIDs->put->fontStyleIDs->put->fontStyleIDs->put->fontStyleIDs->put
+FontConfiguration.PropertiesHandler#initHashMaps()::: properties handler init hash maps:::new->HashMap<String,Short>->new->HashMap<String,Short>->new->HashMap<String,Short>->componentFontNameIDs->Short->valueOf->put->new->HashMap<String,Short>->new->HashMap<Short,Short>->new->HashMap<Short,short[]>->new->HashMap<Short,Short[]>->new->HashMap<Short,Short>->new->HashMap<Short,int[]>->new->HashMap<Short,Short>->new->HashMap<Short,Short>->new->HashMap<Short,Short[]>->new->HashMap<Short,Short>->new->HashMap<Short,Short>
+FontConfiguration.PropertiesHandler#parseExclusions(String, String)::: properties handler parse exclusions:::if->return->numExclusions->pos->while->exclusions->indexOf->exclusionRanges->new->intArr->newPos->for->j->return
+FontConfiguration.PropertiesHandler#getID(HashMap, String)::: properties handler get d:::ret->map->get->if->map->map->size->put->return->map->get->return
+FontConfiguration.PropertiesHandler.FontProperties#put(Object, Object)::: font properties put:::parseProperty->return
+FontConfiguration.PropertiesHandler#parseProperty(String, String)::: properties handler parse property:::if->key->startsWith->key->substring->if->equals->key->replace->faceID->getID->fileID->getID->filenames->put->else->if->key->startsWith->key->substring->exclusions->getID->parseExclusions->put->else->if->key->startsWith->key->substring->hasDefault->has1252->ss->splitSequence->toArray->sa->new->shortArr->for->i->scriptArrayID->getShortArrayID->elcID->dot->key->indexOf->if->if->equals->return->if->equals->getID->else->if->logger->config->return->else->key->substring->getID->key->substring->scriptArrayIDs->if->equals->new->shortArr->else->sequences->get->if->new->shortArr->fid->logicalFontIDs->get->if->if->logger->config->return->fid->intValue->sequences->put->if->alphabeticSuffix->getStringID->put->else->if->alphabeticSuffix->getStringID->put->else->if->key->startsWith->key->substring->if->key->endsWith->key->key->length->substring->scriptAllfontsMotif->getID->getID->put->else->scriptAllfonts->getID->getID->put->else->if->key->startsWith->key->substring->awtfontpaths->getID->getStringID->put->else->if->equals->else->if->equals->else->if->key->startsWith->key->substring->replace->proportionals->getID->getID->put->else->dot1->dot2->isMotif->key->indexOf->if->if->logger->config->return->key->indexOf->if->if->logger->config->return->if->key->endsWith->key->key->length->substring->nameID->logicalFontIDs->key->substring->get->styleID->fontStyleIDs->key->substring->get->scriptID->key->substring->getID->if->if->logger->config->return->pnids->if->scriptFontsMotif->get->else->scriptFonts->get->if->new->ShortArr->getID->nameID->intValue->styleID->intValue->if->scriptFontsMotif->put->else->scriptFonts->put
+FontDescriptor#getNativeName()::: font descriptor get native name:::return
+FontDescriptor#getFontCharsetEncoder()::: font descriptor get font charset encoder:::return
+FontDescriptor#getFontCharsetName()::: font descriptor get font charset name:::return
+FontDescriptor#getExclusionRanges()::: font descriptor get exclusion ranges:::return
 FontDescriptor#isExcluded(char):::Return true if the character is exclusion character.:::for->i->return
+FontDescriptor#toString()::: font descriptor to string:::return->super->toString
+FontDescriptor#initIDs():::Initialize JNI field and method IDs:::
+FontDescriptor#useUnicode()::: font descriptor use unicode:::if->try->newEncoder->newEncoder->catch->finally->return
 FwDispatcher#isDispatchThread():::Delegates the EventQueue#isDispatchThread() method:::
 FwDispatcher#scheduleDispatch(Runnable):::Forwards a runnable to the delegate, which executes it on an appropriate thread.:::
 FwDispatcher#createSecondaryLoop():::Delegates the java.awt.EventQueue#createSecondaryLoop() method:::
+GlobalCursorManager.NativeUpdater#run()::: native updater run:::shouldUpdate->synchronized->if->if->_updateCursor
+GlobalCursorManager.NativeUpdater#postIfNotPending(Component, InvocationEvent)::: native updater post if not pending:::shouldPost->synchronized->if->if->SunToolkit->SunToolkit->targetToAppContext->postEvent
 GlobalCursorManager#updateCursorImmediately():::Should be called for any activity at the Java level which may affect the global cursor, except for Java MOUSE_MOVED events.:::synchronized->_updateCursor
 GlobalCursorManager#updateCursorImmediately(InputEvent):::Should be called in response to Java MOUSE_MOVED events:::shouldUpdate->synchronized->e->getWhen->if->_updateCursor
 GlobalCursorManager#updateCursorLater(Component):::Should be called in response to a native mouse enter or native mouse button released message:::nativeUpdater->Toolkit->getDefaultToolkit->new->InvocationEvent->postIfNotPending
 GlobalCursorManager#setCursor(Component, Cursor, boolean):::Set the global cursor to the specified cursor:::
 GlobalCursorManager#getCursorPos(Point):::Returns the global cursor position, in screen coordinates.:::
+GlobalCursorManager#getLocationOnScreen(Component)::: global cursor manager get location on screen:::
 GlobalCursorManager#findHeavyweightUnderCursor(boolean):::Returns the most specific, visible, heavyweight Component under the cursor:::
+GlobalCursorManager#_updateCursor(boolean):::Updates the global cursor:::synchronized->System->currentTimeMillis->queryPos->p->comp->try->findHeavyweightUnderCursor->if->updateCursorOutOfJava->return->if->AWTAccessor->getComponentAccessor->getLocation->else->if->getLocationOnScreen->if->new->Point->getCursorPos->c->AWTAccessor->getContainerAccessor->findComponentAt->if->AWTAccessor->getComponentAccessor->getCursor->setCursor->catch->finally
+GlobalCursorManager#updateCursorOutOfJava()::: global cursor manager update cursor out of java:::
+Graphics2Delegate#setBackground(Color)::: graphics2 delegate set background:::
+HeadlessToolkit#getUnderlyingToolkit()::: headless toolkit get underlying toolkit:::return
+HeadlessToolkit#getKeyboardFocusManagerPeer()::: headless toolkit get keyboard focus manager peer:::return
+HeadlessToolkit#createTrayIcon(TrayIcon)::: headless toolkit create tray icon:::throw->new->HeadlessException
+HeadlessToolkit#createSystemTray(SystemTray)::: headless toolkit create system tray:::throw->new->HeadlessException
+HeadlessToolkit#isTraySupported()::: headless toolkit is tray supported:::return
+HeadlessToolkit#getGlobalCursorManager()::: headless toolkit get global cursor manager:::throw->new->HeadlessException
+HeadlessToolkit#loadSystemColors(int[])::: headless toolkit load system colors:::throw->new->HeadlessException
+HeadlessToolkit#getColorModel()::: headless toolkit get color model:::throw->new->HeadlessException
+HeadlessToolkit#getScreenResolution()::: headless toolkit get screen resolution:::throw->new->HeadlessException
+HeadlessToolkit#mapInputMethodHighlight(InputMethodHighlight)::: headless toolkit map input method highlight:::throw->new->HeadlessException
+HeadlessToolkit#getMenuShortcutKeyMask()::: headless toolkit get menu shortcut key mask:::throw->new->HeadlessException
+HeadlessToolkit#getMenuShortcutKeyMaskEx()::: headless toolkit get menu shortcut key mask ex:::throw->new->HeadlessException
+HeadlessToolkit#getLockingKeyState(int)::: headless toolkit get locking key state:::throw->new->HeadlessException
+HeadlessToolkit#setLockingKeyState(int, boolean)::: headless toolkit set locking key state:::throw->new->HeadlessException
+HeadlessToolkit#createCustomCursor(Image, Point, String)::: headless toolkit create custom cursor:::throw->new->HeadlessException
+HeadlessToolkit#getBestCursorSize(int, int)::: headless toolkit get best cursor size:::throw->new->HeadlessException
+HeadlessToolkit#getMaximumCursorColors()::: headless toolkit get maximum cursor colors:::throw->new->HeadlessException
+HeadlessToolkit#createDragGestureRecognizer(Class, DragSource, Component, int, DragGestureListener)::: headless toolkit create drag gesture recognizer:::return
+HeadlessToolkit#getScreenSize()::: headless toolkit get screen size:::throw->new->HeadlessException
+HeadlessToolkit#getScreenInsets(GraphicsConfiguration)::: headless toolkit get screen insets:::throw->new->HeadlessException
+HeadlessToolkit#setDynamicLayout(boolean)::: headless toolkit set dynamic layout:::throw->new->HeadlessException
+HeadlessToolkit#isDynamicLayoutSet()::: headless toolkit is dynamic layout set:::throw->new->HeadlessException
+HeadlessToolkit#isDynamicLayoutActive()::: headless toolkit is dynamic layout active:::throw->new->HeadlessException
+HeadlessToolkit#getSystemClipboard()::: headless toolkit get system clipboard:::throw->new->HeadlessException
+HeadlessToolkit#getPrintJob(Frame, String, JobAttributes, PageAttributes)::: headless toolkit get print job:::if->throw->new->HeadlessException->throw->new->NullPointerException
+HeadlessToolkit#getPrintJob(Frame, String, Properties)::: headless toolkit get print job:::if->throw->new->HeadlessException->throw->new->NullPointerException
+HeadlessToolkit#sync()::: headless toolkit sync:::
+HeadlessToolkit#beep()::: headless toolkit beep:::write
+HeadlessToolkit#getSystemEventQueueImpl()::: headless toolkit get system event queue impl:::return->SunToolkit->getSystemEventQueueImplPP
+HeadlessToolkit#checkImage(Image, int, int, ImageObserver)::: headless toolkit check image:::return->tk->checkImage
+HeadlessToolkit#prepareImage(Image, int, int, ImageObserver)::: headless toolkit prepare image:::return->tk->prepareImage
+HeadlessToolkit#getImage(String)::: headless toolkit get image:::return->tk->getImage
+HeadlessToolkit#getImage(URL)::: headless toolkit get image:::return->tk->getImage
+HeadlessToolkit#createImage(String)::: headless toolkit create image:::return->tk->createImage
+HeadlessToolkit#createImage(URL)::: headless toolkit create image:::return->tk->createImage
+HeadlessToolkit#createImage(byte[], int, int)::: headless toolkit create image:::return->tk->createImage
+HeadlessToolkit#createImage(ImageProducer)::: headless toolkit create image:::return->tk->createImage
+HeadlessToolkit#createImage(byte[])::: headless toolkit create image:::return->tk->createImage
+HeadlessToolkit#getFontPeer(String, int)::: headless toolkit get font peer:::if->return->componentFactory->getFontPeer->return
+HeadlessToolkit#getFontMetrics(Font)::: headless toolkit get font metrics:::return->tk->getFontMetrics
+HeadlessToolkit#getFontList()::: headless toolkit get font list:::return->tk->getFontList
+HeadlessToolkit#addPropertyChangeListener(String, PropertyChangeListener)::: headless toolkit add property change listener:::tk->addPropertyChangeListener
+HeadlessToolkit#removePropertyChangeListener(String, PropertyChangeListener)::: headless toolkit remove property change listener:::tk->removePropertyChangeListener
+HeadlessToolkit#isModalityTypeSupported(Dialog.ModalityType)::: headless toolkit is modality type supported:::return
+HeadlessToolkit#isModalExclusionTypeSupported(Dialog.ModalExclusionType)::: headless toolkit is modal exclusion type supported:::return
+HeadlessToolkit#isAlwaysOnTopSupported()::: headless toolkit is always on top supported:::return
+HeadlessToolkit#addAWTEventListener(AWTEventListener, long)::: headless toolkit add event listener:::tk->addAWTEventListener
+HeadlessToolkit#removeAWTEventListener(AWTEventListener)::: headless toolkit remove event listener:::tk->removeAWTEventListener
+HeadlessToolkit#getAWTEventListeners()::: headless toolkit get event listeners:::return->tk->getAWTEventListeners
+HeadlessToolkit#getAWTEventListeners(long)::: headless toolkit get event listeners:::return->tk->getAWTEventListeners
+HeadlessToolkit#isDesktopSupported()::: headless toolkit is desktop supported:::return
+HeadlessToolkit#areExtraMouseButtonsEnabled()::: headless toolkit are extra mouse buttons enabled:::throw->new->HeadlessException
+HKSCS#contains(Charset)::: s contains:::return
+HKSCS#newDecoder()::: s new decoder:::return->cs->newDecoder
+HKSCS#newEncoder()::: s new encoder:::return->cs->newEncoder
+HToolkit#createLightweightFrame(LightweightFrame)::: toolkit create lightweight frame:::throw->new->HeadlessException
+HToolkit#getKeyboardFocusManagerPeer()::: toolkit get keyboard focus manager peer:::return
+HToolkit#createTrayIcon(TrayIcon)::: toolkit create tray icon:::throw->new->HeadlessException
+HToolkit#createSystemTray(SystemTray)::: toolkit create system tray:::throw->new->HeadlessException
+HToolkit#isTraySupported()::: toolkit is tray supported:::return
+HToolkit#getGlobalCursorManager()::: toolkit get global cursor manager:::throw->new->HeadlessException
+HToolkit#loadSystemColors(int[])::: toolkit load system colors:::throw->new->HeadlessException
+HToolkit#getColorModel()::: toolkit get color model:::throw->new->HeadlessException
+HToolkit#getScreenResolution()::: toolkit get screen resolution:::throw->new->HeadlessException
+HToolkit#mapInputMethodHighlight(InputMethodHighlight)::: toolkit map input method highlight:::throw->new->HeadlessException
+HToolkit#getMenuShortcutKeyMask()::: toolkit get menu shortcut key mask:::throw->new->HeadlessException
+HToolkit#getMenuShortcutKeyMaskEx()::: toolkit get menu shortcut key mask ex:::throw->new->HeadlessException
+HToolkit#getLockingKeyState(int)::: toolkit get locking key state:::throw->new->HeadlessException
+HToolkit#setLockingKeyState(int, boolean)::: toolkit set locking key state:::throw->new->HeadlessException
+HToolkit#createCustomCursor(Image, Point, String)::: toolkit create custom cursor:::throw->new->HeadlessException
+HToolkit#getBestCursorSize(int, int)::: toolkit get best cursor size:::throw->new->HeadlessException
+HToolkit#getMaximumCursorColors()::: toolkit get maximum cursor colors:::throw->new->HeadlessException
+HToolkit#createDragGestureRecognizer(Class, DragSource, Component, int, DragGestureListener)::: toolkit create drag gesture recognizer:::return
+HToolkit#getScreenSize()::: toolkit get screen size:::throw->new->HeadlessException
+HToolkit#getScreenInsets(GraphicsConfiguration)::: toolkit get screen insets:::throw->new->HeadlessException
+HToolkit#setDynamicLayout(boolean)::: toolkit set dynamic layout:::throw->new->HeadlessException
+HToolkit#isDynamicLayoutSet()::: toolkit is dynamic layout set:::throw->new->HeadlessException
+HToolkit#isDynamicLayoutActive()::: toolkit is dynamic layout active:::throw->new->HeadlessException
+HToolkit#getSystemClipboard()::: toolkit get system clipboard:::throw->new->HeadlessException
+HToolkit#getPrintJob(Frame, String, JobAttributes, PageAttributes)::: toolkit get print job:::if->throw->new->HeadlessException->throw->new->IllegalArgumentException
+HToolkit#getPrintJob(Frame, String, Properties)::: toolkit get print job:::if->throw->new->HeadlessException->throw->new->IllegalArgumentException
+HToolkit#sync()::: toolkit sync:::
+HToolkit#syncNativeQueue(long)::: toolkit sync native queue:::return
+HToolkit#beep()::: toolkit beep:::write
+HToolkit#isModalityTypeSupported(Dialog.ModalityType)::: toolkit is modality type supported:::return
+HToolkit#isModalExclusionTypeSupported(Dialog.ModalExclusionType)::: toolkit is modal exclusion type supported:::return
+HToolkit#isDesktopSupported()::: toolkit is desktop supported:::return
+HToolkit#isTaskbarSupported()::: toolkit is taskbar supported:::return
+HToolkit#isWindowOpacityControlSupported()::: toolkit is window opacity control supported:::return
+HToolkit#isWindowShapingSupported()::: toolkit is window shaping supported:::return
+HToolkit#isWindowTranslucencySupported()::: toolkit is window translucency supported:::return
+HToolkit#grab(Window)::: toolkit grab:::
+HToolkit#ungrab(Window)::: toolkit ungrab:::
+HToolkit#syncNativeQueue()::: toolkit sync native queue:::return
+HToolkit#getInputMethodAdapterDescriptor()::: toolkit get input method adapter descriptor:::return
+IconInfo#setScaledSize(int, int)::: icon info set scaled size:::getScaledRawLength
+IconInfo#getScaledRawLength(int, int)::: icon info get scaled raw length:::scaledWidthAndHeight->getScaledWidthAndHeight->return
+IconInfo#getScaledWidthAndHeight(int, int)::: icon info get scaled width and height:::tx->GraphicsEnvironment->getLocalGraphicsEnvironment->getDefaultScreenDevice->getDefaultConfiguration->getDefaultTransform->w->Region->tx->getScaleX->clipScale->h->Region->tx->getScaleY->clipScale->return->new->intArr
+IconInfo#isValid()::: icon info is valid:::return
+IconInfo#getWidth()::: icon info get width:::return
+IconInfo#getHeight()::: icon info get height:::return
+IconInfo#toString()::: icon info to string:::return
+IconInfo#getRawLength()::: icon info get raw length:::return
+IconInfo#getIntData()::: icon info get int data:::if->if->longArrayToIntArray->else->if->imageToIntArray->return
+IconInfo#getLongData()::: icon info get long data:::if->if->intArrayToLongArray->else->if->intIconData->imageToIntArray->intArrayToLongArray->return
+IconInfo#getImage()::: icon info get image:::if->if->intArrayToImage->else->if->intIconData->longArrayToIntArray->intArrayToImage->return
+IconInfo#longArrayToIntArray(long[])::: icon info long array to int array:::intData->new->intArr->for->i->return
+IconInfo#intArrayToLongArray(int[])::: icon info int array to long array:::longData->new->longArr->for->i->return
+IconInfo#intArrayToImage(int[])::: icon info int array to image:::cm->ColorSpace->getInstance->new->DirectColorModel->buffer->new->DataBufferInt->raster->Raster->new->intArr->createPackedRaster->im->new->BufferedImage->return
+IconInfo#imageToIntArray(Image, int, int)::: icon info image to int array:::if->return->cm->ColorSpace->getInstance->new->DirectColorModel->scaledWidthAndHeight->getScaledWidthAndHeight->buffer->new->DataBufferInt->raster->Raster->new->intArr->createPackedRaster->im->new->BufferedImage->g->im->getGraphics->g->drawImage->g->dispose->data->buffer->getData->raw->new->intArr->System->arraycopy->return
 InputMethodSupport#getInputMethodAdapterDescriptor():::Returns a new input method adapter descriptor for native input methods.:::
 InputMethodSupport#createInputMethodWindow(String, InputContext):::Returns a new input method window for the platform:::
 InputMethodSupport#enableInputMethodsForTextComponent():::Returns whether input methods are enabled on the platform:::
 InputMethodSupport#getDefaultKeyboardLocale():::Returns the default keyboard locale of the underlying operating system.:::
+KeyboardFocusManagerPeerImpl#clearGlobalFocusOwner(Window)::: keyboard focus manager peer impl clear global focus owner:::if->focusOwner->activeWindow->getFocusOwner->if->focusLog->isLoggable->focusLog->fine->if->fl->new->FocusEvent->SunToolkit->postPriorityEvent
+KeyboardFocusManagerPeerImpl#shouldFocusOnClick(Component)::: keyboard focus manager peer impl should focus on click:::acceptFocusOnClick->acc->AWTAccessor->getComponentAccessor->if->else->if->getComponentCount->else->peer->acc->getPeer->peer->isFocusable->return->acc->canBeFocusOwner
+KeyboardFocusManagerPeerImpl#deliverFocus(Component, Component, boolean, boolean, long, FocusEvent.Cause, Component)::: keyboard focus manager peer impl deliver focus:::if->currentOwner->if->currentOwner->isDisplayable->if->fl->new->FocusEvent->if->focusLog->isLoggable->focusLog->finer->SunToolkit->SunToolkit->targetToAppContext->postEvent->fg->new->FocusEvent->if->focusLog->isLoggable->focusLog->finer->SunToolkit->SunToolkit->targetToAppContext->postEvent->return
+KeyboardFocusManagerPeerImpl#requestFocusFor(Component, FocusEvent.Cause)::: keyboard focus manager peer impl request focus for:::AWTAccessor->getComponentAccessor->requestFocus
+KeyboardFocusManagerPeerImpl#shouldNativelyFocusHeavyweight(Component, Component, boolean, boolean, long, FocusEvent.Cause)::: keyboard focus manager peer impl should natively focus heavyweight:::return->shouldNativelyFocusHeavyweight
+KeyboardFocusManagerPeerImpl#removeLastFocusRequest(Component)::: keyboard focus manager peer impl remove last focus request:::removeLastFocusRequest
+KeyboardFocusManagerPeerImpl#processSynchronousLightweightTransfer(Component, Component, boolean, boolean, long)::: keyboard focus manager peer impl process synchronous lightweight transfer:::return->processSynchronousLightweightTransfer
 KeyboardFocusManagerPeerProvider#getKeyboardFocusManagerPeer():::Gets a singleton KeyboardFocusManagerPeer instance.:::
 LightweightFrame#getParent():::Blocks introspection of a parent window by this child.:::return
+LightweightFrame#getGraphics()::: lightweight frame get graphics:::return
+LightweightFrame#isResizable()::: lightweight frame is resizable:::return
+LightweightFrame#setTitle(String)::: lightweight frame set title:::
+LightweightFrame#setIconImage(Image)::: lightweight frame set icon image:::
+LightweightFrame#setIconImages(java.util.List)::: lightweight frame set icon images:::
+LightweightFrame#setMenuBar(MenuBar)::: lightweight frame set menu bar:::
+LightweightFrame#setResizable(boolean)::: lightweight frame set resizable:::
+LightweightFrame#remove(MenuComponent)::: lightweight frame remove:::
+LightweightFrame#toFront()::: lightweight frame to front:::
+LightweightFrame#toBack()::: lightweight frame to back:::
+LightweightFrame#addNotify()::: lightweight frame add notify:::synchronized->getTreeLock->if->isDisplayable->stk->Toolkit->getDefaultToolkit->try->stk->createLightweightFrame->setPeer->catch->throw->new->RuntimeException->finally->super->addNotify
+LightweightFrame#setPeer(FramePeer)::: lightweight frame set peer:::AWTAccessor->getComponentAccessor->setPeer
 LightweightFrame#emulateActivation(boolean):::Requests the peer to emulate activation or deactivation of the frame:::peer->AWTAccessor->getComponentAccessor->getPeer->peer->emulateActivation
 LightweightFrame#grabFocus():::Delegates the focus grab action to the client (embedding) application:::
 LightweightFrame#ungrabFocus():::Delegates the focus ungrab action to the client (embedding) application:::
@@ -227,18 +614,88 @@ LightweightFrame#createDragGestureRecognizer(Class, DragSource, Component, int, 
 LightweightFrame#createDragSourceContextPeer(DragGestureEvent):::Create a drag source context peer for the lightweight frame.:::
 LightweightFrame#addDropTarget(DropTarget):::Adds a drop target to the lightweight frame.:::
 LightweightFrame#removeDropTarget(DropTarget):::Removes a drop target from the lightweight frame.:::
+ModalityEvent#dispatch()::: modality event dispatch:::switch->getID->listener->modalityPushed->break->listener->modalityPopped->break->throw->new->Error
 ModalityListener#modalityPushed(ModalityEvent):::Called by AWT when it enters a new level of modality:::
 ModalityListener#modalityPopped(ModalityEvent):::Called by AWT when it exits a level of modality:::
+Mutex#lock()::: mutex lock:::if->Thread->currentThread->throw->new->IllegalMonitorStateException->do->if->Thread->currentThread->else->try->wait->catch->finally->while->Thread->currentThread
+Mutex#unlock()::: mutex unlock:::if->Thread->currentThread->throw->new->IllegalMonitorStateException->notify
+Mutex#isOwned()::: mutex is owned:::return->Thread->currentThread
 NativeLibLoader#loadLibraries():::This is copied from java.awt.Toolkit since we need the library loaded in sun.awt.image also:  WARNING: This is a temporary workaround for a problem in the way the AWT loads native libraries:::new->java.security.PrivilegedAction<Void>->doPrivileged
+NullComponentPeer#isObscured()::: null component peer is obscured:::return
+NullComponentPeer#canDetermineObscurity()::: null component peer can determine obscurity:::return
+NullComponentPeer#isFocusable()::: null component peer is focusable:::return
+NullComponentPeer#setVisible(boolean)::: null component peer set visible:::
+NullComponentPeer#show()::: null component peer show:::
+NullComponentPeer#hide()::: null component peer hide:::
+NullComponentPeer#setEnabled(boolean)::: null component peer set enabled:::
+NullComponentPeer#enable()::: null component peer enable:::
+NullComponentPeer#disable()::: null component peer disable:::
+NullComponentPeer#paint(Graphics)::: null component peer paint:::
+NullComponentPeer#repaint(long, int, int, int, int)::: null component peer repaint:::
+NullComponentPeer#print(Graphics)::: null component peer print:::
+NullComponentPeer#setBounds(int, int, int, int, int)::: null component peer set bounds:::
+NullComponentPeer#reshape(int, int, int, int)::: null component peer reshape:::
+NullComponentPeer#coalescePaintEvent(PaintEvent)::: null component peer coalesce paint event:::
+NullComponentPeer#handleEvent(Event)::: null component peer handle event:::return
+NullComponentPeer#handleEvent(java.awt.AWTEvent)::: null component peer handle event:::
+NullComponentPeer#getPreferredSize()::: null component peer get preferred size:::return->new->Dimension
+NullComponentPeer#getMinimumSize()::: null component peer get minimum size:::return->new->Dimension
+NullComponentPeer#getColorModel()::: null component peer get color model:::return
+NullComponentPeer#getGraphics()::: null component peer get graphics:::return
+NullComponentPeer#getGraphicsConfiguration()::: null component peer get graphics configuration:::return
+NullComponentPeer#getFontMetrics(Font)::: null component peer get font metrics:::return
+NullComponentPeer#dispose()::: null component peer dispose:::
+NullComponentPeer#setForeground(Color)::: null component peer set foreground:::
+NullComponentPeer#setBackground(Color)::: null component peer set background:::
+NullComponentPeer#setFont(Font)::: null component peer set font:::
+NullComponentPeer#updateCursorImmediately()::: null component peer update cursor immediately:::
+NullComponentPeer#setCursor(Cursor)::: null component peer set cursor:::
+NullComponentPeer#requestFocus(Component, boolean, boolean, long, Cause)::: null component peer request focus:::return
+NullComponentPeer#createImage(ImageProducer)::: null component peer create image:::return
+NullComponentPeer#createImage(int, int)::: null component peer create image:::return
+NullComponentPeer#prepareImage(Image, int, int, ImageObserver)::: null component peer prepare image:::return
+NullComponentPeer#checkImage(Image, int, int, ImageObserver)::: null component peer check image:::return
+NullComponentPeer#preferredSize()::: null component peer preferred size:::return->getPreferredSize
+NullComponentPeer#minimumSize()::: null component peer minimum size:::return->getMinimumSize
+NullComponentPeer#getLocationOnScreen()::: null component peer get location on screen:::return->new->Point
+NullComponentPeer#getInsets()::: null component peer get insets:::return->insets
+NullComponentPeer#beginValidate()::: null component peer begin validate:::
+NullComponentPeer#endValidate()::: null component peer end validate:::
+NullComponentPeer#insets()::: null component peer insets:::return->new->Insets
+NullComponentPeer#isPaintPending()::: null component peer is paint pending:::return
+NullComponentPeer#handlesWheelScrolling()::: null component peer handles wheel scrolling:::return
+NullComponentPeer#createVolatileImage(int, int)::: null component peer create volatile image:::return
+NullComponentPeer#beginLayout()::: null component peer begin layout:::
+NullComponentPeer#endLayout()::: null component peer end layout:::
+NullComponentPeer#createBuffers(int, BufferCapabilities)::: null component peer create buffers:::throw->new->AWTException
+NullComponentPeer#getBackBuffer()::: null component peer get back buffer:::throw->new->IllegalStateException
+NullComponentPeer#flip(int, int, int, int, BufferCapabilities.FlipContents)::: null component peer flip:::throw->new->IllegalStateException
+NullComponentPeer#destroyBuffers()::: null component peer destroy buffers:::
+NullComponentPeer#isReparentSupported()::: null component peer is reparent supported:::return
+NullComponentPeer#reparent(ContainerPeer)::: null component peer reparent:::throw->new->UnsupportedOperationException
+NullComponentPeer#layout()::: null component peer layout:::
+NullComponentPeer#getBounds()::: null component peer get bounds:::return->new->Rectangle
 NullComponentPeer#applyShape(Region):::Applies the shape to the native component window.:::
 NullComponentPeer#setZOrder(ComponentPeer):::Lowers this component at the bottom of the above HW peer:::
+NullComponentPeer#updateGraphicsData(GraphicsConfiguration)::: null component peer update graphics data:::return
+NullComponentPeer#getAppropriateGraphicsConfiguration(GraphicsConfiguration)::: null component peer get appropriate graphics configuration:::return
 OSInfo#getOSType():::Returns type of operating system.:::osName->System->getProperty->if->if->osName->contains->return->if->osName->contains->return->if->osName->contains->osName->contains->return->if->osName->contains->return->return
+OSInfo#getOSTypeAction()::: info get type action:::return
+OSInfo#getWindowsVersion()::: info get windows version:::osVersion->System->getProperty->if->return->synchronized->result->windowsVersionMap->get->if->arr->osVersion->split->if->try->Integer->parseInt->Integer->parseInt->new->WindowsVersion->catch->return->finally->else->return->windowsVersionMap->put->return
+OSInfo.WindowsVersion#getMajor()::: windows version get major:::return
+OSInfo.WindowsVersion#getMinor()::: windows version get minor:::return
+OSInfo.WindowsVersion#compareTo(WindowsVersion)::: windows version compare to:::result->o->getMajor->if->o->getMinor->return
+OSInfo.WindowsVersion#equals(Object)::: windows version equals:::return->compareTo
+OSInfo.WindowsVersion#hashCode()::: windows version hash code:::return
+OSInfo.WindowsVersion#toString()::: windows version to string:::return
 OverrideNativeWindowHandle#overrideWindowHandle(long):::Replaces an owner window with a window with provided handle.:::
 PaintEventDispatcher#setPaintEventDispatcher(PaintEventDispatcher):::Sets the current PaintEventDispatcher.:::synchronized
 PaintEventDispatcher#getPaintEventDispatcher():::Returns the currently active PaintEventDispatcher:::synchronized->if->new->PaintEventDispatcher->return
 PaintEventDispatcher#createPaintEvent(Component, int, int, int, int):::Creates and returns the PaintEvent that should be dispatched for the specified component:::return->new->Rectangle->new->PaintEvent
 PaintEventDispatcher#shouldDoNativeBackgroundErase(Component):::Returns true if a native background erase should be done for the specified Component.:::return
 PaintEventDispatcher#queueSurfaceDataReplacing(Component, Runnable):::This method is invoked from the toolkit thread when the surface data of the component needs to be replaced:::return
+PeerEvent#getFlags()::: peer event get flags:::return
+PeerEvent#coalesceEvents(PeerEvent)::: peer event coalesce events:::return
 PlatformFont#getMissingGlyphCharacter():::Returns the character that should be rendered when a glyph is missing.:::
 PlatformFont#makeMultiCharsetString(String):::make a array of CharsetString with given String.:::return->str->toCharArray->str->length->makeMultiCharsetString
 PlatformFont#makeMultiCharsetString(String, boolean):::make a array of CharsetString with given String.:::return->str->toCharArray->str->length->makeMultiCharsetString
@@ -246,13 +703,29 @@ PlatformFont#makeMultiCharsetString(char[], int, int):::make a array of CharsetS
 PlatformFont#makeMultiCharsetString(char[], int, int, boolean):::make a array of CharsetString with given char array.:::if->return->new->CharsetStringArr->mcs->tmpStr->new->charArr->tmpChar->encoded->currentFont->for->i->if->return->else->lastIndex->for->i->result->cs->new->CharsetString->if->new->CharsetStringArr->else->mcs->addElement->mcs->mcs->size->new->CharsetStringArr->toArray->return
 PlatformFont#mightHaveMultiFontMetrics():::Is it possible that this font's metrics require the multi-font calls? This might be true, for example, if the font supports kerning.:::return
 PlatformFont#makeConvertedMultiFontString(String):::Specialized fast path string conversion for AWT.:::return->str->toCharArray->str->length->makeConvertedMultiFontChars
+PlatformFont#makeConvertedMultiFontChars(char[], int, int)::: platform font make converted multi font chars:::result->new->ObjectArr->workingCache->convertedData->stringIndex->convertedDataIndex->resultIndex->cacheIndex->currentFontDescriptor->lastFontDescriptor->currentDefaultChar->theChar->end->if->throw->new->ArrayIndexOutOfBoundsException->if->return->while->getFontCache->if->ch->componentCount->for->j->try->input->new->charArr->new->PlatformFontCache->if->currentFontDescriptor->useUnicode->if->put->put->else->put->put->else->CharBuffer->wrap->encode->getFontCache->catch->println->e->printStackTrace->return->finally->if->if->if->if->newResult->new->ObjectArr->System->arraycopy->if->useUnicode->maxBytesPerChar->new->byteArr->else->maxBytesPerChar->new->byteArr->ba->array->size->position->if->else->if->else->if->else->if->if->return
+PlatformFont#getFontCache()::: platform font get font cache:::if->new->ObjectArr->return
+PlatformFont#initIDs():::Initialize JNI field and method IDs:::
 RepaintArea#add(Rectangle, int):::Adds a Rectangle to this RepaintArea:::if->r->isEmpty->return->addTo->if->if->add->else->new->Rectangle
+RepaintArea#cloneAndReset():::Creates a new RepaintArea with the same geometry as this RepaintArea, then removes all of the geometry from this RepaintArea and restores it to an empty RepaintArea.:::ra->new->RepaintArea->for->i->return
+RepaintArea#isEmpty()::: repaint area is empty:::for->i->return
 RepaintArea#constrain(int, int, int, int):::Constrains the size of the repaint area to the passed in bounds.:::for->i
 RepaintArea#subtract(int, int, int, int):::Marks the passed in region as not needing to be painted:::subtract->new->Rectangle->for->i
 RepaintArea#paint(Object, boolean):::Invokes paint and update on target Component with optimal rectangular clip region:::comp->if->isEmpty->return->if->comp->isVisible->return->ra->this->cloneAndReset->if->subtract->subtract->if->paintRect->union->square->benefit->if->for->i
 RepaintArea#updateComponent(Component, Graphics):::Calls Component.update(Graphics) with given Graphics.:::if->comp->update
 RepaintArea#paintComponent(Component, Graphics):::Calls Component.paint(Graphics) with given Graphics.:::if->comp->paint
 RepaintArea#subtract(Rectangle, Rectangle):::Subtracts subtr from rect:::if->return->common->rect->intersection->if->common->isEmpty->return->if->if->return->else->if->return->else->if->if->return->else->if->return->return
+RepaintArea#toString()::: repaint area to string:::return->super->toString
+RequestFocusController#acceptRequestFocus(Component, Component, boolean, boolean, Cause)::: request focus controller accept request focus:::
+ScrollPaneWheelScroller#handleWheelScrolling(ScrollPane, MouseWheelEvent)::: scroll pane wheel scroller handle wheel scrolling:::if->log->isLoggable->log->e->getX->e->getY->e->getSource->finer->increment->if->e->getScrollAmount->adj->getAdjustableToScroll->if->getIncrementFromAdjustable->if->log->isLoggable->log->adj->getClass->finer->scrollAdjustable
+ScrollPaneWheelScroller#getAdjustableToScroll(ScrollPane)::: scroll pane wheel scroller get adjustable to scroll:::policy->sp->getScrollbarDisplayPolicy->if->if->log->isLoggable->log->finer->return->sp->getVAdjustable->else->ins->sp->getInsets->vertScrollWidth->sp->getVScrollbarWidth->if->log->isLoggable->log->finer->log->finer->if->if->log->isLoggable->log->finer->return->sp->getVAdjustable->else->horizScrollHeight->sp->getHScrollbarHeight->if->if->log->isLoggable->log->finer->return->sp->getHAdjustable->else->if->log->isLoggable->log->finer->return
+ScrollPaneWheelScroller#getIncrementFromAdjustable(Adjustable, MouseWheelEvent)::: scroll pane wheel scroller get increment from adjustable:::if->log->isLoggable->if->log->fine->increment->if->e->getScrollType->e->getUnitsToScroll->adj->getUnitIncrement->else->if->e->getScrollType->adj->getBlockIncrement->e->getWheelRotation->return
+ScrollPaneWheelScroller#scrollAdjustable(Adjustable, int)::: scroll pane wheel scroller scroll adjustable:::if->log->isLoggable->if->log->fine->if->log->fine->current->adj->getValue->upperLimit->adj->getMaximum->adj->getVisibleAmount->if->log->isLoggable->log->finer->if->if->adj->setValue->return->else->adj->setValue->return->else->if->adj->getMinimum->if->adj->getMinimum->adj->setValue->return->else->adj->adj->getMinimum->setValue->return
+SoftCache.ValueCell#create(Object, Object, ReferenceQueue)::: value cell create:::if->return->return->new->ValueCell
+SoftCache.ValueCell#strip(Object, boolean)::: value cell strip:::if->return->vc->o->vc->get->if->vc->drop->return
+SoftCache.ValueCell#isValid()::: value cell is valid:::return
+SoftCache.ValueCell#drop()::: value cell drop:::super->clear
+SoftCache#processQueue()::: soft cache process queue:::vc->while->queue->poll->if->vc->isValid->hash->remove->else
 SoftCache#size():::Return the number of key-value mappings in this cache:::return->entrySet->size
 SoftCache#isEmpty():::Return true if this cache contains no key-value mappings.:::return->entrySet->isEmpty
 SoftCache#containsKey(Object):::Return true if this cache contains a mapping for the specified key:::return->ValueCell->hash->get->strip
@@ -261,22 +734,116 @@ SoftCache#get(Object):::Return the value to which this cache maps the specified 
 SoftCache#put(Object, Object):::Update this cache so that the given key maps to the given value:::processQueue->vc->ValueCell->create->return->ValueCell->hash->put->strip
 SoftCache#remove(Object):::Remove the mapping for the given key from this cache, if present.:::processQueue->return->ValueCell->hash->remove->strip
 SoftCache#clear():::Remove all mappings from this cache.:::processQueue->hash->clear
+SoftCache#valEquals(Object, Object)::: soft cache val equals:::return->o1->equals
+SoftCache.Entry#getKey()::: entry get key:::return->ent->getKey
+SoftCache.Entry#getValue()::: entry get value:::return
+SoftCache.Entry#setValue(Object)::: entry set value:::return->ent->ValueCell->ent->getKey->create->setValue
+SoftCache.Entry#equals(Object)::: entry equals:::if->return->e->return->ent->getKey->e->getKey->valEquals->e->getValue->valEquals
+SoftCache.Entry#hashCode()::: entry hash code:::k->return->getKey->k->hashCode->value->hashCode
+SoftCache.EntrySet#iterator()::: entry set iterator:::return->new->Iterator<Map.Entry<Object,Object>>
+SoftCache.EntrySet#isEmpty()::: entry set is empty:::return->iterator->hasNext
+SoftCache.EntrySet#size()::: entry set size:::j->for->i->iterator->i->hasNext->i->next->return
+SoftCache.EntrySet#remove(Object)::: entry set remove:::processQueue->if->return->hashEntries->remove->else->return
 SoftCache#entrySet():::Return a Set view of the mappings in this cache.:::if->new->EntrySet->return
 SubRegionShowable#show(int, int, int, int):::Shows the specific subregion.:::
+SubRegionShowable#showIfNotLost(int, int, int, int)::: sub region showable show if not lost:::
+SunDisplayChanger#add(DisplayChangedListener)::: sun display changer add:::if->log->isLoggable->if->log->fine->if->log->isLoggable->log->finer->listeners->put
+SunDisplayChanger#remove(DisplayChangedListener)::: sun display changer remove:::if->log->isLoggable->if->log->fine->if->log->isLoggable->log->finer->listeners->remove
+SunDisplayChanger#notifyListeners()::: sun display changer notify listeners:::if->log->isLoggable->log->finest->cloneSet->synchronized->listeners->keySet->new->HashSet<DisplayChangedListener>->itr->cloneSet->iterator->while->itr->hasNext->current->itr->next->try->if->log->isLoggable->log->finest->current->displayChanged->catch->listeners->remove->finally
+SunDisplayChanger#notifyPaletteChanged()::: sun display changer notify palette changed:::if->log->isLoggable->log->finest->cloneSet->synchronized->listeners->keySet->new->HashSet<DisplayChangedListener>->itr->cloneSet->iterator->while->itr->hasNext->current->itr->next->try->if->log->isLoggable->log->finest->current->paletteChanged->catch->listeners->remove->finally
+SunGraphicsCallback#run(Component, Graphics)::: sun graphics callback run:::
+SunGraphicsCallback#constrainGraphics(Graphics, Rectangle)::: sun graphics callback constrain graphics:::if->constrain->else->g->translate->g->clipRect
+SunGraphicsCallback#runOneComponent(Component, Rectangle, Graphics, Shape, int)::: sun graphics callback run one component:::if->comp->isDisplayable->comp->isVisible->return->lightweight->comp->isLightweight->if->return->if->comp->getBounds->if->clip->intersects->cg->g->create->try->constrainGraphics->cg->comp->getFont->setFont->cg->comp->getForeground->setColor->if->comp->getBackground->setBackground->else->if->comp->getBackground->setBackground->run->catch->finally->cg->dispose
+SunGraphicsCallback#runComponents(Component[], Graphics, int)::: sun graphics callback run components:::ncomponents->clip->g->getClip->if->log->isLoggable->newrect->clip->getBounds->log->finer->if->for->i->for->i->else->for->i
+SunGraphicsCallback.PaintHeavyweightComponentsCallback#run(Component, Graphics)::: paint heavyweight components callback run:::if->comp->isLightweight->comp->paintAll->else->if->getComponents->runComponents
+SunGraphicsCallback.PaintHeavyweightComponentsCallback#getInstance()::: paint heavyweight components callback get instance:::return
+SunGraphicsCallback.PrintHeavyweightComponentsCallback#run(Component, Graphics)::: print heavyweight components callback run:::if->comp->isLightweight->comp->printAll->else->if->getComponents->runComponents
+SunGraphicsCallback.PrintHeavyweightComponentsCallback#getInstance()::: print heavyweight components callback get instance:::return
 SunHints.Key#getIndex():::Returns the numeric index associated with this Key:::return->intKey
 SunHints.Key#toString():::Returns a string representation of the Key.:::return
 SunHints.Key#isCompatibleValue(Object):::Returns true if the specified object is a valid value for this Key.:::if->return->isCompatibleKey->return
+SunHints.Value#register(SunHints.Key, Value)::: value register:::kindex->key->getIndex->vindex->value->getIndex->if->throw->new->InternalError
+SunHints.Value#get(int, int)::: value get:::return
 SunHints.Value#getIndex():::Returns the numeric index associated with this Key:::return
 SunHints.Value#toString():::Returns a string representation of this Value.:::return
 SunHints.Value#isCompatibleKey(Key):::Returns true if the specified object is a valid Key for this Value.:::return
 SunHints.Value#hashCode():::The hash code for all SunHints.Value objects will be the same as the system identity code of the object as defined by the System.identityHashCode() method.:::return->System->identityHashCode
 SunHints.Value#equals(Object):::The equals method for all SunHints.Value objects will return the same result as the equality operator '=='.:::return
 SunHints.LCDContrastKey#isCompatibleValue(Object):::Returns true if the specified object is a valid value for this Key:::if->ival->intValue->return->return
+SunToolkit#initEQ(AppContext):::Creates and initializes EventQueue instance for the specified AppContext:::eventQueue->new->EventQueue->appContext->put->postEventQueue->new->PostEventQueue->appContext->put
+SunToolkit#useBufferPerWindow()::: sun toolkit use buffer per window:::return
+SunToolkit#createLightweightFrame(LightweightFrame)::: sun toolkit create lightweight frame:::
+SunToolkit#createTrayIcon(TrayIcon)::: sun toolkit create tray icon:::
+SunToolkit#createSystemTray(SystemTray)::: sun toolkit create system tray:::
+SunToolkit#isTraySupported()::: sun toolkit is tray supported:::
+SunToolkit#getKeyboardFocusManagerPeer()::: sun toolkit get keyboard focus manager peer:::
+SunToolkit#awtLock()::: sun toolkit awt lock:::AWT_LOCK->lock
+SunToolkit#awtTryLock()::: sun toolkit awt try lock:::return->AWT_LOCK->tryLock
+SunToolkit#awtUnlock()::: sun toolkit awt unlock:::AWT_LOCK->unlock
+SunToolkit#awtLockWait()::: sun toolkit awt lock wait:::AWT_LOCK_COND->await
+SunToolkit#awtLockWait(long)::: sun toolkit awt lock wait:::AWT_LOCK_COND->await
+SunToolkit#awtLockNotify()::: sun toolkit awt lock notify:::AWT_LOCK_COND->signal
+SunToolkit#awtLockNotifyAll()::: sun toolkit awt lock notify all:::AWT_LOCK_COND->signalAll
+SunToolkit#isAWTLockHeldByCurrentThread()::: sun toolkit is lock held by current thread:::return->AWT_LOCK->isHeldByCurrentThread
+SunToolkit#createNewAppContext()::: sun toolkit create new app context:::threadGroup->Thread->currentThread->getThreadGroup->return->createNewAppContext
+SunToolkit#createNewAppContext(ThreadGroup)::: sun toolkit create new app context:::appContext->new->AppContext->initEQ->return
+SunToolkit#wakeupEventQueue(EventQueue, boolean)::: sun toolkit wakeup event queue:::AWTAccessor->getEventQueueAccessor->wakeup
+SunToolkit#targetToPeer(Object)::: sun toolkit target to peer:::if->GraphicsEnvironment->isHeadless->return->AWTAutoShutdown->getInstance->getPeer->return
+SunToolkit#targetCreatedPeer(Object, Object)::: sun toolkit target created peer:::if->GraphicsEnvironment->isHeadless->AWTAutoShutdown->getInstance->registerPeer
+SunToolkit#targetDisposedPeer(Object, Object)::: sun toolkit target disposed peer:::if->GraphicsEnvironment->isHeadless->AWTAutoShutdown->getInstance->unregisterPeer
+SunToolkit#setAppContext(Object, AppContext):::Sets the appContext field of target:::if->AWTAccessor->getComponentAccessor->setAppContext->else->if->AWTAccessor->getMenuComponentAccessor->setAppContext->else->return->return
+SunToolkit#getAppContext(Object):::Returns the appContext field for target:::if->return->AWTAccessor->getComponentAccessor->getAppContext->else->if->return->AWTAccessor->getMenuComponentAccessor->getAppContext->else->return
+SunToolkit#targetToAppContext(Object)::: sun toolkit target to app context:::if->return->context->getAppContext->if->appContextMap->get->return
+SunToolkit#setLWRequestStatus(Window, boolean)::: sun toolkit set request status:::AWTAccessor->getWindowAccessor->setLWRequestStatus
+SunToolkit#checkAndSetPolicy(Container)::: sun toolkit check and set policy:::defaultPolicy->KeyboardFocusManager->getCurrentKeyboardFocusManager->getDefaultFocusTraversalPolicy->cont->setFocusTraversalPolicy
+SunToolkit#insertTargetMapping(Object, AppContext)::: sun toolkit insert target mapping:::if->setAppContext->appContextMap->put
+SunToolkit#postEvent(AppContext, AWTEvent)::: sun toolkit post event:::if->throw->new->NullPointerException->sea->AWTAccessor->getSequencedEventAccessor->if->sea->isSequencedEvent->nested->sea->getNested->if->nested->getID->twe->Toolkit->getDefaultToolkit->twe->getSource->twe->getWhen->setWindowDeactivationTime->setSystemGenerated->eventContext->event->getSource->targetToAppContext->if->eventContext->equals->throw->new->RuntimeException->postEventQueue->appContext->get->if->postEventQueue->postEvent
+SunToolkit#postPriorityEvent(AWTEvent)::: sun toolkit post priority event:::pe->Toolkit->getDefaultToolkit->new->Runnable->new->PeerEvent->e->getSource->targetToAppContext->postEvent
+SunToolkit#flushPendingEvents()::: sun toolkit flush pending events:::appContext->AppContext->getAppContext->flushPendingEvents
+SunToolkit#flushPendingEvents(AppContext)::: sun toolkit flush pending events:::postEventQueue->appContext->get->if->postEventQueue->flush
+SunToolkit#executeOnEventHandlerThread(Object, Runnable)::: sun toolkit execute on event handler thread:::new->PeerEvent->executeOnEventHandlerThread
+SunToolkit#executeOnEventHandlerThread(Object, Runnable, long)::: sun toolkit execute on event handler thread:::new->PeerEvent->executeOnEventHandlerThread
+SunToolkit#executeOnEventHandlerThread(PeerEvent)::: sun toolkit execute on event handler thread:::peerEvent->getSource->targetToAppContext->postEvent
+SunToolkit#invokeLaterOnAppContext(AppContext, Runnable)::: sun toolkit invoke later on app context:::Toolkit->getDefaultToolkit->new->PeerEvent->postEvent
+SunToolkit#executeOnEDTAndWait(Object, Runnable)::: sun toolkit execute on and wait:::if->EventQueue->isDispatchThread->throw->new->Error->lock->new->AWTInvocationLock->event->new->PeerEvent->synchronized->executeOnEventHandlerThread->while->event->isDispatched->lock->wait->eventThrowable->event->getThrowable->if->throw->new->InvocationTargetException
+SunToolkit#isDispatchThreadForAppContext(Object)::: sun toolkit is dispatch thread for app context:::appContext->targetToAppContext->eq->appContext->get->accessor->AWTAccessor->getEventQueueAccessor->return->accessor->isDispatchThreadImpl
+SunToolkit#getScreenSize()::: sun toolkit get screen size:::return->GraphicsEnvironment->getLocalGraphicsEnvironment->getDefaultScreenDevice->getDefaultConfiguration->getBounds->getSize
+SunToolkit#getColorModel()::: sun toolkit get color model:::return->GraphicsEnvironment->getLocalGraphicsEnvironment->getDefaultScreenDevice->getDefaultConfiguration->getColorModel
+SunToolkit#getFontMetrics(Font)::: sun toolkit get font metrics:::return->FontDesignMetrics->getMetrics
+SunToolkit#getFontList()::: sun toolkit get font list:::hardwiredFontList->return
 SunToolkit#disableBackgroundErase(Canvas):::Disables erasing of background on the canvas before painting if this is supported by the current toolkit:::disableBackgroundEraseImpl
 SunToolkit#disableBackgroundErase(Component):::Disables the native erasing of the background on the given component before painting if this is supported by the current toolkit:::disableBackgroundEraseImpl
+SunToolkit#disableBackgroundEraseImpl(Component)::: sun toolkit disable background erase impl:::AWTAccessor->getComponentAccessor->setBackgroundEraseDisabled
 SunToolkit#getSunAwtNoerasebackground():::Returns the value of "sun.awt.noerasebackground" property:::return->AccessController->new->GetBooleanAction->doPrivileged
 SunToolkit#getSunAwtErasebackgroundonresize():::Returns the value of "sun.awt.erasebackgroundonresize" property:::return->AccessController->new->GetBooleanAction->doPrivileged
+SunToolkit#getImageFromHash(Toolkit, URL)::: sun toolkit get image from hash:::checkPermissions->synchronized->key->url->toString->img->urlImgCache->get->if->try->tk->new->URLImageSource->createImage->urlImgCache->put->catch->finally->return
+SunToolkit#getImageFromHash(Toolkit, String)::: sun toolkit get image from hash:::checkPermissions->synchronized->img->fileImgCache->get->if->try->tk->new->FileImageSource->createImage->fileImgCache->put->catch->finally->return
+SunToolkit#getImage(String)::: sun toolkit get image:::return->getImageFromHash
+SunToolkit#getImage(URL)::: sun toolkit get image:::return->getImageFromHash
+SunToolkit#getImageWithResolutionVariant(String, String)::: sun toolkit get image with resolution variant:::synchronized->image->getImageFromHash->if->return->resolutionVariant->getImageFromHash->createImageWithResolutionVariant->fileImgCache->put->return
+SunToolkit#getImageWithResolutionVariant(URL, URL)::: sun toolkit get image with resolution variant:::synchronized->image->getImageFromHash->if->return->resolutionVariant->getImageFromHash->createImageWithResolutionVariant->key->url->toString->urlImgCache->put->return
+SunToolkit#createImage(String)::: sun toolkit create image:::checkPermissions->return->new->FileImageSource->createImage
+SunToolkit#createImage(URL)::: sun toolkit create image:::checkPermissions->return->new->URLImageSource->createImage
+SunToolkit#createImage(byte[], int, int)::: sun toolkit create image:::return->new->ByteArrayImageSource->createImage
+SunToolkit#createImage(ImageProducer)::: sun toolkit create image:::return->new->ToolkitImage
+SunToolkit#createImageWithResolutionVariant(Image, Image)::: sun toolkit create image with resolution variant:::return->new->MultiResolutionToolkitImage
+SunToolkit#checkImage(Image, int, int, ImageObserver)::: sun toolkit check image:::if->return->tkimg->repbits->if->else->tkimg->getImageRep->check->return->tkimg->check->checkResolutionVariant
+SunToolkit#prepareImage(Image, int, int, ImageObserver)::: sun toolkit prepare image:::if->return->if->return->tkimg->if->tkimg->hasError->if->o->imageUpdate->return->ir->tkimg->getImageRep->return->ir->prepare->prepareResolutionVariant
+SunToolkit#checkResolutionVariant(Image, int, int, ImageObserver)::: sun toolkit check resolution variant:::rvImage->getResolutionVariant->rvw->getRVSize->rvh->getRVSize->return->rvImage->hasError->MultiResolutionToolkitImage->getResolutionVariantObserver->checkImage
+SunToolkit#prepareResolutionVariant(Image, int, int, ImageObserver)::: sun toolkit prepare resolution variant:::rvImage->getResolutionVariant->rvw->getRVSize->rvh->getRVSize->return->rvImage->hasError->MultiResolutionToolkitImage->getResolutionVariantObserver->prepareImage
+SunToolkit#getRVSize(int)::: sun toolkit get size:::return
+SunToolkit#getResolutionVariant(Image)::: sun toolkit get resolution variant:::if->resolutionVariant->getResolutionVariant->if->return->return
+SunToolkit#imageCached(String)::: sun toolkit image cached:::return->fileImgCache->containsKey
+SunToolkit#imageCached(URL)::: sun toolkit image cached:::key->url->toString->return->urlImgCache->containsKey
+SunToolkit#imageExists(String)::: sun toolkit image exists:::if->checkPermissions->return->new->File->exists->return
+SunToolkit#imageExists(URL)::: sun toolkit image exists:::if->checkPermissions->try->is->url->openStream->return->catch->return->finally->return
+SunToolkit#checkPermissions(String)::: sun toolkit check permissions:::security->System->getSecurityManager->if->security->checkRead
+SunToolkit#checkPermissions(URL)::: sun toolkit check permissions:::sm->System->getSecurityManager->if->try->perm->URLUtil->getConnectPermission->if->sm->checkPermission->catch->sm->url->getHost->url->getPort->checkConnect->finally
 SunToolkit#getScaledIconImage(java.util.List, int, int):::Scans imageList for best-looking image of specified dimensions:::if->return->multiResAndnormalImages->imageList->size->new->ArrayList<>->foreach->if->im->getResolutionVariant->multiResAndnormalImages->add->else->multiResAndnormalImages->add->bestImage->bestWidth->bestHeight->bestSimilarity->bestScaleFactor->for->i->multiResAndnormalImages->iterator->i->hasNext->if->return->bimage->new->BufferedImage->g->bimage->createGraphics->g->setRenderingHint->try->x->y->g->drawImage->catch->finally->g->dispose->return
+SunToolkit#getScaledIconData(java.util.List, int, int)::: sun toolkit get scaled icon data:::bimage->getScaledIconImage->if->return->raster->bimage->getRaster->buffer->raster->getDataBuffer->return
+SunToolkit#getSystemEventQueueImpl()::: sun toolkit get system event queue impl:::return->getSystemEventQueueImplPP
+SunToolkit#getSystemEventQueueImplPP()::: sun toolkit get system event queue impl p:::return->AppContext->getAppContext->getSystemEventQueueImplPP
+SunToolkit#getSystemEventQueueImplPP(AppContext)::: sun toolkit get system event queue impl p:::theEventQueue->appContext->get->return
 SunToolkit#getNativeContainer(Component):::Give native peers the ability to query the native container given a native component (eg the direct parent may be lightweight).:::return->Toolkit->getNativeContainer
 SunToolkit#getHeavyweightComponent(Component):::Gives native peers the ability to query the closest HW component:::while->AWTAccessor->getComponentAccessor->isLightweight->AWTAccessor->getComponentAccessor->getParent->return
 SunToolkit#getFocusAcceleratorKeyMask():::Returns key modifiers used by Swing to set up a focus accelerator key stroke.:::return
@@ -290,57 +857,188 @@ SunToolkit#needsXEmbed():::Returns whether default toolkit needs the support of 
 SunToolkit#needsXEmbedImpl():::Returns whether this toolkit needs the support of the xembed from embedding host(if any).:::return
 SunToolkit#isXEmbedServerRequested():::Returns whether the XEmbed server feature is requested by developer:::return->AccessController->new->GetBooleanAction->doPrivileged
 SunToolkit#isModalExcludedSupported():::Returns whether the modal exclusion API is supported by the current toolkit:::tk->Toolkit->getDefaultToolkit->return->tk->isModalExclusionTypeSupported
+SunToolkit#isModalExcludedSupportedImpl()::: sun toolkit is modal excluded supported impl:::return
+SunToolkit#setModalExcluded(Window)::: sun toolkit set modal excluded:::if->window->setModalExclusionType
+SunToolkit#isModalExcluded(Window)::: sun toolkit is modal excluded:::if->return->window->getModalExclusionType->compareTo
 SunToolkit#isModalityTypeSupported(Dialog.ModalityType):::Overridden in XToolkit and WToolkit:::return
 SunToolkit#isModalExclusionTypeSupported(Dialog.ModalExclusionType):::Overridden in XToolkit and WToolkit:::return
+SunToolkit#addModalityListener(ModalityListener)::: sun toolkit add modality listener:::modalityListeners->add
+SunToolkit#removeModalityListener(ModalityListener)::: sun toolkit remove modality listener:::modalityListeners->remove
+SunToolkit#notifyModalityPushed(Dialog)::: sun toolkit notify modality pushed:::notifyModalityChange
+SunToolkit#notifyModalityPopped(Dialog)::: sun toolkit notify modality popped:::notifyModalityChange
+SunToolkit#notifyModalityChange(int, Dialog)::: sun toolkit notify modality change:::ev->new->ModalityEvent->ev->dispatch
+SunToolkit.ModalityListenerList#add(ModalityListener)::: modality listener list add:::listeners->addElement
+SunToolkit.ModalityListenerList#remove(ModalityListener)::: modality listener list remove:::listeners->removeElement
+SunToolkit.ModalityListenerList#modalityPushed(ModalityEvent)::: modality listener list modality pushed:::it->listeners->iterator->while->it->hasNext->it->next->modalityPushed
+SunToolkit.ModalityListenerList#modalityPopped(ModalityEvent)::: modality listener list modality popped:::it->listeners->iterator->while->it->hasNext->it->next->modalityPopped
+SunToolkit#isLightweightOrUnknown(Component)::: sun toolkit is lightweight or unknown:::if->comp->isLightweight->getDefaultToolkit->return->return
 SunToolkit#realSync():::Parameterless version of realsync which uses default timout (see DEFAUL_WAIT_TIME).:::realSync
 SunToolkit#realSync(long):::Forces toolkit to synchronize with the native windowing sub-system, flushing all pending work and waiting for all the events to be processed:::if->EventQueue->isDispatchThread->throw->new->IllegalThreadException->bigLoop->do->sync->iters->while->syncNativeQueue->while->syncNativeQueue->if->throw->new->InfiniteLoop->while->waitForIdle->while->waitForIdle->if->throw->new->InfiniteLoop->while->syncNativeQueue->waitForIdle
 SunToolkit#syncNativeQueue(long):::Platform toolkits need to implement this method to perform the sync of the native queue:::
+SunToolkit#isEQEmpty()::: sun toolkit is empty:::queue->getSystemEventQueueImpl->return->AWTAccessor->getEventQueueAccessor->noEvents
 SunToolkit#waitForIdle(long):::Waits for the Java event queue to empty:::flushPendingEvents->queueWasEmpty->synchronized->isEQEmpty->AppContext->getAppContext->getSystemEventQueueImpl->new->PeerEvent->postEvent->try->while->waitLock->wait->catch->return->finally->try->Thread->sleep->catch->throw->new->RuntimeException->finally->flushPendingEvents->synchronized->return->isEQEmpty
 SunToolkit#grab(Window):::Grabs the mouse input for the given window:::
 SunToolkit#ungrab(Window):::Forces ungrab:::
+SunToolkit#showOrHideTouchKeyboard(Component, AWTEvent)::: sun toolkit show or hide touch keyboard:::
+SunToolkit#isTouchKeyboardAutoShowEnabled()::: sun toolkit is touch keyboard auto show enabled:::return
 SunToolkit#closeSplashScreen():::Locates the splash screen library in a platform dependent way and closes the splash screen:::
+SunToolkit#fireDesktopFontPropertyChanges()::: sun toolkit fire desktop font property changes:::SunToolkit->getDesktopFontHints->setDesktopProperty
+SunToolkit#setAAFontSettingsCondition(boolean)::: sun toolkit set font settings condition:::if->if->tk->Toolkit->getDefaultToolkit->if->fireDesktopFontPropertyChanges
+SunToolkit#getDesktopAAHintsByName(String)::: sun toolkit get desktop hints by name:::aaHint->hintname->toLowerCase->if->hintname->equals->else->if->hintname->equals->else->if->hintname->equals->hintname->equals->else->if->hintname->equals->else->if->hintname->equals->else->if->hintname->equals->if->map->new->RenderingHints->map->put->return->else->return
+SunToolkit#useSystemAAFontSettings()::: sun toolkit use system font settings:::if->systemAAFonts->tk->Toolkit->getDefaultToolkit->if->AccessController->new->GetPropertyAction->doPrivileged->if->Boolean->valueOf->booleanValue->if->getDesktopAAHintsByName->if->return
+SunToolkit#getDesktopAAHints()::: sun toolkit get desktop hints:::return
+SunToolkit#getDesktopFontHints()::: sun toolkit get desktop font hints:::if->useSystemAAFontSettings->tk->Toolkit->getDefaultToolkit->if->map->getDesktopAAHints->return->else->return->else->if->return->desktopFontHints->clone->else->return
+SunToolkit#isDesktopSupported()::: sun toolkit is desktop supported:::
+SunToolkit#isTaskbarSupported()::: sun toolkit is taskbar supported:::
+SunToolkit#consumeNextKeyTyped(KeyEvent)::: sun toolkit consume next key typed:::try->AWTAccessor->getDefaultKeyboardFocusManagerAccessor->KeyboardFocusManager->getCurrentKeyboardFocusManager->consumeNextKeyTyped->catch->cce->printStackTrace->finally
+SunToolkit#dumpPeers(PlatformLogger)::: sun toolkit dump peers:::AWTAutoShutdown->getInstance->dumpPeers
 SunToolkit#getContainingWindow(Component):::Returns the Window ancestor of the component comp.:::while->comp->getParent->return
 SunToolkit#getSunAwtDisableMixing():::Returns the value of "sun.awt.disableMixing" property:::if->AccessController->new->GetBooleanAction->doPrivileged->return->sunAwtDisableMixing->booleanValue
 SunToolkit#isNativeGTKAvailable():::Returns true if the native GTK libraries are available:::return
+SunToolkit#setWindowDeactivationTime(Window, long)::: sun toolkit set window deactivation time:::ctx->getAppContext->if->return->map->ctx->get->if->new->WeakHashMap<Window,Long>->ctx->put->map->put
+SunToolkit#getWindowDeactivationTime(Window)::: sun toolkit get window deactivation time:::ctx->getAppContext->if->return->map->ctx->get->if->return->time->map->get->return
+SunToolkit#updateScreenMenuBarUI()::: sun toolkit update screen menu bar i:::
+SunToolkit#isWindowOpacitySupported()::: sun toolkit is window opacity supported:::return
+SunToolkit#isWindowShapingSupported()::: sun toolkit is window shaping supported:::return
+SunToolkit#isWindowTranslucencySupported()::: sun toolkit is window translucency supported:::return
+SunToolkit#isTranslucencyCapable(GraphicsConfiguration)::: sun toolkit is translucency capable:::return
 SunToolkit#isSwingBackbufferTranslucencySupported():::Returns true if swing backbuffer should be translucent.:::return
 SunToolkit#isContainingTopLevelOpaque(Component):::Returns whether or not a containing top level window for the passed component is GraphicsDevice.WindowTranslucency#PERPIXEL_TRANSLUCENT PERPIXEL_TRANSLUCENT.:::w->getContainingWindow->return->w->isOpaque
 SunToolkit#isContainingTopLevelTranslucent(Component):::Returns whether or not a containing top level window for the passed component is GraphicsDevice.WindowTranslucency#TRANSLUCENT TRANSLUCENT.:::w->getContainingWindow->return->w->getOpacity
 SunToolkit#needUpdateWindow():::Returns whether the native system requires using the peer.updateWindow() method to update the contents of a non-opaque window, or if usual painting procedures are sufficient:::return
 SunToolkit#getNumberOfButtons():::Descendants of the SunToolkit should override and put their own logic here.:::return
 SunToolkit#isInstanceOf(Object, String):::Checks that the given object implements/extends the given interface/class:::if->return->if->return->return->obj->getClass->isInstanceOf
+SunToolkit#isInstanceOf(Class, String)::: sun toolkit is instance of:::if->return->if->cls->getName->equals->return->foreach->cls->getInterfaces->if->c->getName->equals->return->return->cls->getSuperclass->isInstanceOf
+SunToolkit#getLightweightFrame(Component)::: sun toolkit get lightweight frame:::for->c->getParent->return
+SunToolkit#setSystemGenerated(AWTEvent)::: sun toolkit set system generated:::AWTAccessor->getAWTEventAccessor->setSystemGenerated
+SunToolkit#isSystemGenerated(AWTEvent)::: sun toolkit is system generated:::return->AWTAccessor->getAWTEventAccessor->isSystemGenerated
+PostEventQueue#flush()::: post event queue flush:::newThread->Thread->currentThread->try->tempQueue->synchronized->if->return->while->wait->if->return->try->while->eventQueue->postEvent->catch->finally->synchronized->notifyAll->catch->newThread->interrupt->finally
+PostEventQueue#postEvent(AWTEvent)::: post event queue post event:::item->new->EventQueueItem->synchronized->if->else->SunToolkit->event->getSource->AWTAutoShutdown->getInstance->wakeupEventQueue
+Symbol#newEncoder()::: symbol new encoder:::return->new->Encoder
+Symbol#newDecoder()::: symbol new decoder:::throw->new->Error
+Symbol#contains(Charset)::: symbol contains:::return
+Symbol.Encoder#canEncode(char)::: encoder can encode:::if->if->return->else->if->if->return->return
+Symbol.Encoder#encodeLoop(CharBuffer, ByteBuffer)::: encoder encode loop:::sa->src->array->sp->src->arrayOffset->src->position->sl->src->arrayOffset->src->limit->da->dst->array->dp->dst->arrayOffset->dst->position->dl->dst->arrayOffset->dst->limit->try->while->c->if->return->if->canEncode->return->CoderResult->unmappableForLength->if->else->if->return->catch->finally->src->src->arrayOffset->position->dst->dst->arrayOffset->position
+Symbol.Encoder#isLegalReplacement(byte[])::: encoder is legal replacement:::return
+TimedWindowEvent#getWhen()::: timed window event get when:::return
+TracedEventQueue#postEvent(AWTEvent)::: traced event queue post event:::printEvent->id->theEvent->getID->for->i->if->Thread->currentThread->getName->println->super->postEvent
+UngrabEvent#toString()::: ungrab event to string:::return->getSource
+WeakIdentityHashMap#getMap()::: weak identity hash map get map:::for->ref->poll->return
+WeakIdentityHashMap#size()::: weak identity hash map size:::return->getMap->size
+WeakIdentityHashMap#isEmpty()::: weak identity hash map is empty:::return->getMap->isEmpty
+WeakIdentityHashMap#containsKey(Object)::: weak identity hash map contains key:::return->getMap->new->WeakKey<>->containsKey
+WeakIdentityHashMap#containsValue(Object)::: weak identity hash map contains value:::return->getMap->containsValue
+WeakIdentityHashMap#get(Object)::: weak identity hash map get:::return->getMap->new->WeakKey<>->get
+WeakIdentityHashMap#put(K, V)::: weak identity hash map put:::return->getMap->new->WeakKey<K>->put
+WeakIdentityHashMap#remove(Object)::: weak identity hash map remove:::return->getMap->new->WeakKey<>->remove
+WeakIdentityHashMap#putAll(Map)::: weak identity hash map put all:::foreach->m->entrySet->entry->getKey->entry->getValue->put
+WeakIdentityHashMap#clear()::: weak identity hash map clear:::getMap->clear
+WeakIdentityHashMap#keySet()::: weak identity hash map key set:::return->new->AbstractSet<K>
+WeakIdentityHashMap#values()::: weak identity hash map values:::return->getMap->values
+WeakIdentityHashMap#entrySet()::: weak identity hash map entry set:::return->new->AbstractSet<Entry<K,V>>
+WeakIdentityHashMap.WeakKey#equals(Object)::: weak key equals:::if->return->else->if->return->get->get->else->return
+WeakIdentityHashMap.WeakKey#hashCode()::: weak key hash code:::return
 Win32ColorModel24#createCompatibleWritableRaster(int, int):::Creates a WritableRaster with the specified width and height, that has a data layout (SampleModel) compatible with this ColorModel.:::bOffs->return->Raster->createInterleavedRaster
 Win32ColorModel24#createCompatibleSampleModel(int, int):::Creates a SampleModel with the specified width and height, that has a data layout compatible with this ColorModel.:::bOffs->return->new->PixelInterleavedSampleModel
+Win32FontManager#getEUDCFontFile()::: win32 font manager get font file:::
+Win32FontManager#getEUDCFont()::: win32 font manager get font:::return
 Win32FontManager#useAbsoluteFontFileNames():::Whether registerFontFile expects absolute or relative font file names.:::return
+Win32FontManager#registerFontFile(String, String[], int, boolean)::: win32 font manager register font file:::if->registeredFontFiles->contains->return->registeredFontFiles->add->fontFormat->if->getTrueTypeFilter->accept->else->if->getType1Filter->accept->else->return->if->getPlatformFontPath->tmpFontPath->parser->new->StringTokenizer->found->try->while->parser->hasMoreTokens->newPath->parser->nextToken->isJREFont->newPath->equals->theFile->new->File->if->theFile->canRead->path->theFile->getAbsolutePath->if->registerDeferredFont->else->registerFontFile->break->catch->println->finally->if->addToMissingFontFileList
+Win32FontManager#createFontConfiguration()::: win32 font manager create font configuration:::fc->new->WFontConfiguration->fc->init->return
+Win32FontManager#createFontConfiguration(boolean, boolean)::: win32 font manager create font configuration:::return->new->WFontConfiguration
+Win32FontManager#populateFontFileNameMap(HashMap, HashMap, HashMap>, Locale)::: win32 font manager populate font file name map:::populateFontFileNameMap0
+Win32FontManager#populateFontFileNameMap0(HashMap, HashMap, HashMap>, Locale)::: win32 font manager populate font file name map0:::
+Win32FontManager#getFontPath(boolean)::: win32 font manager get font path:::
+Win32FontManager#getDefaultPlatformFont()::: win32 font manager get default platform font:::info->new->StringArr->dirs->getPlatformFontDirs->if->dir->AccessController->new->PrivilegedAction<Object>->doPrivileged->if->else->return
+Win32FontManager#registerJREFontsWithPlatform(String)::: win32 font manager register fonts with platform:::
+Win32FontManager#registerJREFontsForPrinting()::: win32 font manager register fonts for printing:::pathName->synchronized->GraphicsEnvironment->getLocalGraphicsEnvironment->if->return->new->java.security.PrivilegedAction<Object>->doPrivileged
+Win32FontManager#registerFontWithPlatform(String)::: win32 font manager register font with platform:::
+Win32FontManager#deRegisterFontWithPlatform(String)::: win32 font manager de register font with platform:::
 Win32FontManager#populateHardcodedFileNameMap():::populate the map with the most common windows fonts.:::platformFontMap->new->HashMap<String,FamilyDescription>->fd->new->FamilyDescription->platformFontMap->put->new->FamilyDescription->platformFontMap->put->new->FamilyDescription->platformFontMap->put->new->FamilyDescription->platformFontMap->put->new->FamilyDescription->platformFontMap->put->new->FamilyDescription->platformFontMap->put->return
+Win32GraphicsConfig#initIDs()::: win32 graphics config init ds:::
 Win32GraphicsConfig#getConfig(Win32GraphicsDevice, int):::Returns a Win32GraphicsConfiguration object with the given device and PixelFormat:::return->new->Win32GraphicsConfig
 Win32GraphicsConfig#getDevice():::Return the graphics device associated with this configuration.:::return
 Win32GraphicsConfig#getVisual():::Return the PixelFormatIndex this GraphicsConfig uses:::return
+Win32GraphicsConfig#getProxyKey()::: win32 graphics config get proxy key:::return
+Win32GraphicsConfig#getSolidLoops(SurfaceType)::: win32 graphics config get solid loops:::if->SurfaceData->makeRenderLoops->return
 Win32GraphicsConfig#getColorModel():::Returns the color model associated with this configuration.:::return->screen->getColorModel
 Win32GraphicsConfig#getDeviceColorModel():::Returns a new color model for this configuration:::return->screen->getDynamicColorModel
 Win32GraphicsConfig#getColorModel(int):::Returns the color model associated with this configuration that supports the specified transparency.:::switch->return->getColorModel->return->new->DirectColorModel->return->ColorModel->getRGBdefault->return
 Win32GraphicsConfig#getDefaultTransform():::Returns the default Transform for this configuration:::scaleX->screen->getDefaultScaleX->scaleY->screen->getDefaultScaleY->return->AffineTransform->getScaleInstance
 Win32GraphicsConfig#getNormalizingTransform():::Returns a Transform that can be composed with the default Transform of a Graphics2D so that 72 units in user space will equal 1 inch in device space:::ge->GraphicsEnvironment->getLocalGraphicsEnvironment->xscale->ge->getXResolution->yscale->ge->getYResolution->return->new->AffineTransform
+Win32GraphicsConfig#toString()::: win32 graphics config to string:::return->super->toString
+Win32GraphicsConfig#getBounds(int)::: win32 graphics config get bounds:::
+Win32GraphicsConfig#getBounds()::: win32 graphics config get bounds:::return->screen->getScreen->getBounds
+Win32GraphicsConfig#displayChanged()::: win32 graphics config display changed:::
+Win32GraphicsConfig#paletteChanged()::: win32 graphics config palette changed:::
 Win32GraphicsConfig#createSurfaceData(WComponentPeer, int):::Creates a new SurfaceData that will be associated with the given WComponentPeer.:::return->GDIWindowSurfaceData->createData
 Win32GraphicsConfig#createAcceleratedImage(Component, int, int):::Creates a new managed image of the given width and height that is associated with the target Component.:::model->getColorModel->wr->model->createCompatibleWritableRaster->return->model->isAlphaPremultiplied->new->OffScreenImage
 Win32GraphicsConfig#assertOperationSupported(Component, int, BufferCapabilities):::Checks that the requested configuration is natively supported; if not, an AWTException is thrown.:::throw->new->AWTException
 Win32GraphicsConfig#createBackBuffer(WComponentPeer):::This method is called from WComponentPeer when a surface data is replaced REMIND: while the default pipeline doesn't support flipping, it may happen that the accelerated device may have this graphics config (like if the device restoration failed when one device exits fs mode while others remain).:::target->peer->getTarget->return->target->getWidth->target->getHeight->new->SunVolatileImage
 Win32GraphicsConfig#flip(WComponentPeer, Component, VolatileImage, int, int, int, int, BufferCapabilities.FlipContents):::Performs the native flip operation for the given target Component:::if->g->peer->getGraphics->try->g->drawImage->catch->finally->g->dispose->else->if->g->backBuffer->getGraphics->try->g->target->getBackground->setColor->g->backBuffer->getWidth->backBuffer->getHeight->fillRect->catch->finally->g->dispose
+Win32GraphicsConfig#isTranslucencyCapable()::: win32 graphics config is translucency capable:::return
+Win32GraphicsDevice#initIDs()::: win32 graphics device init ds:::
+Win32GraphicsDevice#initDevice(int)::: win32 graphics device init device:::
+Win32GraphicsDevice#initNativeScale(int)::: win32 graphics device init native scale:::
+Win32GraphicsDevice#setNativeScale(int, float, float)::: win32 graphics device set native scale:::
+Win32GraphicsDevice#getNativeScaleX(int)::: win32 graphics device get native scale x:::
+Win32GraphicsDevice#getNativeScaleY(int)::: win32 graphics device get native scale y:::
 Win32GraphicsDevice#getType():::Returns the type of the graphics device.:::return
 Win32GraphicsDevice#getScreen():::Returns the Win32 screen of the device.:::return
+Win32GraphicsDevice#getDefaultScaleX()::: win32 graphics device get default scale x:::return
+Win32GraphicsDevice#getDefaultScaleY()::: win32 graphics device get default scale y:::return
+Win32GraphicsDevice#initScaleFactors()::: win32 graphics device init scale factors:::if->SunGraphicsEnvironment->isUIScaleEnabled->if->setNativeScale->else->initNativeScale->getNativeScaleX->getNativeScaleY->else
 Win32GraphicsDevice#isValid():::Returns whether this is a valid devicie:::return
 Win32GraphicsDevice#invalidate(int):::Called from native code when the device was removed.:::
 Win32GraphicsDevice#getIDstring():::Returns the identification string associated with this graphics device.:::return
 Win32GraphicsDevice#getConfigurations():::Returns all of the graphics configurations associated with this graphics device.:::if->if->WindowsFlags->isOGLEnabled->isDefaultDevice->getDefaultConfiguration->if->new->GraphicsConfigurationArr->return->configs->clone->max->getMaxConfigs->defaultPixID->getDefaultPixID->v->new->Vector<>->if->Win32GraphicsConfig->getConfig->v->addElement->else->for->i->v->size->new->GraphicsConfigurationArr->v->copyInto->return->configs->clone
 Win32GraphicsDevice#getMaxConfigs(int):::Returns the maximum number of graphics configurations available, or 1 if PixelFormat calls fail or are disabled:::if->return->else->return->getMaxConfigsImpl
+Win32GraphicsDevice#getMaxConfigsImpl(int)::: win32 graphics device get max configs impl:::
+Win32GraphicsDevice#isPixFmtSupported(int, int):::Returns whether or not the PixelFormat indicated by index is supported:::
 Win32GraphicsDevice#getDefaultPixID(int):::Returns the PixelFormatID of the default graphics configuration associated with this graphics device, or 0 if PixelFormats calls fail or are disabled.:::if->return->else->return->getDefaultPixIDImpl
+Win32GraphicsDevice#getDefaultPixIDImpl(int):::Returns the default PixelFormat ID from GDI:::
 Win32GraphicsDevice#getDefaultConfiguration():::Returns the default graphics configuration associated with this graphics device.:::if->if->WindowsFlags->isOGLEnabled->isDefaultDevice->defPixID->WGLGraphicsConfig->getDefaultPixFmt->WGLGraphicsConfig->getConfig->if->WindowsFlags->isOGLVerbose->if->print->else->print->println->if->Win32GraphicsConfig->getConfig->return
+Win32GraphicsDevice#toString()::: win32 graphics device to string:::return
+Win32GraphicsDevice#isDefaultDevice():::Returns true if this is the default GraphicsDevice for the GraphicsEnvironment.:::return->GraphicsEnvironment->getLocalGraphicsEnvironment->getDefaultScreenDevice
+Win32GraphicsDevice#isFSExclusiveModeAllowed()::: win32 graphics device is exclusive mode allowed:::security->System->getSecurityManager->if->if->new->AWTPermission->try->security->checkPermission->catch->return->finally->return
 Win32GraphicsDevice#isFullScreenSupported():::returns true unless we're not allowed to use fullscreen mode.:::return->isFSExclusiveModeAllowed
+Win32GraphicsDevice#setFullScreenWindow(Window)::: win32 graphics device set full screen window:::old->getFullScreenWindow->if->return->if->isFullScreenSupported->super->setFullScreenWindow->return->if->if->setDisplayMode->peer->AWTAccessor->getComponentAccessor->getPeer->if->peer->setFullScreenExclusiveModeState->synchronized->exitFullScreenExclusive->removeFSWindowListener->super->setFullScreenWindow->if->getDisplayMode->addFSWindowListener->peer->AWTAccessor->getComponentAccessor->getPeer->if->synchronized->enterFullScreenExclusive->peer->setFullScreenExclusiveModeState->peer->updateGC
+Win32GraphicsDevice#enterFullScreenExclusive(int, WindowPeer)::: win32 graphics device enter full screen exclusive:::
+Win32GraphicsDevice#exitFullScreenExclusive(int, WindowPeer)::: win32 graphics device exit full screen exclusive:::
+Win32GraphicsDevice#isDisplayChangeSupported()::: win32 graphics device is display change supported:::return->isFullScreenSupported->getFullScreenWindow
+Win32GraphicsDevice#setDisplayMode(DisplayMode)::: win32 graphics device set display mode:::if->isDisplayChangeSupported->super->setDisplayMode->return->if->getMatchingDisplayMode->throw->new->IllegalArgumentException->if->getDisplayMode->equals->return->w->getFullScreenWindow->if->peer->AWTAccessor->getComponentAccessor->getPeer->dm->getWidth->dm->getHeight->dm->getBitDepth->dm->getRefreshRate->configDisplayMode->screenBounds->getDefaultConfiguration->getBounds->w->dm->getWidth->dm->getHeight->setBounds->else->throw->new->IllegalStateException
+Win32GraphicsDevice#getCurrentDisplayMode(int)::: win32 graphics device get current display mode:::
+Win32GraphicsDevice#configDisplayMode(int, WindowPeer, int, int, int, int)::: win32 graphics device config display mode:::
+Win32GraphicsDevice#enumDisplayModes(int, ArrayList)::: win32 graphics device enum display modes:::
+Win32GraphicsDevice#getDisplayMode()::: win32 graphics device get display mode:::res->getCurrentDisplayMode->return
+Win32GraphicsDevice#getDisplayModes()::: win32 graphics device get display modes:::modes->new->ArrayList<>->enumDisplayModes->listSize->modes->size->retArray->new->DisplayModeArr->for->i->return
+Win32GraphicsDevice#getMatchingDisplayMode(DisplayMode)::: win32 graphics device get matching display mode:::if->isDisplayChangeSupported->return->modes->getDisplayModes->foreach->if->dm->equals->dm->getRefreshRate->dm->getWidth->mode->getWidth->dm->getHeight->mode->getHeight->dm->getBitDepth->mode->getBitDepth->return->return
+Win32GraphicsDevice#displayChanged()::: win32 graphics device display changed:::initScaleFactors->topLevels->notifyListeners
 Win32GraphicsDevice#paletteChanged():::Part of the DisplayChangedListener interface: devices do not need to react to this event:::
+Win32GraphicsDevice#addDisplayChangedListener(DisplayChangedListener)::: win32 graphics device add display changed listener:::topLevels->add
+Win32GraphicsDevice#removeDisplayChangedListener(DisplayChangedListener)::: win32 graphics device remove display changed listener:::topLevels->remove
+Win32GraphicsDevice#makeColorModel(int, boolean):::Creates and returns the color model associated with this device:::
 Win32GraphicsDevice#getDynamicColorModel():::Returns a dynamic ColorModel which is updated when there are any changes (e.g., palette changes) in the device:::if->makeColorModel->return
 Win32GraphicsDevice#getColorModel():::Returns the non-dynamic ColorModel associated with this device:::if->makeColorModel->return
+Win32GraphicsDevice.Win32FSWindowAdapter#setFSWindowsState(Window, int)::: win32 window adapter set windows state:::gds->GraphicsEnvironment->getLocalGraphicsEnvironment->getScreenDevices->if->foreach->if->gd->getFullScreenWindow->return->foreach->fsw->gd->getFullScreenWindow->if->setExtendedState
+Win32GraphicsDevice.Win32FSWindowAdapter#windowDeactivated(WindowEvent)::: win32 window adapter window deactivated:::e->getOppositeWindow->setFSWindowsState
+Win32GraphicsDevice.Win32FSWindowAdapter#windowActivated(WindowEvent)::: win32 window adapter window activated:::e->getOppositeWindow->setFSWindowsState
+Win32GraphicsDevice.Win32FSWindowAdapter#windowIconified(WindowEvent)::: win32 window adapter window iconified:::ddm->if->device->getDisplayMode->device->setDisplayMode
+Win32GraphicsDevice.Win32FSWindowAdapter#windowDeiconified(WindowEvent)::: win32 window adapter window deiconified:::if->device->setDisplayMode
 Win32GraphicsDevice#addFSWindowListener(Window):::Adds a WindowListener to be used as activation/deactivation listener for the current full-screen window.:::new->Win32FSWindowAdapter->EventQueue->new->Runnable->invokeLater
 Win32GraphicsDevice#removeFSWindowListener(Window):::Removes the fs window listener.:::w->removeWindowListener
+Win32GraphicsEnvironment#initDisplay():::Initializes native components of the graphics environment:::
+Win32GraphicsEnvironment#initDisplayWrapper()::: win32 graphics environment init display wrapper:::if->initDisplay
+Win32GraphicsEnvironment#getNumScreens()::: win32 graphics environment get num screens:::
+Win32GraphicsEnvironment#getDefaultScreen()::: win32 graphics environment get default screen:::
+Win32GraphicsEnvironment#getDefaultScreenDevice()::: win32 graphics environment get default screen device:::screens->getScreenDevices->if->throw->new->AWTError->index->getDefaultScreen->return
 Win32GraphicsEnvironment#getXResolution():::Returns the number of pixels per logical inch along the screen width:::
 Win32GraphicsEnvironment#getYResolution():::Returns the number of pixels per logical inch along the screen height:::
+Win32GraphicsEnvironment#displayChanged()::: win32 graphics environment display changed:::newDevices->getNumScreens->new->GraphicsDeviceArr->oldScreens->if->for->i->for->i->foreach->if->displayChanged->if->defScreen->getDefaultScreen->for->it->oldDevices->listIterator->it->hasNext->displayChanger->notifyListeners
+Win32GraphicsEnvironment#makeScreenDevice(int)::: win32 graphics environment make screen device:::device->if->WindowsFlags->isD3DEnabled->D3DGraphicsDevice->createDevice->if->new->Win32GraphicsDevice->return
+Win32GraphicsEnvironment#isDisplayLocal()::: win32 graphics environment is display local:::return
+Win32GraphicsEnvironment#isFlipStrategyPreferred(ComponentPeer)::: win32 graphics environment is flip strategy preferred:::gc->if->peer->getGraphicsConfiguration->gd->gc->getDevice->if->return->isD3DEnabledOnDevice->return
 Win32GraphicsEnvironment#isDWMCompositionEnabled():::Returns true if dwm composition is currently enabled, false otherwise.:::return
+Win32GraphicsEnvironment#dwmCompositionChanged(boolean):::Called from the native code when DWM composition state changed:::
 Win32GraphicsEnvironment#isVistaOS():::Used to find out if the OS is Windows Vista or later.:::
+WindowIDProvider#getWindow()::: window provider get window:::

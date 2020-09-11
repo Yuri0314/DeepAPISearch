@@ -1,12 +1,110 @@
+DefaultTerminal2#init()::: default terminal2 init:::terminal->init
+DefaultTerminal2#restore()::: default terminal2 restore:::terminal->restore
+DefaultTerminal2#reset()::: default terminal2 reset:::terminal->reset
+DefaultTerminal2#isSupported()::: default terminal2 is supported:::return->terminal->isSupported
+DefaultTerminal2#getWidth()::: default terminal2 get width:::return->terminal->getWidth
+DefaultTerminal2#getHeight()::: default terminal2 get height:::return->terminal->getHeight
+DefaultTerminal2#isAnsiSupported()::: default terminal2 is ansi supported:::return->terminal->isAnsiSupported
+DefaultTerminal2#wrapOutIfNeeded(OutputStream)::: default terminal2 wrap out if needed:::return->terminal->wrapOutIfNeeded
+DefaultTerminal2#wrapInIfNeeded(InputStream)::: default terminal2 wrap in if needed:::return->terminal->wrapInIfNeeded
+DefaultTerminal2#hasWeirdWrap()::: default terminal2 has weird wrap:::return->terminal->hasWeirdWrap
+DefaultTerminal2#isEchoEnabled()::: default terminal2 is echo enabled:::return->terminal->isEchoEnabled
+DefaultTerminal2#setEchoEnabled(boolean)::: default terminal2 set echo enabled:::terminal->setEchoEnabled
+DefaultTerminal2#disableInterruptCharacter()::: default terminal2 disable interrupt character:::terminal->disableInterruptCharacter
+DefaultTerminal2#enableInterruptCharacter()::: default terminal2 enable interrupt character:::terminal->enableInterruptCharacter
+DefaultTerminal2#getOutputEncoding()::: default terminal2 get output encoding:::return->terminal->getOutputEncoding
+DefaultTerminal2#registerCap(String, String)::: default terminal2 register cap:::foreach->InfoCmp->getNames->strings->put
+DefaultTerminal2#registerCap(String)::: default terminal2 register cap:::Collections->InfoCmp->getNames->addAll
+DefaultTerminal2#getBooleanCapability(String)::: default terminal2 get boolean capability:::return->bools->contains
+DefaultTerminal2#getNumericCapability(String)::: default terminal2 get numeric capability:::return
+DefaultTerminal2#getStringCapability(String)::: default terminal2 get string capability:::return->strings->get
+NoInterruptUnixTerminal#init()::: no interrupt unix terminal init:::super->init->getSettings->getPropertyAsString->if->equals->if->getSettings->undef
+NoInterruptUnixTerminal#restore()::: no interrupt unix terminal restore:::if->getSettings->set->super->restore
+OSvTerminal#init()::: sv terminal init:::super->init->if->sttyClass->getMethod->invoke
+OSvTerminal#restore()::: sv terminal restore:::if->sttyClass->getMethod->invoke->super->restore->println
+Terminal#init()::: terminal init:::
+Terminal#restore()::: terminal restore:::
+Terminal#reset()::: terminal reset:::
+Terminal#isSupported()::: terminal is supported:::
+Terminal#getWidth()::: terminal get width:::
+Terminal#getHeight()::: terminal get height:::
+Terminal#isAnsiSupported()::: terminal is ansi supported:::
 Terminal#wrapOutIfNeeded(OutputStream):::When ANSI is not natively handled, the output will have to be wrapped.:::
 Terminal#wrapInIfNeeded(InputStream):::When using native support, return the InputStream to use for reading characters else return the input stream passed as a parameter.:::
 Terminal#hasWeirdWrap():::For terminals that don't wrap when character is written in last column, only when the next character is written:::
+Terminal#isEchoEnabled()::: terminal is echo enabled:::
+Terminal#setEchoEnabled(boolean)::: terminal set echo enabled:::
+Terminal#disableInterruptCharacter()::: terminal disable interrupt character:::
+Terminal#enableInterruptCharacter()::: terminal enable interrupt character:::
+Terminal#getOutputEncoding()::: terminal get output encoding:::
+Terminal2#getBooleanCapability(String)::: terminal2 get boolean capability:::
+Terminal2#getNumericCapability(String)::: terminal2 get numeric capability:::
+Terminal2#getStringCapability(String)::: terminal2 get string capability:::
+TerminalFactory#create()::: terminal factory create:::return->create
+TerminalFactory#create(String)::: terminal factory create:::if->Log->new->Throwable->trace->defaultType->System->getenv->equals->type->Configuration->getString->Log->debug->t->try->tmp->type->toLowerCase->if->tmp->equals->getFlavor->else->if->tmp->equals->getFlavor->else->if->tmp->equals->tmp->equals->getFlavor->else->if->tmp->equals->tmp->equals->tmp->equals->if->System->getenv->new->UnsupportedTerminal->else->new->UnsupportedTerminal->else->if->tmp->equals->os->Configuration->getOsName->flavor->if->os->contains->else->if->System->getenv->getFlavor->else->try->o->Thread->currentThread->getContextClassLoader->loadClass->newInstance->catch->throw->MessageFormat->format->new->IllegalArgumentException->finally->catch->Log->error->new->UnsupportedTerminal->finally->Log->debug->try->t->init->catch->Log->error->return->new->UnsupportedTerminal->finally->return
+TerminalFactory#reset()::: terminal factory reset:::
+TerminalFactory#resetIf(Terminal)::: terminal factory reset if:::if->reset
+TerminalFactory#configure(String)::: terminal factory configure:::checkNotNull->System->setProperty
+TerminalFactory#configure(Type)::: terminal factory configure:::checkNotNull->type->name->toLowerCase->configure
+TerminalFactory#get(String)::: terminal factory get:::if->create->return
+TerminalFactory#get()::: terminal factory get:::return->get
+TerminalFactory#getFlavor(Flavor)::: terminal factory get flavor:::return->getFlavor
+TerminalFactory#getFlavor(Flavor, String)::: terminal factory get flavor:::factory->FLAVORS->get->if->return->factory->createTerminal->else->throw->new->InternalError
+TerminalFactory#registerFlavor(Flavor, TerminalConstructor)::: terminal factory register flavor:::FLAVORS->put
+TerminalFactory.TerminalConstructor#createTerminal(String)::: terminal constructor create terminal:::
+TerminalSupport#init()::: terminal support init:::if->ShutdownHooks->remove->ShutdownHooks->new->Task->add
+TerminalSupport#restore()::: terminal support restore:::TerminalFactory->resetIf->if->ShutdownHooks->remove
+TerminalSupport#reset()::: terminal support reset:::restore->init
+TerminalSupport#isSupported()::: terminal support is supported:::return
+TerminalSupport#isAnsiSupported()::: terminal support is ansi supported:::return
+TerminalSupport#setAnsiSupported(boolean)::: terminal support set ansi supported:::Log->debug
 TerminalSupport#wrapOutIfNeeded(OutputStream):::Subclass to change behavior if needed.:::return
 TerminalSupport#hasWeirdWrap():::Defaults to true which was the behaviour before this method was added.:::return
+TerminalSupport#getWidth()::: terminal support get width:::return
+TerminalSupport#getHeight()::: terminal support get height:::return
+TerminalSupport#isEchoEnabled()::: terminal support is echo enabled:::return
+TerminalSupport#setEchoEnabled(boolean)::: terminal support set echo enabled:::Log->debug
+TerminalSupport#disableInterruptCharacter()::: terminal support disable interrupt character:::
+TerminalSupport#enableInterruptCharacter()::: terminal support enable interrupt character:::
+TerminalSupport#wrapInIfNeeded(InputStream)::: terminal support wrap in if needed:::return
+TerminalSupport#getOutputEncoding()::: terminal support get output encoding:::return
+UnixTerminal#getSettings()::: unix terminal get settings:::return
 UnixTerminal#init():::Remove line-buffered input by invoking "stty -icanon min 1" against the current terminal.:::super->init->setAnsiSupported->if->Configuration->getOsName->contains->settings->set->else->settings->set->settings->undef->setEchoEnabled->parseInfoCmp
 UnixTerminal#restore():::Restore the original terminal configuration, which can be used when shutting down the console reader:::settings->restore->super->restore
 UnixTerminal#getWidth():::Returns the value of <tt>stty columns</tt> param.:::w->settings->getProperty->return
 UnixTerminal#getHeight():::Returns the value of <tt>stty rows>/tt> param.:::h->settings->getProperty->return
+UnixTerminal#hasWeirdWrap()::: unix terminal has weird wrap:::return->getBooleanCapability->getBooleanCapability
+UnixTerminal#setEchoEnabled(boolean)::: unix terminal set echo enabled:::try->if->settings->set->else->settings->set->super->setEchoEnabled->catch->if->Thread->currentThread->interrupt->Log->error->finally
+UnixTerminal#disableInterruptCharacter()::: unix terminal disable interrupt character:::try->getSettings->getPropertyAsString->if->equals->settings->undef->catch->if->Thread->currentThread->interrupt->Log->error->finally
+UnixTerminal#enableInterruptCharacter()::: unix terminal enable interrupt character:::try->if->settings->set->catch->if->Thread->currentThread->interrupt->Log->error->finally
+UnixTerminal#disableLitteralNextCharacter()::: unix terminal disable litteral next character:::try->getSettings->getPropertyAsString->if->equals->settings->undef->catch->if->Thread->currentThread->interrupt->Log->error->finally
+UnixTerminal#enableLitteralNextCharacter()::: unix terminal enable litteral next character:::try->if->settings->set->catch->if->Thread->currentThread->interrupt->Log->error->finally
+UnixTerminal#getBooleanCapability(String)::: unix terminal get boolean capability:::return->bools->contains
+UnixTerminal#getNumericCapability(String)::: unix terminal get numeric capability:::return->ints->get
+UnixTerminal#getStringCapability(String)::: unix terminal get string capability:::return->strings->get
+UnixTerminal#parseInfoCmp()::: unix terminal parse info cmp:::capabilities->if->try->InfoCmp->getInfoCmp->catch->finally->if->InfoCmp->getAnsiCaps->InfoCmp->parseInfoCmp
+WindowsTerminal#init()::: windows terminal init:::super->init->setAnsiSupported->Configuration->getBoolean->setDirectConsole->getConsoleMode->setConsoleMode->setEchoEnabled
 WindowsTerminal#restore():::Restore the original terminal configuration, which can be used when shutting down the console reader:::setConsoleMode->super->restore
+WindowsTerminal#getWidth()::: windows terminal get width:::w->getWindowsTerminalWidth->return
+WindowsTerminal#getHeight()::: windows terminal get height:::h->getWindowsTerminalHeight->return
+WindowsTerminal#setEchoEnabled(boolean)::: windows terminal set echo enabled:::if->getConsoleMode->setConsoleMode->else->getConsoleMode->setConsoleMode->super->setEchoEnabled
+WindowsTerminal#disableInterruptCharacter()::: windows terminal disable interrupt character:::getConsoleMode->setConsoleMode
+WindowsTerminal#enableInterruptCharacter()::: windows terminal enable interrupt character:::getConsoleMode->setConsoleMode
 WindowsTerminal#setDirectConsole(boolean):::Whether or not to allow the use of the JNI console interaction.:::Log->debug
 WindowsTerminal#getDirectConsole():::Whether or not to allow the use of the JNI console interaction.:::return
+WindowsTerminal#wrapInIfNeeded(InputStream)::: windows terminal wrap in if needed:::if->isSystemIn->return->new->InputStream->else->return->super->wrapInIfNeeded
+WindowsTerminal#isSystemIn(InputStream)::: windows terminal is system in:::if->return->else->if->return->else->if->getFD->return->return
+WindowsTerminal#wrapOutIfNeeded(OutputStream)::: windows terminal wrap out if needed:::return->getOutputEncoding->new->Performer->new->AnsiInterpretingOutputStream
+WindowsTerminal#getOutputEncoding()::: windows terminal get output encoding:::codepage->getConsoleOutputCodepage->charsetMS->if->isSupported->return->charsetCP->if->isSupported->return->Log->debug->return->super->getOutputEncoding
+WindowsTerminal#initIDs()::: windows terminal init ds:::
+WindowsTerminal#getConsoleMode()::: windows terminal get console mode:::
+WindowsTerminal#setConsoleMode(int)::: windows terminal set console mode:::
+WindowsTerminal#readConsoleInput()::: windows terminal read console input:::keyEvent->readKeyEvent->return->convertKeys->getBytes
+WindowsTerminal#convertKeys(KEY_EVENT_RECORD)::: windows terminal convert keys:::if->return->sb->new->StringBuilder->if->if->altState->ctrlState->handled->if->switch->sb->append->break->if->switch->sb->append->break->if->if->sb->append->sb->append->else->escapeSequence->switch->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->escapeSequence->break->break->if->for->k->else->if->sb->append->return->sb->toString
+WindowsTerminal#escapeSequence(int, String, String)::: windows terminal escape sequence:::controlNum->if->if->if->if->return->String->format->else->return
+WindowsTerminal#readKeyEvent()::: windows terminal read key event:::
+WindowsTerminal#getConsoleOutputCodepage()::: windows terminal get console output codepage:::
+WindowsTerminal#getWindowsTerminalWidth()::: windows terminal get windows terminal width:::
+WindowsTerminal#getWindowsTerminalHeight()::: windows terminal get windows terminal height:::
+WindowsTerminal#getBufferState()::: windows terminal get buffer state:::
+WindowsTerminal#setCursorPosition(int, int)::: windows terminal set cursor position:::

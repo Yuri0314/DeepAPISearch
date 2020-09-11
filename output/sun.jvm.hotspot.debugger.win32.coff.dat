@@ -1,5 +1,6 @@
 AuxBfEfRecord#getLineNumber():::Actual ordinal line number (1, 2, 3, etc.) within source file,       corresponding to the .bf or .ef record.:::
 AuxBfEfRecord#getPointerToNextFunction():::Symbol-table index of the next .bf symbol record:::
+AuxFileRecord#getName()::: aux file record get name:::
 AuxFunctionDefinitionRecord#getTagIndex():::Symbol-table index of the corresponding .bf (begin function)       symbol record.:::
 AuxFunctionDefinitionRecord#getTotalSize():::Size of the executable code for the function itself:::
 AuxFunctionDefinitionRecord#getPointerToLineNumber():::Index of the first COFF line-number entry for the function in       the global array of line numbers (see sun.jvm.hotspot.debugger.win32.coff.SectionHeader#getCOFFLineNumber),       or -1 if none exists.:::
@@ -13,10 +14,498 @@ AuxSectionDefinitionsRecord#getSelection():::COMDAT selection number:::
 AuxSymbolRecord#getType():::Returns #FUNCTION_DEFINITION, #BF_EF_RECORD,       #WEAK_EXTERNAL, #FILE, or #SECTION_DEFINITION, indicating the concrete subtype of this       interface.:::
 AuxWeakExternalRecord#getTagIndex():::Symbol-table index of sym2, the symbol to be linked if sym1 is       not found.:::
 AuxWeakExternalRecord#getCharacteristics():::<P> A value of #IMAGE_WEAK_EXTERN_SEARCH_NOLIBRARY       indicates that no library search for sym1 should be       performed:::
+COFFFile#getHeader()::: file get header:::
 COFFFile#isImage():::Indicates whether the file is an image (.EXE or .DLL) or not       (.OBJ).:::
 COFFFile#close():::Closes this COFF file:::
 COFFFileParser#getParser():::This class is a singleton; returns the sole instance.:::if->new->COFFFileParser->return
+COFFFileParser#parse(String)::: file parser parse:::try->file->new->File->stream->new->FileInputStream->buf->stream->getChannel->file->length->map->return->new->MappedByteBufferDataSource->parse->catch->throw->new->COFFException->throw->new->COFFException->finally
+COFFFileParser#parse(DataSource)::: file parser parse:::return->new->COFFFileImpl
+COFFFileParser.COFFFileImpl#isImage()::: file impl is image:::return
+COFFFileParser.COFFFileImpl#getHeader()::: file impl get header:::return->header->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getMachineType()::: header impl get machine type:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getNumberOfSections()::: header impl get number of sections:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getTimeDateStamp()::: header impl get time date stamp:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getPointerToSymbolTable()::: header impl get pointer to symbol table:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getNumberOfSymbols()::: header impl get number of symbols:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getSizeOfOptionalHeader()::: header impl get size of optional header:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getOptionalHeader()::: header impl get optional header:::if->getSizeOfOptionalHeader->return->return->new->OptionalHeaderImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getCharacteristics()::: header impl get characteristics:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#hasCharacteristic(short)::: header impl has characteristic:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getSectionHeader(int)::: header impl get section header:::return->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getCOFFSymbol(int)::: header impl get symbol:::return->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getNumberOfStrings()::: header impl get number of strings:::return->getStringTable->getNum
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getString(int)::: header impl get string:::return->getStringTable->get
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#getStringTable()::: header impl get string table:::return->stringTable->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl#rvaToFileOffset(int)::: header impl rva to file offset:::if->return->for->i->getNumberOfSections->throw->Integer->toHexString->new->COFFException
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderImpl#getMagicNumber()::: optional header impl get magic number:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderImpl#getStandardFields()::: optional header impl get standard fields:::return->standardFields->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderImpl#getWindowsSpecificFields()::: optional header impl get windows specific fields:::return->windowsSpecificFields->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderImpl#getDataDirectories()::: optional header impl get data directories:::return->dataDirectories->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderStandardFieldsImpl#getMajorLinkerVersion()::: optional header standard fields impl get major linker version:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderStandardFieldsImpl#getMinorLinkerVersion()::: optional header standard fields impl get minor linker version:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderStandardFieldsImpl#getSizeOfCode()::: optional header standard fields impl get size of code:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderStandardFieldsImpl#getSizeOfInitializedData()::: optional header standard fields impl get size of initialized data:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderStandardFieldsImpl#getSizeOfUninitializedData()::: optional header standard fields impl get size of uninitialized data:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderStandardFieldsImpl#getAddressOfEntryPoint()::: optional header standard fields impl get address of entry point:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderStandardFieldsImpl#getBaseOfCode()::: optional header standard fields impl get base of code:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderStandardFieldsImpl#getBaseOfData()::: optional header standard fields impl get base of data:::if->throw->new->COFFException->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getImageBase()::: optional header windows specific fields impl get image base:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getSectionAlignment()::: optional header windows specific fields impl get section alignment:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getFileAlignment()::: optional header windows specific fields impl get file alignment:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getMajorOperatingSystemVersion()::: optional header windows specific fields impl get major operating system version:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getMinorOperatingSystemVersion()::: optional header windows specific fields impl get minor operating system version:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getMajorImageVersion()::: optional header windows specific fields impl get major image version:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getMinorImageVersion()::: optional header windows specific fields impl get minor image version:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getMajorSubsystemVersion()::: optional header windows specific fields impl get major subsystem version:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getMinorSubsystemVersion()::: optional header windows specific fields impl get minor subsystem version:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getSizeOfImage()::: optional header windows specific fields impl get size of image:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getSizeOfHeaders()::: optional header windows specific fields impl get size of headers:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getCheckSum()::: optional header windows specific fields impl get check sum:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getSubsystem()::: optional header windows specific fields impl get subsystem:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getDLLCharacteristics()::: optional header windows specific fields impl get characteristics:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getSizeOfStackReserve()::: optional header windows specific fields impl get size of stack reserve:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getSizeOfStackCommit()::: optional header windows specific fields impl get size of stack commit:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getSizeOfHeapReserve()::: optional header windows specific fields impl get size of heap reserve:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getSizeOfHeapCommit()::: optional header windows specific fields impl get size of heap commit:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getLoaderFlags()::: optional header windows specific fields impl get loader flags:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#getNumberOfRvaAndSizes()::: optional header windows specific fields impl get number of rva and sizes:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderWindowsSpecificFieldsImpl#maskInt(long)::: optional header windows specific fields impl mask int:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getExportTable()::: optional header data directories impl get export table:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getImportTable()::: optional header data directories impl get import table:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getResourceTable()::: optional header data directories impl get resource table:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getExceptionTable()::: optional header data directories impl get exception table:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getCertificateTable()::: optional header data directories impl get certificate table:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getBaseRelocationTable()::: optional header data directories impl get base relocation table:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getDebug()::: optional header data directories impl get debug:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getArchitecture()::: optional header data directories impl get architecture:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getGlobalPtr()::: optional header data directories impl get global ptr:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getTLSTable()::: optional header data directories impl get table:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getLoadConfigTable()::: optional header data directories impl get load config table:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getBoundImportTable()::: optional header data directories impl get bound import table:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getImportAddressTable()::: optional header data directories impl get import address table:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getDelayImportDescriptor()::: optional header data directories impl get delay import descriptor:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getCOMPlusRuntimeHeader()::: optional header data directories impl get plus runtime header:::return->checkIndex->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getExportDirectoryTable()::: optional header data directories impl get export directory table:::return->exportDirectoryTable->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#getDebugDirectory()::: optional header data directories impl get debug directory:::return->debugDirectory->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.OptionalHeaderDataDirectoriesImpl#checkIndex(int)::: optional header data directories impl check index:::if->throw->new->COFFException->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DataDirectoryImpl#getRVA()::: data directory impl get a:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DataDirectoryImpl#getSize()::: data directory impl get size:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getExportFlags()::: export directory table impl get export flags:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getTimeDateStamp()::: export directory table impl get time date stamp:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getMajorVersion()::: export directory table impl get major version:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getMinorVersion()::: export directory table impl get minor version:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getNameRVA()::: export directory table impl get name a:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getDLLName()::: export directory table impl get name:::return->dllName->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getOrdinalBase()::: export directory table impl get ordinal base:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getNumberOfAddressTableEntries()::: export directory table impl get number of address table entries:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getNumberOfNamePointers()::: export directory table impl get number of name pointers:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getExportAddressTableRVA()::: export directory table impl get export address table a:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getNamePointerTableRVA()::: export directory table impl get name pointer table a:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getOrdinalTableRVA()::: export directory table impl get ordinal table a:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getExportName(int)::: export directory table impl get export name:::return->getExportNameTable->get
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getExportOrdinal(int)::: export directory table impl get export ordinal:::return->getExportOrdinalTable
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#isExportAddressForwarder(short)::: export directory table impl is export address forwarder:::addr->getExportAddress->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getExportAddressForwarder(short)::: export directory table impl get export address forwarder:::getExportAddress->rvaToFileOffset->seek->return->readCString
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getExportAddress(short)::: export directory table impl get export address:::return->getExportAddressTable
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getExportNameTable()::: export directory table impl get export name table:::return->exportNameTable->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getExportNamePointerTable()::: export directory table impl get export name pointer table:::return->exportNamePointerTable->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getExportOrdinalTable()::: export directory table impl get export ordinal table:::return->exportOrdinalTable->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportDirectoryTableImpl#getExportAddressTable()::: export directory table impl get export address table:::return->exportAddressTable->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.ExportNameTable#get(int)::: export name table get:::return->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugDirectoryImpl#getNumEntries()::: debug directory impl get num entries:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugDirectoryImpl#getEntry(int)::: debug directory impl get entry:::if->getNumEntries->throw->new->IndexOutOfBoundsException->return->new->DebugDirectoryEntryImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugDirectoryEntryImpl#getCharacteristics()::: debug directory entry impl get characteristics:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugDirectoryEntryImpl#getTimeDateStamp()::: debug directory entry impl get time date stamp:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugDirectoryEntryImpl#getMajorVersion()::: debug directory entry impl get major version:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugDirectoryEntryImpl#getMinorVersion()::: debug directory entry impl get minor version:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugDirectoryEntryImpl#getType()::: debug directory entry impl get type:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugDirectoryEntryImpl#getSizeOfData()::: debug directory entry impl get size of data:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugDirectoryEntryImpl#getAddressOfRawData()::: debug directory entry impl get address of raw data:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugDirectoryEntryImpl#getPointerToRawData()::: debug directory entry impl get pointer to raw data:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugDirectoryEntryImpl#getDebugVC50()::: debug directory entry impl get debug c50:::try->if->getType->return->offset->getPointerToRawData->seek->if->readByte->readByte->readByte->readByte->return->new->DebugVC50Impl->catch->e->printStackTrace->finally->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugDirectoryEntryImpl#getRawDataByte(int)::: debug directory entry impl get raw data byte:::if->getSizeOfData->throw->new->IndexOutOfBoundsException->getPointerToRawData->seek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#getSubsectionDirectoryOffset()::: debug c50 impl get subsection directory offset:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#getSubsectionDirectory()::: debug c50 impl get subsection directory:::return->subsectionDirectory->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#globalOffset(int)::: debug c50 impl global offset:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#verify()::: debug c50 impl verify:::seek->headerLength->readShort->entryLength->readShort->numEntries->readInt->endOffset->seek->if->readByte->readByte->readByte->readByte->return->throw->new->COFFException
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SubsectionDirectoryImpl#getHeaderLength()::: debug c50 subsection directory impl get header length:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SubsectionDirectoryImpl#getEntryLength()::: debug c50 subsection directory impl get entry length:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SubsectionDirectoryImpl#getNumEntries()::: debug c50 subsection directory impl get num entries:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SubsectionDirectoryImpl#getSubsection(int)::: debug c50 subsection directory impl get subsection:::seek->ssType->readShort->iMod->readShort->lfo->readInt->globalOffset->cb->readInt->switch->return->new->DebugVC50SSModuleImpl->return->new->DebugVC50SSTypesImpl->return->new->DebugVC50SSPublicImpl->return->new->DebugVC50SSPublicSymImpl->return->new->DebugVC50SSSymbolsImpl->return->new->DebugVC50SSAlignSymImpl->return->new->DebugVC50SSSrcLnSegImpl->return->new->DebugVC50SSSrcModuleImpl->return->new->DebugVC50SSLibrariesImpl->return->new->DebugVC50SSGlobalSymImpl->return->new->DebugVC50SSGlobalPubImpl->return->new->DebugVC50SSGlobalTypesImpl->return->new->DebugVC50SSMPCImpl->return->new->DebugVC50SSSegMapImpl->return->new->DebugVC50SSSegNameImpl->return->new->DebugVC50SSPreCompImpl->return->return->new->DebugVC50SSOffsetMap16Impl->return->new->DebugVC50SSOffsetMap32Impl->return->new->DebugVC50SSFileIndexImpl->return->new->DebugVC50SSStaticSymImpl->throw->new->COFFException
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SubsectionImpl#getSubsectionType()::: debug c50 subsection impl get subsection type:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SubsectionImpl#getSubsectionModuleIndex()::: debug c50 subsection impl get subsection module index:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SubsectionImpl#getSubsectionSize()::: debug c50 subsection impl get subsection size:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSModuleImpl#getOverlayNumber()::: debug c50 module impl get overlay number:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSModuleImpl#getLibrariesIndex()::: debug c50 module impl get libraries index:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSModuleImpl#getNumCodeSegments()::: debug c50 module impl get num code segments:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSModuleImpl#getDebuggingStyle()::: debug c50 module impl get debugging style:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSModuleImpl#getSegInfo(int)::: debug c50 module impl get seg info:::return->segInfo->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSModuleImpl#getName()::: debug c50 module impl get name:::return->name->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SegInfoImpl#getSegment()::: debug c50 seg info impl get segment:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SegInfoImpl#getOffset()::: debug c50 seg info impl get offset:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SegInfoImpl#getSegmentCodeSize()::: debug c50 seg info impl get segment code size:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSAlignSymImpl#getSymbolIterator()::: debug c50 align sym impl get symbol iterator:::return->getSubsectionSize->new->DebugVC50SymbolIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSrcModuleImpl#getNumSourceFiles()::: debug c50 src module impl get num source files:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSrcModuleImpl#getNumCodeSegments()::: debug c50 src module impl get num code segments:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSrcModuleImpl#getSourceFileDesc(int)::: debug c50 src module impl get source file desc:::return->baseSrcFiles->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSrcModuleImpl#getSegmentStartOffset(int)::: debug c50 src module impl get segment start offset:::return->segOffsets->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSrcModuleImpl#getSegmentEndOffset(int)::: debug c50 src module impl get segment end offset:::return->segOffsets->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSrcModuleImpl#getSegment(int)::: debug c50 src module impl get segment:::return->segs->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SrcModFileDescImpl#getNumCodeSegments()::: debug c50 src mod file desc impl get num code segments:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SrcModFileDescImpl#getLineNumberMap(int)::: debug c50 src mod file desc impl get line number map:::return->baseSrcLn->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SrcModFileDescImpl#getSegmentStartOffset(int)::: debug c50 src mod file desc impl get segment start offset:::return->segOffsets->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SrcModFileDescImpl#getSegmentEndOffset(int)::: debug c50 src mod file desc impl get segment end offset:::return->segOffsets->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SrcModFileDescImpl#getSourceFileName()::: debug c50 src mod file desc impl get source file name:::return->name->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SrcModLineNumberMapImpl#getSegment()::: debug c50 src mod line number map impl get segment:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SrcModLineNumberMapImpl#getNumSourceLinePairs()::: debug c50 src mod line number map impl get num source line pairs:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SrcModLineNumberMapImpl#getCodeOffset(int)::: debug c50 src mod line number map impl get code offset:::return->offsets->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SrcModLineNumberMapImpl#getLineNumber(int)::: debug c50 src mod line number map impl get line number:::return->lineNumbers->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSymbolBaseImpl#getSymHashIndex()::: debug c50 symbol base impl get sym hash index:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSymbolBaseImpl#getAddrHashIndex()::: debug c50 symbol base impl get addr hash index:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSymbolBaseImpl#getSymTabSize()::: debug c50 symbol base impl get sym tab size:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSymbolBaseImpl#getSymHashSize()::: debug c50 symbol base impl get sym hash size:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSymbolBaseImpl#getAddrHashSize()::: debug c50 symbol base impl get addr hash size:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSymbolBaseImpl#getSymbolIterator()::: debug c50 symbol base impl get symbol iterator:::return->new->DebugVC50SymbolIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSGlobalTypesImpl#getNumTypes()::: debug c50 global types impl get num types:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSGlobalTypesImpl#getTypeOffset(int)::: debug c50 global types impl get type offset:::seek->return->readInt->offsetOfFirstType
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSGlobalTypesImpl#getTypeIterator()::: debug c50 global types impl get type iterator:::return->offsetOfFirstType->new->DebugVC50TypeIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSGlobalTypesImpl#offsetOfFirstType()::: debug c50 global types impl offset of first type:::return->getNumTypes
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSegMapImpl#getNumSegDesc()::: debug c50 seg map impl get num seg desc:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSegMapImpl#getNumLogicalSegDesc()::: debug c50 seg map impl get num logical seg desc:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSegMapImpl#getSegDesc(int)::: debug c50 seg map impl get seg desc:::return->segDescs->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SegDescImpl#getFlags()::: debug c50 seg desc impl get flags:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SegDescImpl#getOverlayNum()::: debug c50 seg desc impl get overlay num:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SegDescImpl#getGroup()::: debug c50 seg desc impl get group:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SegDescImpl#getFrame()::: debug c50 seg desc impl get frame:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SegDescImpl#getName()::: debug c50 seg desc impl get name:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SegDescImpl#getClassName()::: debug c50 seg desc impl get class name:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SegDescImpl#getOffset()::: debug c50 seg desc impl get offset:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SegDescImpl#getSize()::: debug c50 seg desc impl get size:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSSegNameImpl#getSegName(int)::: debug c50 seg name impl get seg name:::return->names->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSFileIndexImpl#getNumModules()::: debug c50 file index impl get num modules:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSFileIndexImpl#getNumReferences()::: debug c50 file index impl get num references:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSFileIndexImpl#getModStart()::: debug c50 file index impl get mod start:::return->modStart->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSFileIndexImpl#getRefCount()::: debug c50 file index impl get ref count:::return->cRefCnt->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSFileIndexImpl#getNameRef()::: debug c50 file index impl get name ref:::return->nameRef->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SSFileIndexImpl#getNames()::: debug c50 file index impl get names:::return->names->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#done()::: debug c50 symbol iterator impl done:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#next()::: debug c50 symbol iterator impl next:::if->done->throw->new->NoSuchElementException->seek->readShort->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLength()::: debug c50 symbol iterator impl get length:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getType()::: debug c50 symbol iterator impl get type:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getOffset()::: debug c50 symbol iterator impl get offset:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getCompilerTargetProcessor()::: debug c50 symbol iterator impl get compiler target processor:::symSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getCompilerFlags()::: debug c50 symbol iterator impl get compiler flags:::symSeek->res->for->i->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getComplierVersion()::: debug c50 symbol iterator impl get complier version:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getRegisterSymbolType()::: debug c50 symbol iterator impl get register symbol type:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getRegisterEnum()::: debug c50 symbol iterator impl get register enum:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getRegisterSymbolName()::: debug c50 symbol iterator impl get register symbol name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getConstantType()::: debug c50 symbol iterator impl get constant type:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getConstantValueAsInt()::: debug c50 symbol iterator impl get constant value as int:::return->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getConstantValueAsLong()::: debug c50 symbol iterator impl get constant value as long:::return->readLongNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getConstantValueAsFloat()::: debug c50 symbol iterator impl get constant value as float:::return->readFloatNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getConstantValueAsDouble()::: debug c50 symbol iterator impl get constant value as double:::return->readDoubleNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getConstantName()::: debug c50 symbol iterator impl get constant name:::return->numericLeafLengthAt->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getUDTType()::: debug c50 symbol iterator impl get type:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getUDTName()::: debug c50 symbol iterator impl get name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getSearchSymbolOffset()::: debug c50 symbol iterator impl get search symbol offset:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getSearchSegment()::: debug c50 symbol iterator impl get search segment:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getObjectCodeViewSignature()::: debug c50 symbol iterator impl get object code view signature:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getObjectName()::: debug c50 symbol iterator impl get object name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getManyRegType()::: debug c50 symbol iterator impl get many reg type:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getManyRegCount()::: debug c50 symbol iterator impl get many reg count:::symSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getManyRegRegister(int)::: debug c50 symbol iterator impl get many reg register:::symSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getManyRegName()::: debug c50 symbol iterator impl get many reg name:::return->getManyRegCount->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getReturnFlags()::: debug c50 symbol iterator impl get return flags:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getReturnStyle()::: debug c50 symbol iterator impl get return style:::symSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getReturnRegisterCount()::: debug c50 symbol iterator impl get return register count:::symSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getReturnRegister(int)::: debug c50 symbol iterator impl get return register:::symSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#advanceToEntryThisSymbol()::: debug c50 symbol iterator impl advance to entry this symbol:::seek->tmpSymSize->readShort->tmpSymType->readShort->if->Assert->that
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getBPRelOffset()::: debug c50 symbol iterator impl get rel offset:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getBPRelType()::: debug c50 symbol iterator impl get rel type:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getBPRelName()::: debug c50 symbol iterator impl get rel name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGDataType()::: debug c50 symbol iterator impl get data type:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGDataOffset()::: debug c50 symbol iterator impl get data offset:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGDataSegment()::: debug c50 symbol iterator impl get data segment:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGDataName()::: debug c50 symbol iterator impl get data name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcParent()::: debug c50 symbol iterator impl get proc parent:::offs->getLGProcParentOffset->if->return->return->new->DebugVC50SymbolIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcParentOffset()::: debug c50 symbol iterator impl get proc parent offset:::symSeek->offs->readInt->if->return->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcEnd()::: debug c50 symbol iterator impl get proc end:::offs->getLGProcEndOffset->return->new->DebugVC50SymbolIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcEndOffset()::: debug c50 symbol iterator impl get proc end offset:::symSeek->offs->readInt->if->Assert->that->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcNext()::: debug c50 symbol iterator impl get proc next:::offs->getLGProcNextOffset->if->return->return->new->DebugVC50SymbolIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcNextOffset()::: debug c50 symbol iterator impl get proc next offset:::symSeek->offs->readInt->if->return->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcLength()::: debug c50 symbol iterator impl get proc length:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcDebugStart()::: debug c50 symbol iterator impl get proc debug start:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcDebugEnd()::: debug c50 symbol iterator impl get proc debug end:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcType()::: debug c50 symbol iterator impl get proc type:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcOffset()::: debug c50 symbol iterator impl get proc offset:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcSegment()::: debug c50 symbol iterator impl get proc segment:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcFlags()::: debug c50 symbol iterator impl get proc flags:::symSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLGProcName()::: debug c50 symbol iterator impl get proc name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkParent()::: debug c50 symbol iterator impl get thunk parent:::offs->getThunkParentOffset->if->return->return->new->DebugVC50SymbolIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkParentOffset()::: debug c50 symbol iterator impl get thunk parent offset:::symSeek->offs->readInt->if->return->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkEnd()::: debug c50 symbol iterator impl get thunk end:::symSeek->offs->readInt->return->new->DebugVC50SymbolIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkEndOffset()::: debug c50 symbol iterator impl get thunk end offset:::symSeek->offs->readInt->if->Assert->that->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkNext()::: debug c50 symbol iterator impl get thunk next:::offs->getThunkNextOffset->if->return->return->new->DebugVC50SymbolIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkNextOffset()::: debug c50 symbol iterator impl get thunk next offset:::symSeek->offs->readInt->if->return->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkOffset()::: debug c50 symbol iterator impl get thunk offset:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkSegment()::: debug c50 symbol iterator impl get thunk segment:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkLength()::: debug c50 symbol iterator impl get thunk length:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkType()::: debug c50 symbol iterator impl get thunk type:::symSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkName()::: debug c50 symbol iterator impl get thunk name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkAdjustorThisDelta()::: debug c50 symbol iterator impl get thunk adjustor this delta:::lengthPrefixedStringLengthAt->symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkAdjustorTargetName()::: debug c50 symbol iterator impl get thunk adjustor target name:::return->lengthPrefixedStringLengthAt->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkVCallDisplacement()::: debug c50 symbol iterator impl get thunk call displacement:::lengthPrefixedStringLengthAt->symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkPCodeOffset()::: debug c50 symbol iterator impl get thunk code offset:::lengthPrefixedStringLengthAt->symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getThunkPCodeSegment()::: debug c50 symbol iterator impl get thunk code segment:::lengthPrefixedStringLengthAt->symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getBlockParent()::: debug c50 symbol iterator impl get block parent:::offs->getBlockParentOffset->if->return->return->new->DebugVC50SymbolIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getBlockParentOffset()::: debug c50 symbol iterator impl get block parent offset:::symSeek->offs->readInt->if->return->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getBlockEnd()::: debug c50 symbol iterator impl get block end:::symSeek->offs->readInt->return->new->DebugVC50SymbolIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getBlockEndOffset()::: debug c50 symbol iterator impl get block end offset:::symSeek->offs->readInt->if->Assert->that->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getBlockLength()::: debug c50 symbol iterator impl get block length:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getBlockOffset()::: debug c50 symbol iterator impl get block offset:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getBlockSegment()::: debug c50 symbol iterator impl get block segment:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getBlockName()::: debug c50 symbol iterator impl get block name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLabelOffset()::: debug c50 symbol iterator impl get label offset:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLabelSegment()::: debug c50 symbol iterator impl get label segment:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLabelFlags()::: debug c50 symbol iterator impl get label flags:::symSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLabelName()::: debug c50 symbol iterator impl get label name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getChangeOffset()::: debug c50 symbol iterator impl get change offset:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getChangeSegment()::: debug c50 symbol iterator impl get change segment:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getChangeModel()::: debug c50 symbol iterator impl get change model:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getVTableRoot()::: debug c50 symbol iterator impl get table root:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getVTablePath()::: debug c50 symbol iterator impl get table path:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getVTableOffset()::: debug c50 symbol iterator impl get table offset:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getVTableSegment()::: debug c50 symbol iterator impl get table segment:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getRegRelOffset()::: debug c50 symbol iterator impl get reg rel offset:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getRegRelType()::: debug c50 symbol iterator impl get reg rel type:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getRegRelRegister()::: debug c50 symbol iterator impl get reg rel register:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getRegRelName()::: debug c50 symbol iterator impl get reg rel name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLThreadType()::: debug c50 symbol iterator impl get thread type:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLThreadOffset()::: debug c50 symbol iterator impl get thread offset:::symSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLThreadSegment()::: debug c50 symbol iterator impl get thread segment:::symSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#getLThreadName()::: debug c50 symbol iterator impl get thread name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#symSeek(int)::: debug c50 symbol iterator impl sym seek:::seek
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#numericLeafLengthAt(int)::: debug c50 symbol iterator impl numeric leaf length at:::return->DebugVC50Impl.this->numericLeafLengthAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#readIntNumericLeafAt(int)::: debug c50 symbol iterator impl read int numeric leaf at:::return->DebugVC50Impl.this->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#readLongNumericLeafAt(int)::: debug c50 symbol iterator impl read long numeric leaf at:::return->DebugVC50Impl.this->readLongNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#readFloatNumericLeafAt(int)::: debug c50 symbol iterator impl read float numeric leaf at:::return->DebugVC50Impl.this->readFloatNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#readDoubleNumericLeafAt(int)::: debug c50 symbol iterator impl read double numeric leaf at:::return->DebugVC50Impl.this->readDoubleNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#lengthPrefixedStringLengthAt(int)::: debug c50 symbol iterator impl length prefixed string length at:::return->DebugVC50Impl.this->lengthPrefixedStringLengthAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50SymbolIteratorImpl#readLengthPrefixedStringAt(int)::: debug c50 symbol iterator impl read length prefixed string at:::return->DebugVC50Impl.this->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#done()::: debug c50 type iterator impl done:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#next()::: debug c50 type iterator impl next:::if->done->throw->new->NoSuchElementException->if->done->parent->getTypeOffset->loadTypeRecord
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getLength()::: debug c50 type iterator impl get length:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getTypeIndex()::: debug c50 type iterator impl get type index:::return->biasTypeIndex
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNumTypes()::: debug c50 type iterator impl get num types:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#typeStringDone()::: debug c50 type iterator impl type string done:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#typeStringNext()::: debug c50 type iterator impl type string next:::if->typeStringDone->throw->new->NoSuchElementException->typeStringLength->loadTypeString
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#typeStringLeaf()::: debug c50 type iterator impl type string leaf:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#typeStringOffset()::: debug c50 type iterator impl type string offset:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getModifierIndex()::: debug c50 type iterator impl get modifier index:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getModifierAttribute()::: debug c50 type iterator impl get modifier attribute:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getPointerType()::: debug c50 type iterator impl get pointer type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getPointerAttributes()::: debug c50 type iterator impl get pointer attributes:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getPointerBasedOnTypeIndex()::: debug c50 type iterator impl get pointer based on type index:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getPointerBasedOnTypeName()::: debug c50 type iterator impl get pointer based on type name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getPointerToMemberClass()::: debug c50 type iterator impl get pointer to member class:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getPointerToMemberFormat()::: debug c50 type iterator impl get pointer to member format:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getArrayElementType()::: debug c50 type iterator impl get array element type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getArrayIndexType()::: debug c50 type iterator impl get array index type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getArrayLength()::: debug c50 type iterator impl get array length:::return->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getArrayName()::: debug c50 type iterator impl get array name:::return->numericLeafLengthAt->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getClassCount()::: debug c50 type iterator impl get class count:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getClassProperty()::: debug c50 type iterator impl get class property:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getClassFieldList()::: debug c50 type iterator impl get class field list:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getClassFieldListIterator()::: debug c50 type iterator impl get class field list iterator:::index->getClassFieldList->unbiasTypeIndex->offset->parent->getTypeOffset->return->new->DebugVC50TypeIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getClassDerivationList()::: debug c50 type iterator impl get class derivation list:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getClassVShape()::: debug c50 type iterator impl get class shape:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getClassSize()::: debug c50 type iterator impl get class size:::return->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getClassName()::: debug c50 type iterator impl get class name:::return->numericLeafLengthAt->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getUnionCount()::: debug c50 type iterator impl get union count:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getUnionProperty()::: debug c50 type iterator impl get union property:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getUnionFieldList()::: debug c50 type iterator impl get union field list:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getUnionFieldListIterator()::: debug c50 type iterator impl get union field list iterator:::index->getUnionFieldList->unbiasTypeIndex->offset->parent->getTypeOffset->return->new->DebugVC50TypeIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getUnionSize()::: debug c50 type iterator impl get union size:::return->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getUnionName()::: debug c50 type iterator impl get union name:::return->numericLeafLengthAt->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getEnumCount()::: debug c50 type iterator impl get enum count:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getEnumProperty()::: debug c50 type iterator impl get enum property:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getEnumType()::: debug c50 type iterator impl get enum type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getEnumFieldList()::: debug c50 type iterator impl get enum field list:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getEnumFieldListIterator()::: debug c50 type iterator impl get enum field list iterator:::index->getEnumFieldList->unbiasTypeIndex->offset->parent->getTypeOffset->return->new->DebugVC50TypeIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getEnumName()::: debug c50 type iterator impl get enum name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getProcedureReturnType()::: debug c50 type iterator impl get procedure return type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getProcedureCallingConvention()::: debug c50 type iterator impl get procedure calling convention:::typeSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getProcedureNumberOfParameters()::: debug c50 type iterator impl get procedure number of parameters:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getProcedureArgumentList()::: debug c50 type iterator impl get procedure argument list:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getProcedureArgumentListIterator()::: debug c50 type iterator impl get procedure argument list iterator:::index->getProcedureArgumentList->unbiasTypeIndex->offset->parent->getTypeOffset->return->new->DebugVC50TypeIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMFunctionReturnType()::: debug c50 type iterator impl get function return type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMFunctionContainingClass()::: debug c50 type iterator impl get function containing class:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMFunctionThis()::: debug c50 type iterator impl get function this:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMFunctionCallingConvention()::: debug c50 type iterator impl get function calling convention:::typeSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMFunctionNumberOfParameters()::: debug c50 type iterator impl get function number of parameters:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMFunctionArgumentList()::: debug c50 type iterator impl get function argument list:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMFunctionArgumentListIterator()::: debug c50 type iterator impl get function argument list iterator:::index->getMFunctionArgumentList->unbiasTypeIndex->offset->parent->getTypeOffset->return->new->DebugVC50TypeIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMFunctionThisAdjust()::: debug c50 type iterator impl get function this adjust:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getVTShapeCount()::: debug c50 type iterator impl get shape count:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getVTShapeDescriptor(int)::: debug c50 type iterator impl get shape descriptor:::typeSeek->val->readByte->if->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getBasicArrayType()::: debug c50 type iterator impl get basic array type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getLabelAddressMode()::: debug c50 type iterator impl get label address mode:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getDimArrayType()::: debug c50 type iterator impl get dim array type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getDimArrayDimInfo()::: debug c50 type iterator impl get dim array dim info:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getDimArrayName()::: debug c50 type iterator impl get dim array name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getVFTPathCount()::: debug c50 type iterator impl get path count:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getVFTPathBase(int)::: debug c50 type iterator impl get path base:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getSkipIndex()::: debug c50 type iterator impl get skip index:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getArgListCount()::: debug c50 type iterator impl get arg list count:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getArgListType(int)::: debug c50 type iterator impl get arg list type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getDefaultArgType()::: debug c50 type iterator impl get default arg type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getDefaultArgExpression()::: debug c50 type iterator impl get default arg expression:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getDerivedCount()::: debug c50 type iterator impl get derived count:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getDerivedType(int)::: debug c50 type iterator impl get derived type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getBitfieldFieldType()::: debug c50 type iterator impl get bitfield field type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getBitfieldLength()::: debug c50 type iterator impl get bitfield length:::typeSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getBitfieldPosition()::: debug c50 type iterator impl get bitfield position:::typeSeek->return->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMListAttribute()::: debug c50 type iterator impl get list attribute:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMListLength()::: debug c50 type iterator impl get list length:::return->getLength->isMListIntroducingVirtual
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMListType(int)::: debug c50 type iterator impl get list type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#isMListIntroducingVirtual()::: debug c50 type iterator impl is list introducing virtual:::return->getMListAttribute->isIntroducingVirtual
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMListVtabOffset()::: debug c50 type iterator impl get list vtab offset:::getMListLength->typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getRefSym()::: debug c50 type iterator impl get ref sym:::typeSeek->len->readShort->return->new->DebugVC50SymbolIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getBClassAttribute()::: debug c50 type iterator impl get class attribute:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getBClassType()::: debug c50 type iterator impl get class type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getBClassOffset()::: debug c50 type iterator impl get class offset:::return->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getVBClassAttribute()::: debug c50 type iterator impl get class attribute:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getVBClassBaseClassType()::: debug c50 type iterator impl get class base class type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getVBClassVirtualBaseClassType()::: debug c50 type iterator impl get class virtual base class type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getVBClassVBPOff()::: debug c50 type iterator impl get class off:::return->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getVBClassVBOff()::: debug c50 type iterator impl get class off:::return->numericLeafLengthAt->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getIVBClassAttribute()::: debug c50 type iterator impl get class attribute:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getIVBClassBType()::: debug c50 type iterator impl get class type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getIVBClassVBPType()::: debug c50 type iterator impl get class type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getIVBClassVBPOff()::: debug c50 type iterator impl get class off:::return->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getIVBClassVBOff()::: debug c50 type iterator impl get class off:::return->numericLeafLengthAt->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getEnumerateAttribute()::: debug c50 type iterator impl get enumerate attribute:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getEnumerateValue()::: debug c50 type iterator impl get enumerate value:::return->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getEnumerateName()::: debug c50 type iterator impl get enumerate name:::return->numericLeafLengthAt->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getFriendFcnType()::: debug c50 type iterator impl get friend fcn type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getFriendFcnName()::: debug c50 type iterator impl get friend fcn name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getIndexValue()::: debug c50 type iterator impl get index value:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getIndexIterator()::: debug c50 type iterator impl get index iterator:::index->getIndexValue->unbiasTypeIndex->offset->parent->getTypeOffset->return->new->DebugVC50TypeIteratorImpl
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMemberAttribute()::: debug c50 type iterator impl get member attribute:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMemberType()::: debug c50 type iterator impl get member type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMemberOffset()::: debug c50 type iterator impl get member offset:::return->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMemberName()::: debug c50 type iterator impl get member name:::return->numericLeafLengthAt->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getStaticAttribute()::: debug c50 type iterator impl get static attribute:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getStaticType()::: debug c50 type iterator impl get static type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getStaticName()::: debug c50 type iterator impl get static name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMethodCount()::: debug c50 type iterator impl get method count:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMethodList()::: debug c50 type iterator impl get method list:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMethodName()::: debug c50 type iterator impl get method name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNestedType()::: debug c50 type iterator impl get nested type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNestedName()::: debug c50 type iterator impl get nested name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getVFuncTabType()::: debug c50 type iterator impl get func tab type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getFriendClsType()::: debug c50 type iterator impl get friend cls type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getOneMethodAttribute()::: debug c50 type iterator impl get one method attribute:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getOneMethodType()::: debug c50 type iterator impl get one method type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#isOneMethodIntroducingVirtual()::: debug c50 type iterator impl is one method introducing virtual:::return->getOneMethodAttribute->isIntroducingVirtual
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getOneMethodVBaseOff()::: debug c50 type iterator impl get one method base off:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getOneMethodName()::: debug c50 type iterator impl get one method name:::baseLen->isOneMethodIntroducingVirtual->return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getVFuncOffType()::: debug c50 type iterator impl get func off type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getVFuncOffOffset()::: debug c50 type iterator impl get func off offset:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNestedExAttribute()::: debug c50 type iterator impl get nested ex attribute:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNestedExType()::: debug c50 type iterator impl get nested ex type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNestedExName()::: debug c50 type iterator impl get nested ex name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMemberModifyAttribute()::: debug c50 type iterator impl get member modify attribute:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMemberModifyType()::: debug c50 type iterator impl get member modify type:::typeSeek->return->readInt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getMemberModifyName()::: debug c50 type iterator impl get member modify name:::return->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNumericTypeAt(int)::: debug c50 type iterator impl get numeric type at:::typeSeek->return->readShort
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNumericLengthAt(int)::: debug c50 type iterator impl get numeric length at:::return->numericLeafLengthAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNumericIntAt(int)::: debug c50 type iterator impl get numeric int at:::return->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNumericLongAt(int)::: debug c50 type iterator impl get numeric long at:::throw->new->RuntimeException
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNumericFloatAt(int)::: debug c50 type iterator impl get numeric float at:::throw->new->RuntimeException
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNumericDoubleAt(int)::: debug c50 type iterator impl get numeric double at:::throw->new->RuntimeException
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#getNumericDataAt(int)::: debug c50 type iterator impl get numeric data at:::throw->new->RuntimeException
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#loadTypeRecord()::: debug c50 type iterator impl load type record:::seek->readShort->loadTypeString
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#loadTypeString()::: debug c50 type iterator impl load type string:::seek->lo->readByte->if->else->hi->readByte
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#typeSeek(int)::: debug c50 type iterator impl type seek:::seek
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#typeStringLength()::: debug c50 type iterator impl type string length:::if->return->switch->return->extraLen->attr->getPointerAttributes->mode->getPointerAttributes->if->numericLeafLengthAt->else->if->return->temp->numericLeafLengthAt->return->lengthPrefixedStringLengthAt->temp->numericLeafLengthAt->return->lengthPrefixedStringLengthAt->temp->numericLeafLengthAt->return->lengthPrefixedStringLengthAt->return->lengthPrefixedStringLengthAt->return->return->return->getVTShapeCount->throw->new->COFFException->return->return->return->return->return->lengthPrefixedStringLengthAt->return->getVFTPathCount->return->lengthPrefixedStringLengthAt->return->throw->new->COFFException->return->lengthPrefixedStringLengthAt->return->numericLeafLengthAt->return->getArgListCount->return->lengthPrefixedStringLengthAt->return->return->getDerivedCount->return->return->getMListLength->isMListIntroducingVirtual->throw->new->COFFException->seek->return->readShort->return->numericLeafLengthAt->temp->numericLeafLengthAt->return->numericLeafLengthAt->temp->numericLeafLengthAt->return->lengthPrefixedStringLengthAt->return->lengthPrefixedStringLengthAt->return->temp->numericLeafLengthAt->return->lengthPrefixedStringLengthAt->return->lengthPrefixedStringLengthAt->return->lengthPrefixedStringLengthAt->return->lengthPrefixedStringLengthAt->return->return->baseLen->isOneMethodIntroducingVirtual->return->lengthPrefixedStringLengthAt->return->return->lengthPrefixedStringLengthAt->return->lengthPrefixedStringLengthAt->throw->new->RuntimeException->throw->new->COFFException
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#isIntroducingVirtual(int)::: debug c50 type iterator impl is introducing virtual:::masked->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#numericLeafLengthAt(int)::: debug c50 type iterator impl numeric leaf length at:::return->DebugVC50Impl.this->numericLeafLengthAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#readIntNumericLeafAt(int)::: debug c50 type iterator impl read int numeric leaf at:::return->DebugVC50Impl.this->readIntNumericLeafAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#lengthPrefixedStringLengthAt(int)::: debug c50 type iterator impl length prefixed string length at:::return->DebugVC50Impl.this->lengthPrefixedStringLengthAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl.DebugVC50TypeIteratorImpl#readLengthPrefixedStringAt(int)::: debug c50 type iterator impl read length prefixed string at:::return->DebugVC50Impl.this->readLengthPrefixedStringAt
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#numericLeafLengthAt(int)::: debug c50 impl numeric leaf length at:::seek->leaf->readShort->if->return->switch->return->return->return->return->return->return->return->return->return->return->return->return->return->return->readIntNumericLeafAt->throw->new->DebugVC50WrongNumericTypeException
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#readIntNumericLeafAt(int)::: debug c50 impl read int numeric leaf at:::seek->leaf->readShort->if->return->switch->return->readByte->return->readShort->return->readInt->throw->new->DebugVC50WrongNumericTypeException
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#readLongNumericLeafAt(int)::: debug c50 impl read long numeric leaf at:::seek->leaf->readShort->if->return->switch->return->readByte->return->readShort->return->readInt->return->readLong->throw->new->DebugVC50WrongNumericTypeException
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#readFloatNumericLeafAt(int)::: debug c50 impl read float numeric leaf at:::seek->leaf->readShort->if->throw->new->DebugVC50WrongNumericTypeException->return->readFloat
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#readDoubleNumericLeafAt(int)::: debug c50 impl read double numeric leaf at:::seek->leaf->readShort->if->throw->new->DebugVC50WrongNumericTypeException->return->readDouble
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#lengthPrefixedStringLengthAt(int)::: debug c50 impl length prefixed string length at:::seek->len->readByte->return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#readLengthPrefixedStringAt(int)::: debug c50 impl read length prefixed string at:::seek->len->readByte->res->new->byteArr->numRead->readBytes->if->throw->new->COFFException->try->return->new->String->catch->throw->new->COFFException->finally
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#unbiasTypeIndex(int)::: debug c50 impl unbias type index:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.DebugVC50Impl#biasTypeIndex(int)::: debug c50 impl bias type index:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#getName()::: section header impl get name:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#getSize()::: section header impl get size:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#getVirtualAddress()::: section header impl get virtual address:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#getSizeOfRawData()::: section header impl get size of raw data:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#getPointerToRawData()::: section header impl get pointer to raw data:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#getPointerToRelocations()::: section header impl get pointer to relocations:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#getPointerToLineNumbers()::: section header impl get pointer to line numbers:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#getNumberOfRelocations()::: section header impl get number of relocations:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#getNumberOfLineNumbers()::: section header impl get number of line numbers:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#getSectionFlags()::: section header impl get section flags:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#hasSectionFlag(int)::: section header impl has section flag:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#getCOFFRelocation(int)::: section header impl get relocation:::return->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.SectionHeaderImpl#getCOFFLineNumber(int)::: section header impl get line number:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#getOffset()::: symbol impl get offset:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#getName()::: symbol impl get name:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#getValue()::: symbol impl get value:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#getSectionNumber()::: symbol impl get section number:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#getType()::: symbol impl get type:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#getStorageClass()::: symbol impl get storage class:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#getNumberOfAuxSymbols()::: symbol impl get number of aux symbols:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#isFunctionDefinition()::: symbol impl is function definition:::return->getStorageClass->getType->getSectionNumber
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#getAuxFunctionDefinitionRecord()::: symbol impl get aux function definition record:::return->auxFunctionDefinitionRecord->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#isBfOrEfSymbol()::: symbol impl is bf or ef symbol:::return->getName->equals->getName->equals->getStorageClass
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#getAuxBfEfRecord()::: symbol impl get aux bf ef record:::return->auxBfEfRecord->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#isWeakExternal()::: symbol impl is weak external:::return->getStorageClass->getSectionNumber->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#getAuxWeakExternalRecord()::: symbol impl get aux weak external record:::return->auxWeakExternalRecord->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#isFile()::: symbol impl is file:::return->getName->equals->getStorageClass
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#getAuxFileRecord()::: symbol impl get aux file record:::return->auxFileRecord->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#isSectionDefinition()::: symbol impl is section definition:::return->getName->charAt->getStorageClass
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFSymbolImpl#getAuxSectionDefinitionsRecord()::: symbol impl get aux section definitions record:::return->auxSectionDefinitionsRecord->getValue
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxFunctionDefinitionRecordImpl#getTagIndex()::: aux function definition record impl get tag index:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxFunctionDefinitionRecordImpl#getTotalSize()::: aux function definition record impl get total size:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxFunctionDefinitionRecordImpl#getPointerToLineNumber()::: aux function definition record impl get pointer to line number:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxFunctionDefinitionRecordImpl#getPointerToNextFunction()::: aux function definition record impl get pointer to next function:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxFunctionDefinitionRecordImpl#getType()::: aux function definition record impl get type:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxBfEfRecordImpl#getLineNumber()::: aux bf ef record impl get line number:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxBfEfRecordImpl#getPointerToNextFunction()::: aux bf ef record impl get pointer to next function:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxBfEfRecordImpl#getType()::: aux bf ef record impl get type:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxWeakExternalRecordImpl#getTagIndex()::: aux weak external record impl get tag index:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxWeakExternalRecordImpl#getCharacteristics()::: aux weak external record impl get characteristics:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxWeakExternalRecordImpl#getType()::: aux weak external record impl get type:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxFileRecordImpl#getName()::: aux file record impl get name:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxFileRecordImpl#getType()::: aux file record impl get type:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxSectionDefinitionsRecordImpl#getLength()::: aux section definitions record impl get length:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxSectionDefinitionsRecordImpl#getNumberOfRelocations()::: aux section definitions record impl get number of relocations:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxSectionDefinitionsRecordImpl#getNumberOfLineNumbers()::: aux section definitions record impl get number of line numbers:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxSectionDefinitionsRecordImpl#getCheckSum()::: aux section definitions record impl get check sum:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxSectionDefinitionsRecordImpl#getNumber()::: aux section definitions record impl get number:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxSectionDefinitionsRecordImpl#getSelection()::: aux section definitions record impl get selection:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.AuxSectionDefinitionsRecordImpl#getType()::: aux section definitions record impl get type:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFRelocationImpl#getVirtualAddress()::: relocation impl get virtual address:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFRelocationImpl#getSymbolTableIndex()::: relocation impl get symbol table index:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFRelocationImpl#getType()::: relocation impl get type:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFLineNumberImpl#getType()::: line number impl get type:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.COFFLineNumberImpl#getLineNumber()::: line number impl get line number:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.StringTable#getNum()::: string table get num:::return
+COFFFileParser.COFFFileImpl.COFFHeaderImpl.StringTable#get(int)::: string table get:::return
 COFFFileParser.COFFFileImpl.COFFHeaderImpl.StringTable#getAtOffset(int):::This version takes an absolute offset in the file:::i->Arrays->new->COFFString->new->Comparator->binarySearch->if->throw->new->COFFException->return
+COFFFileParser.COFFFileImpl#initialize()::: file impl initialize:::seek->try->peOffset->readInt->seek->if->readByte->readByte->readByte->readByte->getFilePointer->catch->finally
+COFFFileParser.COFFFileImpl#readByteAt(long)::: file impl read byte at:::seek->return->readByte
+COFFFileParser.COFFFileImpl#readByte()::: file impl read byte:::try->return->file->readByte->catch->throw->e->toString->Long->toHexString->new->COFFException->finally
+COFFFileParser.COFFFileImpl#readBytesAt(long, byte[])::: file impl read bytes at:::seek->return->readBytes
+COFFFileParser.COFFFileImpl#readBytes(byte[])::: file impl read bytes:::try->return->file->read->catch->throw->e->toString->Long->toHexString->new->COFFException->finally
 COFFFileParser.COFFFileImpl#readShortAt(long):::NOTE: reads little-endian short:::seek->return->readShort
 COFFFileParser.COFFFileImpl#readShort():::NOTE: reads little-endian short:::try->return->file->readShort->byteSwap->catch->throw->e->toString->Long->toHexString->new->COFFException->finally
 COFFFileParser.COFFFileImpl#readIntAt(long):::NOTE: reads little-endian int:::seek->return->readInt
@@ -25,6 +514,13 @@ COFFFileParser.COFFFileImpl#readLongAt(long):::NOTE: reads little-endian long:::
 COFFFileParser.COFFFileImpl#readLong():::NOTE: reads little-endian long:::try->return->file->readLong->byteSwap->catch->throw->e->toString->Long->toHexString->new->COFFException->finally
 COFFFileParser.COFFFileImpl#readFloat():::NOTE: reads little-endian float:::i->readInt->return->Float->intBitsToFloat
 COFFFileParser.COFFFileImpl#readDouble():::NOTE: reads little-endian double:::l->readLong->return->Double->longBitsToDouble
+COFFFileParser.COFFFileImpl#readCString()::: file impl read string:::data->new->ArrayList->b->while->readByte->data->new->Byte->add->bytes->data->size->new->byteArr->for->i->data->size->try->return->new->String->catch->throw->new->COFFException->finally
+COFFFileParser.COFFFileImpl#seek(long)::: file impl seek:::try->file->seek->catch->throw->e->toString->Long->toHexString->new->COFFException->finally
+COFFFileParser.COFFFileImpl#getFilePointer()::: file impl get file pointer:::try->return->file->getFilePointer->catch->throw->new->COFFException->finally
+COFFFileParser.COFFFileImpl#byteSwap(short)::: file impl byte swap:::return
+COFFFileParser.COFFFileImpl#byteSwap(int)::: file impl byte swap:::return->byteSwap->byteSwap
+COFFFileParser.COFFFileImpl#byteSwap(long)::: file impl byte swap:::return->byteSwap->byteSwap
+COFFFileParser.COFFFileImpl#close()::: file impl close:::try->file->close->catch->throw->new->COFFException->finally
 COFFHeader#getMachineType():::Returns one of the constants in sun.jvm.hotspot.debugger.win32.coff.MachineTypes.:::
 COFFHeader#getNumberOfSections():::Number of sections; indicates size of the Section Table, which       immediately follows the headers.:::
 COFFHeader#getTimeDateStamp():::Time and date the file was created.:::
@@ -44,6 +540,7 @@ COFFRelocation#getVirtualAddress():::Address of the item to which relocation is 
 COFFRelocation#getSymbolTableIndex():::A zero-based index into the symbol table:::
 COFFRelocation#getType():::A value indicating what kind of relocation should be       performed:::
 COFFSymbol#getOffset():::Offset within the file of this record:::
+COFFSymbol#getName()::: symbol get name:::
 COFFSymbol#getValue():::Value associated with the symbol:::
 COFFSymbol#getSectionNumber():::Signed integer identifying the section, using a one-based index       into the Section Table:::
 COFFSymbol#getType():::<P> The Type field of a symbol table entry contains two bytes,       each byte representing type information:::
@@ -73,6 +570,8 @@ DebugDirectoryEntry#getAddressOfRawData():::Address of the debug data when loade
 DebugDirectoryEntry#getPointerToRawData():::File pointer to the debug data.:::
 DebugDirectoryEntry#getDebugVC50():::If this debug directory entry is of type       IMAGE_DEBUG_TYPE_CODEVIEW (see:::
 DebugDirectoryEntry#getRawDataByte(int):::Placeholder:::
+DebugVC50#getSubsectionDirectoryOffset()::: debug c50 get subsection directory offset:::
+DebugVC50#getSubsectionDirectory()::: debug c50 get subsection directory:::
 DebugVC50SegDesc#getFlags():::Descriptor flags bit field:::
 DebugVC50SegDesc#getOverlayNum():::The logical overlay number.:::
 DebugVC50SegDesc#getGroup():::The group index into the descriptor array:::
@@ -93,6 +592,7 @@ DebugVC50SrcModLineNumberMap#getSegment():::Segment index for this table.:::
 DebugVC50SrcModLineNumberMap#getNumSourceLinePairs():::Number of source line pairs.:::
 DebugVC50SrcModLineNumberMap#getCodeOffset(int):::Get the ith (i..getNumSourceLinePairs() - 1) offset       within the code segment of the start of the line in the parallel       line number array.:::
 DebugVC50SrcModLineNumberMap#getLineNumber(int):::Get the ith (i..getNumSourceLinePairs() - 1) line       number.:::
+DebugVC50SSAlignSym#getSymbolIterator()::: debug c50 align sym get symbol iterator:::
 DebugVC50SSFileIndex#getNumModules():::Number of file name references per module.:::
 DebugVC50SSFileIndex#getNumReferences():::Count of the total number of file name references.:::
 DebugVC50SSFileIndex#getModStart():::Array of indices into the NameOffset table for each       module:::
@@ -102,6 +602,7 @@ DebugVC50SSFileIndex#getNames():::List of zero terminated file names:::
 DebugVC50SSGlobalTypes#getNumTypes():::Number of types in the table.:::
 DebugVC50SSGlobalTypes#getTypeOffset(int):::Absolute file offset of the ith (0..getNumTypes() - 1)       type in the table.:::
 DebugVC50SSGlobalTypes#getTypeIterator():::Create a new type iterator pointing to the first type in the       subsection.:::
+DebugVC50SSModule#getOverlayNumber()::: debug c50 module get overlay number:::
 DebugVC50SSModule#getLibrariesIndex():::Index into sstLibraries subsection if this module was linked       from a library.:::
 DebugVC50SSModule#getNumCodeSegments():::Count of the number of code segments this module contributes to:::
 DebugVC50SSModule#getDebuggingStyle():::Debugging style for this module:::
@@ -126,6 +627,9 @@ DebugVC50SSSymbolBase#getSymbolIterator():::Retrieves an iterator over the symbo
 DebugVC50Subsection#getSubsectionType():::Returns type of this subsection; see sun.jvm.hotspot.debugger.win32.coff.DebugVC50SubsectionTypes.:::
 DebugVC50Subsection#getSubsectionModuleIndex():::Returns module index associated with this subsection:::
 DebugVC50Subsection#getSubsectionSize():::Number of bytes in subsection.:::
+DebugVC50SubsectionDirectory#getHeaderLength()::: debug c50 subsection directory get header length:::
+DebugVC50SubsectionDirectory#getEntryLength()::: debug c50 subsection directory get entry length:::
+DebugVC50SubsectionDirectory#getNumEntries()::: debug c50 subsection directory get num entries:::
 DebugVC50SubsectionDirectory#getSubsection(int):::Returns subsection at (zero-based) index i.:::
 DebugVC50SymbolIterator#done():::Indicates whether this iterator has processed all of the       available symbols.:::
 DebugVC50SymbolIterator#next():::Go to the next symbol:::
@@ -356,6 +860,8 @@ DebugVC50TypeIterator#getNumericLongAt(int):::Fetch the value of the long or int
 DebugVC50TypeIterator#getNumericFloatAt(int):::Fetch the value of the single-precision floating-point numeric       leaf at the given offset, in bytes, from the start of the       current leaf.:::
 DebugVC50TypeIterator#getNumericDoubleAt(int):::Fetch the value of the double-precision floating-point numeric       leaf at the given offset, in bytes, from the start of the       current leaf.:::
 DebugVC50TypeIterator#getNumericDataAt(int):::Fetch the raw bytes, including LF_ prefix (if any), of the       numeric leaf at the given offset, in bytes, from the start of       the current leaf.:::
+DumpExports#usage()::: dump exports usage:::println->System->exit
+DumpExports#main(String[])::: dump exports main:::if->usage->filename->file->COFFFileParser->getParser->parse->dataDirs->file->getHeader->getOptionalHeader->getDataDirectories->dir->dataDirs->getExportTable->dir->getRVA->Integer->dir->getRVA->toHexString->dir->getSize->Integer->dir->getSize->toHexString->println->file->getHeader->getNumberOfSections->println->for->i->file->getHeader->getNumberOfSections->exports->dataDirs->getExportDirectoryTable->if->println->else->exports->getDLLName->println->Integer->exports->getTimeDateStamp->toHexString->println->Integer->exports->getMajorVersion->toHexString->println->Integer->exports->getMinorVersion->toHexString->println->exports->getNumberOfNamePointers->println->for->i->exports->getNumberOfNamePointers
 ExportDirectoryTable#getExportFlags():::A reserved field, set to zero for now.:::
 ExportDirectoryTable#getTimeDateStamp():::Time and date the export data was created.:::
 ExportDirectoryTable#getMajorVersion():::Major version number:::
@@ -394,6 +900,8 @@ OptionalHeaderDataDirectories#getBoundImportTable():::Bound Import Table address
 OptionalHeaderDataDirectories#getImportAddressTable():::Import Address Table address and size.:::
 OptionalHeaderDataDirectories#getDelayImportDescriptor():::Address and size of the Delay Import Descriptor.:::
 OptionalHeaderDataDirectories#getCOMPlusRuntimeHeader():::COM+ Runtime Header address and size:::
+OptionalHeaderStandardFields#getMajorLinkerVersion()::: optional header standard fields get major linker version:::
+OptionalHeaderStandardFields#getMinorLinkerVersion()::: optional header standard fields get minor linker version:::
 OptionalHeaderStandardFields#getSizeOfCode():::Size of the code (text) section, or the sum of all code sections       if there are multiple sections.:::
 OptionalHeaderStandardFields#getSizeOfInitializedData():::Size of the initialized data section, or the sum of all such       sections if there are multiple data sections.:::
 OptionalHeaderStandardFields#getSizeOfUninitializedData():::Size of the uninitialized data section (BSS), or the sum of all       such sections if there are multiple BSS sections.:::
@@ -420,6 +928,7 @@ OptionalHeaderWindowsSpecificFields#getSizeOfHeapReserve():::Size of local heap 
 OptionalHeaderWindowsSpecificFields#getSizeOfHeapCommit():::Size of local heap space to commit.:::
 OptionalHeaderWindowsSpecificFields#getLoaderFlags():::Obsolete.:::
 OptionalHeaderWindowsSpecificFields#getNumberOfRvaAndSizes():::Number of data-dictionary entries in the remainder of the       Optional Header:::
+SectionHeader#getName()::: section header get name:::
 SectionHeader#getSize():::Total size of the section when loaded into memory:::
 SectionHeader#getVirtualAddress():::For executable images this is the address of the first byte of       the section, when loaded into memory, relative to the image       base:::
 SectionHeader#getSizeOfRawData():::Size of the section (object file) or size of the initialized       data on disk (image files):::
@@ -432,3 +941,9 @@ SectionHeader#getSectionFlags():::Flags describing section's characteristics; se
 SectionHeader#hasSectionFlag(int):::Returns true if the appropriate flag (from sun.jvm.hotspot.debugger.win32.coff.SectionFlags) is set.:::
 SectionHeader#getCOFFRelocation(int):::This is only present for object files:::
 SectionHeader#getCOFFLineNumber(int):::Retrieves the COFF line number at the given index; valid indices       are numbered 0...getNumberOfLineNumbers() - 1.:::
+TestDebugInfo#main(String[])::: test debug info main:::if->println->println->System->exit->try->file->COFFFileParser->getParser->parse->if->file->isImage->println->else->println->vc50->getDebugVC50->if->println->System->exit->else->println->dir->vc50->getSubsectionDirectory->for->i->dir->getNumEntries->catch->e->printStackTrace->finally
+TestDebugInfo#getDebugVC50(COFFFile)::: test debug info get debug c50:::header->file->getHeader->opt->header->getOptionalHeader->if->println->return->dd->opt->getDataDirectories->if->println->return->debug->dd->getDebugDirectory->if->println->return->for->i->debug->getNumEntries->return
+TestDebugInfo#printSymbolTable(DebugVC50Subsection)::: test debug info print symbol table:::sym->iter->sym->getSymbolIterator->printSymbolTable
+TestDebugInfo#printSymbolTable(DebugVC50SymbolIterator)::: test debug info print symbol table:::while->iter->done->type->iter->getType->switch->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->println->break->iter->next
+TestDebugInfo#printTypeTable(DebugVC50Subsection)::: test debug info print type table:::types->iter->types->getTypeIterator->while->iter->done->print->while->iter->typeStringDone->leaf->iter->typeStringLeaf->switch->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->iter->getMemberName->print->break->print->break->print->iter->getMethodName->print->break->print->break->print->break->print->break->print->iter->getOneMethodName->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->break->print->iter->typeStringNext->println->iter->next
+TestParser#main(String[])::: test parser main:::if->println->println->System->exit->try->file->COFFFileParser->getParser->parse->if->file->isImage->println->else->println->header->file->getHeader->numSections->header->getNumberOfSections->println->for->i->optHdr->header->getOptionalHeader->ddirs->optHdr->getDataDirectories->exports->ddirs->getExportDirectoryTable->exports->getExportFlags->println->exports->getDLLName->println->numSymbols->exports->getNumberOfNamePointers->println->for->i->catch->e->printStackTrace->finally

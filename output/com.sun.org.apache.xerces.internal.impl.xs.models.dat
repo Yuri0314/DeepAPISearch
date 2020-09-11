@@ -1,10 +1,53 @@
+CMBuilder#setDeclPool(XSDeclarationPool)::: builder set decl pool:::
 CMBuilder#getContentModel(XSComplexTypeDecl, boolean):::Get content model for the a given type:::contentType->typeDecl->getContentType->if->return->particle->typeDecl->getParticle->if->return->cmValidator->if->createAllCM->else->createDFACM->fNodeFactory->resetNodeCount->if->return
+CMBuilder#createAllCM(XSParticleDecl)::: builder create all m:::if->return->group->allContent->new->XSAllCM->for->i->return
+CMBuilder#createDFACM(XSParticleDecl, boolean)::: builder create m:::node->useRepeatingLeafNodes->buildCompactSyntaxTree->buildSyntaxTree->if->return->return->new->XSDFACM
+CMBuilder#buildSyntaxTree(XSParticleDecl, boolean, boolean)::: builder build syntax tree:::maxOccurs->minOccurs->compactedForUPA->if->if->if->particle->getMaxOccursUnbounded->else->if->type->nodeRet->if->fNodeFactory->getCMLeafNode->expandContentModel->if->nodeRet->setIsCompactUPAModel->else->if->group->temp->twoChildren->for->i->if->if->fNodeFactory->getCMUniOpNode->expandContentModel->nodeRet->setIsCompactUPAModel->return
+CMBuilder#expandContentModel(CMNode, int, int, boolean)::: builder expand content model:::nodeRet->if->else->if->fNodeFactory->getCMUniOpNode->else->if->fNodeFactory->getCMUniOpNode->else->if->fNodeFactory->getCMUniOpNode->else->if->node->type->node->type->fNodeFactory->getCMUniOpNode->nodeRet->new->intArr->setUserData->else->if->fNodeFactory->getCMUniOpNode->fNodeFactory->multiNodes->getCMBinOpNode->else->if->multiNodes->if->fNodeFactory->getCMUniOpNode->if->multiNodes->else->fNodeFactory->multiNodes->getCMBinOpNode->return
+CMBuilder#multiNodes(CMNode, int, boolean)::: builder multi nodes:::if->return->if->return->copyNode->num1->return->fNodeFactory->multiNodes->multiNodes->getCMBinOpNode
+CMBuilder#copyNode(CMNode)::: builder copy node:::type->node->type->if->bin->fNodeFactory->bin->getLeft->copyNode->bin->getRight->copyNode->getCMBinOpNode->else->if->uni->fNodeFactory->uni->getChild->copyNode->getCMUniOpNode->else->if->leaf->fNodeFactory->leaf->type->leaf->getLeaf->leaf->getParticleId->getCMLeafNode->return
+CMBuilder#buildCompactSyntaxTree(XSParticleDecl)::: builder build compact syntax tree:::maxOccurs->minOccurs->type->nodeRet->if->return->buildCompactSyntaxTree2->else->if->group->if->return->buildCompactSyntaxTree2->else->temp->count->for->i->if->if->fNodeFactory->getCMUniOpNode->return
+CMBuilder#buildCompactSyntaxTree2(XSParticleDecl, int, int)::: builder build compact syntax tree2:::nodeRet->if->fNodeFactory->getCMLeafNode->else->if->fNodeFactory->getCMLeafNode->fNodeFactory->getCMUniOpNode->else->if->fNodeFactory->getCMLeafNode->fNodeFactory->getCMUniOpNode->else->if->fNodeFactory->getCMLeafNode->fNodeFactory->getCMUniOpNode->else->fNodeFactory->getCMRepeatingLeafNode->if->fNodeFactory->getCMUniOpNode->else->fNodeFactory->getCMUniOpNode->return
+CMBuilder#useRepeatingLeafNodes(XSParticleDecl)::: builder use repeating leaf nodes:::maxOccurs->minOccurs->type->if->group->if->if->particle2->type2->return->return->for->i->return
+CMNodeFactory#reset(XMLComponentManager)::: node factory reset:::componentManager->getProperty->try->componentManager->getProperty->reset->catch->finally
+CMNodeFactory#reset()::: node factory reset:::if->fSecurityManager->getLimit
+CMNodeFactory#getCMLeafNode(int, Object, int, int)::: node factory get leaf node:::return->new->XSCMLeaf
+CMNodeFactory#getCMRepeatingLeafNode(int, Object, int, int, int, int)::: node factory get repeating leaf node:::nodeCountCheck->return->new->XSCMRepeatingLeaf
+CMNodeFactory#getCMUniOpNode(int, CMNode)::: node factory get uni op node:::nodeCountCheck->return->new->XSCMUniOp
+CMNodeFactory#getCMBinOpNode(int, CMNode, CMNode)::: node factory get bin op node:::return->new->XSCMBinOp
+CMNodeFactory#nodeCountCheck()::: node factory node count check:::if->fSecurityManager->isNoLimit->if->println->println->fErrorReporter->new->ObjectArr->reportError
+CMNodeFactory#resetNodeCount()::: node factory reset node count:::
 CMNodeFactory#setProperty(String, Object):::Sets the value of a property:::if->propertyId->startsWith->suffixLength->propertyId->length->length->if->length->propertyId->endsWith->fSecurityManager->getLimit->return->if->length->propertyId->endsWith->return
+XSAllCM#addElement(XSElementDecl, boolean)::: all m add element:::
 XSAllCM#startContentModel():::This methods to be called on entering a first element whose type has this content model:::state->new->intArr->for->i->return
+XSAllCM#findMatchingDecl(QName, SubstitutionGroupHandler)::: all m find matching decl:::matchingDecl->for->i->return
 XSAllCM#oneTransition(QName, int[], SubstitutionGroupHandler):::The method corresponds to one transition in the content model.:::if->return->findMatchingDecl->matchingDecl->for->i->return->findMatchingDecl
 XSAllCM#endContentModel(int[]):::The method indicates the end of list of children:::state->if->return->if->return->for->i->return
 XSAllCM#checkUniqueParticleAttribution(SubstitutionGroupHandler):::check whether this content violates UPA constraint.:::for->i->return
 XSAllCM#whatCanGoHere(int[]):::Check which elements are valid to appear at this point:::ret->new->ArrayList<>->for->i->return
+XSAllCM#checkMinMaxBounds()::: all m check min max bounds:::return
+XSAllCM#occurenceInfo(int[])::: all m occurence info:::return
+XSAllCM#getTermName(int)::: all m get term name:::return
+XSAllCM#isCompactedForUPA()::: all m is compacted for a:::return
+XSCMBinOp#getLeft()::: bin op get left:::return
+XSCMBinOp#getRight()::: bin op get right:::return
+XSCMBinOp#isNullable()::: bin op is nullable:::if->type->return->fLeftChild->isNullable->fRightChild->isNullable->else->if->type->return->fLeftChild->isNullable->fRightChild->isNullable->else->throw->new->RuntimeException
+XSCMBinOp#calcFirstPos(CMStateSet)::: bin op calc first pos:::if->type->toSet->fLeftChild->firstPos->setTo->toSet->fRightChild->firstPos->union->else->if->type->toSet->fLeftChild->firstPos->setTo->if->fLeftChild->isNullable->toSet->fRightChild->firstPos->union->else->throw->new->RuntimeException
+XSCMBinOp#calcLastPos(CMStateSet)::: bin op calc last pos:::if->type->toSet->fLeftChild->lastPos->setTo->toSet->fRightChild->lastPos->union->else->if->type->toSet->fRightChild->lastPos->setTo->if->fRightChild->isNullable->toSet->fLeftChild->lastPos->union->else->throw->new->RuntimeException
+XSCMLeaf#getLeaf()::: leaf get leaf:::return
+XSCMLeaf#getParticleId()::: leaf get particle id:::return
+XSCMLeaf#getPosition()::: leaf get position:::return
+XSCMLeaf#setPosition(int)::: leaf set position:::
+XSCMLeaf#isNullable()::: leaf is nullable:::return
+XSCMLeaf#toString()::: leaf to string:::strRet->fLeaf->toString->new->StringBuffer->if->strRet->Integer->toString->append->return->strRet->toString
+XSCMLeaf#calcFirstPos(CMStateSet)::: leaf calc first pos:::if->toSet->zeroBits->else->toSet->setBit
+XSCMLeaf#calcLastPos(CMStateSet)::: leaf calc last pos:::if->toSet->zeroBits->else->toSet->setBit
+XSCMRepeatingLeaf#getMinOccurs()::: repeating leaf get min occurs:::return
+XSCMRepeatingLeaf#getMaxOccurs()::: repeating leaf get max occurs:::return
+XSCMUniOp#getChild()::: uni op get child:::return
+XSCMUniOp#isNullable()::: uni op is nullable:::if->type->return->fChild->isNullable->else->return
+XSCMUniOp#calcFirstPos(CMStateSet)::: uni op calc first pos:::toSet->fChild->firstPos->setTo
+XSCMUniOp#calcLastPos(CMStateSet)::: uni op calc last pos:::toSet->fChild->lastPos->setTo
 XSCMUniOp#setUserData(Object):::Allows the user to set arbitrary data on this content model node:::super->setUserData->fChild->setUserData
 XSCMValidator#startContentModel():::This methods to be called on entering a first element whose type has this content model:::
 XSCMValidator#oneTransition(QName, int[], SubstitutionGroupHandler):::The method corresponds to one transaction in the content model.:::
@@ -15,13 +58,30 @@ XSCMValidator#checkMinMaxBounds():::Used by constant space algorithm for a{n,m} 
 XSCMValidator#occurenceInfo(int[]):::Returns an array containing information about the current repeating term or null if no occurrence counting was being performed at the current state.  If an array is returned it will have a length == 4 and will contain:  <ul>   <li>a[0] :: min occurs</li>   <li>a[1] :: max occurs</li>   <li>a[2] :: current value of the counter</li>   <li>a[3] :: identifier for the repeating term</li>  </ul> :::
 XSCMValidator#getTermName(int):::Returns the name of the term (element or wildcard) for the given identifier.:::
 XSCMValidator#isCompactedForUPA():::Checks if this content model has had its min/maxOccurs values reduced for purposes of speeding up UPA:::
+XSDFACM.Occurence#toString()::: occurence to string:::return->Integer->toString
 XSDFACM#isFinalState(int):::check whether the given state is one of the final states:::return
 XSDFACM#oneTransition(QName, int[], SubstitutionGroupHandler):::one transition only:::curState->if->if->return->findMatchingDecl->nextState->elemIndex->matchingDecl->for->if->return->findMatchingDecl->if->o->if->if->if->return->findMatchingDecl->else->if->return->findMatchingDecl->else->if->else->if->return
+XSDFACM#findMatchingDecl(QName, SubstitutionGroupHandler)::: m find matching decl:::matchingDecl->for->elemIndex->return
+XSDFACM#findMatchingDecl(QName, int[], SubstitutionGroupHandler, int)::: m find matching decl:::curState->nextState->matchingDecl->while->if->continue->type->if->subGroupHandler->getMatchingElemDecl->if->break->else->if->if->allowNamespace->break->if->return->findMatchingDecl->o->if->return
+XSDFACM#startContentModel()::: m start content model:::for->elemIndex->return->new->intArr
+XSDFACM#endContentModel(int[])::: m end content model:::curState->if->if->o->if->return->return->return
+XSDFACM#buildDFA(CMNode):::Builds the internal DFA transition table from the given syntax tree.:::EOCPos->nodeEOC->new->XSCMLeaf->new->XSCMBinOp->new->XSCMLeafArr->new->intArr->postTreeBuildInit->new->CMStateSetArr->for->index->calcFollowList->new->ObjectArr->new->intArr->new->intArr->new->intArr->new->intArr->new->intArr->elemOccurenceMap->for->outIndex->if->if->println->fLeafSorter->new->intArr->fSortCount->for->elemIndex->curArraySize->statesToDo->new->CMStateSetArr->new->booleanArr->new->intArrs->setT->fHeadNode->firstPos->unmarkedState->curState->makeDefStateList->stateTable->new->HashMap<>->while->transEntry->setT->getBit->newSet->sorterIndex->for->elemIndex->if->new->OccurenceArr->for->i->if->dumpTree
+XSDFACM#calcFollowList(CMNode):::Calculates the follow list of the current node.:::if->nodeCur->type->getLeft->calcFollowList->getRight->calcFollowList->else->if->nodeCur->type->getLeft->calcFollowList->getRight->calcFollowList->last->getLeft->lastPos->first->getRight->firstPos->for->index->else->if->nodeCur->type->nodeCur->type->getChild->calcFollowList->first->nodeCur->firstPos->last->nodeCur->lastPos->for->index->else->if->nodeCur->type->getChild->calcFollowList
+XSDFACM#dumpTree(CMNode, int):::Dumps the tree of the current node to standard output.:::for->index->type->nodeCur->type->switch->if->print->else->print->if->nodeCur->isNullable->print->print->nodeCur->firstPos->toString->print->print->nodeCur->lastPos->toString->println->getLeft->dumpTree->getRight->dumpTree->break->print->if->nodeCur->isNullable->print->print->nodeCur->firstPos->toString->print->print->nodeCur->lastPos->toString->println->getChild->dumpTree->break->getPosition->getLeaf->print->if->nodeCur->isNullable->print->print->nodeCur->firstPos->toString->print->print->nodeCur->lastPos->toString->println->break->print->print->nodeCur->firstPos->toString->print->print->nodeCur->lastPos->toString->println->break->throw->new->RuntimeException
+XSDFACM#makeDefStateList():::-1 is used to represent bad transitions in the transition table entry for each state:::retArray->new->intArr->for->index->return
+XSDFACM#postTreeBuildInit(CMNode):::Post tree build initialization.:::nodeCur->setMaxStates->leaf->pos->if->nodeCur->type->leaf->getPosition->else->if->nodeCur->type->nodeCur->type->getLeft->postTreeBuildInit->getRight->postTreeBuildInit->else->if->nodeCur->type->nodeCur->type->nodeCur->type->getChild->postTreeBuildInit->else->if->nodeCur->type->leaf->getPosition->else->throw->new->RuntimeException
 XSDFACM#checkUniqueParticleAttribution(SubstitutionGroupHandler):::check whether this content violates UPA constraint.:::conflictTable->new->byteArrs->for->i->for->i->for->i->return
 XSDFACM#whatCanGoHere(int[]):::Check which elements are valid to appear at this point:::curState->if->o->count->ret->new->ArrayList<>->for->elemIndex->return
 XSDFACM#checkMinMaxBounds():::Used by constant space algorithm for a{n,m} for n > 1 and m <= unbounded:::result->for->elemIndex->return
+XSDFACM#occurenceInfo(int[])::: m occurence info:::if->curState->if->o->if->occurenceInfo->new->intArr->return->return
+XSDFACM#getTermName(int)::: m get term name:::term->return->term->toString
+XSDFACM#isCompactedForUPA()::: m is compacted for a:::return
 XSEmptyCM#startContentModel():::This methods to be called on entering a first element whose type has this content model:::return->new->intArr
 XSEmptyCM#oneTransition(QName, int[], SubstitutionGroupHandler):::The method corresponds to one transaction in the content model.:::if->return->return
 XSEmptyCM#endContentModel(int[]):::The method indicates the end of list of children:::isFinal->state->if->return->return
 XSEmptyCM#checkUniqueParticleAttribution(SubstitutionGroupHandler):::check whether this content violates UPA constraint.:::return
 XSEmptyCM#whatCanGoHere(int[]):::Check which elements are valid to appear at this point:::return
+XSEmptyCM#checkMinMaxBounds()::: empty m check min max bounds:::return
+XSEmptyCM#occurenceInfo(int[])::: empty m occurence info:::return
+XSEmptyCM#getTermName(int)::: empty m get term name:::return
+XSEmptyCM#isCompactedForUPA()::: empty m is compacted for a:::return

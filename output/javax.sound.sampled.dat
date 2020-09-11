@@ -34,6 +34,10 @@ AudioInputStream#close():::Closes this audio input stream and releases any syste
 AudioInputStream#mark(int):::Marks the current position in this audio input stream.:::stream->mark->if->markSupported->if->if->new->byteArr->System->arraycopy
 AudioInputStream#reset():::Repositions this audio input stream to the position it had at the time its mark method was last invoked.:::stream->reset->if->if->new->byteArr->System->arraycopy
 AudioInputStream#markSupported():::Tests whether this audio input stream supports the mark and reset methods.:::return->stream->markSupported
+AudioInputStream.TargetDataLineInputStream#available()::: target data line input stream available:::return->line->available
+AudioInputStream.TargetDataLineInputStream#close()::: target data line input stream close:::if->line->isActive->line->flush->line->stop->line->close
+AudioInputStream.TargetDataLineInputStream#read()::: target data line input stream read:::b->new->byteArr->value->read->if->return->if->line->getFormat->getEncoding->equals->return
+AudioInputStream.TargetDataLineInputStream#read(byte[], int, int)::: target data line input stream read:::try->return->line->read->catch->throw->e->getMessage->new->IOException->finally
 AudioSystem#getMixerInfo():::Obtains an array of mixer info objects that represents the set of audio mixers that are currently installed on the system.:::infos->getMixerInfoList->allInfos->infos->infos->size->new->Mixer.InfoArr->toArray->return
 AudioSystem#getMixer(Mixer.Info):::Obtains the requested audio mixer.:::foreach->getMixerProviders->try->return->provider->getMixer->catch->finally->throw->String->format->new->IllegalArgumentException
 AudioSystem#getSourceLineInfo(Line.Info):::Obtains information about all source lines of a particular type that are supported by the installed mixers.:::vector->new->Vector<>->currentInfoArray->mixer->fullInfo->infoArray->getMixerInfo->for->i->returnedArray->vector->size->new->Line.InfoArr->for->i->return
@@ -65,6 +69,19 @@ AudioSystem#getAudioFileTypes(AudioInputStream):::Obtains the file types that th
 AudioSystem#isFileTypeSupported(AudioFileFormat.Type, AudioInputStream):::Indicates whether an audio file of the specified file type can be written from the indicated audio input stream.:::Objects->requireNonNull->Objects->requireNonNull->providers->getAudioFileWriters->for->i->providers->size->return
 AudioSystem#write(AudioInputStream, AudioFileFormat.Type, OutputStream):::Writes a stream of bytes representing an audio file of the specified file type to the output stream provided:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->foreach->getAudioFileWriters->try->return->writer->write->catch->finally->throw->new->IllegalArgumentException
 AudioSystem#write(AudioInputStream, AudioFileFormat.Type, File):::Writes a stream of bytes representing an audio file of the specified file type to the external file provided.:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->foreach->getAudioFileWriters->try->return->writer->write->catch->finally->throw->new->IllegalArgumentException
+AudioSystem#getMixerProviders():::Obtains the list of MixerProviders currently installed on the system.:::return->getProviders
+AudioSystem#getFormatConversionProviders():::Obtains the set of format converters (codecs, transcoders, etc.) that are currently installed on the system.:::return->getProviders
+AudioSystem#getAudioFileReaders():::Obtains the set of audio file readers that are currently installed on the system.:::return->getProviders
+AudioSystem#getAudioFileWriters():::Obtains the set of audio file writers that are currently installed on the system.:::return->getProviders
+AudioSystem#getDefaultMixer(List, Line.Info):::Attempts to locate and return a default Mixer that provides lines of the specified type.:::lineClass->info->getLineClass->providerClassName->JDK13Services->getDefaultProviderClassName->instanceName->JDK13Services->getDefaultInstanceName->mixer->if->defaultProvider->getNamedProvider->if->if->getNamedMixer->if->return->else->getFirstMixer->if->return->if->getNamedMixer->if->return->return
+AudioSystem#getNamedProvider(String, List):::Return a MixerProvider of a given class from the list of MixerProviders:::for->i->providers->size->return
+AudioSystem#getNamedMixer(String, MixerProvider, Line.Info):::Return a Mixer with a given name from a given MixerProvider:::infos->provider->getMixerInfo->for->i->return
+AudioSystem#getNamedMixer(String, List, Line.Info):::From a List of MixerProviders, return a Mixer with a given name:::for->i->providers->size->return
+AudioSystem#getFirstMixer(MixerProvider, Line.Info, boolean):::From a given MixerProvider, return the first appropriate Mixer.:::infos->provider->getMixerInfo->for->j->return
+AudioSystem#isAppropriateMixer(Mixer, Line.Info, boolean):::Checks if a Mixer is appropriate:::if->mixer->isLineSupported->return->lineClass->lineInfo->getLineClass->if->isAssignableFrom->isAssignableFrom->maxLines->mixer->getMaxLines->return->return
+AudioSystem#getMixerInfoList():::Like getMixerInfo, but return List.:::providers->getMixerProviders->return->getMixerInfoList
+AudioSystem#getMixerInfoList(List):::Like getMixerInfo, but return List.:::infos->new->ArrayList<>->someInfos->allInfos->for->i->providers->size->return
+AudioSystem#getProviders(Class):::Obtains the set of services currently installed on the system using the SPI mechanism in 1.3.:::return->JDK13Services->getProviders
 BooleanControl#setValue(boolean):::Sets the current value for the control:::
 BooleanControl#getValue():::Obtains this control's current value.:::return
 BooleanControl#getStateLabel(boolean):::Obtains the label for the specified state.:::return
@@ -106,6 +123,7 @@ DataLine.Info#toString():::Obtains a textual description of the data line info.:
 EnumControl#setValue(Object):::Sets the current value for the control:::if->isValueSupported->throw->new->IllegalArgumentException
 EnumControl#getValue():::Obtains this control's current value.:::return
 EnumControl#getValues():::Returns the set of possible values for this control.:::return->values->clone
+EnumControl#isValueSupported(Object):::Indicates whether the value specified is supported.:::for->i->return
 EnumControl#toString():::Provides a string representation of the control.:::return->getType->getValue->new->String
 FloatControl#setValue(float):::Sets the current value for the control:::if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException
 FloatControl#getValue():::Obtains this control's current value.:::return
@@ -133,6 +151,7 @@ Line.Info#matches(Info):::Indicates whether the specified info object matches th
 Line.Info#toString():::Obtains a textual description of the line info.:::fullPackagePath->initialString->getLineClass->toString->new->String->finalString->index->initialString->indexOf->if->initialString->substring->initialString->fullPackagePath->length->initialString->length->substring->else->return
 LineEvent#getLine():::Obtains the audio line that is the source of this event.:::return->getSource
 LineEvent#getType():::Obtains the event's type.:::return
+LineEvent#getFramePosition()::: line event get frame position:::return
 LineEvent#toString():::Obtains a string representation of the event:::sType->if->type->toString->sLine->if->getLine->else->getLine->toString->return->new->String
 LineEvent.Type#equals(Object):::Indicates whether the specified object is equal to this event type, returning true if the objects are the same.:::return->super->equals
 LineEvent.Type#hashCode():::Returns a hash code value for this event type.:::return->super->hashCode

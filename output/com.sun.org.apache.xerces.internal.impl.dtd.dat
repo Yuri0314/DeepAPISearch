@@ -7,8 +7,13 @@ BalancedDTDGrammar#occurrence(short, Augmentations):::The occurrence count for a
 BalancedDTDGrammar#endGroup(Augmentations):::The end of a group for mixed or children content models.:::length->group->addContentSpecNodes->addUniqueLeafNode->addToCurrentGroup
 BalancedDTDGrammar#endDTD(Augmentations):::The end of the DTD.:::super->endDTD
 BalancedDTDGrammar#addContentSpecToElement(XMLElementDecl):::Adds the content spec to the given element declaration.:::contentSpec->setContentSpecIndex
+BalancedDTDGrammar#addContentSpecNodes(int, int):::Creates a subtree from the leaf nodes at the current depth.:::if->return->middle->return->addContentSpecNodes->addContentSpecNodes->addContentSpecNode
+BalancedDTDGrammar#initializeContentModelStacks():::Initialize the stacks which temporarily hold content models.:::if->new->shortArr->new->intArrs->new->intArr->else->if->newOpStack->new->shortArr->System->arraycopy->newGroupIndexStack->new->intArrs->System->arraycopy->newGroupIndexStackLengths->new->intArr->System->arraycopy
+BalancedDTDGrammar#addToCurrentGroup(int):::Add XMLContentSpec to the current group.:::currentGroup->length->if->new->intArr->else->if->newGroup->new->intArr->System->arraycopy
+DTDGrammar#getGrammarDescription()::: grammar get grammar description:::return
 DTDGrammar#getElementDeclIsExternal(int):::Returns true if the specified element declaration is external.:::if->return->chunk->index->return
 DTDGrammar#getAttributeDeclIsExternal(int):::Returns true if the specified attribute declaration is external.:::if->return->chunk->index->return
+DTDGrammar#getAttributeDeclIndex(int, String)::: grammar get attribute decl index:::if->return->attDefIndex->getFirstAttributeDeclIndex->while->getAttributeDecl->if->attributeDeclName->equals->return->getNextAttributeDeclIndex->return
 DTDGrammar#startDTD(XMLLocator, Augmentations):::The start of the DTD.:::
 DTDGrammar#startParameterEntity(String, XMLResourceIdentifier, String, Augmentations):::This method notifies of the start of an entity:::if->entityarray->new->booleanArr->System->arraycopy
 DTDGrammar#startExternalSubset(XMLResourceIdentifier, Augmentations):::The start of the DTD external subset.:::
@@ -21,6 +26,8 @@ DTDGrammar#externalEntityDecl(String, XMLResourceIdentifier, Augmentations):::An
 DTDGrammar#unparsedEntityDecl(String, XMLResourceIdentifier, String, Augmentations):::An unparsed entity declaration.:::entityDecl->new->XMLEntityDecl->isPE->name->startsWith->inExternal->entityDecl->identifier->getPublicId->identifier->getLiteralSystemId->identifier->getBaseSystemId->setValues->entityIndex->getEntityDeclIndex->if->createEntityDecl->setEntityDecl
 DTDGrammar#notationDecl(String, XMLResourceIdentifier, Augmentations):::A notation declaration:::notationDecl->new->XMLNotationDecl->notationDecl->identifier->getPublicId->identifier->getLiteralSystemId->identifier->getBaseSystemId->setValues->notationIndex->getNotationDeclIndex->if->createNotationDecl->setNotationDecl
 DTDGrammar#endDTD(Augmentations):::The end of the DTD.:::if->fGrammarDescription->getRootName->chunk->index->currName->size->elements->new->ArrayList<>->for->i->fGrammarDescription->setPossibleRoots
+DTDGrammar#setDTDSource(XMLDTDSource)::: grammar set source:::
+DTDGrammar#getDTDSource()::: grammar get source:::return
 DTDGrammar#textDecl(String, String, Augmentations):::Notifies of the presence of a TextDecl line in an entity:::
 DTDGrammar#comment(XMLString, Augmentations):::A comment.:::
 DTDGrammar#processingInstruction(String, XMLString, Augmentations):::A processing instruction:::
@@ -29,6 +36,8 @@ DTDGrammar#endAttlist(Augmentations):::The end of an attribute list.:::
 DTDGrammar#startConditional(short, Augmentations):::The start of a conditional section.:::
 DTDGrammar#ignoredCharacters(XMLString, Augmentations):::Characters within an IGNORE conditional section.:::
 DTDGrammar#endConditional(Augmentations):::The end of a conditional section.:::
+DTDGrammar#setDTDContentModelSource(XMLDTDContentModelSource)::: grammar set content model source:::
+DTDGrammar#getDTDContentModelSource()::: grammar get content model source:::return
 DTDGrammar#startContentModel(String, Augmentations):::The start of a content model:::elementDecl->get->if->initializeContentModelStack
 DTDGrammar#startGroup(Augmentations):::A start of either a mixed or children content model:::initializeContentModelStack
 DTDGrammar#pcdata(Augmentations):::The appearance of "#PCDATA" within a group signifying a mixed content model:::
@@ -45,7 +54,9 @@ DTDGrammar#getFirstElementDeclIndex():::Returns the index of the first element d
 DTDGrammar#getNextElementDeclIndex(int):::Returns the next index of the element declaration following the specified element declaration.:::return
 DTDGrammar#getElementDeclIndex(String):::getElementDeclIndex:::mapping->fElementIndexMap->get->if->return
 DTDGrammar#getElementDeclIndex(QName):::Returns the element decl index.:::return->getElementDeclIndex
+DTDGrammar#getContentSpecType(int)::: grammar get content spec type:::if->return->chunk->index->if->return->else->return
 DTDGrammar#getElementDecl(int, XMLElementDecl):::getElementDecl:::if->return->chunk->index->setValues->if->else->if->getElementContentModelValidator->return
+DTDGrammar#getElementDeclName(int)::: grammar get element decl name:::if->return->chunk->index->return
 DTDGrammar#getFirstAttributeDeclIndex(int):::getFirstAttributeDeclIndex:::chunk->index->return
 DTDGrammar#getNextAttributeDeclIndex(int):::getNextAttributeDeclIndex:::chunk->index->return
 DTDGrammar#getAttributeDecl(int, XMLAttributeDecl):::getAttributeDecl:::if->return->chunk->index->setValues->attributeType->isList->if->else->setValues->return
@@ -57,13 +68,62 @@ DTDGrammar#getNotationDecl(int, XMLNotationDecl):::getNotationDecl:::if->return-
 DTDGrammar#getContentSpec(int, XMLContentSpec):::getContentSpec:::if->return->chunk->index->return
 DTDGrammar#getContentSpecIndex(int):::Returns the index to the content spec for the given element declaration, or -1 if the element declaration index was invalid.:::if->return->chunk->index->return
 DTDGrammar#getContentSpecAsString(int):::getContentSpecAsString:::if->return->chunk->index->contentSpecIndex->contentSpec->new->XMLContentSpec->if->getContentSpec->str->new->StringBuffer->parentContentSpecType->nextContentSpec->switch->str->append->if->str->append->else->str->append->str->append->break->getContentSpec->if->str->append->str->append->str->append->else->if->str->append->appendContentSpec->str->append->else->appendContentSpec->str->append->break->getContentSpec->if->str->append->if->str->append->else->if->str->append->append->else->if->str->append->else->appendContentSpec->str->append->else->if->str->append->appendContentSpec->str->append->else->appendContentSpec->str->append->break->getContentSpec->if->str->append->if->str->append->else->if->str->append->append->else->if->str->append->else->str->append->str->append->else->if->str->append->appendContentSpec->str->append->else->appendContentSpec->str->append->break->appendContentSpec->break->str->append->if->str->append->str->append->break->str->append->str->append->break->str->append->break->str->append->return->str->toString->return
+DTDGrammar#printElements()::: grammar print elements:::elementDeclIndex->elementDecl->new->XMLElementDecl->while->getElementDecl->println
+DTDGrammar#printAttributes(int)::: grammar print attributes:::attributeDeclIndex->getFirstAttributeDeclIndex->print->print->while->print->print->printAttribute->getNextAttributeDeclIndex->if->print->println
 DTDGrammar#addContentSpecToElement(XMLElementDecl):::Adds the content spec to the given element declaration.:::if->if->pcdata->addUniqueLeafNode->if->else->addContentSpecNode->setContentSpecIndex
 DTDGrammar#getElementContentModelValidator(int):::getElementContentModelValidator:::chunk->index->contentModel->if->return->contentType->if->return->contentSpecIndex->contentSpec->new->XMLContentSpec->getContentSpec->if->children->new->ChildrenList->contentSpecTree->new->MixedContentModel->else->if->createChildModel->else->throw->new->RuntimeException->return
+DTDGrammar#createElementDecl()::: grammar create element decl:::chunk->index->ensureElementDeclCapacity->new->QName->return
+DTDGrammar#setElementDecl(int, XMLElementDecl)::: grammar set element decl:::if->return->chunk->index->setValues->if->fElementIndexMap->put
+DTDGrammar#putElementNameMapping(QName, int, int)::: grammar put element name mapping:::
+DTDGrammar#setFirstAttributeDeclIndex(int, int)::: grammar set first attribute decl index:::if->return->chunk->index
+DTDGrammar#setContentSpecIndex(int, int)::: grammar set content spec index:::if->return->chunk->index
+DTDGrammar#createAttributeDecl()::: grammar create attribute decl:::chunk->index->ensureAttributeDeclCapacity->new->QName->return
+DTDGrammar#setAttributeDecl(int, int, XMLAttributeDecl)::: grammar set attribute decl:::attrChunk->attrIndex->setValues->if->elemChunk->elemIndex->index->while->if->break->if->if->else
+DTDGrammar#createContentSpec()::: grammar create content spec:::chunk->index->ensureContentSpecCapacity->return
+DTDGrammar#setContentSpec(int, XMLContentSpec)::: grammar set content spec:::chunk->index
+DTDGrammar#createEntityDecl()::: grammar create entity decl:::chunk->index->ensureEntityDeclCapacity->return
+DTDGrammar#setEntityDecl(int, XMLEntityDecl)::: grammar set entity decl:::chunk->index->fEntityIndexMap->put
+DTDGrammar#createNotationDecl()::: grammar create notation decl:::chunk->ensureNotationDeclCapacity->return
+DTDGrammar#setNotationDecl(int, XMLNotationDecl)::: grammar set notation decl:::chunk->index->fNotationIndexMap->put
 DTDGrammar#addContentSpecNode(short, String):::Create an XMLContentSpec for a single non-leaf:::contentSpecIndex->createContentSpec->fContentSpec->setValues->setContentSpec->return
 DTDGrammar#addUniqueLeafNode(String):::create an XMLContentSpec for a leaf:::contentSpecIndex->createContentSpec->fContentSpec->setValues->setContentSpec->return
 DTDGrammar#addContentSpecNode(short, int, int):::Create an XMLContentSpec for a two child leaf:::contentSpecIndex->createContentSpec->leftIntArray->new->intArr->rightIntArray->new->intArr->fContentSpec->setValues->setContentSpec->return
 DTDGrammar#initializeContentModelStack():::Initialize content model stack.:::if->new->shortArr->new->intArr->new->intArr->else->if->newStack->new->shortArr->System->arraycopy->newIntStack->new->intArr->System->arraycopy->new->intArr->System->arraycopy
+DTDGrammar#isImmutable()::: grammar is immutable:::return
+DTDGrammar#appendContentSpec(XMLContentSpec, StringBuffer, boolean, int)::: grammar append content spec:::thisContentSpec->switch->if->str->append->else->if->str->append->append->else->if->str->append->else->str->append->break->if->getContentSpec->str->append->appendContentSpec->str->append->else->getContentSpec->appendContentSpec->str->append->break->if->getContentSpec->str->append->appendContentSpec->str->append->else->getContentSpec->appendContentSpec->str->append->break->if->str->append->getContentSpec->appendContentSpec->str->append->else->getContentSpec->appendContentSpec->str->append->break->if->str->append->type->otherValue->getContentSpec->appendContentSpec->if->str->append->else->str->append->getContentSpec->appendContentSpec->if->str->append->break->str->append->if->str->append->str->append->break->str->append->str->append->break->str->append->break->str->append->break
+DTDGrammar#printAttribute(int)::: grammar print attribute:::attributeDecl->new->XMLAttributeDecl->if->getAttributeDecl->print->print->print
+DTDGrammar#createChildModel(int):::When the element has a 'CHILDREN' model, this method is called to create the content model object:::contentSpec->new->XMLContentSpec->getContentSpec->if->else->if->if->throw->new->RuntimeException->fQName->setValues->return->new->SimpleContentModel->else->if->contentSpecLeft->new->XMLContentSpec->contentSpecRight->new->XMLContentSpec->getContentSpec->getContentSpec->if->fQName->setValues->fQName2->setValues->return->new->SimpleContentModel->else->if->contentSpecLeft->new->XMLContentSpec->getContentSpec->if->fQName->setValues->return->new->SimpleContentModel->else->throw->new->RuntimeException->cmn->buildSyntaxTree->return->new->DFAContentModel
+DTDGrammar#buildSyntaxTree(int, XMLContentSpec)::: grammar build syntax tree:::nodeRet->getContentSpec->if->new->CMAny->else->if->new->CMAny->else->if->new->CMAny->else->if->fQName->setValues->new->CMLeaf->else->leftNode->rightNode->if->buildSyntaxTree->buildSyntaxTree->new->CMBinOp->else->if->buildSyntaxTree->new->CMUniOp->else->if->buildSyntaxTree->new->CMUniOp->else->throw->new->RuntimeException->return
+DTDGrammar#contentSpecTree(int, XMLContentSpec, ChildrenList):::Build a vector of valid QNames from Content Spec table.:::getContentSpec->if->if->newQName->new->QNameArr->System->arraycopy->newType->new->intArr->System->arraycopy->new->QName->return->leftNode->rightNode->if->else->return->if->contentSpecTree->contentSpecTree->return->if->contentSpecTree->return->throw->new->RuntimeException
+DTDGrammar#ensureElementDeclCapacity(int)::: grammar ensure element decl capacity:::if->resize->resize->resize->resize->resize->resize->resize->else->if->return->new->intArr->new->QNameArr->new->shortArr->new->ContentModelValidatorArr->new->intArr->new->intArr->new->intArr->return
+DTDGrammar#ensureAttributeDeclCapacity(int)::: grammar ensure attribute decl capacity:::if->resize->resize->resize->resize->resize->resize->resize->resize->resize->else->if->return->new->intArr->new->QNameArr->new->shortArr->new->StringArrs->new->shortArr->new->DatatypeValidatorArr->new->StringArr->new->StringArr->new->intArr->return
+DTDGrammar#ensureEntityDeclCapacity(int)::: grammar ensure entity decl capacity:::if->resize->resize->resize->resize->resize->resize->resize->resize->else->if->return->new->StringArr->new->StringArr->new->StringArr->new->StringArr->new->StringArr->new->StringArr->new->byteArr->new->byteArr->return
+DTDGrammar#ensureNotationDeclCapacity(int)::: grammar ensure notation decl capacity:::if->resize->resize->resize->resize->else->if->return->new->StringArr->new->StringArr->new->StringArr->new->StringArr->return
+DTDGrammar#ensureContentSpecCapacity(int)::: grammar ensure content spec capacity:::if->resize->resize->resize->else->if->return->new->shortArr->new->ObjectArr->new->ObjectArr->return
+DTDGrammar#resize(byte[][], int)::: grammar resize:::newarray->new->byteArrs->System->arraycopy->return
+DTDGrammar#resize(short[][], int)::: grammar resize:::newarray->new->shortArrs->System->arraycopy->return
+DTDGrammar#resize(int[][], int)::: grammar resize:::newarray->new->intArrs->System->arraycopy->return
+DTDGrammar#resize(DatatypeValidator[][], int)::: grammar resize:::newarray->new->DatatypeValidatorArrs->System->arraycopy->return
+DTDGrammar#resize(ContentModelValidator[][], int)::: grammar resize:::newarray->new->ContentModelValidatorArrs->System->arraycopy->return
+DTDGrammar#resize(Object[][], int)::: grammar resize:::newarray->new->ObjectArrs->System->arraycopy->return
+DTDGrammar#resize(QName[][], int)::: grammar resize:::newarray->new->QNameArrs->System->arraycopy->return
+DTDGrammar#resize(String[][], int)::: grammar resize:::newarray->new->StringArrs->System->arraycopy->return
+DTDGrammar#resize(String[][][], int)::: grammar resize:::newarray->new->StringArrs->System->arraycopy->return
+DTDGrammar#isEntityDeclared(String)::: grammar is entity declared:::return->getEntityDeclIndex
+DTDGrammar#isEntityUnparsed(String)::: grammar is entity unparsed:::entityIndex->getEntityDeclIndex->if->chunk->index->return->return
 DTDGrammarBucket#putGrammar(DTDGrammar):::Puts the specified grammar into the grammar pool and associate it to a root element name (this being internal, the lack of generality is irrelevant).:::desc->grammar->getGrammarDescription->fGrammars->put
+DTDGrammarBucket#getGrammar(XMLGrammarDescription)::: grammar bucket get grammar:::return->fGrammars->get
+DTDGrammarBucket#clear()::: grammar bucket clear:::fGrammars->clear
+DTDGrammarBucket#setStandalone(boolean)::: grammar bucket set standalone:::
+DTDGrammarBucket#getStandalone()::: grammar bucket get standalone:::return
+DTDGrammarBucket#setActiveGrammar(DTDGrammar)::: grammar bucket set active grammar:::
+DTDGrammarBucket#getActiveGrammar()::: grammar bucket get active grammar:::return
+XML11DTDProcessor#isValidNmtoken(String)::: l11 processor is valid nmtoken:::return->XML11Char->isXML11ValidNmtoken
+XML11DTDProcessor#isValidName(String)::: l11 processor is valid name:::return->XML11Char->isXML11ValidName
+XML11DTDProcessor#createDTDScanner(SymbolTable, XMLErrorReporter, XMLEntityManager)::: l11 processor create scanner:::return->new->XML11DTDScannerImpl
+XML11DTDProcessor#getScannerVersion()::: l11 processor get scanner version:::return
+XML11DTDValidator#reset(XMLComponentManager)::: l11 validator reset:::curr->if->manager->getProperty->curr->getGrammarBucket->super->reset
+XML11DTDValidator#init()::: l11 validator init:::if->super->init->try->fDatatypeValidatorFactory->getBuiltInDV->fDatatypeValidatorFactory->getBuiltInDV->fDatatypeValidatorFactory->getBuiltInDV->fDatatypeValidatorFactory->getBuiltInDV->fDatatypeValidatorFactory->getBuiltInDV->catch->e->printStackTrace->finally
 XML11NSDTDValidator#startNamespaceScope(QName, XMLAttributes, Augmentations):::Bind namespaces:::fNamespaceContext->pushContext->if->fErrorReporter->new->ObjectArr->reportError->length->attributes->getLength->for->i->prefix->fNamespaceContext->getURI->if->if->fErrorReporter->new->ObjectArr->reportError->for->i->attrCount->attributes->getLength->for->i
 XML11NSDTDValidator#endNamespaceScope(QName, Augmentations, boolean):::Handles end element.:::eprefix->fNamespaceContext->getURI->if->if->if->fDocumentHandler->endElement->fNamespaceContext->popContext
 XMLAttributeDecl#setValues(QName, XMLSimpleType, boolean):::setValues:::setValues->setValues
@@ -75,6 +135,8 @@ XMLContentSpec#setValues(XMLContentSpec.Provider, int):::Sets the values from th
 XMLContentSpec#hashCode():::Returns a hash code for this node.:::return->value->hashCode->otherValue->hashCode
 XMLContentSpec#equals(Object):::Returns true if the two objects are equal.:::if->contentSpec->return->return
 XMLContentSpec.Provider#getContentSpec(int, XMLContentSpec):::Fills in the provided content spec structure with content spec information for a unique identifier.:::
+XMLDTDDescription#getGrammarType()::: description get grammar type:::return
+XMLDTDDescription#getRootName()::: description get root name:::return
 XMLDTDDescription#setRootName(String):::Set the root name *:::
 XMLDTDDescription#setPossibleRoots(List):::Set possible roots *:::
 XMLDTDDescription#equals(Object):::Compares this grammar with the given grammar:::if->return->if->getGrammarType->getGrammarType->equals->return->dtdDesc->if->if->equals->return->else->if->contains->return->else->if->if->if->fPossibleRoots->contains->return->else->if->return->else->found->foreach->contains->if->break->if->return->if->if->fExpandedSystemId->equals->return->else->if->return->if->if->fPublicId->equals->return->else->if->return->return
@@ -93,6 +155,11 @@ XMLDTDLoader#setEntityResolver(XMLEntityResolver):::Sets the entity resolver.:::
 XMLDTDLoader#getEntityResolver():::Returns the registered entity resolver.:::return
 XMLDTDLoader#loadGrammar(XMLInputSource):::Returns a Grammar object by parsing the contents of the entity pointed to by source.:::reset->eid->XMLEntityManager->source->getSystemId->source->getBaseSystemId->expandSystemId->desc->source->getPublicId->source->getSystemId->source->getBaseSystemId->new->XMLDTDDescription->if->new->DTDGrammar->else->new->BalancedDTDGrammar->new->DTDGrammarBucket->fGrammarBucket->setStandalone->fGrammarBucket->setActiveGrammar->try->fDTDScanner->setInputSource->fDTDScanner->scanDTDExternalSubset->catch->finally->fEntityManager->closeReaders->if->fGrammarPool->new->GrammarArr->cacheGrammars->return
 XMLDTDLoader#loadGrammarWithContext(XMLDTDValidator, String, String, String, String, String):::Parse a DTD internal and/or external subset and insert the content into the existing DTD grammar owned by the given DTDValidator.:::grammarBucket->validator->getGrammarBucket->activeGrammar->grammarBucket->getActiveGrammar->if->activeGrammar->isImmutable->fEntityManager->getScannerVersion->setScannerVersion->reset->try->if->buffer->internalSubset->length->new->StringBuffer->buffer->append->append->is->buffer->toString->new->StringReader->new->XMLInputSource->fEntityManager->startDocumentEntity->fDTDScanner->scanDTDInternalSubset->if->desc->new->XMLDTDDescription->source->fEntityManager->resolveEntity->fDTDScanner->setInputSource->fDTDScanner->scanDTDExternalSubset->catch->finally->fEntityManager->closeReaders
+XMLDTDLoader#reset()::: loader reset:::super->reset->fDTDScanner->reset->fEntityManager->reset->fErrorReporter->fEntityManager->getEntityScanner->setDocumentLocator
+XMLDTDLoader#createDTDScanner(SymbolTable, XMLErrorReporter, XMLEntityManager)::: loader create scanner:::return->new->XMLDTDScannerImpl
+XMLDTDLoader#getScannerVersion()::: loader get scanner version:::return
+XMLDTDProcessor#reset(XMLComponentManager)::: processor reset:::parser_settings->componentManager->getFeature->if->reset->return->componentManager->getFeature->componentManager->getFeature->componentManager->getFeature->componentManager->getFeature->componentManager->getProperty->componentManager->getProperty->componentManager->getProperty->try->componentManager->getProperty->catch->finally->if->fValidator->getGrammarBucket->else->reset
+XMLDTDProcessor#reset()::: processor reset:::fNDataDeclNotations->clear->if->if->new->HashMap<>->fNotationEnumVals->clear->new->HashMap<>->new->HashMap<>
 XMLDTDProcessor#getRecognizedFeatures():::Returns a list of feature identifiers that are recognized by this component:::return->RECOGNIZED_FEATURES->clone
 XMLDTDProcessor#setFeature(String, boolean):::Sets the state of a feature:::
 XMLDTDProcessor#getRecognizedProperties():::Returns a list of property identifiers that are recognized by this component:::return->RECOGNIZED_PROPERTIES->clone
@@ -124,6 +191,10 @@ XMLDTDProcessor#notationDecl(String, XMLResourceIdentifier, Augmentations):::A n
 XMLDTDProcessor#startConditional(short, Augmentations):::The start of a conditional section.:::if->fDTDGrammar->startConditional->if->fDTDHandler->startConditional
 XMLDTDProcessor#endConditional(Augmentations):::The end of a conditional section.:::if->fDTDGrammar->endConditional->if->fDTDHandler->endConditional
 XMLDTDProcessor#endDTD(Augmentations):::The end of the DTD.:::if->fDTDGrammar->endDTD->if->fGrammarPool->new->GrammarArr->cacheGrammars->if->grammar->fGrammarBucket->getActiveGrammar->foreach->fNDataDeclNotations->entrySet->notation->entry->getValue->if->grammar->getNotationDeclIndex->entity->entry->getKey->fErrorReporter->new->ObjectArr->reportError->foreach->fNotationEnumVals->entrySet->notation->entry->getKey->if->grammar->getNotationDeclIndex->attributeName->entry->getValue->fErrorReporter->new->ObjectArr->reportError->foreach->fTableOfNOTATIONAttributeNames->entrySet->elementName->entry->getKey->elementIndex->grammar->getElementDeclIndex->if->grammar->getContentSpecType->attributeName->entry->getValue->fErrorReporter->new->ObjectArr->reportError->if->checkDeclaredElements->if->fDTDHandler->endDTD
+XMLDTDProcessor#setDTDSource(XMLDTDSource)::: processor set source:::
+XMLDTDProcessor#getDTDSource()::: processor get source:::return
+XMLDTDProcessor#setDTDContentModelSource(XMLDTDContentModelSource)::: processor set content model source:::
+XMLDTDProcessor#getDTDContentModelSource()::: processor get content model source:::return
 XMLDTDProcessor#startContentModel(String, Augmentations):::The start of a content model:::if->fMixedElementTypes->clear->if->fDTDGrammar->startContentModel->if->fDTDContentModelHandler->startContentModel
 XMLDTDProcessor#any(Augmentations):::A content model of ANY.:::if->fDTDGrammar->any->if->fDTDContentModelHandler->any
 XMLDTDProcessor#empty(Augmentations):::A content model of EMPTY.:::if->fDTDGrammar->empty->if->fDTDContentModelHandler->empty
@@ -134,6 +205,13 @@ XMLDTDProcessor#separator(short, Augmentations):::The separator between choices 
 XMLDTDProcessor#occurrence(short, Augmentations):::The occurrence count for a child in a children content model or for the mixed content model group.:::if->fDTDGrammar->occurrence->if->fDTDContentModelHandler->occurrence
 XMLDTDProcessor#endGroup(Augmentations):::The end of a group for mixed or children content models.:::if->fDTDGrammar->endGroup->if->fDTDContentModelHandler->endGroup
 XMLDTDProcessor#endContentModel(Augmentations):::The end of a content model.:::if->fDTDGrammar->endContentModel->if->fDTDContentModelHandler->endContentModel
+XMLDTDProcessor#normalizeDefaultAttrValue(XMLString):::Normalize the attribute value of a non CDATA default attribute collapsing sequences of space characters (x20):::skipSpace->current->end->for->i->if->if->return->return
+XMLDTDProcessor#isValidNmtoken(String)::: processor is valid nmtoken:::return->XMLChar->isValidNmtoken
+XMLDTDProcessor#isValidName(String)::: processor is valid name:::return->XMLChar->isValidName
+XMLDTDProcessor#checkDeclaredElements(DTDGrammar):::Checks that all elements referenced in content models have been declared:::elementIndex->grammar->getFirstElementDeclIndex->contentSpec->new->XMLContentSpec->while->type->grammar->getContentSpecType->if->grammar->getContentSpecIndex->checkDeclaredElements->grammar->getNextElementDeclIndex
+XMLDTDProcessor#checkDeclaredElements(DTDGrammar, int, int, XMLContentSpec):::Does a recursive (if necessary) check on the specified element's content spec to make sure that all children refer to declared elements.:::grammar->getContentSpec->if->value->if->grammar->getElementDeclIndex->fErrorReporter->new->ObjectArr->grammar->getElementDeclName->reportError->else->if->leftNode->rightNode->checkDeclaredElements->checkDeclaredElements->else->if->leftNode->checkDeclaredElements
+XMLDTDValidator#getGrammarBucket()::: validator get grammar bucket:::return
+XMLDTDValidator#reset(XMLComponentManager)::: validator reset:::fRootElement->clear->fValidationState->resetIDTables->fGrammarBucket->clear->parser_settings->componentManager->getFeature->if->fValidationManager->addValidationState->return->componentManager->getFeature->componentManager->getFeature->componentManager->getFeature->componentManager->getFeature->componentManager->getFeature->componentManager->getFeature->componentManager->getProperty->componentManager->getProperty->fValidationManager->addValidationState->fValidationState->setUsingNamespaces->componentManager->getProperty->componentManager->getProperty->componentManager->getProperty->componentManager->getProperty->init
 XMLDTDValidator#getRecognizedFeatures():::Returns a list of feature identifiers that are recognized by this component:::return->RECOGNIZED_FEATURES->clone
 XMLDTDValidator#setFeature(String, boolean):::Sets the state of a feature:::
 XMLDTDValidator#getRecognizedProperties():::Returns a list of property identifiers that are recognized by this component:::return->RECOGNIZED_PROPERTIES->clone
@@ -160,13 +238,25 @@ XMLDTDValidator#processingInstruction(String, XMLString, Augmentations):::A proc
 XMLDTDValidator#startGeneralEntity(String, XMLResourceIdentifier, String, Augmentations):::This method notifies the start of a general entity:::if->fDTDGrammar->getElementDecl->if->fErrorReporter->new->ObjectArr->reportError->if->fGrammarBucket->getStandalone->XMLDTDLoader->checkStandaloneEntityRef->if->fDocumentHandler->startGeneralEntity
 XMLDTDValidator#endGeneralEntity(String, Augmentations):::This method notifies the end of a general entity:::if->fDocumentHandler->endGeneralEntity
 XMLDTDValidator#textDecl(String, String, Augmentations):::Notifies of the presence of a TextDecl line in an entity:::if->fDocumentHandler->textDecl
+XMLDTDValidator#hasGrammar()::: validator has grammar:::return
+XMLDTDValidator#validate()::: validator validate:::return
 XMLDTDValidator#addDTDDefaultAttrsAndValidate(QName, int, XMLAttributes):::Add default attributes and validate.:::if->return->attlistIndex->fDTDGrammar->getFirstAttributeDeclIndex->while->fDTDGrammar->getAttributeDecl->if->if->elementDecl->new->XMLElementDecl->fDTDGrammar->getElementDecl->println->attributes->getLength->println->attPrefix->attLocalpart->attRawName->attType->getAttributeTypeName->attDefaultType->attValue->if->specified->required->cdata->if->attrCount->attributes->getLength->for->i->if->if->if->args->fErrorReporter->reportError->else->if->if->fGrammarBucket->getStandalone->if->fDTDGrammar->getAttributeDeclIsExternal->args->fErrorReporter->reportError->if->index->attRawName->indexOf->if->attRawName->substring->fSymbolTable->addSymbol->attRawName->substring->fSymbolTable->addSymbol->fTempQName->setValues->attributes->addAttribute->fDTDGrammar->getNextAttributeDeclIndex->attrCount->attributes->getLength->for->i
 XMLDTDValidator#getExternalEntityRefInAttrValue(String):::Checks entities in attribute values for standalone VC.:::valLength->nonNormalizedValue->length->ampIndex->nonNormalizedValue->indexOf->while->if->nonNormalizedValue->charAt->semicolonIndex->nonNormalizedValue->indexOf->entityName->nonNormalizedValue->substring->fSymbolTable->addSymbol->entIndex->fDTDGrammar->getEntityDeclIndex->if->fDTDGrammar->getEntityDecl->if->getExternalEntityRefInAttrValue->return->nonNormalizedValue->indexOf->return
 XMLDTDValidator#validateDTDattribute(QName, String, XMLAttributeDecl):::Validate attributes in DTD fashion.:::switch->isAlistAttribute->try->if->fValENTITIES->validate->else->fValENTITY->validate->catch->fErrorReporter->ex->getKey->ex->getArgs->reportError->finally->break->found->enumVals->if->else->for->i->if->enumValueString->new->StringBuilder->if->for->i->fErrorReporter->new->ObjectArr->reportError->break->try->fValID->validate->catch->fErrorReporter->ex->getKey->ex->getArgs->reportError->finally->break->isAlistAttribute->try->if->fValIDRefs->validate->else->fValIDRef->validate->catch->if->fErrorReporter->new->ObjectArr->reportError->else->fErrorReporter->ex->getKey->ex->getArgs->reportError->finally->break->isAlistAttribute->try->if->fValNMTOKENS->validate->else->fValNMTOKEN->validate->catch->if->fErrorReporter->new->ObjectArr->reportError->else->fErrorReporter->new->ObjectArr->reportError->finally->break
 XMLDTDValidator#invalidStandaloneAttDef(QName, QName):::Returns true if invalid standalone attribute definition.:::state->return
+XMLDTDValidator#normalizeAttrValue(XMLAttributes, int):::Normalize the attribute value of a non CDATA attributes collapsing sequences of space characters (x20):::leadingSpace->spaceStart->readingNonSpace->count->attrValue->attributes->getValue->attValue->attrValue->length->new->charArr->fBuffer->setLength->attrValue->attrValue->length->getChars->for->i->if->fBuffer->charAt->fBuffer->setLength->newValue->fBuffer->toString->attributes->setValue->return->attrValue->equals
+XMLDTDValidator#rootElementSpecified(QName):::Root element specified.:::if->root1->root2->if->root1->equals->fErrorReporter->new->ObjectArr->reportError
+XMLDTDValidator#checkContent(int, QName[], int, int):::Check that the content of an element is valid:::fDTDGrammar->getElementDecl->contentType->if->if->return->else->if->else->if->cmElem->result->cmElem->validate->return->else->if->else->if->else->return
+XMLDTDValidator#charDataInContent():::Character data in content.:::if->println->if->newarray->new->QNameArr->System->arraycopy->qname->if->for->i->qname->clear
+XMLDTDValidator#getAttributeTypeName(XMLAttributeDecl):::convert attribute type from ints to strings:::switch->return->totalLength->for->i->buffer->new->StringBuilder->buffer->append->for->i->buffer->append->return->fSymbolTable->buffer->toString->addSymbol->return->return->return->return->return
 XMLDTDValidator#init():::initialization:::if->try->fDatatypeValidatorFactory->getBuiltInDV->fDatatypeValidatorFactory->getBuiltInDV->fDatatypeValidatorFactory->getBuiltInDV->fDatatypeValidatorFactory->getBuiltInDV->fDatatypeValidatorFactory->getBuiltInDV->fDatatypeValidatorFactory->getBuiltInDV->fDatatypeValidatorFactory->getBuiltInDV->fDatatypeValidatorFactory->getBuiltInDV->catch->e->printStackTrace->finally
+XMLDTDValidator#ensureStackCapacity(int):::ensure element stack capacity:::if->newStackOfQueue->new->QNameArr->System->arraycopy->qname->if->for->i->newStack->new->intArr->System->arraycopy->new->intArr->System->arraycopy
 XMLDTDValidator#handleStartElement(QName, XMLAttributes, Augmentations):::Handle element:::if->validate->fValidationManager->setEntityState->fValidationManager->setGrammarFound->rootElementSpecified->if->if->if->fErrorReporter->new->ObjectArr->reportError->if->fDocumentSource->setDocumentHandler->if->fDocumentHandler->setDocumentSource->return->else->fDTDGrammar->getElementDeclIndex->fDTDGrammar->getContentSpecType->if->fErrorReporter->new->ObjectArr->reportError->addDTDDefaultAttrsAndValidate->if->if->newarray->new->intArr->System->arraycopy->if->newarray->new->QNameArr->System->arraycopy->qname->if->for->i->qname->setValues->fCurrentElement->setValues->ensureStackCapacity->setValues->startNamespaceScope->return
+XMLDTDValidator#startNamespaceScope(QName, XMLAttributes, Augmentations)::: validator start namespace scope:::
 XMLDTDValidator#handleEndElement(QName, Augmentations, boolean):::Handle end element.:::if->elementIndex->if->children->childrenOffset->childrenLength->result->checkContent->if->fDTDGrammar->getElementDecl->if->fErrorReporter->new->ObjectArr->reportError->else->messageKey->fErrorReporter->new->ObjectArr->fDTDGrammar->getContentSpecAsString->reportError->endNamespaceScope->if->throw->new->RuntimeException->if->fCurrentElement->clear->if->invIdRefs->fValidationState->checkIDRefID->if->while->invIdRefs->hasNext->fErrorReporter->new->ObjectArr->invIdRefs->next->reportError->return->fCurrentElement->setValues
+XMLDTDValidator#endNamespaceScope(QName, Augmentations, boolean)::: validator end namespace scope:::if->fDocumentHandler->endElement
+XMLDTDValidator#isSpace(int)::: validator is space:::return->XMLChar->isSpace
+XMLDTDValidator#characterData(String, Augmentations)::: validator character data:::data->toCharArray->data->length->new->XMLString->characters->return
 XMLDTDValidatorFilter#hasGrammar():::Returns true if the validator has a DTD grammar:::
 XMLDTDValidatorFilter#validate():::Return true if validator must validate the document:::
 XMLElementDecl#setValues(QName, int, short, ContentModelValidator, XMLSimpleType):::setValues:::setValues->setValues

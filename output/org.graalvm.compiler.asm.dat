@@ -1,12 +1,64 @@
+Assembler#setCodePatchingAnnotationConsumer(Consumer)::: assembler set code patching annotation consumer:::
 Assembler#position():::Returns the current position of the underlying code buffer.:::return->codeBuffer->position
+Assembler#emitByte(int)::: assembler emit byte:::codeBuffer->emitByte
+Assembler#emitShort(int)::: assembler emit short:::codeBuffer->emitShort
+Assembler#emitInt(int)::: assembler emit int:::codeBuffer->emitInt
+Assembler#emitLong(long)::: assembler emit long:::codeBuffer->emitLong
+Assembler#emitByte(int, int)::: assembler emit byte:::codeBuffer->emitByte
+Assembler#emitShort(int, int)::: assembler emit short:::codeBuffer->emitShort
+Assembler#emitInt(int, int)::: assembler emit int:::codeBuffer->emitInt
+Assembler#emitLong(long, int)::: assembler emit long:::codeBuffer->emitLong
+Assembler#getByte(int)::: assembler get byte:::return->codeBuffer->getByte
+Assembler#getShort(int)::: assembler get short:::return->codeBuffer->getShort
+Assembler#getInt(int)::: assembler get int:::return->codeBuffer->getInt
 Assembler#emitString(String):::Some GPU architectures have a text based encoding.:::emitString0->emitString0->emitString0
+Assembler#emitString0(String)::: assembler emit string0:::codeBuffer->x->getBytes->x->length->emitBytes
+Assembler#emitString(String, int)::: assembler emit string:::codeBuffer->s->getBytes->emitBytes
 Assembler#close(boolean):::Closes this assembler:::checkAndClearLabelsWithPatches->return->codeBuffer->close
+Assembler#checkAndClearLabelsWithPatches()::: assembler check and clear labels with patches:::label->while->if->throw->new->GraalError->next
+Assembler#bind(Label)::: assembler bind:::l->position->bind
+Assembler#align(int)::: assembler align:::
+Assembler#jmp(Label)::: assembler jmp:::
+Assembler#patchJumpTarget(int, int)::: assembler patch jump target:::
 Assembler#createLabelName(Label, int):::Creates a name for a label.:::return
 Assembler#nameOf(Label):::Gets a name for a label, creating it if it does not yet exist:::if->new->HashMap<>->name->nameMap->get->if->nameMap->size->createLabelName->nameMap->put->return
 Assembler#makeAddress(Register, int):::This is used by the CompilationResultBuilder to convert a StackSlot to an AbstractAddress.:::
 Assembler#getPlaceholder(int):::Returns a target specific placeholder address that can be used for code patching.:::
 Assembler#ensureUniquePC():::Emits a NOP instruction to advance the current PC.:::
+Assembler#reset()::: assembler reset:::codeBuffer->reset->captureLabelPositions
+Assembler#captureLabelPositions()::: assembler capture label positions:::if->return->foreach->request->capture
+Assembler#requestLabelHint(Label)::: assembler request label hint:::if->new->ArrayList<>->hint->position->new->LabelHint->add->return
+Assembler#getInstructionCounter()::: assembler get instruction counter:::throw->new->UnsupportedOperationException
+Assembler.LabelHint#capture()::: label hint capture:::label->position
+Assembler.LabelHint#getTarget()::: label hint get target:::return
+Assembler.LabelHint#getPosition()::: label hint get position:::return
+Assembler.LabelHint#isValid()::: label hint is valid:::return
+Assembler.InstructionCounter#getSupportedInstructionTypes()::: instruction counter get supported instruction types:::
+Assembler.InstructionCounter#countInstructions(String[], int, int)::: instruction counter count instructions:::
+Buffer#position()::: buffer position:::return->data->position
+Buffer#setPosition(int)::: buffer set position:::BufferUtil->asBaseBuffer->position
 Buffer#close(boolean):::Closes this buffer:::result->data->array->if->Arrays->data->position->copyOf->return
+Buffer#copyData(int, int)::: buffer copy data:::if->return->return->Arrays->data->array->copyOfRange
 Buffer#copyInto(byte[], int, int):::Copies the data from this buffer into a given array.:::System->data->array->arraycopy
+Buffer#ensureSize(int)::: buffer ensure size:::if->data->limit->newBuf->Arrays->data->array->copyOf->newData->ByteBuffer->wrap->newData->data->order->order->BufferUtil->asBaseBuffer->data->position->position
+Buffer#emitBytes(byte[], int, int)::: buffer emit bytes:::data->position->ensureSize->data->put
+Buffer#emitByte(int)::: buffer emit byte:::data->position->ensureSize->data->put
+Buffer#emitShort(int)::: buffer emit short:::data->position->ensureSize->data->putShort
+Buffer#emitInt(int)::: buffer emit int:::data->position->ensureSize->data->putInt
+Buffer#emitLong(long)::: buffer emit long:::data->position->ensureSize->data->putLong
+Buffer#emitBytes(byte[], int)::: buffer emit bytes:::len->ensureSize->System->data->array->arraycopy
+Buffer#emitByte(int, int)::: buffer emit byte:::ensureSize->data->put
+Buffer#emitShort(int, int)::: buffer emit short:::ensureSize->data->putShort->position
+Buffer#emitInt(int, int)::: buffer emit int:::ensureSize->data->putInt->position
+Buffer#emitLong(long, int)::: buffer emit long:::ensureSize->data->putLong->position
+Buffer#getByte(int)::: buffer get byte:::b->data->get->return
+Buffer#getShort(int)::: buffer get short:::s->data->getShort->return
+Buffer#getInt(int)::: buffer get int:::return->data->getInt
+Buffer#reset()::: buffer reset:::BufferUtil->asBaseBuffer->clear
 Label#position():::Returns the position of this label in the code buffer.:::return
+Label#getBlockId()::: label get block id:::return
 Label#bind(int, Assembler):::Binds the label to pos and patches all instructions added by #addPatchAt(int, Assembler).:::if->throw->new->GraalError->if->for->i->patchPositions->size
+Label#isBound()::: label is bound:::return
+Label#addPatchAt(int, Assembler)::: label add patch at:::if->new->ArrayList<>->patchPositions->add
+Label#reset()::: label reset:::if->clear
+Label#toString()::: label to string:::return->isBound->String->position->valueOf

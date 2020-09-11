@@ -1,3 +1,17 @@
+CounterMonitor.CounterMonitorObservedObject#getThreshold()::: counter monitor observed object get threshold:::return
+CounterMonitor.CounterMonitorObservedObject#setThreshold(Number)::: counter monitor observed object set threshold:::
+CounterMonitor.CounterMonitorObservedObject#getPreviousScanCounter()::: counter monitor observed object get previous scan counter:::return
+CounterMonitor.CounterMonitorObservedObject#setPreviousScanCounter(Number)::: counter monitor observed object set previous scan counter:::
+CounterMonitor.CounterMonitorObservedObject#getModulusExceeded()::: counter monitor observed object get modulus exceeded:::return
+CounterMonitor.CounterMonitorObservedObject#setModulusExceeded(boolean)::: counter monitor observed object set modulus exceeded:::
+CounterMonitor.CounterMonitorObservedObject#getDerivedGaugeExceeded()::: counter monitor observed object get derived gauge exceeded:::return
+CounterMonitor.CounterMonitorObservedObject#setDerivedGaugeExceeded(Number)::: counter monitor observed object set derived gauge exceeded:::
+CounterMonitor.CounterMonitorObservedObject#getDerivedGaugeValid()::: counter monitor observed object get derived gauge valid:::return
+CounterMonitor.CounterMonitorObservedObject#setDerivedGaugeValid(boolean)::: counter monitor observed object set derived gauge valid:::
+CounterMonitor.CounterMonitorObservedObject#getEventAlreadyNotified()::: counter monitor observed object get event already notified:::return
+CounterMonitor.CounterMonitorObservedObject#setEventAlreadyNotified(boolean)::: counter monitor observed object set event already notified:::
+CounterMonitor.CounterMonitorObservedObject#getType()::: counter monitor observed object get type:::return
+CounterMonitor.CounterMonitorObservedObject#setType(NumericalType)::: counter monitor observed object set type:::
 CounterMonitor#start():::Starts the counter monitor.:::if->isActive->MONITOR_LOGGER->log->return->foreach->cmo->cmo->setThreshold->cmo->setModulusExceeded->cmo->setEventAlreadyNotified->cmo->setPreviousScanCounter->doStart
 CounterMonitor#stop():::Stops the counter monitor.:::doStop
 CounterMonitor#getDerivedGauge(ObjectName):::Gets the derived gauge of the specified object, if this object is contained in the set of observed MBeans, or null otherwise.:::return->super->getDerivedGauge
@@ -18,8 +32,15 @@ CounterMonitor#setNotify(boolean):::Sets the notification's on/off switch value 
 CounterMonitor#getDifferenceMode():::Gets the difference mode flag value common to all observed MBeans.:::return
 CounterMonitor#setDifferenceMode(boolean):::Sets the difference mode flag value common to all observed MBeans.:::if->return->foreach->cmo->cmo->setThreshold->cmo->setModulusExceeded->cmo->setEventAlreadyNotified->cmo->setPreviousScanCounter
 CounterMonitor#getNotificationInfo():::Returns a <CODE>NotificationInfo</CODE> object containing the name of the Java class of the notification and the notification types sent by the counter monitor.:::return->notifsInfo->clone
+CounterMonitor#updateDerivedGauge(Object, CounterMonitorObservedObject):::Updates the derived gauge attribute of the observed object.:::is_derived_gauge_valid->if->if->o->getPreviousScanCounter->setDerivedGaugeWithDifference->if->o->getDerivedGauge->longValue->if->modulus->longValue->setDerivedGaugeWithDifference->o->setThreshold->o->setEventAlreadyNotified->else->o->setPreviousScanCounter->else->o->setDerivedGauge->return
+CounterMonitor#updateNotifications(CounterMonitorObservedObject):::Updates the notification attribute of the observed object and notifies the listeners only once if the notify flag is set to <CODE>true</CODE>.:::n->if->o->getEventAlreadyNotified->if->o->getDerivedGauge->longValue->o->getThreshold->longValue->if->o->getThreshold->new->MonitorNotification->if->o->setEventAlreadyNotified->else->if->MONITOR_LOGGER->isLoggable->strb->new->StringBuilder->append->append->o->getObservedObject->append->append->getObservedAttribute->append->append->o->getThreshold->append->append->o->getDerivedGauge->append->append->MONITOR_LOGGER->strb->toString->log->return
+CounterMonitor#updateThreshold(CounterMonitorObservedObject):::Updates the threshold attribute of the observed object.:::if->o->getDerivedGauge->longValue->o->getThreshold->longValue->if->offset->longValue->threshold_value->o->getThreshold->longValue->while->o->getDerivedGauge->longValue->offset->longValue->switch->o->getType->o->Integer->valueOf->setThreshold->break->o->Byte->valueOf->setThreshold->break->o->Short->valueOf->setThreshold->break->o->Long->valueOf->setThreshold->break->MONITOR_LOGGER->log->break->if->if->modulus->longValue->if->o->getThreshold->longValue->modulus->longValue->o->setModulusExceeded->o->o->getDerivedGauge->setDerivedGaugeExceeded->o->setEventAlreadyNotified->else->o->setModulusExceeded->o->o->getDerivedGauge->setDerivedGaugeExceeded
+CounterMonitor#setDerivedGaugeWithDifference(Number, Number, CounterMonitorObservedObject):::Sets the derived gauge of the specified observed object when the differenceMode flag is set to <CODE>true</CODE>:::derived->scanCounter->longValue->o->getPreviousScanCounter->longValue->if->modulus->longValue->switch->o->getType->o->Integer->valueOf->setDerivedGauge->break->o->Byte->valueOf->setDerivedGauge->break->o->Short->valueOf->setDerivedGauge->break->o->Long->valueOf->setDerivedGauge->break->MONITOR_LOGGER->log->break
 CounterMonitor#createObservedObject(ObjectName):::Factory method for ObservedObject creation.:::cmo->new->CounterMonitorObservedObject->cmo->setThreshold->cmo->setModulusExceeded->cmo->setEventAlreadyNotified->cmo->setPreviousScanCounter->return
 CounterMonitor#isComparableTypeValid(ObjectName, String, Comparable):::This method globally sets the derived gauge type for the given "object" and "attribute" after checking that the type of the supplied observed attribute value is one of the value types supported by this monitor.:::o->getObservedObject->if->return->if->o->setType->else->if->o->setType->else->if->o->setType->else->if->o->setType->else->return->return
+CounterMonitor#getDerivedGaugeFromComparable(ObjectName, String, Comparable)::: counter monitor get derived gauge from comparable:::o->getObservedObject->if->return->if->o->getModulusExceeded->if->o->getDerivedGauge->longValue->o->getDerivedGaugeExceeded->longValue->o->setThreshold->o->setModulusExceeded->o->setEventAlreadyNotified->o->updateDerivedGauge->setDerivedGaugeValid->return->o->getDerivedGauge
+CounterMonitor#onErrorNotification(MonitorNotification)::: counter monitor on error notification:::o->notification->getObservedObject->getObservedObject->if->return->o->setModulusExceeded->o->setEventAlreadyNotified->o->setPreviousScanCounter
+CounterMonitor#buildAlarmNotification(ObjectName, String, Comparable)::: counter monitor build alarm notification:::o->getObservedObject->if->return->alarm->if->o->getDerivedGaugeValid->updateNotifications->updateThreshold->else->return
 CounterMonitor#isThresholdTypeValid(ObjectName, String, Comparable):::Tests if the threshold, offset and modulus of the specified observed object are of the same type as the counter:::o->getObservedObject->if->return->c->o->getType->classForType->return->c->o->getThreshold->isInstance->isValidForType->isValidForType
 CounterMonitorMBean#getDerivedGauge():::Gets the derived gauge.:::
 CounterMonitorMBean#getDerivedGaugeTimeStamp():::Gets the derived gauge timestamp.:::
@@ -38,6 +59,14 @@ CounterMonitorMBean#getNotify():::Gets the notification's on/off switch value.::
 CounterMonitorMBean#setNotify(boolean):::Sets the notification's on/off switch value.:::
 CounterMonitorMBean#getDifferenceMode():::Gets the difference mode flag value.:::
 CounterMonitorMBean#setDifferenceMode(boolean):::Sets the difference mode flag value.:::
+GaugeMonitor.GaugeMonitorObservedObject#getDerivedGaugeValid()::: gauge monitor observed object get derived gauge valid:::return
+GaugeMonitor.GaugeMonitorObservedObject#setDerivedGaugeValid(boolean)::: gauge monitor observed object set derived gauge valid:::
+GaugeMonitor.GaugeMonitorObservedObject#getType()::: gauge monitor observed object get type:::return
+GaugeMonitor.GaugeMonitorObservedObject#setType(NumericalType)::: gauge monitor observed object set type:::
+GaugeMonitor.GaugeMonitorObservedObject#getPreviousScanGauge()::: gauge monitor observed object get previous scan gauge:::return
+GaugeMonitor.GaugeMonitorObservedObject#setPreviousScanGauge(Number)::: gauge monitor observed object set previous scan gauge:::
+GaugeMonitor.GaugeMonitorObservedObject#getStatus()::: gauge monitor observed object get status:::return
+GaugeMonitor.GaugeMonitorObservedObject#setStatus(int)::: gauge monitor observed object set status:::
 GaugeMonitor#start():::Starts the gauge monitor.:::if->isActive->MONITOR_LOGGER->log->return->foreach->gmo->gmo->setStatus->gmo->setPreviousScanGauge->doStart
 GaugeMonitor#stop():::Stops the gauge monitor.:::doStop
 GaugeMonitor#getDerivedGauge(ObjectName):::Gets the derived gauge of the specified object, if this object is contained in the set of observed MBeans, or null otherwise.:::return->super->getDerivedGauge
@@ -54,8 +83,16 @@ GaugeMonitor#setNotifyLow(boolean):::Sets the low notification's on/off switch v
 GaugeMonitor#getDifferenceMode():::Gets the difference mode flag value common to all observed MBeans.:::return
 GaugeMonitor#setDifferenceMode(boolean):::Sets the difference mode flag value common to all observed MBeans.:::if->return->foreach->gmo->gmo->setStatus->gmo->setPreviousScanGauge
 GaugeMonitor#getNotificationInfo():::Returns a <CODE>NotificationInfo</CODE> object containing the name of the Java class of the notification and the notification types sent by the gauge monitor.:::return->notifsInfo->clone
+GaugeMonitor#updateDerivedGauge(Object, GaugeMonitorObservedObject):::Updates the derived gauge attribute of the observed object.:::is_derived_gauge_valid->if->if->o->getPreviousScanGauge->setDerivedGaugeWithDifference->else->o->setPreviousScanGauge->else->o->setDerivedGauge->return
+GaugeMonitor#updateNotifications(GaugeMonitorObservedObject):::Updates the notification attribute of the observed object and notifies the listeners only once if the notify flag is set to <CODE>true</CODE>.:::n->if->o->getStatus->if->o->getDerivedGauge->o->getType->isFirstGreaterThanLast->if->new->MonitorNotification->o->setStatus->else->if->o->getDerivedGauge->o->getType->isFirstGreaterThanLast->if->new->MonitorNotification->o->setStatus->else->if->o->getStatus->if->o->getDerivedGauge->o->getType->isFirstGreaterThanLast->if->new->MonitorNotification->o->setStatus->else->if->o->getStatus->if->o->getDerivedGauge->o->getType->isFirstGreaterThanLast->if->new->MonitorNotification->o->setStatus->return
+GaugeMonitor#setDerivedGaugeWithDifference(Number, GaugeMonitorObservedObject):::Sets the derived gauge when the differenceMode flag is set to <CODE>true</CODE>:::prev->o->getPreviousScanGauge->der->switch->o->getType->Integer->intValue->intValue->valueOf->break->Byte->byteValue->byteValue->valueOf->break->Short->shortValue->shortValue->valueOf->break->Long->longValue->longValue->valueOf->break->Float->floatValue->floatValue->valueOf->break->Double->doubleValue->doubleValue->valueOf->break->MONITOR_LOGGER->log->return->o->setDerivedGauge
+GaugeMonitor#isFirstGreaterThanLast(Number, Number, NumericalType):::Tests if the first specified Number is greater than or equal to the last:::switch->return->greater->longValue->less->longValue->return->greater->doubleValue->less->doubleValue->MONITOR_LOGGER->log->return
+GaugeMonitor#isFirstStrictlyGreaterThanLast(Number, Number, String):::Tests if the first specified Number is strictly greater than the last:::if->className->equals->className->equals->className->equals->className->equals->return->greater->longValue->less->longValue->else->if->className->equals->className->equals->return->greater->doubleValue->less->doubleValue->else->MONITOR_LOGGER->log->return
 GaugeMonitor#createObservedObject(ObjectName):::Factory method for ObservedObject creation.:::gmo->new->GaugeMonitorObservedObject->gmo->setStatus->gmo->setPreviousScanGauge->return
 GaugeMonitor#isComparableTypeValid(ObjectName, String, Comparable):::This method globally sets the derived gauge type for the given "object" and "attribute" after checking that the type of the supplied observed attribute value is one of the value types supported by this monitor.:::o->getObservedObject->if->return->if->o->setType->else->if->o->setType->else->if->o->setType->else->if->o->setType->else->if->o->setType->else->if->o->setType->else->return->return
+GaugeMonitor#getDerivedGaugeFromComparable(ObjectName, String, Comparable)::: gauge monitor get derived gauge from comparable:::o->getObservedObject->if->return->o->updateDerivedGauge->setDerivedGaugeValid->return->o->getDerivedGauge
+GaugeMonitor#onErrorNotification(MonitorNotification)::: gauge monitor on error notification:::o->notification->getObservedObject->getObservedObject->if->return->o->setStatus->o->setPreviousScanGauge
+GaugeMonitor#buildAlarmNotification(ObjectName, String, Comparable)::: gauge monitor build alarm notification:::o->getObservedObject->if->return->alarm->if->o->getDerivedGaugeValid->updateNotifications->else->return
 GaugeMonitor#isThresholdTypeValid(ObjectName, String, Comparable):::Tests if the threshold high and threshold low are both of the same type as the gauge:::o->getObservedObject->if->return->c->o->getType->classForType->return->isValidForType->isValidForType
 GaugeMonitorMBean#getDerivedGauge():::Gets the derived gauge.:::
 GaugeMonitorMBean#getDerivedGaugeTimeStamp():::Gets the derived gauge timestamp.:::
@@ -70,6 +107,13 @@ GaugeMonitorMBean#getNotifyLow():::Gets the low notification's on/off switch val
 GaugeMonitorMBean#setNotifyLow(boolean):::Sets the low notification's on/off switch value.:::
 GaugeMonitorMBean#getDifferenceMode():::Gets the difference mode flag value.:::
 GaugeMonitorMBean#setDifferenceMode(boolean):::Sets the difference mode flag value.:::
+Monitor.ObservedObject#getObservedObject()::: observed object get observed object:::return
+Monitor.ObservedObject#getAlreadyNotified()::: observed object get already notified:::return
+Monitor.ObservedObject#setAlreadyNotified(int)::: observed object set already notified:::
+Monitor.ObservedObject#getDerivedGauge()::: observed object get derived gauge:::return
+Monitor.ObservedObject#setDerivedGauge(Object)::: observed object set derived gauge:::
+Monitor.ObservedObject#getDerivedGaugeTimeStamp()::: observed object get derived gauge time stamp:::return
+Monitor.ObservedObject#setDerivedGaugeTimeStamp(long)::: observed object set derived gauge time stamp:::
 Monitor#preRegister(MBeanServer, ObjectName):::Allows the monitor MBean to perform any operations it needs before being registered in the MBean server:::MONITOR_LOGGER->log->return
 Monitor#postRegister(Boolean):::Allows the monitor MBean to perform any operations needed after having been registered in the MBean server or after the registration has failed:::
 Monitor#preDeregister():::Allows the monitor MBean to perform any operations it needs before being unregistered by the MBean server:::MONITOR_LOGGER->log->stop
@@ -86,10 +130,21 @@ Monitor#getObservedAttribute():::Gets the attribute being observed:::return
 Monitor#setObservedAttribute(String):::Sets the attribute to observe:::if->throw->new->IllegalArgumentException->synchronized->if->observedAttribute->equals->return->cleanupIsComplexTypeAttribute->index->foreach->resetAlreadyNotified
 Monitor#getGranularityPeriod():::Gets the granularity period (in milliseconds):::return
 Monitor#setGranularityPeriod(long):::Sets the granularity period (in milliseconds):::if->throw->new->IllegalArgumentException->if->return->if->isActive->cleanupFutures->scheduler->schedule
+Monitor#isActive()::: monitor is active:::return
 Monitor#doStart():::Starts the monitor.:::MONITOR_LOGGER->log->synchronized->if->isActive->MONITOR_LOGGER->log->return->cleanupIsComplexTypeAttribute->AccessController->getContext->cleanupFutures->schedulerTask->new->MonitorTask->setMonitorTask->scheduler->getGranularityPeriod->schedule
 Monitor#doStop():::Stops the monitor.:::MONITOR_LOGGER->log->synchronized->if->isActive->MONITOR_LOGGER->log->return->cleanupFutures->cleanupIsComplexTypeAttribute
 Monitor#getDerivedGauge(ObjectName):::Gets the derived gauge of the specified object, if this object is contained in the set of observed MBeans, or null otherwise.:::o->getObservedObject->return->o->getDerivedGauge
 Monitor#getDerivedGaugeTimeStamp(ObjectName):::Gets the derived gauge timestamp of the specified object, if this object is contained in the set of observed MBeans, or 0 otherwise.:::o->getObservedObject->return->o->getDerivedGaugeTimeStamp
+Monitor#getAttribute(MBeanServerConnection, ObjectName, String)::: monitor get attribute:::lookupMBeanInfo->synchronized->if->isActive->throw->new->IllegalArgumentException->if->attribute->getObservedAttribute->equals->throw->new->IllegalArgumentException->attribute->indexOf->mbi->if->try->mbsc->getMBeanInfo->catch->throw->new->IllegalArgumentException->finally->else->fa->synchronized->if->isActive->throw->new->IllegalArgumentException->if->attribute->getObservedAttribute->equals->throw->new->IllegalArgumentException->if->if->attribute->indexOf->mbaiArray->mbi->getAttributes->foreach->if->attribute->mbai->getName->equals->break->if->tokens->attribute->split->for->i->else->return->mbsc->getAttribute
+Monitor#getComparableFromAttribute(ObjectName, String, Object)::: monitor get comparable from attribute:::if->v->foreach->Introspector->elementFromComplex->return->else->return
+Monitor#isComparableTypeValid(ObjectName, String, Comparable)::: monitor is comparable type valid:::return
+Monitor#buildErrorNotification(ObjectName, String, Comparable)::: monitor build error notification:::return
+Monitor#onErrorNotification(MonitorNotification)::: monitor on error notification:::
+Monitor#getDerivedGaugeFromComparable(ObjectName, String, Comparable)::: monitor get derived gauge from comparable:::return
+Monitor#buildAlarmNotification(ObjectName, String, Comparable)::: monitor build alarm notification:::return
+Monitor#isThresholdTypeValid(ObjectName, String, Comparable)::: monitor is threshold type valid:::return
+Monitor#classForType(NumericalType)::: monitor class for type:::switch->return->return->return->return->return->return->throw->new->IllegalArgumentException
+Monitor#isValidForType(Object, Class)::: monitor is valid for type:::return->c->isInstance
 Monitor#getObservedObject(ObjectName):::Get the specified ObservedObject if this object is contained in the set of observed MBeans, or null otherwise.:::foreach->if->o->getObservedObject->equals->return->return
 Monitor#createObservedObject(ObjectName):::Factory method for ObservedObject creation.:::return->new->ObservedObject
 Monitor#createAlreadyNotified():::Create the #alreadyNotified array from the ObservedObject array list.:::observedObjects->size->new->intArr->for->i->updateDeprecatedAlreadyNotified
@@ -100,6 +155,16 @@ Monitor#setAlreadyNotified(ObservedObject, int, int, int[]):::Set the given bits
 Monitor#resetAlreadyNotified(ObservedObject, int, int):::Reset the given bits in the given element of #alreadyNotifieds:::o->o->getAlreadyNotified->setAlreadyNotified->updateAlreadyNotified
 Monitor#resetAllAlreadyNotified(ObservedObject, int, int[]):::Reset all bits in the given element of #alreadyNotifieds:::i->computeAlreadyNotifiedIndex->if->return->o->setAlreadyNotified->updateAlreadyNotified
 Monitor#computeAlreadyNotifiedIndex(ObservedObject, int, int[]):::Check if the #alreadyNotifieds array has been modified:::if->return->else->return->observedObjects->indexOf
+Monitor#sendNotification(String, long, String, Object, Object, ObjectName, boolean):::This method is used by the monitor MBean to create and send a monitor notification to all the listeners registered for this kind of notification.:::if->isActive->return->if->MONITOR_LOGGER->isLoggable->MONITOR_LOGGER->log->seqno->sequenceNumber->getAndIncrement->mn->new->MonitorNotification->if->onErrorNotification->sendNotification
+Monitor#monitor(ObservedObject, int, int[]):::This method is called by the monitor each time the granularity period has been exceeded.:::attribute->notifType->msg->derGauge->trigger->object->value->alarm->if->isActive->return->synchronized->o->getObservedObject->getObservedAttribute->if->return->attributeValue->try->getAttribute->if->if->isAlreadyNotified->return->else->setAlreadyNotified->MONITOR_LOGGER->log->catch->if->isAlreadyNotified->return->else->setAlreadyNotified->MONITOR_LOGGER->log->MONITOR_LOGGER->np_ex->toString->log->if->isAlreadyNotified->return->else->setAlreadyNotified->MONITOR_LOGGER->log->MONITOR_LOGGER->inf_ex->toString->log->if->isAlreadyNotified->return->else->setAlreadyNotified->MONITOR_LOGGER->log->MONITOR_LOGGER->anf_ex->toString->log->if->isAlreadyNotified->return->else->setAlreadyNotified->mb_ex->getMessage->mb_ex->getMessage->MONITOR_LOGGER->log->MONITOR_LOGGER->mb_ex->toString->log->if->isAlreadyNotified->return->else->setAlreadyNotified->ref_ex->getMessage->ref_ex->getMessage->MONITOR_LOGGER->log->MONITOR_LOGGER->ref_ex->toString->log->if->isAlreadyNotified->return->else->setAlreadyNotified->io_ex->getMessage->io_ex->getMessage->MONITOR_LOGGER->log->MONITOR_LOGGER->io_ex->toString->log->if->isAlreadyNotified->return->else->setAlreadyNotified->rt_ex->getMessage->rt_ex->getMessage->MONITOR_LOGGER->log->MONITOR_LOGGER->rt_ex->toString->log->finally->synchronized->if->isActive->return->if->attribute->getObservedAttribute->equals->return->if->try->getComparableFromAttribute->catch->if->isAlreadyNotified->return->else->setAlreadyNotified->MONITOR_LOGGER->log->MONITOR_LOGGER->e->toString->log->if->isAlreadyNotified->return->else->setAlreadyNotified->MONITOR_LOGGER->log->MONITOR_LOGGER->e->toString->log->if->isAlreadyNotified->return->else->setAlreadyNotified->e->getMessage->e->getMessage->MONITOR_LOGGER->log->MONITOR_LOGGER->e->toString->log->finally->if->if->isComparableTypeValid->if->isAlreadyNotified->return->else->setAlreadyNotified->MONITOR_LOGGER->log->if->if->isThresholdTypeValid->if->isAlreadyNotified->return->else->setAlreadyNotified->MONITOR_LOGGER->log->if->buildErrorNotification->if->if->isAlreadyNotified->return->else->setAlreadyNotified->MONITOR_LOGGER->log->if->resetAllAlreadyNotified->getDerivedGaugeFromComparable->o->setDerivedGauge->o->System->currentTimeMillis->setDerivedGaugeTimeStamp->buildAlarmNotification->if->System->currentTimeMillis->sendNotification->if->alarm->getType->alarm->getType->System->currentTimeMillis->alarm->getMessage->alarm->getTrigger->sendNotification
+Monitor#cleanupFutures():::Cleanup the scheduler and monitor tasks futures.:::if->schedulerFuture->cancel->if->monitorFuture->cancel
+Monitor#cleanupIsComplexTypeAttribute():::Cleanup the "is complex type attribute" info.:::remainingAttributes->clear
+Monitor.SchedulerTask#setMonitorTask(MonitorTask)::: scheduler task set monitor task:::
+Monitor.SchedulerTask#run()::: scheduler task run:::synchronized->task->submit
+Monitor.MonitorTask#submit()::: monitor task submit:::return->executor->submit
+Monitor.MonitorTask#run()::: monitor task run:::sf->ac->synchronized->action->new->PrivilegedAction<Void>->if->throw->new->SecurityException->AccessController->doPrivileged->synchronized->if->Monitor.this->isActive->scheduler->Monitor.this->getGranularityPeriod->schedule
+Monitor.DaemonThreadFactory#getThreadGroup()::: daemon thread factory get thread group:::return
+Monitor.DaemonThreadFactory#newThread(Runnable)::: daemon thread factory new thread:::t->threadNumber->getAndIncrement->new->Thread->t->setDaemon->if->t->getPriority->t->setPriority->return
 MonitorMBean#start():::Starts the monitor.:::
 MonitorMBean#stop():::Stops the monitor.:::
 MonitorMBean#addObservedObject(ObjectName):::Adds the specified object in the set of observed MBeans.:::
@@ -117,6 +182,8 @@ MonitorNotification#getObservedObject():::Gets the observed object of this monit
 MonitorNotification#getObservedAttribute():::Gets the observed attribute of this monitor notification.:::return
 MonitorNotification#getDerivedGauge():::Gets the derived gauge of this monitor notification.:::return
 MonitorNotification#getTrigger():::Gets the threshold/string (depending on the monitor type) that triggered off this monitor notification.:::return
+StringMonitor.StringMonitorObservedObject#getStatus()::: string monitor observed object get status:::return
+StringMonitor.StringMonitorObservedObject#setStatus(int)::: string monitor observed object set status:::
 StringMonitor#start():::Starts the string monitor.:::if->isActive->MONITOR_LOGGER->log->return->foreach->smo->smo->setStatus->doStart
 StringMonitor#stop():::Stops the string monitor.:::doStop
 StringMonitor#getDerivedGauge(ObjectName):::Gets the derived gauge of the specified object, if this object is contained in the set of observed MBeans, or null otherwise.:::return->super->getDerivedGauge
@@ -132,6 +199,8 @@ StringMonitor#setNotifyDiffer(boolean):::Sets the differing notification's on/of
 StringMonitor#getNotificationInfo():::Returns a <CODE>NotificationInfo</CODE> object containing the name of the Java class of the notification and the notification types sent by the string monitor.:::return->notifsInfo->clone
 StringMonitor#createObservedObject(ObjectName):::Factory method for ObservedObject creation.:::smo->new->StringMonitorObservedObject->smo->setStatus->return
 StringMonitor#isComparableTypeValid(ObjectName, String, Comparable):::Check that the type of the supplied observed attribute value is one of the value types supported by this monitor.:::if->return->return
+StringMonitor#onErrorNotification(MonitorNotification)::: string monitor on error notification:::o->notification->getObservedObject->getObservedObject->if->return->o->setStatus
+StringMonitor#buildAlarmNotification(ObjectName, String, Comparable)::: string monitor build alarm notification:::type->msg->trigger->o->getObservedObject->if->return->if->o->getStatus->if->o->getDerivedGauge->equals->if->o->setStatus->else->if->o->setStatus->else->if->o->getStatus->if->o->getDerivedGauge->equals->if->o->setStatus->else->if->o->getStatus->if->o->getDerivedGauge->equals->if->o->setStatus->return->new->MonitorNotification
 StringMonitorMBean#getDerivedGauge():::Gets the derived gauge.:::
 StringMonitorMBean#getDerivedGaugeTimeStamp():::Gets the derived gauge timestamp.:::
 StringMonitorMBean#getDerivedGauge(ObjectName):::Gets the derived gauge for the specified MBean.:::

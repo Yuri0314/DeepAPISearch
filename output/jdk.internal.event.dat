@@ -4,4 +4,9 @@ Event#commit():::Writes the field values, time stamp, and event duration:::
 Event#isEnabled():::Returns true if the event is enabled, false otherwise:::return
 Event#shouldCommit():::Returns true if the event is enabled and if the duration is within the threshold for the event, false otherwise.:::return
 Event#set(int, Object):::Sets a field value.:::
+EventHelper#logTLSHandshakeEvent(Instant, String, int, String, String, long)::: event helper log handshake event:::prepend->getDurationString->securityLogger->log
+EventHelper#logSecurityPropertyEvent(String, String)::: event helper log security property event:::securityLogger->log
+EventHelper#logX509ValidationEvent(int, int[])::: event helper log x509 validation event:::codes->IntStream->of->Integer->toString->mapToObj->Collectors->joining->collect->securityLogger->log
+EventHelper#logX509CertificateEvent(String, String, String, String, String, int, long, long, long)::: event helper log x509 certificate event:::securityLogger->new->Date->new->Date->log
+EventHelper#getDurationString(Instant):::Method to calculate a duration timestamp for events which measure the start and end times of certain operations.:::if->duration->Duration->Instant->now->between->micros->duration->toNanos->if->return->else->return->else->return
 EventHelper#isLoggingSecurity():::Helper to determine if security events are being logged at a preconfigured logging level:::if->JUJA->isInitializing->LOGGER_HANDLE->System->getLogger->compareAndSet->securityLogger->isLoggable->return

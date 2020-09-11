@@ -2,13 +2,58 @@ AbbreviationMap#contains(String):::Tells whether the given key is in the map, or
 AbbreviationMap#get(String):::Answers the value associated with the given key:::chars->charsOf->child->foreach->get->if->return->return
 AbbreviationMap#put(String, V):::Associates a given value with a given key:::if->throw->new->NullPointerException->if->key->length->throw->new->IllegalArgumentException->chars->charsOf->add
 AbbreviationMap#putAll(Iterable, V):::Associates a given value with a given set of keys:::foreach->put
+AbbreviationMap#add(char[], V, int, int)::: abbreviation map add:::if->wasAlreadyAKey->new->String->return->nextChar->child->children->get->if->new->AbbreviationMap<>->children->put->newKeyAdded->child->add->if->if->return
 AbbreviationMap#remove(String):::If the map contains the given key, dissociates the key from its value.:::if->key->length->throw->new->IllegalArgumentException->keyChars->charsOf->remove
+AbbreviationMap#remove(char[], int, int)::: abbreviation map remove:::if->return->removeAtEndOfKey->nextChar->child->children->get->if->child->remove->return->if->children->remove->if->setValueToThatOfOnlyChild->return
+AbbreviationMap#setValueToThatOfOnlyChild()::: abbreviation map set value to that of only child:::entry->children->entrySet->iterator->next->onlyChild->entry->getValue
+AbbreviationMap#removeAtEndOfKey()::: abbreviation map remove at end of key:::if->return->if->setValueToThatOfOnlyChild->else->return
 AbbreviationMap#toJavaUtilMap():::Gives a Java map representation of this abbreviation map.:::mappings->new->TreeMap<>->addToMappings->return
+AbbreviationMap#addToMappings(Map)::: abbreviation map add to mappings:::if->mappings->put->foreach->children->values->each->addToMappings
+AbbreviationMap#charsOf(String)::: abbreviation map chars of:::chars->aKey->length->new->charArr->aKey->aKey->length->getChars->return
 Classes#shortNameOf(String):::Gives the "short version" of the given class name:::return->className->className->lastIndexOf->substring
 Classes#wrapperOf(Class):::Gives the primitive wrapper class for the given class:::return->clazz->isPrimitive->WRAPPERS->get
+Columns#fit(Row)::: columns fit:::options->piecesOf->descriptions->piecesOf->rows->new->ArrayList<>->for->i->Math->options->size->descriptions->size->max->return
+Columns#itemOrEmpty(List, int)::: columns item or empty:::return->items->size->items->get
+Columns#piecesOf(String, int)::: columns pieces of:::pieces->new->ArrayList<>->foreach->raw->trim->split->pieces->piecesOfEmbeddedLine->addAll->return
+Columns#piecesOfEmbeddedLine(String, int)::: columns pieces of embedded line:::pieces->new->ArrayList<>->words->BreakIterator->getLineInstance->words->setText->nextPiece->new->StringBuilder->start->words->first->for->end->words->next->words->next->if->nextPiece->length->pieces->nextPiece->toString->add->return
+Columns#processNextWord(String, StringBuilder, int, int, int, List)::: columns process next word:::augmented->word->source->substring->if->augmented->length->word->length->pieces->augmented->toString->replaceAll->add->repeat->new->StringBuilder->append->else->augmented->append->return
+ConstructorInvokingValueConverter#convert(String)::: constructor invoking value converter convert:::return->instantiate
+ConstructorInvokingValueConverter#valueType()::: constructor invoking value converter value type:::return->ctor->getDeclaringClass
+ConstructorInvokingValueConverter#valuePattern()::: constructor invoking value converter value pattern:::return
+Messages#message(Locale, String, Class, String, Object...)::: messages message:::bundle->ResourceBundle->getBundle->template->bundle->type->getName->getString->format->new->MessageFormat->format->setLocale->return->format->format
+MethodInvokingValueConverter#convert(String)::: method invoking value converter convert:::return->clazz->invoke->cast
+MethodInvokingValueConverter#valueType()::: method invoking value converter value type:::return
+MethodInvokingValueConverter#valuePattern()::: method invoking value converter value pattern:::return
+OptionNameMap#contains(String)::: option name map contains:::
+OptionNameMap#get(String)::: option name map get:::
+OptionNameMap#put(String, V)::: option name map put:::
+OptionNameMap#putAll(Iterable, V)::: option name map put all:::
+OptionNameMap#remove(String)::: option name map remove:::
+OptionNameMap#toJavaUtilMap()::: option name map to java util map:::
 Reflection#findConverter(Class):::Finds an appropriate value converter for the given class.:::maybeWrapper->wrapperOf->valueOf->valueOfConverter->if->return->constructor->constructorConverter->if->return->throw->new->IllegalArgumentException
+Reflection#valueOfConverter(Class)::: reflection value of converter:::try->valueOf->clazz->getMethod->if->meetsConverterRequirements->return->new->MethodInvokingValueConverter<>->return->catch->return->finally
+Reflection#constructorConverter(Class)::: reflection constructor converter:::try->return->clazz->getConstructor->new->ConstructorInvokingValueConverter<>->catch->return->finally
 Reflection#instantiate(Constructor, Object...):::Invokes the given constructor with the given arguments.:::try->return->constructor->newInstance->catch->throw->reflectionException->finally
 Reflection#invoke(Method, Object...):::Invokes the given static method with the given arguments.:::try->return->method->invoke->catch->throw->reflectionException->finally
+Reflection#convertWith(ValueConverter, String)::: reflection convert with:::return->converter->convert
+Reflection#meetsConverterRequirements(Method, Class)::: reflection meets converter requirements:::modifiers->method->getModifiers->return->isPublic->isStatic->expectedReturnType->method->getReturnType->equals
+Reflection#reflectionException(Exception)::: reflection reflection exception:::if->return->new->ReflectionException->if->return->ex->getCause->new->ReflectionException->if->return->return->new->ReflectionException
+Row#equals(Object)::: row equals:::if->return->if->getClass->that->getClass->equals->return->other->return->option->equals->description->equals
+Row#hashCode()::: row hash code:::return->option->hashCode->description->hashCode
+Rows#add(String, String)::: rows add:::new->Row->add
+Rows#add(Row)::: rows add:::rows->add->length->max->length->max
+Rows#reset()::: rows reset:::rows->clear
+Rows#fitToWidth()::: rows fit to width:::columns->optionWidth->descriptionWidth->new->Columns->fitted->new->ArrayList<>->foreach->fitted->columns->fit->addAll->reset->foreach->add
+Rows#render()::: rows render:::buffer->new->StringBuilder->foreach->optionWidth->pad->repeat->append->descriptionWidth->pad->append->return->buffer->toString
+Rows#optionWidth()::: rows option width:::return->min
+Rows#descriptionWidth()::: rows description width:::return->optionWidth->min
+Rows#pad(StringBuilder, String, int)::: rows pad:::buffer->append->s->length->repeat->append->return
+SimpleOptionNameMap#contains(String)::: simple option name map contains:::return->map->containsKey
+SimpleOptionNameMap#get(String)::: simple option name map get:::return->map->get
+SimpleOptionNameMap#put(String, V)::: simple option name map put:::map->put
+SimpleOptionNameMap#putAll(Iterable, V)::: simple option name map put all:::foreach->map->put
+SimpleOptionNameMap#remove(String)::: simple option name map remove:::map->remove
+SimpleOptionNameMap#toJavaUtilMap()::: simple option name map to java util map:::return->new->HashMap<>
 Strings#repeat(char, int):::Gives a string consisting of the given character repeated the given number of times.:::buffer->new->StringBuilder->for->i->return->buffer->toString
 Strings#isNullOrEmpty(String):::Tells whether the given string is either  or consists solely of whitespace characters.:::return->target->isEmpty
 Strings#surround(String, char, char):::Gives a string consisting of a given string prepended and appended with surrounding characters.:::return

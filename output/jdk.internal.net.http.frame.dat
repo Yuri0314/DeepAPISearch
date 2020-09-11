@@ -1,2 +1,132 @@
+ContinuationFrame#type()::: continuation frame type:::return
+ContinuationFrame#length()::: continuation frame length:::return
+DataFrame#type()::: data frame type:::return
+DataFrame#length()::: data frame length:::return
+DataFrame#flagAsString(int)::: data frame flag as string:::switch->return->return->return->super->flagAsString
+DataFrame#getData()::: data frame get data:::return
+DataFrame#getDataLength()::: data frame get data length:::return
+DataFrame#getPadLength()::: data frame get pad length:::return
+DataFrame#setPadLength(int)::: data frame set pad length:::
+DataFrame#payloadLength()::: data frame payload length:::if->return->else->return
+ErrorFrame#stringForCode(int)::: error frame string for code:::if->throw->new->IllegalArgumentException->if->return->Integer->toString->else->return
+ErrorFrame#toString()::: error frame to string:::return->super->toString->stringForCode
+ErrorFrame#getErrorCode()::: error frame get error code:::return
+FramesDecoder.FrameProcessor#processFrame(Http2Frame)::: frame processor process frame:::
 FramesDecoder#decode(ByteBuffer):::Adds the data from the given buffer, and performs frame decoding if possible:::if->if->debug->on->debug->inBoundBuffer->remaining->log->inBoundBuffer->inBoundBuffer->limit->position->return->remaining->inBoundBuffer->remaining->if->debug->on->debug->log->if->if->else->b->if->tailBuffers->isEmpty->tailBuffers->getLast->limit->b->limit->freeSpace->b->capacity->if->position->b->position->b->position->b->inBoundBuffer->remaining->limit->b->put->b->position->if->if->debug->on->debug->log->else->if->debug->on->debug->log->tailBuffers->add->if->debug->on->debug->currentBuffer->remaining->log->frame->while->nextFrame->if->debug->on->debug->log->frameProcessor->processFrame->frameProcessed
+FramesDecoder#nextFrame()::: frames decoder next frame:::while->if->return->available->currentBuffer->remaining->if->if->parseFrameHeader->if->return->new->MalformedFrame->else->if->debug->on->debug->log->return->currentBuffer->remaining->if->frame->parseFrameBody->if->return->else->if->debug->on->debug->log->return
+FramesDecoder#frameProcessed()::: frames decoder frame processed:::prepareToRelease->clear
+FramesDecoder#parseFrameHeader()::: frames decoder parse frame header:::x->getInt->getByte->getInt
+FramesDecoder#nextBuffer()::: frames decoder next buffer:::if->currentBuffer->hasRemaining->if->prepareToRelease->add->tailBuffers->poll->if->currentBuffer->remaining
+FramesDecoder#getByte()::: frames decoder get byte:::res->currentBuffer->get->nextBuffer->return
+FramesDecoder#getShort()::: frames decoder get short:::if->currentBuffer->remaining->res->currentBuffer->getShort->nextBuffer->return->val->getByte->getByte->return
+FramesDecoder#getInt()::: frames decoder get int:::if->currentBuffer->remaining->res->currentBuffer->getInt->nextBuffer->return->val->getByte->getByte->getByte->getByte->return
+FramesDecoder#getBytes(int)::: frames decoder get bytes:::bytes->new->byteArr->offset->while->length->Math->currentBuffer->remaining->min->currentBuffer->get->nextBuffer->return
+FramesDecoder#getBuffers(boolean, int)::: frames decoder get buffers:::res->new->ArrayList<>->while->remaining->currentBuffer->remaining->extract->Math->min->extractedBuf->if->Utils->sliceWithLimitedCapacity->asReadOnlyBuffer->else->Utils->sliceWithLimitedCapacity->res->add->nextBuffer->return
+FramesDecoder#close(String)::: frames decoder close:::tailBuffers->clear->bytes->b->if->b->remaining->b->b->limit->position->if->debug->on->debug->log
+FramesDecoder#skipBytes(int)::: frames decoder skip bytes:::while->remaining->currentBuffer->remaining->extract->Math->min->currentBuffer->currentBuffer->position->position->nextBuffer
+FramesDecoder#parseFrameBody()::: frames decoder parse frame body:::switch->return->parseDataFrame->return->parseHeadersFrame->return->parsePriorityFrame->return->parseResetFrame->return->parseSettingsFrame->return->parsePushPromiseFrame->return->parsePingFrame->return->parseGoAwayFrame->return->parseWindowUpdateFrame->return->parseContinuationFrame->Log->logTrace->skipBytes->return
+FramesDecoder#parseDataFrame(int, int, int)::: frames decoder parse data frame:::if->return->new->MalformedFrame->padLength->if->getByte->if->return->new->MalformedFrame->df->getBuffers->new->DataFrame->skipBytes->return
+FramesDecoder#parseHeadersFrame(int, int, int)::: frames decoder parse headers frame:::if->return->new->MalformedFrame->padLength->if->getByte->hasPriority->exclusive->streamDependency->weight->if->x->getInt->getByte->if->return->new->MalformedFrame->hf->getBuffers->new->HeadersFrame->skipBytes->if->hf->setPriority->return
+FramesDecoder#parsePriorityFrame(int, int, int)::: frames decoder parse priority frame:::if->return->new->MalformedFrame->if->skipBytes->return->new->MalformedFrame->x->getInt->weight->getByte->return->new->PriorityFrame
+FramesDecoder#parseResetFrame(int, int, int)::: frames decoder parse reset frame:::if->return->new->MalformedFrame->if->return->new->MalformedFrame->return->getInt->new->ResetFrame
+FramesDecoder#parseSettingsFrame(int, int, int)::: frames decoder parse settings frame:::if->return->new->MalformedFrame->if->return->new->MalformedFrame->if->return->new->MalformedFrame->sf->new->SettingsFrame->n->for->i->return
+FramesDecoder#parsePushPromiseFrame(int, int, int)::: frames decoder parse push promise frame:::if->return->new->MalformedFrame->padLength->if->getByte->promisedStream->getInt->if->return->new->MalformedFrame->ppf->getBuffers->new->PushPromiseFrame->skipBytes->return
+FramesDecoder#parsePingFrame(int, int, int)::: frames decoder parse ping frame:::if->return->new->MalformedFrame->if->return->new->MalformedFrame->return->getBytes->new->PingFrame
+FramesDecoder#parseGoAwayFrame(int, int, int)::: frames decoder parse go away frame:::if->return->new->MalformedFrame->if->return->new->MalformedFrame->lastStream->getInt->errorCode->getInt->debugData->getBytes->if->Log->new->String->logError->return->new->GoAwayFrame
+FramesDecoder#parseWindowUpdateFrame(int, int, int)::: frames decoder parse window update frame:::if->return->new->MalformedFrame->return->getInt->new->WindowUpdateFrame
+FramesDecoder#parseContinuationFrame(int, int, int)::: frames decoder parse continuation frame:::if->return->new->MalformedFrame->return->getBuffers->new->ContinuationFrame
+FramesEncoder#encodeFrames(List)::: frames encoder encode frames:::bufs->frames->size->new->ArrayList<>->foreach->bufs->encodeFrame->addAll->return
+FramesEncoder#encodeConnectionPreface(byte[], SettingsFrame)::: frames encoder encode connection preface:::length->frame->length->buf->getBuffer->buf->put->putSettingsFrame->buf->flip->return
+FramesEncoder#encodeFrame(Http2Frame)::: frames encoder encode frame:::switch->frame->type->return->encodeDataFrame->return->encodeHeadersFrame->return->encodePriorityFrame->return->encodeResetFrame->return->encodeSettingsFrame->return->encodePushPromiseFrame->return->encodePingFrame->return->encodeGoAwayFrame->return->encodeWindowUpdateFrame->return->encodeContinuationFrame->throw->frame->type->frame->getClass->getName->new->UnsupportedOperationException
+FramesEncoder#encodeDataFrame(DataFrame)::: frames encoder encode data frame:::buf->encodeDataFrameStart->if->frame->getFlag->return->frame->getData->frame->getPadLength->joinWithPadding->else->return->frame->getData->join
+FramesEncoder#encodeDataFrameStart(DataFrame)::: frames encoder encode data frame start:::isPadded->frame->getFlag->length->frame->getDataLength->frame->getPadLength->buf->getBuffer->frame->getFlags->frame->streamid->putHeader->if->buf->frame->getPadLength->put->buf->flip->return
+FramesEncoder#encodeHeadersFrame(HeadersFrame)::: frames encoder encode headers frame:::buf->encodeHeadersFrameStart->if->frame->getFlag->return->frame->getHeaderBlock->frame->getPadLength->joinWithPadding->else->return->frame->getHeaderBlock->join
+FramesEncoder#encodeHeadersFrameStart(HeadersFrame)::: frames encoder encode headers frame start:::isPadded->frame->getFlag->hasPriority->frame->getFlag->length->frame->getHeaderLength->frame->getPadLength->buf->getBuffer->frame->getFlags->frame->streamid->putHeader->if->buf->frame->getPadLength->put->if->frame->getExclusive->frame->getStreamDependency->frame->getWeight->putPriority->buf->flip->return
+FramesEncoder#encodePriorityFrame(PriorityFrame)::: frames encoder encode priority frame:::length->buf->getBuffer->frame->streamid->putHeader->frame->exclusive->frame->streamDependency->frame->weight->putPriority->buf->flip->return->List->of
+FramesEncoder#encodeResetFrame(ResetFrame)::: frames encoder encode reset frame:::length->buf->getBuffer->frame->streamid->putHeader->buf->frame->getErrorCode->putInt->buf->flip->return->List->of
+FramesEncoder#encodeSettingsFrame(SettingsFrame)::: frames encoder encode settings frame:::length->frame->length->buf->getBuffer->putSettingsFrame->buf->flip->return->List->of
+FramesEncoder#encodePushPromiseFrame(PushPromiseFrame)::: frames encoder encode push promise frame:::isPadded->frame->getFlag->length->frame->getHeaderLength->buf->getBuffer->frame->getFlags->frame->streamid->putHeader->if->buf->frame->getPadLength->put->buf->frame->getPromisedStream->putInt->buf->flip->if->frame->getFlag->return->frame->getHeaderBlock->frame->getPadLength->joinWithPadding->else->return->frame->getHeaderBlock->join
+FramesEncoder#encodePingFrame(PingFrame)::: frames encoder encode ping frame:::length->buf->getBuffer->frame->getFlags->putHeader->buf->frame->getData->put->buf->flip->return->List->of
+FramesEncoder#encodeGoAwayFrame(GoAwayFrame)::: frames encoder encode go away frame:::debugData->frame->getDebugData->length->buf->getBuffer->putHeader->buf->frame->getLastStream->putInt->buf->frame->getErrorCode->putInt->if->buf->put->buf->flip->return->List->of
+FramesEncoder#encodeWindowUpdateFrame(WindowUpdateFrame)::: frames encoder encode window update frame:::length->buf->getBuffer->putHeader->buf->frame->getUpdate->putInt->buf->flip->return->List->of
+FramesEncoder#encodeContinuationFrame(ContinuationFrame)::: frames encoder encode continuation frame:::length->frame->getHeaderLength->buf->getBuffer->frame->getFlags->frame->streamid->putHeader->buf->flip->return->frame->getHeaderBlock->join
+FramesEncoder#joinWithPadding(ByteBuffer, List, int)::: frames encoder join with padding:::len->data->size->if->return->List->getPadding->of->else->if->return->List->data->get->getPadding->of->else->if->return->List->data->get->data->get->getPadding->of->res->new->ArrayList<>->res->add->res->addAll->res->getPadding->add->return
+FramesEncoder#join(ByteBuffer, List)::: frames encoder join:::len->data->size->if->return->List->of->else->if->return->List->data->get->of->else->if->return->List->data->get->data->get->of->joined->new->ArrayList<>->joined->add->joined->addAll->return
+FramesEncoder#putSettingsFrame(ByteBuffer, SettingsFrame, int)::: frames encoder put settings frame:::frame->getFlags->putHeader->frame->toByteBuffer
+FramesEncoder#putHeader(ByteBuffer, int, int, int, int)::: frames encoder put header:::x->buf->putInt->buf->put->buf->putInt
+FramesEncoder#putPriority(ByteBuffer, boolean, int, int)::: frames encoder put priority:::buf->putInt->buf->put
+FramesEncoder#getBuffer(int)::: frames encoder get buffer:::return->ByteBuffer->allocate
+FramesEncoder#getPadding(int)::: frames encoder get padding:::if->throw->new->IllegalArgumentException->return->ByteBuffer->allocate
+GoAwayFrame#type()::: go away frame type:::return
+GoAwayFrame#length()::: go away frame length:::return
+GoAwayFrame#toString()::: go away frame to string:::return->super->toString->new->String
+GoAwayFrame#getLastStream()::: go away frame get last stream:::return
+GoAwayFrame#getDebugData()::: go away frame get debug data:::return->debugData->clone
+HeaderFrame#flagAsString(int)::: header frame flag as string:::switch->return->return->return->super->flagAsString
+HeaderFrame#getHeaderBlock()::: header frame get header block:::return
+HeaderFrame#getHeaderLength()::: header frame get header length:::return
 HeaderFrame#endHeaders():::Returns true if this block is the final block of headers.:::return->getFlag
+HeadersFrame#type()::: headers frame type:::return
+HeadersFrame#length()::: headers frame length:::return
+HeadersFrame#flagAsString(int)::: headers frame flag as string:::switch->return->return->return->return->super->flagAsString
+HeadersFrame#setPadLength(int)::: headers frame set pad length:::
+HeadersFrame#getPadLength()::: headers frame get pad length:::return
+HeadersFrame#setPriority(int, boolean, int)::: headers frame set priority:::
+HeadersFrame#getStreamDependency()::: headers frame get stream dependency:::return
+HeadersFrame#getWeight()::: headers frame get weight:::return
+HeadersFrame#getExclusive()::: headers frame get exclusive:::return
+Http2Frame#streamid()::: http2 frame streamid:::return
+Http2Frame#setFlag(int)::: http2 frame set flag:::
+Http2Frame#getFlags()::: http2 frame get flags:::return
+Http2Frame#getFlag(int)::: http2 frame get flag:::return
+Http2Frame#streamid(int)::: http2 frame streamid:::
+Http2Frame#typeAsString()::: http2 frame type as string:::return->type->asString
+Http2Frame#type()::: http2 frame type:::return
+Http2Frame#length()::: http2 frame length:::return
+Http2Frame#asString(int)::: http2 frame as string:::switch->return->return->return->return->return->return->return->return->return->return->return
+Http2Frame#toString()::: http2 frame to string:::sb->new->StringBuilder->sb->typeAsString->append->append->Integer->length->toString->append->append->append->append->f->i->if->sb->append->else->while->if->sb->flagAsString->append->append->return->sb->toString
+Http2Frame#flagAsString(int)::: http2 frame flag as string:::return
+MalformedFrame#toString()::: malformed frame to string:::return->super->toString->ErrorFrame->stringForCode
+MalformedFrame#getErrorCode()::: malformed frame get error code:::return
+MalformedFrame#getMessage()::: malformed frame get message:::return
+OutgoingHeaders#setPriority(int, boolean, int)::: outgoing headers set priority:::
+OutgoingHeaders#getStreamDependency()::: outgoing headers get stream dependency:::return
+OutgoingHeaders#getWeight()::: outgoing headers get weight:::return
+OutgoingHeaders#getExclusive()::: outgoing headers get exclusive:::return
+OutgoingHeaders#getAttachment()::: outgoing headers get attachment:::return
+OutgoingHeaders#getUserHeaders()::: outgoing headers get user headers:::return
+OutgoingHeaders#getSystemHeaders()::: outgoing headers get system headers:::return
+PingFrame#type()::: ping frame type:::return
+PingFrame#length()::: ping frame length:::return
+PingFrame#flagAsString(int)::: ping frame flag as string:::switch->return->return->super->flagAsString
+PingFrame#getData()::: ping frame get data:::return->data->clone
+PriorityFrame#type()::: priority frame type:::return
+PriorityFrame#length()::: priority frame length:::return
+PriorityFrame#streamDependency()::: priority frame stream dependency:::return
+PriorityFrame#weight()::: priority frame weight:::return
+PriorityFrame#exclusive()::: priority frame exclusive:::return
+PushPromiseFrame#type()::: push promise frame type:::return
+PushPromiseFrame#length()::: push promise frame length:::return
+PushPromiseFrame#toString()::: push promise frame to string:::return->super->toString
+PushPromiseFrame#flagAsString(int)::: push promise frame flag as string:::switch->return->return->return->super->flagAsString
+PushPromiseFrame#setPadLength(int)::: push promise frame set pad length:::
+PushPromiseFrame#getPadLength()::: push promise frame get pad length:::return
+PushPromiseFrame#getPromisedStream()::: push promise frame get promised stream:::return
+PushPromiseFrame#endHeaders()::: push promise frame end headers:::return->getFlag
+ResetFrame#type()::: reset frame type:::return
+ResetFrame#length()::: reset frame length:::return
+SettingsFrame#flagAsString(int)::: settings frame flag as string:::switch->return->return->super->flagAsString
+SettingsFrame#toString()::: settings frame to string:::sb->new->StringBuilder->sb->super->toString->append->append->for->i->return->sb->toString
+SettingsFrame#name(int)::: settings frame name:::switch->return->return->return->return->return->return->return
+SettingsFrame#type()::: settings frame type:::return
+SettingsFrame#getParameter(int)::: settings frame get parameter:::if->throw->new->IllegalArgumentException->return
+SettingsFrame#setParameter(int, int)::: settings frame set parameter:::if->throw->new->IllegalArgumentException->return
+SettingsFrame#length()::: settings frame length:::len->foreach->if->return
+SettingsFrame#toByteBuffer(ByteBuffer)::: settings frame to byte buffer:::for->i
+SettingsFrame#toByteArray()::: settings frame to byte array:::bytes->length->new->byteArr->buf->ByteBuffer->wrap->toByteBuffer->return
+SettingsFrame#update(SettingsFrame)::: settings frame update:::for->i
+SettingsFrame#defaultRFCSettings()::: settings frame default settings:::f->new->SettingsFrame->f->setParameter->f->setParameter->f->setParameter->f->setParameter->f->setParameter->return
+WindowUpdateFrame#type()::: window update frame type:::return
+WindowUpdateFrame#length()::: window update frame length:::return
+WindowUpdateFrame#toString()::: window update frame to string:::sb->new->StringBuilder->sb->super->toString->append->append->append->return->sb->toString
+WindowUpdateFrame#getUpdate()::: window update frame get update:::return

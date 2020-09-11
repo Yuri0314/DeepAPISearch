@@ -1,1 +1,24 @@
 Main#main(String[]):::main entry point to the command line tool:::scriptArgs->processOptions->foreach->cmd->run->System->exit
+Main.Command#run(String[])::: command run:::
+Main#processOptions(String[]):::Parses and processes command line options.:::currentLanguage->currentEncoding->checkClassPath->seenScript->seenStdin->for->i->if->se->getScriptEngine->addInteractiveMode->return->new->StringArr
+Main#addInteractiveMode(ScriptEngine):::Adds interactive mode Command:::scripts->new->Command->add
+Main#addFileSource(ScriptEngine, String, String):::Adds script source file Command:::scripts->new->Command->add
+Main#addStringSource(ScriptEngine, String):::Adds script string source Command:::scripts->new->Command->add
+Main#listScriptEngines():::Prints list of script engines available and exits.:::factories->engineManager->getEngineFactories->foreach->getError->new->ObjectArr->factory->getLanguageName->factory->getLanguageVersion->factory->getEngineName->factory->getEngineVersion->getMessage->println->System->exit
+Main#processSource(ScriptEngine, String, String):::Processes a given source file or standard input.:::if->filename->equals->in->getIn->new->InputStreamReader->new->BufferedReader->hitEOF->prompt->getPrompt->se->put->while->getError->print->source->try->in->readLine->catch->getError->ioe->toString->println->finally->if->break->res->evaluateString->if->res->toString->if->getError->println->else->fis->try->new->FileInputStream->catch->getError->new->ObjectArr->getMessage->println->System->exit->finally->evaluateStream
+Main#evaluateString(ScriptEngine, String, boolean):::Evaluates given script source:::try->return->se->eval->catch->getError->new->ObjectArr->sexp->getMessage->getMessage->println->if->System->exit->exp->getError->printStackTrace->if->System->exit->finally->return
+Main#evaluateString(ScriptEngine, String):::Evaluate script string source and exit on script error:::evaluateString
+Main#evaluateReader(ScriptEngine, Reader, String):::Evaluates script from given reader:::oldFilename->setScriptFilename->try->return->se->eval->catch->getError->new->ObjectArr->sexp->getMessage->getMessage->println->System->exit->exp->getError->printStackTrace->System->exit->finally->setScriptFilename->return
+Main#evaluateStream(ScriptEngine, InputStream, String, String):::Evaluates given input stream:::reader->if->try->new->InputStreamReader->new->BufferedReader->catch->getError->new->ObjectArr->getMessage->println->System->exit->finally->else->new->InputStreamReader->new->BufferedReader->return->evaluateReader
+Main#usage(int):::Prints usage message and exits:::getError->new->ObjectArr->getMessage->println->System->exit
+Main#getPrompt(ScriptEngine):::Gets prompt for interactive mode:::names->se->getFactory->getNames->return->names->get
+Main#getMessage(String, Object[]):::Get formatted, localized error message:::return->MessageFormat->msgRes->getString->format
+Main#getIn()::: main get in:::return
+Main#getError()::: main get error:::return
+Main#getScriptEngine(String)::: main get script engine:::se->engines->get->if->engineManager->getEngineByName->if->getError->new->ObjectArr->getMessage->println->System->exit->initScriptEngine->engines->put->return
+Main#initScriptEngine(ScriptEngine)::: main init script engine:::se->put->exts->se->getFactory->getExtensions->sysIn->cl->Thread->currentThread->getContextClassLoader->foreach->try->getModule->getResourceAsStream->catch->throw->new->RuntimeException->finally->if->break->if->evaluateStream
+Main#checkClassPath(String[]):::Checks for -classpath, -cp in command line args:::classPath->for->i->if->urls->pathToURLs->loader->new->URLClassLoader->Thread->currentThread->setContextClassLoader->new->ScriptEngineManager
+Main#pathToURLs(String):::Utility method for converting a search path string to an array of directory and JAR file URLs.:::components->path->split->urls->new->URLArr->count->while->url->new->File->fileToURL->if->if->tmp->new->URLArr->System->arraycopy->return
+Main#fileToURL(File):::Returns the directory or JAR file URL corresponding to the specified local file name.:::name->try->file->getCanonicalPath->catch->file->getAbsolutePath->finally->name->replace->if->name->startsWith->if->file->isFile->try->return->new->URL->catch->throw->new->IllegalArgumentException->finally
+Main#setScriptArguments(ScriptEngine, String[])::: main set script arguments:::se->put->se->put
+Main#setScriptFilename(ScriptEngine, String)::: main set script filename:::oldName->se->get->se->put->return

@@ -1,5 +1,8 @@
 AbstractFinder#isValid(T):::Checks validness of the method:::return->Modifier->method->getModifiers->isPublic
 AbstractFinder#find(T[]):::Performs a search in the methods array:::map->new->HashMap<T,Class<?>[]>->oldMethod->oldParams->ambiguous->foreach->if->isValid->newParams->newMethod->getParameterTypes->if->PrimitiveWrapperMap->replacePrimitivesWithWrappers->if->isAssignable->if->else->useNew->isAssignable->useOld->isAssignable->if->newMethod->isSynthetic->oldMethod->isSynthetic->if->else->if->if->newMethod->isVarArgs->length->if->array->new->Class<?>Arr->System->arraycopy->if->type->getComponentType->if->type->isPrimitive->PrimitiveWrapperMap->type->getName->getType->for->i->map->put->foreach->newParams->map->get->if->if->isAssignable->if->else->useNew->isAssignable->useOld->isAssignable->if->newMethod->isSynthetic->oldMethod->isSynthetic->if->if->map->get->else->if->if->throw->new->NoSuchMethodException->if->throw->new->NoSuchMethodException->return
+AbstractFinder#isAssignable(Class[], Class[]):::Determines if every class in min array is either the same as, or is a superclass of, the corresponding class in max array:::for->i->return
+BeanInfoFinder#isValid(Class, Method)::: bean info finder is valid:::return->method->getDeclaringClass->isAssignableFrom
+BeanInfoFinder#instantiate(Class, String, String)::: bean info finder instantiate:::if->DEFAULT->equals->info->DEFAULT_NEW->equals->equals->super->instantiate->if->bd->info->getBeanDescriptor->if->if->type->bd->getBeanClass->equals->return->else->pds->info->getPropertyDescriptors->if->foreach->method->pd->getReadMethod->if->pd->getWriteMethod->if->isValid->return->else->mds->info->getMethodDescriptors->if->foreach->if->md->getMethod->isValid->return->return
 ClassFinder#findClass(String):::Returns the Class object associated with the class or interface with the given string name, using the default class loader:::checkPackageAccess->try->loader->Thread->currentThread->getContextClassLoader->if->ClassLoader->getSystemClassLoader->if->return->Class->forName->catch->finally->return->Class->forName
 ClassFinder#findClass(String, ClassLoader):::Returns the Class object associated with the class or interface with the given string name, using the given class loader:::checkPackageAccess->if->try->return->Class->forName->catch->finally->return->findClass
 ClassFinder#resolveClass(String):::Returns the Class object associated with the class or interface with the given string name, using the default class loader:::return->resolveClass
@@ -9,13 +12,32 @@ FieldFinder#findField(Class, String):::Finds public field (static or non-static)
 FieldFinder#findInstanceField(Class, String):::Finds public non-static field that is declared in public class.:::field->findField->if->Modifier->field->getModifiers->isStatic->throw->new->NoSuchFieldException->return
 FieldFinder#findStaticField(Class, String):::Finds public static field that is declared in public class.:::field->findField->if->Modifier->field->getModifiers->isStatic->throw->new->NoSuchFieldException->return
 FinderUtils#isExported(Class):::Returns true if the given class is an exported package.:::pn->packageName->return->c->getModule->isExported
+FinderUtils#packageName(Class)::: finder utils package name:::if->c->isArray->return->c->getComponentType->packageName->else->name->c->getName->dot->name->lastIndexOf->if->return->return->name->substring
+InstanceFinder#getPackages()::: instance finder get packages:::return->clone
+InstanceFinder#setPackages(String...)::: instance finder set packages:::packages->clone
+InstanceFinder#find(Class)::: instance finder find:::if->return->name->type->getName->object->instantiate->if->return->if->instantiate->if->return->index->name->lastIndexOf->if->name->substring->foreach->instantiate->if->return->return
+InstanceFinder#instantiate(Class, String)::: instance finder instantiate:::if->try->if->ClassFinder->type->getClassLoader->findClass->if->isAssignableFrom->tmp->type->newInstance->return->catch->finally->return
+InstanceFinder#instantiate(Class, String, String)::: instance finder instantiate:::return->instantiate
 MethodFinder#findMethod(Class, String, Class...):::Finds public method (static or non-static) that is accessible from public class.:::if->throw->new->IllegalArgumentException->PrimitiveWrapperMap->replacePrimitivesWithWrappers->signature->new->Signature->try->method->CACHE->get->return->method->getDeclaringClass->isPackageAccessible->CACHE->create->catch->throw->exception->toNoSuchMethodException->finally
 MethodFinder#findInstanceMethod(Class, String, Class...):::Finds public non-static method that is accessible from public class.:::method->findMethod->if->Modifier->method->getModifiers->isStatic->throw->new->NoSuchMethodException->return
 MethodFinder#findStaticMethod(Class, String, Class...):::Finds public static method that is accessible from public class.:::method->findMethod->if->Modifier->method->getModifiers->isStatic->throw->new->NoSuchMethodException->return
 MethodFinder#findAccessibleMethod(Method):::Finds method that is accessible from public class or interface through class hierarchy.:::type->method->getDeclaringClass->if->FinderUtils->isExported->throw->method->getName->new->NoSuchMethodException->if->Modifier->type->getModifiers->isPublic->isPackageAccessible->return->if->Modifier->method->getModifiers->isStatic->throw->method->getName->new->NoSuchMethodException->foreach->type->getGenericInterfaces->try->return->findAccessibleMethod->catch->finally->return->type->getGenericSuperclass->findAccessibleMethod
+MethodFinder#findAccessibleMethod(Method, Type):::Finds method that accessible from specified class.:::name->method->getName->params->method->getParameterTypes->if->type->return->type->getMethod->findAccessibleMethod->if->pt->type->pt->getRawType->foreach->type->getMethods->if->m->getName->equals->pts->m->getParameterTypes->if->if->Arrays->equals->return->findAccessibleMethod->gpts->m->getGenericParameterTypes->if->if->Arrays->TypeResolver->TypeResolver->resolve->erase->equals->return->findAccessibleMethod->throw->new->NoSuchMethodException
 MethodFinder#isValid(Method):::Checks validness of the method:::return->super->isValid->method->getName->equals
+PersistenceDelegateFinder#register(Class, PersistenceDelegate)::: persistence delegate finder register:::synchronized->if->put->else->remove
+PersistenceDelegateFinder#find(Class)::: persistence delegate finder find:::delegate->synchronized->get->return->super->find
 PrimitiveTypeMap#getType(String):::Returns primitive type class by its name.:::return->map->get
 PrimitiveWrapperMap#replacePrimitivesWithWrappers(Class[]):::Replaces all primitive types in specified array with wrappers.:::for->i
 PrimitiveWrapperMap#getType(String):::Returns wrapper for primitive type by its name.:::return->map->get
+PropertyEditorFinder#register(Class, Class)::: property editor finder register:::synchronized->put
+PropertyEditorFinder#find(Class)::: property editor finder find:::predefined->synchronized->get->editor->instantiate->if->super->find->if->type->getEnumConstants->new->EnumEditor->return
+PropertyEditorFinder#instantiate(Class, String, String)::: property editor finder instantiate:::return->super->DEFAULT->equals->instantiate
+Signature#getType()::: signature get type:::return
+Signature#getName()::: signature get name:::return
+Signature#getArgs()::: signature get args:::return
 Signature#equals(Object):::Indicates whether some other object is "equal to" this one.:::if->return->if->signature->return->isEqual->isEqual->isEqual->return
+Signature#isEqual(Object, Object):::Indicates whether some object is "equal to" another one:::return->obj1->equals
+Signature#isEqual(Class[], Class[]):::Indicates whether some array is "equal to" another one:::if->return->if->return->for->i->return
 Signature#hashCode():::Returns a hash code value for the object:::if->code->addHashCode->addHashCode->if->foreach->addHashCode->return
+Signature#addHashCode(int, Object):::Adds hash code value if specified object:::return->object->hashCode
+SignatureException#toNoSuchMethodException(String)::: signature exception to no such method exception:::throwable->getCause->if->return->exception->new->NoSuchMethodException->exception->initCause->return

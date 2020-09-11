@@ -6,6 +6,7 @@ Attrs#getQName(int):::Look up an attribute's XML 1.0 qualified name by index.:::
 Attrs#getType(int):::Look up an attribute's type by index:::return
 Attrs#getValue(int):::Look up an attribute's value by index:::return
 Attrs#getIndex(String, String):::Look up the index of an attribute by Namespace name.:::len->for->idx->return
+Attrs#getIndexNullNS(String, String)::: attrs get index null s:::len->if->for->idx->else->for->idx->return
 Attrs#getIndex(String):::Look up the index of an attribute by XML 1.0 qualified name.:::len->for->idx->return
 Attrs#getType(String, String):::Look up an attribute's type by Namespace name:::idx->getIndex->return
 Attrs#getType(String):::Look up an attribute's type by XML 1.0 qualified name:::idx->getIndex->return
@@ -25,9 +26,27 @@ Pair#eqname(char[]):::Compares two qualified names.:::len->if->for->i->return->r
 Parser#init():::Initializes parser's internals:::new->HashMap<>->new->HashMap<>
 Parser#cleanup():::Cleans up parser internal resources.:::while->while->if->del->del->del->while->del->while->del->while->pop->if->try->close->catch->finally
 Parser#step():::Processes a portion of document:::st->while->ch->getch->switch->if->bkch->break->switch->getch->if->panic->bname->chars->if->for->i->else->panic->if->wsskip->panic->getch->break->getch->bkch->switch->comm->break->cdat->break->dtd->break->break->pi->break->bkch->pair->qname->mElm->local->elm->find->att->pair->attr->del->rslv->switch->wsskip->getch->break->getch->if->getch->panic->break->panic->break->break->switch->bappend->break->if->getch->bkch->bappend->break->bkch->bflash_ws->break->bkch->break->break->switch->if->if->ent->bkch->setch->bflash->else->skippedEnt->break->bkch->bflash->break->if->getch->bkch->bappend->break->panic->bappend->break->break->panic->return
+Parser#dtd():::Parses the document type declaration.:::ch->str->name->psid->if->name->equals->panic->for->st
+Parser#dtdsub():::Parses the document type declaration subset.:::startInternalSub->ch->for->st
+Parser#dtdent():::Parses an entity declaration:::str->val->inp->ids->ch->for->st
+Parser#dtdelm():::Parses an element declaration:::wsskip->name->ch->while->getch->switch->bkch->return->panic->break
+Parser#dtdattl():::Parses an attribute list declaration:::elmqn->elm->ch->for->st
+Parser#dtdatt(Pair):::Parses an attribute declaration:::attqn->att->ch->for->st
+Parser#dtdnot():::Parses a notation declaration:::wsskip->name->name->wsskip->ids->pubsys->notDecl->del
+Parser#attr(Pair):::Parses an attribute:::switch->wsskip->if->inp->for->def->if->attr->return->mAttrs->setLength->return->panic->qname->att->local->type->atype->wsskip->if->getch->panic->bqstr->val->new->String->next->pair->if->isdecl->attr->idx->att->qname->switch->break->break->break->rslv->else->newPrefix->attr->del->break
+Parser#atype(Pair):::Retrieves attribute type:::attr->if->find->return->switch->return->return->return->return->return->return->return->return->return->return->panic->return
+Parser#comm():::Parses a comment:::if->ch->for->st
+Parser#pi():::Parses a processing instruction:::ch->str->for->st
+Parser#cdat():::Parses a character data:::ch->for->st
 Parser#name(boolean):::Reads a xml name:::bname->return->new->String
 Parser#qname(boolean):::Reads a qualified xml name:::bname->chars->new->charArr->System->arraycopy->return
+Parser#pubsys(Input):::Reads the public or/and system identifiers.:::pair->pubsys->del
+Parser#pubsys(char):::Reads the public or/and system identifiers.:::ids->pair->str->name->if->equals->bqstr->new->String->switch->wsskip->bqstr->new->String->break->panic->if->panic->break->return->else->if->equals->bqstr->new->String->return->panic->return
 Parser#eqstr(char):::Reads an attribute value:::if->wsskip->if->getch->panic->bqstr->return->new->String
+Parser#ent(char):::Resoves an entity:::ch->idx->inp->str->bappend->for->st->return
+Parser#pent(char):::Resoves a parameter entity:::ch->idx->inp->str->bappend->if->return->bname->new->String->if->getch->panic->mPEnt->get->if->if->is->resolveEnt->if->if->bappend->new->Input->push->setinp->else->skippedEnt->else->if->else->bappend->push->else->skippedEnt
+Parser#isdecl(Pair, String):::Recognizes and handles a namespace declaration:::if->if->equals->pair->return->else->if->name->eqpref->len->length->pair->new->charArr->getChars->return->return
+Parser#rslv(char[]):::Resolves a prefix.:::for->pref->if->for->pref->panic->return
 Parser#wsskip():::Skips xml white space characters:::ch->while->getch->if->if->break->else->break->return
 Parser#docType(String, String, String):::Reports document type.:::
 Parser#startInternalSub():::Reports the start of DTD internal subset.:::
@@ -39,9 +58,21 @@ Parser#resolveEnt(String, String, String):::Returns an InputSource for specified
 Parser#notDecl(String, String, String):::Reports notation declaration.:::
 Parser#unparsedEntDecl(String, String, String, String):::Reports unparsed entity name.:::
 Parser#panic(String):::Notifies the handler about fatal parsing error.:::
+Parser#bname(boolean):::Reads a qualified xml name:::ch->type->bqname->bcolon->bchidx->bstart->cstart->st->while->if->bcopy->getch->if->else->if->panic->switch->switch->break->break->panic->break->switch->break->if->if->panic->if->break->bcopy->return->break->panic
+Parser#bntok():::Reads a nmtoken:::ch->bappend->while->getch->switch->chtyp->bappend->break->panic->bkch->return
+Parser#bkeyword():::Recognizes a keyword:::str->new->String->switch->str->length->return->equals->switch->return->equals->return->equals->return->equals->break->break->switch->return->equals->return->equals->break->break->switch->return->equals->return->equals->return->equals->return->equals->break->break->switch->return->equals->return->equals->return->equals->return->equals->break->break->break->return
+Parser#bqstr(char):::Reads a single or double quotted string in to the buffer:::inp->bappend->ch->for->st->if
 Parser#bflash():::Reports characters and empties the parser's buffer:::
 Parser#bflash_ws():::Reports white space characters and empties the parser's buffer:::
+Parser#bappend(char, char):::Appends a character to parser's buffer with normalization.:::switch->switch->if->bappend->return->break->break->switch->break->break->break->break->if->else->bappend
+Parser#bappend(char):::Appends a character to parser's buffer.:::try->catch->buff->new->charArr->System->arraycopy->finally
+Parser#bcopy(int, int):::Appends (mChIdx - cidx) characters from character buffer (mChars) to parser's buffer (mBuff).:::length->if->buff->new->charArr->System->arraycopy->System->arraycopy
+Parser#eappend(char):::Recognizes the built-in entities lt, gt, amp, apos, quot:::switch->switch->break->break->break->break->break->break->break->break->switch->break->break->break->break->break->break->break->break->break->break->break
 Parser#setinp(InputSource):::Sets up a new input source on the top of the input stack:::reader->if->if->is->getCharacterStream->is->getCharacterStream->xml->else->if->is->getByteStream->expenc->if->is->getEncoding->is->getEncoding->toUpperCase->if->expenc->equals->is->getByteStream->bom->else->is->getByteStream->enc->xml->else->is->getByteStream->bom->if->is->getByteStream->utf16->if->is->getByteStream->enc->xml->if->expenc->equals->if->expenc->startsWith->panic->is->getByteStream->enc->else->xml->else->panic->is->getPublicId->is->getSystemId
+Parser#bom(InputStream, char):::Determines the entity encoding:::val->is->read->switch->if->panic->if->is->read->panic->if->is->read->panic->return->new->ReaderUTF8->if->is->read->panic->return->new->ReaderUTF16->if->is->read->panic->return->new->ReaderUTF16->return->new->ReaderUTF8->if->panic->switch->is->read->break->is->read->is->read->break->throw->new->UnsupportedEncodingException->break->return
+Parser#utf16(InputStream):::Using a mature technique from Xerces, this method checks further after the bom method above to see if the encoding is UTF-16:::if->b0->if->b1->is->read->b2->is->read->b3->is->read->if->return->new->ReaderUTF16->else->if->return->new->ReaderUTF16->else->return
+Parser#xml(Reader):::Parses the xml text declaration:::str->enc->ch->val->st->byteRead->while->if->else->reader->read->switch->switch->break->reader->read->break->break->break->break->break->break->break->switch->break->break->break->switch->break->break->break->break->switch->break->break->break->panic->break->if->return->for->return
+Parser#enc(String, InputStream):::Sets up the document reader.:::if->name->equals->return->new->ReaderUTF8->else->if->name->equals->return->new->ReaderUTF16->else->if->name->equals->return->new->ReaderUTF16->else->return->new->InputStreamReader
 Parser#push(Input):::Sets up current input on the top of the input stack.:::
 Parser#pop():::Restores previous input on the top of the input stack.:::if->try->close->catch->finally->if->else
 Parser#chtyp(char):::Maps a character to its type:::if->return->return
@@ -67,6 +98,7 @@ ParserSAX#parse(String):::Parse an XML document from a system identifier (URI)::
 ParserSAX#parse(InputSource):::Parse an XML document:::if->throw->new->IllegalArgumentException->new->Input->try->setinp->catch->throw->throw->throw->e->toString->panic->finally->parse
 ParserSAX#parse(InputStream, DefaultHandler):::Parse the content of the given java.io.InputStream instance as XML using the specified org.xml.sax.helpers.DefaultHandler.:::if->throw->new->IllegalArgumentException->new->InputSource->parse
 ParserSAX#parse(InputSource, DefaultHandler):::Parse the content given org.xml.sax.InputSource as XML using the specified org.xml.sax.helpers.DefaultHandler.:::if->throw->new->IllegalArgumentException->new->Input->try->setinp->catch->throw->e->toString->panic->finally->parse
+ParserSAX#parse():::Parse the XML document content using specified handlers and an input source.:::init->try->mHandCont->setDocumentLocator->mHandCont->startDocument->if->evt->do->wsskip->switch->step->break->break->if->panic->break->panic->while->do->switch->if->mHandCont->startElement->else->mHandCont->startElement->if->step->break->if->mHandCont->endElement->else->mHandCont->endElement->while->mHandCont->endPrefixMapping->del->del->if->else->step->break->step->break->panic->while->do->if->wsskip->break->switch->step->break->panic->while->catch->throw->throw->throw->e->toString->panic->finally->mHandCont->endDocument->cleanup
 ParserSAX#docType(String, String, String):::Reports document type.:::mHandDtd->startDTD
 ParserSAX#startInternalSub():::Reports the start of DTD internal subset.:::mHandDtd->startInternalSub
 ParserSAX#comm(char[], int):::Reports a comment.:::
@@ -79,6 +111,10 @@ ParserSAX#unparsedEntDecl(String, String, String, String):::Reports unparsed ent
 ParserSAX#panic(String):::Notifies the handler about fatal parsing error.:::spe->new->SAXParseException->mHandErr->fatalError->throw
 ParserSAX#bflash():::Reports characters and empties the parser's buffer:::if->mHandCont->characters
 ParserSAX#bflash_ws():::Reports white space characters and empties the parser's buffer:::if->mHandCont->characters
+ParserSAX#getFeature(String)::: parser x get feature:::throw->new->UnsupportedOperationException
+ParserSAX#setFeature(String, boolean)::: parser x set feature:::throw->new->UnsupportedOperationException
+ParserSAX#getProperty(String)::: parser x get property:::throw->new->UnsupportedOperationException
+ParserSAX#setProperty(String, Object)::: parser x set property:::throw->new->UnsupportedOperationException
 ReaderUTF16#read(char[], int, int):::Reads characters into a portion of an array.:::num->val->if->while->if->is->read->return->is->read->else->while->if->is->read->return->is->read->return
 ReaderUTF16#read():::Reads a single character.:::val->if->is->read->return->if->is->read->else->is->read->return
 ReaderUTF16#close():::Closes the stream.:::is->close
@@ -98,8 +134,33 @@ XMLStreamWriterImpl#writeDTD(String):::Write a DTD section:::if->_currentEle->ge
 XMLStreamWriterImpl#writeStartElement(String):::Writes a start tag to the output.:::if->localName->length->throw->new->XMLStreamException->if->_currentEle->getState->closeStartTag->new->Element->openStartTag->_writer->write
 XMLStreamWriterImpl#writeEmptyElement(String):::Writes an empty element tag to the output:::if->_currentEle->getState->closeStartTag->new->Element->openStartTag->_writer->write
 XMLStreamWriterImpl#writeAttribute(String, String):::Writes an attribute to the output stream without a prefix.:::if->_currentEle->getState->throw->new->XMLStreamException->_writer->write->_writer->write->_writer->write->writeXMLContent->_writer->write
+XMLStreamWriterImpl#writeEndDocument()::: stream writer impl write end document:::if->_currentEle->getState->closeStartTag->while->if->_currentEle->isEmpty->_writer->write->_writer->_currentEle->getLocalName->write->_writer->write->_currentEle->getParent
+XMLStreamWriterImpl#writeEndElement()::: stream writer impl write end element:::if->_currentEle->getState->closeStartTag->if->throw->new->XMLStreamException->if->_currentEle->isEmpty->return->_writer->write->_writer->_currentEle->getLocalName->write->_writer->write->writeLineSeparator->_currentEle->getParent
+XMLStreamWriterImpl#writeCData(String)::: stream writer impl write data:::if->throw->new->XMLStreamException->if->_currentEle->getState->closeStartTag->_writer->write->_writer->write->_writer->write
+XMLStreamWriterImpl#writeCharacters(String)::: stream writer impl write characters:::if->_currentEle->getState->closeStartTag->writeXMLContent
+XMLStreamWriterImpl#writeCharacters(char[], int, int)::: stream writer impl write characters:::if->_currentEle->getState->closeStartTag->writeXMLContent
 XMLStreamWriterImpl#close():::Close this XMLStreamWriter by closing underlying writer.:::if->_writer->close
 XMLStreamWriterImpl#flush():::Flush this XMLStreamWriter by flushing underlying writer.:::if->_writer->flush
 XMLStreamWriterImpl#setDoIndent(boolean):::Set the flag to indicate if the writer should add line separator:::
+XMLStreamWriterImpl#writeXMLContent(char[], int, int, boolean):::Writes XML content to underlying writer:::if->_writer->write->return->startWritePos->end->for->index->_writer->write
+XMLStreamWriterImpl#writeXMLContent(String)::: stream writer impl write content:::if->content->length->writeXMLContent
+XMLStreamWriterImpl#writeXMLContent(String, boolean, boolean):::Writes XML content to underlying writer:::if->_writer->write->return->startWritePos->end->content->length->for->index->_writer->write
+XMLStreamWriterImpl#openStartTag():::marks open of start tag and writes the same into the writer.:::_currentEle->setState->_writer->write
+XMLStreamWriterImpl#closeStartTag():::marks close of start tag and writes the same into the writer.:::if->_currentEle->isEmpty->_writer->write->else->_writer->write->if->_currentEle->getParent->writeLineSeparator->_currentEle->setState
+XMLStreamWriterImpl#writeLineSeparator():::Write a line separator:::if->_writer->write
+XMLStreamWriterImpl#getCharset(String):::Returns a charset object for the specified encoding:::if->encoding->equalsIgnoreCase->throw->new->UnsupportedEncodingException->cs->try->Charset->forName->catch->throw->new->UnsupportedEncodingException->finally->return
+XMLStreamWriterImpl#checkCharset(Charset):::Checks for charset support.:::if->charset->name->equalsIgnoreCase->throw->charset->name->new->UnsupportedEncodingException->return
+XMLStreamWriterImpl.Element#getParent()::: element get parent:::return
+XMLStreamWriterImpl.Element#getLocalName()::: element get local name:::return
 XMLStreamWriterImpl.Element#getState():::get the state of the element:::return
 XMLStreamWriterImpl.Element#setState(int):::Set the state of the element:::
+XMLStreamWriterImpl.Element#isEmpty()::: element is empty:::return
+XMLWriter#canEncode(char)::: writer can encode:::if->return->return->_encoder->canEncode
+XMLWriter#write(String)::: writer write:::try->_writer->s->toCharArray->write->catch->throw->new->XMLStreamException->finally
+XMLWriter#write(String, int, int)::: writer write:::try->_writer->write->catch->throw->new->XMLStreamException->finally
+XMLWriter#write(char[], int, int)::: writer write:::try->_writer->write->catch->throw->new->XMLStreamException->finally
+XMLWriter#write(int)::: writer write:::try->_writer->write->catch->throw->new->XMLStreamException->finally
+XMLWriter#flush()::: writer flush:::try->_writer->flush->catch->throw->new->XMLStreamException->finally
+XMLWriter#close()::: writer close:::try->_writer->close->catch->throw->new->XMLStreamException->finally
+XMLWriter#nl()::: writer nl:::lineEnd->System->lineSeparator->try->_writer->write->catch->throw->new->XMLStreamException->finally
+XMLWriter#getWriter(OutputStream, String, Charset):::Returns a writer for the specified encoding based on an output stream.:::if->return->new->BufferedOutputStream->new->OutputStreamWriter->return->new->BufferedOutputStream->new->OutputStreamWriter

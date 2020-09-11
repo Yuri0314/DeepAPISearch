@@ -1,26 +1,346 @@
 BaseFileManager#setContext(Context):::Set the context for JavacPathFileManager.:::Log->instance->Options->instance->options->get->warn->options->isLintSet->locations->FSInfo->instance->update->s->options->get->if->try->Float->parseFloat->catch->finally
+BaseFileManager#createLocations()::: base file manager create locations:::return->new->Locations
 BaseFileManager#deferredClose():::Wait for a period of inactivity before calling close():::t->getClass->getName->new->Thread->t->setDaemon->t->start
+BaseFileManager#updateLastUsedTime()::: base file manager update last used time:::if->System->currentTimeMillis
+BaseFileManager#getClassLoader(URL[])::: base file manager get class loader:::thisClassLoader->getClass->getClassLoader->if->try->loader->Class->forName->asSubclass->constrArgTypes->constr->loader->getConstructor->return->constr->newInstance->catch->finally->return->new->URLClassLoader
+BaseFileManager#isDefaultBootClassPath()::: base file manager is default boot class path:::return->locations->isDefaultBootClassPath
+BaseFileManager#handleOption(String, Iterator)::: base file manager handle option:::helper->new->GrumpyHelper->o->Option->lookup->if->return->try->o->handleOption->catch->throw->e->getMessage->new->IllegalArgumentException->finally->return
+BaseFileManager#isSupportedOption(String)::: base file manager is supported option:::o->Option->lookup->return->o->hasArg
 BaseFileManager#handleOption(Option, String):::Common back end for OptionHelper handleFileManagerOption.:::switch->return->locations->setMultiReleaseValue->return->return->locations->handleOption
 BaseFileManager#handleOptions(Map):::Call handleOption for collection of options and corresponding values.:::ok->foreach->map->entrySet->try->e->getKey->e->getValue->handleOption->catch->log->Errors->e->getKey->getPrimaryName->ex->getMessage->IllegalArgumentForOption->error->finally->return
+BaseFileManager#getDefaultEncodingName()::: base file manager get default encoding name:::if->Charset->defaultCharset->name->return
+BaseFileManager#getEncodingName()::: base file manager get encoding name:::return->getDefaultEncodingName
+BaseFileManager#decode(ByteBuffer, boolean)::: base file manager decode:::encName->getEncodingName->decoder->try->getDecoder->catch->log->Errors->UnsupportedEncoding->error->return->CharBuffer->allocate->flip->finally->factor->decoder->averageCharsPerByte->decoder->maxCharsPerByte->dest->CharBuffer->inbuf->remaining->allocate->while->result->decoder->decode->dest->flip->if->result->isUnderflow->if->dest->limit->dest->capacity->CharBuffer->dest->capacity->allocate->put->dest->flip->return->else->if->result->isOverflow->newCapacity->dest->capacity->inbuf->remaining->decoder->maxCharsPerByte->CharBuffer->allocate->put->else->if->result->isMalformed->result->isUnmappable->unmappable->new->StringBuilder->len->result->length->for->i->charsetName->charset->name->log->dest->limit->Errors->unmappable->toString->IllegalCharForEncoding->error->dest->dest->limit->position->dest->dest->capacity->limit->dest->put->else->throw->new->AssertionError
+BaseFileManager#getDecoder(String, boolean)::: base file manager get decoder:::cs->Charset->forName->decoder->cs->newDecoder->action->if->else->return->decoder->onMalformedInput->onUnmappableCharacter
 BaseFileManager#makeByteBuffer(InputStream):::Make a byte buffer from an input stream.:::limit->in->available->if->result->byteBufferCache->get->position->while->in->available->if->ByteBuffer->allocate->result->flip->put->count->in->result->array->read->if->break->result->position->return->result->flip
+BaseFileManager#recycleByteBuffer(ByteBuffer)::: base file manager recycle byte buffer:::byteBufferCache->put
+BaseFileManager.ByteBufferCache#get(int)::: byte buffer cache get:::if->result->cached->capacity->cached->clear->ByteBuffer->allocate->return
+BaseFileManager.ByteBufferCache#put(ByteBuffer)::: byte buffer cache put:::
+BaseFileManager#getCachedContent(JavaFileObject)::: base file manager get cached content:::e->contentCache->get->if->return->if->e->isValid->contentCache->remove->return->return->e->getValue
+BaseFileManager#cache(JavaFileObject, CharBuffer)::: base file manager cache:::contentCache->new->ContentCacheEntry->put
+BaseFileManager#flushCache(JavaFileObject)::: base file manager flush cache:::contentCache->remove
+BaseFileManager.ContentCacheEntry#isValid(JavaFileObject)::: content cache entry is valid:::return->file->getLastModified
+BaseFileManager.ContentCacheEntry#getValue()::: content cache entry get value:::return->ref->get
+BaseFileManager#getKind(Path)::: base file manager get kind:::return->path->getFileName->toString->getKind
+BaseFileManager#getKind(String)::: base file manager get kind:::if->name->endsWith->return->else->if->name->endsWith->return->else->if->name->endsWith->return->else->return
+BaseFileManager#nullCheck(T)::: base file manager null check:::return->Objects->requireNonNull
+BaseFileManager#nullCheck(Collection)::: base file manager null check:::foreach->Objects->requireNonNull->return
 CacheFSInfo#preRegister(Context):::Register a Context.Factory to create a CacheFSInfo.:::context->instance->new->CacheFSInfo->c->put->return->put
+CacheFSInfo#clearCache()::: cache info clear cache:::cache->clear
+CacheFSInfo#getCanonicalFile(Path)::: cache info get canonical file:::e->getEntry->return
+CacheFSInfo#exists(Path)::: cache info exists:::e->getEntry->return
+CacheFSInfo#isDirectory(Path)::: cache info is directory:::e->getEntry->return
+CacheFSInfo#isFile(Path)::: cache info is file:::e->getEntry->return
+CacheFSInfo#getJarClassPath(Path)::: cache info get jar class path:::e->getEntry->if->super->getJarClassPath->return
+CacheFSInfo#getEntry(Path)::: cache info get entry:::e->cache->get->if->new->Entry->super->getCanonicalFile->super->exists->super->isDirectory->super->isFile->cache->put->return
 FSInfo#instance(Context):::Get the FSInfo instance for this context.:::instance->context->get->if->new->FSInfo->return
+FSInfo#getCanonicalFile(Path)::: info get canonical file:::try->return->file->toRealPath->catch->return->file->toAbsolutePath->normalize->finally
+FSInfo#exists(Path)::: info exists:::return->Files->exists
+FSInfo#isDirectory(Path)::: info is directory:::return->Files->isDirectory
+FSInfo#isFile(Path)::: info is file:::return->Files->isRegularFile
+FSInfo#getJarClassPath(Path)::: info get jar class path:::parent->file->getParent->try->jarFile->file->toFile->new->JarFile->man->jarFile->getManifest->if->return->Collections->emptyList->attr->man->getMainAttributes->if->return->Collections->emptyList->path->attr->getValue->if->return->Collections->emptyList->list->new->ArrayList<>->for->st->new->StringTokenizer->st->hasMoreTokens->return->catch->finally
+FSInfo#getJarFSProvider()::: info get jar provider:::if->return->foreach->FileSystemProvider->installedProviders->if->provider->getScheme->equals->return->return
+JavacFileManager#toArray(CharBuffer)::: javac file manager to array:::if->buffer->hasArray->return->buffer->compact->flip->array->else->return->buffer->toString->toCharArray
 JavacFileManager#preRegister(Context):::Register a Context.Factory to create a JavacFileManager.:::context->new->JavacFileManager->put
 JavacFileManager#setContext(Context):::Set the context for JavacFileManager.:::super->setContext->FSInfo->instance->options->isSet->sf->options->get->if->sf->equals
+JavacFileManager#setPathFactory(PathFactory)::: javac file manager set path factory:::Objects->requireNonNull->locations->setPathFactory
+JavacFileManager#getPath(String, String...)::: javac file manager get path:::return->pathFactory->getPath
 JavacFileManager#setSymbolFileEnabled(boolean):::Set whether or not to use ct.sym as an alternate to rt.jar.:::
+JavacFileManager#isSymbolFileEnabled()::: javac file manager is symbol file enabled:::return
+JavacFileManager#getJavaFileObject(String)::: javac file manager get java file object:::return->getJavaFileObjects->iterator->next
+JavacFileManager#getJavaFileObject(Path)::: javac file manager get java file object:::return->getJavaFileObjects->iterator->next
+JavacFileManager#getFileForOutput(String, JavaFileObject.Kind, JavaFileObject)::: javac file manager get file for output:::return->getJavaFileForOutput
+JavacFileManager#getJavaFileObjectsFromStrings(Iterable)::: javac file manager get java file objects from strings:::paths->new->ListBuffer<>->foreach->paths->nullCheck->getPath->append->return->paths->toList->getJavaFileObjectsFromPaths
+JavacFileManager#getJavaFileObjects(String...)::: javac file manager get java file objects:::return->Arrays->nullCheck->asList->getJavaFileObjectsFromStrings
+JavacFileManager#isValidName(String)::: javac file manager is valid name:::foreach->name->split->if->SourceVersion->isIdentifier->return->return
+JavacFileManager#validateClassName(String)::: javac file manager validate class name:::if->isValidName->throw->new->IllegalArgumentException
+JavacFileManager#validatePackageName(String)::: javac file manager validate package name:::if->packageName->length->isValidName->throw->new->IllegalArgumentException
+JavacFileManager#testName(String, boolean, boolean)::: javac file manager test name:::try->validatePackageName->if->throw->new->AssertionError->printAscii->catch->if->throw->new->AssertionError->printAscii->finally->try->validateClassName->if->throw->new->AssertionError->printAscii->catch->if->throw->new->AssertionError->printAscii->finally
+JavacFileManager#printAscii(String, Object...)::: javac file manager print ascii:::message->try->ascii->String->format->getBytes->new->String->catch->throw->new->AssertionError->finally->println
+JavacFileManager#getContainer(Path)::: javac file manager get container:::fs->containers->get->if->return->if->fsInfo->isFile->path->equals->containers->new->JRTImageContainer->put->return->realPath->fsInfo->getCanonicalFile->containers->get->if->containers->put->return->attr->try->Files->readAttributes->catch->finally->if->if->attr->isDirectory->new->DirectoryContainer->else->try->new->ArchiveContainer->catch->throw->new->IOException->finally->containers->put->containers->put->return
+JavacFileManager.Container#list(Path, RelativeDirectory, Set, boolean, ListBuffer):::Insert all files in subdirectory subdirectory of container which match fileKinds into resultList:::
+JavacFileManager.Container#getFileObject(Path, RelativeFile)::: container get file object:::
+JavacFileManager.Container#close()::: container close:::
+JavacFileManager.JRTImageContainer#list(Path, RelativeDirectory, Set, boolean, ListBuffer):::Insert all files in a subdirectory of the platform image which match fileKinds into resultList.:::try->e->getJRTIndex->getEntry->if->return->foreach->values->if->fileKinds->getKind->contains->fe->PathFileObject->forJRTPath->resultList->append->if->foreach->list->catch->ex->printStackTrace->log->Errors->getMessage->ErrorReadingFile->error->finally
+JavacFileManager.JRTImageContainer#getFileObject(Path, RelativeFile)::: image container get file object:::e->getJRTIndex->name->dirname->getEntry->if->return->p->name->basename->get->if->return->PathFileObject->forJRTPath->else->return
+JavacFileManager.JRTImageContainer#close()::: image container close:::
+JavacFileManager#getJRTIndex()::: javac file manager get index:::if->JRTIndex->getSharedInstance->return
+JavacFileManager.DirectoryContainer#list(Path, RelativeDirectory, Set, boolean, ListBuffer):::Insert all files in subdirectory subdirectory of directory userPath which match fileKinds into resultList:::d->try->subdirectory->resolveAgainst->catch->return->finally->if->Files->exists->return->if->caseMapCheck->return->files->try->s->Files->list->s->sorted->Collectors->toList->collect->catch->return->finally->foreach->fname->f->getFileName->toString->if->fname->endsWith->fname->fname->length->substring->if->Files->isDirectory->if->SourceVersion->isIdentifier->new->RelativeDirectory->list->else->if->isValidFile->try->file->new->RelativeFile->fe->PathFileObject->file->resolveAgainst->forDirectoryPath->resultList->append->catch->throw->new->IOException->finally
+JavacFileManager.DirectoryContainer#getFileObject(Path, RelativeFile)::: directory container get file object:::try->f->name->resolveAgainst->if->Files->exists->return->PathFileObject->fsInfo->getCanonicalFile->forSimplePath->catch->finally->return
+JavacFileManager.DirectoryContainer#close()::: directory container close:::
+JavacFileManager.ArchiveContainer#list(Path, RelativeDirectory, Set, boolean, ListBuffer):::Insert all files in subdirectory subdirectory of this archive which match fileKinds into resultList:::resolvedSubdirectory->packages->get->if->return->maxDepth->opts->EnumSet->of->Files->new->SimpleFileVisitor<Path>->walkFileTree
+JavacFileManager.ArchiveContainer#isValid(Path)::: archive container is valid:::if->return->else->name->fileName->toString->if->name->endsWith->name->name->length->substring->return->SourceVersion->isIdentifier
+JavacFileManager.ArchiveContainer#getFileObject(Path, RelativeFile)::: archive container get file object:::root->name->dirname->packagepath->packages->get->if->relpath->packagepath->name->basename->resolve->if->Files->exists->return->PathFileObject->forJarPath->return
+JavacFileManager.ArchiveContainer#close()::: archive container close:::fileSystem->close
+JavacFileManager#isValidFile(String, Set):::container is a directory, a zip file, or a non-existent path.:::kind->getKind->return->fileKinds->contains
+JavacFileManager#caseMapCheck(Path, RelativePath):::Hack to make Windows case sensitive:::if->return->path->sep->try->f->toRealPath->toString->f->getFileSystem->getSeparator->charAt->catch->return->finally->pcs->path->toCharArray->ncs->toCharArray->i->j->while->while->while->if->if->return->return
 JavacFileManager#flush():::Flush any output resources.:::contentCache->clear
 JavacFileManager#close():::Close the JavaFileManager, releasing resources.:::if->deferredClose->return->locations->close->foreach->containers->values->container->close->containers->clear->contentCache->clear
+JavacFileManager#getClassLoader(Location)::: javac file manager get class loader:::checkNotModuleOrientedLocation->path->getLocation->if->return->lb->new->ListBuffer<>->foreach->try->lb->f->toURI->toURL->append->catch->throw->new->AssertionError->finally->return->lb->lb->size->new->URLArr->toArray->getClassLoader
+JavacFileManager#list(Location, String, Set, boolean)::: javac file manager list:::checkNotModuleOrientedLocation->nullCheck->nullCheck->path->getLocationAsPaths->if->return->List->nil->subdirectory->RelativeDirectory->forPackage->results->new->ListBuffer<>->foreach->container->getContainer->container->list->return->results->toList
+JavacFileManager#inferBinaryName(Location, JavaFileObject)::: javac file manager infer binary name:::checkNotModuleOrientedLocation->Objects->requireNonNull->path->getLocationAsPaths->if->return->if->return->inferBinaryName->else->throw->file->getClass->getName->new->IllegalArgumentException
+JavacFileManager#isSameFile(FileObject, FileObject)::: javac file manager is same file:::nullCheck->nullCheck->if->return->isSameFile->return->a->equals
+JavacFileManager#hasLocation(Location)::: javac file manager has location:::nullCheck->return->locations->hasLocation
+JavacFileManager#hasExplicitLocation(Location)::: javac file manager has explicit location:::nullCheck->return->locations->hasExplicitLocation
+JavacFileManager#getJavaFileForInput(Location, String, JavaFileObject.Kind)::: javac file manager get java file for input:::checkNotModuleOrientedLocation->nullCheck->nullCheck->if->sourceOrClass->contains->throw->new->IllegalArgumentException->return->RelativeFile->forClass->getFileForInput
+JavacFileManager#getFileForInput(Location, String, String)::: javac file manager get file for input:::checkNotModuleOrientedLocation->nullCheck->if->isRelativeUri->throw->new->IllegalArgumentException->name->packageName->length->new->RelativeFile->RelativeDirectory->forPackage->new->RelativeFile->return->getFileForInput
+JavacFileManager#getFileForInput(Location, RelativeFile)::: javac file manager get file for input:::path->getLocationAsPaths->if->return->foreach->fo->getContainer->getFileObject->if->return->return
+JavacFileManager#getJavaFileForOutput(Location, String, JavaFileObject.Kind, FileObject)::: javac file manager get java file for output:::checkOutputLocation->nullCheck->nullCheck->if->sourceOrClass->contains->throw->new->IllegalArgumentException->return->RelativeFile->forClass->getFileForOutput
+JavacFileManager#getFileForOutput(Location, String, String, FileObject)::: javac file manager get file for output:::checkOutputLocation->nullCheck->if->isRelativeUri->throw->new->IllegalArgumentException->name->packageName->length->new->RelativeFile->RelativeDirectory->forPackage->new->RelativeFile->return->getFileForOutput
+JavacFileManager#getFileForOutput(Location, RelativeFile, FileObject)::: javac file manager get file for output:::dir->if->if->getClassOutDir->getClassOutDir->else->baseName->fileName->basename->if->return->getSibling->else->p->getPath->real->fsInfo->getCanonicalFile->return->PathFileObject->forSimplePath->else->if->getSourceOutDir->getSourceOutDir->getClassOutDir->else->path->locations->getLocation->foreach->break->try->if->System->getProperty->getPath->path->fileName->fsInfo->getCanonicalFile->resolveAgainst->return->PathFileObject->forDirectoryPath->catch->throw->new->IOException->finally
+JavacFileManager#getJavaFileObjectsFromFiles(Iterable)::: javac file manager get java file objects from files:::result->if->size->new->ArrayList<>->else->new->ArrayList<>->foreach->Objects->requireNonNull->p->f->toPath->result->PathFileObject->fsInfo->getCanonicalFile->forSimplePath->add->return
+JavacFileManager#getJavaFileObjectsFromPaths(Iterable)::: javac file manager get java file objects from paths:::result->if->size->new->ArrayList<>->else->new->ArrayList<>->foreach->result->PathFileObject->fsInfo->getCanonicalFile->forSimplePath->add->return
+JavacFileManager#getJavaFileObjects(File...)::: javac file manager get java file objects:::return->Arrays->nullCheck->asList->getJavaFileObjectsFromFiles
+JavacFileManager#getJavaFileObjects(Path...)::: javac file manager get java file objects:::return->Arrays->nullCheck->asList->getJavaFileObjectsFromPaths
+JavacFileManager#setLocation(Location, Iterable)::: javac file manager set location:::nullCheck->locations->asPaths->setLocation
+JavacFileManager#setLocationFromPaths(Location, Collection)::: javac file manager set location from paths:::nullCheck->locations->nullCheck->setLocation
+JavacFileManager#getLocation(Location)::: javac file manager get location:::nullCheck->return->locations->getLocation->asFiles
+JavacFileManager#getLocationAsPaths(Location)::: javac file manager get location as paths:::nullCheck->return->locations->getLocation
+JavacFileManager#contains(Location, FileObject)::: javac file manager contains:::nullCheck->nullCheck->p->asPath->return->locations->contains
+JavacFileManager#getClassOutDir()::: javac file manager get class out dir:::return->locations->getOutputLocation
+JavacFileManager#getSourceOutDir()::: javac file manager get source out dir:::return->locations->getOutputLocation
+JavacFileManager#getLocationForModule(Location, String)::: javac file manager get location for module:::checkModuleOrientedOrOutputLocation->nullCheck->if->getSourceOutDir->return->locations->getLocationForModule
+JavacFileManager#getServiceLoader(Location, Class)::: javac file manager get service loader:::nullCheck->nullCheck->getClass->getModule->addUses->if->location->isModuleOrientedLocation->paths->locations->getLocation->finder->ModuleFinder->paths->paths->size->new->PathArr->toArray->of->bootLayer->ModuleLayer->boot->cf->bootLayer->configuration->ModuleFinder->of->Collections->emptySet->resolveAndBind->layer->bootLayer->ClassLoader->getSystemClassLoader->defineModulesWithOneLoader->return->ServiceLoader->load->else->return->ServiceLoader->getClassLoader->load
+JavacFileManager#getLocationForModule(Location, JavaFileObject)::: javac file manager get location for module:::checkModuleOrientedOrOutputLocation->if->return->p->Locations->normalize->return->locations->getLocationForModule
+JavacFileManager#setLocationForModule(Location, String, Collection)::: javac file manager set location for module:::nullCheck->checkModuleOrientedOrOutputLocation->locations->nullCheck->nullCheck->setLocationForModule
+JavacFileManager#inferModuleName(Location)::: javac file manager infer module name:::checkNotModuleOrientedLocation->return->locations->inferModuleName
+JavacFileManager#listLocationsForModules(Location)::: javac file manager list locations for modules:::checkModuleOrientedOrOutputLocation->return->locations->listLocationsForModules
+JavacFileManager#asPath(FileObject)::: javac file manager as path:::if->return->else->throw->file->getName->new->IllegalArgumentException
 JavacFileManager#isRelativeUri(URI):::Enforces the specification of a "relative" name as used in #getFileForInput(Location,String,String) getFileForInput:::if->uri->isAbsolute->return->path->uri->normalize->getPath->if->path->length->return->if->path->uri->getPath->equals->return->if->path->startsWith->path->startsWith->path->startsWith->return->return
+JavacFileManager#isRelativeUri(String)::: javac file manager is relative uri:::try->return->new->URI->isRelativeUri->catch->return->finally
 JavacFileManager#getRelativeName(File):::Converts a relative file name to a relative URI:::if->file->isAbsolute->result->file->getPath->replace->if->isRelativeUri->return->throw->new->IllegalArgumentException
 JavacFileManager#getMessage(IOException):::Get a detail message from an IOException:::s->e->getLocalizedMessage->if->return->e->getMessage->if->return->return->e->toString
+JavacFileManager#checkOutputLocation(Location)::: javac file manager check output location:::Objects->requireNonNull->if->location->isOutputLocation->throw->location->getName->new->IllegalArgumentException
+JavacFileManager#checkModuleOrientedOrOutputLocation(Location)::: javac file manager check module oriented or output location:::Objects->requireNonNull->if->location->isModuleOrientedLocation->location->isOutputLocation->throw->location->getName->new->IllegalArgumentException
+JavacFileManager#checkNotModuleOrientedLocation(Location)::: javac file manager check not module oriented location:::Objects->requireNonNull->if->location->isModuleOrientedLocation->throw->location->getName->new->IllegalArgumentException
+JavacFileManager#asPaths(Iterable)::: javac file manager as paths:::if->return->return->new->Iterator<Path>
+JavacFileManager#asFiles(Iterable)::: javac file manager as files:::if->return->return->new->Iterator<File>
+JRTIndex#getSharedInstance()::: index get shared instance:::if->try->new->JRTIndex->catch->throw->new->UncheckedIOException->finally->return
 JRTIndex#instance(Context):::Get a context-specific instance of a cache.:::try->instance->context->get->if->context->new->JRTIndex->put->return->catch->throw->new->UncheckedIOException->finally
+JRTIndex#isAvailable()::: index is available:::try->FileSystems->URI->create->getFileSystem->return->catch->return->finally
+JRTIndex.CtSym#toString()::: ct sym to string:::sb->new->StringBuilder->needSep->if->sb->append->if->if->sb->append->sb->append->if->if->sb->append->sb->append->sb->append->return->sb->toString
+JRTIndex#getCtSym(CharSequence)::: index get ct sym:::return->RelativeDirectory->forPackage->getEntry
+JRTIndex#getEntry(RelativeDirectory)::: index get entry:::ref->entries->get->e->ref->get->if->files->new->LinkedHashMap<>->subdirs->new->LinkedHashSet<>->dir->if->isEmpty->jrtfs->getPath->else->pkgs->jrtfs->getPath->pkgs->rd->getPath->replaceAll->replace->resolve->if->Files->exists->try->modules->Files->newDirectoryStream->foreach->if->Files->isSymbolicLink->Files->readSymbolicLink->p->rd->resolveAgainst->if->Files->exists->continue->try->stream->Files->newDirectoryStream->foreach->name->entry->getFileName->toString->if->Files->isRegularFile->files->put->else->if->Files->isDirectory->subdirs->new->RelativeDirectory->add->catch->finally->catch->finally->Collections->unmodifiableMap->Collections->unmodifiableSet->getCtInfo->new->Entry->entries->new->SoftReference<>->put->return
+JRTIndex#isInJRT(FileObject)::: index is in t:::if->path->getPath->return->path->getFileSystem->else->return
+JRTIndex#getCtInfo(RelativeDirectory)::: index get ct info:::if->isEmpty->return->if->bundleName->ResourceBundle->getBundle->try->attrs->ctBundle->replace->getString->hidden->proprietary->minProfile->foreach->attrs->split->switch->break->break->return->new->CtSym->catch->return->finally
+Locations#getPath(String, String...)::: locations get path:::try->return->pathFactory->getPath->catch->throw->new->IllegalArgumentException->finally
+Locations#close()::: locations close:::list->new->ListBuffer<>->closeables->try->closeable->close->catch->list->add->finally->forEach->if->list->nonEmpty->ex->new->IOException->foreach->ex->addSuppressed->throw
+Locations#update(Log, boolean, FSInfo)::: locations update:::
+Locations#setPathFactory(PathFactory)::: locations set path factory:::
+Locations#isDefaultBootClassPath()::: locations is default boot class path:::h->getHandler->return->h->isDefault
+Locations#getPathEntries(String):::Split a search path into its elements:::return->getPathEntries
+Locations#getPathEntries(String, Path):::Split a search path into its elements:::entries->new->ListBuffer<>->foreach->searchPath->Pattern->quote->split->if->s->isEmpty->if->entries->add->else->try->entries->getPath->add->catch->if->log->Warnings->InvalidPath->warning->finally->return
+Locations#setMultiReleaseValue(String)::: locations set multi release value:::Collections->singletonMap
+Locations#contains(Collection, Path)::: locations contains:::if->return->enclosingJar->if->file->getFileSystem->provider->fsInfo->getJarFSProvider->uri->file->toUri->if->uri->getScheme->equals->ssp->uri->getSchemeSpecificPart->sep->ssp->lastIndexOf->if->ssp->startsWith->Paths->URI->ssp->substring->create->get->nf->normalize->foreach->np->normalize->if->np->getFileSystem->nf->getFileSystem->Files->isDirectory->nf->startsWith->return->if->Files->isSameFile->return->return
+Locations.SearchPath#expandJarClassPaths(boolean)::: search path expand jar class paths:::return
+Locations.SearchPath#emptyPathDefault(Path)::: search path empty path default:::return
+Locations.SearchPath#addDirectories(String, boolean)::: search path add directories:::prev->try->if->foreach->getPathEntries->addDirectory->return->catch->finally
+Locations.SearchPath#addDirectories(String)::: search path add directories:::return->addDirectories
+Locations.SearchPath#addDirectory(Path, boolean)::: search path add directory:::if->Files->isDirectory->if->log->Warnings->DirPathElementNotFound->warning->return->try->s->Files->list->s->Locations.this->isArchive->filter->addFile->forEach->catch->finally
+Locations.SearchPath#addFiles(String, boolean)::: search path add files:::if->getPathEntries->addFiles->return
+Locations.SearchPath#addFiles(String)::: search path add files:::return->addFiles
+Locations.SearchPath#addFiles(Iterable, boolean)::: search path add files:::if->foreach->addFile->return
+Locations.SearchPath#addFiles(Iterable)::: search path add files:::return->addFiles
+Locations.SearchPath#addFile(Path, boolean)::: search path add file:::if->contains->return->if->fsInfo->exists->if->log->Warnings->PathElementNotFound->warning->super->add->return->canonFile->fsInfo->getCanonicalFile->if->canonicalValues->contains->return->if->fsInfo->isFile->if->file->getFileName->toString->endsWith->file->endsWith->if->isArchive->try->FileSystems->newFileSystem->close->if->log->Warnings->UnexpectedArchiveFile->warning->catch->if->log->Warnings->InvalidArchiveFile->warning->return->finally->else->if->fsInfo->getJarFSProvider->log->Errors->NoZipfsForArchive->error->return->super->add->canonicalValues->add->if->fsInfo->isFile->file->endsWith->addJarClassPath
+Locations.SearchPath#addJarClassPath(Path, boolean)::: search path add jar class path:::try->foreach->fsInfo->getJarClassPath->addFile->catch->log->Errors->JavacFileManager->getMessage->ErrorReadingFile->error->finally
+Locations.LocationHandler#handleOption(Option, String)::: location handler handle option:::
+Locations.LocationHandler#isSet()::: location handler is set:::return->getPaths
+Locations.LocationHandler#isExplicit()::: location handler is explicit:::
+Locations.LocationHandler#getPaths()::: location handler get paths:::
+Locations.LocationHandler#setPaths(Iterable)::: location handler set paths:::
+Locations.LocationHandler#setPathsForModule(String, Iterable)::: location handler set paths for module:::
+Locations.LocationHandler#getLocationForModule(String)::: location handler get location for module:::return
+Locations.LocationHandler#getLocationForModule(Path)::: location handler get location for module:::return
+Locations.LocationHandler#inferModuleName()::: location handler infer module name:::return
+Locations.LocationHandler#listLocationsForModules()::: location handler list locations for modules:::return
+Locations.LocationHandler#contains(Path)::: location handler contains:::
+Locations.BasicLocationHandler#setPathsForModule(String, Iterable)::: basic location handler set paths for module:::throw->new->UnsupportedOperationException
+Locations.BasicLocationHandler#checkSingletonDirectory(Iterable)::: basic location handler check singleton directory:::pathIter->paths->iterator->if->pathIter->hasNext->throw->new->IllegalArgumentException->path->pathIter->next->if->pathIter->hasNext->throw->new->IllegalArgumentException->checkDirectory->return
+Locations.BasicLocationHandler#checkDirectory(Path)::: basic location handler check directory:::Objects->requireNonNull->if->Files->exists->throw->new->FileNotFoundException->if->Files->isDirectory->throw->new->IOException->return
+Locations.BasicLocationHandler#isExplicit()::: basic location handler is explicit:::return
+Locations.OutputLocationHandler#handleOption(Option, String)::: output location handler handle option:::if->options->contains->return->getPath->return
+Locations.OutputLocationHandler#getPaths()::: output location handler get paths:::return->Collections->singleton
+Locations.OutputLocationHandler#setPaths(Iterable)::: output location handler set paths:::if->else->checkSingletonDirectory
+Locations.OutputLocationHandler#getLocationForModule(String)::: output location handler get location for module:::if->new->ModuleTable->l->moduleTable->get->if->out->outputDir->resolve->location->getName->Collections->singletonList->new->ModuleLocationHandler->moduleTable->add->return
+Locations.OutputLocationHandler#setPathsForModule(String, Iterable)::: output location handler set paths for module:::out->checkSingletonDirectory->if->new->ModuleTable->l->moduleTable->get->if->location->getName->Collections->singletonList->new->ModuleLocationHandler->moduleTable->add->else->Collections->singletonList->moduleTable->updatePaths
+Locations.OutputLocationHandler#getLocationForModule(Path)::: output location handler get location for module:::return->moduleTable->get
+Locations.OutputLocationHandler#listLocationsForModules()::: output location handler list locations for modules:::if->try->stream->Files->newDirectoryStream->foreach->p->getFileName->toString->getLocationForModule->catch->finally->if->moduleTable->isEmpty->return->Collections->emptySet->return->Collections->moduleTable->locations->singleton
+Locations.OutputLocationHandler#contains(Path)::: output location handler contains:::if->return->moduleTable->contains->else->return->normalize->normalize->startsWith
+Locations.SimpleLocationHandler#handleOption(Option, String)::: simple location handler handle option:::if->options->contains->return->Collections->createPath->addFiles->unmodifiableCollection->return
+Locations.SimpleLocationHandler#getPaths()::: simple location handler get paths:::return
+Locations.SimpleLocationHandler#setPaths(Iterable)::: simple location handler set paths:::p->if->computePath->else->createPath->addFiles->Collections->unmodifiableCollection
+Locations.SimpleLocationHandler#computePath(String)::: simple location handler compute path:::return->createPath->addFiles
+Locations.SimpleLocationHandler#createPath()::: simple location handler create path:::return->new->SearchPath
+Locations.SimpleLocationHandler#contains(Path)::: simple location handler contains:::return->Locations.this->contains
+Locations.ClassPathLocationHandler#getPaths()::: class path location handler get paths:::lazy->return
+Locations.ClassPathLocationHandler#computePath(String)::: class path location handler compute path:::cp->if->System->getProperty->if->System->getProperty->System->getProperty->if->return->createPath->addFiles
+Locations.ClassPathLocationHandler#createPath()::: class path location handler create path:::return->new->SearchPath->expandJarClassPaths->getPath->emptyPathDefault
+Locations.ClassPathLocationHandler#lazy()::: class path location handler lazy:::if->setPaths
+Locations.BootClassPathLocationHandler#isDefault()::: boot class path location handler is default:::lazy->return
+Locations.BootClassPathLocationHandler#handleOption(Option, String)::: boot class path location handler handle option:::if->options->contains->return->canonicalize->optionValues->put->if->optionValues->remove->optionValues->remove->return
+Locations.BootClassPathLocationHandler#canonicalize(Option)::: boot class path location handler canonicalize:::switch->return->return->return->return
+Locations.BootClassPathLocationHandler#getPaths()::: boot class path location handler get paths:::lazy->return
+Locations.BootClassPathLocationHandler#setPaths(Iterable)::: boot class path location handler set paths:::if->else->p->new->SearchPath->addFiles->Collections->unmodifiableCollection->optionValues->clear
+Locations.BootClassPathLocationHandler#computePath()::: boot class path location handler compute path:::path->new->SearchPath->bootclasspathOpt->optionValues->get->endorseddirsOpt->optionValues->get->extdirsOpt->optionValues->get->xbootclasspathPrependOpt->optionValues->get->xbootclasspathAppendOpt->optionValues->get->path->addFiles->if->path->addDirectories->else->path->System->getProperty->addDirectories->if->path->addFiles->else->systemClasses->systemClasses->if->path->addFiles->else->files->System->getProperty->path->addFiles->path->addFiles->if->path->addDirectories->else->jfxrt->javaHome->resolve->if->Files->exists->path->addFile->path->System->getProperty->addDirectories->return
+Locations.BootClassPathLocationHandler#systemClasses():::Return a collection of files containing system classes:::if->Files->isRegularFile->return->Collections->singleton->modules->javaHome->resolve->if->Files->modules->resolve->isDirectory->try->listedModules->Files->list->return->listedModules->Collectors->toList->collect->catch->finally->return
+Locations.BootClassPathLocationHandler#lazy()::: boot class path location handler lazy:::if->try->Collections->computePath->unmodifiableCollection->catch->throw->new->UncheckedIOException->finally
+Locations.BootClassPathLocationHandler#contains(Path)::: boot class path location handler contains:::return->Locations.this->contains
+Locations.ModuleLocationHandler#getName()::: module location handler get name:::return
+Locations.ModuleLocationHandler#isOutputLocation()::: module location handler is output location:::return
+Locations.ModuleLocationHandler#handleOption(Option, String)::: module location handler handle option:::throw->new->UnsupportedOperationException
+Locations.ModuleLocationHandler#getPaths()::: module location handler get paths:::return->Collections->unmodifiableCollection
+Locations.ModuleLocationHandler#isExplicit()::: module location handler is explicit:::return
+Locations.ModuleLocationHandler#setPaths(Iterable)::: module location handler set paths:::parent->setPathsForModule
+Locations.ModuleLocationHandler#setPathsForModule(String, Iterable)::: module location handler set paths for module:::throw->new->UnsupportedOperationException
+Locations.ModuleLocationHandler#inferModuleName()::: module location handler infer module name:::return
+Locations.ModuleLocationHandler#contains(Path)::: module location handler contains:::return->Locations.this->contains
+Locations.ModuleLocationHandler#toString()::: module location handler to string:::return
+Locations.ModuleTable#add(ModuleLocationHandler)::: module table add:::nameMap->put->foreach->pathMap->normalize->put
+Locations.ModuleTable#updatePaths(ModuleLocationHandler)::: module table update paths:::for->iter->pathMap->entrySet->iterator->iter->hasNext->foreach->pathMap->normalize->put
+Locations.ModuleTable#get(String)::: module table get:::return->nameMap->get
+Locations.ModuleTable#get(Path)::: module table get:::while->l->pathMap->get->if->return->path->getParent->return
+Locations.ModuleTable#clear()::: module table clear:::nameMap->clear->pathMap->clear
+Locations.ModuleTable#isEmpty()::: module table is empty:::return->nameMap->isEmpty
+Locations.ModuleTable#contains(Path)::: module table contains:::return->Locations.this->pathMap->keySet->contains
+Locations.ModuleTable#locations()::: module table locations:::return->Collections->nameMap->values->stream->Collectors->toSet->collect->unmodifiableSet
+Locations.ModuleTable#explicitLocations()::: module table explicit locations:::return->Collections->nameMap->entrySet->stream->e->getValue->filter->e->getValue->map->Collectors->toSet->collect->unmodifiableSet
+Locations.ModulePathLocationHandler#handleOption(Option, String)::: module path location handler handle option:::if->options->contains->return->getPathEntries->setPaths->return
+Locations.ModulePathLocationHandler#getLocationForModule(String)::: module path location handler get location for module:::initModuleLocations->return->moduleTable->get
+Locations.ModulePathLocationHandler#getLocationForModule(Path)::: module path location handler get location for module:::initModuleLocations->return->moduleTable->get
+Locations.ModulePathLocationHandler#listLocationsForModules()::: module path location handler list locations for modules:::explicitLocations->moduleTable->explicitLocations->Collections->emptySet->explicitLocationsList->explicitLocations->isEmpty->Collections->singletonList->Collections->emptyList->if->return->searchPathLocations->new->ModulePathIterator->return->Iterators->Arrays->asList->Iterable->iterator->createCompoundIterator
+Locations.ModulePathLocationHandler#contains(Path)::: module path location handler contains:::if->initModuleLocations->return->moduleTable->contains
+Locations.ModulePathLocationHandler#setPaths(Iterable)::: module path location handler set paths:::if->foreach->checkValidModulePathEntry->super->setPaths
+Locations.ModulePathLocationHandler#setPathsForModule(String, Iterable)::: module path location handler set paths for module:::checkedPaths->checkPaths->initModuleLocations->l->moduleTable->get->if->location->getName->new->ModuleLocationHandler->moduleTable->add->else->moduleTable->updatePaths
+Locations.ModulePathLocationHandler#checkPaths(Iterable)::: module path location handler check paths:::Objects->requireNonNull->validPaths->new->ArrayList<>->foreach->validPaths->checkDirectory->add->return
+Locations.ModulePathLocationHandler#initModuleLocations()::: module path location handler init module locations:::if->return->new->ModuleTable->foreach->listLocationsForModules->foreach->if->l->if->containsKey->moduleTable->add
+Locations.ModulePathLocationHandler#checkValidModulePathEntry(Path)::: module path location handler check valid module path entry:::if->Files->exists->return->if->Files->isDirectory->return->name->p->getFileName->toString->lastDot->name->lastIndexOf->if->switch->name->substring->return->throw->p->toString->new->IllegalArgumentException
+Locations.ModulePathLocationHandler.ModulePathIterator#hasNext()::: module path iterator has next:::if->return->while->if->pathIter->hasNext->path->pathIter->next->if->Files->isDirectory->scanDirectory->else->scanFile->else->return->return
+Locations.ModulePathLocationHandler.ModulePathIterator#next()::: module path iterator next:::hasNext->if->result->return->throw->new->NoSuchElementException
+Locations.ModulePathLocationHandler.ModulePathIterator#scanDirectory(Path)::: module path iterator scan directory:::paths->new->LinkedHashSet<>->moduleInfoClass->try->stream->Files->newDirectoryStream->foreach->if->entry->endsWith->break->paths->add->catch->log->Errors->LocnCantReadDirectory->error->return->Collections->emptySet->finally->if->try->moduleName->readModuleName->name->location->getName->l->Collections->singletonList->new->ModuleLocationHandler->return->Collections->singleton->catch->log->Errors->LocnBadModuleInfo->error->return->Collections->emptySet->log->Errors->LocnCantReadFile->error->return->Collections->emptySet->finally->result->new->LinkedHashSet<>->index->foreach->module->inferModuleName->if->continue->moduleName->modulePath->name->location->getName->l->Collections->singletonList->new->ModuleLocationHandler->result->add->return
+Locations.ModulePathLocationHandler.ModulePathIterator#scanFile(Path)::: module path iterator scan file:::module->inferModuleName->if->return->Collections->emptySet->moduleName->modulePath->name->location->getName->l->Collections->singletonList->new->ModuleLocationHandler->return->Collections->singleton
+Locations.ModulePathLocationHandler.ModulePathIterator#inferModuleName(Path)::: module path iterator infer module name:::if->Files->isDirectory->if->Files->p->resolve->exists->Files->p->resolve->exists->name->p->getFileName->toString->if->SourceVersion->isName->return->new->Pair<>->return->if->p->getFileName->toString->endsWith->fsInfo->exists->jarFSProvider->fsInfo->getJarFSProvider->if->log->Errors->NoZipfsForArchive->error->return->try->fs->jarFSProvider->newFileSystem->moduleInfoClass->fs->getPath->if->Files->exists->moduleName->readModuleName->return->new->Pair<>->mf->fs->getPath->if->Files->exists->try->in->Files->newInputStream->man->new->Manifest->attrs->man->getMainAttributes->if->moduleName->attrs->new->Attributes.Name->getValue->if->if->isModuleName->return->new->Pair<>->else->log->Errors->LocnCantGetModuleNameForJar->error->return->catch->finally->catch->log->Errors->LocnBadModuleInfo->error->return->log->Errors->LocnCantReadFile->error->return->finally->fn->p->getFileName->toString->mn->fn->fn->length->substring->matcher->Pattern->compile->matcher->if->matcher->find->start->matcher->start->mn->substring->mn->replaceAll->replaceAll->replaceAll->replaceAll->if->mn->isEmpty->return->new->Pair<>->log->Errors->LocnCantGetModuleNameForJar->error->return->if->p->getFileName->toString->endsWith->try->JmodFile->checkMagic->fs->fileSystems->get->if->jarFSProvider->fsInfo->getJarFSProvider->if->log->Errors->LocnCantReadFile->error->return->jarFSProvider->Collections->emptyMap->newFileSystem->try->moduleInfoClass->fs->getPath->moduleName->readModuleName->modulePath->fs->getPath->fileSystems->put->closeables->add->return->new->Pair<>->catch->finally->if->fs->close->catch->log->Errors->LocnBadModuleInfo->error->log->Errors->LocnCantReadFile->error->return->finally->if->log->Warnings->LocnUnknownFileOnModulePath->warning->return
+Locations.ModulePathLocationHandler.ModulePathIterator#readModuleName(Path)::: module path iterator read module name:::if->new->ModuleNameReader->return->moduleNameReader->readModuleName
+Locations.ModulePathLocationHandler#isModuleName(String):::Returns true if the given name is a legal module name.:::next->off->while->name->indexOf->id->name->substring->if->SourceVersion->isName->return->last->name->substring->return->SourceVersion->isName
+Locations.ModuleSourcePathLocationHandler#handleOption(Option, String)::: module source path location handler handle option:::init->return
+Locations.ModuleSourcePathLocationHandler#init(String)::: module source path location handler init:::segments->new->ArrayList<>->foreach->value->split->expandBraces->map->new->LinkedHashMap<>->noSuffixPaths->new->ArrayList<>->anySuffix->MARKER->foreach->markStart->seg->indexOf->if->p->getPath->add->noSuffixPaths->add->else->if->seg->charAt->isSeparator->throw->new->IllegalArgumentException->prefix->seg->substring->getPath->suffix->markEnd->MARKER->length->if->seg->length->else->if->seg->charAt->isSeparator->seg->indexOf->throw->new->IllegalArgumentException->else->seg->substring->getPath->add->if->noSuffixPaths->add->initModuleTable
+Locations.ModuleSourcePathLocationHandler#initModuleTable(Map>)::: module source path location handler init module table:::new->ModuleTable->map->hasModuleInfo->modPath->stream->anyMatch->if->locnName->location->getName->l->new->ModuleLocationHandler->moduleTable->add->forEach
+Locations.ModuleSourcePathLocationHandler#isSeparator(char)::: module source path location handler is separator:::return
+Locations.ModuleSourcePathLocationHandler#add(Map>, Path, Path)::: module source path location handler add:::if->Files->isDirectory->if->key->Files->exists->Warnings->DirPathElementNotDirectory->Warnings->DirPathElementNotFound->log->warning->return->try->stream->Files->Files->isDirectory->newDirectoryStream->foreach->path->entry->resolve->if->Files->isDirectory->name->entry->getFileName->toString->paths->map->get->if->map->new->ArrayList<>->put->paths->add->catch->println->finally
+Locations.ModuleSourcePathLocationHandler#expandBraces(String, Collection)::: module source path location handler expand braces:::depth->start->prefix->suffix->for->i->value->length->if->throw->new->IllegalArgumentException->results->add
+Locations.ModuleSourcePathLocationHandler#getMatchingBrace(String, int)::: module source path location handler get matching brace:::depth->for->i->value->length->throw->new->IllegalArgumentException
+Locations.ModuleSourcePathLocationHandler#isSet()::: module source path location handler is set:::return
+Locations.ModuleSourcePathLocationHandler#getPaths()::: module source path location handler get paths:::if->throw->new->IllegalStateException->return
+Locations.ModuleSourcePathLocationHandler#setPaths(Iterable)::: module source path location handler set paths:::map->new->LinkedHashMap<>->newPaths->new->ArrayList<>->foreach->add->newPaths->add->initModuleTable->Collections->unmodifiableList
+Locations.ModuleSourcePathLocationHandler#setPathsForModule(String, Iterable)::: module source path location handler set paths for module:::validPaths->checkPaths->if->new->ModuleTable->l->moduleTable->get->if->location->getName->new->ModuleLocationHandler->moduleTable->add->else->moduleTable->updatePaths
+Locations.ModuleSourcePathLocationHandler#checkPaths(Iterable)::: module source path location handler check paths:::Objects->requireNonNull->validPaths->new->ArrayList<>->foreach->validPaths->checkDirectory->add->return
+Locations.ModuleSourcePathLocationHandler#getLocationForModule(String)::: module source path location handler get location for module:::return->moduleTable->get
+Locations.ModuleSourcePathLocationHandler#getLocationForModule(Path)::: module source path location handler get location for module:::return->moduleTable->get
+Locations.ModuleSourcePathLocationHandler#listLocationsForModules()::: module source path location handler list locations for modules:::if->return->Collections->emptySet->return->Collections->moduleTable->locations->singleton
+Locations.ModuleSourcePathLocationHandler#contains(Path)::: module source path location handler contains:::return->moduleTable->contains
+Locations.SystemModulesLocationHandler#handleOption(Option, String)::: system modules location handler handle option:::if->options->contains->return->if->else->if->value->equals->else->getPath->update->return
+Locations.SystemModulesLocationHandler#getPaths()::: system modules location handler get paths:::return->Collections->singleton
+Locations.SystemModulesLocationHandler#setPaths(Iterable)::: system modules location handler set paths:::if->else->dir->checkSingletonDirectory->update
+Locations.SystemModulesLocationHandler#setPathsForModule(String, Iterable)::: system modules location handler set paths for module:::checkedPaths->checkPaths->initSystemModules->l->moduleTable->get->if->location->getName->new->ModuleLocationHandler->moduleTable->add->else->moduleTable->updatePaths
+Locations.SystemModulesLocationHandler#checkPaths(Iterable)::: system modules location handler check paths:::Objects->requireNonNull->validPaths->new->ArrayList<>->foreach->validPaths->checkDirectory->add->return
+Locations.SystemModulesLocationHandler#update(Path)::: system modules location handler update:::if->isCurrentPlatform->Files->p->resolve->resolve->exists->Files->systemJavaHome->resolve->exists->throw->p->toString->new->IllegalArgumentException
+Locations.SystemModulesLocationHandler#isCurrentPlatform(Path)::: system modules location handler is current platform:::try->return->Files->isSameFile->catch->throw->p->toString->new->IllegalArgumentException->finally
+Locations.SystemModulesLocationHandler#getLocationForModule(String)::: system modules location handler get location for module:::initSystemModules->return->moduleTable->get
+Locations.SystemModulesLocationHandler#getLocationForModule(Path)::: system modules location handler get location for module:::initSystemModules->return->moduleTable->get
+Locations.SystemModulesLocationHandler#listLocationsForModules()::: system modules location handler list locations for modules:::initSystemModules->return->Collections->moduleTable->locations->singleton
+Locations.SystemModulesLocationHandler#contains(Path)::: system modules location handler contains:::initSystemModules->return->moduleTable->contains
+Locations.SystemModulesLocationHandler#initSystemModules()::: system modules location handler init system modules:::if->return->if->new->ModuleTable->return->if->try->jrtURI->URI->create->jrtfs->if->isCurrentPlatform->FileSystems->getFileSystem->else->try->attrMap->Collections->systemJavaHome->toString->singletonMap->FileSystems->newFileSystem->catch->javaHomeURL->systemJavaHome->resolve->toUri->toURL->currentLoader->getClassLoader->fsLoader->new->URLArr->new->URLClassLoader->FileSystems->Collections->emptyMap->newFileSystem->closeables->add->finally->closeables->add->jrtfs->getPath->catch->systemJavaHome->resolve->if->Files->exists->throw->new->IOException->finally->new->ModuleTable->try->stream->Files->Files->isDirectory->newDirectoryStream->foreach->moduleName->entry->getFileName->toString->name->location->getName->h->Collections->singletonList->new->ModuleLocationHandler->moduleTable->add->catch->finally
+Locations.PatchModulesLocationHandler#handleOption(Option, String)::: patch modules location handler handle option:::if->options->contains->return->moduleTable->clear->foreach->value->split->eq->v->indexOf->if->moduleName->v->substring->mPatchPath->new->SearchPath->v->substring->addFiles->name->location->getName->h->new->ModuleLocationHandler->moduleTable->add->else->log->Errors->LocnInvalidArgForXpatch->error->return
+Locations.PatchModulesLocationHandler#isSet()::: patch modules location handler is set:::return->moduleTable->isEmpty
+Locations.PatchModulesLocationHandler#getPaths()::: patch modules location handler get paths:::throw->new->UnsupportedOperationException
+Locations.PatchModulesLocationHandler#setPaths(Iterable)::: patch modules location handler set paths:::throw->new->UnsupportedOperationException
+Locations.PatchModulesLocationHandler#setPathsForModule(String, Iterable)::: patch modules location handler set paths for module:::throw->new->UnsupportedOperationException
+Locations.PatchModulesLocationHandler#getLocationForModule(String)::: patch modules location handler get location for module:::return->moduleTable->get
+Locations.PatchModulesLocationHandler#getLocationForModule(Path)::: patch modules location handler get location for module:::return->moduleTable->get
+Locations.PatchModulesLocationHandler#listLocationsForModules()::: patch modules location handler list locations for modules:::return->Collections->moduleTable->locations->singleton
+Locations.PatchModulesLocationHandler#contains(Path)::: patch modules location handler contains:::return->moduleTable->contains
+Locations#initHandlers()::: locations init handlers:::new->HashMap<>->new->EnumMap<>->handlers->new->BootClassPathLocationHandler->new->ClassPathLocationHandler->new->SimpleLocationHandler->new->SimpleLocationHandler->new->SimpleLocationHandler->new->OutputLocationHandler->new->OutputLocationHandler->new->OutputLocationHandler->new->ModuleSourcePathLocationHandler->new->PatchModulesLocationHandler->new->ModulePathLocationHandler->new->ModulePathLocationHandler->new->SystemModulesLocationHandler->foreach->handlersForLocation->put->foreach->handlersForOption->put
+Locations#handleOption(Option, String)::: locations handle option:::h->handlersForOption->get->return->h->handleOption
+Locations#hasLocation(Location)::: locations has location:::h->getHandler->return->h->isSet
+Locations#hasExplicitLocation(Location)::: locations has explicit location:::h->getHandler->return->h->isExplicit
+Locations#getLocation(Location)::: locations get location:::h->getHandler->return->h->getPaths
+Locations#getOutputLocation(Location)::: locations get output location:::if->location->isOutputLocation->throw->new->IllegalArgumentException->h->getHandler->return
+Locations#setLocation(Location, Iterable)::: locations set location:::h->getHandler->if->if->location->isOutputLocation->new->OutputLocationHandler->else->new->SimpleLocationHandler->handlersForLocation->put->h->setPaths
+Locations#getLocationForModule(Location, String)::: locations get location for module:::h->getHandler->return->h->getLocationForModule
+Locations#getLocationForModule(Location, Path)::: locations get location for module:::h->getHandler->return->h->getLocationForModule
+Locations#setLocationForModule(Location, String, Iterable)::: locations set location for module:::h->getHandler->if->if->location->isOutputLocation->new->OutputLocationHandler->else->new->ModulePathLocationHandler->handlersForLocation->put->h->setPathsForModule
+Locations#inferModuleName(Location)::: locations infer module name:::h->getHandler->return->h->inferModuleName
+Locations#listLocationsForModules(Location)::: locations list locations for modules:::h->getHandler->return->h->listLocationsForModules
+Locations#contains(Location, Path)::: locations contains:::h->getHandler->if->throw->new->IllegalArgumentException->return->h->contains
+Locations#getHandler(Location)::: locations get handler:::Objects->requireNonNull->return->handlersForLocation->get
+Locations#isArchive(Path):::Is this the name of an archive file?:::n->StringUtils->file->getFileName->toString->toLowerCase->return->fsInfo->isFile->n->endsWith->n->endsWith
+Locations#normalize(Path)::: locations normalize:::try->return->p->toRealPath->catch->return->p->toAbsolutePath->normalize->finally
 PathFileObject#forDirectoryPath(BaseFileManager, Path, Path, RelativePath):::Create a PathFileObject for a file within a directory, such that the binary name can be inferred from the relationship to an enclosing directory:::return->new->DirectoryFileObject
+PathFileObject.DirectoryFileObject#getName()::: directory file object get name:::return->relativePath->resolveAgainst->toString
+PathFileObject.DirectoryFileObject#inferBinaryName(Iterable)::: directory file object infer binary name:::return->toBinaryName
+PathFileObject.DirectoryFileObject#toString()::: directory file object to string:::return
+PathFileObject.DirectoryFileObject#getSibling(String)::: directory file object get sibling:::return->path->resolveSibling->relativePath->dirname->new->RelativeFile->new->DirectoryFileObject
 PathFileObject#forJarPath(BaseFileManager, Path, Path):::Create a PathFileObject for a file in a file system such as a jar file, such that the binary name can be inferred from its position within the file system:::return->new->JarFileObject
+PathFileObject.JarFileObject#getName()::: jar file object get name:::return
+PathFileObject.JarFileObject#inferBinaryName(Iterable)::: jar file object infer binary name:::root->path->getFileSystem->getRootDirectories->iterator->next->return->root->relativize->toBinaryName
+PathFileObject.JarFileObject#toUri()::: jar file object to uri:::return->path->toString->createJarUri
+PathFileObject.JarFileObject#toString()::: jar file object to string:::return
+PathFileObject.JarFileObject#getSibling(String)::: jar file object get sibling:::return->path->resolveSibling->new->JarFileObject
+PathFileObject.JarFileObject#createJarUri(Path, String)::: jar file object create jar uri:::jarURI->jarFile->toUri->normalize->separator->entryName->startsWith->try->return->new->URI->catch->throw->new->CannotCreateUriError->finally
 PathFileObject#forJRTPath(BaseFileManager, Path):::Create a PathFileObject for a file in a modular file system, such as jrt:, such that the binary name can be inferred from its position within the filesystem:::return->new->JRTFileObject
+PathFileObject.JRTFileObject#getName()::: file object get name:::return->path->toString
+PathFileObject.JRTFileObject#inferBinaryName(Iterable)::: file object infer binary name:::return->path->path->getNameCount->subpath->toBinaryName
+PathFileObject.JRTFileObject#toString()::: file object to string:::return
+PathFileObject.JRTFileObject#getSibling(String)::: file object get sibling:::return->path->resolveSibling->new->JRTFileObject
 PathFileObject#forSimplePath(BaseFileManager, Path, Path):::Create a PathFileObject for a file whose binary name must be inferred from its position on a search path:::return->new->SimpleFileObject
+PathFileObject.SimpleFileObject#getName()::: simple file object get name:::return->userPath->toString
+PathFileObject.SimpleFileObject#inferBinaryName(Iterable)::: simple file object infer binary name:::absPath->path->toAbsolutePath->foreach->ap->p->toAbsolutePath->if->absPath->startsWith->try->rp->ap->relativize->if->return->toBinaryName->catch->finally->return
+PathFileObject.SimpleFileObject#getKind()::: simple file object get kind:::return->BaseFileManager->getKind
+PathFileObject.SimpleFileObject#isNameCompatible(String, Kind)::: simple file object is name compatible:::return->isPathNameCompatible
+PathFileObject.SimpleFileObject#toUri()::: simple file object to uri:::return->userPath->toUri->normalize
+PathFileObject.SimpleFileObject#getSibling(String)::: simple file object get sibling:::return->path->resolveSibling->userPath->resolveSibling->new->SimpleFileObject
 PathFileObject#inferBinaryName(Iterable):::See JavacFileManager#inferBinaryName.:::
 PathFileObject#getSibling(String):::Return the file object for a sibling file with a given file name:::
 PathFileObject#getPath():::Return the Path for this object.:::return
 PathFileObject#getShortName():::The short name is used when generating raw diagnostics.:::return->path->getFileName->toString
+PathFileObject#getKind()::: path file object get kind:::return->BaseFileManager->getKind
+PathFileObject#isNameCompatible(String, Kind)::: path file object is name compatible:::return->isPathNameCompatible
+PathFileObject#isPathNameCompatible(Path, String, Kind)::: path file object is path name compatible:::Objects->requireNonNull->Objects->requireNonNull->if->BaseFileManager->getKind->return->sn->pn->p->getFileName->toString->if->pn->equals->return->if->p->getFileSystem->if->if->Normalizer->isNormalized->Normalizer->isNormalized->normName->Normalizer->normalize->if->normName->equals->return->if->pn->equalsIgnoreCase->try->return->p->toRealPath->getFileName->toString->equals->catch->finally->return
+PathFileObject#getNestingKind()::: path file object get nesting kind:::return
+PathFileObject#getAccessLevel()::: path file object get access level:::return
+PathFileObject#toUri()::: path file object to uri:::return->path->toUri
+PathFileObject#openInputStream()::: path file object open input stream:::fileManager->updateLastUsedTime->return->Files->newInputStream
+PathFileObject#openOutputStream()::: path file object open output stream:::fileManager->updateLastUsedTime->fileManager->flushCache->ensureParentDirectoriesExist->return->Files->newOutputStream
+PathFileObject#openReader(boolean)::: path file object open reader:::decoder->fileManager->fileManager->getEncodingName->getDecoder->return->openInputStream->new->InputStreamReader
+PathFileObject#getCharContent(boolean)::: path file object get char content:::cb->fileManager->getCachedContent->if->try->in->openInputStream->bb->fileManager->makeByteBuffer->prev->useSource->try->fileManager->decode->catch->finally->useSource->fileManager->recycleByteBuffer->if->fileManager->cache->catch->finally->return
+PathFileObject#openWriter()::: path file object open writer:::fileManager->updateLastUsedTime->fileManager->flushCache->ensureParentDirectoriesExist->return->Files->newOutputStream->fileManager->getEncodingName->new->OutputStreamWriter
+PathFileObject#getLastModified()::: path file object get last modified:::try->return->Files->getLastModifiedTime->toMillis->catch->return->finally
+PathFileObject#delete()::: path file object delete:::try->Files->delete->return->catch->return->finally
+PathFileObject#isSameFile(PathFileObject)::: path file object is same file:::return->path->equals
+PathFileObject#equals(Object)::: path file object equals:::return->path->equals
+PathFileObject#hashCode()::: path file object hash code:::return->path->hashCode
+PathFileObject#toString()::: path file object to string:::return->getClass->getSimpleName
+PathFileObject#ensureParentDirectoriesExist()::: path file object ensure parent directories exist:::if->parent->path->getParent->if->Files->isDirectory->try->Files->createDirectories->catch->throw->new->IOException->finally
+PathFileObject#toBinaryName(RelativePath)::: path file object to binary name:::return->toBinaryName
+PathFileObject#toBinaryName(Path)::: path file object to binary name:::return->relativePath->toString->relativePath->getFileSystem->getSeparator->toBinaryName
+PathFileObject#toBinaryName(String, String)::: path file object to binary name:::return->removeExtension->replace
+PathFileObject#removeExtension(String)::: path file object remove extension:::lastDot->fileName->lastIndexOf->return->fileName->substring
 PathFileObject#getSimpleName(FileObject):::Return the last component of a presumed hierarchical URI:::uri->fo->toUri->s->uri->getSchemeSpecificPart->return->s->s->lastIndexOf->substring
+RelativePath#dirname()::: relative path dirname:::
+RelativePath#basename()::: relative path basename:::
+RelativePath#resolveAgainst(Path)::: relative path resolve against:::sep->directory->getFileSystem->getSeparator->return->directory->path->replace->resolve
+RelativePath#resolveAgainst(FileSystem)::: relative path resolve against:::sep->fs->getSeparator->root->fs->getRootDirectories->iterator->next->return->root->path->replace->resolve
+RelativePath#compareTo(RelativePath)::: relative path compare to:::return->path->compareTo
+RelativePath#equals(Object)::: relative path equals:::if->return->return->path->equals
+RelativePath#hashCode()::: relative path hash code:::return->path->hashCode
+RelativePath#toString()::: relative path to string:::return
+RelativePath#getPath()::: relative path get path:::return
+RelativePath.RelativeDirectory#forPackage(CharSequence)::: relative directory for package:::return->packageName->toString->replace->new->RelativeDirectory
+RelativePath.RelativeDirectory#dirname()::: relative directory dirname:::l->path->length->if->return->sep->path->lastIndexOf->return->path->substring->new->RelativeDirectory
+RelativePath.RelativeDirectory#basename()::: relative directory basename:::l->path->length->if->return->sep->path->lastIndexOf->return->path->substring
 RelativePath.RelativeDirectory#contains(RelativePath):::Return true if this subdirectory "contains" the other path:::return->length->path->length->startsWith
+RelativePath.RelativeDirectory#toString()::: relative directory to string:::return
+RelativePath.RelativeFile#forClass(CharSequence, JavaFileObject.Kind)::: relative file for class:::return->className->toString->replace->new->RelativeFile
+RelativePath.RelativeFile#dirname()::: relative file dirname:::sep->path->lastIndexOf->return->path->substring->new->RelativeDirectory
+RelativePath.RelativeFile#basename()::: relative file basename:::sep->path->lastIndexOf->return->path->substring
+RelativePath.RelativeFile#getZipEntry(ZipFile)::: relative file get zip entry:::return->zip->getEntry
+RelativePath.RelativeFile#toString()::: relative file to string:::return

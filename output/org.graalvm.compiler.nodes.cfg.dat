@@ -1,2 +1,75 @@
+Block#getBeginNode()::: block get begin node:::return
+Block#getEndNode()::: block get end node:::return
+Block#getLoop()::: block get loop:::return
+Block#setLoop(Loop)::: block set loop:::
+Block#getLoopDepth()::: block get loop depth:::return->loop->getDepth
+Block#isLoopHeader()::: block is loop header:::return->getBeginNode
+Block#isLoopEnd()::: block is loop end:::return->getEndNode
+Block#isExceptionEntry()::: block is exception entry:::predecessor->getBeginNode->predecessor->return->getBeginNode->exceptionEdge
+Block#getFirstPredecessor()::: block get first predecessor:::return->getPredecessors
+Block#getFirstSuccessor()::: block get first successor:::return->getSuccessors
+Block#getEarliestPostDominated()::: block get earliest post dominated:::b->while->dom->b->getDominator->if->dom->getPostdominator->else->break->return
+Block#getPostdominator()::: block get postdominator:::return
+Block.NodeIterator#hasNext()::: node iterator has next:::return
+Block.NodeIterator#next()::: node iterator next:::result->if->fixedWithNextNode->next->fixedWithNextNode->next->if->else->return
+Block.NodeIterator#remove()::: node iterator remove:::throw->new->UnsupportedOperationException
+Block#getNodes()::: block get nodes:::return->new->Iterable<FixedNode>
+Block#toString()::: block to string:::return->toString
+Block#toString(Verbosity)::: block to string:::sb->new->StringBuilder->sb->append->append->if->if->isLoopHeader->sb->append->if->getSuccessorCount->sb->append->for->i->getSuccessorCount->sb->append->if->getPredecessorCount->sb->append->for->i->getPredecessorCount->sb->append->return->sb->toString
 Block#getRelativeFrequency():::The execution frequency of this block relative to the start block as estimated by the profiling information.:::return
+Block#setRelativeFrequency(double)::: block set relative frequency:::
+Block#getDominator(int)::: block get dominator:::result->for->i->return
+Block#canKill(LocationIdentity)::: block can kill:::if->location->isImmutable->return->return->getKillLocations->contains
+Block#getKillLocations()::: block get kill locations:::if->calcKillLocations->return
+Block#calcKillLocations()::: block calc kill locations:::result->new->LocationSet->foreach->this->getNodes->if->identity->getLocationIdentity->result->add->else->if->foreach->getLocationIdentities->result->add->if->result->isAny->break->return
+Block#canKillBetweenThisAndDominator(LocationIdentity)::: block can kill between this and dominator:::if->location->isImmutable->return->return->this->getKillLocationsBetweenThisAndDominator->contains
+Block#getKillLocationsBetweenThisAndDominator()::: block get kill locations between this and dominator:::if->dominatorResult->new->LocationSet->stopBlock->getDominator->if->this->isLoopHeader->dominatorResult->this->getLoop->getKillLocations->addAll->else->foreach->this->getPredecessors->if->dominatorResult->b->getKillLocations->addAll->if->dominatorResult->isAny->break->b->calcKillLocationsBetweenThisAndTarget->if->dominatorResult->isAny->break->return
+Block#calcKillLocationsBetweenThisAndTarget(LocationSet, Block)::: block calc kill locations between this and target:::if->result->isAny->return->else->if->this->getDominator->result->this->getKillLocationsBetweenThisAndDominator->addAll->else->this->getDominator->calcKillLocationsBetweenThisAndTarget->result->this->getDominator->getKillLocations->addAll->if->result->isAny->return->this->getDominator->calcKillLocationsBetweenThisAndTarget
+Block#delete()::: block delete:::next->getSuccessors->foreach->getPredecessors->predSuccs->newPredSuccs->new->BlockArr->for->i->pred->setSuccessors->newPreds->new->ArrayList<>->for->i->next->getPredecessorCount->next->newPreds->new->BlockArr->toArray->setPredecessors
+Block#setPostDominator(Block)::: block set post dominator:::
+ControlFlowGraph.RecursiveVisitor#enter(Block)::: recursive visitor enter:::
+ControlFlowGraph.RecursiveVisitor#exit(Block, V)::: recursive visitor exit:::
+ControlFlowGraph#compute(StructuredGraph, boolean, boolean, boolean, boolean)::: control flow graph compute:::cfg->new->ControlFlowGraph->cfg->identifyBlocks->cfg->computeFrequencies->if->cfg->computeLoopInformation->if->cfg->computeDominators->if->cfg->computePostdominators->return
+ControlFlowGraph#dominatorTreeString()::: control flow graph dominator tree string:::return->getStartBlock->dominatorTreeString
+ControlFlowGraph#dominatorTreeString(Block)::: control flow graph dominator tree string:::sb->new->StringBuilder->sb->append->sb->append->firstDominated->b->getFirstDominated->while->if->firstDominated->getDominator->getPostdominator->sb->append->sb->dominatorTreeString->append->firstDominated->getDominatedSibling->sb->append->return->sb->toString
+ControlFlowGraph#visitDominatorTreeDefault(RecursiveVisitor)::: control flow graph visit dominator tree default:::stack->new->BlockArr->current->getStartBlock->tos->values->valuesTOS->while->state->if->state->getDominator->state->getDominator->getPostdominator->if->value->visitor->enter->if->if->new->ObjectArr->dominated->current->getFirstDominated->skipPostDom->if->continue->else->next->state->getDominatedSibling->skipPostDom->if->continue->postDom->current->getPostdominator->if->postDom->getDominator->continue->value->if->visitor->exit->current->getDominator
+ControlFlowGraph#skipPostDom(Block)::: control flow graph skip post dom:::if->block->getDominator->getPostdominator->return->block->getDominatedSibling->return
+ControlFlowGraph.DeferredExit#getBlock()::: deferred exit get block:::return
+ControlFlowGraph.DeferredExit#getNext()::: deferred exit get next:::return
+ControlFlowGraph#addDeferredExit(DeferredExit[], Block)::: control flow graph add deferred exit:::outermostExited->b->getDominator->getLoop->exitBlockLoop->b->getLoop->while->outermostExited->getParent->outermostExited->getParent->outermostExited->getParent->loopIndex->outermostExited->getIndex->new->DeferredExit
+ControlFlowGraph#visitDominatorTreeDeferLoopExits(RecursiveVisitor)::: control flow graph visit dominator tree defer loop exits:::stack->getBlocks->new->BlockArr->tos->visited->getBlocks->new->BitSet->loopCount->getLoops->size->deferredExits->new->DeferredExitArr->values->valuesTOS->getStartBlock->while->cur->curId->cur->getId->if->visited->get->value->if->visitor->exit->if->cur->isLoopHeader->loopIndex->cur->getLoop->getIndex->deferredExit->if->while->else->visited->set->value->visitor->enter->if->if->new->ObjectArr->alwaysReached->cur->getPostdominator->if->if->alwaysReached->getDominator->else->if->isDominatorTreeLoopExit->addDeferredExit->else->b->cur->getFirstDominated->while->if->if->isDominatorTreeLoopExit->addDeferredExit->else->b->getDominatedSibling
+ControlFlowGraph#visitDominatorTree(RecursiveVisitor, boolean)::: control flow graph visit dominator tree:::if->this->getLoops->size->visitDominatorTreeDeferLoopExits->else->visitDominatorTreeDefault
+ControlFlowGraph#isDominatorTreeLoopExit(Block)::: control flow graph is dominator tree loop exit:::dominator->b->getDominator->return->b->getLoop->dominator->getLoop->b->isLoopHeader->dominator->getLoopDepth->b->getLoopDepth
+ControlFlowGraph#computeDominators()::: control flow graph compute dominators:::blocks->curMaxDominatorDepth->for->i->getStartBlock->calcDominatorRanges
+ControlFlowGraph#calcDominatorRanges(Block, int)::: control flow graph calc dominator ranges:::stack->new->BlockArr->tos->myNumber->do->cur->dominated->cur->getFirstDominated->if->cur->getDominatorNumber->cur->setDominatorNumber->if->do->dominated->getDominatedSibling->while->else->cur->setMaxChildDomNumber->else->cur->dominated->getMaxChildDominatorNumber->setMaxChildDomNumber->while
+ControlFlowGraph#commonDominatorRaw(Block, Block)::: control flow graph common dominator raw:::aDomDepth->a->getDominatorDepth->bDomDepth->b->getDominatorDepth->if->return->a->getDominator->commonDominatorRawSameDepth->else->return->b->getDominator->commonDominatorRawSameDepth
+ControlFlowGraph#commonDominatorRawSameDepth(Block, Block)::: control flow graph common dominator raw same depth:::iterA->iterB->while->iterA->getDominator->iterB->getDominator->return
+ControlFlowGraph#getBlocks()::: control flow graph get blocks:::return
+ControlFlowGraph#getStartBlock()::: control flow graph get start block:::return
+ControlFlowGraph#reversePostOrder()::: control flow graph reverse post order:::return
+ControlFlowGraph#getNodeToBlock()::: control flow graph get node to block:::return
+ControlFlowGraph#blockFor(Node)::: control flow graph block for:::return->nodeToBlock->get
+ControlFlowGraph#getLoops()::: control flow graph get loops:::return
+ControlFlowGraph#getMaxDominatorDepth()::: control flow graph get max dominator depth:::return
+ControlFlowGraph#identifyBlock(Block)::: control flow graph identify block:::cur->block->getBeginNode->while->nodeToBlock->set->next->cur->next->if->return->else->if->else->nodeToBlock->set->return
+ControlFlowGraph#identifyBlocks():::Identify and connect blocks (including loop backward edges):::numBlocks->foreach->graph->getNodes->block->new->Block->identifyBlock->count->nodeMap->stack->new->BlockArr->tos->startBlock->graph->start->blockFor->startBlock->setPredecessors->do->block->id->block->getId->if->last->block->getEndNode->if->endNode->suxBlock->nodeMap->endNode->merge->get->if->suxBlock->getId->block->new->BlockArr->setSuccessors->else->if->ifNode->trueSucc->nodeMap->ifNode->trueSuccessor->get->falseSucc->nodeMap->ifNode->falseSuccessor->get->block->new->BlockArr->setSuccessors->ifPred->new->BlockArr->trueSucc->setPredecessors->falseSucc->setPredecessors->else->if->loopEndNode->block->new->BlockArr->nodeMap->loopEndNode->loopBegin->get->setSuccessors->else->if->block->setSuccessors->else->startTos->ifPred->new->BlockArr->foreach->last->successors->sux->nodeMap->get->sux->setPredecessors->suxCount->successors->new->BlockArr->System->arraycopy->block->setSuccessors->block->setId->beginNode->block->getBeginNode->if->computeLoopPredecessors->else->if->mergeNode->forwardEndCount->mergeNode->forwardEndCount->predecessors->new->BlockArr->for->i->block->setPredecessors->else->if->index->block->setId->else->throw->GraalError->shouldNotReachHere->while
+ControlFlowGraph#computeLoopPredecessors(NodeMap, Block, LoopBeginNode)::: control flow graph compute loop predecessors:::forwardEndCount->loopBeginNode->forwardEndCount->loopEnds->loopBeginNode->orderedLoopEnds->predecessors->new->BlockArr->for->i->for->i->block->setPredecessors
+ControlFlowGraph#computeFrequencies():::Computes the frequencies of all blocks relative to the start block:::foreach->predecessors->block->getPredecessors->relativeFrequency->if->else->if->pred->if->pred->getSuccessorCount->controlSplit->pred->getEndNode->controlSplit->block->getBeginNode->probability->multiplyRelativeFrequencies->else->for->i->if->block->getBeginNode->loopBegin->block->getBeginNode->loopBegin->loopFrequency->multiplyRelativeFrequencies->if->else->if->block->setRelativeFrequency
+ControlFlowGraph#computeLoopInformation()::: control flow graph compute loop information:::new->ArrayList<>->if->graph->hasLoops->stack->new->BlockArr->foreach->beginNode->block->getBeginNode->if->parent->block->getLoop->loop->loops->size->new->HIRLoop->if->parent->getChildren->add->loops->add->block->setLoop->loop->getBlocks->add->loopBegin->foreach->loopBegin->loopEnds->endBlock->nodeToBlock->get->computeLoopBlocks->foreach->loop->getBlocks->foreach->b->getSuccessors->if->sux->getLoop->loop->getNaturalExits->add->loop->getNaturalExits->sort->if->graph->getGuardsStage->areFrameStatesAtDeopts->foreach->loopBegin->loopExits->exitBlock->nodeToBlock->get->exitBlock->getFirstPredecessor->computeLoopBlocks->loop->getLoopExits->add->loop->getLoopExits->sort->size->loop->getBlocks->size->for->i->else->loop->getLoopExits->loop->getNaturalExits->addAll
+ControlFlowGraph#computeLoopBlocks(Block, Loop, Block[], boolean)::: control flow graph compute loop blocks:::if->start->getLoop->start->setLoop->loop->getBlocks->add->tos->do->block->foreach->block->getPredecessors->block->getSuccessors->if->b->getLoop->b->setLoop->loop->getBlocks->add->while
+ControlFlowGraph#computePostdominators()::: control flow graph compute postdominators:::reversePostOrderTmp->for->j
+ControlFlowGraph#commonPostdominator(Block, Block)::: control flow graph common postdominator:::iterA->iterB->while->if->iterA->getId->iterB->getId->iterA->getPostdominator->if->return->else->iterB->getPostdominator->if->return->return
+ControlFlowGraph#setNodeToBlock(NodeMap)::: control flow graph set node to block:::
 ControlFlowGraph#multiplyRelativeFrequencies(double, double):::Multiplies a and b and clamps the between ControlFlowGraph#MIN_RELATIVE_FREQUENCY and ControlFlowGraph#MAX_RELATIVE_FREQUENCY.:::r->if->return->if->return->return
+HIRLoop#numBackedges()::: loop num backedges:::return->getHeader->getBeginNode->loopEnds->count
+HIRLoop#getKillLocations()::: loop get kill locations:::if->new->LocationSet->foreach->this->getBlocks->if->b->getLoop->killLocations->b->getKillLocations->addAll->if->killLocations->isAny->break->foreach->this->getChildren->if->killLocations->isAny->break->killLocations->getKillLocations->addAll->return
+HIRLoop#canKill(LocationIdentity)::: loop can kill:::return->getKillLocations->contains
+HIRLoop#toString()::: loop to string:::return->super->toString->getHeader->getBeginNode
+LocationSet#initList()::: location set init list:::if->new->ArrayList<>
+LocationSet#isEmpty()::: location set is empty:::return
+LocationSet#isAny()::: location set is any:::return->firstLocation->isAny
+LocationSet#add(LocationIdentity)::: location set add:::if->this->isAny->return->else->if->location->isAny->else->if->location->isImmutable->return->else->if->else->if->location->equals->return->else->initList->for->i->list->size->list->add
+LocationSet#addAll(LocationSet)::: location set add all:::if->add->otherList->if->foreach->add
+LocationSet#contains(LocationIdentity)::: location set contains:::if->LocationIdentity->any->equals->return->if->locationIdentity->equals->return->if->for->i->list->size->return
+LocationSet#getCopyAsList()::: location set get copy as list:::result->new->ArrayList<>->if->result->add->if->result->addAll->return
+LocationSet#toString()::: location set to string:::if->this->isAny->return->else->if->this->isEmpty->return->else->copyAsList->getCopyAsList->return->Arrays->copyAsList->new->LocationIdentityArr->toArray->toString

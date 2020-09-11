@@ -1,3 +1,35 @@
+AbstractHeapGraphWriter#write()::: abstract heap graph writer write:::symTbl->VM->getVM->getSymbolTable->symTbl->probe->symTbl->probe->symTbl->probe->heap->VM->getVM->getObjectHeap->try->heap->new->DefaultHeapVisitor->iterate->writeHeapRecordPrologue->writeJavaThreads->writeGlobalJNIHandles->catch->handleRuntimeException->finally
+AbstractHeapGraphWriter#writeJavaThreads()::: abstract heap graph writer write java threads:::threads->VM->getVM->getThreads->jt->threads->first->index->while->if->jt->getThreadObj->writeJavaThread->jt->next
+AbstractHeapGraphWriter#writeJavaThread(JavaThread, int)::: abstract heap graph writer write java thread:::
+AbstractHeapGraphWriter#writeGlobalJNIHandles()::: abstract heap graph writer write global handles:::handles->VM->getVM->getJNIHandles->blk->handles->globalHandles->if->try->blk->new->AddressVisitor->oopsDo->catch->handleRuntimeException->finally
+AbstractHeapGraphWriter#writeGlobalJNIHandle(Address)::: abstract heap graph writer write global handle:::
+AbstractHeapGraphWriter#writeHeapHeader()::: abstract heap graph writer write heap header:::
+AbstractHeapGraphWriter#writeInternalObject(Oop)::: abstract heap graph writer write internal object:::
+AbstractHeapGraphWriter#writePrimitiveArray(TypeArray)::: abstract heap graph writer write primitive array:::writeObject
+AbstractHeapGraphWriter#writeObjectArray(ObjArray)::: abstract heap graph writer write object array:::writeObject
+AbstractHeapGraphWriter#writeInstance(Instance)::: abstract heap graph writer write instance:::writeObject
+AbstractHeapGraphWriter#writeString(Instance)::: abstract heap graph writer write string:::writeInstance
+AbstractHeapGraphWriter#writeClass(Instance)::: abstract heap graph writer write class:::writeInstance
+AbstractHeapGraphWriter#writeThread(Instance)::: abstract heap graph writer write thread:::writeInstance
+AbstractHeapGraphWriter#writeObject(Oop)::: abstract heap graph writer write object:::writeObjectHeader->writeObjectFields->writeObjectFooter
+AbstractHeapGraphWriter#writeObjectHeader(Oop)::: abstract heap graph writer write object header:::
+AbstractHeapGraphWriter#writeObjectFields(Oop)::: abstract heap graph writer write object fields:::try->oop->new->DefaultOopVisitor->iterate->catch->handleRuntimeException->finally
+AbstractHeapGraphWriter#writeObjectFields(InstanceKlass)::: abstract heap graph writer write object fields:::try->oop->new->DefaultOopVisitor->iterateStaticFields->catch->handleRuntimeException->finally
+AbstractHeapGraphWriter#writeReferenceField(Oop, OopField)::: abstract heap graph writer write reference field:::
+AbstractHeapGraphWriter#writeByteField(Oop, ByteField)::: abstract heap graph writer write byte field:::
+AbstractHeapGraphWriter#writeCharField(Oop, CharField)::: abstract heap graph writer write char field:::
+AbstractHeapGraphWriter#writeBooleanField(Oop, BooleanField)::: abstract heap graph writer write boolean field:::
+AbstractHeapGraphWriter#writeShortField(Oop, ShortField)::: abstract heap graph writer write short field:::
+AbstractHeapGraphWriter#writeIntField(Oop, IntField)::: abstract heap graph writer write int field:::
+AbstractHeapGraphWriter#writeLongField(Oop, LongField)::: abstract heap graph writer write long field:::
+AbstractHeapGraphWriter#writeFloatField(Oop, FloatField)::: abstract heap graph writer write float field:::
+AbstractHeapGraphWriter#writeDoubleField(Oop, DoubleField)::: abstract heap graph writer write double field:::
+AbstractHeapGraphWriter#writeObjectFooter(Oop)::: abstract heap graph writer write object footer:::
+AbstractHeapGraphWriter#writeHeapFooter()::: abstract heap graph writer write heap footer:::
+AbstractHeapGraphWriter#writeHeapRecordPrologue()::: abstract heap graph writer write heap record prologue:::
+AbstractHeapGraphWriter#writeHeapRecordEpilogue()::: abstract heap graph writer write heap record epilogue:::
+AbstractHeapGraphWriter#handleRuntimeException(RuntimeException)::: abstract heap graph writer handle runtime exception:::cause->re->getCause->if->throw->else->throw
+AbstractHeapGraphWriter#isJavaVisible(Oop)::: abstract heap graph writer is java visible:::if->return->else->if->oak->oop->getKlass->bottomKlass->oak->getBottomKlass->return->else->return
 AddressOps#lessThan(Address, Address):::Returns true if a1 is less than a2:::if->return->else->if->return->else->return->a1->lessThan
 AddressOps#lessThanOrEqual(Address, Address):::Returns true if a1 is less than or equal to a2:::if->return->else->if->return->else->return->a1->lessThanOrEqual
 AddressOps#greaterThan(Address, Address):::Returns true if a1 is greater than a2:::if->return->else->if->return->else->return->a1->greaterThan
@@ -9,29 +41,238 @@ AddressOps#gt(Address, Address):::Shorthand for #greaterThan:::return->greaterTh
 AddressOps#gte(Address, Address):::Shorthand for #greaterThanOrEqual:::return->greaterThanOrEqual
 AddressOps#max(Address, Address):::Returns maximum of the two addresses:::return->gt
 AddressOps#min(Address, Address):::Returns minimum of the two addresses:::return->lt
+AltPlatformInfo#knownCPU(String)::: alt platform info known u:::
+AltPlatformInfo#getCPU(String)::: alt platform info get u:::
+Assert#that(boolean, String)::: assert that:::if->throw->new->AssertionFailure
+BasicHashtable#initialize(TypeDataBase)::: basic hashtable initialize:::type->db->lookupType->type->getCIntegerField->type->getAddressField->db->lookupType->getSize
+BasicHashtable#tableSize()::: basic hashtable table size:::return->tableSizeField->getValue
+BasicHashtable#bucket(int)::: basic hashtable bucket:::if->Assert->tableSize->that->tmp->bucketsField->getValue->tmp->addOffsetTo->bucket->VMObjectFactory->newObject->return->bucket->getHashtableEntryClass->getEntry
+BasicHashtable#getHashtableEntryClass()::: basic hashtable get hashtable entry class:::return
+BasicHashtableEntry#initialize(TypeDataBase)::: basic hashtable entry initialize:::type->db->lookupType->type->getCIntegerField->type->getAddressField
+BasicHashtableEntry#hash()::: basic hashtable entry hash:::return->hashField->getValue
+BasicHashtableEntry#nextAddressValue()::: basic hashtable entry next address value:::dbg->VM->getVM->getDebugger->nextValue->nextField->getValue->return->dbg->getAddressValue
+BasicHashtableEntry#isShared()::: basic hashtable entry is shared:::return->nextAddressValue
+BasicHashtableEntry#next()::: basic hashtable entry next:::nextValue->nextField->getValue->next->nextValue->andWithMask->return->VMObjectFactory->this->getClass->newObject
+BitMap#size()::: bit map size:::return
+BitMap#at(int)::: bit map at:::if->Assert->size->that->return->Bits->wordFor->isSetNthBit
+BitMap#atPut(int, boolean)::: bit map at put:::index->indexFor->pos->if->Bits->setNthBit->else->Bits->clearNthBit
+BitMap#set_size(int)::: bit map set_size:::
+BitMap#set_map(Address)::: bit map set_map:::for->i->sizeInWords
+BitMap#clear()::: bit map clear:::for->i->sizeInWords
+BitMap#iterate(BitMapClosure)::: bit map iterate:::for->index->sizeInWords
 BitMap#setUnion(BitMap):::Sets this bitmap to the logical union of it and the       argument:::if->Assert->size->other->size->that->changed->for->index->sizeInWords->return
 BitMap#setIntersection(BitMap):::Sets this bitmap to the logical intersection of it and the       argument:::if->Assert->size->other->size->that->for->index->sizeInWords
 BitMap#setFrom(BitMap):::Sets this bitmap to the contents of the argument:::if->Assert->size->other->size->that->for->index->sizeInWords
 BitMap#setDifference(BitMap):::Sets this bitmap to the logical difference between it and the       argument; that is, any bits that are set in the argument are       cleared in this bitmap:::if->Assert->size->other->size->that->changed->for->index->sizeInWords->return
 BitMap#isSame(BitMap):::Both bitmaps must be the same size.:::if->Assert->size->other->size->that->for->index->sizeInWords->return
+BitMap#getNextOneOffset(int, int)::: bit map get next one offset:::if->return->index->indexFor->r_index->indexFor->res_offset->pos->bitInWord->res->if->for->return->for->return
+BitMap#sizeInWords()::: bit map size in words:::return->size
+BitMap#indexFor(int)::: bit map index for:::return
+BitMap#wordFor(int)::: bit map word for:::return
+BitMap#bitInWord(int)::: bit map bit in word:::return
 BitMapClosure#doBit(int):::Called when specified bit in map is set:::
+Bits#setBits(int, int)::: bits set bits:::return
+Bits#clearBits(int, int)::: bits clear bits:::return
+Bits#nthBit(int)::: bits nth bit:::return
+Bits#setNthBit(int, int)::: bits set nth bit:::return->nthBit->setBits
+Bits#clearNthBit(int, int)::: bits clear nth bit:::return->nthBit->clearBits
+Bits#isSetNthBit(int, int)::: bits is set nth bit:::return->nthBit->maskBits
+Bits#rightNBits(int)::: bits right bits:::return->nthBit
+Bits#maskBits(int, int)::: bits mask bits:::return
+Bits#maskBitsLong(long, long)::: bits mask bits long:::return
 Bits#roundTo(int, int):::Returns integer round-up to the nearest multiple of s (s must be       a power of two):::m->return->maskBits
+CompactHashTable#initialize(TypeDataBase)::: compact hash table initialize:::type->db->lookupType->type->getAddressField->type->getCIntegerField->type->getCIntegerField->type->getAddressField->type->getAddressField->db->lookupType->getSize
+CompactHashTable#bucketCount()::: compact hash table bucket count:::return->bucketCountField->getValue
+CompactHashTable#isValueOnlyBucket(int)::: compact hash table is value only bucket:::return
+CompactHashTable#bucketOffset(int)::: compact hash table bucket offset:::return
+CompactHashTable#probe(byte[], long)::: compact hash table probe:::if->bucketCount->return->symOffset->sym->baseAddress->baseAddressField->getValue->bucket->bucketsField->getValue->index->bucketCount->bucketInfo->bucket->getCIntegerAt->bucketOffset->bucketOffset->nextBucketInfo->bucket->getCIntegerAt->nextBucketOffset->bucketOffset->entry->entriesField->getValue->addOffsetTo->if->isValueOnlyBucket->entry->getCIntegerAt->Symbol->baseAddress->addOffsetTo->create->if->sym->equals->return->else->entryMax->entriesField->getValue->addOffsetTo->while->entry->lessThan->symHash->entry->getCIntegerAt->if->entry->getCIntegerAt->symAddr->baseAddress->addOffsetTo->Symbol->create->if->sym->equals->return->entry->addOffsetTo->return
+CompactHashTable.SymbolVisitor#visit(Symbol)::: symbol visitor visit:::
+CompactHashTable#symbolsDo(SymbolVisitor)::: compact hash table symbols do:::symOffset->sym->baseAddress->baseAddressField->getValue->bucket->bucketsField->getValue->for->index->bucketCount
+ConstantTag#value()::: constant tag value:::return
+ConstantTag#isKlass()::: constant tag is klass:::return
+ConstantTag#isField()::: constant tag is field:::return
+ConstantTag#isMethod()::: constant tag is method:::return
+ConstantTag#isInterfaceMethod()::: constant tag is interface method:::return
+ConstantTag#isString()::: constant tag is string:::return
+ConstantTag#isInt()::: constant tag is int:::return
+ConstantTag#isFloat()::: constant tag is float:::return
+ConstantTag#isLong()::: constant tag is long:::return
+ConstantTag#isDouble()::: constant tag is double:::return
+ConstantTag#isNameAndType()::: constant tag is name and type:::return
+ConstantTag#isUtf8()::: constant tag is utf8:::return
+ConstantTag#isMethodHandle()::: constant tag is method handle:::return
+ConstantTag#isMethodType()::: constant tag is method type:::return
+ConstantTag#isDynamicConstant()::: constant tag is dynamic constant:::return
+ConstantTag#isInvokeDynamic()::: constant tag is invoke dynamic:::return
+ConstantTag#isInvalid()::: constant tag is invalid:::return
+ConstantTag#isUnresolvedKlass()::: constant tag is unresolved klass:::return
+ConstantTag#isUnresolveKlassInError()::: constant tag is unresolve klass in error:::return
+ConstantTag#isKlassIndex()::: constant tag is klass index:::return
+ConstantTag#isStringIndex()::: constant tag is string index:::return
+ConstantTag#isKlassReference()::: constant tag is klass reference:::return->isKlassIndex->isUnresolvedKlass
+ConstantTag#isFieldOrMethod()::: constant tag is field or method:::return->isField->isMethod->isInterfaceMethod
+ConstantTag#isSymbol()::: constant tag is symbol:::return->isUtf8
+ConstantTag#basicType()::: constant tag basic type:::switch->return->return->return->return->return->throw->new->InternalError
+ConstantTag#toString()::: constant tag to string:::return->Integer->toString
+ConstIterator#hasNext()::: const iterator has next:::return->iter->hasNext
+ConstIterator#next()::: const iterator next:::return->iter->next
+ConstIterator#remove()::: const iterator remove:::throw->new->UnsupportedOperationException
+CPPExpressions.CastExpr#getType()::: cast expr get type:::return
+CPPExpressions.CastExpr#getAddress()::: cast expr get address:::return
+CPPExpressions.StaticFieldExpr#getContainingType()::: static field expr get containing type:::return
+CPPExpressions.StaticFieldExpr#getFieldName()::: static field expr get field name:::return
 CPPExpressions#parseCast(String):::Attempts to parse the given string into a CastExpr:::if->Pattern->compile->matcher->castPattern->matcher->if->matcher->matches->type->matcher->group->addr->matcher->group->return->new->CastExpr->return
 CPPExpressions#parseStaticField(String):::Attempts to parse the given string into a       StaticFieldExpr:::sep->idx->expr->lastIndexOf->if->return->containingType->expr->substring->fieldName->expr->sep->length->expr->length->substring->return->new->StaticFieldExpr
 CStringUtilities#getStringLength(Address):::Return the length of a null-terminated ASCII string in the       remote process:::i->while->addr->getCIntegerAt->return
+CStringUtilities#getString(Address)::: string utilities get string:::return->Charset->forName->getString
 CStringUtilities#getString(Address, Charset):::Fetch a null-terminated ASCII string from the remote process:::if->return->data->new->ArrayList->val->i->do->addr->getCIntegerAt->if->data->new->Byte->add->while->bytes->data->size->new->byteArr->for->data->size->return->new->String
 FindObjectByType#getResults():::Returns a List of Oops:::return
+FindObjectByType#prologue(long)::: find object by type prologue:::
+FindObjectByType#epilogue()::: find object by type epilogue:::
+FindObjectByType#doObj(Oop)::: find object by type do obj:::if->obj->getKlass->equals->results->add->return
+GenericArray#initialize(TypeDataBase)::: generic array initialize:::type->db->lookupType->type->getCIntegerField->new->CIntField
+GenericArray#length()::: generic array length:::return->lengthField->getValue
+GenericArray#getLength()::: generic array get length:::return->length
 GenericArray#getIntegerAt(int):::Gets the element at the given index.:::if->length->throw->length->new->ArrayIndexOutOfBoundsException->elemType->getElemType->if->getElemType->isCIntegerType->throw->new->RuntimeException->data->getAddress->addOffsetTo->elemSize->elemType->getSize->return->data->getCIntegerAt
+GenericArray#getAddressAt(int)::: generic array get address at:::if->length->throw->new->ArrayIndexOutOfBoundsException->elemType->getElemType->if->getElemType->isCIntegerType->throw->new->RuntimeException->data->getAddress->addOffsetTo->elemSize->elemType->getSize->return->data->getAddressAt
+GenericArray#byteSizeof(int)::: generic array byte sizeof:::return->getElemType->getSize
+GenericArray#getSize()::: generic array get size:::return->VM->getVM->length->byteSizeof->VM->getVM->getBytesPerWord->alignUp->VM->getVM->getBytesPerWord
 GenericArray#getElemType():::The element type of this array.:::
+GenericGrowableArray#initialize(TypeDataBase)::: generic growable array initialize:::type->db->lookupType->type->getAddressField->type->getCIntegerField->new->CIntField->type->getCIntegerField->new->CIntField
+GenericGrowableArray#max()::: generic growable array max:::return->_max_field->getAddress->getValue
+GenericGrowableArray#length()::: generic growable array length:::return->_len_field->getAddress->getValue
+GrowableArray#initialize(TypeDataBase)::: growable array initialize:::type->db->lookupType->type->getAddressField
+GrowableArray#create(Address, InstanceConstructor)::: growable array create:::if->return->return->new->GrowableArray<S>
+GrowableArray#at(int)::: growable array at:::if->length->throw->new->ArrayIndexOutOfBoundsException->data->dataField->getAddress->getValue->addr->data->VM->getVM->getAddressSize->getAddressAt->if->return->return->virtualConstructor->instantiateWrapperFor
+GrowableArray#getData()::: growable array get data:::return->dataField->getAddress->getValue
+Hashtable#initialize(TypeDataBase)::: hashtable initialize:::type->db->lookupType
+Hashtable#getHashtableEntryClass()::: hashtable get hashtable entry class:::return
+Hashtable#computeHash(Symbol)::: hashtable compute hash:::return->name->identityHash
+Hashtable#hashToIndex(long)::: hashtable hash to index:::return->tableSize
+Hashtable#hashSymbol(byte[])::: hashtable hash symbol:::h->s->len->while->return
+HashtableBucket#initialize(TypeDataBase)::: hashtable bucket initialize:::type->db->lookupType->type->getAddressField
+HashtableBucket#getEntry(Class)::: hashtable bucket get entry:::tmp->entryField->getValue->return->VMObjectFactory->newObject
+HashtableBucket#entry()::: hashtable bucket entry:::return->getEntry
+HashtableEntry#initialize(TypeDataBase)::: hashtable entry initialize:::type->db->lookupType->type->getAddressField
+HashtableEntry#literalValue()::: hashtable entry literal value:::return->literalField->getValue
 HeapGraphWriter#write(String):::writes the heap graph in the given file:::
+HeapGXLWriter#write(String)::: heap writer write:::new->FileWriter->new->BufferedWriter->new->PrintWriter->super->write->if->out->checkError->throw->new->IOException->out->flush
+HeapGXLWriter#writeHeapHeader()::: heap writer write heap header:::out->print->out->print->out->println->out->println->out->println->new->Date->toString->writeAttribute->writeVMInfo->out->print->out->getID->print->out->println
+HeapGXLWriter#writeObjectHeader(Oop)::: heap writer write object header:::new->ArrayList->oop->isArray->oop->getKlass->getJavaMirror->writeEdge->out->print->out->getID->print->out->println
+HeapGXLWriter#writeObjectFooter(Oop)::: heap writer write object footer:::out->println->for->itr->refFields->iterator->itr->hasNext
+HeapGXLWriter#writeObjectArray(ObjArray)::: heap writer write object array:::writeObjectHeader->writeArrayLength->writeObjectFields->writeObjectFooter
+HeapGXLWriter#writePrimitiveArray(TypeArray)::: heap writer write primitive array:::writeObjectHeader->writeArrayLength->out->println->klass->array->getKlass->if->klass->getElementType->out->print->out->OopUtilities->charArrayToString->escapeXMLChars->print->out->println->else->out->println->writeObjectFields->out->println->out->println->writeObjectFooter
+HeapGXLWriter#writeClass(Instance)::: heap writer write class:::writeObjectHeader->reflectedType->java_lang_Class->asKlass->isInstanceKlass->if->name->reflectedType->getName->if->name->asString->writeAttribute->if->sizeInBytes->reflectedType->getLayoutHelper->Long->toString->writeAttribute->writeObjectFields->out->println->if->superType->reflectedType->getSuper->superMirror->superType->getJavaMirror->writeEdge->if->ik->interfaces->ik->getLocalInterfaces->len->interfaces->length->for->i->loader->ik->getClassLoader->writeEdge->writeEdge->writeEdge->for->itr->refFields->iterator->itr->hasNext
+HeapGXLWriter#writeReferenceField(Oop, OopField)::: heap writer write reference field:::refFields->add
+HeapGXLWriter#writeByteField(Oop, ByteField)::: heap writer write byte field:::Byte->field->getValue->toString->writeField
+HeapGXLWriter#writeCharField(Oop, CharField)::: heap writer write char field:::Character->field->getValue->toString->escapeXMLChars->writeField
+HeapGXLWriter#writeBooleanField(Oop, BooleanField)::: heap writer write boolean field:::Boolean->field->getValue->toString->writeField
+HeapGXLWriter#writeShortField(Oop, ShortField)::: heap writer write short field:::Short->field->getValue->toString->writeField
+HeapGXLWriter#writeIntField(Oop, IntField)::: heap writer write int field:::Integer->field->getValue->toString->writeField
+HeapGXLWriter#writeLongField(Oop, LongField)::: heap writer write long field:::Long->field->getValue->toString->writeField
+HeapGXLWriter#writeFloatField(Oop, FloatField)::: heap writer write float field:::Float->field->getValue->toString->writeField
+HeapGXLWriter#writeDoubleField(Oop, DoubleField)::: heap writer write double field:::Double->field->getValue->toString->writeField
+HeapGXLWriter#writeHeapFooter()::: heap writer write heap footer:::out->println->out->println
+HeapGXLWriter#identifierToXMLName(String)::: heap writer identifier to name:::return->name->replace
+HeapGXLWriter#escapeXMLChars(String)::: heap writer escape chars:::result->for->i->max->s->length->delta->if->return->return->result->toString
+HeapGXLWriter#getID(Oop)::: heap writer get d:::if->return->else->return->oop->getHandle->toString
+HeapGXLWriter#writeArrayLength(Array)::: heap writer write array length:::Integer->array->getLength->toString->writeAttribute
+HeapGXLWriter#writeAttribute(String, String, String)::: heap writer write attribute:::out->print->out->print->out->print->out->print->out->print->out->print->out->print->out->print->out->println
+HeapGXLWriter#writeEdge(Oop, Oop, String)::: heap writer write edge:::out->print->out->getID->print->out->print->out->getID->print->out->println->writeAttribute->out->println
+HeapGXLWriter#writeField(Field, String, String, String)::: heap writer write field:::if->out->print->else->out->print->name->field->getID->getName->out->identifierToXMLName->print->out->print->out->print->out->print->out->print->out->print->out->print->out->print->out->print->out->print->out->print->if->out->println->else->out->println
+HeapGXLWriter#writeVMInfo()::: heap writer write info:::vm->VM->getVM->vm->getVMRelease->writeAttribute->vm->isClientCompiler->vm->isServerCompiler->writeAttribute->vm->getOS->writeAttribute->vm->getCPU->writeAttribute->Integer->vm->getOopSize->toString->writeAttribute
+HeapHprofBinWriter#write(String)::: heap hprof bin writer write:::new->FileOutputStream->new->BufferedOutputStream->new->DataOutputStream->vm->VM->getVM->vm->getDebugger->vm->getObjectHeap->vm->getSymbolTable->vm->getOopSize->TypeArray->baseOffsetInBytes->TypeArray->baseOffsetInBytes->TypeArray->baseOffsetInBytes->TypeArray->baseOffsetInBytes->TypeArray->baseOffsetInBytes->TypeArray->baseOffsetInBytes->TypeArray->baseOffsetInBytes->TypeArray->baseOffsetInBytes->TypeArray->baseOffsetInBytes->objectHeap->getBooleanSize->objectHeap->getByteSize->objectHeap->getCharSize->objectHeap->getShortSize->objectHeap->getIntSize->objectHeap->getLongSize->objectHeap->getFloatSize->objectHeap->getDoubleSize->vm->getUniverse->heap->used->writeFileHeader->writeDummyTrace->writeSymbols->writeClasses->dumpStackTraces->writeClassDumpRecords->super->write->out->flush->fillInHeapRecordLength->if->out->writeByte->out->writeInt->out->writeInt->out->flush->fos->close
+HeapHprofBinWriter#writeHeapRecordPrologue()::: heap hprof bin writer write heap record prologue:::if->out->writeByte->out->writeInt->out->flush->fos->getChannel->position->out->writeInt
+HeapHprofBinWriter#writeHeapRecordEpilogue()::: heap hprof bin writer write heap record epilogue:::if->out->flush->if->fos->getChannel->position->fillInHeapRecordLength
+HeapHprofBinWriter#fillInHeapRecordLength()::: heap hprof bin writer fill in heap record length:::dumpEnd->fos->getChannel->position->dumpLenLong->if->throw->new->RuntimeException->currentPosition->fos->getChannel->position->fos->getChannel->position->dumpLen->fos->write->fos->write->fos->write->fos->write->fos->getChannel->position
+HeapHprofBinWriter#getSizeForType(int)::: heap hprof bin writer get size for type:::switch->return->return->return->return->return->return->return->return->throw->new->RuntimeException
+HeapHprofBinWriter#getArrayHeaderSize(boolean)::: heap hprof bin writer get array header size:::return
+HeapHprofBinWriter#calculateArrayMaxLength(long, int, long, String)::: heap hprof bin writer calculate array max length:::length->dumpEnd->fos->getChannel->position->originalLengthInBytes->currentRecordLength->if->fillInHeapRecordLength->writeHeapRecordPrologue->maxBytes->if->println->return
+HeapHprofBinWriter#writeClassDumpRecords()::: heap hprof bin writer write class dump records:::cldGraph->VM->getVM->getClassLoaderDataGraph->try->cldGraph->new->ClassLoaderDataGraph.ClassVisitor->classesDo->catch->handleRuntimeException->finally
+HeapHprofBinWriter#writeClass(Instance)::: heap hprof bin writer write class:::reflectedKlass->java_lang_Class->asKlass->if->writeInstance
+HeapHprofBinWriter#writeClassDumpRecord(Klass)::: heap hprof bin writer write class dump record:::out->writeByte->k->getJavaMirror->writeObjectID->out->writeInt->superKlass->k->getJavaSuper->if->superKlass->getJavaMirror->writeObjectID->else->writeObjectID->if->ik->ik->getClassLoader->writeObjectID->writeObjectID->writeObjectID->writeObjectID->writeObjectID->fields->getInstanceFields->instSize->getSizeForFields->classDataCache->new->ClassData->put->out->writeInt->out->writeShort->declaredFields->ik->getImmediateFields->staticFields->new->ArrayList->instanceFields->new->ArrayList->itr->for->declaredFields->iterator->itr->hasNext->writeFieldDescriptors->writeFieldDescriptors->else->if->oak->bottomKlass->oak->getBottomKlass->if->ik->ik->getClassLoader->writeObjectID->writeObjectID->writeObjectID->else->writeObjectID->writeObjectID->writeObjectID->else->writeObjectID->writeObjectID->writeObjectID->writeObjectID->writeObjectID->out->writeInt->out->writeShort->out->writeShort->out->writeShort
+HeapHprofBinWriter#dumpStackTraces()::: heap hprof bin writer dump stack traces:::writeHeader->out->writeInt->out->writeInt->out->writeInt->frameSerialNum->numThreads->threads->VM->getVM->getThreads->for->thread->threads->first->thread->next
+HeapHprofBinWriter#dumpStackFrame(int, int, Method, int)::: heap hprof bin writer dump stack frame:::lineNumber->if->m->isNative->else->m->getLineNumberFromBCI->VM->getVM->getOopSize->writeHeader->writeObjectID->m->getName->writeSymbolID->m->getSignature->writeSymbolID->m->getMethodHolder->getSourceFileName->writeSymbolID->out->writeInt->out->writeInt
+HeapHprofBinWriter#writeJavaThread(JavaThread, int)::: heap hprof bin writer write java thread:::out->writeByte->jt->getThreadObj->writeObjectID->out->writeInt->out->writeInt->writeLocalJNIHandles
+HeapHprofBinWriter#writeLocalJNIHandles(JavaThread, int)::: heap hprof bin writer write local handles:::threadIndex->blk->jt->activeHandles->if->try->blk->new->AddressVisitor->oopsDo->catch->handleRuntimeException->finally
+HeapHprofBinWriter#writeGlobalJNIHandle(Address)::: heap hprof bin writer write global handle:::oopHandle->handleAddr->getOopHandleAt->oop->objectHeap->newOop->if->isJavaVisible->out->writeByte->writeObjectID->getAddressValue->writeObjectID
+HeapHprofBinWriter#writeObjectArray(ObjArray)::: heap hprof bin writer write object array:::headerSize->getArrayHeaderSize->length->array->getLength->calculateArrayMaxLength->out->writeByte->writeObjectID->out->writeInt->out->writeInt->array->getKlass->getJavaMirror->writeObjectID->for->index
+HeapHprofBinWriter#writePrimitiveArray(TypeArray)::: heap hprof bin writer write primitive array:::headerSize->getArrayHeaderSize->tak->array->getKlass->type->tak->getElementType->typeName->tak->getElementTypeName->typeSize->getSizeForType->length->array->getLength->calculateArrayMaxLength->out->writeByte->writeObjectID->out->writeInt->out->writeInt->out->writeByte->switch->writeBooleanArray->break->writeCharArray->break->writeFloatArray->break->writeDoubleArray->break->writeByteArray->break->writeShortArray->break->writeIntArray->break->writeLongArray->break->throw->new->RuntimeException
+HeapHprofBinWriter#writeBooleanArray(TypeArray, int)::: heap hprof bin writer write boolean array:::for->index
+HeapHprofBinWriter#writeByteArray(TypeArray, int)::: heap hprof bin writer write byte array:::for->index
+HeapHprofBinWriter#writeShortArray(TypeArray, int)::: heap hprof bin writer write short array:::for->index
+HeapHprofBinWriter#writeIntArray(TypeArray, int)::: heap hprof bin writer write int array:::for->index
+HeapHprofBinWriter#writeLongArray(TypeArray, int)::: heap hprof bin writer write long array:::for->index
+HeapHprofBinWriter#writeCharArray(TypeArray, int)::: heap hprof bin writer write char array:::for->index
+HeapHprofBinWriter#writeFloatArray(TypeArray, int)::: heap hprof bin writer write float array:::for->index
+HeapHprofBinWriter#writeDoubleArray(TypeArray, int)::: heap hprof bin writer write double array:::for->index
+HeapHprofBinWriter#writeInstance(Instance)::: heap hprof bin writer write instance:::out->writeByte->writeObjectID->out->writeInt->klass->instance->getKlass->klass->getJavaMirror->writeObjectID->cd->classDataCache->get->if->Assert->klass->getName->asString->klass->getAddress->that->fields->size->out->writeInt->for->itr->fields->iterator->itr->hasNext
+HeapHprofBinWriter#writeFieldDescriptors(List, InstanceKlass)::: heap hprof bin writer write field descriptors:::out->fields->size->writeShort->for->itr->fields->iterator->itr->hasNext
+HeapHprofBinWriter#signatureToHprofKind(char)::: heap hprof bin writer signature to hprof kind:::switch->return->return->return->return->return->return->return->return->return->throw->new->RuntimeException
+HeapHprofBinWriter#writeField(Field, Oop)::: heap hprof bin writer write field:::typeCode->field->getSignature->getByteAt->switch->out->getValue->writeBoolean->break->out->getValue->writeChar->break->out->getValue->writeByte->break->out->getValue->writeShort->break->out->getValue->writeInt->break->out->getValue->writeLong->break->out->getValue->writeFloat->break->out->getValue->writeDouble->break->if->VM->getVM->isCompressedOopsEnabled->handle->getValueAsOopHandle->getAddressValue->writeObjectID->else->handle->getValueAsOopHandle->getAddressValue->writeObjectID->break->throw->new->RuntimeException
+HeapHprofBinWriter#writeHeader(int, int)::: heap hprof bin writer write header:::out->writeByte->out->writeInt->out->writeInt
+HeapHprofBinWriter#writeDummyTrace()::: heap hprof bin writer write dummy trace:::writeHeader->out->writeInt->out->writeInt->out->writeInt
+HeapHprofBinWriter#writeSymbols()::: heap hprof bin writer write symbols:::try->symTbl->new->SymbolTable.SymbolVisitor->symbolsDo->catch->handleRuntimeException->finally
+HeapHprofBinWriter#writeSymbol(Symbol)::: heap hprof bin writer write symbol:::if->buf->sym->asString->getBytes->writeHeader->writeSymbolID->out->write->else->writeHeader->writeSymbolID
+HeapHprofBinWriter#writeClasses()::: heap hprof bin writer write classes:::cldGraph->VM->getVM->getClassLoaderDataGraph->try->cldGraph->new->ClassLoaderDataGraph.ClassVisitor->classesDo->catch->handleRuntimeException->finally
+HeapHprofBinWriter#writeFileHeader()::: heap hprof bin writer write file header:::out->writeBytes->out->writeByte->out->writeInt->out->System->currentTimeMillis->writeLong
+HeapHprofBinWriter#writeObjectID(Oop)::: heap hprof bin writer write object d:::handle->oop->getHandle->address->getAddressValue->writeObjectID
+HeapHprofBinWriter#writeSymbolID(Symbol)::: heap hprof bin writer write symbol d:::address->sym->getAddress->getAddressValue->getAddressValue->writeObjectID
+HeapHprofBinWriter#writeObjectID(long)::: heap hprof bin writer write object d:::if->out->writeInt->else->out->writeLong
+HeapHprofBinWriter#getAddressValue(Address)::: heap hprof bin writer get address value:::return->dbg->getAddressValue
+HeapHprofBinWriter#getInstanceFields(InstanceKlass)::: heap hprof bin writer get instance fields:::klass->res->new->ArrayList->while->curFields->klass->getImmediateFields->for->itr->curFields->iterator->itr->hasNext->klass->getSuper->return
+HeapHprofBinWriter#getSizeForFields(List)::: heap hprof bin writer get size for fields:::size->for->itr->fields->iterator->itr->hasNext->return
 HeapProgressThunk#heapIterationFractionUpdate(double):::Will be called periodically with a number between 0 and 1.:::
 HeapProgressThunk#heapIterationComplete():::Will be called after the iteration is complete.:::
+IntArray#initialize(TypeDataBase)::: int array initialize:::db->lookupType->type->db->lookupType->type->getAddressField->getOffset
+IntArray#at(int)::: int array at:::return->getIntegerAt
+IntArray#getElemType()::: int array get elem type:::return
+IntegerEnum#getValue()::: integer enum get value:::return
+Interval#getLowEndpoint()::: interval get low endpoint:::return
+Interval#getHighEndpoint()::: interval get high endpoint:::return
 Interval#overlaps(Interval, Comparator):::This takes the Interval to compare against as well as a       Comparator which will be applied to the low and high endpoints       of the given intervals.:::return->arg->getLowEndpoint->arg->getHighEndpoint->overlaps
 Interval#overlaps(Object, Object, Comparator):::Routine which can be used instead of the one taking an interval,       for the situation where the endpoints are being retrieved from       different data structures:::if->endpointComparator->compare->return->if->endpointComparator->compare->return->return
+Interval#toString()::: interval to string:::return->getLowEndpoint->toString->getHighEndpoint->toString
+IntervalNode#copyFrom(RBNode)::: interval node copy from:::argNode
+IntervalNode#getInterval()::: interval node get interval:::return
+IntervalNode#getMinEndpoint()::: interval node get min endpoint:::return
+IntervalNode#getMaxEndpoint()::: interval node get max endpoint:::return
+IntervalNode#update()::: interval node update:::newMaxEndpoint->computeMaxEndpoint->newMinEndpoint->computeMinEndpoint->if->return->return
+IntervalNode#computeMinEndpoint()::: interval node compute min endpoint:::left->getLeft->if->return->left->getMinEndpoint->return->interval->getLowEndpoint
+IntervalNode#computeMaxEndpoint()::: interval node compute max endpoint:::curMax->interval->getHighEndpoint->if->getLeft->left->getLeft->if->endpointComparator->left->getMaxEndpoint->compare->left->getMaxEndpoint->if->getRight->right->getRight->if->endpointComparator->right->getMaxEndpoint->compare->right->getMaxEndpoint->return
+IntervalNode#toString()::: interval node to string:::res->interval->toString->d->getData->if->return
+IntervalTree#insert(Interval, Object)::: interval tree insert:::node->new->IntervalNode->insertNode
 IntervalTree#findAllNodesIntersecting(Interval):::Returns a List&lt;IntervalNode&gt; indicating which nodes'       intervals were intersected by the given query interval:::retList->new->ArrayList->getRoot->searchForIntersectingNodesFrom->return
+IntervalTree#print()::: interval tree print:::printOn
+IntervalTree#printOn(PrintStream)::: interval tree print on:::getRoot->printFromNode
+IntervalTree#getNodeValue(RBNode)::: interval tree get node value:::return->getInterval
+IntervalTree#verify()::: interval tree verify:::super->verify->getRoot->verifyFromNode
+IntervalTree#verifyFromNode(RBNode)::: interval tree verify from node:::if->return->intNode->if->intNode->getMaxEndpoint->intNode->computeMaxEndpoint->equals->if->print->throw->new->RuntimeException->if->intNode->getMinEndpoint->intNode->computeMinEndpoint->equals->if->print->throw->new->RuntimeException->node->getLeft->verifyFromNode->node->getRight->verifyFromNode
+IntervalTree.IntervalComparator#compare(Object, Object)::: interval comparator compare:::i1->i2->return->endpointComparator->i1->getLowEndpoint->i2->getLowEndpoint->compare
+IntervalTree#searchForIntersectingNodesFrom(IntervalNode, Interval, List)::: interval tree search for intersecting nodes from:::if->return->left->node->getLeft->if->endpointComparator->left->getMaxEndpoint->interval->getLowEndpoint->compare->searchForIntersectingNodesFrom->if->node->getInterval->overlaps->resultList->add->right->node->getRight->if->endpointComparator->interval->getHighEndpoint->right->getMinEndpoint->compare->searchForIntersectingNodesFrom
+IntervalTree#printFromNode(RBNode, PrintStream, int):::Debugging:::for->i->tty->print->if->tty->println->return->tty->getMinEndpoint->getMaxEndpoint->node->getColor->println->if->node->getLeft->node->getLeft->printFromNode->if->node->getRight->node->getRight->printFromNode
+KlassArray#initialize(TypeDataBase)::: klass array initialize:::db->lookupType->type->db->lookupType->type->getAddressField->getOffset
+KlassArray#getAt(int)::: klass array get at:::return->Metadata->getAddressAt->instantiateWrapperFor
+KlassArray#getElemType()::: klass array get elem type:::return
+LivenessAnalysis#computeAllLivenessPaths(Oop)::: liveness analysis compute all liveness paths:::list->computeAllLivenessPaths->if->list->size->return->return
+LivenessAnalysis#computeAllLivenessPaths(Oop, boolean)::: liveness analysis compute all liveness paths:::rev->VM->getVM->getRevPtrs->if->throw->new->RuntimeException->if->rev->get->return->visitedOops->new->HashSet->visitedRoots->new->IdentityHashMap->visitedOops->add->list->new->LivenessPathList->path->new->LivenessPath->path->new->LivenessPathElement->push->list->add->while->path->for->i->list->size->if->return->list->remove->try->nextPtrs->rev->path->peek->getObj->get->if->for->iter->nextPtrs->iterator->iter->hasNext->catch->println->finally
 LivenessPath#size():::Number of elements in the path:::return->stack->size
 LivenessPath#get(int):::Fetch the element at the given index; 0-based:::return->stack->get
+LivenessPath#printOn(PrintStream)::: liveness path print on:::for->j->size
 LivenessPath#isComplete():::Indicates whether this path is "complete", i.e., whether the       last element is a root:::if->size->return->return->peek->isRoot
+LivenessPath#peek()::: liveness path peek:::return->stack->peek
+LivenessPath#push(LivenessPathElement)::: liveness path push:::stack->push
+LivenessPath#pop()::: liveness path pop:::stack->pop
+LivenessPath#copy()::: liveness path copy:::dup->new->LivenessPath->for->i->stack->size->return
+LivenessPathElement#isRoot()::: liveness path element is root:::return
+LivenessPathElement#isTerminal()::: liveness path element is terminal:::return
+LivenessPathElement#getObj()::: liveness path element get obj:::return
+LivenessPathElement#getField()::: liveness path element get field:::return
+LivenessPathList#size()::: liveness path list size:::return->list->size
+LivenessPathList#get(int)::: liveness path list get:::return->list->get
+LivenessPathList#add(LivenessPath)::: liveness path list add:::list->add
+LivenessPathList#remove(LivenessPath)::: liveness path list remove:::list->remove
+MarkBits#clear()::: mark bits clear:::bits->clear
 MarkBits#mark(Oop):::Returns true if a mark was newly placed for the given Oop, or       false if the Oop was already marked:::if->println->return->handle->obj->getHandle->idx->handle->minus->VM->getVM->getOopSize->if->bits->size->println->return->intIdx->if->bits->at->return->bits->atPut->return
 MarkBits#clear(Oop):::Forces clearing of a given mark bit.:::handle->obj->getHandle->idx->handle->minus->VM->getVM->getOopSize->if->bits->size->println->return->intIdx->bits->atPut
 MessageQueue#readMessage():::This blocks until a message is available:::
@@ -39,28 +280,163 @@ MessageQueue#readMessageWithTimeout(long):::This blocks for up to millis millise
 MessageQueue#writeMessage(Object):::Write a message to the queue:::
 MessageQueueBackend#getFirstQueue():::Get one of the two symmetric sides of this message queue.:::return
 MessageQueueBackend#getSecondQueue():::Get second of the two symmetric sides of this message queue.:::return
+MessageQueueBackend.MessageQueueImpl#readMessage()::: message queue impl read message:::synchronized->while->readList->isEmpty->try->readList->wait->catch->finally->return->readList->removeFirst
+MessageQueueBackend.MessageQueueImpl#readMessageWithTimeout(long)::: message queue impl read message with timeout:::synchronized->if->readList->isEmpty->if->return->try->readList->wait->catch->finally->if->readList->isEmpty->return->return->readList->removeFirst
+MessageQueueBackend.MessageQueueImpl#writeMessage(Object)::: message queue impl write message:::synchronized->writeList->addLast->writeList->notify
+MethodArray#initialize(TypeDataBase)::: method array initialize:::db->lookupType->type->db->lookupType->type->getAddressField->getOffset
+MethodArray#at(int)::: method array at:::return->Metadata->getAddressAt->instantiateWrapperFor
+MethodArray#getElemType()::: method array get elem type:::return
+ObjectReader#debugPrintln(String)::: object reader debug println:::if->println
+ObjectReader#debugPrintStackTrace(Exception)::: object reader debug print stack trace:::if->els->exp->getStackTrace->for->i
+ObjectReader#readObject(Oop)::: object reader read object:::if->return->readInstance->else->if->return->readPrimitiveArray->else->if->return->readObjectArray->else->return
+ObjectReader#getDefaultPrimitiveValue(Class)::: object reader get default primitive value:::if->return->else->if->return->new->Character->else->if->return->new->Byte->else->if->return->new->Short->else->if->return->new->Integer->else->if->return->new->Long->else->if->return->new->Float->else->if->return->new->Double->else->throw->new->RuntimeException
+ObjectReader#getVMSymbol(String)::: object reader get symbol:::return->VM->getVM->getSymbolTable->probe
+ObjectReader#javaLangString()::: object reader java lang string:::if->getVMSymbol->return
+ObjectReader#javaUtilHashtableEntry()::: object reader java util hashtable entry:::if->getVMSymbol->return
+ObjectReader#javaUtilHashtable()::: object reader java util hashtable:::if->getVMSymbol->return
+ObjectReader#javaUtilProperties()::: object reader java util properties:::if->getVMSymbol->return
+ObjectReader#setHashtableEntry(java.util.Hashtable, Oop)::: object reader set hashtable entry:::ik->oop->getKlass->keyField->ik->findField->valueField->ik->findField->nextField->ik->findField->if->if->Assert->ik->getName->javaUtilHashtableEntry->equals->that->Assert->that->key->value->next->try->keyField->getValue->readObject->valueField->getValue->readObject->nextField->getValue->p->put->if->setHashtableEntry->catch->if->debugPrintln->debugPrintStackTrace->finally
+ObjectReader#setPropertiesEntry(java.util.Properties, Oop)::: object reader set properties entry:::ik->oop->getKlass->keyField->ik->findField->valueField->ik->findField->try->p->keyField->getValue->readObject->valueField->getValue->readObject->setProperty->catch->if->debugPrintStackTrace->finally
+ObjectReader#getHashtable(Instance)::: object reader get hashtable:::k->oop->getKlass->tableField->k->findField->if->debugPrintln->return->table->new->java.util.Hashtable->kvs->tableField->getValue->size->kvs->getLength->debugPrintln->for->i->return
+ObjectReader#getProperties(Instance)::: object reader get properties:::k->oop->getKlass->mapField->k->findField->if->debugPrintln->return->mapObj->mapField->getValue->if->debugPrintln->return->mk->mapObj->getKlass->tableField->mk->findField->if->debugPrintln->return->props->new->java.util.Properties->kvs->tableField->getValue->size->kvs->getLength->debugPrintln->LongStream->range->kvs->getObjAt->mapToObj->filter->setPropertiesEntry->forEach->return
+ObjectReader#readInstance(Instance)::: object reader read instance:::result->getFromObjTable->if->kls->oop->getKlass->if->kls->getName->javaLangString->equals->return->OopUtilities->stringOopToString->if->kls->getName->javaUtilHashtable->equals->return->getHashtable->if->kls->getName->javaUtilProperties->equals->return->getProperties->clz->readClass->try->clz->newInstance->catch->ctrs->clz->getDeclaredConstructors->for->n->finally->if->putIntoObjTable->oop->new->FieldSetter->iterate->return
+ObjectReader#readPrimitiveArray(TypeArray)::: object reader read primitive array:::result->getFromObjTable->if->length->array->getLength->klass->array->getKlass->type->klass->getElementType->switch->arrayObj->new->booleanArr->array->new->DefaultOopVisitor->iterate->break->arrayObj->new->charArr->array->new->DefaultOopVisitor->iterate->break->arrayObj->new->floatArr->array->new->DefaultOopVisitor->iterate->break->arrayObj->new->doubleArr->array->new->DefaultOopVisitor->iterate->break->arrayObj->new->byteArr->array->new->DefaultOopVisitor->iterate->break->arrayObj->new->shortArr->array->new->DefaultOopVisitor->iterate->break->arrayObj->new->intArr->array->new->DefaultOopVisitor->iterate->break->arrayObj->new->longArr->array->new->DefaultOopVisitor->iterate->break->throw->new->RuntimeException->putIntoObjTable->return
+ObjectReader#isRobust(OopHandle)::: object reader is robust:::return->RobustOopDeterminator->oopLooksValid
+ObjectReader#readObjectArray(ObjArray)::: object reader read object array:::result->getFromObjTable->if->length->array->getLength->klass->array->getKlass->bottomKls->klass->getBottomKlass->bottomCls->dimension->klass->getDimension->dimArray->if->readClass->new->intArr->else->botKls->new->intArr->arrayObj->newInstance->putIntoObjTable->array->new->DefaultOopVisitor->iterate->return
+ObjectReader.FieldSetter#printFieldSetError(java.lang.reflect.Field, Exception)::: field setter print field set error:::if->if->debugPrintln->debugPrintStackTrace
+ObjectReader.FieldSetter#doOop(OopField, boolean)::: field setter do oop:::handle->field->getObj->getValueAsOopHandle->if->isRobust->return->f->try->readField->if->Modifier->f->getModifiers->isFinal->return->f->setAccessible->f->field->getObj->getValue->readObject->set->catch->printFieldSetError->finally
+ObjectReader.FieldSetter#doByte(ByteField, boolean)::: field setter do byte:::f->try->readField->if->Modifier->f->getModifiers->isFinal->return->f->setAccessible->f->field->getObj->getValue->setByte->catch->printFieldSetError->finally
+ObjectReader.FieldSetter#doChar(CharField, boolean)::: field setter do char:::f->try->readField->if->Modifier->f->getModifiers->isFinal->return->f->setAccessible->f->field->getObj->getValue->setChar->catch->printFieldSetError->finally
+ObjectReader.FieldSetter#doBoolean(BooleanField, boolean)::: field setter do boolean:::f->try->readField->if->Modifier->f->getModifiers->isFinal->return->f->setAccessible->f->field->getObj->getValue->setBoolean->catch->printFieldSetError->finally
+ObjectReader.FieldSetter#doShort(ShortField, boolean)::: field setter do short:::f->try->readField->if->Modifier->f->getModifiers->isFinal->return->f->setAccessible->f->field->getObj->getValue->setShort->catch->printFieldSetError->finally
+ObjectReader.FieldSetter#doInt(IntField, boolean)::: field setter do int:::f->try->readField->if->Modifier->f->getModifiers->isFinal->return->f->setAccessible->f->field->getObj->getValue->setInt->catch->printFieldSetError->finally
+ObjectReader.FieldSetter#doLong(LongField, boolean)::: field setter do long:::f->try->readField->if->Modifier->f->getModifiers->isFinal->return->f->setAccessible->f->field->getObj->getValue->setLong->catch->printFieldSetError->finally
+ObjectReader.FieldSetter#doFloat(FloatField, boolean)::: field setter do float:::f->try->readField->if->Modifier->f->getModifiers->isFinal->return->f->setAccessible->f->field->getObj->getValue->setFloat->catch->printFieldSetError->finally
+ObjectReader.FieldSetter#doDouble(DoubleField, boolean)::: field setter do double:::f->try->readField->if->Modifier->f->getModifiers->isFinal->return->f->setAccessible->f->field->getObj->getValue->setDouble->catch->printFieldSetError->finally
+ObjectReader.FieldSetter#doCInt(CIntField, boolean)::: field setter do int:::throw->new->RuntimeException
+ObjectReader#readClass(InstanceKlass)::: object reader read class:::cls->getFromObjTable->if->Class->kls->getName->asString->replace->forName->putIntoObjTable->return
+ObjectReader#readMethodOrConstructor(sun.jvm.hotspot.oops.Method)::: object reader read method or constructor:::name->m->getName->asString->if->name->equals->return->readConstructor->else->return->readMethod
+ObjectReader#readMethod(sun.jvm.hotspot.oops.Method)::: object reader read method:::result->getFromObjTable->if->clz->m->getMethodHolder->readClass->name->m->getName->asString->paramTypes->m->getSignature->getParamTypes->clz->getMethod->putIntoObjTable->return
+ObjectReader#readConstructor(sun.jvm.hotspot.oops.Method)::: object reader read constructor:::result->getFromObjTable->if->clz->m->getMethodHolder->readClass->name->m->getName->asString->paramTypes->m->getSignature->getParamTypes->clz->getDeclaredConstructor->putIntoObjTable->return
+ObjectReader#readField(sun.jvm.hotspot.oops.Field)::: object reader read field:::result->fieldMap->get->if->fieldId->f->getID->clz->f->getFieldHolder->readClass->name->fieldId->getName->try->clz->getField->catch->clz->getDeclaredField->finally->fieldMap->put->return
+ObjectReader#putIntoObjTable(Oop, Object)::: object reader put into obj table:::oopToObjMap->put
+ObjectReader#getFromObjTable(Oop)::: object reader get from obj table:::return->oopToObjMap->get
+ObjectReader#putIntoObjTable(Metadata, Object)::: object reader put into obj table:::oopToObjMap->put
+ObjectReader#getFromObjTable(Metadata)::: object reader get from obj table:::return->oopToObjMap->get
+ObjectReader.SignatureParser#doBool()::: signature parser do bool:::tmp->add
+ObjectReader.SignatureParser#doChar()::: signature parser do char:::tmp->add
+ObjectReader.SignatureParser#doFloat()::: signature parser do float:::tmp->add
+ObjectReader.SignatureParser#doDouble()::: signature parser do double:::tmp->add
+ObjectReader.SignatureParser#doByte()::: signature parser do byte:::tmp->add
+ObjectReader.SignatureParser#doShort()::: signature parser do short:::tmp->add
+ObjectReader.SignatureParser#doInt()::: signature parser do int:::tmp->add
+ObjectReader.SignatureParser#doLong()::: signature parser do long:::tmp->add
+ObjectReader.SignatureParser#doVoid()::: signature parser do void:::if->isReturnType->tmp->add->else->throw->new->RuntimeException
+ObjectReader.SignatureParser#doObject(int, int)::: signature parser do object:::tmp->getClass->add
+ObjectReader.SignatureParser#doArray(int, int)::: signature parser do array:::inner->arrayInnerBegin->elemCls->switch->_signature->getByteAt->break->break->break->break->break->break->break->break->getClass->break->break->dimension->dimArray->new->intArr->tmp->newInstance->getClass->add
+ObjectReader.SignatureParser#getClass(int, int)::: signature parser get class:::className->getClassName->try->return->Class->forName->catch->if->debugPrintln->throw->new->RuntimeException->finally
+ObjectReader.SignatureParser#getClassName(int, int)::: signature parser get class name:::buf->new->StringBuffer->for->i->return->buf->toString
+ObjectReader.SignatureParser#arrayInnerBegin(int)::: signature parser array inner begin:::while->_signature->getByteAt->return
+ObjectReader.SignatureParser#getNumParams()::: signature parser get num params:::return->tmp->size
+ObjectReader.SignatureParser#getParamTypes()::: signature parser get param types:::return->tmp->elements
+ObjectReader#getParamTypes(Symbol)::: object reader get param types:::sp->new->SignatureParser->sp->iterateParameters->result->sp->getNumParams->new->ClassArr->e->sp->getParamTypes->i->while->e->hasMoreElements->e->nextElement->return
+PlatformInfo#getOS()::: platform info get s:::os->System->getProperty->if->os->equals->return->else->if->os->equals->return->else->if->os->equals->return->else->if->os->equals->return->else->if->os->equals->return->else->if->os->contains->os->contains->return->else->if->os->startsWith->return->else->throw->new->UnsupportedPlatformException
+PlatformInfo#knownCPU(String)::: platform info known u:::KNOWN->new->StringArr->foreach->if->s->equals->return->return
+PlatformInfo#getCPU()::: platform info get u:::cpu->System->getProperty->try->pic->Class->forName->api->pic->newInstance->if->api->knownCPU->return->api->getCPU->catch->finally->if->knownCPU->throw->new->UnsupportedPlatformException->if->cpu->equals->return->if->cpu->equals->return->if->cpu->equals->return->if->cpu->equals->return->return
+PlatformInfo#main(String[])::: platform info main:::getOS->println
+PointerFinder#find(Address)::: pointer finder find:::loc->new->PointerLocation->heap->VM->getVM->getUniverse->heap->if->genheap->if->genheap->isIn->for->i->genheap->nGens->if->Assert->that->if->VM->getVM->getUseTLAB->for->t->VM->getVM->getThreads->first->t->next->return->else->if->heap->isIn->return->interp->VM->getVM->getInterpreter->if->interp->contains->interp->getCodeletContaining->return->if->VM->getVM->isCore->c->VM->getVM->getCodeCache->if->c->contains->c->findBlobUnsafe->if->Assert->that->codeContains->dataContains->if->isNMethod->nm->nm->oopsContains->return->handles->VM->getVM->getJNIHandles->storage->handles->globalHandles->if->storage->findOop->return->handles->weakGlobalHandles->if->storage->findOop->return->for->t->VM->getVM->getThreads->first->t->next->return
+PointerLocation#isInHeap()::: pointer location is in heap:::return
+PointerLocation#isInNewGen()::: pointer location is in new gen:::return->getGen
+PointerLocation#isInOldGen()::: pointer location is in old gen:::return->getGen
+PointerLocation#inOtherGen()::: pointer location in other gen:::return->isInNewGen->isInOldGen
 PointerLocation#getGeneration():::Only valid if isInHeap():::return
 PointerLocation#isInTLAB():::This may be true if isInNewGen is also true:::return
 PointerLocation#getTLABThread():::Only valid if isInTLAB() returns true:::return
 PointerLocation#getTLAB():::Only valid if isInTLAB() returns true:::return
+PointerLocation#isInInterpreter()::: pointer location is in interpreter:::return
 PointerLocation#getInterpreterCodelet():::For now, only valid if isInInterpreter is true:::return
+PointerLocation#isInCodeCache()::: pointer location is in code cache:::return
 PointerLocation#getCodeBlob():::For now, only valid if isInCodeCache is true:::return
+PointerLocation#isInBlobCode()::: pointer location is in blob code:::return
+PointerLocation#isInBlobData()::: pointer location is in blob data:::return
+PointerLocation#isInBlobOops()::: pointer location is in blob oops:::return
+PointerLocation#isInBlobUnknownLocation()::: pointer location is in blob unknown location:::return
+PointerLocation#isInStrongGlobalJNIHandles()::: pointer location is in strong global handles:::return
+PointerLocation#isInWeakGlobalJNIHandles()::: pointer location is in weak global handles:::return
+PointerLocation#isInLocalJNIHandleBlock()::: pointer location is in local handle block:::return
 PointerLocation#getJNIHandleBlock():::Only valid if isInLocalJNIHandleBlock is true:::return
 PointerLocation#getJNIHandleThread():::Only valid if isInLocalJNIHandleBlock is true:::return
+PointerLocation#isUnknown()::: pointer location is unknown:::return->isInHeap->isInInterpreter->isInCodeCache->isInStrongGlobalJNIHandles->isInWeakGlobalJNIHandles->isInLocalJNIHandleBlock
+PointerLocation#toString()::: pointer location to string:::bos->new->ByteArrayOutputStream->new->PrintStream->printOn->return->bos->toString
+PointerLocation#print()::: pointer location print:::printOn
+PointerLocation#printOn(PrintStream)::: pointer location print on:::tty->print->if->tty->print->else->tty->addr->toString->print->tty->print->if->isInHeap->if->isInTLAB->tty->getTLABThread->getThreadName->print->getTLABThread->printThreadIDOn->tty->print->getTLAB->printOn->else->if->isInNewGen->tty->print->else->if->isInOldGen->tty->print->else->tty->print->if->getGeneration->getGeneration->printOn->else->if->isInInterpreter->tty->interpreterCodelet->getDescription->println->interpreterCodelet->printOn->else->if->isInCodeCache->b->getCodeBlob->tty->print->if->isInBlobCode->tty->print->else->if->isInBlobData->tty->print->else->if->isInBlobOops->tty->print->else->if->Assert->isInBlobUnknownLocation->that->tty->print->tty->print->b->printOn->else->if->isInStrongGlobalJNIHandles->tty->print->else->if->isInWeakGlobalJNIHandles->tty->print->else->if->isInLocalJNIHandleBlock->tty->print->tty->handleBlock->top->print->if->handleThread->isJavaThread->tty->print->printThreadIDOn->else->tty->print->else->if->Assert->isUnknown->that->tty->print
+ProcImageClassLoader#findClass(String)::: proc image class loader find class:::try->bos->new->ByteArrayOutputStream->klass->SystemDictionaryHelper->findInstanceKlass->cw->new->ClassWriter->cw->write->buf->bos->toByteArray->return->defineClass->catch->throw->new->ClassNotFoundException->initCause->finally
+ProgressiveHeapVisitor#prologue(long)::: progressive heap visitor prologue:::userHeapVisitor->prologue
+ProgressiveHeapVisitor#doObj(Oop)::: progressive heap visitor do obj:::userHeapVisitor->doObj->obj->getObjectSize->curFrac->if->thunk->heapIterationFractionUpdate->return
+ProgressiveHeapVisitor#epilogue()::: progressive heap visitor epilogue:::userHeapVisitor->epilogue->thunk->heapIterationComplete
+RBColor#getName()::: color get name:::return
+RBNode#getData()::: node get data:::return
 RBNode#copyFrom(RBNode):::Must copy all user-defined fields from the given node:::
 RBNode#update():::This is called by the base RBTree's insertion and deletion       methods when necessary:::return
+RBNode#getColor()::: node get color:::return
+RBNode#setColor(RBColor)::: node set color:::
+RBNode#getParent()::: node get parent:::return
+RBNode#setParent(RBNode)::: node set parent:::
 RBNode#getLeft():::Access to left child:::return
+RBNode#setLeft(RBNode)::: node set left:::
 RBNode#getRight():::Access to right child:::return
+RBNode#setRight(RBNode)::: node set right:::
+RBTree#getRoot()::: tree get root:::return
+RBTree#insertNode(RBNode)::: tree insert node:::treeInsert->x->setColor->shouldPropagate->x->update->if->println->propagateStart->while->x->getParent->getColor->if->x->getParent->x->getParent->getParent->getLeft->y->x->getParent->getParent->getRight->if->y->getColor->if->println->x->getParent->setColor->y->setColor->x->getParent->getParent->setColor->x->getParent->update->x->getParent->getParent->x->update->else->if->x->getParent->getRight->if->println->x->getParent->leftRotate->if->println->x->getParent->setColor->x->getParent->getParent->setColor->x->getParent->getParent->rightRotate->x->getParent->else->y->x->getParent->getParent->getLeft->if->y->getColor->if->println->x->getParent->setColor->y->setColor->x->getParent->getParent->setColor->x->getParent->update->x->getParent->getParent->x->update->else->if->x->getParent->getLeft->if->println->x->getParent->rightRotate->if->println->x->getParent->setColor->x->getParent->getParent->setColor->x->getParent->getParent->leftRotate->x->getParent->while->if->println->propagateStart->getParent->propagateStart->update->root->setColor->if->verify
 RBTree#deleteNode(RBNode):::FIXME: this does not work properly yet for augmented red-black       trees since it doesn't update nodes:::y->if->z->getLeft->z->getRight->else->treeSuccessor->x->if->y->getLeft->y->getLeft->else->y->getRight->xParent->if->x->y->getParent->setParent->x->getParent->else->y->getParent->if->y->getParent->else->if->y->getParent->getLeft->y->getParent->setLeft->else->y->getParent->setRight->if->z->copyFrom->if->y->getColor->deleteFixup->if->verify
+RBTree#print()::: tree print:::printOn
+RBTree#printOn(PrintStream)::: tree print on:::printFromNode
+RBTree#getNodeValue(RBNode)::: tree get node value:::return->node->getData
 RBTree#verify():::Verify invariants are preserved:::verifyFromNode
+RBTree#treeInsert(RBNode)::: tree tree insert:::y->x->while->if->comparator->getNodeValue->getNodeValue->compare->x->getLeft->else->x->getRight->z->setParent->if->else->if->comparator->getNodeValue->getNodeValue->compare->y->setLeft->else->y->setRight
+RBTree#treeSuccessor(RBNode)::: tree tree successor:::if->x->getRight->return->x->getRight->treeMinimum->y->x->getParent->while->y->getRight->y->getParent->return
+RBTree#treeMinimum(RBNode)::: tree tree minimum:::while->x->getLeft->x->getLeft->return
+RBTree#leftRotate(RBNode):::Returns true if updates must continue propagating up the tree:::y->x->getRight->x->y->getLeft->setRight->if->y->getLeft->y->getLeft->setParent->y->x->getParent->setParent->if->x->getParent->else->if->x->getParent->getLeft->x->getParent->setLeft->else->x->getParent->setRight->y->setLeft->x->setParent->res->x->update->y->update->return
+RBTree#rightRotate(RBNode):::Returns true if updates must continue propagating up the tree:::x->y->getLeft->y->x->getRight->setLeft->if->x->getRight->x->getRight->setParent->x->y->getParent->setParent->if->y->getParent->else->if->y->getParent->getLeft->y->getParent->setLeft->else->y->getParent->setRight->x->setRight->y->setParent->res->y->update->x->update->return
+RBTree#deleteFixup(RBNode, RBNode):::Restores red-black property to tree after splicing out node       during deletion:::while->x->getColor->if->xParent->getLeft->w->xParent->getRight->if->if->throw->new->RuntimeException->if->w->getColor->w->setColor->xParent->setColor->leftRotate->xParent->getRight->if->w->getLeft->w->getLeft->getColor->w->getRight->w->getRight->getColor->w->setColor->x->getParent->else->if->w->getRight->w->getRight->getColor->w->getLeft->setColor->w->setColor->rightRotate->xParent->getRight->w->xParent->getColor->setColor->xParent->setColor->if->w->getRight->w->getRight->setColor->leftRotate->x->getParent->else->w->xParent->getLeft->if->if->throw->new->RuntimeException->if->w->getColor->w->setColor->xParent->setColor->rightRotate->xParent->getLeft->if->w->getRight->w->getRight->getColor->w->getLeft->w->getLeft->getColor->w->setColor->x->getParent->else->if->w->getLeft->w->getLeft->getColor->w->getRight->setColor->w->setColor->leftRotate->xParent->getLeft->w->xParent->getColor->setColor->xParent->setColor->if->w->getLeft->w->getLeft->setColor->rightRotate->x->getParent->if->x->setColor
+RBTree#verifyFromNode(RBNode)::: tree verify from node:::if->return->if->node->getColor->node->getColor->if->println->printOn->throw->new->RuntimeException->if->node->getColor->if->node->getLeft->if->node->getLeft->getColor->if->println->printOn->throw->new->RuntimeException->if->node->getRight->if->node->getRight->getColor->if->println->printOn->throw->new->RuntimeException->i->node->getLeft->verifyFromNode->j->node->getRight->verifyFromNode->if->if->println->printOn->throw->new->RuntimeException->return->node->getColor
+RBTree#printFromNode(RBNode, PrintStream, int):::Debugging:::for->i->tty->print->if->tty->println->return->tty->getNodeValue->node->getColor->println->node->getLeft->printFromNode->node->getRight->printFromNode
+RBTree#main(String[])::: tree main:::treeSize->maxVal->println->tree->new->Comparator->new->RBTree->rand->System->currentTimeMillis->new->Random->for->i->println->println->for->i->println
+ReversePtrs#put(LivenessPathElement, Oop)::: reverse ptrs put:::if->return->al->rp->get->if->new->ArrayList->al->add->rp->put
 ReversePtrs#get(Oop):::Returns an ArrayList of the incoming references to this Oop if       it is alive, and null if it is dead according to the       ReversePtrsAnalysis:::return->rp->get
 ReversePtrsAnalysis#setHeapProgressThunk(HeapProgressThunk):::Sets an optional progress thunk:::
 ReversePtrsAnalysis#run():::Runs the analysis algorithm:::if->VM->getVM->getRevPtrs->return->vm->VM->getVM->new->ReversePtrs->vm->setRevPtrs->universe->vm->getUniverse->collHeap->universe->heap->collHeap->used->if->progressThunk->heapIterationFractionUpdate->new->MarkBits->vm->getObjectHeap->for->thread->VM->getVM->getThreads->first->thread->next->handles->VM->getVM->getJNIHandles->handles->globalHandles->new->RootVisitor->doOopStorage->handles->weakGlobalHandles->new->RootVisitor->doOopStorage->cldg->VM->getVM->getClassLoaderDataGraph->cldg->new->ClassLoaderDataGraph.ClassVisitor->classesDo->if->progressThunk->heapIterationComplete
+ReversePtrsAnalysis#markAndTraverse(OopHandle)::: reverse ptrs analysis mark and traverse:::try->heap->newOop->markAndTraverse->catch->Long->e->getAddress->toHexString->println->println->finally
+ReversePtrsAnalysis#printHeader()::: reverse ptrs analysis print header:::for->i
+ReversePtrsAnalysis#markAndTraverse(Oop)::: reverse ptrs analysis mark and traverse:::if->return->if->markBits->mark->return->workList->new->Stack->next->try->while->currObj->if->currObj->getObjectSize->curFrac->if->progressThunk->heapIterationFractionUpdate->if->printHeader->currObj->getHandle->println->currObj->new->DefaultOopVisitor->iterate->if->workList->pop->catch->println->println->finally
+ReversePtrsAnalysis.RootVisitor#visitAddress(Address)::: root visitor visit address:::next->heap->addr->getOopHandleAt->newOop->lp->new->NamedFieldIdentifier->new->LivenessPathElement->rp->put->markAndTraverse
+ReversePtrsAnalysis.RootVisitor#visitCompOopAddress(Address)::: root visitor visit comp oop address:::next->heap->addr->getCompOopHandleAt->newOop->lp->new->NamedFieldIdentifier->new->LivenessPathElement->rp->put->markAndTraverse
+ReversePtrsAnalysis#doStack(JavaThread, AddressVisitor)::: reverse ptrs analysis do stack:::for->fst->new->StackFrameStream->fst->isDone->fst->next
+ReversePtrsAnalysis#doJNIHandleBlock(JNIHandleBlock, AddressVisitor)::: reverse ptrs analysis do handle block:::handles->oopsDo
+ReversePtrsAnalysis#doOopStorage(OopStorage, AddressVisitor)::: reverse ptrs analysis do oop storage:::oopSet->oopsDo
+RobustOopDeterminator#initialize(TypeDataBase)::: robust oop determinator initialize:::type->db->lookupType->if->VM->getVM->isCompressedKlassPointersEnabled->type->getAddressField->else->type->getAddressField
+RobustOopDeterminator#oopLooksValid(OopHandle)::: robust oop determinator oop looks valid:::if->return->if->VM->getVM->getUniverse->isIn->return->try->if->VM->getVM->isCompressedKlassPointersEnabled->Metadata->oop->klassField->getOffset->getCompKlassAddressAt->instantiateWrapperFor->else->Metadata->klassField->getValue->instantiateWrapperFor->return->catch->return->finally
+StreamMonitor.Trigger#matches(String)::: trigger matches:::for->i->return
+StreamMonitor.Trigger#equals(String[])::: trigger equals:::if->return->for->i->return
 StreamMonitor#addTrigger(String, int):::Adds a "trigger", which the stream watches for and, if seen,       reports the trigger value of via the getTriggers() method:::return->new->StringArr->addTrigger
 StreamMonitor#addTrigger(String[], int):::Adds a "trigger", which the stream watches for and, if seen,       reports the trigger value of via the getTriggers() method:::for->iter->triggers->iterator->iter->hasNext->trigger->new->Trigger->return->triggers->add
 StreamMonitor#removeTrigger(String):::Removes a previously added trigger:::return->new->StringArr->removeTrigger
 StreamMonitor#removeTrigger(String[]):::Removes a previously added trigger:::for->iter->triggers->listIterator->iter->hasNext->return
 StreamMonitor#getTriggersSeen():::Returns an List of java.lang.Integer objects indicating the       values of the triggers seen since the last call to       getTriggersSeen:::tmpList->new->LinkedList->return
 StreamMonitor#waitFor(String, long):::Waits for the specified string to come in for the given period       of time (measured in milliseconds).:::try->wait->catch->finally->return
+StreamMonitor#startCapture()::: stream monitor start capture:::new->StringBuffer
+StreamMonitor#stopCapture()::: stream monitor stop capture:::ret->captureBuffer->toString->return
+StreamMonitor#run()::: stream monitor run:::buf->new->byteArr->shouldContinue->try->do->str->input->readLine->if->else->if->println->synchronized->if->captureBuffer->append->captureBuffer->append->if->str->indexOf->notifyAll->for->iter->triggers->iterator->iter->hasNext->while->catch->finally->print->if->print->println
+SystemDictionaryHelper#initialize()::: system dictionary helper initialize:::
+SystemDictionaryHelper#getAllInstanceKlasses()::: system dictionary helper get all instance klasses:::if->return->tmp->new->Vector->cldg->VM->getVM->getClassLoaderDataGraph->cldg->new->ClassLoaderDataGraph.ClassVisitor->classesDo->tmpArray->tmp->toArray->new->InstanceKlassArr->System->arraycopy->Arrays->new->Comparator->sort->return
+SystemDictionaryHelper#findInstanceKlasses(String)::: system dictionary helper find instance klasses:::namePart->replace->tmpKlasses->getAllInstanceKlasses->tmp->new->Vector->for->i->tmpArray->tmp->toArray->searchResult->new->InstanceKlassArr->System->arraycopy->return
+SystemDictionaryHelper#findInstanceKlass(String)::: system dictionary helper find instance klass:::className->replace->cldg->VM->getVM->getClassLoaderDataGraph->klass->cldg->find->if->return->else->return
+U1Array#initialize(TypeDataBase)::: u1 array initialize:::db->lookupType->type->db->lookupType->type->getAddressField->getOffset
+U1Array#at(int)::: u1 array at:::return->getIntegerAt
+U1Array#getElemType()::: u1 array get elem type:::return
+U2Array#initialize(TypeDataBase)::: u2 array initialize:::db->lookupType->type->db->lookupType->type->getAddressField->getOffset
+U2Array#at(int)::: u2 array at:::return->getIntegerAt
+U2Array#getElemType()::: u2 array get elem type:::return
 WorkerThread#invokeLater(Runnable):::Runs the given Runnable in the thread represented by this       WorkerThread object at an unspecified later time.:::mq->writeMessage
 WorkerThread#shutdown():::Can be used to dispose of the internal worker thread:::mq->new->Runnable->writeMessage
+WorkerThread.MainLoop#run()::: main loop run:::while->runnable->myMq->readMessage->try->runnable->run->catch->e->printStackTrace->finally

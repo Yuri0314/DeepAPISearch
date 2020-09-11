@@ -1,15 +1,34 @@
+AbstractDiagnosticFormatter#formatKind(JCDiagnostic, Locale)::: abstract diagnostic formatter format kind:::switch->d->getType->return->return->localize->return->localize->return->localize->throw->d->getType->new->AssertionError
+AbstractDiagnosticFormatter#format(JCDiagnostic, Locale)::: abstract diagnostic formatter format:::List->nil->return->formatDiagnostic
+AbstractDiagnosticFormatter#formatDiagnostic(JCDiagnostic, Locale)::: abstract diagnostic formatter format diagnostic:::
+AbstractDiagnosticFormatter#formatPosition(JCDiagnostic, PositionKind, Locale)::: abstract diagnostic formatter format position:::Assert->d->getPosition->check->return->String->getPosition->valueOf
+AbstractDiagnosticFormatter#getPosition(JCDiagnostic, PositionKind)::: abstract diagnostic formatter get position:::switch->return->d->getIntStartPosition->return->d->getIntEndPosition->return->d->getLineNumber->return->d->getColumnNumber->return->d->getIntPosition->throw->new->AssertionError
+AbstractDiagnosticFormatter#formatSource(JCDiagnostic, boolean, Locale)::: abstract diagnostic formatter format source:::fo->d->getSource->if->throw->new->IllegalArgumentException->if->return->fo->getName->else->if->return->getShortName->else->return->PathFileObject->getSimpleName
 AbstractDiagnosticFormatter#formatArguments(JCDiagnostic, Locale):::Format the arguments of a given diagnostic.:::buf->new->ListBuffer<>->foreach->d->getArgs->buf->formatArgument->append->return->buf->toList
 AbstractDiagnosticFormatter#formatArgument(JCDiagnostic, Object, Locale):::Format a single argument of a given diagnostic.:::if->s->try->formatMessage->catch->finally->return->else->if->return->expr2String->else->if->return->formatIterable->else->if->return->printer->visit->else->if->return->printer->visit->else->if->return->getName->else->if->return->else->if->return->else->if->return->toString->else->if->return->else->if->return->else->return->String->valueOf
+AbstractDiagnosticFormatter#expr2String(JCExpression)::: abstract diagnostic formatter expr2 string:::switch->tree->getTag->return->expr2String->return->Pretty->toSimpleString->Assert->tree->getKind->error->return
 AbstractDiagnosticFormatter#formatIterable(JCDiagnostic, Iterable, Locale):::Format an iterable argument of a given diagnostic.:::sbuf->new->StringBuilder->sep->foreach->sbuf->append->sbuf->formatArgument->append->return->sbuf->toString
 AbstractDiagnosticFormatter#formatSubdiagnostics(JCDiagnostic, Locale):::Format all the subdiagnostics attached to a given diagnostic.:::subdiagnostics->List->nil->maxDepth->config->getMultilineLimit->if->try->maxCount->config->getMultilineLimit->count->foreach->d->getSubdiagnostics->if->subdiagnostics->formatSubdiagnostic->append->else->break->catch->finally->return
 AbstractDiagnosticFormatter#formatSubdiagnostic(JCDiagnostic, JCDiagnostic, Locale):::Format a subdiagnostics attached to a given diagnostic.:::return->formatMessage
 AbstractDiagnosticFormatter#formatSourceLine(JCDiagnostic, int):::Format the faulty source code line and point to the error.:::buf->new->StringBuilder->source->d->getDiagnosticSource->pos->d->getIntPosition->if->d->getIntPosition->throw->new->AssertionError->line->source->getLine->if->return->buf->indent->append->col->source->getColumnNumber->if->config->isCaretEnabled->buf->append->for->i->buf->indent->append->return->buf->toString
+AbstractDiagnosticFormatter#formatLintCategory(JCDiagnostic, Locale)::: abstract diagnostic formatter format lint category:::lc->d->getLintCategory->if->return->return->localize
 AbstractDiagnosticFormatter#localize(Locale, String, Object...):::Converts a String into a locale-dependent representation accordingly to a given locale.:::return->messages->getLocalizedString
+AbstractDiagnosticFormatter#displaySource(JCDiagnostic)::: abstract diagnostic formatter display source:::return->config->getVisible->contains->d->getType->d->getIntPosition
+AbstractDiagnosticFormatter#isRaw()::: abstract diagnostic formatter is raw:::return
 AbstractDiagnosticFormatter#indentString(int):::Creates a string with a given amount of empty spaces:::spaces->if->spaces->length->return->spaces->substring->else->buf->new->StringBuilder->for->i->return->buf->toString
 AbstractDiagnosticFormatter#indent(String, int):::Indent a string by prepending a given amount of empty spaces to each line of the string.:::indent->indentString->buf->new->StringBuilder->nl->foreach->s->split->buf->append->buf->append->return->buf->toString
+AbstractDiagnosticFormatter#getConfiguration()::: abstract diagnostic formatter get configuration:::return
+AbstractDiagnosticFormatter.SimpleConfiguration#getMultilineLimit(MultilineLimit)::: simple configuration get multiline limit:::return->multilineLimits->get
+AbstractDiagnosticFormatter.SimpleConfiguration#getVisible()::: simple configuration get visible:::return->EnumSet->copyOf
+AbstractDiagnosticFormatter.SimpleConfiguration#setMultilineLimit(MultilineLimit, int)::: simple configuration set multiline limit:::multilineLimits->put
+AbstractDiagnosticFormatter.SimpleConfiguration#setVisible(Set)::: simple configuration set visible:::EnumSet->copyOf
+AbstractDiagnosticFormatter.SimpleConfiguration#setVisiblePart(DiagnosticPart, boolean)::: simple configuration set visible part:::if->visibleParts->add->else->visibleParts->remove
 AbstractDiagnosticFormatter.SimpleConfiguration#setCaretEnabled(boolean):::Shows a '^' sign under the source line displayed by the formatter (if applicable).:::
 AbstractDiagnosticFormatter.SimpleConfiguration#isCaretEnabled():::Tells whether the caret display is active or not.:::return
+AbstractDiagnosticFormatter#getPrinter()::: abstract diagnostic formatter get printer:::return
+AbstractDiagnosticFormatter#setPrinter(Printer)::: abstract diagnostic formatter set printer:::
 AbstractLog#useSource(JavaFileObject):::Re-assign source, returning previous setting.:::prev->source->getFile->getSource->return
+AbstractLog#getSource(JavaFileObject)::: abstract log get source:::if->return->s->sourceMap->get->if->new->DiagnosticSource->sourceMap->put->return
 AbstractLog#currentSource():::Return the underlying diagnostic source:::return
 AbstractLog#error(String, Object...):::Report an error, unless another error was already reported at same  source position.:::diags->errorKey->error
 AbstractLog#error(Error):::Report an error, unless another error was already reported at same  source position.:::diags->error->report
@@ -30,6 +49,14 @@ AbstractLog#note(DiagnosticPosition, Note):::Provide a non-fatal notification, u
 AbstractLog#note(int, Note):::Provide a non-fatal notification, unless suppressed by the -nowarn option.:::diags->wrap->note->report
 AbstractLog#note(JavaFileObject, Note):::Provide a non-fatal notification, unless suppressed by the -nowarn option.:::diags->getSource->note->report
 AbstractLog#mandatoryNote(JavaFileObject, Note):::Provide a non-fatal notification, unless suppressed by the -nowarn option.:::diags->getSource->mandatoryNote->report
+AbstractLog#report(JCDiagnostic)::: abstract log report:::
+AbstractLog#directError(String, Object...)::: abstract log direct error:::
+AbstractLog#wrap(int)::: abstract log wrap:::return->new->SimpleDiagnosticPosition
+ArrayUtils#calculateNewLength(int, int)::: array utils calculate new length:::while->return
+ArrayUtils#ensureCapacity(T[], int)::: array utils ensure capacity:::if->return->else->newLength->calculateNewLength->result->Array->array->getClass->getComponentType->newInstance->System->arraycopy->return
+ArrayUtils#ensureCapacity(byte[], int)::: array utils ensure capacity:::if->return->else->newLength->calculateNewLength->result->new->byteArr->System->arraycopy->return
+ArrayUtils#ensureCapacity(char[], int)::: array utils ensure capacity:::if->return->else->newLength->calculateNewLength->result->new->charArr->System->arraycopy->return
+ArrayUtils#ensureCapacity(int[], int)::: array utils ensure capacity:::if->return->else->newLength->calculateNewLength->result->new->intArr->System->arraycopy->return
 Assert#check(boolean):::Equivalent to   assert cond;:::if->error
 Assert#checkNull(Object):::Equivalent to   assert (o == null);:::if->error
 Assert#checkNonNull(T):::Equivalent to   assert (t != null); return t;:::if->error->return
@@ -45,23 +72,42 @@ Assert#checkNonNull(T, String):::Equivalent to   assert (o != null) : msg;:::if-
 Assert#checkNonNull(T, Supplier):::Equivalent to   assert (o != null) : msg.get();  Note: message string is computed lazily.:::if->msg->get->error->return
 Assert#error():::Equivalent to   assert false;:::throw->new->AssertionError
 Assert#error(String):::Equivalent to   assert false : msg;:::throw->new->AssertionError
+BasicDiagnosticFormatter#formatDiagnostic(JCDiagnostic, Locale)::: basic diagnostic formatter format diagnostic:::if->messages->getCurrentLocale->format->selectFormat->buf->new->StringBuilder->for->i->format->length->if->return->buf->toString->addSourceLineIfNeeded->else->return->buf->toString
+BasicDiagnosticFormatter#formatMessage(JCDiagnostic, Locale)::: basic diagnostic formatter format message:::currentIndentation->buf->new->StringBuilder->args->formatArguments->msg->d->getCode->args->toArray->localize->lines->msg->split->if->new->StringArr->if->getConfiguration->getVisible->contains->getConfiguration->getIndentation->buf->indent->append->if->getConfiguration->getVisible->contains->getConfiguration->getIndentation->for->i->if->d->isMultiline->getConfiguration->getVisible->contains->getConfiguration->getIndentation->foreach->formatSubdiagnostics->buf->indent->append->return->buf->toString
+BasicDiagnosticFormatter#addSourceLineIfNeeded(JCDiagnostic, String)::: basic diagnostic formatter add source line if needed:::if->displaySource->return->else->conf->getConfiguration->indentSource->conf->getIndentation->sourceLine->formatSourceLine->singleLine->msg->contains->if->getConfiguration->getSourcePosition->return->else->return->msg->Matcher->quoteReplacement->replaceFirst
+BasicDiagnosticFormatter#formatMeta(char, JCDiagnostic, Locale)::: basic diagnostic formatter format meta:::switch->return->formatSource->return->formatPosition->return->formatSource->return->formatPosition->return->formatPosition->return->formatPosition->return->formatKind->return->formatPosition->usePrefix->switch->d->getType->break->d->getIntPosition->break->if->return->formatKind->else->return->return->formatMessage->return->formatLintCategory->return->return->return->String->valueOf
+BasicDiagnosticFormatter#selectFormat(JCDiagnostic)::: basic diagnostic formatter select format:::source->d->getDiagnosticSource->format->getConfiguration->getFormat->if->if->d->getIntPosition->getConfiguration->getFormat->else->if->source->getFile->source->getFile->getKind->getConfiguration->getFormat->return
+BasicDiagnosticFormatter#getConfiguration()::: basic diagnostic formatter get configuration:::return->super->getConfiguration
+BasicDiagnosticFormatter.BasicConfiguration#initFormat()::: basic configuration init format:::initFormats
+BasicDiagnosticFormatter.BasicConfiguration#initOldFormat()::: basic configuration init old format:::initFormats
+BasicDiagnosticFormatter.BasicConfiguration#initFormats(String, String, String)::: basic configuration init formats:::new->EnumMap<>->setFormat->setFormat->setFormat
+BasicDiagnosticFormatter.BasicConfiguration#initFormats(String)::: basic configuration init formats:::formats->fmt->split->switch->setFormat->setFormat->setFormat
+BasicDiagnosticFormatter.BasicConfiguration#initIndentation()::: basic configuration init indentation:::new->HashMap<>->setIndentation->setIndentation->setIndentation->setIndentation
 BasicDiagnosticFormatter.BasicConfiguration#getIndentation(DiagnosticPart):::Get the amount of spaces for a given indentation kind:::return->indentationLevels->get
 BasicDiagnosticFormatter.BasicConfiguration#setIndentation(DiagnosticPart, int):::Set the indentation level for various element of a given diagnostic - this might lead to more readable diagnostics:::indentationLevels->put
 BasicDiagnosticFormatter.BasicConfiguration#setSourcePosition(SourcePosition):::Set the source line positioning used by this formatter:::
 BasicDiagnosticFormatter.BasicConfiguration#getSourcePosition():::Get the source line positioning used by this formatter:::return
 BasicDiagnosticFormatter.BasicConfiguration#setFormat(BasicFormatKind, String):::Set a metachar string for a specific format:::availableFormats->put
 BasicDiagnosticFormatter.BasicConfiguration#getFormat(BasicFormatKind):::Get a metachar string for a specific format:::return->availableFormats->get
+Bits#sizeTo(int)::: bits size to:::if->Arrays->copyOf
 Bits#clear():::This set = {}.:::Assert->check->for->i
+Bits#reset()::: bits reset:::internalReset
+Bits#internalReset()::: bits internal reset:::
+Bits#isReset()::: bits is reset:::return
+Bits#assign(Bits)::: bits assign:::someBits->dup->return
 Bits#dup():::Return a copy of this set.:::Assert->check->tmp->new->Bits->dupBits->return
+Bits#dupBits()::: bits dup bits:::result->if->else->new->intArr->System->arraycopy->return
 Bits#incl(int):::Include x in this set.:::Assert->check->Assert->check->sizeTo
 Bits#inclRange(int, int):::Include [start..limit) in this set.:::Assert->check->sizeTo->for->x
 Bits#excludeFrom(int):::Exclude [start...end] from this set.:::Assert->check->temp->new->Bits->temp->sizeTo->temp->inclRange->internalAndSet
 Bits#excl(int):::Exclude x from this set.:::Assert->check->Assert->check->sizeTo
 Bits#isMember(int):::Is x an element of this set?:::Assert->check->return
 Bits#andSet(Bits):::this set = this set & xs.:::Assert->check->internalAndSet->return
+Bits#internalAndSet(Bits)::: bits internal and set:::Assert->check->sizeTo->for->i
 Bits#orSet(Bits):::this set = this set | xs.:::Assert->check->sizeTo->for->i->return
 Bits#diffSet(Bits):::this set = this set \ xs.:::Assert->check->for->i->return
 Bits#xorSet(Bits):::this set = this set ^ xs.:::Assert->check->sizeTo->for->i->return
+Bits#trailingZeroBits(int):::Count trailing zero bits in an int:::Assert->check->if->return->n->if->if->if->if->return
 Bits#nextBit(int):::Return the index of the least bit position &ge; x that is set:::Assert->check->windex->if->return->word->while->if->return->trailingZeroBits->if->return
 Bits#toString():::a string representation of this set.:::if->digits->new->charArr->for->i->return->new->String->else->return
 ByteBuffer#appendByte(int):::Append byte to this buffer.:::ArrayUtils->ensureCapacity
@@ -78,9 +124,24 @@ ByteBuffer#toName(Names):::Convert contents to name.:::return->names->fromUtf
 Constants#decode(Object, Type):::Converts a constant in internal representation (in which boolean, char, byte, short, and int are each represented by an Integer) into standard representation:::if->i->switch->type->getTag->return->return->return->return->return
 Constants#format(Object, Type):::Returns a string representation of a constant value (given in internal representation), quoted and formatted as in Java source.:::decode->switch->type->getTag->return->formatByte->return->formatLong->return->formatFloat->return->formatDouble->return->formatChar->if->return->formatString->return
 Constants#format(Object):::Returns a string representation of a constant value (given in standard wrapped representation), quoted and formatted as in Java source.:::if->return->formatByte->if->return->formatShort->if->return->formatLong->if->return->formatFloat->if->return->formatDouble->if->return->formatChar->if->return->formatString->if->return->value->toString->else->throw->value->getClass->getName->new->IllegalArgumentException
+Constants#formatByte(byte)::: constants format byte:::return->String->format
+Constants#formatShort(short)::: constants format short:::return->String->format
+Constants#formatLong(long)::: constants format long:::return
+Constants#formatFloat(float)::: constants format float:::if->Float->isNaN->return->else->if->Float->isInfinite->return->else->return
+Constants#formatDouble(double)::: constants format double:::if->Double->isNaN->return->else->if->Double->isInfinite->return->else->return
+Constants#formatChar(char)::: constants format char:::return->Convert->quote
+Constants#formatString(String)::: constants format string:::return->Convert->quote
+Context.Factory#make(Context)::: factory make:::
 Context#put(Key, Factory):::Set the factory for the key in this context.:::checkState->old->ht->put->if->throw->new->AssertionError->checkState->ft->put
 Context#put(Key, T):::Set the value for the key in this context.:::if->throw->new->AssertionError->checkState->old->ht->put->if->throw->new->AssertionError
 Context#get(Key):::Get the value for the key in this context.:::checkState->o->ht->get->if->fac->fac->make->if->throw->new->AssertionError->Assert->ht->get->check->return->Context->uncheckedCast
+Context#key(Class)::: context key:::checkState->k->kt->get->uncheckedCast->if->new->Key<>->kt->put->return
+Context#get(Class)::: context get:::return->key->get
+Context#put(Class, T)::: context put:::key->put
+Context#put(Class, Factory)::: context put:::key->put
+Context#uncheckedCast(Object):::TODO: This method should be removed and Context should be made type safe:::return
+Context#dump()::: context dump:::foreach->ht->values->value->getClass->println
+Context#checkState(Map)::: context check state:::if->throw->new->IllegalStateException
 Convert#string2int(String, int):::Convert string to integer.:::if->return->Integer->parseInt->else->cs->s->toCharArray->limit->n->foreach->d->Character->digit->if->throw->new->NumberFormatException->return
 Convert#string2long(String, int):::Convert string to long integer.:::if->return->Long->parseLong->else->cs->s->toCharArray->limit->n->foreach->d->Character->digit->if->throw->new->NumberFormatException->return
 Convert#utf2chars(byte[], int, char[], int, int):::Convert `len' bytes from utf8 to characters:::i->j->limit->while->b->if->else->if->return
@@ -94,22 +155,63 @@ Convert#chars2utf(char[]):::Return all characters in given array as an array of 
 Convert#string2utf(String):::Return string as an array of bytes in in Utf8 representation.:::return->s->toCharArray->chars2utf
 Convert#quote(String):::Escapes each character in a string that has an escape sequence or is non-printable ASCII:::buf->new->StringBuilder->for->i->s->length->return->buf->toString
 Convert#quote(char):::Escapes a character if it has an escape sequence or is non-printable ASCII:::switch->return->return->return->return->return->return->return->return->return->isPrintableAscii->String->valueOf->String->format
+Convert#isPrintableAscii(char):::Is a character printable ASCII?:::return
 Convert#escapeUnicode(String):::Escape all unicode characters in string.:::len->s->length->i->while->ch->s->charAt->if->buf->new->StringBuilder->buf->s->substring->append->while->s->charAt->if->buf->append->buf->Character->forDigit->append->buf->Character->forDigit->append->buf->Character->forDigit->append->buf->Character->forDigit->append->else->buf->append->buf->toString->else->return
 Convert#shortName(Name):::Return the last part of a qualified name.:::start->name->lastIndexOf->end->name->getByteLength->if->name->length->return->return->name->name->lastIndexOf->name->getByteLength->subName
 Convert#shortName(String):::Return the last part of a qualified name from its string representation:::return->name->name->lastIndexOf->substring
 Convert#packagePart(Name):::Return the package name of a class name, excluding the trailing '.',  "" if not existent.:::return->classname->classname->lastIndexOf->subName
+Convert#packagePart(String)::: convert package part:::lastDot->classname->lastIndexOf->return->classname->substring
+Convert#enclosingCandidates(Name)::: convert enclosing candidates:::names->List->nil->index->while->name->lastIndexOf->name->subName->names->prepend->return
+Convert#classCandidates(Name)::: convert class candidates:::names->List->nil->nameStr->name->toString->index->while->nameStr->indexOf->pack->nameStr->substring->clz->nameStr->substring->replace->names->fromString->prepend->return->names->reverse
+Dependencies#instance(Context)::: dependencies instance:::instance->context->get->if->new->DummyDependencies->return
 Dependencies#push(ClassSymbol, CompletionCause):::Push a new completion node on the stack.:::
 Dependencies#pop():::Remove current dependency node from the stack.:::
 Dependencies.GraphDependencies#preRegister(Context):::Register a Context.Factory to create a Dependencies.:::context->GraphDependencies->new->put
+Dependencies.GraphDependencies.Node#addDependency(DependencyKind, Node)::: node add dependency:::deps->depsByKind->get->if->deps->contains->deps->add
+Dependencies.GraphDependencies.Node#equals(Object)::: node equals:::return->data->equals
+Dependencies.GraphDependencies.Node#hashCode()::: node hash code:::return->data->hashCode
+Dependencies.GraphDependencies.Node#getSupportedDependencyKinds()::: node get supported dependency kinds:::return->CompletionCause->values
+Dependencies.GraphDependencies.Node#getDependenciesByKind(DependencyKind)::: node get dependencies by kind:::return->depsByKind->get
+Dependencies.GraphDependencies.Node#nodeAttributes()::: node node attributes:::p->new->Properties->p->DotVisitor->toString->wrap->put->return
+Dependencies.GraphDependencies.Node#dependencyAttributes(Node, GraphUtils.DependencyKind)::: node dependency attributes:::p->new->Properties->p->put->return
+Dependencies.GraphDependencies.Node#toString()::: node to string:::return->data->getQualifiedName->toString
+Dependencies.GraphDependencies.CompletionNode#nodeAttributes()::: completion node node attributes:::p->super->nodeAttributes->p->put->p->put->return
+Dependencies.GraphDependencies.CompletionNode#getClassSymbol()::: completion node get class symbol:::return
+Dependencies.GraphDependencies#push(ClassSymbol, CompletionCause)::: graph dependencies push:::n->new->CompletionNode->if->push
 Dependencies.GraphDependencies#push(Node, CompletionCause):::Push a new dependency on the stack.:::cachedNode->dependencyNodeMap->get->if->dependencyNodeMap->put->else->if->nodeStack->isEmpty->currentNode->nodeStack->peek->currentNode->addDependency->nodeStack->push->return
+Dependencies.GraphDependencies#pop()::: graph dependencies pop:::nodeStack->pop
+Dependencies.GraphDependencies#close()::: graph dependencies close:::if->dependenciesModes->contains->new->PruneVisitor->dependencyNodeMap->values->visit->if->dependenciesModes->contains->new->FilterVisitor->dependencyNodeMap->values->visit->if->dependenciesModes->contains->new->FilterVisitor->dependencyNodeMap->values->visit->if->try->fw->new->FileWriter->fw->GraphUtils->dependencyNodeMap->values->toDot->append->catch->finally
+Dependencies.GraphDependencies#complete(Symbol)::: graph dependencies complete:::push->pop
+Dependencies.GraphDependencies#isTerminal()::: graph dependencies is terminal:::return
+Dependencies.GraphDependencies#getNodes()::: graph dependencies get nodes:::return->dependencyNodeMap->values
+Dependencies.GraphDependencies.PruneVisitor#visitNode(Node, Void)::: prune visitor visit node:::
+Dependencies.GraphDependencies.PruneVisitor#visitDependency(GraphUtils.DependencyKind, Node, Node, Void)::: prune visitor visit dependency:::if->from->equals->get->remove
+Dependencies.GraphDependencies.FilterVisitor#visitNode(Node, Void)::: filter visitor visit node:::if->if->dependencyNodeMap->remove
+Dependencies.GraphDependencies.FilterVisitor#visitDependency(GraphUtils.DependencyKind, Node, Node, Void)::: filter visitor visit dependency:::if->if->get->remove
+Dependencies.DummyDependencies#push(ClassSymbol, CompletionCause)::: dummy dependencies push:::
+Dependencies.DummyDependencies#pop()::: dummy dependencies pop:::
 DiagnosticSource#getFile():::Return the underlying file object handled by this  DiagnosticSource object.:::return
 DiagnosticSource#getLineNumber(int):::Return the one-based line number associated with a given pos for the current source file:::try->if->findLine->return->return->catch->finally
 DiagnosticSource#getColumnNumber(int, boolean):::Return the one-based column number associated with a given pos for the current source file:::try->if->findLine->column->for->bp->return->return->catch->finally
 DiagnosticSource#getLine(int):::Return the content of the line containing a given pos.:::try->if->findLine->return->lineEnd->while->if->return->return->new->String->catch->finally
+DiagnosticSource#getEndPosTable()::: diagnostic source get end pos table:::return
+DiagnosticSource#setEndPosTable(EndPosTable)::: diagnostic source set end pos table:::if->throw->new->IllegalStateException
 DiagnosticSource#findLine(int):::Find the line in the buffer that contains the current position:::if->return->try->if->refBuf->get->if->initBuf->else->if->bp->while->switch->if->break->break->return->catch->log->directError->new->charArr->return->finally
+DiagnosticSource#initBuf(JavaFileObject)::: diagnostic source init buf:::buf->cs->fileObject->getCharContent->if->cb->JavacFileManager->toArray->cb->limit->else->cs->toString->toCharArray->new->SoftReference<>->return
 Filter#accepts(T):::Does this element match against the filter?:::
 ForwardingDiagnosticFormatter#getDelegatedFormatter():::Returns the underlying delegated formatter:::return
+ForwardingDiagnosticFormatter#getConfiguration()::: forwarding diagnostic formatter get configuration:::return
+ForwardingDiagnosticFormatter#displaySource(D)::: forwarding diagnostic formatter display source:::return->formatter->displaySource
+ForwardingDiagnosticFormatter#format(D, Locale)::: forwarding diagnostic formatter format:::return->formatter->format
+ForwardingDiagnosticFormatter#formatKind(D, Locale)::: forwarding diagnostic formatter format kind:::return->formatter->formatKind
+ForwardingDiagnosticFormatter#formatMessage(D, Locale)::: forwarding diagnostic formatter format message:::return->formatter->formatMessage
+ForwardingDiagnosticFormatter#formatPosition(D, PositionKind, Locale)::: forwarding diagnostic formatter format position:::return->formatter->formatPosition
+ForwardingDiagnosticFormatter#formatSource(D, boolean, Locale)::: forwarding diagnostic formatter format source:::return->formatter->formatSource
 ForwardingDiagnosticFormatter.ForwardingConfiguration#getDelegatedConfiguration():::Returns the underlying delegated configuration.:::return
+ForwardingDiagnosticFormatter.ForwardingConfiguration#getMultilineLimit(MultilineLimit)::: forwarding configuration get multiline limit:::return->configuration->getMultilineLimit
+ForwardingDiagnosticFormatter.ForwardingConfiguration#getVisible()::: forwarding configuration get visible:::return->configuration->getVisible
+ForwardingDiagnosticFormatter.ForwardingConfiguration#setMultilineLimit(MultilineLimit, int)::: forwarding configuration set multiline limit:::configuration->setMultilineLimit
+ForwardingDiagnosticFormatter.ForwardingConfiguration#setVisible(Set)::: forwarding configuration set visible:::configuration->setVisible
 GraphUtils.Node#accept(NodeVisitor, A):::visitor method.:::
 GraphUtils.NodeVisitor#visitNode(N, A):::Visitor action for nodes.:::
 GraphUtils.NodeVisitor#visitDependency(DependencyKind, N, N, A):::Visitor action for a dependency between 'from' and 'to' with given kind.:::
@@ -118,19 +220,53 @@ GraphUtils.DottableNode#nodeAttributes():::Retrieves the set of dot attributes a
 GraphUtils.DottableNode#dependencyAttributes(N, DependencyKind):::Retrieves the set of dot attributes associated with a given dependency.:::
 GraphUtils.AbstractNode#getSupportedDependencyKinds():::Get an array of the dependency kinds supported by this node.:::
 GraphUtils.AbstractNode#getDependenciesByKind(DependencyKind):::Get all dependencies of a given kind:::
+GraphUtils.AbstractNode#toString()::: abstract node to string:::return->data->toString
+GraphUtils.AbstractNode#accept(NodeVisitor, A)::: abstract node accept:::visitor->visitNode->foreach->getSupportedDependencyKinds->foreach->getDependenciesByKind->new->ArrayList<>->visitor->visitDependency
+GraphUtils.TarjanNode#getAllDependencies()::: tarjan node get all dependencies:::
+GraphUtils.TarjanNode#compareTo(N)::: tarjan node compare to:::return
 GraphUtils#tarjan(Iterable):::Tarjan's algorithm to determine strongly connected components of a directed graph in linear time:::tarjan->new->Tarjan<>->return->tarjan->findSCC
+GraphUtils.Tarjan#findSCC(Iterable)::: tarjan find c:::foreach->if->findSCC->return->sccs->toList
+GraphUtils.Tarjan#findSCC(N)::: tarjan find c:::visitNode->foreach->v->getAllDependencies->if->findSCC->Math->min->else->if->stack->contains->Math->min->if->addSCC
+GraphUtils.Tarjan#visitNode(N)::: tarjan visit node:::stack->prepend
+GraphUtils.Tarjan#addSCC(N)::: tarjan add c:::n->cycle->new->ListBuffer<>->do->stack->remove->cycle->add->while->sccs->cycle->toList->add
 GraphUtils#toDot(Collection, String, String):::Debugging: dot representation of a set of connected nodes:::buf->new->StringBuilder->buf->String->format->append->buf->String->DotVisitor->wrap->format->append->dotVisitor->new->DotVisitor<>->dotVisitor->visit->buf->append->return->buf->toString
+GraphUtils.DotVisitor#visitDependency(DependencyKind, N, N, StringBuilder)::: dot visitor visit dependency:::buf->String->from->hashCode->to->hashCode->format->append->buf->from->dependencyAttributes->formatProperties->append->buf->append
+GraphUtils.DotVisitor#visitNode(N, StringBuilder)::: dot visitor visit node:::buf->String->node->hashCode->format->append->buf->node->nodeAttributes->formatProperties->append->buf->append
+GraphUtils.DotVisitor#formatProperties(Properties)::: dot visitor format properties:::return->p->toString->replaceAll->replaceAll->replaceAll
+GraphUtils.DotVisitor#wrap(String)::: dot visitor wrap:::res->return->res->replaceAll
 IntHashTable#hash(Object):::Compute the hash code of a given object.:::return->System->identityHashCode
 IntHashTable#lookup(Object, int):::Find either the index of a key's value, or the index of an available space.:::node->hash1->hash2->deleted->for->i
 IntHashTable#lookup(Object):::Lookup a given key's value in the hash table.:::return->hash->lookup
 IntHashTable#getFromIndex(int):::Return the value stored at the specified index in the table.:::node->return
 IntHashTable#putAtIndex(Object, int, int):::Associates the specified key with the specified value in this map.:::old->if->if->if->rehash->return->else->oldValue->return
+IntHashTable#remove(Object)::: int hash table remove:::index->lookup->old->if->return->return
 IntHashTable#rehash():::Expand the hash table when it exceeds the load factor:::oldObjsTable->oldIntsTable->oldCapacity->newCapacity->newObjTable->new->ObjectArr->newIntTable->new->intArr->newMask->key->for->i
 IntHashTable#clear():::Removes all mappings from this map.:::for->i
+Iterators#createCompoundIterator(Iterable, Function>)::: iterators create compound iterator:::return->new->CompoundIterator<>
+Iterators.CompoundIterator#hasNext()::: compound iterator has next:::if->currentIterator->hasNext->update->return
+Iterators.CompoundIterator#next()::: compound iterator next:::if->hasNext->throw->new->NoSuchElementException->return->currentIterator->next
+Iterators.CompoundIterator#remove()::: compound iterator remove:::throw->new->UnsupportedOperationException
+Iterators.CompoundIterator#update()::: compound iterator update:::while->inputs->hasNext->convertor->inputs->next->apply->if->currentIterator->hasNext->return
+Iterators#createFilterIterator(Iterator, Predicate)::: iterators create filter iterator:::return->new->Iterator<E>
 JavacMessages#instance(Context):::Get the JavacMessages instance for this context.:::instance->context->get->if->new->JavacMessages->return
+JavacMessages#getCurrentLocale()::: javac messages get current locale:::return
+JavacMessages#setCurrentLocale(Locale)::: javac messages set current locale:::if->Locale->getDefault->getBundles
+JavacMessages#add(String)::: javac messages add:::ResourceBundle->getBundle->add
+JavacMessages#add(ResourceBundleHelper)::: javac messages add:::bundleHelpers->prepend->if->bundleCache->isEmpty->bundleCache->clear
+JavacMessages#getBundles(Locale)::: javac messages get bundles:::if->return->bundles->bundleCache->get->bundleList->bundles->get->if->List->nil->foreach->try->rb->helper->getResourceBundle->bundleList->prepend->catch->throw->new->InternalError->finally->bundleCache->new->SoftReference<>->put->return
 JavacMessages#getLocalizedString(String, Object...):::Gets the localized string corresponding to a key, formatted with a set of args.:::return->getLocalizedString
+JavacMessages#getLocalizedString(JCDiagnostic.DiagnosticInfo)::: javac messages get localized string:::return->getLocalizedString
+JavacMessages#getLocalizedString(Locale, String, Object...)::: javac messages get localized string:::if->getCurrentLocale->return->getBundles->getLocalizedString
+JavacMessages#getLocalizedString(Locale, JCDiagnostic.DiagnosticInfo)::: javac messages get localized string:::if->getCurrentLocale->return->getBundles->getLocalizedString
+JavacMessages#getDefaultLocalizedString(String, Object...)::: javac messages get default localized string:::return->List->getDefaultBundle->of->getLocalizedString
+JavacMessages#getDefaultMessages()::: javac messages get default messages:::if->new->JavacMessages->return
+JavacMessages#getDefaultBundle()::: javac messages get default bundle:::try->if->ResourceBundle->getBundle->return->catch->throw->new->Error->finally
+JavacMessages#getLocalizedString(List, String, Object...)::: javac messages get localized string:::msg->for->l->l->nonEmpty->if->return->MessageFormat->format
+JavacMessages#getLocalizedString(List, JCDiagnostic.DiagnosticInfo)::: javac messages get localized string:::msg->for->l->l->nonEmpty->if->diagInfo->key->if->return->MessageFormat->new->ObjectArr->format->else->return->diagFormatter->getDiagFactory->create->getCurrentLocale->format
+JavacMessages#getDiagFactory()::: javac messages get diag factory:::if->instance->return
 JavacMessages.ResourceBundleHelper#getResourceBundle(Locale):::Gets the ResourceBundle.:::
 JCDiagnostic.Factory#instance(Context):::Get the Factory instance for this context.:::instance->context->get->if->new->Factory->return
+JCDiagnostic.Factory#initOptions(Options)::: factory init options:::if->options->isSet->defaultErrorFlags->add
 JCDiagnostic.Factory#error(DiagnosticFlag, DiagnosticSource, DiagnosticPosition, String, Object...):::Create an error diagnostic:::return->errorKey->error
 JCDiagnostic.Factory#error(DiagnosticFlag, DiagnosticSource, DiagnosticPosition, Error):::Create an error diagnostic:::diag->EnumSet->copyOf->create->if->diag->setFlag->return
 JCDiagnostic.Factory#mandatoryWarning(LintCategory, DiagnosticSource, DiagnosticPosition, String, Object...):::Create a warning diagnostic that will not be hidden by the -nowarn or -Xlint:none options.:::return->warningKey->mandatoryWarning
@@ -147,42 +283,73 @@ JCDiagnostic.Factory#create(DiagnosticType, DiagnosticSource, DiagnosticPosition
 JCDiagnostic.Factory#create(DiagnosticSource, DiagnosticPosition, DiagnosticInfo):::Create a new diagnostic of the given kind, which is not mandatory and which has no lint category.:::return->EnumSet->noneOf->create
 JCDiagnostic.Factory#create(DiagnosticType, LintCategory, Set, DiagnosticSource, DiagnosticPosition, String, Object...):::Create a new diagnostic of the given kind.:::return->DiagnosticInfo->of->create
 JCDiagnostic.Factory#create(LintCategory, Set, DiagnosticSource, DiagnosticPosition, DiagnosticInfo):::Create a new diagnostic with given key.:::return->normalize->new->JCDiagnostic
+JCDiagnostic.Factory#normalize(DiagnosticInfo)::: factory normalize:::return->DiagnosticInfo->Stream->of->return->fragment->map->toArray->of
 JCDiagnostic.Factory#errorKey(String, Object...):::Create a new error key.:::return->DiagnosticInfo->of
 JCDiagnostic.Factory#warningKey(String, Object...):::Create a new warning key.:::return->DiagnosticInfo->of
 JCDiagnostic.Factory#noteKey(String, Object...):::Create a new note key.:::return->DiagnosticInfo->of
 JCDiagnostic.Factory#fragmentKey(String, Object...):::Create a new fragment key.:::return->DiagnosticInfo->of
 JCDiagnostic#fragment(String, Object...):::Create a fragment diagnostic, for use as an argument in other diagnostics:::return->getFragmentFormatter->DiagnosticInfo->of->EnumSet->noneOf->new->JCDiagnostic
+JCDiagnostic#getFragmentFormatter()::: diagnostic get fragment formatter:::if->JavacMessages->getDefaultMessages->new->BasicDiagnosticFormatter->return
 JCDiagnostic.DiagnosticPosition#getTree():::Gets the tree node, if any, to which the diagnostic applies.:::
 JCDiagnostic.DiagnosticPosition#getStartPosition():::If there is a tree node, get the start position of the tree node:::
 JCDiagnostic.DiagnosticPosition#getPreferredPosition():::Get the position within the file that most accurately defines the  location for the diagnostic.:::
 JCDiagnostic.DiagnosticPosition#getEndPosition(EndPosTable):::If there is a tree node, and if endPositions are available, get  the end position of the tree node:::
+JCDiagnostic.SimpleDiagnosticPosition#getTree()::: simple diagnostic position get tree:::return
+JCDiagnostic.SimpleDiagnosticPosition#getStartPosition()::: simple diagnostic position get start position:::return
+JCDiagnostic.SimpleDiagnosticPosition#getPreferredPosition()::: simple diagnostic position get preferred position:::return
+JCDiagnostic.SimpleDiagnosticPosition#getEndPosition(EndPosTable)::: simple diagnostic position get end position:::return
+JCDiagnostic.SourcePosition#getLineNumber()::: source position get line number:::return
+JCDiagnostic.SourcePosition#getColumnNumber()::: source position get column number:::return
 JCDiagnostic.DiagnosticInfo#key():::Compute the resource key.:::return
 JCDiagnostic.DiagnosticInfo#of(DiagnosticType, String, String, Object...):::Static factory method; build a custom diagnostic key using given kind, prefix, code and args.:::switch->return->new->Error->return->new->Warning->return->new->Note->return->new->Fragment->Assert->error->return
 JCDiagnostic.DiagnosticInfo#getCode():::Returns the code for this diagnostic info, provided mainly for backward compatibility:::return
 JCDiagnostic.DiagnosticInfo#getArgs():::Returns the arguments for this diagnostic info, provided mainly for backward compatibility:::return
+JCDiagnostic.DiagnosticInfo#setArgs(Object[])::: diagnostic info set args:::
 JCDiagnostic#getType():::Get the type of this diagnostic.:::return
 JCDiagnostic#getSubdiagnostics():::Get the subdiagnostic list:::return->List->nil
+JCDiagnostic#isMultiline()::: diagnostic is multiline:::return
 JCDiagnostic#isMandatory():::Check whether or not this diagnostic is required to be shown.:::return->flags->contains
 JCDiagnostic#hasLintCategory():::Check whether this diagnostic has an associated lint category.:::return
 JCDiagnostic#getLintCategory():::Get the associated lint category, or null if none.:::return
 JCDiagnostic#getSource():::Get the name of the source file referred to by this diagnostic.:::if->return->else->return->source->getFile
 JCDiagnostic#getDiagnosticSource():::Get the source referred to by this diagnostic.:::return
+JCDiagnostic#getIntStartPosition()::: diagnostic get int start position:::return->position->getStartPosition
+JCDiagnostic#getIntPosition()::: diagnostic get int position:::return->position->getPreferredPosition
+JCDiagnostic#getIntEndPosition()::: diagnostic get int end position:::return->position->source->getEndPosTable->getEndPosition
+JCDiagnostic#getStartPosition()::: diagnostic get start position:::return->getIntStartPosition
+JCDiagnostic#getPosition()::: diagnostic get position:::return->getIntPosition
+JCDiagnostic#getEndPosition()::: diagnostic get end position:::return->getIntEndPosition
+JCDiagnostic#getDiagnosticPosition()::: diagnostic get diagnostic position:::return
 JCDiagnostic#getLineNumber():::Get the line number within the source referred to by this diagnostic.:::if->new->SourcePosition->return->sourcePosition->getLineNumber
 JCDiagnostic#getColumnNumber():::Get the column number within the line of source referred to by this diagnostic.:::if->new->SourcePosition->return->sourcePosition->getColumnNumber
 JCDiagnostic#getArgs():::Get the arguments to be included in the text of the diagnostic.:::return
 JCDiagnostic#getPrefix():::Get the prefix string associated with this type of diagnostic.:::return->getPrefix
 JCDiagnostic#getPrefix(DiagnosticType):::Get the prefix string associated with a particular type of diagnostic.:::return->defaultFormatter->Locale->getDefault->formatKind
 JCDiagnostic#toString():::Return the standard presentation of this diagnostic.:::return->defaultFormatter->Locale->getDefault->format
+JCDiagnostic#getKind()::: diagnostic get kind:::switch->return->return->flags->contains->return->return
+JCDiagnostic#getCode()::: diagnostic get code:::return->diagnosticInfo->key
+JCDiagnostic#getMessage(Locale)::: diagnostic get message:::return->defaultFormatter->formatMessage
+JCDiagnostic#setFlag(DiagnosticFlag)::: diagnostic set flag:::flags->add->if->switch->flags->remove->break->flags->add->break
+JCDiagnostic#isFlagSet(DiagnosticFlag)::: diagnostic is flag set:::return->flags->contains
+JCDiagnostic.MultilineDiagnostic#getSubdiagnostics()::: multiline diagnostic get subdiagnostics:::return
+JCDiagnostic.MultilineDiagnostic#isMultiline()::: multiline diagnostic is multiline:::return
 List#nil():::Construct an empty list.:::return
 List#filter(List, A):::Returns the list obtained from 'l' after removing all elements 'elem':::Assert->checkNonNull->res->List->nil->foreach->if->a->equals->res->prepend->return->res->reverse
+List#intersect(List)::: list intersect:::buf->new->ListBuffer<>->foreach->if->that->contains->buf->append->return->buf->toList
+List#diff(List)::: list diff:::buf->new->ListBuffer<>->foreach->if->that->contains->buf->append->return->buf->toList
 List#take(int):::Create a new list from the first n elements of this list:::buf->new->ListBuffer<>->count->foreach->if->break->buf->append->return->buf->toList
 List#of(A):::Construct a list consisting of given element.:::return->List->nil->new->List<>
 List#of(A, A):::Construct a list consisting of given elements.:::return->of->new->List<>
 List#of(A, A, A):::Construct a list consisting of given elements.:::return->of->new->List<>
 List#of(A, A, A, A...):::Construct a list consisting of given elements.:::return->from->new->List<>->new->List<>->new->List<>
 List#from(A[]):::Construct a list consisting all elements of given array.:::xs->nil->if->for->i->return
+List#from(Iterable)::: list from:::xs->new->ListBuffer<>->foreach->xs->append->return->xs->toList
 List#fill(int, A):::Construct a list consisting of a given number of identical elements.:::l->nil->for->i->return
 List#isEmpty():::Does list have no elements?:::return
+List#nonEmpty()::: list non empty:::return
+List#length()::: list length:::l->len->while->return
+List#size()::: list size:::return->length
+List#setTail(List)::: list set tail:::return
 List#prepend(A):::Prepend given element to front of list, forming and returning  a new list.:::return->new->List<>
 List#prependList(List):::Prepend given list of elements to front of list, forming and returning  a new list.:::if->this->isEmpty->return->if->xs->isEmpty->return->if->isEmpty->return->prepend->result->rev->xs->reverse->Assert->check->while->rev->nonEmpty->h->h->setTail->return
 List#reverse():::Reverse list:::if->isEmpty->tail->isEmpty->return->rev->nil->for->l->l->nonEmpty->return
@@ -190,6 +357,7 @@ List#append(A):::Append given element at length, forming and returning  a new li
 List#appendList(List):::Append given list at length, forming and returning  a new list.:::return->x->prependList
 List#appendList(ListBuffer):::Append given list buffer at length, forming and returning a new list.:::return->x->toList->appendList
 List#toArray(T[]):::Copy successive elements of this list into given vector until  list is exhausted or end of vector is reached.:::i->l->dest->while->l->nonEmpty->if->l->isEmpty->if->return->Array->vec->getClass->getComponentType->size->newInstance->return->toArray
+List#toArray()::: list to array:::return->size->new->ObjectArr->toArray
 List#toString(String):::Form a string listing all elements with given separator character.:::if->isEmpty->return->else->buf->new->StringBuilder->buf->append->for->l->l->nonEmpty->return->buf->toString
 List#toString():::Form a string listing all elements with comma as the separator character.:::return->toString
 List#hashCode():::Compute a hash code, overrides Object:::l->h->while->hashCode->return
@@ -197,10 +365,28 @@ List#equals(Object):::Is this list the same as other list?:::if->return->equals-
 List#equals(List, List):::Are the two lists the same?:::while->if->if->return->else->if->equals->return->return
 List#contains(Object):::Does the list contain the specified element?:::l->while->if->if->return->else->if->equals->return->return
 List#last():::The last element in the list, if any, or null.:::last->t->while->return
+List#map(Function)::: list map:::changed->buf->new->ListBuffer<>->foreach->z->mapper->apply->buf->append->return->buf->toList
+List#convert(Class, List)::: list convert:::if->return->foreach->klass->cast->return
+List#emptyIterator()::: list empty iterator:::return
+List#iterator()::: list iterator:::if->return->emptyIterator->return->new->Iterator<A>
+List#get(int)::: list get:::if->throw->String->valueOf->new->IndexOutOfBoundsException->l->for->i->l->isEmpty->if->l->isEmpty->throw->size->new->IndexOutOfBoundsException->return
+List#addAll(int, Collection)::: list add all:::if->c->isEmpty->return->throw->new->UnsupportedOperationException
+List#set(int, A)::: list set:::throw->new->UnsupportedOperationException
+List#add(int, A)::: list add:::throw->new->UnsupportedOperationException
+List#remove(int)::: list remove:::throw->new->UnsupportedOperationException
+List#indexOf(Object)::: list index of:::i->for->l->return
+List#lastIndexOf(Object)::: list last index of:::last->i->for->l->return
+List#listIterator()::: list list iterator:::return->Collections->new->ArrayList<A>->unmodifiableList->listIterator
+List#listIterator(int)::: list list iterator:::return->Collections->new->ArrayList<A>->unmodifiableList->listIterator
+List#subList(int, int)::: list sub list:::if->size->throw->new->IllegalArgumentException->a->new->ArrayList<>->i->for->l->return->Collections->unmodifiableList
 List#collector():::Collect elements into a new list (using a @code{ListBuffer}):::return->Collector->ListBuffer->new->ListBuffer->add->buf1->addAll->return->ListBuffer->toList->of
+ListBuffer#of(T)::: list buffer of:::lb->new->ListBuffer<>->lb->add->return
+ListBuffer#clear()::: list buffer clear:::List->nil
 ListBuffer#length():::Return the number of elements in this buffer.:::return
+ListBuffer#size()::: list buffer size:::return
 ListBuffer#isEmpty():::Is buffer empty?:::return
 ListBuffer#nonEmpty():::Is buffer not empty?:::return
+ListBuffer#copy():::Copy list and sets last.:::if->elems->nonEmpty->orig->List->of->while->nonEmpty->List->of
 ListBuffer#prepend(A):::Prepend an element to buffer.:::elems->prepend->if->return
 ListBuffer#append(A):::Append an element to buffer.:::Assert->checkNonNull->if->copy->newLast->List->of->if->else->return
 ListBuffer#appendList(List):::Append all elements in a list to buffer.:::while->xs->nonEmpty->append->return
@@ -209,39 +395,91 @@ ListBuffer#appendArray(A[]):::Append all elements in an array to buffer.:::forea
 ListBuffer#toList():::Convert buffer to a list of all its elements.:::return
 ListBuffer#contains(Object):::Does the list contain the specified element?:::return->elems->contains
 ListBuffer#toArray(T[]):::Convert buffer to an array:::return->elems->toArray
+ListBuffer#toArray()::: list buffer to array:::return->size->new->ObjectArr->toArray
 ListBuffer#first():::The first element in this buffer.:::return
 ListBuffer#next():::Return first element in this buffer and remove:::x->if->elems->isEmpty->if->elems->isEmpty->return
 ListBuffer#iterator():::An enumeration of all elements in this buffer.:::return->new->Iterator<A>
+ListBuffer#add(A)::: list buffer add:::append->return
+ListBuffer#remove(Object)::: list buffer remove:::throw->new->UnsupportedOperationException
+ListBuffer#containsAll(Collection)::: list buffer contains all:::foreach->if->contains->return->return
+ListBuffer#addAll(Collection)::: list buffer add all:::foreach->append->return
+ListBuffer#removeAll(Collection)::: list buffer remove all:::throw->new->UnsupportedOperationException
+ListBuffer#retainAll(Collection)::: list buffer retain all:::throw->new->UnsupportedOperationException
+ListBuffer#offer(A)::: list buffer offer:::append->return
+ListBuffer#poll()::: list buffer poll:::return->next
+ListBuffer#peek()::: list buffer peek:::return->first
+ListBuffer#last()::: list buffer last:::return
 Log.DiagnosticHandler#install(Log):::Install this diagnostic handler as the current one, recording the previous one.:::
 Log.DiagnosticHandler#report(JCDiagnostic):::Handle a diagnostic.:::
+Log.DiscardDiagnosticHandler#report(JCDiagnostic)::: discard diagnostic handler report:::
+Log.DeferredDiagnosticHandler#report(JCDiagnostic)::: deferred diagnostic handler report:::if->diag->isFlagSet->filter->accepts->deferred->add->else->prev->report
+Log.DeferredDiagnosticHandler#getDiagnostics()::: deferred diagnostic handler get diagnostics:::return
 Log.DeferredDiagnosticHandler#reportDeferredDiagnostics():::Report all deferred diagnostics.:::EnumSet->allOf->reportDeferredDiagnostics
 Log.DeferredDiagnosticHandler#reportDeferredDiagnostics(Set):::Report selected deferred diagnostics.:::d->while->deferred->poll->if->kinds->d->getKind->contains->prev->report
 Log#instance(Context):::Get the Log instance for this context.:::instance->context->get->if->new->Log->return
 Log#preRegister(Context, PrintWriter):::Register a Context.Factory to create a Log.:::context->new->Log->put
+Log#initWriters(Context):::Initialize a map of writers based on values found in the context:::out->context->get->err->context->get->if->new->PrintWriter->new->PrintWriter->return->initWriters->else->if->pw->return->initWriters->else->return->initWriters
+Log#initWriters(PrintWriter, PrintWriter):::Initialize a writer map for a stream for normal output, and a stream for diagnostics.:::writers->new->EnumMap<>->writers->put->writers->put->writers->put->writers->put->writers->put->return
+Log#initWriters(PrintWriter, PrintWriter, PrintWriter):::Initialize a writer map with different streams for different types of diagnostics.:::writers->new->EnumMap<>->writers->put->writers->put->writers->put->writers->put->writers->put->return
+Log#initOptions(Options)::: log init options:::options->isSet->options->isSet->options->isUnset->options->isSet->getDefaultMaxErrors->getIntOption->getDefaultMaxWarnings->getIntOption->rawDiagnostics->options->isSet->new->RawDiagnosticFormatter->new->BasicDiagnosticFormatter->ek->options->get->if->Arrays->ek->split->asList->new->HashSet<>
+Log#getIntOption(Options, Option, int)::: log get int option:::s->options->get->try->if->n->Integer->parseInt->return->catch->finally->return
 Log#getDefaultMaxErrors():::Default value for -Xmaxerrs.:::return
 Log#getDefaultMaxWarnings():::Default value for -Xmaxwarns.:::return
+Log#hasDiagnosticListener()::: log has diagnostic listener:::return
+Log#setEndPosTable(JavaFileObject, EndPosTable)::: log set end pos table:::Assert->checkNonNull->getSource->setEndPosTable
 Log#currentSourceFile():::Return current sourcefile.:::return->source->getFile
 Log#getDiagnosticFormatter():::Get the current diagnostic formatter.:::return
 Log#setDiagnosticFormatter(DiagnosticFormatter):::Set the current diagnostic formatter.:::
+Log#getWriter(WriterKind)::: log get writer:::return->writers->get
+Log#setWriter(WriterKind, PrintWriter)::: log set writer:::Assert->checkNonNull->writers->put
+Log#setWriters(PrintWriter)::: log set writers:::Assert->checkNonNull->foreach->WriterKind->values->writers->put
 Log#popDiagnosticHandler(DiagnosticHandler):::Replace the specified diagnostic handler with the handler that was current at the time this handler was created:::Assert->check
 Log#flush():::Flush the logs:::foreach->writers->values->pw->flush
+Log#flush(WriterKind)::: log flush:::getWriter->flush
 Log#shouldReport(JavaFileObject, int):::Returns true if an error needs to be reported for a given source name and pos.:::if->return->coords->new->Pair<>->shouldReport->recorded->contains->if->recorded->add->return
+Log#shouldReport(JCDiagnostic):::Returns true if a diagnostics needs to be reported.:::file->d->getSource->if->return->if->d->getIntPosition->shouldReport->return->if->d->isFlagSet->return->coords->getCode->new->Pair<>->shouldReport->recordedSourceLevelErrors->contains->if->recordedSourceLevelErrors->add->return
+Log#getCode(JCDiagnostic)::: log get code:::buf->new->ListBuffer<>->getCodeRecursive->return->buf->toList
+Log#getCodeRecursive(ListBuffer, JCDiagnostic)::: log get code recursive:::buf->d->getCode->add->foreach->d->getArgs->if->getCodeRecursive
 Log#prompt():::Prompt user after an error.:::if->localize->println->try->while->switch->read->System->exit->return->return->throw->new->AssertionError->catch->finally
+Log#printErrLine(int, PrintWriter):::Print the faulty source code line and point to the error.:::line->source->getLine->if->return->col->source->getColumnNumber->printRawLines->for->i->writer->println->writer->flush
+Log#printNewline()::: log print newline:::noticeWriter->writers->get->noticeWriter->println
+Log#printNewline(WriterKind)::: log print newline:::getWriter->println
+Log#printLines(String, Object...)::: log print lines:::noticeWriter->writers->get->localize->printRawLines
+Log#printLines(DiagnosticInfo)::: log print lines:::noticeWriter->writers->get->localize->printRawLines
+Log#printLines(PrefixKind, String, Object...)::: log print lines:::noticeWriter->writers->get->localize->printRawLines
+Log#printLines(WriterKind, String, Object...)::: log print lines:::getWriter->localize->printRawLines
+Log#printLines(WriterKind, PrefixKind, String, Object...)::: log print lines:::getWriter->localize->printRawLines
 Log#printRawLines(String):::Print the text of a message, translating newlines appropriately  for the platform.:::noticeWriter->writers->get->printRawLines
 Log#printRawLines(WriterKind, String):::Print the text of a message, translating newlines appropriately  for the platform.:::getWriter->printRawLines
 Log#printRawLines(PrintWriter, String):::Print the text of a message, translating newlines appropriately  for the platform.:::nl->while->msg->indexOf->writer->msg->substring->println->msg->substring->if->msg->length->writer->println
 Log#printVerbose(String, Object...):::Print the localized text of a "verbose" message to the noticeWriter stream.:::noticeWriter->writers->get->localize->printRawLines
+Log#directError(String, Object...)::: log direct error:::errWriter->writers->get->localize->printRawLines->errWriter->flush
 Log#strictWarning(DiagnosticPosition, String, Object...):::Report a warning that cannot be suppressed.:::diags->warning->writeDiagnostic
 Log#report(JCDiagnostic):::Primary method to report a diagnostic.:::diagnosticHandler->report
+Log.DefaultDiagnosticHandler#report(JCDiagnostic)::: default diagnostic handler report:::if->expectDiagKeys->diagnostic->getCode->remove->switch->diagnostic->getType->throw->new->IllegalArgumentException->if->diagnostic->isMandatory->writeDiagnostic->break->if->diagnostic->isMandatory->if->writeDiagnostic->break->if->diagnostic->isFlagSet->shouldReport->writeDiagnostic->break->if->diagnostic->isFlagSet
 Log#writeDiagnostic(JCDiagnostic):::Write out a diagnostic.:::if->diagListener->report->return->writer->diag->getType->getWriterForDiagnosticType->diagFormatter->messages->getCurrentLocale->format->printRawLines->if->switch->diag->getType->prompt->if->new->RuntimeException->printStackTrace->writer->flush
+Log#getWriterForDiagnosticType(DiagnosticType)::: log get writer for diagnostic type:::switch->throw->new->IllegalArgumentException->return->writers->get->return->writers->get->return->writers->get->throw->new->Error
 Log#getLocalizedString(String, Object...):::Find a localized string in the resource bundle:::return->JavacMessages->key->getDefaultLocalizedString
 Log#localize(String, Object...):::Find a localized string in the resource bundle.:::return->localize
+Log#localize(JCDiagnostic.DiagnosticInfo)::: log localize:::if->return->diagInfo->key->else->return->messages->getLocalizedString
 Log#localize(PrefixKind, String, Object...):::Find a localized string in the resource bundle.:::if->return->pk->key->else->return->messages->pk->key->getLocalizedString
+Log#printRawDiag(PrintWriter, String, int, String):::print an error or warning message::::if->printRawLines->else->line->source->getLineNumber->file->source->getFile->if->file->getName->printRawLines->printErrLine->pw->flush
 Log#rawError(int, String):::report an error::::errWriter->writers->get->if->currentSourceFile->shouldReport->printRawDiag->prompt->errWriter->flush
 Log#rawWarning(int, String):::report a warning::::warnWriter->writers->get->if->printRawDiag->prompt->warnWriter->flush
+Log#format(String, Object...)::: log format:::return->String->format
 MandatoryWarningHandler#report(DiagnosticPosition, Warning):::Report a mandatory warning.:::currentSource->log->currentSourceFile->if->if->new->HashSet<>->if->logMandatoryWarning->sourcesWithReportedWarnings->add->else->if->if->sourcesWithReportedWarnings->contains->else->else->if->equal->else->if->else->if->equal
 MandatoryWarningHandler#reportDeferredDiagnostic():::Report any diagnostic that might have been deferred by previous calls of report().:::if->if->deferredDiagnosticKind->getKey->logMandatoryNote->else->deferredDiagnosticKind->getKey->logMandatoryNote->if->logMandatoryNote
+MandatoryWarningHandler#equal(Object, Object):::Check two objects, each possibly null, are either both null or are equal.:::return->o1->equals
+MandatoryWarningHandler#logMandatoryWarning(DiagnosticPosition, Warning):::Reports a mandatory warning to the log:::if->log->mandatoryWarning->else->log->warning
+MandatoryWarningHandler#logMandatoryNote(JavaFileObject, String, Object...):::Reports a mandatory note to the log:::if->log->new->Note->mandatoryNote->else->log->new->Note->note
 MatchingUtils#isValidImportString(String):::Return true if the argument string is a valid import-style string specifying claimed annotations; return false otherwise.:::if->s->equals->return->valid->t->index->t->indexOf->if->if->t->length->if->t->charAt->t->t->length->substring->else->return->if->javaIds->t->t->length->split->foreach->SourceVersion->isIdentifier->return
+MatchingUtils#validImportStringToPatternString(String)::: matching utils valid import string to pattern string:::if->s->equals->return->else->s_prime->s->replace->if->s_prime->endsWith->s_prime->s_prime->length->substring->return
+MatchingUtils#validImportStringToPattern(String)::: matching utils valid import string to pattern:::pattern->validImportStringToPatternString->if->return->else->return->Pattern->compile
+ModuleHelper#addExports(Module, Module)::: module helper add exports:::foreach->from->addExports
+Name#contentEquals(CharSequence)::: name content equals:::return->toString->cs->toString->equals
+Name#length()::: name length:::return->toString->length
+Name#charAt(int)::: name char at:::return->toString->charAt
+Name#subSequence(int, int)::: name sub sequence:::return->toString->subSequence
 Name#append(Name):::Return the concatenation of this name and name `n'.:::len->getByteLength->bs->n->getByteLength->new->byteArr->getBytes->n->getBytes->return->table->fromUtf
 Name#append(char, Name):::Return the concatenation of this name, the given ASCII  character, and name `n'.:::len->getByteLength->bs->n->getByteLength->new->byteArr->getBytes->n->getBytes->return->table->fromUtf
 Name#compareTo(Name):::An arbitrary but consistent complete order among all Names.:::return->other->getIndex->this->getIndex
@@ -251,6 +489,7 @@ Name#startsWith(Name):::Does this name start with prefix?:::thisBytes->this->get
 Name#subName(int, int):::Returns the sub-name starting at position start, up to and  excluding position end.:::if->return->table->getByteArray->getByteOffset->fromUtf
 Name#toString():::Return the string representation of this name.:::return->Convert->getByteArray->getByteOffset->getByteLength->utf2string
 Name#toUtf():::Return the Utf8 representation of this name.:::bs->getByteLength->new->byteArr->getBytes->return
+Name#getIndex()::: name get index:::
 Name#getByteLength():::Get the length (in bytes) of this name.:::
 Name#getByteAt(int):::Returns i'th byte of this name.:::
 Name#getBytes(byte[], int):::Copy all bytes of this name to buffer cs, starting at start.:::System->getByteArray->getByteOffset->getByteLength->arraycopy
@@ -263,6 +502,13 @@ Name.Table#fromUtf(byte[], int, int):::get the name for the bytes in cs[start..s
 Name.Table#dispose():::Release any resources used by this table.:::
 Name.Table#hashValue(byte[], int, int):::The hashcode of a name.:::h->off->for->i->return
 Name.Table#equals(byte[], int, byte[], int, int):::Compare two subarrays:::i->while->return
+Names#instance(Context)::: names instance:::instance->context->get->if->new->Names->context->put->return
+Names#createTable(Options)::: names create table:::useUnsharedTable->options->isSet->if->return->UnsharedNameTable->create->else->return->SharedNameTable->create
+Names#dispose()::: names dispose:::table->dispose
+Names#fromChars(char[], int, int)::: names from chars:::return->table->fromChars
+Names#fromString(String)::: names from string:::return->table->fromString
+Names#fromUtf(byte[])::: names from utf:::return->table->fromUtf
+Names#fromUtf(byte[], int, int)::: names from utf:::return->table->fromUtf
 Options#instance(Context):::Get the Options instance for this context.:::instance->context->get->if->new->Options->return
 Options#get(String):::Get the value for an undocumented option.:::return->values->get
 Options#get(Option):::Get the value for an option.:::return->values->get
@@ -275,28 +521,102 @@ Options#isLintSet(String):::Check if the value for a lint option has been explic
 Options#isUnset(String):::Check if the value for an undocumented option has not been set.:::return->values->get
 Options#isUnset(Option):::Check if the value for an option has not been set.:::return->values->get
 Options#isUnset(Option, String):::Check if the value for a choice option has not been set to a specific value.:::return->values->get
+Options#put(String, String)::: options put:::values->put
+Options#put(Option, String)::: options put:::values->put
+Options#putAll(Options)::: options put all:::values->putAll
+Options#remove(String)::: options remove:::values->remove
+Options#keySet()::: options key set:::return->values->keySet
+Options#size()::: options size:::return->values->size
+Options#addListener(Runnable)::: options add listener:::listeners->prepend
+Options#notifyListeners()::: options notify listeners:::foreach->r->run
+Pair#toString()::: pair to string:::return
+Pair#equals(Object)::: pair equals:::return->Objects->equals->Objects->equals
+Pair#hashCode()::: pair hash code:::if->return->snd->hashCode->else->if->return->fst->hashCode->else->return->fst->hashCode->snd->hashCode
+Pair#of(A, B)::: pair of:::return->new->Pair<>
 Position#makeLineMap(char[], int, boolean):::A two-way map between line/column numbers and positions,  derived from a scan done at creation time:::lineMap->new->LineTabMapImpl->new->LineMapImpl->lineMap->build->return
 Position#encodePosition(int, int):::Encode line and column numbers in an integer as:  line-number << LINESHIFT + column-number :::if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->if->return->return
 Position.LineMap#getStartPosition(int):::Find the start position of a line.:::
 Position.LineMap#getPosition(int, int):::Find the position corresponding to a (line,column).:::
 Position.LineMap#getLineNumber(int):::Find the line containing a position; a line termination character is on the line it terminates.:::
 Position.LineMap#getColumnNumber(int):::Find the column for a character position:::
+Position.LineMapImpl#build(char[], int)::: line map impl build:::c->i->linebuf->new->intArr->while->do->ch->if->if->else->break->else->if->setTabPosition->while->new->intArr->System->arraycopy
+Position.LineMapImpl#getStartPosition(int)::: line map impl get start position:::return
+Position.LineMapImpl#getStartPosition(long)::: line map impl get start position:::return->longToInt->getStartPosition
+Position.LineMapImpl#getPosition(int, int)::: line map impl get position:::return
+Position.LineMapImpl#getPosition(long, long)::: line map impl get position:::return->longToInt->longToInt->getPosition
+Position.LineMapImpl#getLineNumber(int)::: line map impl get line number:::if->return->low->high->while->mid->midVal->if->else->if->else->return->return
+Position.LineMapImpl#getLineNumber(long)::: line map impl get line number:::return->longToInt->getLineNumber
+Position.LineMapImpl#getColumnNumber(int)::: line map impl get column number:::return->getLineNumber
+Position.LineMapImpl#getColumnNumber(long)::: line map impl get column number:::return->longToInt->getColumnNumber
+Position.LineMapImpl#longToInt(long)::: line map impl long to int:::intValue->if->throw->new->IndexOutOfBoundsException->return
+Position.LineMapImpl#setTabPosition(int)::: line map impl set tab position:::
+Position.LineTabMapImpl#setTabPosition(int)::: line tab map impl set tab position:::tabMap->set
+Position.LineTabMapImpl#getColumnNumber(int)::: line tab map impl get column number:::lineStart->getLineNumber->column->for->bp->return
+Position.LineTabMapImpl#getPosition(int, int)::: line tab map impl get position:::pos->col->while->if->tabMap->get->else->return
+PropagatedException#getCause()::: propagated exception get cause:::return->super->getCause
+RawDiagnosticFormatter.RawDiagnosticPosHelper#getPosition(JCExpression)::: raw diagnostic pos helper get position:::diagSource->diag->getDiagnosticSource->diagLine->diag->getLineNumber->expLine->diagSource->getLineNumber->expCol->diagSource->getColumnNumber->return->String->valueOf
+RawDiagnosticFormatter#formatDiagnostic(JCDiagnostic, Locale)::: raw diagnostic formatter format diagnostic:::try->new->RawDiagnosticPosHelper->buf->new->StringBuilder->if->d->getPosition->buf->formatSource->append->buf->append->buf->formatPosition->append->buf->append->buf->formatPosition->append->buf->append->else->if->d->getSource->d->getSource->getKind->buf->formatSource->append->buf->append->else->buf->append->buf->append->buf->formatMessage->append->if->displaySource->buf->append->buf->formatSourceLine->append->return->buf->toString->catch->return->finally
+RawDiagnosticFormatter#formatMessage(JCDiagnostic, Locale)::: raw diagnostic formatter format message:::buf->new->StringBuilder->args->formatArguments->buf->d->getCode->args->toArray->localize->append->if->d->isMultiline->getConfiguration->getVisible->contains->subDiags->formatSubdiagnostics->if->subDiags->nonEmpty->sep->buf->append->foreach->formatSubdiagnostics->buf->append->buf->append->buf->append->buf->append->buf->append->return->buf->toString
+RawDiagnosticFormatter#formatArgument(JCDiagnostic, Object, Locale)::: raw diagnostic formatter format argument:::s->if->arg->toString->else->if->Assert->checkNonNull->rawDiagnosticPosHelper->getPosition->else->if->getShortName->else->super->formatArgument->return
+RawDiagnosticFormatter#localize(Locale, String, Object...)::: raw diagnostic formatter localize:::buf->new->StringBuilder->buf->append->sep->foreach->buf->append->buf->append->return->buf->toString
+RawDiagnosticFormatter#isRaw()::: raw diagnostic formatter is raw:::return
 RichDiagnosticFormatter#instance(Context):::Get the DiagnosticFormatter instance for this context.:::instance->context->get->if->new->RichDiagnosticFormatter->return
+RichDiagnosticFormatter#format(JCDiagnostic, Locale)::: rich diagnostic formatter format:::sb->new->StringBuilder->new->ClassNameSimplifier->foreach->WhereClauseKind->values->whereClauses->get->clear->preprocessDiagnostic->sb->formatter->format->append->if->getConfiguration->isEnabled->clauses->getWhereClauses->indent->formatter->isRaw->formatter->indentString->foreach->whereClause->formatter->format->if->whereClause->length->sb->append->return->sb->toString
+RichDiagnosticFormatter#formatMessage(JCDiagnostic, Locale)::: rich diagnostic formatter format message:::new->ClassNameSimplifier->preprocessDiagnostic->return->super->formatMessage
 RichDiagnosticFormatter#setRichPrinter(RichPrinter):::Sets the type/symbol printer used by this formatter.:::formatter->setPrinter
 RichDiagnosticFormatter#getRichPrinter():::Returns the type/symbol printer used by this formatter.:::return
 RichDiagnosticFormatter#preprocessDiagnostic(JCDiagnostic):::Preprocess a given diagnostic by looking both into its arguments and into its subdiagnostics (if any):::foreach->diag->getArgs->if->preprocessArgument->if->diag->isMultiline->foreach->diag->getSubdiagnostics->preprocessDiagnostic
 RichDiagnosticFormatter#preprocessArgument(Object):::Preprocess a diagnostic argument:::if->preprocessType->else->if->preprocessSymbol->else->if->preprocessDiagnostic->else->if->foreach->preprocessArgument
 RichDiagnosticFormatter#getWhereClauses():::Build a list of multiline diagnostics containing detailed info about type-variables, captured types, and intersection types:::clauses->List->nil->foreach->WhereClauseKind->values->lines->List->nil->foreach->whereClauses->get->entrySet->lines->entry->getValue->prepend->if->lines->isEmpty->key->kind->key->if->lines->size->d->diags->whereClauses->get->keySet->fragment->lines->reverse->new->JCDiagnostic.MultilineDiagnostic->clauses->prepend->return->clauses->reverse
+RichDiagnosticFormatter#indexOf(Type, WhereClauseKind)::: rich diagnostic formatter index of:::index->foreach->whereClauses->get->keySet->if->return->if->t->toString->type->toString->equals->return
+RichDiagnosticFormatter#unique(TypeVar)::: rich diagnostic formatter unique:::typevar->stripMetadata->found->foreach->whereClauses->get->keySet->if->t->stripMetadata->toString->typevar->toString->equals->if->throw->new->AssertionError->return
 RichDiagnosticFormatter.ClassNameSimplifier#addUsage(Symbol):::Add a name usage to the simplifier's internal cache:::n->sym->getSimpleName->conflicts->nameClashes->get->if->List->nil->if->conflicts->contains->nameClashes->conflicts->append->put
+RichDiagnosticFormatter.ClassNameSimplifier#simplify(Symbol)::: class name simplifier simplify:::name->s->getQualifiedName->toString->if->isCompound->isPrimitive->conflicts->nameClashes->s->getSimpleName->get->if->conflicts->size->conflicts->contains->l->List->nil->s2->while->hasTag->getEnclosingType->hasTag->l->s2->getSimpleName->prepend->l->s2->getSimpleName->prepend->buf->new->StringBuilder->sep->foreach->buf->append->buf->append->buf->toString->return
+RichDiagnosticFormatter.RichPrinter#localize(Locale, String, Object...)::: rich printer localize:::return->formatter->localize
+RichDiagnosticFormatter.RichPrinter#capturedVarId(CapturedType, Locale)::: rich printer captured var id:::return->indexOf
+RichDiagnosticFormatter.RichPrinter#visitType(Type, Locale)::: rich printer visit type:::s->super->visitType->if->localize->return
+RichDiagnosticFormatter.RichPrinter#visitCapturedType(CapturedType, Locale)::: rich printer visit captured type:::if->getConfiguration->isEnabled->return->indexOf->localize->else->return->super->visitCapturedType
+RichDiagnosticFormatter.RichPrinter#visitClassType(ClassType, Locale)::: rich printer visit class type:::if->t->isCompound->getConfiguration->isEnabled->return->indexOf->localize->else->return->super->visitClassType
+RichDiagnosticFormatter.RichPrinter#className(ClassType, boolean, Locale)::: rich printer class name:::sym->if->length->getConfiguration->isEnabled->return->super->className->else->if->return->nameSimplifier->simplify->toString->else->return->toString
+RichDiagnosticFormatter.RichPrinter#visitTypeVar(TypeVar, Locale)::: rich printer visit type var:::if->unique->getConfiguration->isEnabled->return->t->toString->else->return->t->toString->indexOf->localize
+RichDiagnosticFormatter.RichPrinter#visitClassSymbol(ClassSymbol, Locale)::: rich printer visit class symbol:::if->isCompound->return->visit->name->nameSimplifier->simplify->if->name->length->getConfiguration->isEnabled->return->super->visitClassSymbol->else->return
+RichDiagnosticFormatter.RichPrinter#visitMethodSymbol(MethodSymbol, Locale)::: rich printer visit method symbol:::ownerName->visit->if->s->isStaticOrInstanceInit->return->else->ms->toString->if->if->hasTag->getTypeArguments->visitTypes->getParameterTypes->s->flags->printMethodArgs->return
 RichDiagnosticFormatter#preprocessType(Type):::Preprocess a given type looking for (i) additional info (where clauses) to be added to the main diagnostic (ii) names to be compacted.:::typePreprocessor->visit
 RichDiagnosticFormatter#preprocessSymbol(Symbol):::Preprocess a given symbol looking for (i) additional info (where clauses) to be added to the main diagnostic (ii) names to be compacted:::symbolPreprocessor->visit
+RichDiagnosticFormatter#getConfiguration()::: rich diagnostic formatter get configuration:::return
 RichDiagnosticFormatter.RichConfiguration#getAvailableFeatures():::Returns a list of all the features supported by the rich formatter.:::return->RichFormatterFeature->values
 RichDiagnosticFormatter.RichConfiguration#enable(RichFormatterFeature):::Enable a specific feature on this rich formatter.:::features->add
 RichDiagnosticFormatter.RichConfiguration#disable(RichFormatterFeature):::Disable a specific feature on this rich formatter.:::features->remove
 RichDiagnosticFormatter.RichConfiguration#isEnabled(RichFormatterFeature):::Is a given feature enabled on this formatter?:::return->features->contains
+SharedNameTable#create(Names)::: shared name table create:::while->freelist->nonEmpty->t->get->if->return->return->new->SharedNameTable
+SharedNameTable#dispose(SharedNameTable)::: shared name table dispose:::freelist->new->SoftReference<>->prepend
+SharedNameTable#fromChars(char[], int, int)::: shared name table from chars:::nc->bytes->ArrayUtils->ensureCapacity->nbytes->Convert->chars2utf->h->hashValue->n->while->n->getByteLength->equals->if->new->NameImpl->if->return
+SharedNameTable#fromUtf(byte[], int, int)::: shared name table from utf:::h->hashValue->n->names->while->n->getByteLength->equals->if->nc->ArrayUtils->ensureCapacity->System->arraycopy->new->NameImpl->if->return
+SharedNameTable#dispose()::: shared name table dispose:::dispose
+SharedNameTable.NameImpl#getIndex()::: name impl get index:::return
+SharedNameTable.NameImpl#getByteLength()::: name impl get byte length:::return
+SharedNameTable.NameImpl#getByteAt(int)::: name impl get byte at:::return->getByteArray
+SharedNameTable.NameImpl#getByteArray()::: name impl get byte array:::return
+SharedNameTable.NameImpl#getByteOffset()::: name impl get byte offset:::return
 SharedNameTable.NameImpl#hashCode():::Return the hash value of this name.:::return
 SharedNameTable.NameImpl#equals(Object):::Is this name equal to other?:::if->return->getIndex->else->return
 StringUtils#toLowerCase(String):::Converts the given String to lower case using the Locale#US US Locale:::return->source->toLowerCase
 StringUtils#toUpperCase(String):::Converts the given String to upper case using the Locale#US US Locale:::return->source->toUpperCase
 StringUtils#indexOfIgnoreCase(String, String):::Case insensitive version of String#indexOf(java.lang.String):::return->indexOfIgnoreCase
 StringUtils#indexOfIgnoreCase(String, String, int):::Case insensitive version of String#indexOf(java.lang.String, int):::m->Pattern->Pattern->quote->compile->matcher->return->m->find->m->start
+UnsharedNameTable#create(Names)::: unshared name table create:::return->new->UnsharedNameTable
+UnsharedNameTable#fromChars(char[], int, int)::: unshared name table from chars:::name->new->byteArr->nbytes->Convert->chars2utf->return->fromUtf
+UnsharedNameTable#fromUtf(byte[], int, int)::: unshared name table from utf:::h->hashValue->element->n->previousNonNullTableEntry->firstTableEntry->while->if->break->element->get->if->if->else->Assert->checkNonNull->else->if->n->getByteLength->equals->return->bytes->new->byteArr->System->arraycopy->new->NameImpl->newEntry->new->HashEntry->if->else->Assert->checkNull->return
+UnsharedNameTable#dispose()::: unshared name table dispose:::
+UnsharedNameTable.NameImpl#getIndex()::: name impl get index:::return
+UnsharedNameTable.NameImpl#getByteLength()::: name impl get byte length:::return
+UnsharedNameTable.NameImpl#getByteAt(int)::: name impl get byte at:::return
+UnsharedNameTable.NameImpl#getByteArray()::: name impl get byte array:::return
+UnsharedNameTable.NameImpl#getByteOffset()::: name impl get byte offset:::return
+Warner#pos()::: warner pos:::return
+Warner#warn(LintCategory)::: warner warn:::nonSilentLintSet->add
+Warner#silentWarn(LintCategory)::: warner silent warn:::silentLintSet->add
+Warner#hasSilentLint(LintCategory)::: warner has silent lint:::return->silentLintSet->contains
+Warner#hasNonSilentLint(LintCategory)::: warner has non silent lint:::return->nonSilentLintSet->contains
+Warner#hasLint(LintCategory)::: warner has lint:::return->hasSilentLint->hasNonSilentLint
+Warner#clear()::: warner clear:::nonSilentLintSet->clear->silentLintSet->clear

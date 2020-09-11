@@ -1,8 +1,25 @@
+AbstractRepository#getFactory()::: abstract repository get factory:::return
 AbstractRepository#getTree():::Accessor for tree.:::return
 AbstractRepository#getReifier():::Returns a Reifier used to convert parts of the AST into reflective objects.:::return->Reifier->getFactory->make
 AbstractRepository#parse(String):::Returns the AST for the generic type info of this entity.:::
+ClassRepository#parse(String)::: class repository parse:::return->SignatureParser->make->parseClassSig
 ClassRepository#make(String, GenericsFactory):::Static factory method.:::return->new->ClassRepository
+ClassRepository#getSuperclass()::: class repository get superclass:::value->if->computeSuperclass->return
+ClassRepository#getSuperInterfaces()::: class repository get super interfaces:::value->if->computeSuperInterfaces->return->value->clone
+ClassRepository#computeSuperclass()::: class repository compute superclass:::r->getReifier->getTree->getSuperclass->accept->return->r->getResult
+ClassRepository#computeSuperInterfaces()::: class repository compute super interfaces:::ts->getTree->getSuperInterfaces->length->superInterfaces->new->TypeArr->for->i->return
+ConstructorRepository#parse(String)::: constructor repository parse:::return->SignatureParser->make->parseMethodSig
 ConstructorRepository#make(String, GenericsFactory):::Static factory method.:::return->new->ConstructorRepository
+ConstructorRepository#getParameterTypes()::: constructor repository get parameter types:::value->if->computeParameterTypes->return->value->clone
+ConstructorRepository#getExceptionTypes()::: constructor repository get exception types:::value->if->computeExceptionTypes->return->value->clone
+ConstructorRepository#computeParameterTypes()::: constructor repository compute parameter types:::pts->getTree->getParameterTypes->length->parameterTypes->new->TypeArr->for->i->return
+ConstructorRepository#computeExceptionTypes()::: constructor repository compute exception types:::ets->getTree->getExceptionTypes->length->exceptionTypes->new->TypeArr->for->i->return
+FieldRepository#parse(String)::: field repository parse:::return->SignatureParser->make->parseTypeSig
 FieldRepository#make(String, GenericsFactory):::Static factory method.:::return->new->FieldRepository
+FieldRepository#getGenericType()::: field repository get generic type:::value->if->computeGenericType->return
+FieldRepository#computeGenericType()::: field repository compute generic type:::r->getReifier->getTree->accept->return->r->getResult
 GenericDeclRepository#getTypeParameters():::Returns the formal type parameters of this generic declaration.:::value->if->computeTypeParameters->return->value->clone
+GenericDeclRepository#computeTypeParameters()::: generic decl repository compute type parameters:::ftps->getTree->getFormalTypeParameters->length->typeParameters->new->TypeVariable<?>Arr->for->i->return
 MethodRepository#make(String, GenericsFactory):::Static factory method.:::return->new->MethodRepository
+MethodRepository#getReturnType()::: method repository get return type:::value->if->computeReturnType->return
+MethodRepository#computeReturnType()::: method repository compute return type:::r->getReifier->getTree->getReturnType->accept->return->r->getResult

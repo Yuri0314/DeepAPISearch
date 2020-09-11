@@ -1,5 +1,32 @@
 Log#isLoggable(Level):::"logger like" API to be used by RMI implementation:::
+Log#log(Level, String)::: log log:::
+Log#log(Level, String, Throwable)::: log log:::
 Log#setOutputStream(OutputStream):::get and set the RMI server call output stream:::
+Log#getPrintStream()::: log get print stream:::
+Log.LogFactory#createLog(String, String, Level)::: log factory create log:::
 Log#getLog(String, String, int):::Access log for a tri-state system property:::level->if->else->if->else->if->else->if->else->return->logFactory->createLog
 Log#getLog(String, String, boolean):::Access logs associated with boolean properties  Do not call getLog multiple times on the same logger name:::level->return->logFactory->createLog
+Log.LoggerLogFactory#createLog(String, String, Level)::: logger log factory create log:::logger->Logger->getLogger->return->new->LoggerLog
+Log.LoggerLog#isLoggable(Level)::: logger log is loggable:::return->logger->isLoggable
+Log.LoggerLog#log(Level, String)::: logger log log:::if->isLoggable->source->getSource->logger->Thread->currentThread->getName->logp
+Log.LoggerLog#log(Level, String, Throwable)::: logger log log:::if->isLoggable->source->getSource->logger->Thread->currentThread->getName->logp
+Log.LoggerLog#toString()::: logger log to string:::return->logger->toString->logger->getLevel->logger->getName
+Log.LoggerLog#setOutputStream(OutputStream):::Set the output stream associated with the RMI server call logger:::if->if->logger->isLoggable->logger->setLevel->new->InternalStreamHandler->copyHandler->setLevel->logger->addHandler->else->if->logger->removeHandler
+Log.LoggerLog#getPrintStream()::: logger log get print stream:::if->new->LoggerPrintStream->return
+Log.InternalStreamHandler#publish(LogRecord)::: internal stream handler publish:::super->publish->flush
+Log.InternalStreamHandler#close()::: internal stream handler close:::flush
+Log.LoggerPrintStream#write(int)::: logger print stream write:::if->return->else->if->try->message->Thread->currentThread->getName->bufOut->toString->logger->logp->catch->finally->bufOut->reset->else->super->write
+Log.LoggerPrintStream#write(byte[], int, int)::: logger print stream write:::if->throw->new->ArrayIndexOutOfBoundsException->for->i
+Log.LoggerPrintStream#toString()::: logger print stream to string:::return
+Log.LogStreamLogFactory#createLog(String, String, Level)::: log stream log factory create log:::stream->if->LogStream->log->return->new->LogStreamLog
+Log.LogStreamLog#isLoggable(Level)::: log stream log is loggable:::return->level->intValue
+Log.LogStreamLog#log(Level, String)::: log stream log log:::if->isLoggable->source->getSource->stream->unqualifiedName->println
+Log.LogStreamLog#log(Level, String, Throwable)::: log stream log log:::if->isLoggable->synchronized->source->getSource->stream->unqualifiedName->println->thrown->printStackTrace
+Log.LogStreamLog#getPrintStream()::: log stream log get print stream:::return
+Log.LogStreamLog#setOutputStream(OutputStream)::: log stream log set output stream:::if->if->VERBOSE->intValue->VERBOSE->intValue->stream->setOutputStream->else->intValue
+Log.LogStreamLog#unqualifiedName(String)::: log stream log unqualified name:::lastDot->name->lastIndexOf->if->name->substring->name->replace->return
+Log#getSource():::Obtain class and method names of code calling a log method.:::trace->new->Exception->getStackTrace->return->new->StringArr->getClassName->getMethodName
+NewThreadAction#run()::: new thread action run:::sm->System->getSecurityManager->if->sm->checkPermission->t->new->Thread->t->ClassLoader->getSystemClassLoader->setContextClassLoader->t->setDaemon->return
+RuntimeUtil.GetInstanceAction#run()::: get instance action run:::return->getInstance
+RuntimeUtil#getInstance()::: runtime util get instance:::sm->System->getSecurityManager->if->sm->checkPermission->return
 RuntimeUtil#getScheduler():::Returns the shared thread pool for scheduling delayed tasks:::return

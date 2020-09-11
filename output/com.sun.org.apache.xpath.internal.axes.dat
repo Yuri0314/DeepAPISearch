@@ -1,5 +1,6 @@
 AttributeIterator#getNextNode():::Get the next node via getFirstAttribute && getNextAttribute.:::m_cdtm->getFirstAttribute->m_cdtm->getNextAttribute->return
 AttributeIterator#getAxis():::Returns the axis being iterated, if it is known.:::return
+AxesWalker#wi()::: axes walker wi:::return
 AxesWalker#init(Compiler, int, int):::Initialize an AxesWalker during the parse of the XPath expression.:::initPredicateInfo
 AxesWalker#clone():::Get a cloned AxesWalker.:::clone->super->clone->return
 AxesWalker#cloneDeep(WalkingIterator, List):::Do a deep clone of this walker, including next and previous walkers:::clone->findClone->if->return->this->clone->clone->setLocPathIterator->if->cloneList->add->cloneList->add->if->wi->if->m_nextWalker->cloneDeep->if->if->m_prevWalker->cloneDeep->else->if->return
@@ -13,6 +14,7 @@ AxesWalker#setNextWalker(AxesWalker):::Set the next walker in the location step 
 AxesWalker#getNextWalker():::Get the next walker in the location step chain.:::return
 AxesWalker#setPrevWalker(AxesWalker):::Set or clear the previous walker reference in the location step chain.:::
 AxesWalker#getPrevWalker():::Get the previous walker reference in the location step chain.:::return
+AxesWalker#returnNextNode(int):::This is simply a way to bottle-neck the return of the next node, for diagnostic purposes.:::return
 AxesWalker#getNextNode():::Get the next node in document order on the axes.:::if->return->if->m_traverser->first->else->if->m_traverser->next->if->return
 AxesWalker#nextNode()::: Moves the TreeWalker to the next visible node in document order relative to the current node, and returns the new node:::nextNode->walker->wi->getLastUsedWalker->while->if->break->walker->getNextNode->if->else->if->walker->acceptNode->continue->if->wi->setLastUsedWalker->break->else->prev->walker->setRoot->continue->return
 AxesWalker#getLastPos(XPathContext):::Get the index of the last node that can be itterated to.:::pos->getProximityPosition->walker->try->clone->catch->return->finally->walker->setPredicateCount->walker->setNextWalker->walker->setPrevWalker->lpi->wi->savedWalker->lpi->getLastUsedWalker->try->lpi->setLastUsedWalker->next->while->walker->nextNode->catch->finally->lpi->setLastUsedWalker->return
@@ -21,6 +23,9 @@ AxesWalker#getDTM(int):::Get the DTM for this walker.:::return->wi->getXPathCont
 AxesWalker#isDocOrdered():::Returns true if all the nodes in the iteration well be returned in document order:::return
 AxesWalker#getAxis():::Returns the axis being iterated, if it is known.:::return
 AxesWalker#callVisitors(ExpressionOwner, XPathVisitor):::This will traverse the heararchy, calling the visitor for each member:::if->visitor->visitStep->callPredicateVisitors->if->m_nextWalker->callVisitors
+AxesWalker#getExpression()::: axes walker get expression:::return
+AxesWalker#setExpression(Expression)::: axes walker set expression:::exp->exprSetParent
+AxesWalker#deepEquals(Expression)::: axes walker deep equals:::if->super->deepEquals->return->walker->if->return->return
 BasicTestIterator#getNextNode():::Get the next node via getNextXXX:::
 BasicTestIterator#nextNode()::: Returns the next node in the set and advances the position of the iterator in the set:::if->return->if->resetProximityPositions->next->vars->savedStart->if->m_execContext->getVarStack->vars->getStackFrame->vars->setStackFrame->else->try->do->getNextNode->if->if->acceptNode->break->else->continue->else->break->while->if->return->else->return->catch->finally->if->vars->setStackFrame
 BasicTestIterator#cloneWithReset()::: Get a cloned Iterator that is reset to the beginning  of the query.:::clone->super->cloneWithReset->clone->resetProximityPositions->return
@@ -50,6 +55,7 @@ DescendantIterator#setRoot(int, Object):::Initialize the context values for this
 DescendantIterator#asNode(XPathContext):::Return the first node out of the nodeset, if this expression is a nodeset expression:::if->getPredicateCount->return->super->asNode->current->xctxt->getCurrentNode->dtm->xctxt->getDTM->traverser->dtm->getAxisTraverser->localName->getLocalName->namespace->getNamespace->what->if->return->traverser->first->else->type->getNodeTypeTest->extendedType->dtm->getExpandedTypeID->return->traverser->first
 DescendantIterator#detach()::: Detaches the iterator from the set which it iterated over, releasing any computational resources and placing the iterator in the INVALID state:::if->super->detach
 DescendantIterator#getAxis():::Returns the axis being iterated, if it is known.:::return
+DescendantIterator#deepEquals(Expression)::: descendant iterator deep equals:::if->super->deepEquals->return->if->return->return
 FilterExprIterator#setRoot(int, Object):::Initialize the context values for this expression after it is cloned.:::super->setRoot->FilterExprIteratorSimple->getPrefixResolver->getIsTopLevel->executeFilterExpr
 FilterExprIterator#getNextNode():::Get the next node via getNextXXX:::if->m_exprObj->nextNode->else->return
 FilterExprIterator#detach():::Detaches the walker from the set which it iterated over, releasing any computational resources and placing the iterator in the INVALID state.:::super->detach->m_exprObj->detach
@@ -58,7 +64,10 @@ FilterExprIterator#getInnerExpression():::Get the inner contained expression of 
 FilterExprIterator#setInnerExpression(Expression):::Set the inner contained expression of this filter.:::expr->exprSetParent
 FilterExprIterator#getAnalysisBits():::Get the analysis bits for this walker, as defined in the WalkerFactory.:::if->return->getAnalysisBits->return
 FilterExprIterator#isDocOrdered():::Returns true if all the nodes in the iteration well be returned in document order:::return->m_exprObj->isDocOrdered
+FilterExprIterator.filterExprOwner#getExpression():::filter expr owner get expression:::return
+FilterExprIterator.filterExprOwner#setExpression(Expression):::filter expr owner set expression:::exp->exprSetParent
 FilterExprIterator#callPredicateVisitors(XPathVisitor):::This will traverse the heararchy, calling the visitor for each member:::m_expr->new->filterExprOwner->callVisitors->super->callPredicateVisitors
+FilterExprIterator#deepEquals(Expression)::: filter expr iterator deep equals:::if->super->deepEquals->return->fet->if->m_expr->deepEquals->return->return
 FilterExprIteratorSimple#setRoot(int, Object):::Initialize the context values for this expression after it is cloned.:::super->setRoot->getPrefixResolver->getIsTopLevel->executeFilterExpr
 FilterExprIteratorSimple#executeFilterExpr(int, XPathContext, PrefixResolver, boolean, int, Expression):::Execute the expression:::savedResolver->xctxt->getNamespaceContext->result->try->xctxt->pushCurrentNode->xctxt->setNamespaceContext->if->vars->xctxt->getVarStack->savedStart->vars->getStackFrame->vars->setStackFrame->expr->execute->result->setShouldCacheNodes->vars->setStackFrame->else->expr->execute->catch->throw->new->com.sun.org.apache.xml.internal.utils.WrappedRuntimeException->finally->xctxt->popCurrentNode->xctxt->setNamespaceContext->return
 FilterExprIteratorSimple#nextNode()::: Returns the next node in the set and advances the position of the iterator in the set:::if->return->next->if->m_exprObj->nextNode->else->if->return->else->return
@@ -68,7 +77,10 @@ FilterExprIteratorSimple#getInnerExpression():::Get the inner contained expressi
 FilterExprIteratorSimple#setInnerExpression(Expression):::Set the inner contained expression of this filter.:::expr->exprSetParent
 FilterExprIteratorSimple#getAnalysisBits():::Get the analysis bits for this walker, as defined in the WalkerFactory.:::if->return->getAnalysisBits->return
 FilterExprIteratorSimple#isDocOrdered():::Returns true if all the nodes in the iteration well be returned in document order:::return->m_exprObj->isDocOrdered
+FilterExprIteratorSimple.filterExprOwner#getExpression():::filter expr owner get expression:::return
+FilterExprIteratorSimple.filterExprOwner#setExpression(Expression):::filter expr owner set expression:::exp->exprSetParent
 FilterExprIteratorSimple#callPredicateVisitors(XPathVisitor):::This will traverse the heararchy, calling the visitor for each member:::m_expr->new->filterExprOwner->callVisitors->super->callPredicateVisitors
+FilterExprIteratorSimple#deepEquals(Expression)::: filter expr iterator simple deep equals:::if->super->deepEquals->return->fet->if->m_expr->deepEquals->return->return
 FilterExprIteratorSimple#getAxis():::Returns the axis being iterated, if it is known.:::if->return->m_exprObj->getAxis->else->return
 FilterExprWalker#init(Compiler, int, int):::Init a FilterExprWalker.:::super->init->switch->compiler->compileExpression->m_expr->exprSetParent->if->break->compiler->compileExpression->m_expr->exprSetParent
 FilterExprWalker#detach():::Detaches the walker from the set which it iterated over, releasing any computational resources and placing the iterator in the INVALID state.:::super->detach->if->m_exprObj->detach
@@ -83,7 +95,10 @@ FilterExprWalker#setInnerExpression(Expression):::Set the inner contained expres
 FilterExprWalker#getAnalysisBits():::Get the analysis bits for this walker, as defined in the WalkerFactory.:::if->return->getAnalysisBits->return
 FilterExprWalker#isDocOrdered():::Returns true if all the nodes in the iteration well be returned in document order:::return->m_exprObj->isDocOrdered
 FilterExprWalker#getAxis():::Returns the axis being iterated, if it is known.:::return->m_exprObj->getAxis
+FilterExprWalker.filterExprOwner#getExpression():::filter expr owner get expression:::return
+FilterExprWalker.filterExprOwner#setExpression(Expression):::filter expr owner set expression:::exp->exprSetParent
 FilterExprWalker#callPredicateVisitors(XPathVisitor):::This will traverse the heararchy, calling the visitor for each member:::m_expr->new->filterExprOwner->callVisitors->super->callPredicateVisitors
+FilterExprWalker#deepEquals(Expression)::: filter expr walker deep equals:::if->super->deepEquals->return->walker->if->m_expr->deepEquals->return->return
 HasPositionalPredChecker#check(LocPathIterator):::Process the LocPathIterator to see if it contains variables or functions that may make it context dependent.:::hppc->new->HasPositionalPredChecker->path->callVisitors->return
 HasPositionalPredChecker#visitFunction(ExpressionOwner, Function):::Visit a function.:::if->return
 HasPositionalPredChecker#visitPredicate(ExpressionOwner, Expression):::Visit a predicate within a location path:::if->if->else->pred->callVisitors->return
@@ -91,6 +106,7 @@ IteratorPool#getInstanceOrThrow():::Get an instance of the given object in this 
 IteratorPool#getInstance():::Get an instance of the given object in this pool:::if->m_freeStack->isEmpty->try->return->m_orig->clone->catch->throw->new->WrappedRuntimeException->finally->else->result->m_freeStack->m_freeStack->size->remove->return
 IteratorPool#freeInstance(DTMIterator):::Add an instance of the given object to the pool:::m_freeStack->add
 LocPathIterator#getAnalysisBits():::Get the analysis bits for this walker, as defined in the WalkerFactory.:::axis->getAxis->bit->WalkerFactory->getAnalysisBitFromAxes->return
+LocPathIterator#readObject(java.io.ObjectInputStream):::Read the object from a serialization stream.:::try->stream->defaultReadObject->new->IteratorPool->catch->throw->new->javax.xml.transform.TransformerException->finally
 LocPathIterator#setEnvironment(Object):::Set the environment in which this iterator operates, which should provide: a node (the context node..:::
 LocPathIterator#getDTM(int):::Get an instance of a DTM that "owns" a node handle:::return->m_execContext->getDTM
 LocPathIterator#getDTMManager():::Get an instance of the DTMManager:::return->m_execContext->getDTMManager
@@ -133,23 +149,58 @@ LocPathIterator#getContext():::The node context for the iterator.:::return
 LocPathIterator#getCurrentContextNode():::The node context from where the expression is being executed from (i.e:::return
 LocPathIterator#setCurrentContextNode(int):::Set the current context node for this iterator.:::
 LocPathIterator#getPrefixResolver():::Return the saved reference to the prefix resolver that was in effect when this iterator was created.:::if->getExpressionOwner->return
+LocPathIterator#callVisitors(ExpressionOwner, XPathVisitor)::: loc path iterator call visitors:::if->visitor->visitLocationPath->visitor->visitStep->callPredicateVisitors
 LocPathIterator#isDocOrdered():::Returns true if all the nodes in the iteration well be returned in document order.:::return
 LocPathIterator#getAxis():::Returns the axis being iterated, if it is known.:::return
+LocPathIterator#getLastPos(XPathContext)::: loc path iterator get last pos:::return->getLength
 MatchPatternIterator#setRoot(int, Object):::Initialize the context values for this expression after it is cloned.:::super->setRoot->m_cdtm->getAxisTraverser
 MatchPatternIterator#detach()::: Detaches the iterator from the set which it iterated over, releasing any computational resources and placing the iterator in the INVALID state:::if->super->detach
 MatchPatternIterator#getNextNode():::Get the next node via getNextXXX:::m_traverser->first->m_traverser->next->return
 MatchPatternIterator#nextNode()::: Returns the next node in the set and advances the position of the iterator in the set:::if->return->next->vars->savedStart->if->m_execContext->getVarStack->vars->getStackFrame->vars->setStackFrame->else->try->if->m_pattern->toString->println->do->getNextNode->if->if->acceptNode->break->else->continue->else->break->while->if->if->println->m_cdtm->getNodeName->println->incrementCurrentPos->return->else->return->catch->finally->if->vars->setStackFrame
 MatchPatternIterator#acceptNode(int, XPathContext)::: Test whether a specified node is visible in the logical view of a TreeWalker or NodeIterator:::try->xctxt->pushCurrentNode->xctxt->pushIteratorRoot->if->println->print->m_cdtm->getNodeName->println->m_pattern->toString->println->NodeTest->m_pattern->getWhatToShow->debugWhatToShow->score->m_pattern->execute->if->println->println->return->catch->throw->se->getMessage->new->RuntimeException->finally->xctxt->popCurrentNode->xctxt->popIteratorRoot
 NodeSequence#getVector():::If this iterator needs to cache nodes that are fetched, they are stored in the Vector in the generic object.:::nv->m_cache->getVector->return
+NodeSequence#getCache():::Get the cache (if any) of nodes obtained from the iterator so far:::return
 NodeSequence#SetVector(NodeVector):::Set the vector where nodes will be cached.:::setObject
 NodeSequence#hasCache():::If the iterator needs to cache nodes as they are fetched, then this method returns true.:::nv->getVector->return
+NodeSequence#cacheComplete():::If this NodeSequence has a cache, and that cache is fully populated then this method returns true, otherwise if there is no cache or it is not complete it returns false.:::complete->if->m_cache->isComplete->else->return
+NodeSequence#markCacheComplete():::If this NodeSequence has a cache, mark that it is complete:::nv->getVector->if->m_cache->setCacheComplete
 NodeSequence#setIter(DTMIterator):::Set the functional iterator that fetches nodes.:::
 NodeSequence#getContainedIter():::Get the functional iterator that fetches nodes.:::return
+NodeSequence#getDTM(int)::: node sequence get m:::mgr->getDTMManager->if->return->getDTMManager->getDTM->else->assertion->return
+NodeSequence#getDTMManager()::: node sequence get manager:::return
+NodeSequence#getRoot()::: node sequence get root:::if->return->m_iter->getRoot->else->return
+NodeSequence#setRoot(int, Object)::: node sequence set root:::if->throw->new->RuntimeException->if->xctxt->xctxt->getDTMManager->m_iter->setRoot->if->m_iter->isDocOrdered->if->hasCache->setShouldCacheNodes->runTo->else->assertion
+NodeSequence#reset()::: node sequence reset:::
+NodeSequence#getWhatToShow()::: node sequence get what to show:::return->hasCache->m_iter->getWhatToShow
+NodeSequence#getExpandEntityReferences()::: node sequence get expand entity references:::if->return->m_iter->getExpandEntityReferences->else->return
+NodeSequence#nextNode()::: node sequence next node:::vec->getVector->if->if->vec->size->next->vec->elementAt->return->else->if->cacheComplete->return->if->return->next->m_iter->nextNode->if->if->hasCache->if->m_iter->isDocOrdered->getVector->addElement->else->insertIndex->addNodeInDocOrder->if->else->else->markCacheComplete->return
+NodeSequence#previousNode()::: node sequence previous node:::if->hasCache->if->return->else->return->item->else->n->m_iter->previousNode->m_iter->getCurrentPos->return
+NodeSequence#detach()::: node sequence detach:::if->m_iter->detach->super->detach
 NodeSequence#allowDetachToRelease(boolean):::Calling this with a value of false will cause the nodeset to be cached.:::if->hasCache->setShouldCacheNodes->if->m_iter->allowDetachToRelease->super->allowDetachToRelease
+NodeSequence#getCurrentNode()::: node sequence get current node:::if->hasCache->currentIndex->vec->getVector->if->vec->size->return->vec->elementAt->else->return->if->return->m_iter->getCurrentNode->else->return
+NodeSequence#isFresh()::: node sequence is fresh:::return
+NodeSequence#setShouldCacheNodes(boolean)::: node sequence set should cache nodes:::if->if->hasCache->new->NodeVector->SetVector->else->SetVector
+NodeSequence#isMutable()::: node sequence is mutable:::return->hasCache
+NodeSequence#getCurrentPos()::: node sequence get current pos:::return
+NodeSequence#runTo(int)::: node sequence run to:::n->if->pos->while->nextNode->else->if->return->else->if->hasCache->getVector->size->else->if->getVector->while->previousNode->else->while->nextNode
+NodeSequence#setCurrentPos(int)::: node sequence set current pos:::runTo
+NodeSequence#item(int)::: node sequence item:::setCurrentPos->n->nextNode->return
+NodeSequence#setItem(int, int)::: node sequence set item:::vec->getVector->if->oldNode->vec->elementAt->if->m_cache->useCount->newCache->new->IteratorCache->nv->try->vec->clone->catch->e->printStackTrace->rte->e->getMessage->new->RuntimeException->throw->finally->newCache->setVector->newCache->setCacheComplete->super->setObject->vec->setElementAt->vec->size->else->m_iter->setItem
+NodeSequence#getLength()::: node sequence get length:::cache->getCache->if->if->cache->isComplete->nv->cache->getVector->return->nv->size->if->return->m_iter->getLength->if->pos->runTo->return->else->return->m_iter->getLength
 NodeSequence#cloneWithReset():::Note: Not a deep clone.:::seq->super->clone->if->m_cache->increaseUseCount->return
 NodeSequence#clone():::Get a clone of this iterator, but don't reset the iteration in the process, so that it may be used from the current position:::clone->super->clone->if->m_iter->clone->if->m_cache->increaseUseCount->return
+NodeSequence#isDocOrdered()::: node sequence is doc ordered:::if->return->m_iter->isDocOrdered->else->return
+NodeSequence#getAxis()::: node sequence get axis:::if->return->m_iter->getAxis->else->assertion->return
+NodeSequence#getAnalysisBits()::: node sequence get analysis bits:::if->return->getAnalysisBits->else->return
+NodeSequence#fixupVariables(List, int)::: node sequence fixup variables:::super->fixupVariables
 NodeSequence#addNodeInDocOrder(int):::Add the node into a vector of nodes where it should occur in document order.:::hasCache->assertion->insertIndex->vec->getVector->size->vec->size->i->for->if->vec->insertElementAt->return
 NodeSequence#setObject(Object):::It used to be that many locations in the code simply did an assignment to this.m_obj directly, rather than calling the setObject(Object) method:::if->super->setObject->v->if->m_cache->setVector->else->if->new->IteratorCache->m_cache->setVector->else->if->cache->m_cache->increaseUseCount->super->cache->getVector->setObject->else->super->setObject
+NodeSequence.IteratorCache#useCount():::Returns count of how many NodeSequence objects share this IteratorCache object.:::return
+NodeSequence.IteratorCache#increaseUseCount():::This method is called when yet another NodeSequence object uses, or shares this same cache.:::if
+NodeSequence.IteratorCache#setVector(NodeVector):::Sets the NodeVector that holds the growing list of nodes as they are appended to the cached list.:::
+NodeSequence.IteratorCache#getVector():::Get the cached list of nodes obtained from the iterator so far.:::return
+NodeSequence.IteratorCache#setCacheComplete(boolean):::Call this method with 'true' if the iterator is exhausted and the cached list is complete, or no longer growing.:::
+NodeSequence.IteratorCache#isComplete():::Returns true if no cache is complete and immutable.:::return
 NodeSequence#getIteratorCache():::Get the cached list of nodes appended with values obtained from the iterator as a NodeSequence is walked when its nextNode() method is called.:::return
 OneStepIterator#setRoot(int, Object):::Initialize the context values for this expression after it is cloned.:::super->setRoot->if->m_cdtm->getAxisIterator->m_iterator->setStartNode
 OneStepIterator#detach()::: Detaches the iterator from the set which it iterated over, releasing any computational resources and placing the iterator in the INVALID state:::if->if->super->detach
@@ -162,10 +213,13 @@ OneStepIterator#getLength()::: The number of nodes in the list:::if->isReverseAx
 OneStepIterator#countProximityPosition(int):::Count backwards one proximity position.:::if->isReverseAxes->super->countProximityPosition->else->if
 OneStepIterator#reset():::Reset the iterator.:::super->reset->if->m_iterator->reset
 OneStepIterator#getAxis():::Returns the axis being iterated, if it is known.:::return
+OneStepIterator#deepEquals(Expression)::: one step iterator deep equals:::if->super->deepEquals->return->if->return->return
 OneStepIteratorForward#setRoot(int, Object):::Initialize the context values for this expression after it is cloned.:::super->setRoot->m_cdtm->getAxisTraverser
 OneStepIteratorForward#getNextNode():::Get the next node via getFirstAttribute && getNextAttribute.:::m_traverser->first->m_traverser->next->return
 OneStepIteratorForward#getAxis():::Returns the axis being iterated, if it is known.:::return
+OneStepIteratorForward#deepEquals(Expression)::: one step iterator forward deep equals:::if->super->deepEquals->return->if->return->return
 PathComponent#getAnalysisBits():::Get the analysis bits for this path component, as defined in the WalkerFactory.:::
+PredicatedNodeTest#readObject(java.io.ObjectInputStream):::Read the object from a serialization stream.:::try->stream->defaultReadObject->resetProximityPositions->catch->throw->new->javax.xml.transform.TransformerException->finally
 PredicatedNodeTest#clone():::Get a cloned PrdicatedNodeTest.:::clone->super->clone->if->new->intArr->System->arraycopy->if->return
 PredicatedNodeTest#getPredicateCount():::Get the number of predicates that this walker has.:::if->return->else->return
 PredicatedNodeTest#setPredicateCount(int):::Set the number of predicates that this walker has:::if->newPredicates->new->ExpressionArr->for->i->else
@@ -188,6 +242,9 @@ PredicatedNodeTest#getLocPathIterator():::Get the owning location path iterator.
 PredicatedNodeTest#setLocPathIterator(LocPathIterator):::Set the location path iterator owner for this walker:::if->li->exprSetParent
 PredicatedNodeTest#canTraverseOutsideSubtree():::Tell if this expression or it's subexpressions can traverse outside the current subtree.:::n->getPredicateCount->for->i->return
 PredicatedNodeTest#callPredicateVisitors(XPathVisitor):::This will traverse the heararchy, calling the visitor for each member:::if->n->for->i
+PredicatedNodeTest#deepEquals(Expression)::: predicated node test deep equals:::if->super->deepEquals->return->pnt->if->n->if->return->for->i->else->if->return->return
+PredicatedNodeTest.PredOwner#getExpression()::: pred owner get expression:::return
+PredicatedNodeTest.PredOwner#setExpression(Expression)::: pred owner set expression:::exp->exprSetParent
 ReverseAxesWalker#setRoot(int):::Set the root node of the TreeWalker:::super->setRoot->getDTM->getAxisIterator->m_iterator->setStartNode
 ReverseAxesWalker#detach():::Detaches the walker from the set which it iterated over, releasing any computational resources and placing the iterator in the INVALID state.:::super->detach
 ReverseAxesWalker#getNextNode():::Get the next node in document order on the axes.:::if->return->next->m_iterator->next->if->if->return
@@ -209,22 +266,67 @@ UnionPathIterator#addIterator(DTMIterator):::Add an iterator to the union list.:
 UnionPathIterator#detach()::: Detaches the iterator from the set which it iterated over, releasing any computational resources and placing the iterator in the INVALID state:::if->n->for->i
 UnionPathIterator#createUnionIterator(Compiler, int):::This will return an iterator capable of handling the union of paths given.:::upi->new->UnionPathIterator->nPaths->isAllChildIterators->for->i->if->uci->new->UnionChildIterator->for->i->return->else->return
 UnionPathIterator#getAnalysisBits():::Get the analysis bits for this walker, as defined in the WalkerFactory.:::bits->if->n->for->i->return
+UnionPathIterator#readObject(java.io.ObjectInputStream):::Read the object from a serialization stream.:::try->stream->defaultReadObject->new->IteratorPool->catch->throw->new->javax.xml.transform.TransformerException->finally
 UnionPathIterator#clone():::Get a cloned LocPathIterator that holds the same position as this iterator.:::clone->super->clone->if->n->new->DTMIteratorArr->for->i->return
 UnionPathIterator#createDTMIterator(Compiler, int):::Create a new location path iterator.:::lpi->WalkerFactory->compiler->getLocationPathDepth->newDTMIterator->return
 UnionPathIterator#loadLocationPaths(Compiler, int, int):::Initialize the location path iterators:::steptype->compiler->getOp->if->compiler->getNextOpPos->loadLocationPaths->createDTMIterator->exprSetParent->else->switch->compiler->getNextOpPos->loadLocationPaths->iter->compiler->getNamespaceContext->new->WalkingIterator->iter->exprSetParent->if->compiler->getLocationPathDepth->iter->setIsTopLevel->new->com.sun.org.apache.xpath.internal.axes.FilterExprWalker->init->break->new->LocPathIteratorArr
 UnionPathIterator#nextNode()::: Returns the next node in the set and advances the position of the iterator in the set:::if->return->earliestNode->if->n->iteratorUsed->for->i->if->nextNode->incrementCurrentPos->else->return
 UnionPathIterator#fixupVariables(List, int):::This function is used to fixup variables from QNames to stack frame indexes at stylesheet build time.:::for->i
 UnionPathIterator#getAxis():::Returns the axis being iterated, if it is known.:::return
+UnionPathIterator.iterOwner#getExpression():::iter owner get expression:::return
+UnionPathIterator.iterOwner#setExpression(Expression):::iter owner set expression:::if->wi->getPrefixResolver->new->WalkingIterator->few->new->FilterExprWalker->wi->setFirstWalker->few->setInnerExpression->wi->exprSetParent->few->exprSetParent->exp->exprSetParent->else->exp->exprSetParent
+UnionPathIterator#callVisitors(ExpressionOwner, XPathVisitor)::: union path iterator call visitors:::if->visitor->visitUnionPath->if->n->for->i
+UnionPathIterator#deepEquals(Expression)::: union path iterator deep equals:::if->super->deepEquals->return->upi->if->n->if->return->for->i->else->if->return->return
 WalkerFactory#loadOneWalker(WalkingIterator, Compiler, int):::This method is for building an array of possible levels where the target element(s) could be found for a match.:::firstWalker->stepType->compiler->getOp->if->createDefaultWalker->firstWalker->init->return
 WalkerFactory#loadWalkers(WalkingIterator, Compiler, int, int):::This method is for building an array of possible levels where the target element(s) could be found for a match.:::stepType->firstWalker->walker->prevWalker->analysis->analyze->while->compiler->getOp->createDefaultWalker->walker->init->walker->exprSetParent->if->else->prevWalker->setNextWalker->walker->setPrevWalker->compiler->getNextStepPos->if->break->return
+WalkerFactory#isSet(int, int)::: walker factory is set:::return
+WalkerFactory#diagnoseIterator(String, int, Compiler)::: walker factory diagnose iterator:::compiler->toString->Integer->toBinaryString->getAnalysisString->println
 WalkerFactory#newDTMIterator(Compiler, int, boolean):::Create a new LocPathIterator iterator:::firstStepPos->OpMap->getFirstChildPos->analysis->analyze->isOneStep->isOneStep->iter->if->walksSelfOnly->isWild->hasPredicate->if->diagnoseIterator->new->SelfIteratorNoPredicate->else->if->walksChildrenOnly->if->isWild->hasPredicate->if->diagnoseIterator->new->ChildIterator->else->if->diagnoseIterator->new->ChildTestIterator->else->if->walksAttributes->if->diagnoseIterator->new->AttributeIterator->else->if->walksFilteredList->if->walksNamespaces->walksInDocOrder->isSet->if->diagnoseIterator->new->OneStepIteratorForward->else->if->diagnoseIterator->new->OneStepIterator->else->if->isOptimizableForDescendantIterator->if->diagnoseIterator->new->DescendantIterator->else->if->isNaturalDocOrder->if->diagnoseIterator->new->WalkingIterator->else->if->diagnoseIterator->new->WalkingIteratorSorted->if->setIsTopLevel->return
 WalkerFactory#getAxisFromStep(Compiler, int):::Special purpose function to see if we can optimize the pattern for a DescendantIterator.:::stepType->compiler->getOp->switch->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->throw->XSLMessages->new->ObjectArr->Integer->toString->createXPATHMessage->new->RuntimeException
 WalkerFactory#getAnalysisBitFromAxes(int):::Get a corresponding BIT_XXX from an axis.:::switch->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return
+WalkerFactory#functionProximateOrContainsProximate(Compiler, int)::: walker factory function proximate or contains proximate:::endFunc->compiler->getOp->OpMap->getFirstChildPos->funcID->compiler->getOp->switch->return->i->for->p->compiler->getNextOpPos->return
+WalkerFactory#isProximateInnerExpr(Compiler, int)::: walker factory is proximate inner expr:::op->compiler->getOp->innerExprOpPos->switch->if->isProximateInnerExpr->return->break->break->isProx->functionProximateOrContainsProximate->if->return->break->leftPos->OpMap->getFirstChildPos->rightPos->compiler->getNextOpPos->isProximateInnerExpr->if->return->isProximateInnerExpr->if->return->break->return->return
 WalkerFactory#mightBeProximate(Compiler, int, int):::Tell if the predicates need to have proximity knowledge.:::mightBeProximate->argLen->switch->compiler->getArgLength->break->compiler->getArgLengthOfStep->predPos->compiler->getFirstPredicateOpPos->count->while->compiler->getOp->innerExprOpPos->predOp->compiler->getOp->switch->return->break->return->isProx->functionProximateOrContainsProximate->if->return->break->leftPos->OpMap->getFirstChildPos->rightPos->compiler->getNextOpPos->isProximateInnerExpr->if->return->isProximateInnerExpr->if->return->break->return->compiler->getNextOpPos->return
+WalkerFactory#isOptimizableForDescendantIterator(Compiler, int, int):::Special purpose function to see if we can optimize the pattern for a DescendantIterator.:::stepType->stepCount->foundDorDS->foundSelf->foundDS->nodeTestType->while->compiler->getOp->if->return->if->return->mightBeProximate->mightBeProximate->if->return->switch->return->if->return->break->if->return->break->if->return->break->if->return->break->throw->XSLMessages->new->ObjectArr->Integer->toString->createXPATHMessage->new->RuntimeException->compiler->getStepTestType->nextStepOpCodePos->compiler->getNextStepPos->if->break->if->compiler->getOp->if->compiler->countPredicates->return->return
+WalkerFactory#analyze(Compiler, int, int):::Analyze the location path and return 32 bits that give information about the location path as a whole:::stepType->stepCount->analysisResult->while->compiler->getOp->predAnalysis->analyzePredicate->if->switch->break->break->break->break->break->break->break->break->if->break->break->break->break->break->break->break->break->break->break->throw->XSLMessages->new->ObjectArr->Integer->toString->createXPATHMessage->new->RuntimeException->if->compiler->getOp->compiler->getNextStepPos->if->break->return
 WalkerFactory#isDownwardAxisOfMany(int):::Tell if the given axis goes downword:::return
 WalkerFactory#loadSteps(MatchPatternIterator, Compiler, int, int):::Read a LocationPath as a generalized match pattern:::if->println->compiler->getPatternString->println->stepType->step->firstStep->prevStep->analysis->analyze->while->compiler->getOp->createDefaultStepPattern->if->else->step->setRelativePathPattern->compiler->getNextStepPos->if->break->axis->paxis->tail->for->pat->pat->getRelativePathPattern->if->selfPattern->new->ContextMatchStepPattern->score->tail->getStaticScore->tail->setRelativePathPattern->tail->setStaticScore->selfPattern->setStaticScore->if->step->toString->println->println->return
+WalkerFactory#createDefaultStepPattern(Compiler, int, MatchPatternIterator, int, StepPattern, StepPattern):::Create a StepPattern that is contained within a LocationPath.:::stepType->compiler->getOp->simpleInit->prevIsOneStepDown->whatToShow->compiler->getWhatToShow->ai->axis->predicateAxis->switch->expr->switch->compiler->compileExpression->break->compiler->compileExpression->new->FunctionPattern->break->new->StepPattern->break->break->break->break->break->break->break->break->break->break->break->break->break->break->throw->XSLMessages->new->ObjectArr->Integer->toString->createXPATHMessage->new->RuntimeException->if->compiler->getWhatToShow->compiler->getStepNS->compiler->getStepLocalName->new->StepPattern->if->print->Axis->ai->getAxis->getNames->print->Axis->ai->getAxis->getNames->print->print->print->NodeTest->ai->getWhatToShow->debugWhatToShow->argLen->compiler->getFirstPredicateOpPos->ai->compiler->getCompiledPredicates->setPredicates->return
 WalkerFactory#analyzePredicate(Compiler, int, int):::Analyze a step and give information about it's predicates:::argLen->switch->compiler->getArgLength->break->compiler->getArgLengthOfStep->pos->compiler->getFirstPredicateOpPos->nPredicates->compiler->countPredicates->return
+WalkerFactory#createDefaultWalker(Compiler, int, WalkingIterator, int):::Create the proper Walker from the axes type.:::ai->stepType->compiler->getOp->simpleInit->totalNumberWalkers->prevIsOneStepDown->switch->if->compiler->toString->println->new->FilterExprWalker->break->new->AxesWalker->break->new->ReverseAxesWalker->break->new->ReverseAxesWalker->break->new->AxesWalker->break->new->AxesWalker->break->new->AxesWalker->break->new->AxesWalker->break->new->AxesWalker->break->new->AxesWalker->break->new->AxesWalker->break->new->ReverseAxesWalker->break->new->ReverseAxesWalker->break->new->ReverseAxesWalker->break->new->AxesWalker->break->throw->XSLMessages->new->ObjectArr->Integer->toString->createXPATHMessage->new->RuntimeException->if->ai->initNodeTest->else->whatToShow->compiler->getWhatToShow->if->ai->initNodeTest->else->ai->compiler->getStepNS->compiler->getStepLocalName->initNodeTest->return
+WalkerFactory#getAnalysisString(int)::: walker factory get analysis string:::buf->new->StringBuffer->buf->append->getStepCount->append->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->if->buf->append->return->buf->toString
+WalkerFactory#hasPredicate(int)::: walker factory has predicate:::return
+WalkerFactory#isWild(int)::: walker factory is wild:::return
+WalkerFactory#walksAncestors(int)::: walker factory walks ancestors:::return->isSet
+WalkerFactory#walksAttributes(int)::: walker factory walks attributes:::return
+WalkerFactory#walksNamespaces(int)::: walker factory walks namespaces:::return
+WalkerFactory#walksChildren(int)::: walker factory walks children:::return
+WalkerFactory#walksDescendants(int)::: walker factory walks descendants:::return->isSet
+WalkerFactory#walksSubtree(int)::: walker factory walks subtree:::return->isSet
+WalkerFactory#walksSubtreeOnlyMaybeAbsolute(int)::: walker factory walks subtree only maybe absolute:::return->walksSubtree->walksExtraNodes->walksUp->walksSideways
+WalkerFactory#walksSubtreeOnly(int)::: walker factory walks subtree only:::return->walksSubtreeOnlyMaybeAbsolute->isAbsolute
+WalkerFactory#walksFilteredList(int)::: walker factory walks filtered list:::return->isSet
+WalkerFactory#walksSubtreeOnlyFromRootOrContext(int)::: walker factory walks subtree only from root or context:::return->walksSubtree->walksExtraNodes->walksUp->walksSideways->isSet
+WalkerFactory#walksInDocOrder(int)::: walker factory walks in doc order:::return->walksSubtreeOnlyMaybeAbsolute->walksExtraNodesOnly->walksFollowingOnlyMaybeAbsolute->isSet
+WalkerFactory#walksFollowingOnlyMaybeAbsolute(int)::: walker factory walks following only maybe absolute:::return->isSet->walksSubtree->walksUp->walksSideways
+WalkerFactory#walksUp(int)::: walker factory walks up:::return->isSet
+WalkerFactory#walksSideways(int)::: walker factory walks sideways:::return->isSet
+WalkerFactory#walksExtraNodes(int)::: walker factory walks extra nodes:::return->isSet
+WalkerFactory#walksExtraNodesOnly(int)::: walker factory walks extra nodes only:::return->walksExtraNodes->isSet->walksSubtree->walksUp->walksSideways->isAbsolute
+WalkerFactory#isAbsolute(int)::: walker factory is absolute:::return->isSet
+WalkerFactory#walksChildrenOnly(int)::: walker factory walks children only:::return->walksChildren->isSet->walksExtraNodes->walksDescendants->walksUp->walksSideways->isAbsolute->isSet
+WalkerFactory#walksChildrenAndExtraAndSelfOnly(int)::: walker factory walks children and extra and self only:::return->walksChildren->walksDescendants->walksUp->walksSideways->isAbsolute->isSet
+WalkerFactory#walksDescendantsAndExtraAndSelfOnly(int)::: walker factory walks descendants and extra and self only:::return->walksChildren->walksDescendants->walksUp->walksSideways->isAbsolute->isSet
+WalkerFactory#walksSelfOnly(int)::: walker factory walks self only:::return->isSet->walksSubtree->walksUp->walksSideways->isAbsolute
+WalkerFactory#walksUpOnly(int)::: walker factory walks up only:::return->walksSubtree->walksUp->walksSideways->isAbsolute
+WalkerFactory#walksDownOnly(int)::: walker factory walks down only:::return->walksSubtree->walksUp->walksSideways->isAbsolute
+WalkerFactory#walksDownExtraOnly(int)::: walker factory walks down extra only:::return->walksSubtree->walksExtraNodes->walksUp->walksSideways->isAbsolute
+WalkerFactory#canSkipSubtrees(int)::: walker factory can skip subtrees:::return->isSet->walksSideways
+WalkerFactory#canCrissCross(int)::: walker factory can criss cross:::if->walksSelfOnly->return->else->if->walksDownOnly->canSkipSubtrees->return->else->if->walksChildrenAndExtraAndSelfOnly->return->else->if->walksDescendantsAndExtraAndSelfOnly->return->else->if->walksUpOnly->return->else->if->walksExtraNodesOnly->return->else->if->walksSubtree->walksSideways->walksUp->canSkipSubtrees->return->else->return
 WalkerFactory#isNaturalDocOrder(int):::Tell if the pattern can be 'walked' with the iteration steps in natural document order, without duplicates.:::if->canCrissCross->isSet->walksFilteredList->return->if->walksInDocOrder->return->return
+WalkerFactory#isNaturalDocOrder(Compiler, int, int, int):::Tell if the pattern can be 'walked' with the iteration steps in natural document order, without duplicates.:::if->canCrissCross->return->if->isSet->return->if->isSet->isSet->return->stepType->stepCount->foundWildAttribute->potentialDuplicateMakingStepCount->while->compiler->getOp->switch->if->return->localName->compiler->getStepLocalName->if->localName->equals->break->if->return->if->return->break->throw->XSLMessages->new->ObjectArr->Integer->toString->createXPATHMessage->new->RuntimeException->nextStepOpCodePos->compiler->getNextStepPos->if->break->return
+WalkerFactory#isOneStep(int)::: walker factory is one step:::return
+WalkerFactory#getStepCount(int)::: walker factory get step count:::return
 WalkingIterator#getAnalysisBits():::Get the analysis bits for this walker, as defined in the WalkerFactory.:::bits->if->walker->while->bit->walker->getAnalysisBits->walker->getNextWalker->return
 WalkingIterator#clone():::Get a cloned WalkingIterator that holds the same position as this iterator.:::clone->super->clone->if->m_firstWalker->cloneDeep->return
 WalkingIterator#reset():::Reset the iterator.:::super->reset->if->m_firstWalker->setRoot
@@ -236,6 +338,10 @@ WalkingIterator#setLastUsedWalker(AxesWalker):::Set the last used walker.:::
 WalkingIterator#getLastUsedWalker():::Get the last used walker.:::return
 WalkingIterator#detach()::: Detaches the iterator from the set which it iterated over, releasing any computational resources and placing the iterator in the INVALID state:::if->walker->while->walker->detach->walker->getNextWalker->super->detach
 WalkingIterator#fixupVariables(List, int):::This function is used to fixup variables from QNames to stack frame indexes at stylesheet build time.:::walker->while->walker->fixupVariables->walker->getNextWalker
+WalkingIterator#callVisitors(ExpressionOwner, XPathVisitor)::: walking iterator call visitors:::if->visitor->visitLocationPath->if->m_firstWalker->callVisitors
+WalkingIterator#getExpression()::: walking iterator get expression:::return
+WalkingIterator#setExpression(Expression)::: walking iterator set expression:::exp->exprSetParent
+WalkingIterator#deepEquals(Expression)::: walking iterator deep equals:::if->super->deepEquals->return->walker1->walker2->while->if->walker1->deepEquals->return->walker1->getNextWalker->walker2->getNextWalker->if->return->return
 WalkingIteratorSorted#isDocOrdered():::Returns true if all the nodes in the iteration well be returned in document order.:::return
 WalkingIteratorSorted#canBeWalkedInNaturalDocOrderStatic():::Tell if the nodeset can be walked in doc order, via static analysis.:::if->walker->prevAxis->prevIsSimpleDownAxis->for->i->return->return
 WalkingIteratorSorted#fixupVariables(List, int):::This function is used to perform some extra analysis of the iterator.:::super->fixupVariables->analysis->getAnalysisBits->if->WalkerFactory->isNaturalDocOrder->else

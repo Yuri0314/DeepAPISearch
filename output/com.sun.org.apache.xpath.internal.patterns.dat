@@ -5,6 +5,8 @@ FunctionPattern#fixupVariables(List, int):::This function is used to fixup varia
 FunctionPattern#execute(XPathContext, int):::Test a node to see if it matches the given node test.:::nl->m_functionExpr->asIterator->score->if->n->while->nl->nextNode->if->break->nl->detach->return
 FunctionPattern#execute(XPathContext, int, DTM, int):::Test a node to see if it matches the given node test.:::nl->m_functionExpr->asIterator->score->if->n->while->nl->nextNode->if->break->nl->detach->return
 FunctionPattern#execute(XPathContext):::Test a node to see if it matches the given node test.:::context->xctxt->getCurrentNode->nl->m_functionExpr->asIterator->score->if->n->while->nl->nextNode->if->break->nl->detach->return
+FunctionPattern.FunctionOwner#getExpression()::: function owner get expression:::return
+FunctionPattern.FunctionOwner#setExpression(Expression)::: function owner set expression:::exp->exprSetParent
 FunctionPattern#callSubtreeVisitors(XPathVisitor):::Call the visitor for the function.:::m_functionExpr->new->FunctionOwner->callVisitors->super->callSubtreeVisitors
 NodeTest#getWhatToShow():::This attribute determines which node types are accepted:::return
 NodeTest#setWhatToShow(int):::This attribute determines which node types are accepted:::
@@ -12,6 +14,7 @@ NodeTest#getNamespace():::Return the namespace to be tested.:::return
 NodeTest#setNamespace(String):::Set the namespace to be tested.:::
 NodeTest#getLocalName():::Return the local name to be tested.:::return
 NodeTest#setLocalName(String):::Set the local name to be tested.:::
+NodeTest#deepEquals(Expression)::: node test deep equals:::if->isSameClass->return->nt->if->if->return->else->if->equals->return->else->if->return->if->if->return->else->if->equals->return->else->if->return->if->return->if->return->return
 NodeTest#initNodeTest(int):::Initialize this node test by setting the whatToShow property, and calculating the score that this test will return if a test succeeds.:::calcScore
 NodeTest#initNodeTest(int, String, String):::Initialize this node test by setting the whatToShow property and the namespace and local name, and calculating the score that this test will return if a test succeeds.:::calcScore
 NodeTest#getStaticScore():::Get the static score for this node test.:::return
@@ -20,10 +23,13 @@ NodeTest#calcScore():::Static calc of match score.:::if->else->if->else->if->els
 NodeTest#getDefaultScore():::Get the score that this test will return if a test succeeds.:::return->m_score->num
 NodeTest#getNodeTypeTest(int):::Tell what node type to test, if not DTMFilter.SHOW_ALL.:::if->return->if->return->if->return->if->return->if->return->if->return->if->return->if->return->if->return->if->return->if->return->if->return->if->return->return
 NodeTest#debugWhatToShow(int):::Do a diagnostics dump of a whatToShow bit set.:::v->new->ArrayList<>->if->v->add->if->v->add->if->v->add->if->v->add->if->v->add->if->v->add->if->v->add->if->v->add->if->v->add->if->v->add->if->v->add->if->v->add->if->v->add->n->v->size->for->i->if->print->println
+NodeTest#subPartMatch(String, String):::Two names are equal if they and either both are null or the name t is wild and the name p is non-null, or the two strings are equal.:::return->p->equals
+NodeTest#subPartMatchNS(String, String):::This is temporary to patch over Xerces issue with representing DOM namespaces as "".:::return->p->length->p->equals
 NodeTest#execute(XPathContext, int):::Tell what the test score is for the given node.:::dtm->xctxt->getDTM->nodeType->dtm->getNodeType->if->return->nodeBit->switch->return->return->return->return->dtm->getNodeName->subPartMatch->ns->dtm->getLocalName->return->subPartMatch->return->dtm->getNamespaceURI->subPartMatchNS->dtm->getLocalName->subPartMatch->return
 NodeTest#execute(XPathContext, int, DTM, int):::Tell what the test score is for the given node.:::if->return->nodeBit->dtm->getNodeType->switch->return->return->return->return->dtm->getNodeName->subPartMatch->ns->dtm->getLocalName->return->subPartMatch->return->dtm->getNamespaceURI->subPartMatchNS->dtm->getLocalName->subPartMatch->return
 NodeTest#execute(XPathContext):::Test the current node to see if it matches the given node test.:::return->xctxt->getCurrentNode->execute
 NodeTest#fixupVariables(List, int):::Node tests by themselves do not need to fix up variables.:::
+NodeTest#callVisitors(ExpressionOwner, XPathVisitor)::: node test call visitors:::assertion
 NodeTestFilter#setNodeTest(NodeTest):::Set the node test for this filter.:::
 StepPattern#calcTargetString():::Calculate the local name or psuedo name of the node that this pattern will test, for hash table lookup optimization.:::whatToShow->getWhatToShow->switch->break->break->break->break->if->WILD->equals->else->break->break
 StepPattern#getTargetString():::Get the local name or psuedo name of the node that this pattern will test, for hash table lookup optimization.:::return
@@ -39,6 +45,8 @@ StepPattern#calcScore():::Static calc of match score.:::if->getPredicateCount->e
 StepPattern#execute(XPathContext, int):::Execute this pattern step, including predicates.:::dtm->xctxt->getDTM->if->expType->dtm->getExpandedTypeID->return->execute->return
 StepPattern#execute(XPathContext):::Execute this pattern step, including predicates.:::return->xctxt->getCurrentNode->execute
 StepPattern#execute(XPathContext, int, DTM, int):::Execute an expression in the XPath runtime context, and return the result of the expression.:::if->if->return->m_relativePathPattern->execute->else->return->score->super->execute->if->return->if->getPredicateCount->if->executePredicates->return->if->return->m_relativePathPattern->executeRelativePathPattern->return
+StepPattern#checkProximityPosition(XPathContext, int, DTM, int, int):::New Method to check whether the current node satisfies a position predicate:::try->traverser->dtm->getAxisTraverser->for->child->traverser->first->traverser->next->catch->throw->se->getMessage->new->java.lang.RuntimeException->finally->return
+StepPattern#getProximityPosition(XPathContext, int, boolean):::Get the proximity position index of the current node based on this node test.:::pos->context->xctxt->getCurrentNode->dtm->xctxt->getDTM->parent->dtm->getParent->try->traverser->dtm->getAxisTraverser->for->child->traverser->first->traverser->next->catch->throw->se->getMessage->new->java.lang.RuntimeException->finally->return
 StepPattern#getProximityPosition(XPathContext):::Get the proximity position index of the current node based on this node test.:::return->xctxt->getPredicatePos->getProximityPosition
 StepPattern#getLastPos(XPathContext):::Get the count of the nodes that match the test, which is the proximity position of the last node that can pass this test in the sub context selection:::return->xctxt->getPredicatePos->getProximityPosition
 StepPattern#executeRelativePathPattern(XPathContext, DTM, int):::Execute the match pattern step relative to another step.:::score->context->traverser->dtm->getAxisTraverser->for->relative->traverser->first->traverser->next->return
@@ -47,9 +55,19 @@ StepPattern#toString():::Get the string represenentation of this step for diagno
 StepPattern#getMatchScore(XPathContext, int):::Get the match score of the given node.:::xctxt->pushCurrentNode->xctxt->pushCurrentExpressionNode->try->score->execute->return->score->num->catch->finally->xctxt->popCurrentNode->xctxt->popCurrentExpressionNode
 StepPattern#setAxis(int):::Set the axis that this step should follow.:::
 StepPattern#getAxis():::Get the axis that this step follows.:::return
+StepPattern.PredOwner#getExpression()::: pred owner get expression:::return
+StepPattern.PredOwner#setExpression(Expression)::: pred owner set expression:::exp->exprSetParent
+StepPattern#callVisitors(ExpressionOwner, XPathVisitor)::: step pattern call visitors:::if->visitor->visitMatchPattern->callSubtreeVisitors
 StepPattern#callSubtreeVisitors(XPathVisitor):::Call the visitors on the subtree:::if->n->for->i->if->m_relativePathPattern->callVisitors
+StepPattern#getExpression()::: step pattern get expression:::return
+StepPattern#setExpression(Expression)::: step pattern set expression:::exp->exprSetParent
+StepPattern#deepEquals(Expression)::: step pattern deep equals:::if->super->deepEquals->return->sp->if->n->if->return->for->i->else->if->return->if->if->m_relativePathPattern->deepEquals->return->else->if->return->return
 UnionPattern#fixupVariables(List, int):::No arguments to process, so this does nothing.:::for->i
 UnionPattern#canTraverseOutsideSubtree():::Tell if this expression or it's subexpressions can traverse outside the current subtree.:::if->n->for->i->return
 UnionPattern#setPatterns(StepPattern[]):::Set the contained step patterns to be tested.:::if->for->i
 UnionPattern#getPatterns():::Get the contained step patterns to be tested.:::return
 UnionPattern#execute(XPathContext):::Test a node to see if it matches any of the patterns in the union.:::bestScore->n->for->i->if->return
+UnionPattern.UnionPathPartOwner#getExpression()::: union path part owner get expression:::return
+UnionPattern.UnionPathPartOwner#setExpression(Expression)::: union path part owner set expression:::exp->exprSetParent
+UnionPattern#callVisitors(ExpressionOwner, XPathVisitor)::: union pattern call visitors:::visitor->visitUnionPattern->if->n->for->i
+UnionPattern#deepEquals(Expression)::: union pattern deep equals:::if->isSameClass->return->up->if->n->if->return->for->i->else->if->return->return

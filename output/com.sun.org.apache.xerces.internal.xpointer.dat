@@ -11,22 +11,58 @@ ElementSchemePointer#isChildFragmentResolved():::Returns true if the XPointer ex
 ElementSchemePointer#reportError(String, Object[]):::Reports an XPointer error:::throw->fErrorReporter->getMessageFormatter->fErrorReporter->getLocale->formatMessage->new->XNIException
 ElementSchemePointer#initErrorReporter():::Initializes error handling objects:::if->new->XMLErrorReporter->if->new->XPointerErrorHandler->fErrorReporter->new->XPointerMessageFormatter->putMessageFormatter
 ElementSchemePointer#init():::Initializes the element scheme processor:::initErrorReporter
+ElementSchemePointer.Tokens#getTokenString(int)::: tokens get token string:::return->fTokenNames->get
+ElementSchemePointer.Tokens#addToken(String):::Add the specified string as a token:::str->fTokenNames->get->tokenInt->Integer->parseInt->if->fTokenNames->size->fTokenNames->put->tokenInt->intValue->addToken
+ElementSchemePointer.Tokens#addToken(int):::Add the specified int token:::try->catch->oldList->new->intArr->System->arraycopy->finally
+ElementSchemePointer.Tokens#rewind():::Resets the current position to the head of the token list.:::
+ElementSchemePointer.Tokens#hasMore():::Returns true if the #getNextToken() method returns a valid token.:::return
+ElementSchemePointer.Tokens#nextToken():::Obtains the token at the current position, then advance the current position by one:::if->reportError->return
+ElementSchemePointer.Tokens#peekToken():::Obtains the token at the current position, without advancing the current position:::if->reportError->return
+ElementSchemePointer.Tokens#nextTokenAsString():::Obtains the token at the current position as a String:::s->nextToken->getTokenString->if->reportError->return
+ElementSchemePointer.Tokens#getTokenCount():::Returns the number of tokens.:::return
+ElementSchemePointer.Scanner#scanExpr(SymbolTable, Tokens, String, int, int):::Scans the XPointer Expression:::ch->nameOffset->nameHandle->while->if->break->data->charAt->chartype->switch->if->return->addToken->data->charAt->child->while->if->break->data->charAt->if->new->ObjectArr->reportError->return->tokens->addToken->break->scanNCName->if->new->ObjectArr->reportError->return->if->data->charAt->else->symbolTable->data->substring->addSymbol->addToken->tokens->addToken->break->return
+ElementSchemePointer.Scanner#scanNCName(String, int, int):::Scans a NCName:::ch->data->charAt->if->if->XMLChar->isNameStart->return->else->chartype->if->return->while->data->charAt->if->if->XMLChar->isName->break->else->chartype->if->break->return
+ElementSchemePointer.Scanner#addToken(Tokens, int):::This method adds the specified token to the token list:::tokens->addToken
 ShortHandPointer#parseXPointer(String):::The XPointerProcessor takes care of this:::
+ShortHandPointer#resolveXPointer(QName, XMLAttributes, Augmentations, int)::: short hand pointer resolve pointer:::if->if->if->hasMatchingIdentifier->if->else->if->if->hasMatchingIdentifier->else->if->return
+ShortHandPointer#hasMatchingIdentifier(QName, XMLAttributes, Augmentations, int)::: short hand pointer has matching identifier:::normalizedValue->if->for->i->attributes->getLength->if->normalizedValue->equals->return->return
 ShortHandPointer#getDTDDeterminedID(XMLAttributes, int):::Rerturns the DTD determine-ID:::if->attributes->getType->equals->return->attributes->getValue->return
 ShortHandPointer#getSchemaDeterminedID(XMLAttributes, int):::Returns the schema-determined-ID.:::augs->attributes->getAugmentations->attrPSVI->augs->getItem->if->typeDef->attrPSVI->getMemberTypeDefinition->if->attrPSVI->getTypeDefinition->if->isIDType->return->attrPSVI->getSchemaValue->getNormalizedValue->return
 ShortHandPointer#getChildrenSchemaDeterminedID(XMLAttributes, int):::Not quite sure how this can be correctly implemented.:::return
+ShortHandPointer#isFragmentResolved()::: short hand pointer is fragment resolved:::return
+ShortHandPointer#isChildFragmentResolved()::: short hand pointer is child fragment resolved:::return
 ShortHandPointer#getSchemeName():::Returns the name of the ShortHand pointer:::return
+ShortHandPointer#getSchemeData()::: short hand pointer get scheme data:::return
+ShortHandPointer#setSchemeName(String)::: short hand pointer set scheme name:::
+ShortHandPointer#setSchemeData(String)::: short hand pointer set scheme data:::
 XPointerErrorHandler#warning(String, String, XMLParseException):::Warning.:::printError
 XPointerErrorHandler#error(String, String, XMLParseException):::Error.:::printError
 XPointerErrorHandler#fatalError(String, String, XMLParseException):::Fatal error.:::printError->throw
+XPointerErrorHandler#printError(String, XMLParseException):::Prints the error message.:::fOut->print->fOut->print->fOut->print->systemId->ex->getExpandedSystemId->if->index->systemId->lastIndexOf->if->systemId->substring->fOut->print->fOut->print->fOut->ex->getLineNumber->print->fOut->print->fOut->ex->getColumnNumber->print->fOut->print->fOut->ex->getMessage->print->fOut->println->fOut->flush
+XPointerHandler#setDocumentHandler(XMLDocumentHandler)::: pointer handler set document handler:::
 XPointerHandler#parseXPointer(String):::Parses the XPointer framework expression and delegates scheme specific parsing.:::init->tokens->new->Tokens->scanner->new->Scanner->length->xpointer->length->success->scanner->scanExpr->if->new->ObjectArr->reportError->while->tokens->hasMore->token->tokens->nextToken->switch->tokens->nextToken->shortHandPointerName->tokens->getTokenString->if->new->ObjectArr->reportError->shortHandPointer->new->ShortHandPointer->shortHandPointer->setSchemeName->fXPointerParts->add->break->tokens->nextToken->prefix->tokens->getTokenString->tokens->nextToken->localName->tokens->getTokenString->schemeName->openParenCount->closeParenCount->tokens->nextToken->openParen->tokens->getTokenString->if->if->new->ObjectArr->reportError->else->new->ObjectArr->reportError->schemeData->while->tokens->hasMore->tokens->nextToken->tokens->getTokenString->if->break->tokens->nextToken->tokens->getTokenString->tokens->nextToken->closeParen->tokens->getTokenString->if->new->ObjectArr->reportError->while->tokens->hasMore->if->tokens->tokens->peekToken->getTokenString->break->if->new->ObjectArr->reportError->if->schemeName->equals->elementSchemePointer->new->ElementSchemePointer->elementSchemePointer->setSchemeName->elementSchemePointer->setSchemeData->try->elementSchemePointer->parseXPointer->fXPointerParts->add->catch->throw->new->XNIException->finally->else->new->ObjectArr->reportWarning->break->new->ObjectArr->reportError
+XPointerHandler#resolveXPointer(QName, XMLAttributes, Augmentations, int)::: pointer handler resolve pointer:::resolved->if->for->i->fXPointerParts->size->else->if->fXPointerPart->resolveXPointer->if->return
 XPointerHandler#isFragmentResolved():::Returns true if the Node fragment is resolved.:::resolved->fXPointerPart->isFragmentResolved->if->return
 XPointerHandler#isChildFragmentResolved():::Returns true if the XPointer expression resolves to a non-element child of the current resource fragment.:::resolved->fXPointerPart->isChildFragmentResolved->return
 XPointerHandler#isXPointerResolved():::Returns true if the XPointer successfully found a sub-resource .:::return
 XPointerHandler#getXPointerPart():::Returns the pointer part used to resolve the document fragment.:::return
+XPointerHandler#reportError(String, Object[]):::Reports XPointer Errors:::throw->fErrorReporter->getMessageFormatter->fErrorReporter->getLocale->formatMessage->new->XNIException
+XPointerHandler#reportWarning(String, Object[]):::Reports XPointer Warnings:::fXPointerErrorReporter->reportError
 XPointerHandler#initErrorReporter():::Initializes error handling objects:::if->new->XMLErrorReporter->if->new->XPointerErrorHandler->fXPointerErrorReporter->new->XPointerMessageFormatter->putMessageFormatter
 XPointerHandler#init():::Initializes the XPointer Processor;:::fXPointerParts->clear->initErrorReporter
 XPointerHandler#getPointerParts():::Returns an ArrayList of XPointerPart objects:::return
+XPointerHandler.Tokens#getTokenString(int):::Returns the token String:::return->fTokenNames->get
+XPointerHandler.Tokens#addToken(String):::Add the specified string as a token:::str->fTokenNames->get->tokenInt->Integer->parseInt->if->fTokenNames->size->fTokenNames->put->tokenInt->intValue->addToken
+XPointerHandler.Tokens#addToken(int):::Add the specified int token:::try->catch->oldList->new->intArr->System->arraycopy->finally
+XPointerHandler.Tokens#rewind():::Resets the current position to the head of the token list.:::
+XPointerHandler.Tokens#hasMore():::Returns true if the #getNextToken() method returns a valid token.:::return
+XPointerHandler.Tokens#nextToken():::Obtains the token at the current position, then advance the current position by one:::if->reportError->return
+XPointerHandler.Tokens#peekToken():::Obtains the token at the current position, without advancing the current position:::if->reportError->return
+XPointerHandler.Tokens#nextTokenAsString():::Obtains the token at the current position as a String:::tokenStrint->nextToken->getTokenString->if->reportError->return
+XPointerHandler.Scanner#scanExpr(SymbolTable, Tokens, String, int, int):::Scans the XPointer Expression:::ch->openParen->closeParen->nameOffset->dataOffset->isQName->name->prefix->schemeData->schemeDataBuff->new->StringBuffer->while->if->break->data->charAt->while->if->break->data->charAt->if->break->chartype->switch->addToken->break->addToken->break->if->scanNCName->if->new->ObjectArr->reportError->return->if->data->charAt->else->symbolTable->data->substring->addSymbol->if->if->return->data->charAt->scanNCName->if->return->if->data->charAt->else->symbolTable->data->substring->addSymbol->if->addToken->tokens->addToken->tokens->addToken->else->if->addToken->tokens->addToken->break->else->if->scanData->if->new->ObjectArr->reportError->return->if->data->charAt->else->symbolTable->schemeDataBuff->toString->addSymbol->addToken->tokens->addToken->schemeDataBuff->schemeDataBuff->length->delete->else->return->return
+XPointerHandler.Scanner#scanNCName(String, int, int):::Scans a NCName:::ch->data->charAt->if->if->XMLChar->isNameStart->return->else->chartype->if->return->while->data->charAt->if->if->XMLChar->isName->break->else->chartype->if->break->return
+XPointerHandler.Scanner#scanData(String, StringBuffer, int, int):::Scans the SchemeData:::while->if->break->ch->data->charAt->chartype->if->schemeData->append->scanData->if->return->data->charAt->if->return->schemeData->append->else->if->return->else->if->data->charAt->if->break->schemeData->append->else->schemeData->append->return
+XPointerHandler.Scanner#addToken(Tokens, int):::This method adds the specified token to the token list:::tokens->addToken
 XPointerHandler#comment(XMLString, Augmentations):::If the comment is a child of a matched element, then pass else return.:::if->isChildFragmentResolved->return->super->comment
 XPointerHandler#processingInstruction(String, XMLString, Augmentations):::A processing instruction:::if->isChildFragmentResolved->return->super->processingInstruction
 XPointerHandler#startElement(QName, XMLAttributes, Augmentations):::The start of an element.:::if->resolveXPointer->if->processXMLBaseAttributes->if->processXMLLangAttributes->fNamespaceContext->setContextInvalid->return->super->startElement

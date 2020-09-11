@@ -30,6 +30,8 @@ AttributesImpl#setLocalName(int, String):::Set the local name of a specific attr
 AttributesImpl#setQName(int, String):::Set the qualified name of a specific attribute.:::if->else->badIndex
 AttributesImpl#setType(int, String):::Set the type of a specific attribute.:::if->else->badIndex
 AttributesImpl#setValue(int, String):::Set the value of a specific attribute.:::if->else->badIndex
+AttributesImpl#ensureCapacity(int):::Ensure the internal array's capacity.:::if->return->max->if->else->if->return->else->while->newData->new->StringArr->if->System->arraycopy
+AttributesImpl#badIndex(int):::Report a bad array index in a manipulator.:::msg->throw->new->ArrayIndexOutOfBoundsException
 DefaultHandler#resolveEntity(String, String):::Resolve an external entity:::return
 DefaultHandler#notationDecl(String, String, String):::Receive notification of a notation declaration:::
 DefaultHandler#unparsedEntityDecl(String, String, String, String):::Receive notification of an unparsed entity declaration:::
@@ -75,7 +77,9 @@ NamespaceSupport.Context#getURI(String):::Look up the URI associated with a pref
 NamespaceSupport.Context#getPrefix(String):::Look up one of the prefixes associated with a URI in this context:::if->return->else->return->uriTable->get
 NamespaceSupport.Context#getDeclaredPrefixes():::Return an enumeration of prefixes declared in this context.:::if->return->else->return->Collections->enumeration
 NamespaceSupport.Context#getPrefixes():::Return an enumeration of all prefixes currently in force:::if->return->else->return->Collections->prefixTable->keySet->enumeration
+NamespaceSupport.Context#copyTables():::Copy on write for the internal tables in this context:::if->new->HashMap<>->else->new->HashMap<>->if->new->HashMap<>->else->new->HashMap<>->new->HashMap<>->new->HashMap<>
 NewInstance#newInstance(Class, ClassLoader, String):::Creates a new instance of the specified class name  Package private so this code is not exposed at the API level.:::classLoader->Objects->requireNonNull->className->Objects->requireNonNull->if->className->equals->return->type->new->com.sun.org.apache.xerces.internal.parsers.SAXParser->cast->internal->if->System->getSecurityManager->if->className->startsWith->driverClass->if->Class->forName->else->classLoader->loadClass->try->return->type->driverClass->getConstructor->newInstance->cast->catch->throw->ex->getMessage->new->InstantiationException->finally
+ParserAdapter#setup(Parser):::Internal setup method.:::if->throw->new->NullPointerException->new->AttributesImpl->new->NamespaceSupport->new->AttributeListAdapter
 ParserAdapter#setFeature(String, boolean):::Set a feature flag for the parser:::if->name->equals->checkNotParsing->if->else->if->name->equals->checkNotParsing->if->else->if->name->equals->checkNotParsing->else->throw->new->SAXNotRecognizedException
 ParserAdapter#getFeature(String):::Check a parser feature flag:::if->name->equals->return->else->if->name->equals->return->else->if->name->equals->return->else->throw->new->SAXNotRecognizedException
 ParserAdapter#setProperty(String, Object):::Set a parser property:::throw->new->SAXNotRecognizedException
@@ -98,7 +102,11 @@ ParserAdapter#endElement(String):::Adapter implementation method; do not call:::
 ParserAdapter#characters(char[], int, int):::Adapter implementation method; do not call:::if->contentHandler->characters
 ParserAdapter#ignorableWhitespace(char[], int, int):::Adapter implementation method; do not call:::if->contentHandler->ignorableWhitespace
 ParserAdapter#processingInstruction(String, String):::Adapter implementation method; do not call:::if->contentHandler->processingInstruction
+ParserAdapter#setupParser():::Initialize the parser before each run.:::if->throw->new->IllegalStateException->nsSupport->reset->if->nsSupport->setNamespaceDeclUris->if->parser->setEntityResolver->if->parser->setDTDHandler->if->parser->setErrorHandler->parser->setDocumentHandler
+ParserAdapter#processName(String, boolean, boolean):::Process a qualified (prefixed) name:::parts->nsSupport->processName->if->if->throw->makeException->reportError->new->StringArr->qName->intern->return
 ParserAdapter#reportError(String):::Report a non-fatal error.:::if->errorHandler->makeException->error
+ParserAdapter#makeException(String):::Construct an exception for the current context.:::if->return->new->SAXParseException->else->return->new->SAXParseException
+ParserAdapter#checkNotParsing(String, String):::Throw an exception if we are parsing:::if->throw->new->SAXNotSupportedException
 ParserAdapter.AttributeListAdapter#setAttributeList(AttributeList):::Set the embedded AttributeList:::
 ParserAdapter.AttributeListAdapter#getLength():::Return the length of the attribute list.:::return->qAtts->getLength
 ParserAdapter.AttributeListAdapter#getURI(int):::Return the Namespace URI of the specified attribute.:::return
@@ -147,6 +155,8 @@ XMLFilterImpl#skippedEntity(String):::Filter a skipped entity event.:::if->conte
 XMLFilterImpl#warning(SAXParseException):::Filter a warning event.:::if->errorHandler->warning
 XMLFilterImpl#error(SAXParseException):::Filter an error event.:::if->errorHandler->error
 XMLFilterImpl#fatalError(SAXParseException):::Filter a fatal error event.:::if->errorHandler->fatalError
+XMLFilterImpl#setupParse():::Set up before a parse:::if->throw->new->NullPointerException->parent->setEntityResolver->parent->setDTDHandler->parent->setContentHandler->parent->setErrorHandler
+XMLReaderAdapter#setup(XMLReader):::Internal setup.:::if->throw->new->NullPointerException->new->AttributesAdapter
 XMLReaderAdapter#setLocale(Locale):::Set the locale for error reporting:::throw->new->SAXNotSupportedException
 XMLReaderAdapter#setEntityResolver(EntityResolver):::Register the entity resolver.:::xmlReader->setEntityResolver
 XMLReaderAdapter#setDTDHandler(DTDHandler):::Register the DTD event handler.:::xmlReader->setDTDHandler
@@ -154,6 +164,7 @@ XMLReaderAdapter#setDocumentHandler(DocumentHandler):::Register the SAX1 documen
 XMLReaderAdapter#setErrorHandler(ErrorHandler):::Register the error event handler.:::xmlReader->setErrorHandler
 XMLReaderAdapter#parse(String):::Parse the document:::new->InputSource->parse
 XMLReaderAdapter#parse(InputSource):::Parse the document:::setupXMLReader->xmlReader->parse
+XMLReaderAdapter#setupXMLReader():::Set up the XML reader.:::xmlReader->setFeature->try->xmlReader->setFeature->catch->finally->xmlReader->setContentHandler
 XMLReaderAdapter#setDocumentLocator(Locator):::Set a document locator.:::if->documentHandler->setDocumentLocator
 XMLReaderAdapter#startDocument():::Start document event.:::if->documentHandler->startDocument
 XMLReaderAdapter#endDocument():::End document event.:::if->documentHandler->endDocument
@@ -174,3 +185,6 @@ XMLReaderAdapter.AttributesAdapter#getType(String):::Return the type of an attri
 XMLReaderAdapter.AttributesAdapter#getValue(String):::Return the value of an attribute by qualified (prefixed) name.:::return->attributes->getValue
 XMLReaderFactory#createXMLReader():::Obtains a new instance of a org.xml.sax.XMLReader:::className->cl->SecuritySupport->getClassLoader->try->SecuritySupport->getSystemProperty->catch->finally->if->provider->findServiceProvider->if->return->if->jarLookup->if->return->new->com.sun.org.apache.xerces.internal.parsers.SAXParser->return->loadClass
 XMLReaderFactory#createXMLReader(String):::Attempt to create an XML reader from a class name:::return->SecuritySupport->getClassLoader->loadClass
+XMLReaderFactory#loadClass(ClassLoader, String)::: reader factory load class:::try->return->NewInstance->newInstance->catch->throw->new->SAXException->throw->new->SAXException->throw->new->SAXException->throw->new->SAXException->finally
+XMLReaderFactory#jarLookup(ClassLoader):::Locates a provider by directly reading the jar service file.:::cl->Objects->requireNonNull->clsFromJar->service->in->reader->try->SecuritySupport->getResourceAsStream->if->SecuritySupport->getResourceAsStream->if->new->InputStreamReader->new->BufferedReader->reader->readLine->in->close->catch->finally->return
+XMLReaderFactory#findServiceProvider(Class, ClassLoader)::: reader factory find service provider:::cl->Objects->requireNonNull->try->return->AccessController->serviceLoader->ServiceLoader->load->iterator->serviceLoader->iterator->if->iterator->hasNext->return->iterator->next->else->return->doPrivileged->catch->x->new->RuntimeException->throw->new->SAXException->finally

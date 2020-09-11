@@ -18,6 +18,8 @@ FuncExtFunction#getArgCount():::Return the number of arguments that were passed 
 FuncExtFunction#execute(XPathContext):::Execute the function:::if->xctxt->isSecureProcessing->throw->XPATHMessages->new->ObjectArr->toString->createXPATHMessage->new->javax.xml.transform.TransformerException->result->argVec->new->ArrayList<>->nArgs->m_argVec->size->for->i->extProvider->xctxt->getOwnerObject->val->extProvider->extFunction->if->XObject->create->else->new->XNull->return
 FuncExtFunction#setArg(Expression, int):::Set an argument expression for a function:::m_argVec->add->arg->exprSetParent
 FuncExtFunction#checkNumberArgs(int):::Check that the number of arguments passed to this function is correct.:::
+FuncExtFunction.ArgExtOwner#getExpression()::: arg ext owner get expression:::return
+FuncExtFunction.ArgExtOwner#setExpression(Expression)::: arg ext owner set expression:::exp->exprSetParent
 FuncExtFunction#callArgVisitors(XPathVisitor):::Call the visitors for the function arguments.:::for->i->m_argVec->size
 FuncExtFunction#exprSetParent(ExpressionNode):::Set the parent node:::super->exprSetParent->nArgs->m_argVec->size->for->i
 FuncExtFunction#reportWrongNumberArgs():::Constructs and throws a WrongNumberArgException with the appropriate message for this function object:::fMsg->XSLMessages->new->ObjectArr->createXPATHMessage->throw->new->RuntimeException
@@ -28,6 +30,10 @@ FuncFalse#execute(XPathContext):::Execute the function:::return
 FuncFalse#fixupVariables(List, int):::No arguments to process, so this does nothing.:::
 FuncFloor#execute(XPathContext):::Execute the function:::return->m_arg0->execute->num->floor->new->XNumber
 FuncGenerateId#execute(XPathContext):::Execute the function:::which->getArg0AsNode->if->return->Integer->toHexString->toUpperCase->new->XString->else->return
+FuncHere#execute(XPathContext)::: func here execute:::xpathOwnerNode->xctxt->getOwnerObject->if->return->xpathOwnerNodeDTM->xctxt->getDTMHandleFromNode->currentNode->xctxt->getCurrentNode->dtm->xctxt->getDTM->docContext->dtm->getDocument->if->error->currentDoc->dtm->getNode->getOwnerDocument->xpathOwnerDoc->getOwnerDocument->if->throw->new->TransformerException->nodes->xctxt->getDTMManager->new->XNodeSet->nodeSet->nodes->mutableNodeset->hereNode->switch->dtm->getNodeType->nodeSet->addNode->break->dtm->getParent->nodeSet->addNode->break->break->nodeSet->detach->return
+FuncHere#getOwnerDocument(Node)::: func here get owner document:::if->node->getNodeType->return->return->node->getOwnerDocument
+FuncHere#fixupVariables(List, int)::: func here fixup variables:::
+FuncId#getNodesByID(XPathContext, int, String, StringVector, NodeSetDTM, boolean):::Fill in a list with nodes that match a space delimited list if ID ID references.:::if->ref->tokenizer->new->StringTokenizer->hasMore->tokenizer->hasMoreTokens->dtm->xctxt->getDTM->while->tokenizer->nextToken->tokenizer->hasMoreTokens->if->usedrefs->contains->continue->node->dtm->getElementById->if->nodeSet->addNodeInDocOrder->if->if->new->StringVector->usedrefs->addElement->return
 FuncId#execute(XPathContext):::Execute the function:::context->xctxt->getCurrentNode->dtm->xctxt->getDTM->docContext->dtm->getDocument->if->error->arg->m_arg0->execute->argType->arg->getType->nodes->xctxt->getDTMManager->new->XNodeSet->nodeSet->nodes->mutableNodeset->if->ni->arg->iter->usedrefs->pos->ni->nextNode->while->ndtm->ni->getDTM->refval->ndtm->getStringValue->toString->ni->nextNode->getNodesByID->else->if->return->else->refval->arg->str->getNodesByID->return
 FuncLang#execute(XPathContext):::Execute the function:::lang->m_arg0->execute->str->parent->xctxt->getCurrentNode->isLang->dtm->xctxt->getDTM->while->if->dtm->getNodeType->langAttr->dtm->getAttributeNode->if->langVal->dtm->getNodeValue->if->langVal->toLowerCase->lang->toLowerCase->startsWith->valLen->lang->length->if->langVal->length->langVal->charAt->break->dtm->getParent->return
 FuncLast#postCompileStep(Compiler):::Figure out if we're executing a toplevel expression:::compiler->getLocationPathDepth
@@ -56,11 +62,14 @@ FuncSubstringAfter#execute(XPathContext):::Execute the function:::s1->m_arg0->ex
 FuncSubstringBefore#execute(XPathContext):::Execute the function:::s1->m_arg0->execute->str->s2->m_arg1->execute->str->index->s1->indexOf->return->s1->substring->new->XString
 FuncSum#execute(XPathContext):::Execute the function:::nodes->m_arg0->xctxt->getCurrentNode->asIterator->sum->pos->while->nodes->nextNode->dtm->nodes->getDTM->s->dtm->getStringValue->if->s->toDouble->nodes->detach->return->new->XNumber
 FuncSystemProperty#execute(XPathContext):::Execute the function:::fullName->m_arg0->execute->str->indexOfNSSep->fullName->indexOf->result->propName->xsltInfo->new->Properties->loadPropertyFile->if->prefix->fullName->substring->namespace->xctxt->getNamespaceContext->getNamespaceForPrefix->fullName->substring->if->namespace->startsWith->namespace->equals->xsltInfo->getProperty->if->new->ObjectArr->warn->return->else->new->ObjectArr->warn->try->SecuritySupport->getSystemProperty->if->return->catch->new->ObjectArr->warn->return->finally->else->try->SecuritySupport->getSystemProperty->if->return->catch->new->ObjectArr->warn->return->finally->if->propName->equals->result->length->try->return->new->XString->catch->return->new->XString->finally->else->return->new->XString
+FuncSystemProperty#loadPropertyFile(Properties):::Retrieve a property bundle from XSLT_PROPERTIES:::try->is->SecuritySupport->getResourceAsStream->try->bis->new->BufferedInputStream->target->load->catch->finally->catch->throw->new->com.sun.org.apache.xml.internal.utils.WrappedRuntimeException->finally
 Function#setArg(Expression, int):::Set an argument expression for a function:::reportWrongNumberArgs
 Function#checkNumberArgs(int):::Check that the number of arguments passed to this function is correct:::if->reportWrongNumberArgs
 Function#reportWrongNumberArgs():::Constructs and throws a WrongNumberArgException with the appropriate message for this function object:::throw->XSLMessages->createXPATHMessage->new->WrongNumberArgsException
 Function#execute(XPathContext):::Execute an XPath function object:::println->return
 Function#callArgVisitors(XPathVisitor):::Call the visitors for the function arguments.:::
+Function#callVisitors(ExpressionOwner, XPathVisitor)::: function call visitors:::if->visitor->visitFunction->callArgVisitors
+Function#deepEquals(Expression)::: function deep equals:::if->isSameClass->return->return
 Function#postCompileStep(Compiler):::This function is currently only being used by Position() and Last():::
 Function2Args#getArg1():::Return the second argument passed to the function (at index 1).:::return
 Function2Args#fixupVariables(List, int):::This function is used to fixup variables from QNames to stack frame indexes at stylesheet build time.:::super->fixupVariables->if->m_arg1->fixupVariables
@@ -68,12 +77,20 @@ Function2Args#setArg(Expression, int):::Set an argument expression for a functio
 Function2Args#checkNumberArgs(int):::Check that the number of arguments passed to this function is correct.:::if->reportWrongNumberArgs
 Function2Args#reportWrongNumberArgs():::Constructs and throws a WrongNumberArgException with the appropriate message for this function object.:::throw->XSLMessages->createXPATHMessage->new->WrongNumberArgsException
 Function2Args#canTraverseOutsideSubtree():::Tell if this expression or it's subexpressions can traverse outside the current subtree.:::return->super->canTraverseOutsideSubtree->m_arg1->canTraverseOutsideSubtree
+Function2Args.Arg1Owner#getExpression()::: arg1 owner get expression:::return
+Function2Args.Arg1Owner#setExpression(Expression)::: arg1 owner set expression:::exp->exprSetParent
+Function2Args#callArgVisitors(XPathVisitor)::: function2 args call arg visitors:::super->callArgVisitors->if->m_arg1->new->Arg1Owner->callVisitors
+Function2Args#deepEquals(Expression)::: function2 args deep equals:::if->super->deepEquals->return->if->if->return->if->m_arg1->deepEquals->return->else->if->return->return
 Function3Args#getArg2():::Return the third argument passed to the function (at index 2).:::return
 Function3Args#fixupVariables(List, int):::This function is used to fixup variables from QNames to stack frame indexes at stylesheet build time.:::super->fixupVariables->if->m_arg2->fixupVariables
 Function3Args#setArg(Expression, int):::Set an argument expression for a function:::if->super->setArg->else->if->arg->exprSetParent->else->reportWrongNumberArgs
 Function3Args#checkNumberArgs(int):::Check that the number of arguments passed to this function is correct.:::if->reportWrongNumberArgs
 Function3Args#reportWrongNumberArgs():::Constructs and throws a WrongNumberArgException with the appropriate message for this function object.:::throw->XSLMessages->createXPATHMessage->new->WrongNumberArgsException
 Function3Args#canTraverseOutsideSubtree():::Tell if this expression or it's subexpressions can traverse outside the current subtree.:::return->super->canTraverseOutsideSubtree->m_arg2->canTraverseOutsideSubtree
+Function3Args.Arg2Owner#getExpression()::: arg2 owner get expression:::return
+Function3Args.Arg2Owner#setExpression(Expression)::: arg2 owner set expression:::exp->exprSetParent
+Function3Args#callArgVisitors(XPathVisitor)::: function3 args call arg visitors:::super->callArgVisitors->if->m_arg2->new->Arg2Owner->callVisitors
+Function3Args#deepEquals(Expression)::: function3 args deep equals:::if->super->deepEquals->return->if->if->return->if->m_arg2->deepEquals->return->else->if->return->return
 FunctionDef1Arg#getArg0AsNode(XPathContext):::Execute the first argument expression that is expected to return a nodeset:::return->xctxt->getCurrentNode->m_arg0->asNode
 FunctionDef1Arg#Arg0IsNodesetExpr():::Tell if the expression is a nodeset expression.:::return->m_arg0->isNodesetExpr
 FunctionDef1Arg#getArg0AsString(XPathContext):::Execute the first argument expression that is expected to return a string:::if->currentNode->xctxt->getCurrentNode->if->return->else->dtm->xctxt->getDTM->return->dtm->getStringValue->else->return->m_arg0->execute->xstr
@@ -87,12 +104,20 @@ FunctionMultiArgs#fixupVariables(List, int):::This function is used to fixup var
 FunctionMultiArgs#checkNumberArgs(int):::Check that the number of arguments passed to this function is correct.:::
 FunctionMultiArgs#reportWrongNumberArgs():::Constructs and throws a WrongNumberArgException with the appropriate message for this function object:::fMsg->XSLMessages->new->ObjectArr->createXPATHMessage->throw->new->RuntimeException
 FunctionMultiArgs#canTraverseOutsideSubtree():::Tell if this expression or it's subexpressions can traverse outside the current subtree.:::if->super->canTraverseOutsideSubtree->return->else->n->for->i->return
+FunctionMultiArgs.ArgMultiOwner#getExpression()::: arg multi owner get expression:::return
+FunctionMultiArgs.ArgMultiOwner#setExpression(Expression)::: arg multi owner set expression:::exp->exprSetParent
+FunctionMultiArgs#callArgVisitors(XPathVisitor)::: function multi args call arg visitors:::super->callArgVisitors->if->n->for->i
+FunctionMultiArgs#deepEquals(Expression)::: function multi args deep equals:::if->super->deepEquals->return->fma->if->n->if->return->for->i->else->if->return->return
 FunctionOneArg#getArg0():::Return the first argument passed to the function (at index 0).:::return
 FunctionOneArg#setArg(Expression, int):::Set an argument expression for a function:::if->arg->exprSetParent->else->reportWrongNumberArgs
 FunctionOneArg#checkNumberArgs(int):::Check that the number of arguments passed to this function is correct.:::if->reportWrongNumberArgs
 FunctionOneArg#reportWrongNumberArgs():::Constructs and throws a WrongNumberArgException with the appropriate message for this function object.:::throw->XSLMessages->createXPATHMessage->new->WrongNumberArgsException
 FunctionOneArg#canTraverseOutsideSubtree():::Tell if this expression or it's subexpressions can traverse outside the current subtree.:::return->m_arg0->canTraverseOutsideSubtree
 FunctionOneArg#fixupVariables(List, int):::This function is used to fixup variables from QNames to stack frame indexes at stylesheet build time.:::if->m_arg0->fixupVariables
+FunctionOneArg#callArgVisitors(XPathVisitor)::: function one arg call arg visitors:::if->m_arg0->callVisitors
+FunctionOneArg#getExpression()::: function one arg get expression:::return
+FunctionOneArg#setExpression(Expression)::: function one arg set expression:::exp->exprSetParent
+FunctionOneArg#deepEquals(Expression)::: function one arg deep equals:::if->super->deepEquals->return->if->if->return->if->m_arg0->deepEquals->return->else->if->return->return
 FuncTranslate#execute(XPathContext):::Execute the function:::theFirstString->m_arg0->execute->str->theSecondString->m_arg1->execute->str->theThirdString->m_arg2->execute->str->theFirstStringLength->theFirstString->length->theThirdStringLength->theThirdString->length->sbuffer->new->StringBuffer->for->i->return->sbuffer->toString->new->XString
 FuncTrue#execute(XPathContext):::Execute the function:::return
 FuncTrue#fixupVariables(List, int):::No arguments to process, so this does nothing.:::

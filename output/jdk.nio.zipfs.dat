@@ -1,0 +1,320 @@
+JarFileSystem#getInode(byte[])::: jar file system get inode:::versionedPath->lookup->apply->return->super->getInode->super->getInode
+JarFileSystem#isMultiReleaseJar()::: jar file system is multi release jar:::try->is->getBytes->newInputStream->multiRelease->new->Manifest->getMainAttributes->getValue->return->equalsIgnoreCase->catch->return->finally
+JarFileSystem#createVersionedLinks(int):::create a map of aliases for versioned entries, for example:   version/PackagePrivate.class -> META-INF/versions/9/version/PackagePrivate.class   version/PackagePrivate.java -> META-INF/versions/9/version/PackagePrivate.java   version/Version.class -> META-INF/versions/10/version/Version.class   version/Version.java -> META-INF/versions/10/version/Version.java  then wrap the map in a function that getEntry can use to override root entry lookup for entries that have corresponding versioned entries:::aliasMap->new->HashMap<>->verdir->getBytes->getInode->if->getVersionMap->values->rootName->getRootName->if->rootNode->getInode->if->IndexNode->keyOf->aliasMap->put->walk->forEach->return->aliasMap->IndexNode->keyOf->get
+JarFileSystem#getVersionMap(int, IndexNode):::create a sorted version map of version -> inode, for inodes <= max version   9 -> META-INF/versions/9  10 -> META-INF/versions/10:::map->new->TreeMap<>->child->while->key->getVersion->if->map->put->return
+JarFileSystem#getVersion(byte[], int):::extract the integer version number -- META-INF/versions/9 returns 9:::try->return->Integer->Arrays->copyOfRange->getString->parseInt->catch->return->finally
+JarFileSystem#walk(IndexNode, Consumer):::walk the IndexNode tree processing all leaf nodes:::if->return->if->inode->isDir->walk->else->process->accept->walk
+JarFileSystem#getRootName(IndexNode, IndexNode):::extract the root name from a versioned entry name   given inode for META-INF/versions/9/foo/bar.class   and prefix META-INF/versions/9/   returns foo/bar.class:::offset->fullName->return->Arrays->copyOfRange
+JarFileSystemProvider#getScheme()::: jar file system provider get scheme:::return
+JarFileSystemProvider#uriToPath(URI)::: jar file system provider uri to path:::scheme->uri->getScheme->if->scheme->getScheme->equalsIgnoreCase->throw->getScheme->new->IllegalArgumentException->try->uristr->uri->toString->end->uristr->indexOf->uristr->uristr->length->substring->new->URI->return->Paths->uri->getHost->uri->getPath->new->URI->get->toAbsolutePath->catch->throw->new->AssertionError->finally
+JarFileSystemProvider#getPath(URI)::: jar file system provider get path:::fs->getFileSystem->path->uri->getFragment->if->uristr->uri->toString->off->uristr->indexOf->if->uristr->substring->if->return->fs->getPath->throw->new->IllegalArgumentException
+ZipCoder.UTF8#getBytes(String)::: f8 get bytes:::for->i->s->length->return->s->getBytes
+ZipCoder.UTF8#toString(byte[])::: f8 to string:::foreach->if->return->super->toString->return->new->String
+ZipCoder#get(String)::: zip coder get:::cs->Charset->forName->if->cs->name->equals->return->return->new->ZipCoder
+ZipCoder#toString(byte[])::: zip coder to string:::cd->decoder->reset->clen->cd->maxCharsPerByte->ca->new->charArr->if->return->new->String->bb->ByteBuffer->wrap->cb->CharBuffer->wrap->cr->cd->decode->if->cr->isUnderflow->throw->cr->toString->new->IllegalArgumentException->cd->flush->if->cr->isUnderflow->throw->cr->toString->new->IllegalArgumentException->return->cb->position->new->String
+ZipCoder#getBytes(String)::: zip coder get bytes:::ce->encoder->reset->ca->s->toCharArray->len->ce->maxBytesPerChar->ba->new->byteArr->if->return->bb->ByteBuffer->wrap->cb->CharBuffer->wrap->cr->ce->encode->if->cr->isUnderflow->throw->cr->toString->new->IllegalArgumentException->ce->flush->if->cr->isUnderflow->throw->cr->toString->new->IllegalArgumentException->if->bb->position->return->else->return->Arrays->bb->position->copyOf
+ZipCoder#isUTF8()::: zip coder is f8:::return
+ZipCoder#decoder()::: zip coder decoder:::dec->decTL->get->if->cs->newDecoder->onMalformedInput->onUnmappableCharacter->decTL->set->return
+ZipCoder#encoder()::: zip coder encoder:::enc->encTL->get->if->cs->newEncoder->onMalformedInput->onUnmappableCharacter->encTL->set->return
+ZipConstants#CH(byte[], int)::: zip constants  h:::return->Byte->toUnsignedInt
+ZipConstants#SH(byte[], int)::: zip constants  h:::return->Byte->toUnsignedInt->Byte->toUnsignedInt
+ZipConstants#LG(byte[], int)::: zip constants  g:::return->SH->SH
+ZipConstants#LL(byte[], int)::: zip constants  l:::return->LG->LG
+ZipConstants#getSig(byte[], int)::: zip constants get sig:::return->LG
+ZipConstants#pkSigAt(byte[], int, int, int)::: zip constants pk sig at:::return
+ZipConstants#cenSigAt(byte[], int)::: zip constants cen sig at:::return->pkSigAt
+ZipConstants#locSigAt(byte[], int)::: zip constants loc sig at:::return->pkSigAt
+ZipConstants#endSigAt(byte[], int)::: zip constants end sig at:::return->pkSigAt
+ZipConstants#extSigAt(byte[], int)::: zip constants ext sig at:::return->pkSigAt
+ZipConstants#end64SigAt(byte[], int)::: zip constants end64 sig at:::return->pkSigAt
+ZipConstants#locator64SigAt(byte[], int)::: zip constants locator64 sig at:::return->pkSigAt
+ZipConstants#LOCSIG(byte[])::: zip constants  g:::return->LG
+ZipConstants#LOCVER(byte[])::: zip constants  r:::return->SH
+ZipConstants#LOCFLG(byte[])::: zip constants  g:::return->SH
+ZipConstants#LOCHOW(byte[])::: zip constants  w:::return->SH
+ZipConstants#LOCTIM(byte[])::: zip constants  m:::return->LG
+ZipConstants#LOCCRC(byte[])::: zip constants  c:::return->LG
+ZipConstants#LOCSIZ(byte[])::: zip constants  z:::return->LG
+ZipConstants#LOCLEN(byte[])::: zip constants  n:::return->LG
+ZipConstants#LOCNAM(byte[])::: zip constants  m:::return->SH
+ZipConstants#LOCEXT(byte[])::: zip constants  t:::return->SH
+ZipConstants#EXTCRC(byte[])::: zip constants  c:::return->LG
+ZipConstants#EXTSIZ(byte[])::: zip constants  z:::return->LG
+ZipConstants#EXTLEN(byte[])::: zip constants  n:::return->LG
+ZipConstants#ENDSUB(byte[])::: zip constants  b:::return->SH
+ZipConstants#ENDTOT(byte[])::: zip constants  t:::return->SH
+ZipConstants#ENDSIZ(byte[])::: zip constants  z:::return->LG
+ZipConstants#ENDOFF(byte[])::: zip constants  f:::return->LG
+ZipConstants#ENDCOM(byte[])::: zip constants  m:::return->SH
+ZipConstants#ENDCOM(byte[], int)::: zip constants  m:::return->SH
+ZipConstants#ZIP64_ENDTOD(byte[])::: zip constants  p64_ d:::return->LL
+ZipConstants#ZIP64_ENDTOT(byte[])::: zip constants  p64_ t:::return->LL
+ZipConstants#ZIP64_ENDSIZ(byte[])::: zip constants  p64_ z:::return->LL
+ZipConstants#ZIP64_ENDOFF(byte[])::: zip constants  p64_ f:::return->LL
+ZipConstants#ZIP64_LOCOFF(byte[])::: zip constants  p64_ f:::return->LL
+ZipConstants#CENSIG(byte[], int)::: zip constants  g:::return->LG
+ZipConstants#CENVEM(byte[], int)::: zip constants  m:::return->SH
+ZipConstants#CENVER(byte[], int)::: zip constants  r:::return->SH
+ZipConstants#CENFLG(byte[], int)::: zip constants  g:::return->SH
+ZipConstants#CENHOW(byte[], int)::: zip constants  w:::return->SH
+ZipConstants#CENTIM(byte[], int)::: zip constants  m:::return->LG
+ZipConstants#CENCRC(byte[], int)::: zip constants  c:::return->LG
+ZipConstants#CENSIZ(byte[], int)::: zip constants  z:::return->LG
+ZipConstants#CENLEN(byte[], int)::: zip constants  n:::return->LG
+ZipConstants#CENNAM(byte[], int)::: zip constants  m:::return->SH
+ZipConstants#CENEXT(byte[], int)::: zip constants  t:::return->SH
+ZipConstants#CENCOM(byte[], int)::: zip constants  m:::return->SH
+ZipConstants#CENDSK(byte[], int)::: zip constants  k:::return->SH
+ZipConstants#CENATT(byte[], int)::: zip constants  t:::return->SH
+ZipConstants#CENATX(byte[], int)::: zip constants  x:::return->LG
+ZipConstants#CENOFF(byte[], int)::: zip constants  f:::return->LG
+ZipDirectoryStream#iterator()::: zip directory stream iterator:::if->throw->new->ClosedDirectoryStreamException->if->throw->new->IllegalStateException->try->zipfs->iteratorOf->catch->throw->new->IllegalStateException->finally->return->new->Iterator<Path>
+ZipDirectoryStream#close()::: zip directory stream close:::
+ZipFileAttributes#compressedSize()::: zip file attributes compressed size:::
+ZipFileAttributes#crc()::: zip file attributes crc:::
+ZipFileAttributes#method()::: zip file attributes method:::
+ZipFileAttributes#extra()::: zip file attributes extra:::
+ZipFileAttributes#comment()::: zip file attributes comment:::
+ZipFileAttributes#toString()::: zip file attributes to string:::
+ZipFileAttributeView#get(ZipPath, Class)::: zip file attribute view get:::if->throw->new->NullPointerException->if->return->new->ZipFileAttributeView->if->return->new->ZipFileAttributeView->return
+ZipFileAttributeView#get(ZipPath, String)::: zip file attribute view get:::if->throw->new->NullPointerException->if->type->equals->return->new->ZipFileAttributeView->if->type->equals->return->new->ZipFileAttributeView->return
+ZipFileAttributeView#name()::: zip file attribute view name:::return
+ZipFileAttributeView#readAttributes()::: zip file attribute view read attributes:::return->path->getAttributes
+ZipFileAttributeView#setTimes(FileTime, FileTime, FileTime)::: zip file attribute view set times:::path->setTimes
+ZipFileAttributeView#setAttribute(String, Object)::: zip file attribute view set attribute:::try->if->AttrID->valueOf->setTimes->if->AttrID->valueOf->setTimes->if->AttrID->valueOf->setTimes->return->catch->finally->throw->new->UnsupportedOperationException
+ZipFileAttributeView#readAttributes(String)::: zip file attribute view read attributes:::zfas->readAttributes->map->new->LinkedHashMap<>->if->equals->foreach->AttrID->values->try->map->id->name->attribute->put->catch->finally->else->as->attributes->split->foreach->try->map->AttrID->valueOf->attribute->put->catch->finally->return
+ZipFileAttributeView#attribute(AttrID, ZipFileAttributes)::: zip file attribute view attribute:::switch->return->zfas->size->return->zfas->creationTime->return->zfas->lastAccessTime->return->zfas->lastModifiedTime->return->zfas->isDirectory->return->zfas->isRegularFile->return->zfas->isSymbolicLink->return->zfas->isOther->return->zfas->fileKey->if->return->zfas->compressedSize->break->if->return->zfas->crc->break->if->return->zfas->method->break->return
+ZipFileStore#name()::: zip file store name:::return->zfs->toString
+ZipFileStore#type()::: zip file store type:::return
+ZipFileStore#isReadOnly()::: zip file store is read only:::return->zfs->isReadOnly
+ZipFileStore#supportsFileAttributeView(Class)::: zip file store supports file attribute view:::return
+ZipFileStore#supportsFileAttributeView(String)::: zip file store supports file attribute view:::return->name->equals->name->equals
+ZipFileStore#getFileStoreAttributeView(Class)::: zip file store get file store attribute view:::if->throw->new->NullPointerException->return
+ZipFileStore#getTotalSpace()::: zip file store get total space:::return->new->ZipFileStoreAttributes->totalSpace
+ZipFileStore#getUsableSpace()::: zip file store get usable space:::return->new->ZipFileStoreAttributes->usableSpace
+ZipFileStore#getUnallocatedSpace()::: zip file store get unallocated space:::return->new->ZipFileStoreAttributes->unallocatedSpace
+ZipFileStore#getAttribute(String)::: zip file store get attribute:::if->attribute->equals->return->getTotalSpace->if->attribute->equals->return->getUsableSpace->if->attribute->equals->return->getUnallocatedSpace->throw->new->UnsupportedOperationException
+ZipFileStore.ZipFileStoreAttributes#totalSpace()::: zip file store attributes total space:::return
+ZipFileStore.ZipFileStoreAttributes#usableSpace()::: zip file store attributes usable space:::if->fstore->isReadOnly->return->fstore->getUsableSpace->return
+ZipFileStore.ZipFileStoreAttributes#unallocatedSpace()::: zip file store attributes unallocated space:::if->fstore->isReadOnly->return->fstore->getUnallocatedSpace->return
+ZipFileSystem#provider()::: zip file system provider:::return
+ZipFileSystem#getSeparator()::: zip file system get separator:::return
+ZipFileSystem#isOpen()::: zip file system is open:::return
+ZipFileSystem#isReadOnly()::: zip file system is read only:::return
+ZipFileSystem#checkWritable()::: zip file system check writable:::if->throw->new->ReadOnlyFileSystemException
+ZipFileSystem#setReadOnly()::: zip file system set read only:::
+ZipFileSystem#getRootDirectories()::: zip file system get root directories:::return->List->of
+ZipFileSystem#getRootDir()::: zip file system get root dir:::return
+ZipFileSystem#getPath(String, String...)::: zip file system get path:::if->return->new->ZipPath->sb->new->StringBuilder->sb->append->foreach->if->path->length->if->sb->length->sb->append->sb->append->return->sb->toString->new->ZipPath
+ZipFileSystem#getUserPrincipalLookupService()::: zip file system get user principal lookup service:::throw->new->UnsupportedOperationException
+ZipFileSystem#newWatchService()::: zip file system new watch service:::throw->new->UnsupportedOperationException
+ZipFileSystem#getFileStore(ZipPath)::: zip file system get file store:::return->new->ZipFileStore
+ZipFileSystem#getFileStores()::: zip file system get file stores:::return->List->new->ZipFileStore->of
+ZipFileSystem#supportedFileAttributeViews()::: zip file system supported file attribute views:::return
+ZipFileSystem#toString()::: zip file system to string:::return->zfpath->toString
+ZipFileSystem#getZipFile()::: zip file system get zip file:::return
+ZipFileSystem#getPathMatcher(String)::: zip file system get path matcher:::pos->syntaxAndInput->indexOf->if->syntaxAndInput->length->throw->new->IllegalArgumentException->syntax->syntaxAndInput->substring->input->syntaxAndInput->substring->expr->if->syntax->equalsIgnoreCase->toRegexPattern->else->if->syntax->equalsIgnoreCase->else->throw->new->UnsupportedOperationException->pattern->Pattern->compile->return->new->PathMatcher
+ZipFileSystem#close()::: zip file system close:::beginWrite->try->if->return->catch->finally->endWrite->if->streams->isEmpty->copy->new->HashSet<>->foreach->is->close->beginWrite->try->AccessController->sync->return->doPrivileged->ch->close->catch->throw->e->getException->finally->endWrite->synchronized->foreach->inf->end->synchronized->foreach->def->end->ioe->synchronized->foreach->try->AccessController->Files->deleteIfExists->doPrivileged->catch->x->e->getException->if->else->ioe->addSuppressed->finally->provider->removeFileSystem->if->throw
+ZipFileSystem#getFileAttributes(byte[])::: zip file system get file attributes:::e->beginRead->try->ensureOpen->getEntry->if->inode->getInode->if->return->new->Entry->catch->finally->endRead->return
+ZipFileSystem#checkAccess(byte[])::: zip file system check access:::beginRead->try->ensureOpen->if->getInode->throw->toString->new->NoSuchFileException->catch->finally->endRead
+ZipFileSystem#setTimes(byte[], FileTime, FileTime, FileTime)::: zip file system set times:::checkWritable->beginWrite->try->ensureOpen->e->getEntry->if->throw->getString->new->NoSuchFileException->if->if->mtime->toMillis->if->atime->toMillis->if->ctime->toMillis->update->catch->finally->endWrite
+ZipFileSystem#exists(byte[])::: zip file system exists:::beginRead->try->ensureOpen->return->getInode->catch->finally->endRead
+ZipFileSystem#isDirectory(byte[])::: zip file system is directory:::beginRead->try->n->getInode->return->n->isDir->catch->finally->endRead
+ZipFileSystem#iteratorOf(byte[], DirectoryStream.Filter)::: zip file system iterator of:::beginWrite->try->ensureOpen->inode->getInode->if->throw->getString->new->NotDirectoryException->list->new->ArrayList<>->child->while->zp->new->ZipPath->if->filter->accept->list->add->return->list->iterator->catch->finally->endWrite
+ZipFileSystem#createDirectory(byte[], FileAttribute...)::: zip file system create directory:::checkWritable->beginWrite->try->ensureOpen->if->exists->throw->getString->new->FileAlreadyExistsException->checkParents->e->new->Entry->update->catch->finally->endWrite
+ZipFileSystem#copyFile(boolean, byte[], byte[], CopyOption...)::: zip file system copy file:::checkWritable->if->Arrays->equals->return->beginWrite->try->ensureOpen->eSrc->getEntry->if->throw->getString->new->NoSuchFileException->if->eSrc->isDir->createDirectory->return->hasReplace->hasCopyAttrs->foreach->if->else->if->eDst->getEntry->if->if->throw->getString->new->FileAlreadyExistsException->else->checkParents->u->new->Entry->u->name->if->if->else->if->Arrays->copyOf->else->if->getTempPathForEntry->Files->copy->if->System->currentTimeMillis->update->if->updateDelete->catch->finally->endWrite
+ZipFileSystem#newOutputStream(byte[], OpenOption...)::: zip file system new output stream:::checkWritable->hasCreateNew->hasCreate->hasAppend->hasTruncate->foreach->if->throw->new->IllegalArgumentException->if->if->if->if->if->throw->new->IllegalArgumentException->beginRead->try->ensureOpen->e->getEntry->if->if->e->isDir->throw->getString->new->FileAlreadyExistsException->if->is->getInputStream->os->new->Entry->getOutputStream->copyStream->is->close->return->return->new->Entry->getOutputStream->else->if->throw->getString->new->NoSuchFileException->checkParents->return->new->Entry->getOutputStream->catch->finally->endRead
+ZipFileSystem#newInputStream(byte[])::: zip file system new input stream:::beginRead->try->ensureOpen->e->getEntry->if->throw->getString->new->NoSuchFileException->if->e->isDir->throw->getString->new->FileSystemException->return->getInputStream->catch->finally->endRead
+ZipFileSystem#checkOptions(Set)::: zip file system check options:::foreach->if->throw->new->NullPointerException->if->throw->new->IllegalArgumentException->if->options->contains->options->contains->throw->new->IllegalArgumentException
+ZipFileSystem#newByteChannel(byte[], Set, FileAttribute...)::: zip file system new byte channel:::checkOptions->if->options->contains->options->contains->checkWritable->beginRead->try->wbc->Channels->options->new->OpenOptionArr->toArray->newOutputStream->newChannel->leftover->if->options->contains->e->getEntry->if->offset->return->new->SeekableByteChannel->catch->finally->endRead->else->beginRead->try->ensureOpen->e->getEntry->if->e->isDir->throw->getString->new->NoSuchFileException->rbc->Channels->getInputStream->newChannel->size->return->new->SeekableByteChannel->catch->finally->endRead
+ZipFileSystem#newFileChannel(byte[], Set, FileAttribute...)::: zip file system new file channel:::checkOptions->forWrite->options->contains->options->contains->beginRead->try->ensureOpen->e->getEntry->if->checkWritable->if->if->options->contains->options->contains->throw->getString->new->NoSuchFileException->else->if->options->contains->throw->getString->new->FileAlreadyExistsException->if->e->isDir->throw->getString->new->FileAlreadyExistsException->new->HashSet<>->options->remove->else->if->e->isDir->throw->getString->new->NoSuchFileException->isFCH->tmpfile->getTempPathForEntry->fch->tmpfile->getFileSystem->provider->newFileChannel->u->new->Entry->if->return->new->FileChannel->catch->finally->endRead
+ZipFileSystem#getTempPathForEntry(byte[])::: zip file system get temp path for entry:::tmpPath->createTempFileInSameDirectoryAs->if->e->getEntry->if->try->is->newInputStream->Files->copy->catch->finally->return
+ZipFileSystem#removeTempPathForEntry(Path)::: zip file system remove temp path for entry:::Files->delete->tmppaths->remove
+ZipFileSystem#checkParents(byte[])::: zip file system check parents:::beginRead->try->while->getParent->if->inodes->IndexNode->keyOf->containsKey->throw->getString->new->NoSuchFileException->catch->finally->endRead
+ZipFileSystem#getParent(byte[])::: zip file system get parent:::off->getParentOff->if->return->return->Arrays->copyOf
+ZipFileSystem#getParentOff(byte[])::: zip file system get parent off:::off->if->while->return
+ZipFileSystem#beginWrite()::: zip file system begin write:::rwlock->writeLock->lock
+ZipFileSystem#endWrite()::: zip file system end write:::rwlock->writeLock->unlock
+ZipFileSystem#beginRead()::: zip file system begin read:::rwlock->readLock->lock
+ZipFileSystem#endRead()::: zip file system end read:::rwlock->readLock->unlock
+ZipFileSystem#getBytes(String)::: zip file system get bytes:::return->zc->getBytes
+ZipFileSystem#getString(byte[])::: zip file system get string:::return->zc->toString
+ZipFileSystem#finalize()::: zip file system finalize:::close
+ZipFileSystem#readFullyAt(byte[], int, long, long)::: zip file system read fully at:::bb->ByteBuffer->wrap->bb->position->bb->limit->return->readFullyAt
+ZipFileSystem#readFullyAt(ByteBuffer, long)::: zip file system read fully at:::synchronized->return->ch->position->read
+ZipFileSystem#findEND()::: zip file system find d:::buf->new->byteArr->ziplen->ch->size->minHDR->minPos->for->pos->zerror->return
+ZipFileSystem#initCEN()::: zip file system init n:::findEND->if->new->LinkedHashMap<>->buildNodeTree->return->if->zerror->cenpos->if->zerror->cen->new->byteArr->if->readFullyAt->zerror->new->LinkedHashMap<>->pos->limit->while->if->cenSigAt->zerror->method->CENHOW->nlen->CENNAM->elen->CENEXT->clen->CENCOM->if->CENFLG->zerror->if->zerror->if->zerror->inode->new->IndexNode->inodes->put->if->zerror->buildNodeTree->return
+ZipFileSystem#ensureOpen()::: zip file system ensure open:::if->throw->new->ClosedFileSystemException
+ZipFileSystem#createTempFileInSameDirectoryAs(Path)::: zip file system create temp file in same directory as:::parent->path->toAbsolutePath->getParent->dir->path->getFileSystem->getPath->tmpPath->Files->createTempFile->tmppaths->add->return
+ZipFileSystem#updateDelete(IndexNode)::: zip file system update delete:::beginWrite->try->removeFromTree->inodes->remove->catch->finally->endWrite
+ZipFileSystem#update(Entry)::: zip file system update:::beginWrite->try->old->inodes->put->if->removeFromTree->if->parent->inodes->LOOKUPKEY->getParent->as->get->catch->finally->endWrite
+ZipFileSystem#copyLOCEntry(Entry, boolean, OutputStream, long, byte[])::: zip file system copy entry:::locoff->size->if->if->else->if->readFullyAt->throw->new->ZipException->if->LOCNAM->LOCNAM->LOCEXT->e->writeLOC->else->os->write->LOCNAM->LOCEXT->n->while->readFullyAt->if->os->write->return
+ZipFileSystem#sync()::: zip file system sync:::if->exChClosers->isEmpty->foreach->if->isEmpty->close->Files->delete->exChClosers->remove->if->return->attrs->getPosixAttributes->tmpFile->createTempFileInSameDirectoryAs->try->os->Files->newOutputStream->new->BufferedOutputStream->elist->inodes->size->new->ArrayList<>->written->buf->new->byteArr->e->foreach->inodes->values->if->try->if->copyLOCEntry->else->e->writeLOC->if->os->write->else->if->try->is->Files->newInputStream->n->if->while->is->read->os->write->else->if->try->os2->new->EntryOutputStream->while->is->read->os2->write->catch->finally->if->e->writeEXT->catch->finally->Files->delete->tmppaths->remove->else->elist->add->catch->x->printStackTrace->finally->else->if->continue->if->continue->Entry->readCEN->try->copyLOCEntry->elist->add->catch->x->printStackTrace->finally->foreach->entry->writeCEN->elist->size->end->write->catch->finally->if->streams->isEmpty->ecc->createTempFileInSameDirectoryAs->new->ExChannelCloser->Files->move->exChClosers->add->Collections->new->HashSet<InputStream>->synchronizedSet->else->ch->close->Files->delete->if->Files->attrs->permissions->setPosixFilePermissions->Files->move
+ZipFileSystem#getPosixAttributes(Path):::Returns a file's POSIX file attributes.:::try->view->Files->getFileAttributeView->if->return->return->view->readAttributes->catch->return->finally
+ZipFileSystem#getInode(byte[])::: zip file system get inode:::if->throw->new->NullPointerException->return->inodes->IndexNode->keyOf->get
+ZipFileSystem#getEntry(byte[])::: zip file system get entry:::inode->getInode->if->return->if->return->return->Entry->readCEN
+ZipFileSystem#deleteFile(byte[], boolean)::: zip file system delete file:::checkWritable->inode->getInode->if->if->throw->new->ZipException->if->throw->getString->new->NoSuchFileException->else->if->inode->isDir->throw->getString->new->DirectoryNotEmptyException->updateDelete
+ZipFileSystem#copyStream(InputStream, OutputStream)::: zip file system copy stream:::copyBuf->new->byteArr->n->while->is->read->os->write
+ZipFileSystem#getOutputStream(Entry)::: zip file system get output stream:::if->System->currentTimeMillis->if->if->zc->isUTF8->os->if->getTempPathForEntry->Files->newOutputStream->else->new->ByteArrayOutputStream->return->new->EntryOutputStream
+ZipFileSystem#getInputStream(Entry)::: zip file system get input stream:::eis->if->if->new->ByteArrayInputStream->else->if->Files->newInputStream->else->throw->new->ZipException->else->if->Files->newInputStream->return->else->new->EntryInputStream->if->bufSize->if->size->getInflater->new->InflaterInputStream->else->if->else->throw->new->ZipException->streams->add->return
+ZipFileSystem.EntryInputStream#read(byte[], int, int)::: entry input stream read:::ensureOpen->initDataPos->if->return->if->return->if->n->bb->ByteBuffer->wrap->bb->position->bb->limit->synchronized->zfch->position->read->if->if->close->return
+ZipFileSystem.EntryInputStream#read()::: entry input stream read:::b->new->byteArr->if->read->return->else->return
+ZipFileSystem.EntryInputStream#skip(long)::: entry input stream skip:::ensureOpen->if->if->close->return
+ZipFileSystem.EntryInputStream#available()::: entry input stream available:::return
+ZipFileSystem.EntryInputStream#size()::: entry input stream size:::return
+ZipFileSystem.EntryInputStream#close()::: entry input stream close:::streams->remove
+ZipFileSystem.EntryInputStream#initDataPos()::: entry input stream init data pos:::if->buf->new->byteArr->if->readFullyAt->throw->new->ZipException->LOCNAM->LOCEXT
+ZipFileSystem.EntryOutputStream#write(byte[], int, int)::: entry output stream write:::if->ensureOpen->if->throw->new->IOException->if->throw->new->IndexOutOfBoundsException->else->if->return->switch->super->write->break->out->write->break->throw->new->ZipException->crc->update
+ZipFileSystem.EntryOutputStream#close()::: entry output stream close:::if->return->switch->finish->def->getBytesRead->def->getBytesWritten->crc->getValue->break->crc->getValue->break->throw->new->ZipException->if->toByteArray->if->releaseDeflater->return->super->close->releaseDeflater->update
+ZipFileSystem#zerror(String)::: zip file system zerror:::throw->new->ZipException
+ZipFileSystem#getInflater()::: zip file system get inflater:::synchronized->size->inflaters->size->if->inf->inflaters->remove->return->else->return->new->Inflater
+ZipFileSystem#releaseInflater(Inflater)::: zip file system release inflater:::synchronized->if->inflaters->size->inf->reset->inflaters->add->else->inf->end
+ZipFileSystem#getDeflater()::: zip file system get deflater:::synchronized->size->deflaters->size->if->def->deflaters->remove->return->else->return->new->Deflater
+ZipFileSystem#releaseDeflater(Deflater)::: zip file system release deflater:::synchronized->if->inflaters->size->def->reset->deflaters->add->else->def->end
+ZipFileSystem.END#write(OutputStream, long, boolean)::: d write:::hasZip64->xlen->xoff->if->if->count->if->if->off64->writeInt->writeLong->writeShort->writeShort->writeInt->writeInt->writeLong->writeLong->writeLong->writeLong->writeInt->writeInt->writeLong->writeInt->writeInt->writeShort->writeShort->writeShort->writeShort->writeInt->writeInt->if->writeShort->writeBytes->else->writeShort
+ZipFileSystem.IndexNode#keyOf(byte[])::: index node key of:::key->cachedKey->get->if->new->IndexNode->cachedKey->set->return->key->as
+ZipFileSystem.IndexNode#name(byte[])::: index node name:::Arrays->hashCode
+ZipFileSystem.IndexNode#as(byte[])::: index node as:::name->return
+ZipFileSystem.IndexNode#isDir()::: index node is dir:::return
+ZipFileSystem.IndexNode#equals(Object)::: index node equals:::if->return->if->return->equals->return->Arrays->equals
+ZipFileSystem.IndexNode#hashCode()::: index node hash code:::return
+ZipFileSystem.Entry#version()::: entry version:::if->return->else->if->return->throw->new->ZipException
+ZipFileSystem.Entry#readCEN(ZipFileSystem, IndexNode)::: entry read n:::return->new->Entry->cen
+ZipFileSystem.Entry#cen(ZipFileSystem, IndexNode)::: entry cen:::cen->pos->if->cenSigAt->zerror->CENVER->CENFLG->CENHOW->CENTIM->dosToJavaTime->CENCRC->CENSIZ->CENLEN->nlen->CENNAM->elen->CENEXT->clen->CENCOM->CENOFF->if->Arrays->copyOfRange->readExtra->if->Arrays->copyOfRange->return
+ZipFileSystem.Entry#writeCEN(OutputStream)::: entry write n:::written->version0->version->csize0->size0->locoff0->elen64->elenNTFS->elenEXTT->foundExtraTime->zname->toDirectoryPath->nlen->elen->eoff->clen->if->if->if->if->while->tag->SH->sz->SH->if->if->if->else->writeInt->if->writeShort->writeShort->else->writeShort->writeShort->writeShort->writeShort->javaToDosTime->writeInt->writeInt->writeInt->writeInt->writeShort->writeShort->if->Math->min->writeShort->else->writeShort->writeShort->writeShort->writeInt->writeInt->writeBytes->if->writeShort->writeShort->if->writeLong->if->writeLong->if->writeLong->if->writeShort->writeShort->writeInt->writeShort->writeShort->javaToWinTime->writeLong->javaToWinTime->writeLong->javaToWinTime->writeLong->if->writeShort->writeShort->if->os->write->else->os->write->javaToUnixTime->writeInt->if->writeBytes->if->writeBytes->return
+ZipFileSystem.Entry#writeLOC(OutputStream)::: entry write c:::writeInt->version->version->zname->toDirectoryPath->nlen->elen->foundExtraTime->eoff->elen64->elenEXTT->elenNTFS->if->version->writeShort->writeShort->writeShort->javaToDosTime->writeInt->writeInt->writeInt->writeInt->else->if->writeShort->else->version->writeShort->writeShort->writeShort->javaToDosTime->writeInt->writeInt->if->writeInt->writeInt->else->writeInt->writeInt->while->tag->SH->sz->SH->if->if->if->else->if->if->writeShort->writeShort->writeBytes->if->writeShort->writeShort->writeLong->writeLong->if->writeShort->writeShort->writeInt->writeShort->writeShort->javaToWinTime->writeLong->javaToWinTime->writeLong->javaToWinTime->writeLong->if->writeShort->writeShort->fbyte->if->if->os->write->javaToUnixTime->writeInt->if->javaToUnixTime->writeInt->if->javaToUnixTime->writeInt->if->writeBytes->return
+ZipFileSystem.Entry#writeEXT(OutputStream)::: entry write t:::writeInt->writeInt->if->writeLong->writeLong->return->else->writeInt->writeInt->return
+ZipFileSystem.Entry#readExtra(ZipFileSystem)::: entry read extra:::if->return->elen->off->newOff->while->pos->tag->SH->sz->SH->if->break->switch->if->if->break->LL->if->if->break->LL->if->if->break->LL->break->if->break->if->SH->break->if->SH->break->LL->winToJavaTime->LL->winToJavaTime->LL->winToJavaTime->break->if->if->LG->unixToJavaTime->break->buf->new->byteArr->if->zipfs->readFullyAt->throw->new->ZipException->if->locSigAt->throw->Long->getSig->toString->new->ZipException->locElen->LOCEXT->if->break->locNlen->LOCNAM->new->byteArr->if->zipfs->readFullyAt->throw->new->ZipException->locPos->while->locTag->SH->locSZ->SH->if->continue->end->flag->CH->if->LG->unixToJavaTime->if->LG->unixToJavaTime->if->LG->unixToJavaTime->break->break->System->arraycopy->if->Arrays->copyOf->else
+ZipFileSystem.Entry#creationTime()::: entry creation time:::return->FileTime->fromMillis
+ZipFileSystem.Entry#isDirectory()::: entry is directory:::return->isDir
+ZipFileSystem.Entry#isOther()::: entry is other:::return
+ZipFileSystem.Entry#isRegularFile()::: entry is regular file:::return->isDir
+ZipFileSystem.Entry#lastAccessTime()::: entry last access time:::return->FileTime->fromMillis
+ZipFileSystem.Entry#lastModifiedTime()::: entry last modified time:::return->FileTime->fromMillis
+ZipFileSystem.Entry#size()::: entry size:::return
+ZipFileSystem.Entry#isSymbolicLink()::: entry is symbolic link:::return
+ZipFileSystem.Entry#fileKey()::: entry file key:::return
+ZipFileSystem.Entry#compressedSize()::: entry compressed size:::return
+ZipFileSystem.Entry#crc()::: entry crc:::return
+ZipFileSystem.Entry#method()::: entry method:::return
+ZipFileSystem.Entry#extra()::: entry extra:::if->return->Arrays->copyOf->return
+ZipFileSystem.Entry#comment()::: entry comment:::if->return->Arrays->copyOf->return
+ZipFileSystem.Entry#toString()::: entry to string:::sb->new->StringBuilder->fm->new->Formatter->fm->creationTime->toMillis->format->fm->lastAccessTime->toMillis->format->fm->lastModifiedTime->toMillis->format->fm->isRegularFile->format->fm->isDirectory->format->fm->isSymbolicLink->format->fm->isOther->format->fm->fileKey->format->fm->size->format->fm->compressedSize->format->fm->crc->format->fm->method->format->fm->close->return->sb->toString
+ZipFileSystem#removeFromTree(IndexNode)::: zip file system remove from tree:::parent->inodes->LOOKUPKEY->getParent->as->get->child->if->child->equals->else->last->while->if->child->equals->break->else
+ZipFileSystem.ParentLookup#as(byte[], int)::: parent lookup as:::name->return
+ZipFileSystem.ParentLookup#name(byte[], int)::: parent lookup name:::result->for->i
+ZipFileSystem.ParentLookup#equals(Object)::: parent lookup equals:::if->return->oname->return->Arrays->equals
+ZipFileSystem#buildNodeTree()::: zip file system build node tree:::beginWrite->try->root->inodes->LOOKUPKEY->as->get->if->new->IndexNode->else->inodes->remove->nodes->inodes->keySet->new->IndexNodeArr->toArray->inodes->put->lookup->new->ParentLookup->foreach->parent->while->off->getParentOff->if->break->lookup->as->if->inodes->containsKey->inodes->get->break->Arrays->copyOf->new->IndexNode->inodes->put->catch->finally->endWrite
+ZipFileSystemProvider#getScheme()::: zip file system provider get scheme:::return
+ZipFileSystemProvider#uriToPath(URI)::: zip file system provider uri to path:::scheme->uri->getScheme->if->scheme->getScheme->equalsIgnoreCase->throw->getScheme->new->IllegalArgumentException->try->spec->uri->getRawSchemeSpecificPart->sep->spec->indexOf->if->spec->substring->return->Paths->new->URI->get->toAbsolutePath->catch->throw->e->getMessage->new->IllegalArgumentException->finally
+ZipFileSystemProvider#ensureFile(Path)::: zip file system provider ensure file:::try->attrs->Files->readAttributes->if->attrs->isRegularFile->throw->new->UnsupportedOperationException->return->catch->return->finally
+ZipFileSystemProvider#newFileSystem(URI, Map)::: zip file system provider new file system:::path->uriToPath->synchronized->realPath->if->ensureFile->path->toRealPath->if->filesystems->containsKey->throw->new->FileSystemAlreadyExistsException->zipfs->try->if->env->containsKey->new->JarFileSystem->else->new->ZipFileSystem->catch->pname->path->toString->if->pname->endsWith->pname->endsWith->throw->throw->new->UnsupportedOperationException->finally->if->path->toRealPath->filesystems->put->return
+ZipFileSystemProvider#newFileSystem(Path, Map)::: zip file system provider new file system:::if->path->getFileSystem->FileSystems->getDefault->throw->new->UnsupportedOperationException->ensureFile->try->zipfs->if->env->containsKey->new->JarFileSystem->else->new->ZipFileSystem->return->catch->pname->path->toString->if->pname->endsWith->pname->endsWith->throw->throw->new->UnsupportedOperationException->finally
+ZipFileSystemProvider#getPath(URI)::: zip file system provider get path:::spec->uri->getSchemeSpecificPart->sep->spec->indexOf->if->throw->new->IllegalArgumentException->return->getFileSystem->spec->substring->getPath
+ZipFileSystemProvider#getFileSystem(URI)::: zip file system provider get file system:::synchronized->zipfs->try->filesystems->uriToPath->toRealPath->get->catch->finally->if->throw->new->FileSystemNotFoundException->return
+ZipFileSystemProvider#toZipPath(Path)::: zip file system provider to zip path:::if->throw->new->NullPointerException->if->throw->new->ProviderMismatchException->return
+ZipFileSystemProvider#checkAccess(Path, AccessMode...)::: zip file system provider check access:::toZipPath->checkAccess
+ZipFileSystemProvider#copy(Path, Path, CopyOption...)::: zip file system provider copy:::toZipPath->toZipPath->copy
+ZipFileSystemProvider#createDirectory(Path, FileAttribute...)::: zip file system provider create directory:::toZipPath->createDirectory
+ZipFileSystemProvider#delete(Path)::: zip file system provider delete:::toZipPath->delete
+ZipFileSystemProvider#getFileAttributeView(Path, Class, LinkOption...)::: zip file system provider get file attribute view:::return->ZipFileAttributeView->toZipPath->get
+ZipFileSystemProvider#getFileStore(Path)::: zip file system provider get file store:::return->toZipPath->getFileStore
+ZipFileSystemProvider#isHidden(Path)::: zip file system provider is hidden:::return->toZipPath->isHidden
+ZipFileSystemProvider#isSameFile(Path, Path)::: zip file system provider is same file:::return->toZipPath->isSameFile
+ZipFileSystemProvider#move(Path, Path, CopyOption...)::: zip file system provider move:::toZipPath->toZipPath->move
+ZipFileSystemProvider#newAsynchronousFileChannel(Path, Set, ExecutorService, FileAttribute...)::: zip file system provider new asynchronous file channel:::throw->new->UnsupportedOperationException
+ZipFileSystemProvider#newByteChannel(Path, Set, FileAttribute...)::: zip file system provider new byte channel:::return->toZipPath->newByteChannel
+ZipFileSystemProvider#newDirectoryStream(Path, Filter)::: zip file system provider new directory stream:::return->toZipPath->newDirectoryStream
+ZipFileSystemProvider#newFileChannel(Path, Set, FileAttribute...)::: zip file system provider new file channel:::return->toZipPath->newFileChannel
+ZipFileSystemProvider#newInputStream(Path, OpenOption...)::: zip file system provider new input stream:::return->toZipPath->newInputStream
+ZipFileSystemProvider#newOutputStream(Path, OpenOption...)::: zip file system provider new output stream:::return->toZipPath->newOutputStream
+ZipFileSystemProvider#readAttributes(Path, Class, LinkOption...)::: zip file system provider read attributes:::if->return->toZipPath->getAttributes->return
+ZipFileSystemProvider#readAttributes(Path, String, LinkOption...)::: zip file system provider read attributes:::return->toZipPath->readAttributes
+ZipFileSystemProvider#readSymbolicLink(Path)::: zip file system provider read symbolic link:::throw->new->UnsupportedOperationException
+ZipFileSystemProvider#setAttribute(Path, String, Object, LinkOption...)::: zip file system provider set attribute:::toZipPath->setAttribute
+ZipFileSystemProvider#removeFileSystem(Path, ZipFileSystem)::: zip file system provider remove file system:::synchronized->zfpath->toRealPath->if->filesystems->get->filesystems->remove
+ZipInfo#main(String[])::: zip info main:::if->print->else->env->Collections->emptyMap->zfs->new->ZipFileSystemProvider->Paths->get->newFileSystem->cen->if->print->return->pos->buf->new->byteArr->no->while->print->printCEN->len->CENNAM->CENEXT->if->zfs->locoff->readFullyAt->ZipFileSystem->zerror->if->LOCEXT->CENEXT->LOCNAM->LOCEXT->if->zfs->locoff->readFullyAt->ZipFileSystem->zerror->printLOC->CENNAM->CENEXT->CENCOM->zfs->close
+ZipInfo#print(String, Object...)::: zip info print:::printf
+ZipInfo#printLOC(byte[])::: zip info print c:::print->print->LOCSIG->print->if->LOCSIG->print->return->LOCVER->LOCVER->LOCVER->print->LOCFLG->print->LOCHOW->print->LOCTIM->LOCTIM->dosToJavaTime->print->LOCCRC->print->LOCSIZ->print->LOCLEN->print->LOCNAM->LOCNAM->new->String->print->LOCEXT->print->if->LOCEXT->LOCNAM->LOCEXT->printExtra
+ZipInfo#printCEN(byte[], int)::: zip info print n:::print->CENSIG->print->if->CENSIG->print->return->CENVEM->CENVEM->CENVEM->CENVEM->print->CENVER->CENVER->CENVER->print->CENFLG->print->CENHOW->print->CENTIM->CENTIM->dosToJavaTime->print->CENCRC->print->CENSIZ->print->CENLEN->print->CENNAM->CENNAM->new->String->print->CENEXT->print->if->CENEXT->CENNAM->CENEXT->printExtra->CENCOM->print->CENDSK->print->CENATT->print->CENATX->print->CENOFF->print
+ZipInfo#locoff(byte[], int)::: zip info locoff:::locoff->CENOFF->if->off->CENNAM->end->CENEXT->while->tag->SH->sz->SH->if->continue->if->CENLEN->if->CENSIZ->return->LL->return
+ZipInfo#printExtra(byte[], int, int)::: zip info print extra:::end->while->tag->SH->sz->SH->print->if->print->break->for->i->print->switch->print->pos->while->LL->print->print->break->print->if->SH->SH->print->LL->winToJavaTime->print->LL->winToJavaTime->print->LL->winToJavaTime->print->break->print->while->LG->unixToJavaTime->print->break->print
+ZipPath#getRoot()::: zip path get root:::if->this->isAbsolute->return->zfs->getRootDir->else->return
+ZipPath#getFileName()::: zip path get file name:::off->if->return->while->if->return->result->new->byteArr->System->arraycopy->return->getFileSystem->new->ZipPath
+ZipPath#getParent()::: zip path get parent:::off->if->return->while->if->return->getRoot->result->new->byteArr->System->arraycopy->return->getFileSystem->new->ZipPath
+ZipPath#getNameCount()::: zip path get name count:::initOffsets->return
+ZipPath#getName(int)::: zip path get name:::initOffsets->if->throw->new->IllegalArgumentException->begin->len->if->else->result->new->byteArr->System->arraycopy->return->new->ZipPath
+ZipPath#subpath(int, int)::: zip path subpath:::initOffsets->if->throw->new->IllegalArgumentException->begin->len->if->else->result->new->byteArr->System->arraycopy->return->new->ZipPath
+ZipPath#toRealPath(LinkOption...)::: zip path to real path:::realPath->resolved->getResolvedPath->if->else->new->ZipPath->realPath->checkAccess->return
+ZipPath#isHidden()::: zip path is hidden:::return
+ZipPath#toAbsolutePath()::: zip path to absolute path:::if->isAbsolute->return->else->tmp->new->byteArr->System->arraycopy->return->new->ZipPath
+ZipPath#toUri()::: zip path to uri:::try->return->zfs->getZipFile->toUri->toString->decodeUri->zfs->toAbsolutePath->getString->new->URI->catch->throw->new->AssertionError->finally
+ZipPath#equalsNameAt(ZipPath, int)::: zip path equals name at:::mbegin->mlen->if->else->obegin->olen->if->else->if->return->n->while->if->return->return
+ZipPath#relativize(Path)::: zip path relativize:::o->checkPath->if->o->equals->return->new->byteArr->new->ZipPath->if->return->if->this->isAbsolute->o->isAbsolute->throw->new->IllegalArgumentException->if->return->Arrays->copyOfRange->new->ZipPath->mc->this->getNameCount->oc->o->getNameCount->n->Math->min->i->while->if->equalsNameAt->break->dotdots->len->if->result->new->byteArr->pos->while->if->if->System->arraycopy->return->new->ZipPath
+ZipPath#getFileSystem()::: zip path get file system:::return
+ZipPath#isAbsolute()::: zip path is absolute:::return
+ZipPath#resolve(Path)::: zip path resolve:::o->checkPath->if->return->if->o->isAbsolute->return->return->resolve
+ZipPath#resolve(byte[])::: zip path resolve:::resolved->tpath->tlen->olen->if->new->byteArr->System->arraycopy->System->arraycopy->else->new->byteArr->System->arraycopy->System->arraycopy->return->new->ZipPath
+ZipPath#resolveSibling(Path)::: zip path resolve sibling:::Objects->requireNonNull->parent->getParent->return->parent->resolve
+ZipPath#startsWith(Path)::: zip path starts with:::Objects->requireNonNull->if->return->o->if->o->isAbsolute->this->isAbsolute->return->olast->for->i->return
+ZipPath#endsWith(Path)::: zip path ends with:::Objects->requireNonNull->if->return->o->olast->if->last->if->if->return->if->o->isAbsolute->this->isAbsolute->return->for->return
+ZipPath#resolve(String)::: zip path resolve:::opath->normalize->if->return->if->return->new->ZipPath->return->resolve
+ZipPath#resolveSibling(String)::: zip path resolve sibling:::return->zfs->getPath->resolveSibling
+ZipPath#startsWith(String)::: zip path starts with:::return->zfs->getPath->startsWith
+ZipPath#endsWith(String)::: zip path ends with:::return->zfs->getPath->endsWith
+ZipPath#normalize()::: zip path normalize:::resolved->getResolved->if->return->return->new->ZipPath
+ZipPath#checkPath(Path)::: zip path check path:::Objects->requireNonNull->if->throw->new->ProviderMismatchException->return
+ZipPath#initOffsets()::: zip path init offsets:::if->count->index->if->else->while->c->if->while->result->new->intArr->while->c->if->else->while->synchronized->if
+ZipPath#getResolvedPath()::: zip path get resolved path:::r->if->if->isAbsolute->getResolved->else->toAbsolutePath->getResolvedPath->return
+ZipPath#normalize(byte[])::: zip path normalize:::len->if->return->prevC->for->i->if->return->Arrays->copyOf->return
+ZipPath#normalize(byte[], int)::: zip path normalize:::to->new->byteArr->n->while->m->prevC->while->c->if->if->continue->if->throw->zfs->getString->new->InvalidPathException->if->return->Arrays->copyOf
+ZipPath#normalize(String)::: zip path normalize:::if->isUTF8->return->zfs->getBytes->normalize->len->path->length->if->return->new->byteArr->prevC->for->i->if->path->substring->return->zfs->getBytes
+ZipPath#normalize(String, int, int)::: zip path normalize:::to->new->StringBuilder->to->append->m->prevC->while->c->path->charAt->if->if->continue->if->throw->new->InvalidPathException->to->append->to->length->if->to->delete->return->zfs->to->toString->getBytes
+ZipPath#getResolved()::: zip path get resolved:::for->i->return
+ZipPath#resolve0()::: zip path resolve0:::to->new->byteArr->nc->getNameCount->lastM->new->intArr->lastMOff->m->for->i->if->return->Arrays->copyOf
+ZipPath#toString()::: zip path to string:::return->zfs->getString
+ZipPath#hashCode()::: zip path hash code:::h->if->Arrays->hashCode->return
+ZipPath#equals(Object)::: zip path equals:::return->compareTo
+ZipPath#compareTo(Path)::: zip path compare to:::o->checkPath->len1->len2->n->Math->min->v1->v2->k->while->c1->c2->if->return->return
+ZipPath#register(WatchService, WatchEvent.Kind[], WatchEvent.Modifier...)::: zip path register:::if->throw->new->NullPointerException->throw->new->ProviderMismatchException
+ZipPath#register(WatchService, WatchEvent.Kind...)::: zip path register:::return->new->WatchEvent.ModifierArr->register
+ZipPath#toFile()::: zip path to file:::throw->new->UnsupportedOperationException
+ZipPath#iterator()::: zip path iterator:::return->new->Iterator<Path>
+ZipPath#createDirectory(FileAttribute...)::: zip path create directory:::zfs->getResolvedPath->createDirectory
+ZipPath#newInputStream(OpenOption...)::: zip path new input stream:::if->foreach->if->throw->new->UnsupportedOperationException->return->zfs->getResolvedPath->newInputStream
+ZipPath#newDirectoryStream(Filter)::: zip path new directory stream:::return->new->ZipDirectoryStream
+ZipPath#delete()::: zip path delete:::zfs->getResolvedPath->deleteFile
+ZipPath#deleteIfExists()::: zip path delete if exists:::zfs->getResolvedPath->deleteFile
+ZipPath#getAttributes()::: zip path get attributes:::zfas->zfs->getResolvedPath->getFileAttributes->if->throw->toString->new->NoSuchFileException->return
+ZipPath#setAttribute(String, Object, LinkOption...)::: zip path set attribute:::type->attr->colonPos->attribute->indexOf->if->else->attribute->substring->attribute->substring->view->ZipFileAttributeView->get->if->throw->new->UnsupportedOperationException->view->setAttribute
+ZipPath#setTimes(FileTime, FileTime, FileTime)::: zip path set times:::zfs->getResolvedPath->setTimes
+ZipPath#readAttributes(String, LinkOption...)::: zip path read attributes:::view->attrs->colonPos->attributes->indexOf->if->else->attributes->substring->attributes->substring->zfv->ZipFileAttributeView->get->if->throw->new->UnsupportedOperationException->return->zfv->readAttributes
+ZipPath#getFileStore()::: zip path get file store:::if->exists->return->zfs->getFileStore->throw->zfs->getString->new->NoSuchFileException
+ZipPath#isSameFile(Path)::: zip path is same file:::if->this->equals->return->if->this->getFileSystem->other->getFileSystem->return->this->checkAccess->checkAccess->return->Arrays->this->getResolvedPath->getResolvedPath->equals
+ZipPath#newByteChannel(Set, FileAttribute...)::: zip path new byte channel:::return->zfs->getResolvedPath->newByteChannel
+ZipPath#newFileChannel(Set, FileAttribute...)::: zip path new file channel:::return->zfs->getResolvedPath->newFileChannel
+ZipPath#checkAccess(AccessMode...)::: zip path check access:::w->x->foreach->switch->break->break->break->throw->new->UnsupportedOperationException->zfs->getResolvedPath->checkAccess->if->zfs->isReadOnly->throw->toString->new->AccessDeniedException
+ZipPath#exists()::: zip path exists:::try->return->zfs->getResolvedPath->exists->catch->finally->return
+ZipPath#newOutputStream(OpenOption...)::: zip path new output stream:::if->return->zfs->getResolvedPath->newOutputStream->return->zfs->getResolvedPath->newOutputStream
+ZipPath#move(ZipPath, CopyOption...)::: zip path move:::if->Files->getZipFile->getZipFile->isSameFile->zfs->getResolvedPath->target->getResolvedPath->copyFile->else->copyToTarget->delete
+ZipPath#copy(ZipPath, CopyOption...)::: zip path copy:::if->Files->getZipFile->getZipFile->isSameFile->zfs->getResolvedPath->target->getResolvedPath->copyFile->else->copyToTarget
+ZipPath#copyToTarget(ZipPath, CopyOption...)::: zip path copy to target:::replaceExisting->copyAttrs->foreach->if->else->if->zfas->getAttributes->exists->if->try->target->deleteIfExists->catch->finally->else->target->exists->if->throw->target->toString->new->FileAlreadyExistsException->if->zfas->isDirectory->target->createDirectory->else->is->zfs->getResolvedPath->newInputStream->try->os->target->newOutputStream->try->buf->new->byteArr->n->while->is->read->os->write->catch->finally->os->close->catch->finally->is->close->if->view->ZipFileAttributeView->get->try->view->zfas->lastModifiedTime->zfas->lastAccessTime->zfas->creationTime->setTimes->catch->try->target->delete->catch->finally->throw->finally
+ZipPath#decode(char)::: zip path decode:::if->return->if->return->if->return->return
+ZipPath#decodeUri(String)::: zip path decode uri:::if->return->n->s->length->if->return->if->s->indexOf->return->sb->new->StringBuilder->bb->new->byteArr->betweenBrackets->for->i->return->sb->toString
+ZipUtils#writeShort(OutputStream, int)::: zip utils write short:::os->write->os->write
+ZipUtils#writeInt(OutputStream, long)::: zip utils write int:::os->write->os->write->os->write->os->write
+ZipUtils#writeLong(OutputStream, long)::: zip utils write long:::os->write->os->write->os->write->os->write->os->write->os->write->os->write->os->write
+ZipUtils#writeBytes(OutputStream, byte[])::: zip utils write bytes:::os->write
+ZipUtils#writeBytes(OutputStream, byte[], int, int)::: zip utils write bytes:::os->write
+ZipUtils#toDirectoryPath(byte[])::: zip utils to directory path:::if->Arrays->copyOf->return
+ZipUtils#dosToJavaTime(long)::: zip utils dos to java time:::year->month->day->hour->minute->second->if->try->ldt->LocalDateTime->of->return->ldt->ZoneId->systemDefault->getRules->getOffset->toEpochSecond->convert->catch->finally->return->overflowDosToJavaTime
+ZipUtils#overflowDosToJavaTime(int, int, int, int, int, int)::: zip utils overflow dos to java time:::return->new->Date->getTime
+ZipUtils#javaToDosTime(long)::: zip utils java to dos time:::instant->Instant->ofEpochMilli->ldt->LocalDateTime->ZoneId->systemDefault->ofInstant->year->ldt->getYear->if->return->return->ldt->getMonthValue->ldt->getDayOfMonth->ldt->getHour->ldt->getMinute->ldt->getSecond
+ZipUtils#winToJavaTime(long)::: zip utils win to java time:::return->convert
+ZipUtils#javaToWinTime(long)::: zip utils java to win time:::return->convert
+ZipUtils#unixToJavaTime(long)::: zip utils unix to java time:::return->convert
+ZipUtils#javaToUnixTime(long)::: zip utils java to unix time:::return->convert
+ZipUtils#isRegexMeta(char)::: zip utils is regex meta:::return->regexMetaChars->indexOf
+ZipUtils#isGlobMeta(char)::: zip utils is glob meta:::return->globMetaChars->indexOf
+ZipUtils#next(String, int)::: zip utils next:::if->glob->length->return->glob->charAt->return
+ZipUtils#toRegexPattern(String)::: zip utils to regex pattern:::inGroup->regex->new->StringBuilder->i->while->globPattern->length->c->globPattern->charAt->switch->if->globPattern->length->throw->new->PatternSyntaxException->next->globPattern->charAt->if->isGlobMeta->isRegexMeta->regex->append->regex->append->break->regex->append->break->regex->append->if->next->regex->append->else->if->next->regex->append->if->next->regex->append->hasRangeStart->last->while->globPattern->length->globPattern->charAt->if->break->if->throw->new->PatternSyntaxException->if->next->regex->append->regex->append->if->if->throw->new->PatternSyntaxException->if->next->break->if->throw->new->PatternSyntaxException->regex->append->else->if->throw->new->PatternSyntaxException->regex->append->break->if->throw->new->PatternSyntaxException->regex->append->break->if->regex->append->else->regex->append->break->if->regex->append->else->regex->append->break->if->next->regex->append->else->regex->append->break->regex->append->break->if->isRegexMeta->regex->append->regex->append->if->throw->new->PatternSyntaxException->return->regex->append->toString

@@ -1,16 +1,20 @@
 Algorithm#getAlgorithmURI():::Method getAlgorithmURI:::return->getLocalAttribute
 Algorithm#setAlgorithmURI(String):::Sets the algorithm's URI as used in the signature.:::if->setLocalAttribute
 ClassLoaderUtils#loadClass(String, Class):::Load a class with a given name:::try->cl->Thread->currentThread->getContextClassLoader->if->return->cl->loadClass->catch->LOG->e->getMessage->debug->finally->return->loadClass2
+ClassLoaderUtils#loadClass2(String, Class)::: class loader utils load class2:::try->return->Class->forName->catch->try->if->getClassLoader->return->getClassLoader->loadClass->catch->if->callingClass->getClassLoader->return->callingClass->getClassLoader->loadClass->finally->LOG->ex->getMessage->debug->throw->finally
 JCEMapper#register(String, Algorithm):::Method register:::JavaUtils->checkRegisterPermission->algorithmsMap->put
 JCEMapper#registerDefaultAlgorithms():::This method registers the default algorithms.:::algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put->algorithmsMap->new->Algorithm->put
 JCEMapper#translateURItoJCEID(String):::Method translateURItoJCEID:::algorithm->getAlgorithm->if->return->return
 JCEMapper#getAlgorithmClassFromURI(String):::Method getAlgorithmClassFromURI:::algorithm->getAlgorithm->if->return->return
 JCEMapper#getKeyLengthFromURI(String):::Returns the keylength in bits for a particular algorithm.:::algorithm->getAlgorithm->if->return->return
+JCEMapper#getIVLengthFromURI(String)::: mapper get length from i:::algorithm->getAlgorithm->if->return->return
 JCEMapper#getJCEKeyAlgorithmFromURI(String):::Method getJCEKeyAlgorithmFromURI:::algorithm->getAlgorithm->if->return->return
 JCEMapper#getJCEProviderFromURI(String):::Method getJCEProviderFromURI:::algorithm->getAlgorithm->if->return->return
+JCEMapper#getAlgorithm(String):::Method getAlgorithm:::LOG->debug->if->return->algorithmsMap->get->return
 JCEMapper#getProviderId():::Gets the default Provider for obtaining the security algorithms:::return
 JCEMapper#setProviderId(String):::Sets the default Provider for obtaining the security algorithms:::JavaUtils->checkRegisterPermission
 MessageDigestAlgorithm#getInstance(Document, String):::Factory method for constructing a message digest algorithm by name.:::return->new->MessageDigestAlgorithm
+MessageDigestAlgorithm#getDigestInstance(String)::: message digest algorithm get digest instance:::algorithmID->JCEMapper->translateURItoJCEID->if->exArgs->throw->new->XMLSignatureException->md->provider->JCEMapper->getProviderId->try->if->MessageDigest->getInstance->else->MessageDigest->getInstance->catch->exArgs->ex->getLocalizedMessage->throw->new->XMLSignatureException->exArgs->ex->getLocalizedMessage->throw->new->XMLSignatureException->finally->return
 MessageDigestAlgorithm#getAlgorithm():::Returns the actual java.security.MessageDigest algorithm object:::return
 MessageDigestAlgorithm#isEqual(byte[], byte[]):::Proxy method for java.security.MessageDigest#isEqual which is executed on the internal java.security.MessageDigest object.:::return->MessageDigest->isEqual
 MessageDigestAlgorithm#digest():::Proxy method for java.security.MessageDigest#digest() which is executed on the internal java.security.MessageDigest object.:::return->algorithm->digest
@@ -23,6 +27,9 @@ MessageDigestAlgorithm#reset():::Proxy method for java.security.MessageDigest#re
 MessageDigestAlgorithm#update(byte[]):::Proxy method for java.security.MessageDigest#update(byte[]) which is executed on the internal java.security.MessageDigest object.:::algorithm->update
 MessageDigestAlgorithm#update(byte):::Proxy method for java.security.MessageDigest#update(byte) which is executed on the internal java.security.MessageDigest object.:::algorithm->update
 MessageDigestAlgorithm#update(byte[], int, int):::Proxy method for java.security.MessageDigest#update(byte[], int, int) which is executed on the internal java.security.MessageDigest object.:::algorithm->update
+MessageDigestAlgorithm#getBaseNamespace()::: message digest algorithm get base namespace:::return
+MessageDigestAlgorithm#getBaseLocalName()::: message digest algorithm get base local name:::return
+SignatureAlgorithm#getSignatureAlgorithmSpi(String):::Get a SignatureAlgorithmSpi object corresponding to the algorithmURI argument:::try->implementingClass->algorithmHash->get->LOG->debug->if->exArgs->throw->new->XMLSignatureException->tmp->implementingClass->newInstance->return->catch->exArgs->ex->getMessage->throw->new->XMLSignatureException->finally
 SignatureAlgorithm#sign():::Proxy method for java.security.Signature#sign() which is executed on the internal java.security.Signature object.:::return->signatureAlgorithm->engineSign
 SignatureAlgorithm#getJCEAlgorithmString():::Proxy method for java.security.Signature#getAlgorithm which is executed on the internal java.security.Signature object.:::return->signatureAlgorithm->engineGetJCEAlgorithmString
 SignatureAlgorithm#getJCEProviderName():::Method getJCEProviderName:::return->signatureAlgorithm->engineGetJCEProviderName
@@ -56,3 +63,4 @@ SignatureAlgorithmSpi#engineVerify(byte[]):::Proxy method for java.security.Sign
 SignatureAlgorithmSpi#engineSetParameter(AlgorithmParameterSpec):::Proxy method for java.security.Signature#setParameter( java.security.spec.AlgorithmParameterSpec) which is executed on the internal java.security.Signature object.:::
 SignatureAlgorithmSpi#engineGetContextFromElement(Element):::Method engineGetContextFromElement:::
 SignatureAlgorithmSpi#engineSetHMACOutputLength(int):::Method engineSetHMACOutputLength:::
+SignatureAlgorithmSpi#reset()::: signature algorithm spi reset:::

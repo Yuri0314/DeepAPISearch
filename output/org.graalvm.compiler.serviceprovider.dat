@@ -1,9 +1,25 @@
 BufferUtil#asBaseBuffer(Buffer):::Coerces obj to be of type Buffer:::return
 GraalServices#load(Class):::Gets an Iterable of the providers available for a given service.:::if->list->servicesCache->get->if->return->if->throw->String->service->getName->format->new->InternalError->providers->load0->if->synchronized->providersList->new->ArrayList<>->foreach->module->provider->getClass->getModule->if->module->isNamed->providersList->add->servicesCache->put->return->return
+GraalServices#load0(Class)::: graal services load0:::iterable->ServiceLoader->load->return->new->Iterable<>
 GraalServices#openJVMCITo(Class):::Opens all JVMCI packages to the module of a given class:::if->return->jvmciModule->otherModule->other->getModule->if->foreach->jvmciModule->getPackages->if->jvmciModule->isOpen->JVMCI->getRuntime->jvmciModule->addOpens
 GraalServices#loadSingle(Class, boolean):::Gets the provider for a given service for which at most one provider must be available.:::providers->load->singleProvider->try->for->it->providers->iterator->it->hasNext->catch->finally->if->if->throw->String->service->getName->format->new->InternalError->return
 GraalServices#getClassfileAsStream(Class):::Gets the class file bytes for c.:::classfilePath->c->getName->replace->return->c->getModule->getResourceAsStream
 GraalServices#isToStringTrusted(Class):::Determines if invoking Object#toString() on an instance of c will only run trusted code.:::module->c->getModule->jvmciModule->if->jvmciModule->isOpen->return->return
+GraalServices.DirectSpeculationReason#equals(Object)::: direct speculation reason equals:::if->that->return->Arrays->equals->return
+GraalServices.DirectSpeculationReason#hashCode()::: direct speculation reason hash code:::return->Arrays->hashCode
+GraalServices.DirectSpeculationReason#toString()::: direct speculation reason to string:::return->String->Arrays->toString->format
+GraalServices.DirectSpeculationReason#encode(Supplier)::: direct speculation reason encode:::if->encodingSupplier->get->encoding->addInt->foreach->if->encoding->addInt->else->addNonNullObject->return
+GraalServices.DirectSpeculationReason#addNonNullObject(SpeculationReasonEncoding, Object)::: direct speculation reason add non null object:::c->o->getClass->if->encoding->addString->else->if->encoding->addByte->else->if->encoding->addShort->else->if->encoding->addShort->else->if->encoding->addInt->else->if->encoding->addLong->else->if->encoding->Float->floatToRawIntBits->addInt->else->if->encoding->Double->doubleToRawLongBits->addLong->else->if->encoding->ordinal->addInt->else->if->encoding->addMethod->else->if->encoding->addType->else->if->encoding->addField->else->if->sco->encoding->o->getClass->getName->addString->sco->new->EncodingAdapter->accept->else->if->o->getClass->p->while->encoding->p->getBCI->addInt->encoding->p->getMethod->addMethod->p->getCaller->else->throw->c->getName->new->IllegalArgumentException
+GraalServices.EncodingAdapter#visitBoolean(boolean)::: encoding adapter visit boolean:::encoding->addByte
+GraalServices.EncodingAdapter#visitByte(byte)::: encoding adapter visit byte:::encoding->addByte
+GraalServices.EncodingAdapter#visitChar(char)::: encoding adapter visit char:::encoding->addShort
+GraalServices.EncodingAdapter#visitShort(short)::: encoding adapter visit short:::encoding->addInt
+GraalServices.EncodingAdapter#visitInt(int)::: encoding adapter visit int:::encoding->addInt
+GraalServices.EncodingAdapter#visitLong(long)::: encoding adapter visit long:::encoding->addLong
+GraalServices.EncodingAdapter#visitFloat(float)::: encoding adapter visit float:::encoding->Float->floatToRawIntBits->addInt
+GraalServices.EncodingAdapter#visitDouble(double)::: encoding adapter visit double:::encoding->Double->doubleToRawLongBits->addLong
+GraalServices.EncodingAdapter#visitObject(Object)::: encoding adapter visit object:::if->encoding->addInt->else->DirectSpeculationReason->addNonNullObject
+GraalServices#createSpeculationReason(int, String, Object...)::: graal services create speculation reason:::return->new->DirectSpeculationReason
 GraalServices#getExecutionID():::Gets a unique identifier for this execution such as a process ID or a #getGlobalTimeStamp() fixed timestamp.:::return->Long->ProcessHandle->current->pid->toString
 GraalServices#getGlobalTimeStamp():::Gets a time stamp for the current process:::if->globalTimeStamp->get->globalTimeStamp->System->currentTimeMillis->compareAndSet->return->globalTimeStamp->get
 GraalServices#getThreadAllocatedBytes(long):::Returns an approximation of the total amount of memory, in bytes, allocated in heap memory for the thread of the specified ID:::jmx->if->throw->new->UnsupportedOperationException->return->jmx->getThreadAllocatedBytes
@@ -14,5 +30,27 @@ GraalServices#isCurrentThreadCpuTimeSupported():::Determines if the Java virtual
 GraalServices#getInputArguments():::Gets the input arguments passed to the Java virtual machine which does not include the arguments to the main method:::jmx->if->return->return->jmx->getInputArguments
 GraalServices#fma(float, float, float):::Returns the fused multiply add of the three arguments; that is, returns the exact product of the first two arguments summed with the third argument and then rounded once to the nearest float.:::return->Math->fma
 GraalServices#fma(double, double, double):::Returns the fused multiply add of the three arguments; that is, returns the exact product of the first two arguments summed with the third argument and then rounded once to the nearest double.:::return->Math->fma
+GraalServices#createVirtualObject(ResolvedJavaType, int, boolean)::: graal services create virtual object:::return->VirtualObject->get
+GraalUnsafeAccess#initUnsafe()::: graal unsafe access init unsafe:::try->return->Unsafe->getUnsafe->catch->try->theUnsafe->getDeclaredField->theUnsafe->setAccessible->return->theUnsafe->get->catch->throw->new->RuntimeException->finally->finally
 GraalUnsafeAccess#getUnsafe():::Gets the Unsafe singleton.:::sm->System->getSecurityManager->if->sm->new->RuntimePermission->checkPermission->return
+JavaVersionUtil#getJavaSpecificationVersion()::: java version util get java specification version:::value->Services->getSavedProperties->get->if->value->startsWith->value->substring->return->Integer->parseInt
+JMXService#getThreadAllocatedBytes(long)::: service get thread allocated bytes:::
+JMXService#getCurrentThreadCpuTime()::: service get current thread cpu time:::
+JMXService#isThreadAllocatedMemorySupported()::: service is thread allocated memory supported:::
+JMXService#isCurrentThreadCpuTimeSupported()::: service is current thread cpu time supported:::
+JMXService#getInputArguments()::: service get input arguments:::
+SpeculationReasonGroup#toString()::: speculation reason group to string:::return->String->Arrays->toString->format
 SpeculationReasonGroup#createSpeculationReason(Object...):::Creates a speculation reason described by this group.:::return->GraalServices->createSpeculationReason
+SpeculationReasonGroup#isOfSupportedType(Class)::: speculation reason group is of supported type:::if->SUPPORTED_EXACT_TYPES->contains->return->if->isAssignableFrom->return->if->isAssignableFrom->return->if->isAssignableFrom->isAssignableFrom->return->return
+SpeculationReasonGroup#toBox(Class)::: speculation reason group to box:::if->return->if->return->if->return->if->return->return
+SpeculationReasonGroup#checkSignature(Object[])::: speculation reason group check signature:::for->i->return
+SpeculationReasonGroup.SpeculationContextObject#accept(Visitor)::: speculation context object accept:::
+SpeculationReasonGroup.SpeculationContextObject.Visitor#visitBoolean(boolean)::: visitor visit boolean:::
+SpeculationReasonGroup.SpeculationContextObject.Visitor#visitByte(byte)::: visitor visit byte:::
+SpeculationReasonGroup.SpeculationContextObject.Visitor#visitChar(char)::: visitor visit char:::
+SpeculationReasonGroup.SpeculationContextObject.Visitor#visitShort(short)::: visitor visit short:::
+SpeculationReasonGroup.SpeculationContextObject.Visitor#visitInt(int)::: visitor visit int:::
+SpeculationReasonGroup.SpeculationContextObject.Visitor#visitLong(long)::: visitor visit long:::
+SpeculationReasonGroup.SpeculationContextObject.Visitor#visitFloat(float)::: visitor visit float:::
+SpeculationReasonGroup.SpeculationContextObject.Visitor#visitDouble(double)::: visitor visit double:::
+SpeculationReasonGroup.SpeculationContextObject.Visitor#visitObject(Object)::: visitor visit object:::

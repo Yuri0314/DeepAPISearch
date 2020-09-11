@@ -1,3 +1,24 @@
+JdkRegExp#match(String)::: jdk reg exp match:::if->return->return->new->DefaultMatcher
+JdkRegExp.DefaultMatcher#search(int)::: default matcher search:::return->defaultMatcher->find
+JdkRegExp.DefaultMatcher#getInput()::: default matcher get input:::return
+JdkRegExp.DefaultMatcher#start()::: default matcher start:::return->defaultMatcher->start
+JdkRegExp.DefaultMatcher#start(int)::: default matcher start:::return->defaultMatcher->start
+JdkRegExp.DefaultMatcher#end()::: default matcher end:::return->defaultMatcher->end
+JdkRegExp.DefaultMatcher#end(int)::: default matcher end:::return->defaultMatcher->end
+JdkRegExp.DefaultMatcher#group()::: default matcher group:::return->defaultMatcher->group
+JdkRegExp.DefaultMatcher#group(int)::: default matcher group:::return->defaultMatcher->group
+JdkRegExp.DefaultMatcher#groupCount()::: default matcher group count:::return->defaultMatcher->groupCount
+JoniRegExp#match(String)::: joni reg exp match:::if->return->return->new->JoniMatcher
+JoniRegExp.Factory#compile(String, String)::: factory compile:::return->new->JoniRegExp
+JoniRegExp.JoniMatcher#search(int)::: joni matcher search:::return->joniMatcher->input->length->search
+JoniRegExp.JoniMatcher#getInput()::: joni matcher get input:::return
+JoniRegExp.JoniMatcher#start()::: joni matcher start:::return->joniMatcher->getBegin
+JoniRegExp.JoniMatcher#start(int)::: joni matcher start:::return->start->joniMatcher->getRegion
+JoniRegExp.JoniMatcher#end()::: joni matcher end:::return->joniMatcher->getEnd
+JoniRegExp.JoniMatcher#end(int)::: joni matcher end:::return->end->joniMatcher->getRegion
+JoniRegExp.JoniMatcher#group()::: joni matcher group:::return->input->joniMatcher->getBegin->joniMatcher->getEnd->substring
+JoniRegExp.JoniMatcher#group(int)::: joni matcher group:::if->return->group->region->joniMatcher->getRegion->return->input->substring
+JoniRegExp.JoniMatcher#groupCount()::: joni matcher group count:::region->joniMatcher->getRegion->return
 RegExp#getSource():::Get the source pattern of this regular expression.:::return
 RegExp#setGlobal(boolean):::Set the global flag of this regular expression to global.:::
 RegExp#isGlobal():::Get the global flag of this regular expression.:::return
@@ -18,4 +39,43 @@ RegExpResult#getIndex():::Get the index for the match:::return
 RegExpResult#length():::Get the length of the match:::return->length
 RegExpResult#getGroup(int):::Get the group with the given index or the empty string if group index is not valid.:::return
 RegExpResult#getLastParen():::Get the last parenthesis group, or the empty string if none exists.:::return
+RegExpScanner.Capture#canBeReferencedFrom(int, int):::Returns true if this Capture can be referenced from the position specified by the group and level parameters:::return
+RegExpScanner#processForwardReferences()::: reg exp scanner process forward references:::iterator->forwardReferences->descendingIterator->while->iterator->hasNext->pos->iterator->next->num->iterator->next->if->caps->size->buffer->new->StringBuilder->Integer->toString->octalOrLiteral->sb->insert->forwardReferences->clear
 RegExpScanner#scan(String):::Scan a JavaScript regexp string returning a Java safe regex string.:::scanner->new->RegExpScanner->try->scanner->disjunction->catch->throw->e->getMessage->new->PatternSyntaxException->finally->if->string->length->p->scanner->getStringBuilder->toString->throw->p->length->new->PatternSyntaxException->scanner->processForwardReferences->return
+RegExpScanner#getStringBuilder()::: reg exp scanner get string builder:::return
+RegExpScanner#getJavaPattern()::: reg exp scanner get java pattern:::return->sb->toString
+RegExpScanner#getGroupsInNegativeLookahead()::: reg exp scanner get groups in negative lookahead:::vec->for->i->caps->size->return
+RegExpScanner#commit(int):::Commit n characters to the builder and to a given token:::switch->sb->append->skip->break->sb->append->sb->append->skip->break->sb->append->sb->append->sb->append->skip->break->return
+RegExpScanner#restart(int, int):::Restart the buffers back at an earlier position.:::reset->sb->setLength
+RegExpScanner#push(char)::: reg exp scanner push:::expected->expected->get->put
+RegExpScanner#pop(char)::: reg exp scanner pop:::expected->Math->expected->get->min->put
+RegExpScanner#disjunction()::: reg exp scanner disjunction:::while->alternative->if->commit->else->break
+RegExpScanner#alternative()::: reg exp scanner alternative:::while->term
+RegExpScanner#term()::: reg exp scanner term:::startIn->startOut->sb->length->if->assertion->return->if->atom->quantifier->return->restart->return
+RegExpScanner#assertion()::: reg exp scanner assertion:::startIn->startOut->sb->length->switch->return->commit->if->return->commit->break->if->break->if->break->isNegativeLookahead->commit->if->if->disjunction->if->if->return->commit->break->break->restart->return
+RegExpScanner#quantifier()::: reg exp scanner quantifier:::if->quantifierPrefix->if->commit->return->return
+RegExpScanner#quantifierPrefix()::: reg exp scanner quantifier prefix:::startIn->startOut->sb->length->switch->return->commit->commit->if->decimalDigits->break->push->if->commit->decimalDigits->if->pop->commit->else->restart->return->return->break->restart->return
+RegExpScanner#atom()::: reg exp scanner atom:::startIn->startOut->sb->length->if->patternCharacter->return->if->return->commit->if->commit->if->atomEscape->return->if->characterClass->return->if->commit->if->commit->else->caps->new->Capture->add->disjunction->if->commit->return->restart->return
+RegExpScanner#patternCharacter()::: reg exp scanner pattern character:::if->atEOF->return->switch->return->n->expected->get->if->return->if->quantifierPrefix->sb->append->return->commit->return->return->commit
+RegExpScanner#atomEscape()::: reg exp scanner atom escape:::return->decimalEscape->characterClassEscape->characterEscape->identityEscape
+RegExpScanner#characterEscape()::: reg exp scanner character escape:::startIn->startOut->sb->length->if->controlEscape->return->if->commit->if->controlLetter->return->restart->if->hexEscapeSequence->unicodeEscapeSequence->return->restart->return
+RegExpScanner#scanEscapeSequence(char, int)::: reg exp scanner scan escape sequence:::startIn->startOut->sb->length->if->return->commit->for->i->return
+RegExpScanner#hexEscapeSequence()::: reg exp scanner hex escape sequence:::return->scanEscapeSequence
+RegExpScanner#unicodeEscapeSequence()::: reg exp scanner unicode escape sequence:::return->scanEscapeSequence
+RegExpScanner#controlEscape()::: reg exp scanner control escape:::switch->return->commit->return
+RegExpScanner#controlLetter()::: reg exp scanner control letter:::if->isDecimalDigit->sb->sb->length->setLength->unicode->skip->return->return
+RegExpScanner#identityEscape()::: reg exp scanner identity escape:::if->atEOF->throw->new->RuntimeException->if->sb->append->else->if->NON_IDENT_ESCAPES->indexOf->sb->sb->length->setLength->return->commit
+RegExpScanner#decimalEscape()::: reg exp scanner decimal escape:::startIn->startOut->sb->length->if->isOctalDigit->skip->sb->append->return->if->isDecimalDigit->if->if->octalValue->while->isOctalDigit->skip->unicode->else->decimalDigits->else->decimalValue->while->isDecimalDigit->skip->if->sb->sb->length->setLength->Integer->toString->octalOrLiteral->else->if->caps->size->capture->caps->get->if->capture->canBeReferencedFrom->sb->sb->length->setLength->else->sb->append->else->sb->sb->length->setLength->forwardReferences->add->forwardReferences->sb->length->add->return->restart->return
+RegExpScanner#characterClassEscape()::: reg exp scanner character class escape:::switch->if->RegExpFactory->usesJavaUtilRegex->sb->sb->length->setLength->if->sb->Lexer->getWhitespaceRegExp->append->else->sb->append->Lexer->getWhitespaceRegExp->append->append->skip->return->return->commit->if->RegExpFactory->usesJavaUtilRegex->sb->sb->length->setLength->sb->append->Lexer->getWhitespaceRegExp->append->append->skip->return->return->commit->return->commit->return
+RegExpScanner#characterClass()::: reg exp scanner character class:::startIn->startOut->sb->length->if->try->push->commit->if->commit->if->classRanges->pop->commit->if->sb->sb->length->setLength->sb->append->else->if->sb->sb->length->setLength->sb->append->return->catch->finally->restart->return
+RegExpScanner#classRanges()::: reg exp scanner class ranges:::nonemptyClassRanges->return
+RegExpScanner#nonemptyClassRanges()::: reg exp scanner nonempty class ranges:::startIn->startOut->sb->length->if->classAtom->if->commit->if->classAtom->classRanges->return->nonemptyClassRangesNoDash->return->restart->return
+RegExpScanner#nonemptyClassRangesNoDash()::: reg exp scanner nonempty class ranges no dash:::startIn->startOut->sb->length->if->classAtomNoDash->if->commit->if->classAtom->classRanges->return->nonemptyClassRangesNoDash->return->if->classAtom->return->restart->return
+RegExpScanner#classAtom()::: reg exp scanner class atom:::if->return->commit->return->classAtomNoDash
+RegExpScanner#classAtomNoDash()::: reg exp scanner class atom no dash:::if->atEOF->return->startIn->startOut->sb->length->switch->return->sb->append->return->commit->commit->if->classEscape->return->restart->return->return->commit
+RegExpScanner#classEscape()::: reg exp scanner class escape:::if->decimalEscape->return->if->sb->sb->length->setLength->sb->append->skip->return->return->characterEscape->characterClassEscape->identityEscape
+RegExpScanner#decimalDigits()::: reg exp scanner decimal digits:::if->isDecimalDigit->return->while->isDecimalDigit->commit->return
+RegExpScanner#unicode(int, StringBuilder)::: reg exp scanner unicode:::hex->Integer->toHexString->buffer->append->for->i->hex->length->buffer->append
+RegExpScanner#octalOrLiteral(String, StringBuilder)::: reg exp scanner octal or literal:::length->numberLiteral->length->octalValue->pos->while->ch->numberLiteral->charAt->if->isOctalDigit->else->break->if->buffer->append->unicode->buffer->numberLiteral->substring->append->else->buffer->append
+RegExpScanner#isOctalDigit(char)::: reg exp scanner is octal digit:::return
+RegExpScanner#isDecimalDigit(char)::: reg exp scanner is decimal digit:::return

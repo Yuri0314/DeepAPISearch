@@ -1,23 +1,318 @@
+Blit#locate(SurfaceType, CompositeType, SurfaceType)::: blit locate:::return->GraphicsPrimitiveMgr->locate
+Blit#getFromCache(SurfaceType, CompositeType, SurfaceType)::: blit get from cache:::o->blitcache->get->if->return->blit->locate->if->println->println->println->println->else->blitcache->put->return
 Blit#Blit(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int):::All Blit implementors must have this invoker method:::
+Blit#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: blit make primitive:::if->comptype->isDerivedFrom->gxb->new->GeneralXorBlit->setupGeneralBinaryOp->return->else->if->comptype->isDerivedFrom->return->new->GeneralMaskBlit->else->return
+Blit.AnyBlit#Blit(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int)::: any blit  blit:::srcCM->srcData->getColorModel->dstCM->dstData->getColorModel->ctx->comp->new->RenderingHints->createContext->srcRas->srcData->getRaster->dstRas->dstData->getRaster->if->Region->getInstanceXYWH->span->si->clip->getSpanIterator->while->si->nextSpan->w->h->tmpSrcRas->srcRas->createChild->tmpDstRas->dstRas->createWritableChild->ctx->compose->ctx->dispose
+Blit.GeneralMaskBlit#Blit(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int)::: general mask blit  blit:::performop->MaskBlit
+Blit.GeneralXorBlit#setPrimitives(Blit, Blit, GraphicsPrimitive, Blit)::: general xor blit set primitives:::
+Blit.GeneralXorBlit#Blit(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int)::: general xor blit  blit:::src->dst->opclip->sx->sy->dx->dy->if->else->cachedSrc->if->srcTmp->get->convertFrom->if->new->WeakReference<>->if->else->cachedDst->if->dstTmp->get->convertFrom->if->new->WeakReference<>->performop->Blit->if->convertTo
+Blit#traceWrap()::: blit trace wrap:::return->new->TraceBlit
+Blit.TraceBlit#traceWrap()::: trace blit trace wrap:::return
+Blit.TraceBlit#Blit(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int)::: trace blit  blit:::tracePrimitive->target->Blit
+BlitBg#locate(SurfaceType, CompositeType, SurfaceType)::: blit bg locate:::return->GraphicsPrimitiveMgr->locate
+BlitBg#getFromCache(SurfaceType, CompositeType, SurfaceType)::: blit bg get from cache:::o->blitcache->get->if->return->blit->locate->if->println->println->println->println->else->blitcache->put->return
 BlitBg#BlitBg(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int, int):::All BlitBg implementors must have this invoker method:::
+BlitBg#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: blit bg make primitive:::return->new->General
+BlitBg.General#BlitBg(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int, int)::: general  blit bg:::dstModel->dstData->getColorModel->bgHasAlpha->if->dstModel->hasAlpha->ColorModel->getRGBdefault->wr->dstModel->createCompatibleWritableRaster->isPremult->dstModel->isAlphaPremultiplied->bimg->new->BufferedImage->tmpData->BufImgSurfaceData->createData->bgColor->new->Color->sg2d->new->SunGraphics2D->fillop->FillRect->tmpData->getSurfaceType->locate->combineop->Blit->srcData->getSurfaceType->tmpData->getSurfaceType->getFromCache->blitop->Blit->tmpData->getSurfaceType->dstData->getSurfaceType->getFromCache->fillop->FillRect->combineop->Blit->blitop->Blit
+BlitBg#traceWrap()::: blit bg trace wrap:::return->new->TraceBlitBg
+BlitBg.TraceBlitBg#traceWrap()::: trace blit bg trace wrap:::return
+BlitBg.TraceBlitBg#BlitBg(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int, int)::: trace blit bg  blit bg:::tracePrimitive->target->BlitBg
 CompositeType#deriveSubType(String):::Return a new CompositeType object which uses this object as its more general "supertype" descriptor:::return->new->CompositeType
 CompositeType#forAlphaComposite(AlphaComposite):::Return a CompositeType object for the specified AlphaComposite rule.:::switch->ac->getRule->return->if->ac->getAlpha->return->else->return->return->if->ac->getAlpha->return->else->return->return->return->return->return->return->return->return->return->throw->new->InternalError
+CompositeType#makeUniqueID(String)::: composite type make unique d:::i->compositeUIDMap->get->if->if->throw->new->InternalError->compositeUIDMap->put->return
+CompositeType#getUniqueID()::: composite type get unique d:::return
+CompositeType#getDescriptor()::: composite type get descriptor:::return
+CompositeType#getSuperType()::: composite type get super type:::return
+CompositeType#hashCode()::: composite type hash code:::return->desc->hashCode
+CompositeType#isDerivedFrom(CompositeType)::: composite type is derived from:::comptype->do->if->return->while->return
+CompositeType#equals(Object)::: composite type equals:::if->return->return
+CompositeType#toString()::: composite type to string:::return
+CustomComponent#register()::: custom component register:::owner->primitives->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->GraphicsPrimitiveMgr->register
+CustomComponent#getRegionOfInterest(SurfaceData, SurfaceData, Region, int, int, int, int, int, int)::: custom component get region of interest:::ret->Region->getInstanceXYWH->ret->dst->getBounds->getIntersection->r->src->getBounds->r->translate->ret->getIntersection->if->ret->getIntersection->return
+OpaqueCopyAnyToArgb#Blit(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int)::: opaque copy any to argb  blit:::srcRast->src->getRaster->srcCM->src->getColorModel->dstRast->dst->getRaster->icr->dstPix->icr->getDataStorage->roi->CustomComponent->getRegionOfInterest->si->roi->getSpanIterator->srcPix->dstScan->icr->getScanlineStride->span->new->intArr->while->si->nextSpan->rowoff->icr->getDataOffset->for->y->icr->markDirty
+OpaqueCopyArgbToAny#Blit(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int)::: opaque copy argb to any  blit:::srcRast->src->getRaster->icr->srcPix->icr->getDataStorage->dstRast->dst->getRaster->dstCM->dst->getColorModel->roi->CustomComponent->getRegionOfInterest->si->roi->getSpanIterator->dstPix->srcScan->icr->getScanlineStride->span->new->intArr->while->si->nextSpan->rowoff->icr->getDataOffset->for->y
+XorCopyArgbToAny#Blit(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int)::: xor copy argb to any  blit:::srcRast->src->getRaster->icr->srcPix->icr->getDataStorage->dstRast->dst->getRaster->dstCM->dst->getColorModel->roi->CustomComponent->getRegionOfInterest->si->roi->getSpanIterator->xorrgb->getXorColor->getRGB->xorPixel->dstCM->getDataElements->srcPixel->dstPixel->srcScan->icr->getScanlineStride->span->new->intArr->while->si->nextSpan->rowoff->icr->getDataOffset->for->y
+DrawGlyphList#locate(SurfaceType, CompositeType, SurfaceType)::: draw glyph list locate:::return->GraphicsPrimitiveMgr->locate
+DrawGlyphList#DrawGlyphList(SunGraphics2D, SurfaceData, GlyphList)::: draw glyph list  draw glyph list:::
+DrawGlyphList#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: draw glyph list make primitive:::return->new->General
+DrawGlyphList.General#DrawGlyphList(SunGraphics2D, SurfaceData, GlyphList)::: general  draw glyph list:::strbounds->gl->getBounds->num->gl->getNumGlyphs->clip->sg2d->getCompClip->cx1->clip->getLoX->cy1->clip->getLoY->cx2->clip->getHiX->cy2->clip->getHiY->for->i
+DrawGlyphList#traceWrap()::: draw glyph list trace wrap:::return->new->TraceDrawGlyphList
+DrawGlyphList.TraceDrawGlyphList#traceWrap()::: trace draw glyph list trace wrap:::return
+DrawGlyphList.TraceDrawGlyphList#DrawGlyphList(SunGraphics2D, SurfaceData, GlyphList)::: trace draw glyph list  draw glyph list:::tracePrimitive->target->DrawGlyphList
+DrawGlyphListAA#locate(SurfaceType, CompositeType, SurfaceType)::: draw glyph list a locate:::return->GraphicsPrimitiveMgr->locate
+DrawGlyphListAA#DrawGlyphListAA(SunGraphics2D, SurfaceData, GlyphList)::: draw glyph list a  draw glyph list a:::
+DrawGlyphListAA#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: draw glyph list a make primitive:::return->new->General
+DrawGlyphListAA.General#DrawGlyphListAA(SunGraphics2D, SurfaceData, GlyphList)::: general  draw glyph list a:::gl->getBounds->num->gl->getNumGlyphs->clip->sg2d->getCompClip->cx1->clip->getLoX->cy1->clip->getLoY->cx2->clip->getHiX->cy2->clip->getHiY->for->i
+DrawGlyphListAA#traceWrap()::: draw glyph list a trace wrap:::return->new->TraceDrawGlyphListAA
+DrawGlyphListAA.TraceDrawGlyphListAA#traceWrap()::: trace draw glyph list a trace wrap:::return
+DrawGlyphListAA.TraceDrawGlyphListAA#DrawGlyphListAA(SunGraphics2D, SurfaceData, GlyphList)::: trace draw glyph list a  draw glyph list a:::tracePrimitive->target->DrawGlyphListAA
+DrawGlyphListLCD#locate(SurfaceType, CompositeType, SurfaceType)::: draw glyph list d locate:::return->GraphicsPrimitiveMgr->locate
+DrawGlyphListLCD#DrawGlyphListLCD(SunGraphics2D, SurfaceData, GlyphList)::: draw glyph list d  draw glyph list d:::
+DrawGlyphListLCD#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: draw glyph list d make primitive:::return
+DrawGlyphListLCD#traceWrap()::: draw glyph list d trace wrap:::return->new->TraceDrawGlyphListLCD
+DrawGlyphListLCD.TraceDrawGlyphListLCD#traceWrap()::: trace draw glyph list d trace wrap:::return
+DrawGlyphListLCD.TraceDrawGlyphListLCD#DrawGlyphListLCD(SunGraphics2D, SurfaceData, GlyphList)::: trace draw glyph list d  draw glyph list d:::tracePrimitive->target->DrawGlyphListLCD
+DrawLine#locate(SurfaceType, CompositeType, SurfaceType)::: draw line locate:::return->GraphicsPrimitiveMgr->locate
 DrawLine#DrawLine(SunGraphics2D, SurfaceData, int, int, int, int):::  All DrawLine implementors must have this invoker method:::
+DrawLine#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: draw line make primitive:::throw->new->InternalError
+DrawLine#traceWrap()::: draw line trace wrap:::return->new->TraceDrawLine
+DrawLine.TraceDrawLine#traceWrap()::: trace draw line trace wrap:::return
+DrawLine.TraceDrawLine#DrawLine(SunGraphics2D, SurfaceData, int, int, int, int)::: trace draw line  draw line:::tracePrimitive->target->DrawLine
+DrawParallelogram#locate(SurfaceType, CompositeType, SurfaceType)::: draw parallelogram locate:::return->GraphicsPrimitiveMgr->locate
 DrawParallelogram#DrawParallelogram(SunGraphics2D, SurfaceData, double, double, double, double, double, double, double, double):::All DrawParallelogram implementors must have this invoker method:::
+DrawParallelogram#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: draw parallelogram make primitive:::throw->new->InternalError
+DrawParallelogram#traceWrap()::: draw parallelogram trace wrap:::return->new->TraceDrawParallelogram
+DrawParallelogram.TraceDrawParallelogram#traceWrap()::: trace draw parallelogram trace wrap:::return
+DrawParallelogram.TraceDrawParallelogram#DrawParallelogram(SunGraphics2D, SurfaceData, double, double, double, double, double, double, double, double)::: trace draw parallelogram  draw parallelogram:::tracePrimitive->target->DrawParallelogram
+DrawPath#locate(SurfaceType, CompositeType, SurfaceType)::: draw path locate:::return->GraphicsPrimitiveMgr->locate
 DrawPath#DrawPath(SunGraphics2D, SurfaceData, int, int, Path2D.Float):::  All DrawPath implementors must have this invoker method:::
+DrawPath#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: draw path make primitive:::throw->new->InternalError
+DrawPath#traceWrap()::: draw path trace wrap:::return->new->TraceDrawPath
+DrawPath.TraceDrawPath#traceWrap()::: trace draw path trace wrap:::return
+DrawPath.TraceDrawPath#DrawPath(SunGraphics2D, SurfaceData, int, int, Path2D.Float)::: trace draw path  draw path:::tracePrimitive->target->DrawPath
+DrawPolygons#locate(SurfaceType, CompositeType, SurfaceType)::: draw polygons locate:::return->GraphicsPrimitiveMgr->locate
 DrawPolygons#DrawPolygons(SunGraphics2D, SurfaceData, int[], int[], int[], int, int, int, boolean):::  All DrawPolygon implementors must have this invoker method:::
+DrawPolygons#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: draw polygons make primitive:::throw->new->InternalError
+DrawPolygons#traceWrap()::: draw polygons trace wrap:::return->new->TraceDrawPolygons
+DrawPolygons.TraceDrawPolygons#traceWrap()::: trace draw polygons trace wrap:::return
+DrawPolygons.TraceDrawPolygons#DrawPolygons(SunGraphics2D, SurfaceData, int[], int[], int[], int, int, int, boolean)::: trace draw polygons  draw polygons:::tracePrimitive->target->DrawPolygons
+DrawRect#locate(SurfaceType, CompositeType, SurfaceType)::: draw rect locate:::return->GraphicsPrimitiveMgr->locate
 DrawRect#DrawRect(SunGraphics2D, SurfaceData, int, int, int, int):::  All DrawRect implementors must have this invoker method:::
+DrawRect#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: draw rect make primitive:::throw->new->InternalError
+DrawRect#traceWrap()::: draw rect trace wrap:::return->new->TraceDrawRect
+DrawRect.TraceDrawRect#traceWrap()::: trace draw rect trace wrap:::return
+DrawRect.TraceDrawRect#DrawRect(SunGraphics2D, SurfaceData, int, int, int, int)::: trace draw rect  draw rect:::tracePrimitive->target->DrawRect
+FillParallelogram#locate(SurfaceType, CompositeType, SurfaceType)::: fill parallelogram locate:::return->GraphicsPrimitiveMgr->locate
 FillParallelogram#FillParallelogram(SunGraphics2D, SurfaceData, double, double, double, double, double, double):::All FillParallelogram implementors must have this invoker method:::
+FillParallelogram#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: fill parallelogram make primitive:::throw->new->InternalError
+FillParallelogram#traceWrap()::: fill parallelogram trace wrap:::return->new->TraceFillParallelogram
+FillParallelogram.TraceFillParallelogram#traceWrap()::: trace fill parallelogram trace wrap:::return
+FillParallelogram.TraceFillParallelogram#FillParallelogram(SunGraphics2D, SurfaceData, double, double, double, double, double, double)::: trace fill parallelogram  fill parallelogram:::tracePrimitive->target->FillParallelogram
+FillPath#locate(SurfaceType, CompositeType, SurfaceType)::: fill path locate:::return->GraphicsPrimitiveMgr->locate
 FillPath#FillPath(SunGraphics2D, SurfaceData, int, int, Path2D.Float):::  All FillPath implementors must have this invoker method:::
+FillPath#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: fill path make primitive:::throw->new->InternalError
+FillPath#traceWrap()::: fill path trace wrap:::return->new->TraceFillPath
+FillPath.TraceFillPath#traceWrap()::: trace fill path trace wrap:::return
+FillPath.TraceFillPath#FillPath(SunGraphics2D, SurfaceData, int, int, Path2D.Float)::: trace fill path  fill path:::tracePrimitive->target->FillPath
+FillRect#locate(SurfaceType, CompositeType, SurfaceType)::: fill rect locate:::return->GraphicsPrimitiveMgr->locate
 FillRect#FillRect(SunGraphics2D, SurfaceData, int, int, int, int):::  All FillRect implementors must have this invoker method:::
+FillRect#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: fill rect make primitive:::return->new->General
+FillRect.General#FillRect(SunGraphics2D, SurfaceData, int, int, int, int)::: general  fill rect:::fillop->MaskFill
+FillRect#traceWrap()::: fill rect trace wrap:::return->new->TraceFillRect
+FillRect.TraceFillRect#traceWrap()::: trace fill rect trace wrap:::return
+FillRect.TraceFillRect#FillRect(SunGraphics2D, SurfaceData, int, int, int, int)::: trace fill rect  fill rect:::tracePrimitive->target->FillRect
+FillSpans#locate(SurfaceType, CompositeType, SurfaceType)::: fill spans locate:::return->GraphicsPrimitiveMgr->locate
+FillSpans#FillSpans(SunGraphics2D, SurfaceData, int, long, SpanIterator)::: fill spans  fill spans:::
 FillSpans#FillSpans(SunGraphics2D, SurfaceData, SpanIterator):::All FillSpan implementors must have this invoker method:::si->getNativeIterator->FillSpans
+FillSpans#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: fill spans make primitive:::throw->new->InternalError
+FillSpans#traceWrap()::: fill spans trace wrap:::return->new->TraceFillSpans
+FillSpans.TraceFillSpans#traceWrap()::: trace fill spans trace wrap:::return
+FillSpans.TraceFillSpans#FillSpans(SunGraphics2D, SurfaceData, SpanIterator)::: trace fill spans  fill spans:::tracePrimitive->target->FillSpans
+FontInfo#mtx(double[])::: font info mtx:::return
+FontInfo#clone()::: font info clone:::try->return->super->clone->catch->return->finally
+FontInfo#toString()::: font info to string:::return->mtx->mtx
+GeneralRenderer#register()::: general renderer register:::owner->primitives->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->new->GraphicsPrimitiveProxy->GraphicsPrimitiveMgr->register
+GeneralRenderer#doDrawPoly(SurfaceData, PixelWriter, int[], int[], int, int, Region, int, int, boolean)::: general renderer do draw poly:::mx->my->x1->y1->tmp->if->return->while->x2->y2->GeneralRenderer->doDrawLine->if->GeneralRenderer->doDrawLine
+GeneralRenderer#doSetRect(SurfaceData, PixelWriter, int, int, int, int)::: general renderer do set rect:::dstRast->sData->getRaster->pw->setRaster->while->for->x
+GeneralRenderer#doDrawLine(SurfaceData, PixelWriter, int[], Region, int, int, int, int)::: general renderer do draw line:::if->new->intArr->if->clip->getLoX->clip->getLoY->clip->getHiX->clip->getHiY->adjustLine->return->x1->y1->x2->y2->dstRast->sData->Math->min->Math->min->Math->abs->Math->abs->getRaster->pw->setRaster->if->if->do->pw->writePixel->while->else->do->pw->writePixel->while->else->if->if->do->pw->writePixel->while->else->do->pw->writePixel->while->else->dx->dy->ax->ay->steps->bumpmajor->bumpminor->errminor->errmajor->error->xmajor->if->else->if->ysteps->if->if->xsteps->if->if->if->do->pw->writePixel->if->while->else->do->pw->writePixel->if->while->return
+GeneralRenderer#doDrawRect(PixelWriter, SunGraphics2D, SurfaceData, int, int, int, int)::: general renderer do draw rect:::if->return->x2->Region->Region->dimAdd->dimAdd->y2->Region->Region->dimAdd->dimAdd->r->sg2d->getCompClip->getBoundsIntersectionXYXY->if->r->isEmpty->return->cx1->r->getLoX->cy1->r->getLoY->cx2->r->getHiX->cy2->r->getHiY->if->doSetRect->return->if->doSetRect->if->doSetRect->if->doSetRect->if->doSetRect
+GeneralRenderer#doDrawGlyphList(SurfaceData, PixelWriter, GlyphList, Region)::: general renderer do draw glyph list:::bounds->gl->getBounds->clip->clipBoxToBounds->cx1->cy1->cx2->cy2->dstRast->sData->getRaster->pw->setRaster->num->gl->getNumGlyphs->for->i
+GeneralRenderer#outcode(int, int, int, int, int, int)::: general renderer outcode:::code->if->else->if->else->if->else->if->return
+GeneralRenderer#adjustLine(int[], int, int, int, int)::: general renderer adjust line:::cxmax->cymax->x1->y1->x2->y2->if->return->if->if->return->if->t->if->if->if->return->else->if->if->return->if->t->if->if->if->return->else->outcode1->outcode2->dx->dy->ax->ay->xmajor->outcode->outcode->while->xsteps->ysteps->if->return->if->if->if->else->if->if->if->else->if->if->else->if->if->if->outcode->else->if->if->else->if->if->else->if->else->if->if->else->if->if->else->if->outcode->return
+GeneralRenderer#createSolidPixelWriter(SunGraphics2D, SurfaceData)::: general renderer create solid pixel writer:::dstCM->sData->getColorModel->srcPixel->dstCM->getDataElements->return->new->SolidPixelWriter
+GeneralRenderer#createXorPixelWriter(SunGraphics2D, SurfaceData)::: general renderer create xor pixel writer:::dstCM->sData->getColorModel->srcPixel->dstCM->getDataElements->comp->sg2d->getComposite->xorrgb->comp->getXorColor->getRGB->xorPixel->dstCM->getDataElements->switch->dstCM->getTransferType->return->new->XorPixelWriter.ByteData->return->new->XorPixelWriter.ShortData->return->new->XorPixelWriter.IntData->return->new->XorPixelWriter.FloatData->return->new->XorPixelWriter.DoubleData->throw->new->InternalError
+SetFillRectANY#FillRect(SunGraphics2D, SurfaceData, int, int, int, int)::: set fill rect y  fill rect:::pw->GeneralRenderer->createSolidPixelWriter->r->sg2d->getCompClip->getBoundsIntersectionXYWH->GeneralRenderer->r->getLoX->r->getLoY->r->getHiX->r->getHiY->doSetRect
+PixelWriterDrawHandler#drawLine(int, int, int, int)::: pixel writer draw handler draw line:::GeneralRenderer->doDrawLine
+PixelWriterDrawHandler#drawPixel(int, int)::: pixel writer draw handler draw pixel:::GeneralRenderer->doSetRect
+PixelWriterDrawHandler#drawScanline(int, int, int)::: pixel writer draw handler draw scanline:::GeneralRenderer->doSetRect
+SetFillPathANY#FillPath(SunGraphics2D, SurfaceData, int, int, Path2D.Float)::: set fill path y  fill path:::pw->GeneralRenderer->createSolidPixelWriter->ProcessPath->sg2d->getCompClip->new->PixelWriterDrawHandler->fillPath
+SetFillSpansANY#FillSpans(SunGraphics2D, SurfaceData, SpanIterator)::: set fill spans y  fill spans:::pw->GeneralRenderer->createSolidPixelWriter->span->new->intArr->while->si->nextSpan->GeneralRenderer->doSetRect
+SetDrawLineANY#DrawLine(SunGraphics2D, SurfaceData, int, int, int, int)::: set draw line y  draw line:::pw->GeneralRenderer->createSolidPixelWriter->if->GeneralRenderer->sg2d->getCompClip->doDrawLine->else->GeneralRenderer->sg2d->getCompClip->doDrawLine
+SetDrawPolygonsANY#DrawPolygons(SunGraphics2D, SurfaceData, int[], int[], int[], int, int, int, boolean)::: set draw polygons y  draw polygons:::pw->GeneralRenderer->createSolidPixelWriter->off->clip->sg2d->getCompClip->for->i
+SetDrawPathANY#DrawPath(SunGraphics2D, SurfaceData, int, int, Path2D.Float)::: set draw path y  draw path:::pw->GeneralRenderer->createSolidPixelWriter->ProcessPath->sg2d->getCompClip->new->PixelWriterDrawHandler->drawPath
+SetDrawRectANY#DrawRect(SunGraphics2D, SurfaceData, int, int, int, int)::: set draw rect y  draw rect:::pw->GeneralRenderer->createSolidPixelWriter->GeneralRenderer->doDrawRect
+XorFillRectANY#FillRect(SunGraphics2D, SurfaceData, int, int, int, int)::: xor fill rect y  fill rect:::pw->GeneralRenderer->createXorPixelWriter->r->sg2d->getCompClip->getBoundsIntersectionXYWH->GeneralRenderer->r->getLoX->r->getLoY->r->getHiX->r->getHiY->doSetRect
+XorFillPathANY#FillPath(SunGraphics2D, SurfaceData, int, int, Path2D.Float)::: xor fill path y  fill path:::pw->GeneralRenderer->createXorPixelWriter->ProcessPath->sg2d->getCompClip->new->PixelWriterDrawHandler->fillPath
+XorFillSpansANY#FillSpans(SunGraphics2D, SurfaceData, SpanIterator)::: xor fill spans y  fill spans:::pw->GeneralRenderer->createXorPixelWriter->span->new->intArr->while->si->nextSpan->GeneralRenderer->doSetRect
+XorDrawLineANY#DrawLine(SunGraphics2D, SurfaceData, int, int, int, int)::: xor draw line y  draw line:::pw->GeneralRenderer->createXorPixelWriter->if->GeneralRenderer->sg2d->getCompClip->doDrawLine->else->GeneralRenderer->sg2d->getCompClip->doDrawLine
+XorDrawPolygonsANY#DrawPolygons(SunGraphics2D, SurfaceData, int[], int[], int[], int, int, int, boolean)::: xor draw polygons y  draw polygons:::pw->GeneralRenderer->createXorPixelWriter->off->clip->sg2d->getCompClip->for->i
+XorDrawPathANY#DrawPath(SunGraphics2D, SurfaceData, int, int, Path2D.Float)::: xor draw path y  draw path:::pw->GeneralRenderer->createXorPixelWriter->ProcessPath->sg2d->getCompClip->new->PixelWriterDrawHandler->drawPath
+XorDrawRectANY#DrawRect(SunGraphics2D, SurfaceData, int, int, int, int)::: xor draw rect y  draw rect:::pw->GeneralRenderer->createXorPixelWriter->GeneralRenderer->doDrawRect
+XorDrawGlyphListANY#DrawGlyphList(SunGraphics2D, SurfaceData, GlyphList)::: xor draw glyph list y  draw glyph list:::pw->GeneralRenderer->createXorPixelWriter->GeneralRenderer->sg2d->getCompClip->doDrawGlyphList
+XorDrawGlyphListAAANY#DrawGlyphListAA(SunGraphics2D, SurfaceData, GlyphList)::: xor draw glyph list y  draw glyph list a:::pw->GeneralRenderer->createXorPixelWriter->GeneralRenderer->sg2d->getCompClip->doDrawGlyphList
+PixelWriter#setRaster(WritableRaster)::: pixel writer set raster:::
+PixelWriter#writePixel(int, int)::: pixel writer write pixel:::
+SolidPixelWriter#writePixel(int, int)::: solid pixel writer write pixel:::dstRast->setDataElements
+XorPixelWriter#writePixel(int, int)::: xor pixel writer write pixel:::dstPixel->dstRast->getDataElements->xorPixel->dstRast->setDataElements
+XorPixelWriter#xorPixel(Object)::: xor pixel writer xor pixel:::
+XorPixelWriter.ByteData#xorPixel(Object)::: byte data xor pixel:::dstData->for->i
+XorPixelWriter.ShortData#xorPixel(Object)::: short data xor pixel:::dstData->for->i
+XorPixelWriter.IntData#xorPixel(Object)::: int data xor pixel:::dstData->for->i
+XorPixelWriter.FloatData#xorPixel(Object)::: float data xor pixel:::dstData->for->i
+XorPixelWriter.DoubleData#xorPixel(Object)::: double data xor pixel:::dstData->for->i
 GraphicsPrimitive.GeneralBinaryOp#setPrimitives(Blit, Blit, GraphicsPrimitive, Blit):::This method allows the setupGeneralBinaryOp method to set the converters into the General version of the Primitive.:::
 GraphicsPrimitive.GeneralBinaryOp#getSourceType():::These 4 methods are implemented automatically for any GraphicsPrimitive:::
+GraphicsPrimitive.GeneralBinaryOp#getCompositeType()::: general binary op get composite type:::
+GraphicsPrimitive.GeneralBinaryOp#getDestType()::: general binary op get dest type:::
+GraphicsPrimitive.GeneralBinaryOp#getSignature()::: general binary op get signature:::
+GraphicsPrimitive.GeneralBinaryOp#getPrimTypeID()::: general binary op get prim type d:::
 GraphicsPrimitive.GeneralUnaryOp#setPrimitives(Blit, GraphicsPrimitive, Blit):::This method allows the setupGeneralUnaryOp method to set the converters into the General version of the Primitive.:::
 GraphicsPrimitive.GeneralUnaryOp#getCompositeType():::These 3 methods are implemented automatically for any GraphicsPrimitive:::
+GraphicsPrimitive.GeneralUnaryOp#getDestType()::: general unary op get dest type:::
+GraphicsPrimitive.GeneralUnaryOp#getSignature()::: general unary op get signature:::
+GraphicsPrimitive.GeneralUnaryOp#getPrimTypeID()::: general unary op get prim type d:::
+GraphicsPrimitive#makePrimTypeID()::: graphics primitive make prim type d:::if->throw->new->InternalError->return
+GraphicsPrimitive#makeUniqueID(int, SurfaceType, CompositeType, SurfaceType)::: graphics primitive make unique d:::return->dst->getUniqueID->cmp->getUniqueID->src->getUniqueID
 GraphicsPrimitive#getUniqueID():::Gets instance ID of this graphics primitive:::return
+GraphicsPrimitive#getSignature()::: graphics primitive get signature:::return
 GraphicsPrimitive#getPrimTypeID():::Gets unique id for this GraphicsPrimitive type:::return
+GraphicsPrimitive#getNativePrim()::: graphics primitive get native prim:::return
+GraphicsPrimitive#getSourceType()::: graphics primitive get source type:::return
+GraphicsPrimitive#getCompositeType()::: graphics primitive get composite type:::return
+GraphicsPrimitive#getDestType()::: graphics primitive get dest type:::return
 GraphicsPrimitive#satisfies(String, SurfaceType, CompositeType, SurfaceType):::Return true if this primitive can be used for the given signature surfaces, and composite.:::if->return->while->if->return->if->srctype->equals->break->srctype->getSuperType->while->if->return->if->comptype->equals->break->comptype->getSuperType->while->if->return->if->dsttype->equals->break->dsttype->getSuperType->return
+GraphicsPrimitive#satisfiesSameAs(GraphicsPrimitive)::: graphics primitive satisfies same as:::return->sourceType->equals->compositeType->equals->destType->equals
+GraphicsPrimitive#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: graphics primitive make primitive:::
+GraphicsPrimitive#traceWrap()::: graphics primitive trace wrap:::
+GraphicsPrimitive#tracingEnabled()::: graphics primitive tracing enabled:::return
+GraphicsPrimitive#getTraceOutputFile()::: graphics primitive get trace output file:::if->if->o->AccessController->new->PrivilegedAction<FileOutputStream>->doPrivileged->if->new->PrintStream->else->else->return
+GraphicsPrimitive.TraceReporter#setShutdownHook()::: trace reporter set shutdown hook:::AccessController->t->new->TraceReporter->thread->ThreadGroupUtils->getRootThreadGroup->new->Thread->thread->setContextClassLoader->Runtime->getRuntime->addShutdownHook->return->doPrivileged
+GraphicsPrimitive.TraceReporter#run()::: trace reporter run:::ps->getTraceOutputFile->iterator->traceMap->entrySet->iterator->total->numprims->while->iterator->hasNext->me->iterator->next->prim->me->getKey->count->me->getValue->if->ps->print->else->ps->print->ps->println->if->ps->println->else->if->ps->println
+GraphicsPrimitive#tracePrimitive(Object)::: graphics primitive trace primitive:::if->if->new->HashMap<>->TraceReporter->setShutdownHook->o->traceMap->get->if->new->intArr->traceMap->put->if->ps->getTraceOutputFile->if->ps->System->currentTimeMillis->print->ps->println
+GraphicsPrimitive#setupGeneralBinaryOp(GeneralBinaryOp)::: graphics primitive setup general binary op:::primID->gbo->getPrimTypeID->methodSignature->gbo->getSignature->srctype->gbo->getSourceType->comptype->gbo->getCompositeType->dsttype->gbo->getDestType->convertsrc->convertdst->convertres->performop->createConverter->GraphicsPrimitiveMgr->locatePrim->if->else->getGeneralOp->if->throw->new->InternalError->createConverter->createConverter->gbo->setPrimitives
+GraphicsPrimitive#setupGeneralUnaryOp(GeneralUnaryOp)::: graphics primitive setup general unary op:::primID->guo->getPrimTypeID->methodSignature->guo->getSignature->comptype->guo->getCompositeType->dsttype->guo->getDestType->convertdst->createConverter->performop->getGeneralOp->convertres->createConverter->if->throw->new->InternalError->guo->setPrimitives
+GraphicsPrimitive#createConverter(SurfaceType, SurfaceType)::: graphics primitive create converter:::if->srctype->equals->return->cv->Blit->getFromCache->if->throw->new->InternalError->return
+GraphicsPrimitive#convertFrom(Blit, SurfaceData, int, int, int, int, SurfaceData)::: graphics primitive convert from:::return->convertFrom
+GraphicsPrimitive#convertFrom(Blit, SurfaceData, int, int, int, int, SurfaceData, int)::: graphics primitive convert from:::if->r->dstData->getBounds->if->if->dstBI->new->BufferedImage->BufImgSurfaceData->createData->ob->Blit->return
+GraphicsPrimitive#convertTo(Blit, SurfaceData, SurfaceData, Region, int, int, int, int)::: graphics primitive convert to:::if->ob->Blit
+GraphicsPrimitive#getGeneralOp(int, CompositeType)::: graphics primitive get general op:::return->GraphicsPrimitiveMgr->locatePrim
+GraphicsPrimitive#simplename(Field[], Object)::: graphics primitive simplename:::for->i->return->o->toString
+GraphicsPrimitive#simplename(SurfaceType)::: graphics primitive simplename:::return->getDeclaredFields->simplename
+GraphicsPrimitive#simplename(CompositeType)::: graphics primitive simplename:::return->getDeclaredFields->simplename
+GraphicsPrimitive#toString()::: graphics primitive to string:::if->sig->index->sig->indexOf->if->sig->substring->getClass->getName->simplename->simplename->simplename->return
+GraphicsPrimitiveMgr#initIDs(Class, Class, Class, Class, Class, Class, Class, Class, Class, Class, Class)::: graphics primitive mgr init ds:::
+GraphicsPrimitiveMgr#registerNativeLoops()::: graphics primitive mgr register native loops:::
+GraphicsPrimitiveMgr#register(GraphicsPrimitive[])::: graphics primitive mgr register:::devCollection->oldSize->newSize->if->writeLog->for->i->if->temp->new->GraphicsPrimitiveArr->if->System->arraycopy->System->arraycopy
+GraphicsPrimitiveMgr#registerGeneral(GraphicsPrimitive)::: graphics primitive mgr register general:::if->new->GraphicsPrimitiveArr->return->len->newGen->new->GraphicsPrimitiveArr->System->arraycopy
+GraphicsPrimitiveMgr#locate(int, SurfaceType)::: graphics primitive mgr locate:::return->locate
+GraphicsPrimitiveMgr#locate(int, SurfaceType, CompositeType, SurfaceType)::: graphics primitive mgr locate:::prim->locatePrim->if->locateGeneral->if->prim->makePrimitive->if->prim->traceWrap->return
+GraphicsPrimitiveMgr#locatePrim(int, SurfaceType, CompositeType, SurfaceType)::: graphics primitive mgr locate prim:::src->dst->cmp->prim->spec->new->PrimitiveSpec->for->dst->getSuperType->return
+GraphicsPrimitiveMgr#locateGeneral(int)::: graphics primitive mgr locate general:::if->return->for->i->return
+GraphicsPrimitiveMgr#locate(PrimitiveSpec)::: graphics primitive mgr locate:::if->if->for->i->Arrays->sort->devCollection->if->return->index->Arrays->binarySearch->if->prim->if->instantiate->if->writeLog->if->writeLog->return->if->writeLog->writeLog->return
+GraphicsPrimitiveMgr#writeLog(String)::: graphics primitive mgr write log:::if->println
+GraphicsPrimitiveMgr#testPrimitiveInstantiation()::: graphics primitive mgr test primitive instantiation:::testPrimitiveInstantiation
+GraphicsPrimitiveMgr#testPrimitiveInstantiation(boolean)::: graphics primitive mgr test primitive instantiation:::resolved->unresolved->prims->for->j->println->println->println
+GraphicsPrimitiveMgr#main(String[])::: graphics primitive mgr main:::if->Arrays->sort->testPrimitiveInstantiation
+GraphicsPrimitiveProxy#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: graphics primitive proxy make primitive:::throw->new->InternalError
+GraphicsPrimitiveProxy#instantiate()::: graphics primitive proxy instantiate:::name->owner->getName->getPackageName->try->clazz->Class->forName->p->clazz->getDeclaredConstructor->newInstance->if->satisfiesSameAs->throw->new->RuntimeException->return->catch->throw->ex->toString->new->RuntimeException->finally
+GraphicsPrimitiveProxy#getPackageName(String)::: graphics primitive proxy get package name:::lastDotIdx->className->lastIndexOf->if->return->return->className->substring
+GraphicsPrimitiveProxy#traceWrap()::: graphics primitive proxy trace wrap:::return->instantiate->traceWrap
+MaskBlit#locate(SurfaceType, CompositeType, SurfaceType)::: mask blit locate:::return->GraphicsPrimitiveMgr->locate
+MaskBlit#getFromCache(SurfaceType, CompositeType, SurfaceType)::: mask blit get from cache:::o->blitcache->get->if->return->blit->locate->if->println->println->println->println->else->blitcache->put->return
 MaskBlit#MaskBlit(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int, byte[], int, int):::All MaskBlit implementors must have this invoker method:::
+MaskBlit#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: mask blit make primitive:::if->equals->throw->new->InternalError->ob->new->General->setupGeneralBinaryOp->return
+MaskBlit.General#setPrimitives(Blit, Blit, GraphicsPrimitive, Blit)::: general set primitives:::
+MaskBlit.General#MaskBlit(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int, byte[], int, int)::: general  mask blit:::src->dst->opclip->sx->sy->dx->dy->if->else->cachedSrc->if->srcTmp->get->convertFrom->if->new->WeakReference<>->if->else->cachedDst->if->dstTmp->get->convertFrom->if->new->WeakReference<>->performop->MaskBlit->if->convertTo
+MaskBlit#traceWrap()::: mask blit trace wrap:::return->new->TraceMaskBlit
+MaskBlit.TraceMaskBlit#traceWrap()::: trace mask blit trace wrap:::return
+MaskBlit.TraceMaskBlit#MaskBlit(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, int, int, byte[], int, int)::: trace mask blit  mask blit:::tracePrimitive->target->MaskBlit
+MaskFill#locate(SurfaceType, CompositeType, SurfaceType)::: mask fill locate:::return->GraphicsPrimitiveMgr->locate
+MaskFill#locatePrim(SurfaceType, CompositeType, SurfaceType)::: mask fill locate prim:::return->GraphicsPrimitiveMgr->locatePrim
+MaskFill#getFromCache(SurfaceType, CompositeType, SurfaceType)::: mask fill get from cache:::o->fillcache->get->if->return->fill->locatePrim->if->fillcache->put->return
 MaskFill#MaskFill(SunGraphics2D, SurfaceData, Composite, int, int, int, int, byte[], int, int):::All MaskFill implementors must have this invoker method:::
+MaskFill#FillAAPgram(SunGraphics2D, SurfaceData, Composite, double, double, double, double, double, double)::: mask fill  fill pgram:::
+MaskFill#DrawAAPgram(SunGraphics2D, SurfaceData, Composite, double, double, double, double, double, double, double, double)::: mask fill  draw pgram:::
+MaskFill#canDoParallelograms()::: mask fill can do parallelograms:::return->getNativePrim
+MaskFill#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: mask fill make primitive:::if->equals->equals->if->equals->throw->new->InternalError->else->return->new->General->else->throw->new->InternalError
+MaskFill.General#MaskFill(SunGraphics2D, SurfaceData, Composite, int, int, int, int, byte[], int, int)::: general  mask fill:::dstBI->new->BufferedImage->tmpData->BufImgSurfaceData->createData->clip->pixel->tmpData->sg2d->getColor->pixelFor->fillop->FillRect->maskop->MaskBlit
+MaskFill#traceWrap()::: mask fill trace wrap:::return->new->TraceMaskFill
+MaskFill.TraceMaskFill#traceWrap()::: trace mask fill trace wrap:::return
+MaskFill.TraceMaskFill#MaskFill(SunGraphics2D, SurfaceData, Composite, int, int, int, int, byte[], int, int)::: trace mask fill  mask fill:::tracePrimitive->target->MaskFill
+MaskFill.TraceMaskFill#FillAAPgram(SunGraphics2D, SurfaceData, Composite, double, double, double, double, double, double)::: trace mask fill  fill pgram:::tracePrimitive->target->FillAAPgram
+MaskFill.TraceMaskFill#DrawAAPgram(SunGraphics2D, SurfaceData, Composite, double, double, double, double, double, double, double, double)::: trace mask fill  draw pgram:::tracePrimitive->target->DrawAAPgram
+MaskFill.TraceMaskFill#canDoParallelograms()::: trace mask fill can do parallelograms:::return->target->canDoParallelograms
+ProcessPath.DrawHandler#setBounds(int, int, int, int)::: draw handler set bounds:::
+ProcessPath.DrawHandler#setBounds(int, int, int, int, int)::: draw handler set bounds:::setBounds
+ProcessPath.DrawHandler#adjustBounds(int, int, int, int)::: draw handler adjust bounds:::if->if->if->if->setBounds
+ProcessPath.DrawHandler#drawLine(int, int, int, int)::: draw handler draw line:::
+ProcessPath.DrawHandler#drawPixel(int, int)::: draw handler draw pixel:::
+ProcessPath.DrawHandler#drawScanline(int, int, int)::: draw handler draw scanline:::
+ProcessPath.EndSubPathHandler#processEndSubPath()::: end sub path handler process end sub path:::
+ProcessPath.ProcessHandler#processFixedLine(int, int, int, int, int[], boolean, boolean)::: process handler process fixed line:::
+ProcessPath#fillPath(DrawHandler, Path2D.Float, int, int)::: process path fill path:::fhnd->new->FillProcessHandler->if->doProcessPath->return->p2df->getWindingRule->FillPolygon->return
+ProcessPath#drawPath(DrawHandler, EndSubPathHandler, Path2D.Float, int, int)::: process path draw path:::return->new->DrawProcessHandler->doProcessPath
+ProcessPath#drawPath(DrawHandler, Path2D.Float, int, int)::: process path draw path:::return->new->DrawProcessHandler->doProcessPath
+ProcessPath#CLIP(float, float, float, float, double)::: process path  p:::return
+ProcessPath#CLIP(int, int, int, int, double)::: process path  p:::return
+ProcessPath#IS_CLIPPED(int)::: process path  s_ d:::return
+ProcessPath#TESTANDCLIP(float, float, float[], int, int, int, int)::: process path  p:::t->res->if->if->if->return->else->if->return->CLIP->return
+ProcessPath#TESTANDCLIP(int, int, int[], int, int, int, int)::: process path  p:::t->res->if->if->if->return->else->if->return->CLIP->return
+ProcessPath#CLIPCLAMP(float, float, float[], int, int, int, int, int, int)::: process path  p:::res->TESTANDCLIP->if->else->if->else->if->if->else->return
+ProcessPath#CLIPCLAMP(int, int, int[], int, int, int, int, int, int)::: process path  p:::res->TESTANDCLIP->if->else->if->else->if->if->else->return
+ProcessPath.DrawProcessHandler#processEndSubPath()::: draw process handler process end sub path:::processESP->processEndSubPath
+ProcessPath.DrawProcessHandler#PROCESS_LINE(int, int, int, int, boolean, int[])::: draw process handler  s_ e:::X0->Y0->X1->Y1->if->if->return->if->dhnd->drawPixel->else->if->dhnd->drawPixel->return->if->if->dhnd->drawPixel->dhnd->drawLine->if->if->if->return->dhnd->drawPixel
+ProcessPath.DrawProcessHandler#PROCESS_POINT(int, int, boolean, int[])::: draw process handler  s_ t:::_X->_Y->if->return->if->dhnd->drawPixel->else->if->dhnd->drawPixel
+ProcessPath.DrawProcessHandler#processFixedLine(int, int, int, int, int[], boolean, boolean)::: draw process handler process fixed line:::c->rx1->ry1->rx2->ry2->if->if->PROCESS_POINT->return->if->else->dx->dy->fx1->fy1->fx2->fy2->if->else->bx1->by1->cross->if->else->if->else->bx2->by2->cross->if->else->PROCESS_LINE
+ProcessPath#DrawMonotonicQuad(ProcessHandler, float[], boolean, int[])::: process path  draw monotonic quad:::x0->y0->xe->ye->px->py->count->shift->ax->ay->bx->by->ddpx->ddpy->dpx->dpy->x1->y1->x2->y2->maxDD->Math->Math->abs->Math->abs->max->dx->dy->x0w->y0w->while->while->if->if->hnd->processFixedLine->hnd->processFixedLine
+ProcessPath#ProcessMonotonicQuad(ProcessHandler, float[], int[])::: process path  process monotonic quad:::coords1->new->floatArr->tx->ty->xMin->yMin->xMax->yMax->for->i->if->if->return->else->if->return->if->if->ProcessMonotonicQuad->ProcessMonotonicQuad->else->DrawMonotonicQuad
+ProcessPath#ProcessQuad(ProcessHandler, float[], int[])::: process path  process quad:::params->new->doubleArr->cnt->param->if->ax->if->bx->if->if->ay->if->by->if->if->if->else->if->else->switch->break->ProcessFirstMonotonicPartOfQuad->break->ProcessFirstMonotonicPartOfQuad->if->ProcessFirstMonotonicPartOfQuad->break->ProcessMonotonicQuad
+ProcessPath#ProcessFirstMonotonicPartOfQuad(ProcessHandler, float[], int[], float)::: process path  process first monotonic part of quad:::coords1->new->floatArr->ProcessMonotonicQuad
+ProcessPath#DrawMonotonicCubic(ProcessHandler, float[], boolean, int[])::: process path  draw monotonic cubic:::x0->y0->xe->ye->px->py->incStepBnd->decStepBnd->count->shift->ax->ay->bx->by->cx->cy->dddpx->dddpy->ddpx->ddpy->dpx->dpy->x1->y1->x2->y2->x0w->y0w->dx->dy->while->while->Math->abs->Math->abs->while->Math->abs->Math->abs->if->if->if->hnd->processFixedLine->else->hnd->processFixedLine
+ProcessPath#ProcessMonotonicCubic(ProcessHandler, float[], int[])::: process path  process monotonic cubic:::coords1->new->floatArr->tx->ty->xMin->xMax->yMin->yMax->for->i->if->if->return->else->if->return->if->if->ProcessMonotonicCubic->ProcessMonotonicCubic->else->DrawMonotonicCubic
+ProcessPath#ProcessCubic(ProcessHandler, float[], int[])::: process path  process cubic:::params->new->doubleArr->eqn->new->doubleArr->res->new->doubleArr->cnt->if->nr->QuadCurve2D->solveQuadratic->for->i->if->nr->QuadCurve2D->solveQuadratic->for->i->if->Arrays->sort->ProcessFirstMonotonicPartOfCubic->for->i->ProcessMonotonicCubic
+ProcessPath#ProcessFirstMonotonicPartOfCubic(ProcessHandler, float[], int[], float)::: process path  process first monotonic part of cubic:::coords1->new->floatArr->tx->ty->ProcessMonotonicCubic
+ProcessPath#ProcessLine(ProcessHandler, float, float, float, float, int[])::: process path  process line:::xMin->yMin->xMax->yMax->X1->Y1->X2->Y2->X3->Y3->res->clipped->x3->y3->c->new->floatArr->lastClipped->TESTANDCLIP->if->return->IS_CLIPPED->TESTANDCLIP->if->return->IS_CLIPPED->if->TESTANDCLIP->if->return->IS_CLIPPED->TESTANDCLIP->if->return->IS_CLIPPED->hnd->processFixedLine->else->CLIPCLAMP->if->hnd->processFixedLine->else->if->return->CLIPCLAMP->hnd->processFixedLine->if->hnd->processFixedLine
+ProcessPath#doProcessPath(ProcessHandler, Path2D.Float, float, float)::: process path do process path:::coords->new->floatArr->tCoords->new->floatArr->closeCoord->new->floatArr->firstCoord->new->floatArr->pixelInfo->new->intArr->subpathStarted->skip->lastX->lastY->adjustBounds->if->pi->p2df->getPathIterator->while->pi->isDone->switch->pi->currentSegment->if->if->if->ProcessLine->hnd->processEndSubPath->if->else->break->if->if->else->ProcessLine->break->if->if->else->if->ProcessQuad->else->ProcessLine->break->if->if->else->if->ProcessCubic->else->ProcessLine->break->if->if->ProcessLine->hnd->processEndSubPath->break->pi->next->if->if->if->ProcessLine->hnd->processEndSubPath->return
+ProcessPath.FillData#addPoint(int, int, boolean)::: fill data add point:::if->plgPnts->size->else->plgPnts->new->Point->add
+ProcessPath.FillData#isEmpty()::: fill data is empty:::return->plgPnts->size
+ProcessPath.FillData#isEnded()::: fill data is ended:::return->plgPnts->plgPnts->size->get
+ProcessPath.FillData#setEnded()::: fill data set ended:::return->plgPnts->plgPnts->size->get
+ProcessPath.ActiveEdgeList#isEmpty()::: active edge list is empty:::return
+ProcessPath.ActiveEdgeList#insert(Point, int)::: active edge list insert:::np->X1->Y1->X2->Y2->ne->if->return->else->dX->dY->stepx->x0->dy->dir->if->else->if->else->new->Edge->if
+ProcessPath.ActiveEdgeList#delete(Edge)::: active edge list delete:::prevp->nextp->if->else->if
+ProcessPath.ActiveEdgeList#sort():::Bubble sorting in the ascending order of the linked list:::p->q->r->s->temp->wasSwap->while->while->if->if->else->else->if->while
+ProcessPath#FillPolygon(FillProcessHandler, int)::: process path  fill polygon:::k->y->n->drawing->active->rightBnd->fd->yMin->yMax->hashSize->hashOffset->counter->counterMask->pntOffset->pnts->pnts->size->if->return->yHash->new->PointArr->curpt->pnts->get->for->i->ept->pnts->get->curHashInd->activeList->new->ActiveEdgeList->for
+ProcessPath.FillProcessHandler#processFixedLine(int, int, int, int, int[], boolean, boolean)::: fill process handler process fixed line:::outXMin->outXMax->outYMin->outYMax->res->if->lastClipped->c->new->intArr->TESTANDCLIP->if->return->TESTANDCLIP->if->return->IS_CLIPPED->CLIPCLAMP->if->processFixedLine->else->if->return->CLIPCLAMP->processFixedLine->if->processFixedLine->return->if->fd->isEmpty->fd->isEnded->fd->addPoint->fd->addPoint->if->fd->setEnded
+ProcessPath.FillProcessHandler#processEndSubPath()::: fill process handler process end sub path:::if->fd->isEmpty->fd->setEnded
+RenderCache.Entry#matches(SurfaceType, CompositeType, SurfaceType)::: entry matches:::return
+RenderCache.Entry#getValue()::: entry get value:::return
+RenderCache#get(SurfaceType, CompositeType, SurfaceType)::: render cache get:::max->for->i->return
+RenderCache#put(SurfaceType, CompositeType, SurfaceType, Object)::: render cache put:::e->new->Entry->num->System->arraycopy
+ScaledBlit#locate(SurfaceType, CompositeType, SurfaceType)::: scaled blit locate:::return->GraphicsPrimitiveMgr->locate
+ScaledBlit#getFromCache(SurfaceType, CompositeType, SurfaceType)::: scaled blit get from cache:::o->blitcache->get->if->return->blit->locate->if->else->blitcache->put->return
+ScaledBlit#Scale(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, double, double, double, double)::: scaled blit  scale:::
+ScaledBlit#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: scaled blit make primitive:::return
+ScaledBlit#traceWrap()::: scaled blit trace wrap:::return->new->TraceScaledBlit
+ScaledBlit.TraceScaledBlit#traceWrap()::: trace scaled blit trace wrap:::return
+ScaledBlit.TraceScaledBlit#Scale(SurfaceData, SurfaceData, Composite, Region, int, int, int, int, double, double, double, double)::: trace scaled blit  scale:::tracePrimitive->target->Scale
 SurfaceType#deriveSubType(String):::Return a new SurfaceType object which uses this object as its more general "supertype" descriptor:::return->new->SurfaceType
+SurfaceType#deriveSubType(String, PixelConverter)::: surface type derive sub type:::return->new->SurfaceType
+SurfaceType#makeUniqueID(String)::: surface type make unique d:::i->surfaceUIDMap->get->if->if->throw->new->InternalError->Integer->valueOf->surfaceUIDMap->put->return->i->intValue
+SurfaceType#getUniqueID()::: surface type get unique d:::return
+SurfaceType#getDescriptor()::: surface type get descriptor:::return
+SurfaceType#getSuperType()::: surface type get super type:::return
+SurfaceType#getPixelConverter()::: surface type get pixel converter:::return
+SurfaceType#pixelFor(int, ColorModel)::: surface type pixel for:::return->pixelConverter->rgbToPixel
+SurfaceType#rgbFor(int, ColorModel)::: surface type rgb for:::return->pixelConverter->pixelToRgb
+SurfaceType#getAlphaMask()::: surface type get alpha mask:::return->pixelConverter->getAlphaMask
+SurfaceType#hashCode()::: surface type hash code:::return->desc->hashCode
+SurfaceType#equals(Object)::: surface type equals:::if->return->return
+SurfaceType#toString()::: surface type to string:::return
+TransformBlit#locate(SurfaceType, CompositeType, SurfaceType)::: transform blit locate:::return->GraphicsPrimitiveMgr->locate
+TransformBlit#getFromCache(SurfaceType, CompositeType, SurfaceType)::: transform blit get from cache:::o->blitcache->get->if->return->blit->locate->if->else->blitcache->put->return
+TransformBlit#Transform(SurfaceData, SurfaceData, Composite, Region, AffineTransform, int, int, int, int, int, int, int)::: transform blit  transform:::
+TransformBlit#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: transform blit make primitive:::return
+TransformBlit#traceWrap()::: transform blit trace wrap:::return->new->TraceTransformBlit
+TransformBlit.TraceTransformBlit#traceWrap()::: trace transform blit trace wrap:::return
+TransformBlit.TraceTransformBlit#Transform(SurfaceData, SurfaceData, Composite, Region, AffineTransform, int, int, int, int, int, int, int)::: trace transform blit  transform:::tracePrimitive->target->Transform
+TransformHelper#locate(SurfaceType)::: transform helper locate:::return->GraphicsPrimitiveMgr->locate
+TransformHelper#getFromCache(SurfaceType)::: transform helper get from cache:::o->helpercache->get->if->return->helper->locate->if->else->helpercache->put->return
+TransformHelper#Transform(MaskBlit, SurfaceData, SurfaceData, Composite, Region, AffineTransform, int, int, int, int, int, int, int, int, int, int[], int, int)::: transform helper  transform:::
+TransformHelper#makePrimitive(SurfaceType, CompositeType, SurfaceType)::: transform helper make primitive:::return
+TransformHelper#traceWrap()::: transform helper trace wrap:::return->new->TraceTransformHelper
+TransformHelper.TraceTransformHelper#traceWrap()::: trace transform helper trace wrap:::return
+TransformHelper.TraceTransformHelper#Transform(MaskBlit, SurfaceData, SurfaceData, Composite, Region, AffineTransform, int, int, int, int, int, int, int, int, int, int[], int, int)::: trace transform helper  transform:::tracePrimitive->target->Transform
+XORComposite#getXorColor()::: composite get xor color:::return
+XORComposite#getXorPixel()::: composite get xor pixel:::return
+XORComposite#getAlphaMask()::: composite get alpha mask:::return
+XORComposite#createContext(ColorModel, ColorModel, RenderingHints)::: composite create context:::return->new->SunCompositeContext

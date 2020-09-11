@@ -1,15 +1,71 @@
+BMPSet#contains(int)::: set contains:::if->return->else->if->return->else->if->lead->twoBits->if->return->else->return->containsSlow->else->if->return->containsSlow->else->return
 BMPSet#span(CharSequence, int, SpanCondition, OutputInt):::Span the initial substring for which each character c has spanCondition==contains(c):::c->c2->i->limit->s->length->numSupplementary->if->while->s->charAt->if->if->break->else->if->if->break->else->if->s->charAt->lead->twoBits->if->if->break->else->if->containsSlow->break->else->supplementary->UCharacterProperty->getRawSupplementary->if->containsSlow->break->else->while->s->charAt->if->if->break->else->if->if->break->else->if->s->charAt->lead->twoBits->if->if->break->else->if->containsSlow->break->else->supplementary->UCharacterProperty->getRawSupplementary->if->containsSlow->break->if->spanLength->return
 BMPSet#spanBack(CharSequence, int, SpanCondition):::Symmetrical with span():::c->c2->if->for->else->for->return
+BMPSet#set32x64Bits(int[], int, int):::Set bits in a bit rectangle in "vertical" bit organization:::lead->trail->bits->if->return->limitLead->limitTrail->if->while->else->if->do->while->if->if->for->for
+BMPSet#initBits()::: set init bits:::start->limit->listIndex->do->if->else->if->break->do->while->while->while->set32x64Bits->if->break->if->else->minStart->while->if->if->if->if->if->if->set32x64Bits->if->if->break->if->else
+BMPSet#findCodePoint(int, int, int):::Same as UnicodeSet.findCodePoint(int c) except that the binary search is restricted for finding code points in a certain range:::if->return->if->return->for->return
+BMPSet#containsSlow(int, int, int)::: set contains slow:::return->findCodePoint
+CharacterIteratorWrapper#current()::: character iterator wrapper current:::c->iterator->current->if->return->return
+CharacterIteratorWrapper#getLength()::: character iterator wrapper get length:::return->iterator->getEndIndex->iterator->getBeginIndex
+CharacterIteratorWrapper#getIndex()::: character iterator wrapper get index:::return->iterator->getIndex
+CharacterIteratorWrapper#next()::: character iterator wrapper next:::i->iterator->current->iterator->next->if->return->return
+CharacterIteratorWrapper#previous()::: character iterator wrapper previous:::i->iterator->previous->if->return->return
+CharacterIteratorWrapper#setIndex(int)::: character iterator wrapper set index:::iterator->setIndex
+CharacterIteratorWrapper#getText(char[], int)::: character iterator wrapper get text:::length->iterator->getEndIndex->iterator->getBeginIndex->currentIndex->iterator->getIndex->if->throw->Integer->toString->new->IndexOutOfBoundsException->for->ch->iterator->first->iterator->next->iterator->setIndex->return
 CharacterIteratorWrapper#clone():::Creates a clone of this iterator:::try->result->super->clone->clone->return->catch->return->finally
 CharTrie#getCodePointValue(int):::Gets the value associated with the codepoint:::offset->if->return->getCodePointOffset->return
 CharTrie#getLeadValue(char):::Gets the value to the data which this lead surrogate character points to:::return->getLeadOffset
 CharTrie#unserialize(InputStream):::Parses the input stream and stores its trie content into a index and data array:::input->new->DataInputStream->indexDataLength->new->charArr->for->i
 CharTrie#getSurrogateOffset(char, char):::Gets the offset to the data which the surrogate pair points to.:::if->throw->new->NullPointerException->offset->m_dataManipulate_->getLeadValue->getFoldingOffset->if->return->getRawOffset->return
+FilteredNormalizer2#normalize(CharSequence, StringBuilder)::: filtered normalizer2 normalize:::if->throw->new->IllegalArgumentException->dest->setLength->normalize->return
+FilteredNormalizer2#normalize(CharSequence, Appendable)::: filtered normalizer2 normalize:::if->throw->new->IllegalArgumentException->return->normalize
+FilteredNormalizer2#normalizeSecondAndAppend(StringBuilder, CharSequence)::: filtered normalizer2 normalize second and append:::return->normalizeSecondAndAppend
+FilteredNormalizer2#append(StringBuilder, CharSequence)::: filtered normalizer2 append:::return->normalizeSecondAndAppend
+FilteredNormalizer2#getDecomposition(int)::: filtered normalizer2 get decomposition:::return->set->contains->norm2->getDecomposition
+FilteredNormalizer2#getCombiningClass(int)::: filtered normalizer2 get combining class:::return->set->contains->norm2->getCombiningClass
+FilteredNormalizer2#isNormalized(CharSequence)::: filtered normalizer2 is normalized:::spanCondition->for->prevSpanLimit->s->length->return
+FilteredNormalizer2#spanQuickCheckYes(CharSequence)::: filtered normalizer2 span quick check yes:::spanCondition->for->prevSpanLimit->s->length->return->s->length
+FilteredNormalizer2#hasBoundaryBefore(int)::: filtered normalizer2 has boundary before:::return->set->contains->norm2->hasBoundaryBefore
+FilteredNormalizer2#normalize(CharSequence, Appendable, UnicodeSet.SpanCondition)::: filtered normalizer2 normalize:::tempDest->new->StringBuilder->try->for->prevSpanLimit->src->length->catch->throw->e->toString->new->InternalError->finally->return
+FilteredNormalizer2#normalizeSecondAndAppend(StringBuilder, CharSequence, boolean)::: filtered normalizer2 normalize second and append:::if->throw->new->IllegalArgumentException->if->first->length->if->return->normalize->else->return->first->append->prefixLimit->set->span->if->prefix->second->subSequence->suffixStart->set->spanBack->if->if->norm2->normalizeSecondAndAppend->else->norm2->append->else->middle->first->first->length->subSequence->new->StringBuilder->if->norm2->normalizeSecondAndAppend->else->norm2->append->first->delete->append->if->second->length->rest->second->second->length->subSequence->if->normalize->else->first->append->return
+ICUBinary.IsAcceptable#isDataVersionAcceptable(byte[])::: is acceptable is data version acceptable:::return
 ICUBinary.Authenticate#isDataVersionAcceptable(byte[]):::Method used in ICUBinary.readHeader() to provide data format authentication.:::
 ICUBinary#getRequiredData(String):::Loads an ICU binary data file and returns it as a ByteBuffer:::root->try->is->AccessController->new->PrivilegedAction<InputStream>->doPrivileged->b->new->BufferedInputStream->inputStream->new->DataInputStream->bb->new->byteArr->n->inputStream->read->bytes->ByteBuffer->wrap->return->catch->throw->new->UncheckedIOException->finally
 ICUBinary#readHeaderAndDataVersion(ByteBuffer, int, Authenticate):::Same as readHeader(), but returns a VersionInfo rather than a compact int.:::return->readHeader->getVersionInfoFromCompactInt
+ICUBinary#readHeader(InputStream, byte[], Authenticate)::: binary read header:::input->new->DataInputStream->headersize->input->readChar->readcount->magic1->input->readByte->magic2->input->readByte->if->throw->new->IOException->input->readChar->input->readChar->bigendian->input->readByte->charset->input->readByte->charsize->input->readByte->input->readByte->dataFormatID->new->byteArr->input->readFully->dataVersion->new->byteArr->input->readFully->unicodeVersion->new->byteArr->input->readFully->if->throw->new->IOException->input->skipBytes->if->Arrays->equals->authenticate->isDataVersionAcceptable->throw->new->IOException->return
 ICUBinary#readHeader(ByteBuffer, int, Authenticate):::Reads an ICU data header, checks the data format, and returns the data version:::magic1->bytes->get->magic2->bytes->get->if->throw->new->IOException->isBigEndian->bytes->get->charsetFamily->bytes->get->sizeofUChar->bytes->get->if->throw->new->IOException->bytes->order->headerSize->bytes->getChar->sizeofUDataInfo->bytes->getChar->if->throw->new->IOException->formatVersion->new->byteArr->bytes->get->bytes->get->bytes->get->bytes->get->if->bytes->get->bytes->get->bytes->get->bytes->get->authenticate->isDataVersionAcceptable->throw->String->bytes->get->bytes->get->bytes->get->bytes->get->format->new->IOException->bytes->position->return->bytes->get->bytes->get->bytes->get->bytes->get
+ICUBinary#skipBytes(ByteBuffer, int)::: binary skip bytes:::if->bytes->bytes->position->position
 ICUBinary#getVersionInfoFromCompactInt(int):::Returns a VersionInfo for the bytes in the compact version integer.:::return->VersionInfo->getInstance
+Norm2AllModes.NoopNormalizer2#normalize(CharSequence, StringBuilder)::: noop normalizer2 normalize:::if->dest->setLength->return->dest->append->else->throw->new->IllegalArgumentException
+Norm2AllModes.NoopNormalizer2#normalize(CharSequence, Appendable)::: noop normalizer2 normalize:::if->try->return->dest->append->catch->throw->e->toString->new->InternalError->finally->else->throw->new->IllegalArgumentException
+Norm2AllModes.NoopNormalizer2#normalizeSecondAndAppend(StringBuilder, CharSequence)::: noop normalizer2 normalize second and append:::if->return->first->append->else->throw->new->IllegalArgumentException
+Norm2AllModes.NoopNormalizer2#append(StringBuilder, CharSequence)::: noop normalizer2 append:::if->return->first->append->else->throw->new->IllegalArgumentException
+Norm2AllModes.NoopNormalizer2#getDecomposition(int)::: noop normalizer2 get decomposition:::return
+Norm2AllModes.NoopNormalizer2#isNormalized(CharSequence)::: noop normalizer2 is normalized:::return
+Norm2AllModes.NoopNormalizer2#spanQuickCheckYes(CharSequence)::: noop normalizer2 span quick check yes:::return->s->length
+Norm2AllModes.NoopNormalizer2#hasBoundaryBefore(int)::: noop normalizer2 has boundary before:::return
+Norm2AllModes.Normalizer2WithImpl#normalize(CharSequence, StringBuilder)::: normalizer2 with impl normalize:::if->throw->new->IllegalArgumentException->dest->setLength->src->length->new->NormalizerImpl.ReorderingBuffer->normalize->return
+Norm2AllModes.Normalizer2WithImpl#normalize(CharSequence, Appendable)::: normalizer2 with impl normalize:::if->throw->new->IllegalArgumentException->buffer->src->length->new->NormalizerImpl.ReorderingBuffer->normalize->buffer->flush->return
+Norm2AllModes.Normalizer2WithImpl#normalize(CharSequence, NormalizerImpl.ReorderingBuffer)::: normalizer2 with impl normalize:::
+Norm2AllModes.Normalizer2WithImpl#normalizeSecondAndAppend(StringBuilder, CharSequence)::: normalizer2 with impl normalize second and append:::return->normalizeSecondAndAppend
+Norm2AllModes.Normalizer2WithImpl#append(StringBuilder, CharSequence)::: normalizer2 with impl append:::return->normalizeSecondAndAppend
+Norm2AllModes.Normalizer2WithImpl#normalizeSecondAndAppend(StringBuilder, CharSequence, boolean)::: normalizer2 with impl normalize second and append:::if->throw->new->IllegalArgumentException->first->length->second->length->new->NormalizerImpl.ReorderingBuffer->normalizeAndAppend->return
+Norm2AllModes.Normalizer2WithImpl#normalizeAndAppend(CharSequence, boolean, NormalizerImpl.ReorderingBuffer)::: normalizer2 with impl normalize and append:::
+Norm2AllModes.Normalizer2WithImpl#getDecomposition(int)::: normalizer2 with impl get decomposition:::return->impl->getDecomposition
+Norm2AllModes.Normalizer2WithImpl#getCombiningClass(int)::: normalizer2 with impl get combining class:::return->impl->impl->getNorm16->getCC
+Norm2AllModes.Normalizer2WithImpl#isNormalized(CharSequence)::: normalizer2 with impl is normalized:::return->s->length->spanQuickCheckYes
+Norm2AllModes.DecomposeNormalizer2#normalize(CharSequence, NormalizerImpl.ReorderingBuffer)::: decompose normalizer2 normalize:::impl->src->length->decompose
+Norm2AllModes.DecomposeNormalizer2#normalizeAndAppend(CharSequence, boolean, NormalizerImpl.ReorderingBuffer)::: decompose normalizer2 normalize and append:::impl->decomposeAndAppend
+Norm2AllModes.DecomposeNormalizer2#spanQuickCheckYes(CharSequence)::: decompose normalizer2 span quick check yes:::return->impl->s->length->decompose
+Norm2AllModes.DecomposeNormalizer2#hasBoundaryBefore(int)::: decompose normalizer2 has boundary before:::return->impl->hasDecompBoundaryBefore
+Norm2AllModes.ComposeNormalizer2#normalize(CharSequence, NormalizerImpl.ReorderingBuffer)::: compose normalizer2 normalize:::impl->src->length->compose
+Norm2AllModes.ComposeNormalizer2#normalizeAndAppend(CharSequence, boolean, NormalizerImpl.ReorderingBuffer)::: compose normalizer2 normalize and append:::impl->composeAndAppend
+Norm2AllModes.ComposeNormalizer2#isNormalized(CharSequence)::: compose normalizer2 is normalized:::return->impl->s->length->new->StringBuilder->new->NormalizerImpl.ReorderingBuffer->compose
+Norm2AllModes.ComposeNormalizer2#spanQuickCheckYes(CharSequence)::: compose normalizer2 span quick check yes:::return->impl->s->length->composeQuickCheck
+Norm2AllModes.ComposeNormalizer2#hasBoundaryBefore(int)::: compose normalizer2 has boundary before:::return->impl->hasCompBoundaryBefore
+Norm2AllModes#getInstanceFromSingleton(Norm2AllModesSingleton)::: norm2 all modes get instance from singleton:::if->throw->return
+Norm2AllModes#getNFCInstance()::: norm2 all modes get instance:::return->getInstanceFromSingleton
+Norm2AllModes#getNFKCInstance()::: norm2 all modes get instance:::return->getInstanceFromSingleton
 Normalizer2#getNFCInstance():::Returns a Normalizer2 instance for Unicode NFC normalization:::return->Norm2AllModes->getNFCInstance
 Normalizer2#getNFDInstance():::Returns a Normalizer2 instance for Unicode NFD normalization:::return->Norm2AllModes->getNFCInstance
 Normalizer2#getNFKCInstance():::Returns a Normalizer2 instance for Unicode NFKC normalization:::return->Norm2AllModes->getNFKCInstance
@@ -24,9 +80,20 @@ Normalizer2#getCombiningClass(int):::Gets the combining class of c:::return
 Normalizer2#isNormalized(CharSequence):::Tests if the string is normalized:::
 Normalizer2#spanQuickCheckYes(CharSequence):::Returns the end of the normalized substring of the input string:::
 Normalizer2#hasBoundaryBefore(int):::Tests if the character always has a normalization boundary before it, regardless of context:::
+NormalizerBase.Mode#getNormalizer2(int)::: mode get normalizer2:::
+NormalizerBase#toMode(Normalizer.Form)::: normalizer base to mode:::switch->return->return->return->return->throw->new->IllegalArgumentException
+NormalizerBase.NONEMode#getNormalizer2(int)::: mode get normalizer2:::return
+NormalizerBase.NFDMode#getNormalizer2(int)::: mode get normalizer2:::return
+NormalizerBase.NFKDMode#getNormalizer2(int)::: mode get normalizer2:::return
+NormalizerBase.NFCMode#getNormalizer2(int)::: mode get normalizer2:::return
+NormalizerBase.NFKCMode#getNormalizer2(int)::: mode get normalizer2:::return
 NormalizerBase#clone():::Clones this NormalizerBase object:::try->copy->super->clone->text->clone->new->StringBuilder->return->catch->throw->e->toString->new->InternalError->finally
 NormalizerBase#normalize(String, Mode, int):::Normalizes a String using the given normalization operation:::return->mode->getNormalizer2->normalize
+NormalizerBase#normalize(String, Normalizer.Form)::: normalizer base normalize:::return->NormalizerBase->toMode->normalize
+NormalizerBase#normalize(String, Normalizer.Form, int)::: normalizer base normalize:::return->NormalizerBase->toMode->normalize
 NormalizerBase#isNormalized(String, Mode, int):::Test if a string is in a given normalization form:::return->mode->getNormalizer2->isNormalized
+NormalizerBase#isNormalized(String, Normalizer.Form)::: normalizer base is normalized:::return->NormalizerBase->toMode->isNormalized
+NormalizerBase#isNormalized(String, Normalizer.Form, int)::: normalizer base is normalized:::return->NormalizerBase->toMode->isNormalized
 NormalizerBase#current():::Return the current character in the normalized text.:::if->buffer->length->nextNormalize->return->buffer->codePointAt->else->return
 NormalizerBase#next():::Return the next character in the normalized text and advance the iteration position by one:::if->buffer->length->nextNormalize->c->buffer->codePointAt->Character->charCount->return->else->return
 NormalizerBase#previous():::Return the previous character in the normalized text and decrement the iteration position by one:::if->previousNormalize->c->buffer->codePointBefore->Character->charCount->return->else->return
@@ -41,18 +108,99 @@ NormalizerBase#setMode(Mode):::Set the normalization mode for this object:::mode
 NormalizerBase#getMode():::Return the basic operation performed by this NormalizerBase:::return
 NormalizerBase#setText(String):::Set the input text over which this NormalizerBase will iterate:::newIter->UCharacterIterator->getInstance->if->throw->new->IllegalStateException->reset
 NormalizerBase#setText(CharacterIterator):::Set the input text over which this NormalizerBase will iterate:::newIter->UCharacterIterator->getInstance->if->throw->new->IllegalStateException->clearBuffer
+NormalizerBase#clearBuffer()::: normalizer base clear buffer:::buffer->setLength
+NormalizerBase#nextNormalize()::: normalizer base next normalize:::clearBuffer->text->setIndex->c->text->nextCodePoint->if->return->segment->new->StringBuilder->appendCodePoint->while->text->nextCodePoint->if->norm2->hasBoundaryBefore->text->moveCodePointIndex->break->segment->appendCodePoint->text->getIndex->norm2->normalize->return->buffer->length
+NormalizerBase#previousNormalize()::: normalizer base previous normalize:::clearBuffer->text->setIndex->segment->new->StringBuilder->c->while->text->previousCodePoint->if->segment->insert->else->segment->Character->toChars->insert->if->norm2->hasBoundaryBefore->break->text->getIndex->norm2->normalize->buffer->length->return->buffer->length
+NormalizerImpl.Hangul#isHangul(int)::: hangul is hangul:::return
+NormalizerImpl.Hangul#isHangulLV(int)::: hangul is hangul v:::return
 NormalizerImpl.Hangul#decompose(int, Appendable):::Decomposes c, which must be a Hangul syllable, into buffer and returns the length of the decomposition (2 or 3).:::try->c2->buffer->append->buffer->append->if->return->else->buffer->append->return->catch->throw->new->InternalError->finally
+NormalizerImpl.ReorderingBuffer#isEmpty()::: reordering buffer is empty:::return->str->length
+NormalizerImpl.ReorderingBuffer#length()::: reordering buffer length:::return->str->length
+NormalizerImpl.ReorderingBuffer#getLastCC()::: reordering buffer get last c:::return
+NormalizerImpl.ReorderingBuffer#getStringBuilder()::: reordering buffer get string builder:::return
+NormalizerImpl.ReorderingBuffer#equals(CharSequence, int, int)::: reordering buffer equals:::return->UTF16Plus->str->length->equal
+NormalizerImpl.ReorderingBuffer#append(int, int)::: reordering buffer append:::if->str->appendCodePoint->if->str->length->else->insert
+NormalizerImpl.ReorderingBuffer#append(CharSequence, int, int, int, int)::: reordering buffer append:::if->return->if->if->str->length->else->if->str->length->str->append->else->c->Character->codePointAt->Character->charCount->insert->while->Character->codePointAt->Character->charCount->if->impl->getNorm16->getCCFromYesOrMaybe->else->append
+NormalizerImpl.ReorderingBuffer#append(char)::: reordering buffer append:::str->append->str->length->return
+NormalizerImpl.ReorderingBuffer#appendZeroCC(int)::: reordering buffer append zero c:::str->appendCodePoint->str->length
+NormalizerImpl.ReorderingBuffer#append(CharSequence)::: reordering buffer append:::if->s->length->str->append->str->length->return
+NormalizerImpl.ReorderingBuffer#append(CharSequence, int, int)::: reordering buffer append:::if->str->append->str->length->return
 NormalizerImpl.ReorderingBuffer#flush():::Flushes from the intermediate StringBuilder to the Appendable, if they are different objects:::if->str->length->else->try->app->append->str->setLength->catch->throw->new->InternalError->finally
 NormalizerImpl.ReorderingBuffer#flushAndAppendZeroCC(CharSequence, int, int):::Flushes from the intermediate StringBuilder to the Appendable, if they are different objects:::if->str->append->str->length->else->try->app->append->append->str->setLength->catch->throw->new->InternalError->finally->return
+NormalizerImpl.ReorderingBuffer#remove()::: reordering buffer remove:::str->setLength
+NormalizerImpl.ReorderingBuffer#removeSuffix(int)::: reordering buffer remove suffix:::oldLength->str->length->str->delete->str->length
+NormalizerImpl.ReorderingBuffer#insert(int, int)::: reordering buffer insert:::for->setIterator->skipPrevious->previousCC->if->str->insert->if->else->str->Character->toChars->insert->if
+NormalizerImpl.ReorderingBuffer#setIterator()::: reordering buffer set iterator:::str->length
+NormalizerImpl.ReorderingBuffer#skipPrevious()::: reordering buffer skip previous:::str->offsetByCodePoints
+NormalizerImpl.ReorderingBuffer#previousCC()::: reordering buffer previous c:::if->return->c->str->codePointBefore->Character->charCount->return->impl->getCCFromYesOrMaybeCP
 NormalizerImpl.UTF16Plus#isSurrogateLead(int):::Assuming c is a surrogate code point (UTF16.isSurrogate(c)), is it a lead surrogate?:::return
 NormalizerImpl.UTF16Plus#equal(CharSequence, int, int, CharSequence, int, int):::Compares two CharSequence subsequences for binary equality.:::if->return->if->return->while->if->s1->charAt->s2->charAt->return->return
+NormalizerImpl.IsAcceptable#isDataVersionAcceptable(byte[])::: is acceptable is data version acceptable:::return
+NormalizerImpl#load(ByteBuffer)::: normalizer impl load:::try->ICUBinary->readHeaderAndDataVersion->indexesLength->bytes->getInt->if->throw->new->InternalError->inIndexes->new->intArr->for->i->offset->nextOffset->Trie2_16->createFromSerialized->trieLength->normTrie->getSerializedLength->if->throw->new->InternalError->ICUBinary->skipBytes->numChars->chars->if->new->charArr->for->i->new->String->maybeYesCompositions->substring->new->byteArr->bytes->get->return->catch->throw->new->InternalError->finally
+NormalizerImpl#load(String)::: normalizer impl load:::return->ICUBinary->getRequiredData->load
+NormalizerImpl#getNorm16(int)::: normalizer impl get norm16:::return->normTrie->get
+NormalizerImpl#isAlgorithmicNoNo(int)::: normalizer impl is algorithmic no no:::return
+NormalizerImpl#isCompNo(int)::: normalizer impl is comp no:::return
+NormalizerImpl#isDecompYes(int)::: normalizer impl is decomp yes:::return
+NormalizerImpl#getCC(int)::: normalizer impl get c:::if->return->getCCFromNormalYesOrMaybe->if->return->return->getCCFromNoNo
+NormalizerImpl#getCCFromNormalYesOrMaybe(int)::: normalizer impl get from normal yes or maybe:::return
+NormalizerImpl#getCCFromYesOrMaybe(int)::: normalizer impl get from yes or maybe:::return->getCCFromNormalYesOrMaybe
+NormalizerImpl#getCCFromYesOrMaybeCP(int)::: normalizer impl get from yes or maybe p:::if->return->return->getNorm16->getCCFromYesOrMaybe
 NormalizerImpl#getFCD16(int):::Returns the FCD data for code point c.:::if->return->else->if->if->singleLeadMightHaveNonZeroFCD16->return->return->getFCD16FromNormData
 NormalizerImpl#singleLeadMightHaveNonZeroFCD16(int):::Returns true if the single-or-lead code unit c might have non-zero FCD data.:::bits->if->return->return
 NormalizerImpl#getFCD16FromNormData(int):::Gets the FCD value from the regular normalization data.:::norm16->getNorm16->if->if->getCCFromNormalYesOrMaybe->return->else->if->return->else->deltaTrailCC->if->return->mapAlgorithmic->getNorm16->if->isHangulLVT->return->mapping->firstUnit->extraData->charAt->fcd16->if->extraData->charAt->return
 NormalizerImpl#getDecomposition(int):::Gets the decomposition for one code point.:::norm16->if->getNorm16->isMaybeOrNonZeroCC->return->decomp->if->isDecompNoAlgorithmic->mapAlgorithmic->getNorm16->if->if->return->else->return->UTF16->valueOf->else->if->isHangulLV->isHangulLVT->buffer->new->StringBuilder->Hangul->decompose->return->buffer->toString->mapping->length->extraData->charAt->return->extraData->substring
 NormalizerImpl#decompose(CharSequence, int, int, StringBuilder, int):::Decomposes s[src, limit[ and writes the result to dest:::if->dest->setLength->buffer->new->ReorderingBuffer->decompose
+NormalizerImpl#decompose(CharSequence, int, int, ReorderingBuffer)::: normalizer impl decompose:::minNoCP->prevSrc->c->norm16->prevBoundary->prevCC->for->return
+NormalizerImpl#decomposeAndAppend(CharSequence, boolean, ReorderingBuffer)::: normalizer impl decompose and append:::limit->s->length->if->return->if->decompose->return->c->Character->codePointAt->src->firstCC->prevCC->cc->getNorm16->getCC->while->Character->charCount->if->break->Character->codePointAt->getNorm16->getCC->buffer->append->buffer->append
+NormalizerImpl#compose(CharSequence, int, int, boolean, boolean, ReorderingBuffer)::: normalizer impl compose:::prevBoundary->minNoMaybeCP->for
 NormalizerImpl#composeQuickCheck(CharSequence, int, int, boolean, boolean):::Very similar to compose(): Make the same changes in both places if relevant:::qcResult->prevBoundary->minNoMaybeCP->for
+NormalizerImpl#composeAndAppend(CharSequence, boolean, boolean, ReorderingBuffer)::: normalizer impl compose and append:::src->limit->s->length->if->buffer->isEmpty->firstStarterInSrc->findNextCompBoundary->if->lastStarterInDest->buffer->getStringBuilder->buffer->length->findPreviousCompBoundary->middle->buffer->length->new->StringBuilder->middle->buffer->getStringBuilder->buffer->length->append->buffer->buffer->length->removeSuffix->middle->append->middle->length->compose->if->compose->else->buffer->append
+NormalizerImpl#makeFCD(CharSequence, int, int, ReorderingBuffer)::: normalizer impl make d:::prevBoundary->prevSrc->c->prevFCD16->fcd16->for->return
+NormalizerImpl#hasDecompBoundaryBefore(int)::: normalizer impl has decomp boundary before:::return->singleLeadMightHaveNonZeroFCD16->getNorm16->norm16HasDecompBoundaryBefore
+NormalizerImpl#norm16HasDecompBoundaryBefore(int)::: normalizer impl norm16 has decomp boundary before:::if->return->if->return->mapping->firstUnit->extraData->charAt->return->extraData->charAt
+NormalizerImpl#hasDecompBoundaryAfter(int)::: normalizer impl has decomp boundary after:::if->return->if->singleLeadMightHaveNonZeroFCD16->return->return->getNorm16->norm16HasDecompBoundaryAfter
+NormalizerImpl#norm16HasDecompBoundaryAfter(int)::: normalizer impl norm16 has decomp boundary after:::if->isHangulLVT->return->if->if->isMaybeOrNonZeroCC->return->return->mapping->firstUnit->extraData->charAt->if->return->if->return->return->extraData->charAt
+NormalizerImpl#isDecompInert(int)::: normalizer impl is decomp inert:::return->getNorm16->isDecompYesAndZeroCC
+NormalizerImpl#hasCompBoundaryBefore(int)::: normalizer impl has comp boundary before:::return->getNorm16->norm16HasCompBoundaryBefore
+NormalizerImpl#hasCompBoundaryAfter(int, boolean)::: normalizer impl has comp boundary after:::return->getNorm16->norm16HasCompBoundaryAfter
+NormalizerImpl#isMaybe(int)::: normalizer impl is maybe:::return
+NormalizerImpl#isMaybeOrNonZeroCC(int)::: normalizer impl is maybe or non zero c:::return
+NormalizerImpl#isInert(int)::: normalizer impl is inert:::return
+NormalizerImpl#isJamoVT(int)::: normalizer impl is jamo t:::return
+NormalizerImpl#hangulLVT()::: normalizer impl hangul t:::return
+NormalizerImpl#isHangulLV(int)::: normalizer impl is hangul v:::return
+NormalizerImpl#isHangulLVT(int)::: normalizer impl is hangul t:::return->hangulLVT
+NormalizerImpl#isCompYesAndZeroCC(int)::: normalizer impl is comp yes and zero c:::return
+NormalizerImpl#isDecompYesAndZeroCC(int)::: normalizer impl is decomp yes and zero c:::return
+NormalizerImpl#isMostDecompYesAndZeroCC(int):::A little faster and simpler than isDecompYesAndZeroCC() but does not include the MaybeYes which combine-forward and have ccc=0:::return
+NormalizerImpl#isDecompNoAlgorithmic(int)::: normalizer impl is decomp no algorithmic:::return
+NormalizerImpl#getCCFromNoNo(int)::: normalizer impl get from no no:::mapping->if->extraData->charAt->return->extraData->charAt->else->return
+NormalizerImpl#getTrailCCFromCompYesAndZeroCC(int)::: normalizer impl get trail from comp yes and zero c:::if->return->else->return->extraData->charAt
+NormalizerImpl#mapAlgorithmic(int, int)::: normalizer impl map algorithmic:::return
+NormalizerImpl#getCompositionsListForDecompYes(int)::: normalizer impl get compositions list for decomp yes:::if->return->else->if->return
+NormalizerImpl#getCompositionsListForComposite(int)::: normalizer impl get compositions list for composite:::list->firstUnit->maybeYesCompositions->charAt->return
+NormalizerImpl#decomposeShort(CharSequence, int, int, boolean, boolean, ReorderingBuffer)::: normalizer impl decompose short:::while->c->Character->codePointAt->if->return->norm16->getNorm16->if->norm16HasCompBoundaryBefore->return->Character->charCount->decompose->if->norm16HasCompBoundaryAfter->return->return
+NormalizerImpl#decompose(int, int, ReorderingBuffer)::: normalizer impl decompose:::if->if->isMaybeOrNonZeroCC->buffer->getCCFromYesOrMaybe->append->return->mapAlgorithmic->getNorm16->if->buffer->append->else->if->isHangulLV->isHangulLVT->Hangul->decompose->else->mapping->firstUnit->extraData->charAt->length->leadCC->trailCC->if->extraData->charAt->else->buffer->append
+NormalizerImpl#combine(String, int, int):::Finds the recomposition result for a forward-combining "lead" character, specified with a pointer to its compositions list, and a backward-combining "trail" character:::key1->firstUnit->if->while->compositions->charAt->if->if->return->compositions->charAt->compositions->charAt->else->return->compositions->charAt->else->key2->secondUnit->for->return
+NormalizerImpl#recompose(ReorderingBuffer, int, boolean)::: normalizer impl recompose:::sb->buffer->getStringBuilder->p->if->sb->length->return->starter->pRemove->compositionsList->c->compositeAndFwd->norm16->cc->prevCC->starterIsSupplementary->for->buffer->flush
+NormalizerImpl#hasCompBoundaryBefore(int, int):::Does c have a composition boundary before it? True if its decomposition begins with a character that has ccc=0 && NFC_QC=Yes (isCompYesAndZeroCC()):::return->norm16HasCompBoundaryBefore
+NormalizerImpl#norm16HasCompBoundaryBefore(int)::: normalizer impl norm16 has comp boundary before:::return->isAlgorithmicNoNo
+NormalizerImpl#hasCompBoundaryBefore(CharSequence, int, int)::: normalizer impl has comp boundary before:::return->Character->codePointAt->hasCompBoundaryBefore
+NormalizerImpl#norm16HasCompBoundaryAfter(int, boolean)::: normalizer impl norm16 has comp boundary after:::return->isTrailCC01ForCompBoundaryAfter
+NormalizerImpl#hasCompBoundaryAfter(CharSequence, int, int, boolean)::: normalizer impl has comp boundary after:::return->Character->codePointBefore->hasCompBoundaryAfter
+NormalizerImpl#isTrailCC01ForCompBoundaryAfter(int):::For FCC: Given norm16 HAS_COMP_BOUNDARY_AFTER, does it have tccc<=1?:::return->isInert->isDecompNoAlgorithmic->extraData->charAt
+NormalizerImpl#findPreviousCompBoundary(CharSequence, int, boolean)::: normalizer impl find previous comp boundary:::while->c->Character->codePointBefore->norm16->getNorm16->if->norm16HasCompBoundaryAfter->break->Character->charCount->if->hasCompBoundaryBefore->break->return
+NormalizerImpl#findNextCompBoundary(CharSequence, int, int, boolean)::: normalizer impl find next comp boundary:::while->c->Character->codePointAt->norm16->normTrie->get->if->hasCompBoundaryBefore->break->Character->charCount->if->norm16HasCompBoundaryAfter->break->return
+NormalizerImpl#findNextFCDBoundary(CharSequence, int, int)::: normalizer impl find next boundary:::while->c->Character->codePointAt->norm16->if->getNorm16->norm16HasDecompBoundaryBefore->break->Character->charCount->if->norm16HasDecompBoundaryAfter->break->return
 NormalizerImpl#getDecompose(int[], String[]):::Get the canonical decomposition sherman  for ComposedCharIter:::impl->Normalizer2->getNFDInstance->length->norm16->ch->i->while->if->else->if->else->if->s->impl->getDecomposition->if->return
+NormalizerImpl#needSingleQuotation(char)::: normalizer impl need single quotation:::return
+NormalizerImpl#canonicalDecomposeWithSingleQuotation(String)::: normalizer impl canonical decompose with single quotation:::impl->Normalizer2->getNFDInstance->src->string->toCharArray->srcIndex->srcLimit->dest->new->charArr->destIndex->destLimit->prevSrc->norm->reorderStartIndex->length->c1->c2->cp->minNoMaybe->cc->prevCC->trailCC->p->pStart->for->return->new->String
+NormalizerImpl#insertOrdered(char[], int, int, int, char, char, int):::simpler, single-character version of mergeOrdered() - bubble-insert one single code point into the preceding string which is already canonically ordered (c, c2) may or may not yet have been inserted at src[current]..src[p]  it must be p=current+lengthof(c, c2) i.e:::back->preBack->r->prevCC->trailCC->if->prevArgs->new->PrevArgs->getPrevCC->if->while->getPrevCC->if->break->do->while->if->return
+NormalizerImpl#mergeOrdered(char[], int, int, char[], int, int):::merge two UTF-16 string parts together to canonically order (order by combining classes) their concatenation  the two strings may already be adjacent, so that the merging is done in-place if the two strings are not adjacent, then the buffer holding the first one must be large enough the second string may or may not be ordered in itself  before: [start]..[current] is already ordered, and         [next]..[limit]    may be ordered in itself, but                          is not in relation to [start..current[ after: [start..current+(limit-next)[ is ordered  the algorithm is a simple bubble-sort that takes the characters from src[next++] and inserts them in correct combining class order into the preceding part of the string  since this function is called much less often than the single-code point insertOrdered(), it just uses that for easier maintenance:::r->cc->trailCC->adjacent->ncArgs->new->NextCCArgs->if->while->getNextCC->if->if->else->if->break->else->insertOrdered->if->return->else->if->do->while->prevArgs->new->PrevArgs->return->getPrevCC
+NormalizerImpl#getNextCC(NextCCArgs)::: normalizer impl get next c:::if->UTF16->isTrailSurrogate->return->else->if->UTF16->isLeadSurrogate->return->UCharacter->getCombiningClass->else->if->UTF16->isTrailSurrogate->return->UCharacter->Character->toCodePoint->getCombiningClass->else->return
+NormalizerImpl#getPrevCC(PrevArgs)::: normalizer impl get prev c:::if->return->else->if->UTF16->isLeadSurrogate->return->else->if->UTF16->isTrailSurrogate->return->UCharacter->getCombiningClass->else->if->UTF16->isLeadSurrogate->return->UCharacter->Character->toCodePoint->getCombiningClass->else->return
+NormalizerImpl#getPreviousTrailCC(CharSequence, int, int)::: normalizer impl get previous trail c:::if->return->return->Character->codePointBefore->getFCD16
 Replaceable#length():::Returns the number of 16-bit code units in the text.:::
 Replaceable#charAt(int):::Returns the 16-bit code unit at the given offset into the text.:::
 Replaceable#getChars(int, int, char[], int):::Copies characters from this object into the destination character array:::
@@ -66,7 +214,9 @@ ReplaceableUCharacterIterator#getIndex():::Gets the current currentIndex in text
 ReplaceableUCharacterIterator#next():::Returns next UTF16 character and increments the iterator's currentIndex by 1:::if->replaceable->length->return->replaceable->charAt->return
 ReplaceableUCharacterIterator#previous():::Returns previous UTF16 character and decrements the iterator's currentIndex by 1:::if->return->replaceable->charAt->return
 ReplaceableUCharacterIterator#setIndex(int):::Sets the currentIndex to the specified currentIndex in the text and returns that single UTF16 character at currentIndex:::if->replaceable->length->throw->new->IllegalArgumentException
+ReplaceableUCharacterIterator#getText(char[], int)::: replaceable character iterator get text:::length->replaceable->length->if->throw->Integer->toString->new->IndexOutOfBoundsException->replaceable->getChars->return
 Trie.DataManipulate#getFoldingOffset(int):::Called by com.ibm.icu.impl.Trie to extract from a lead surrogate's data the index array offset of the indexes for that lead surrogate.:::
+Trie.DefaultGetFoldingOffset#getFoldingOffset(int)::: default get folding offset get folding offset:::return
 Trie#getSurrogateOffset(char, char):::Gets the offset to the data which the surrogate pair points to.:::
 Trie#getRawOffset(int, char):::Gets the offset to the data which the index ch after variable offset points to:::return
 Trie#getBMPOffset(char):::Gets the offset to data which the BMP character points to Treats a lead surrogate as a normal code point.:::return->getRawOffset->getRawOffset
@@ -74,16 +224,41 @@ Trie#getLeadOffset(char):::Gets the offset to the data which this lead surrogate
 Trie#getCodePointOffset(int):::Internal trie getter from a code point:::if->return->else->if->return->getRawOffset->else->if->return->getBMPOffset->else->if->return->UTF16->getLeadSurrogate->getSurrogateOffset->else->return
 Trie#unserialize(InputStream):::Parses the inputstream and creates the trie index with it. This is overwritten by the child classes.:::new->charArr->input->new->DataInputStream->for->i
 Trie#isCharTrie():::Determines if this is a 16 bit trie:::return
+Trie#checkHeader(int):::Authenticates raw data header:::if->return->if->return->return
 Trie2#createFromSerialized(ByteBuffer):::Create a Trie2 from its serialized form:::outerByteOrder->bytes->order->try->header->new->UTrie2Header->bytes->getInt->switch->break->isBigEndian->bytes->order->break->throw->new->IllegalArgumentException->bytes->getChar->bytes->getChar->bytes->getChar->bytes->getChar->bytes->getChar->bytes->getChar->if->throw->new->IllegalArgumentException->This->new->Trie2_16->indexArraySize->new->charArr->i->for->for->return->catch->finally->bytes->order
 Trie2#get(int):::Get the value for a code point as stored in the Trie2.:::
 Trie2#getFromU16SingleLead(char):::Get the trie value for a UTF-16 code unit:::
+Trie2.Range#equals(Object)::: range equals:::if->other->getClass->getClass->equals->return->tother->return
+Trie2.Range#hashCode()::: range hash code:::h->initHash->hashUChar32->hashUChar32->hashInt->hashByte->return
 Trie2#iterator()::: Create an iterator over the value ranges in this Trie2:::return->iterator
 Trie2#iterator(ValueMapper):::Create an iterator over the value ranges from this Trie2:::return->new->Trie2Iterator
+Trie2.ValueMapper#map(int)::: value mapper map:::
 Trie2.Trie2Iterator#next()::: The main next() function for Trie2 iterators:::if->hasNext->throw->new->NoSuchElementException->if->endOfRange->val->mappedVal->if->get->mapper->map->rangeEnd->for->else->getFromU16SingleLead->mapper->map->rangeEndLS->for->return
+Trie2.Trie2Iterator#hasNext()::: trie2 iterator has next:::return
+Trie2.Trie2Iterator#rangeEndLS(char)::: trie2 iterator range end s:::if->return->c->val->getFromU16SingleLead->for->return
 Trie2#rangeEnd(int, int, int):::Find the last character in a contiguous range of characters with the same Trie2 value as the input character.:::c->limit->Math->min->for->if->return
+Trie2#initHash()::: trie2 init hash:::return
+Trie2#hashByte(int, int)::: trie2 hash byte:::return
+Trie2#hashUChar32(int, int)::: trie2 hash char32:::Trie2->hashByte->Trie2->hashByte->Trie2->hashByte->return
+Trie2#hashInt(int, int)::: trie2 hash int:::Trie2->hashByte->Trie2->hashByte->Trie2->hashByte->Trie2->hashByte->return
 Trie2_16#createFromSerialized(ByteBuffer):::Create a Trie2 from its serialized form:::return->Trie2->createFromSerialized
 Trie2_16#get(int):::Get the value for a code point as stored in the Trie2.:::value->ix->if->if->return->if->return->if->return->if->return->return
 Trie2_16#getFromU16SingleLead(char):::Get a Trie2 value for a UTF-16 code unit:::value->ix->return
+Trie2_16#getSerializedLength()::: trie2_16 get serialized length:::return
+UBiDiProps#readData(ByteBuffer)::: bi di props read data:::ICUBinary->new->IsAcceptable->readHeader->i->count->bytes->getInt->if->throw->new->IOException->new->intArr->for->Trie2_16->createFromSerialized->expectedTrieLength->trieLength->trie->getSerializedLength->if->throw->new->IOException->ICUBinary->skipBytes->if->new->intArr->for->new->byteArr->for->new->byteArr->for
+UBiDiProps.IsAcceptable#isDataVersionAcceptable(byte[])::: is acceptable is data version acceptable:::return
+UBiDiProps#getClass(int)::: bi di props get class:::return->trie->get->getClassFromProps
+UBiDiProps#getMirror(int, int)::: bi di props get mirror:::delta->getMirrorDeltaFromProps->if->return->else->m->i->length->c2->for->return
+UBiDiProps#getMirror(int)::: bi di props get mirror:::props->trie->get->return->getMirror
+UBiDiProps#getJoiningType(int)::: bi di props get joining type:::return->trie->get
+UBiDiProps#getJoiningGroup(int)::: bi di props get joining group:::start->limit->if->return->if->return->return
+UBiDiProps#getPairedBracketType(int)::: bi di props get paired bracket type:::return->trie->get
+UBiDiProps#getPairedBracket(int)::: bi di props get paired bracket:::props->trie->get->if->return->else->return->getMirror
+UBiDiProps#getClassFromProps(int)::: bi di props get class from props:::return
+UBiDiProps#getFlagFromProps(int, int)::: bi di props get flag from props:::return
+UBiDiProps#getMirrorDeltaFromProps(int)::: bi di props get mirror delta from props:::return
+UBiDiProps#getMirrorCodePoint(int)::: bi di props get mirror code point:::return
+UBiDiProps#getMirrorIndex(int)::: bi di props get mirror index:::return
 UCharacter#digit(int, int):::Returns the numeric value of a decimal digit code point:::if->value->digit->if->UCharacterProperty->getEuropeanDigit->return->else->return
 UCharacter#digit(int):::Returns the numeric value of a decimal digit code point:::return->digit
 UCharacter#getType(int):::Returns a value indicating a code point's Unicode category:::return->getType
@@ -94,6 +269,7 @@ UCharacter#getCombiningClass(int):::Returns the combining class of the argument 
 UCharacter#getUnicodeVersion():::Returns the version of Unicode data used.:::return
 UCharacter#getCodePoint(char, char):::Returns a code point corresponding to the two UTF16 characters.:::if->UTF16->isLeadSurrogate->UTF16->isTrailSurrogate->return->UCharacterProperty->getRawSupplementary->throw->new->IllegalArgumentException
 UCharacter#getAge(int):::Returns the "age" of the code point. The "age" is the Unicode version when the code point was first designated (as a non-character or for Private Use) or assigned a character:::if->throw->new->IllegalArgumentException->return->getAge
+UCharacter#getIntPropertyValue(int, int)::: character get int property value:::return->getIntPropertyValue
 UCharacterIterator#getInstance(String):::Returns a UCharacterIterator object given a source string.:::return->new->ReplaceableUCharacterIterator
 UCharacterIterator#getInstance(StringBuffer):::Returns a UCharacterIterator object given a source StringBuffer.:::return->new->ReplaceableUCharacterIterator
 UCharacterIterator#getInstance(CharacterIterator):::Returns a UCharacterIterator object given a CharacterIterator.:::return->new->CharacterIteratorWrapper
@@ -113,36 +289,81 @@ UCharacterIterator#clone():::Creates a copy of this iterator, independent from o
 UCharacterProperty#getProperty(int):::Gets the main property value for code point ch.:::return->m_trie_->get
 UCharacterProperty#getAdditional(int, int):::Gets the unicode additional properties:::if->return->return->m_additionalTrie_->get
 UCharacterProperty#getAge(int):::Get the "age" of the code point. The "age" is the Unicode version when the code point was first designated (as a non-character or for Private Use) or assigned a character. This can be useful to avoid emitting code points to receiving processes that do not accept newer characters. The data is from the UCD file DerivedAge.txt. This API does not check the validity of the codepoint.:::version->getAdditional->return->VersionInfo->getInstance
+UCharacterProperty#getType(int)::: character property get type:::return->getProperty
+UCharacterProperty.IntProperty#getValue(int)::: int property get value:::return->getAdditional
+UCharacterProperty#getIntPropertyValue(int, int)::: character property get int property value:::if->return->intProp->getValue->return
 UCharacterProperty#getRawSupplementary(char, char):::Forms a supplementary code point from the argument character<br> Note this is for internal use hence no checks for the validity of the surrogate characters are done:::return
 UCharacterProperty#getMask(int):::Gets the type mask:::return
 UCharacterProperty#getEuropeanDigit(int):::Returns the digit values of characters like 'A' - 'Z', normal, half-width and full-width:::if->return->if->return->if->return->return
+UCharacterProperty#digit(int)::: character property digit:::value->getProperty->getNumericTypeValue->if->return->else->return
+UCharacterProperty#getNumericTypeValue(int)::: character property get numeric type value:::return
+UCharacterProperty#ntvGetType(int)::: character property ntv get type:::return
+UCharacterProperty.IsAcceptable#isDataVersionAcceptable(byte[])::: is acceptable is data version acceptable:::return
+UCharacterProperty#upropsvec_addPropertyStarts(UnicodeSet)::: character property upropsvec_add property starts:::if->trieIterator->m_additionalTrie_->iterator->range->while->trieIterator->hasNext->trieIterator->next->set->add
 UnicodeSet#set(UnicodeSet):::Make this object represent the same set as other.:::checkFrozen->clone->new->TreeSet<String>->return
 UnicodeSet#size():::Returns the number of elements in this set (its cardinality) Note than the elements of a set may include both individual codepoints and strings.:::n->count->getRangeCount->for->i->return->strings->size
+UnicodeSet#add_unchecked(int, int)::: unicode set add_unchecked:::if->throw->Utility->hex->new->IllegalArgumentException->if->throw->Utility->hex->new->IllegalArgumentException->if->range->add->else->if->add->return
 UnicodeSet#add(int):::Adds the specified character to this set if it is not already present:::checkFrozen->return->add_unchecked
+UnicodeSet#add_unchecked(int)::: unicode set add_unchecked:::if->throw->Utility->hex->new->IllegalArgumentException->i->findCodePoint->if->return->if->if->ensureCapacity->if->System->arraycopy->else->if->else->if->temp->new->intArr->if->System->arraycopy->System->arraycopy->else->System->arraycopy->return
 UnicodeSet#add(CharSequence):::Adds the specified multicharacter to this set if it is not already present:::checkFrozen->cp->getSingleCP->if->strings->s->toString->add->else->add_unchecked->return
+UnicodeSet#getSingleCP(CharSequence):::Utility for getting code point from single code point CharSequence:::if->s->length->throw->new->IllegalArgumentException->if->s->length->return->if->s->length->return->s->charAt->cp->UTF16->charAt->if->return->return
 UnicodeSet#complement(int, int):::Complements the specified range in this set:::checkFrozen->if->throw->Utility->hex->new->IllegalArgumentException->if->throw->Utility->hex->new->IllegalArgumentException->if->range->xor->return
 UnicodeSet#contains(int):::Returns true if this set contains the given character.:::if->throw->Utility->hex->new->IllegalArgumentException->if->return->bmpSet->contains->if->return->stringSpan->contains->i->findCodePoint->return
+UnicodeSet#findCodePoint(int):::Returns the smallest value i such that c < list[i]:::if->return->if->return->lo->hi->for
 UnicodeSet#retainAll(UnicodeSet):::Retains only the elements in this set that are contained in the specified set:::checkFrozen->retain->strings->retainAll->return
 UnicodeSet#clear():::Removes all of the elements from this set:::checkFrozen->strings->clear->return
 UnicodeSet#getRangeCount():::Iteration method that returns the number of ranges contained in this set.:::return
 UnicodeSet#getRangeStart(int):::Iteration method that returns the first character in the specified range of this set.:::return
 UnicodeSet#getRangeEnd(int):::Iteration method that returns the last character in the specified range of this set.:::return
+UnicodeSet#applyPattern(String, ParsePosition):::Parses the given pattern, starting at the given position:::if->equals->checkFrozen->version->VersionInfo->getInstance->new->VersionFilter->applyFilter->else->throw->new->IllegalStateException->return
+UnicodeSet#ensureCapacity(int)::: unicode set ensure capacity:::if->return->temp->new->intArr->System->arraycopy
+UnicodeSet#ensureBufferCapacity(int)::: unicode set ensure buffer capacity:::if->return->new->intArr
+UnicodeSet#range(int, int):::Assumes start <= end.:::if->new->intArr->else->return
+UnicodeSet#xor(int[], int, int)::: unicode set xor:::ensureBufferCapacity->i->j->k->a->b->if->if->else->while->if->else->if->else->if->else->break->temp->return
+UnicodeSet#add(int[], int, int)::: unicode set add:::ensureBufferCapacity->i->j->k->a->b->while->switch->if->if->max->else->else->if->if->max->else->else->if->break->if->max->else->break->if->if->break->else->if->break->break->if->else->if->else->if->break->break->if->else->if->else->if->break->break->temp->return
+UnicodeSet#retain(int[], int, int)::: unicode set retain:::ensureBufferCapacity->i->j->k->a->b->while->switch->if->else->if->else->if->break->break->if->else->if->else->if->break->break->if->else->if->else->if->break->break->if->else->if->else->if->break->break->temp->return
+UnicodeSet#max(int, int)::: unicode set max:::return
+UnicodeSet.Filter#contains(int)::: filter contains:::
+UnicodeSet.VersionFilter#contains(int)::: version filter contains:::v->UCharacter->getAge->return->v->compareTo
+UnicodeSet#getInclusions(int)::: unicode set get inclusions:::if->throw->new->IllegalStateException->if->incl->new->UnicodeSet->upropsvec_addPropertyStarts->return
+UnicodeSet#applyFilter(Filter, int):::Generic filter-based scanning code for UCD property UnicodeSets.:::clear->startHasProperty->inclusions->getInclusions->limitRange->inclusions->getRangeCount->for->j->if->add_unchecked->return
 UnicodeSet#isFrozen():::Is this frozen, according to the Freezable interface?:::return
 UnicodeSet#freeze():::Freeze this class, according to the Freezable interface.:::if->isFrozen->if->capacity->oldList->new->intArr->for->i->if->strings->isEmpty->new->ArrayList<String>->new->UnicodeSetStringSpan->if->stringSpan->needsStringSpanUTF16->new->BMPSet->return
 UnicodeSet#span(CharSequence, SpanCondition):::Span a string using this UnicodeSet:::return->span
 UnicodeSet#span(CharSequence, int, SpanCondition):::Span a string using this UnicodeSet:::end->s->length->if->else->if->return->if->return->bmpSet->span->if->return->stringSpan->span->else->if->strings->isEmpty->which->strSpan->new->ArrayList<String>->new->UnicodeSetStringSpan->if->strSpan->needsStringSpanUTF16->return->strSpan->span->return->spanCodePointsAndCount
 UnicodeSet#spanAndCount(CharSequence, int, SpanCondition, OutputInt):::Same as span() but also counts the smallest number of set elements on any path across the span:::if->throw->new->IllegalArgumentException->end->s->length->if->else->if->return->if->return->stringSpan->spanAndCount->else->if->return->bmpSet->span->else->if->strings->isEmpty->which->strSpan->new->ArrayList<String>->new->UnicodeSetStringSpan->return->strSpan->spanAndCount->return->spanCodePointsAndCount
+UnicodeSet#spanCodePointsAndCount(CharSequence, int, SpanCondition, OutputInt)::: unicode set span code points and count:::spanContained->c->next->length->s->length->count->do->Character->codePointAt->if->contains->break->Character->charCount->while->if->return
 UnicodeSet#spanBack(CharSequence, int, SpanCondition):::Span a string backwards (from the fromIndex) using this UnicodeSet:::if->return->if->s->length->s->length->if->return->bmpSet->spanBack->if->return->stringSpan->spanBack->else->if->strings->isEmpty->which->strSpan->new->ArrayList<String>->new->UnicodeSetStringSpan->if->strSpan->needsStringSpanUTF16->return->strSpan->spanBack->spanContained->c->prev->do->Character->codePointBefore->if->contains->break->Character->charCount->while->return
 UnicodeSet#cloneAsThawed():::Clone a thawed version of this class, according to the Freezable interface.:::result->new->UnicodeSet->return
+UnicodeSet#checkFrozen()::: unicode set check frozen:::if->isFrozen->throw->new->UnsupportedOperationException
 UnicodeSetStringSpan#needsStringSpanUTF16():::Do the strings need to be checked in span() etc.?:::return
 UnicodeSetStringSpan#contains(int):::For fast UnicodeSet::contains(c).:::return->spanSet->contains
+UnicodeSetStringSpan#addToSpanNotSet(int):::Adds a starting or ending string character to the spanNotSet so that a character span ends before any string.:::if->if->spanSet->contains->return->spanSet->cloneAsThawed->spanNotSet->add
 UnicodeSetStringSpan#span(CharSequence, int, SpanCondition):::Spans a string.:::if->return->spanNot->spanLimit->spanSet->span->if->s->length->return->return->spanWithStrings
+UnicodeSetStringSpan#spanWithStrings(CharSequence, int, int, SpanCondition):::Synchronized method for complicated spans using the offsets:::initSize->if->offsets->setMaxLength->length->s->length->pos->rest->spanLength->i->stringsLength->strings->size->for
 UnicodeSetStringSpan#spanAndCount(CharSequence, int, SpanCondition, OutputInt):::Spans a string and counts the smallest number of set elements on any path across the span:::if->return->spanNot->if->return->spanContainedAndCount->stringsLength->strings->size->length->s->length->pos->rest->count->while->cpLength->spanOne->maxInc->for->i->if->return->return
+UnicodeSetStringSpan#spanContainedAndCount(CharSequence, int, OutputInt)::: unicode set string span span contained and count:::offsets->setMaxLength->stringsLength->strings->size->length->s->length->pos->rest->count->while->cpLength->spanOne->if->offsets->addOffsetAndCount->for->i->if->offsets->isEmpty->return->minOffset->offsets->popMinimum->return
 UnicodeSetStringSpan#spanBack(CharSequence, int, SpanCondition):::Span a string backwards.:::if->return->spanNotBack->pos->spanSet->spanBack->if->return->spanLength->initSize->if->offsets->setMaxLength->i->stringsLength->strings->size->spanBackLengthsOffset->if->for
+UnicodeSetStringSpan#spanNot(CharSequence, int, OutputInt):::Algorithm for spanNot()==span(SpanCondition.NOT_CONTAINED)  Theoretical algorithm: - Iterate through the string, and at each code point boundary:   + If the code point there is in the set, then return with the current position:::length->s->length->pos->rest->stringsLength->strings->size->count->do->spanLimit->if->spanNotSet->span->else->spanNotSet->spanAndCount->if->return->cpLength->spanOne->if->return->for->i->while->if->return
+UnicodeSetStringSpan#spanNotBack(CharSequence, int)::: unicode set string span span not back:::pos->i->stringsLength->strings->size->do->spanNotSet->spanBack->if->return->cpLength->spanOneBack->if->return->for->while->return
+UnicodeSetStringSpan#makeSpanLengthByte(int)::: unicode set string span make span length byte:::return
+UnicodeSetStringSpan#matches16(CharSequence, int, String, int)::: unicode set string span matches16:::end->while->if->s->charAt->t->charAt->return->return
 UnicodeSetStringSpan#matches16CPB(CharSequence, int, int, String, int):::Compare 16-bit Unicode strings (which may be malformed UTF-16) at code point boundaries:::return->matches16->Character->s->charAt->isHighSurrogate->Character->s->charAt->isLowSurrogate->Character->s->charAt->isHighSurrogate->Character->s->charAt->isLowSurrogate
 UnicodeSetStringSpan#spanOne(UnicodeSet, CharSequence, int, int):::Does the set contain the next code point? If so, return its length; otherwise return its negative length.:::c->s->charAt->if->c2->s->charAt->if->UTF16->isTrailSurrogate->supplementary->UCharacterProperty->getRawSupplementary->return->set->contains->return->set->contains
+UnicodeSetStringSpan#spanOneBack(UnicodeSet, CharSequence, int)::: unicode set string span span one back:::c->s->charAt->if->c2->s->charAt->if->UTF16->isLeadSurrogate->supplementary->UCharacterProperty->getRawSupplementary->return->set->contains->return->set->contains
+UnicodeSetStringSpan.OffsetList#setMaxLength(int)::: offset list set max length:::if->new->intArr->clear
+UnicodeSetStringSpan.OffsetList#clear()::: offset list clear:::for->i
+UnicodeSetStringSpan.OffsetList#isEmpty()::: offset list is empty:::return
+UnicodeSetStringSpan.OffsetList#shift(int):::Reduces all stored offsets by delta, used when the current position moves by delta:::i->if->if
+UnicodeSetStringSpan.OffsetList#addOffset(int):::Adds an offset:::i->if
+UnicodeSetStringSpan.OffsetList#addOffsetAndCount(int, int):::Adds an offset and updates its count:::i->if->if->else->if
+UnicodeSetStringSpan.OffsetList#containsOffset(int)::: offset list contains offset:::i->if->return
+UnicodeSetStringSpan.OffsetList#hasCountAtOffset(int, int)::: offset list has count at offset:::i->if->oldCount->return
+UnicodeSetStringSpan.OffsetList#popMinimum(OutputInt):::Finds the lowest stored offset from a non-empty list, removes it, and reduces all other offsets by this minimum.:::i->result->while->count->if->if->return->count->while->if->return
 UTF16#charAt(String, int):::Extract a single UTF-32 value from a string:::single->source->charAt->if->return->return->_charAt
+UTF16#_charAt(String, int, char)::: f16 _char at:::if->return->if->if->source->length->trail->source->charAt->if->return->UCharacterProperty->getRawSupplementary->else->if->lead->source->charAt->if->return->UCharacterProperty->getRawSupplementary->return
 UTF16#charAt(CharSequence, int):::Extract a single UTF-32 value from a string:::single->source->charAt->if->return->return->_charAt
+UTF16#_charAt(CharSequence, int, char)::: f16 _char at:::if->return->if->if->source->length->trail->source->charAt->if->return->UCharacterProperty->getRawSupplementary->else->if->lead->source->charAt->if->return->UCharacterProperty->getRawSupplementary->return
 UTF16#charAt(char[], int, int, int):::Extract a single UTF-32 value from a substring:::if->throw->new->ArrayIndexOutOfBoundsException->single->if->isSurrogate->return->if->if->return->trail->if->isTrailSurrogate->return->UCharacterProperty->getRawSupplementary->else->if->return->lead->if->isLeadSurrogate->return->UCharacterProperty->getRawSupplementary->return
 UTF16#getCharCount(int):::Determines how many chars this char32 requires:::if->return->return
 UTF16#isSurrogate(char):::Determines whether the code value is a surrogate.:::return
@@ -153,6 +374,7 @@ UTF16#getTrailSurrogate(int):::Returns the trail surrogate:::if->return->return
 UTF16#valueOf(int):::Convenience method corresponding to String.valueOf(char):::if->throw->new->IllegalArgumentException->return->toString
 UTF16#append(StringBuffer, int):::Append a single UTF-32 value to the end of a StringBuffer:::if->throw->Integer->toHexString->new->IllegalArgumentException->if->target->getLeadSurrogate->append->target->getTrailSurrogate->append->else->target->append->return
 UTF16#moveCodePointOffset(char[], int, int, int, int):::Shifts offset16 by the argument number of codepoints within a subarray.:::size->count->ch->result->if->throw->new->StringIndexOutOfBoundsException->if->throw->new->StringIndexOutOfBoundsException->if->throw->new->StringIndexOutOfBoundsException->if->if->throw->new->StringIndexOutOfBoundsException->while->if->isLeadSurrogate->isTrailSurrogate->else->if->throw->new->StringIndexOutOfBoundsException->for->if->throw->new->StringIndexOutOfBoundsException->return
+UTF16#toString(int):::Converts argument code point and returns a String object representing the code point's value in UTF16 format:::if->return->String->valueOf->result->new->StringBuilder->result->getLeadSurrogate->append->result->getTrailSurrogate->append->return->result->toString
 Utility#escape(String):::Convert characters outside the range U+0020 to U+007F to Unicode escapes, and convert backslash to a double backslash.:::buf->new->StringBuilder->for->i->s->length->return->buf->toString
 Utility#unescapeAt(String, int[]):::Convert an escape to a 32-bit code point value:::c->result->n->minDig->maxDig->bitsPerDigit->dig->i->braces->offset->length->s->length->if->return->Character->codePointAt->UTF16->getCharCount->switch->break->break->if->UTF16->charAt->else->break->UCharacter->digit->if->break->if->while->UTF16->charAt->UCharacter->digit->if->break->UTF16->getCharCount->if->return->if->if->return->if->return->if->UTF16->isLeadSurrogate->ahead->s->charAt->if->o->new->intArr->unescapeAt->if->UTF16->isTrailSurrogate->UCharacterProperty->getRawSupplementary->return->for->if->UTF16->charAt->UTF16->getCharCount->return->return
 Utility#hex(long, int):::Supplies a zero-padded hex representation of an integer (without 0x):::if->return->negative->if->result->Long->toString->toUpperCase->if->result->length->result->length->substring->if->return->return
@@ -161,3 +383,4 @@ Utility#escapeUnprintable(T, int):::Escape unprintable characters using <backsla
 VersionInfo#getInstance(String):::Returns an instance of VersionInfo with the argument version.:::length->version->length->array->count->index->while->c->version->charAt->if->else->if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->for->i->return->getInstance
 VersionInfo#getInstance(int, int, int, int):::Returns an instance of VersionInfo with the argument version.:::if->throw->new->IllegalArgumentException->version->getInt->key->Integer->valueOf->result->MAP_->get->if->new->VersionInfo->MAP_->put->return
 VersionInfo#compareTo(VersionInfo):::Compares other with this VersionInfo.:::return
+VersionInfo#getInt(int, int, int, int):::Gets the int from the version numbers:::return

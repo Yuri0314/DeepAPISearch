@@ -1,1 +1,51 @@
+AttachProviderImpl#name()::: attach provider impl name:::return
+AttachProviderImpl#type()::: attach provider impl type:::return
+AttachProviderImpl#attachVirtualMachine(String)::: attach provider impl attach virtual machine:::checkAttachPermission->testAttachable->return->new->VirtualMachineImpl
+AttachProviderImpl#listVirtualMachines()::: attach provider impl list virtual machines:::if->isTempPathSecure->return->super->listVirtualMachines->else->return->listJavaProcesses
+AttachProviderImpl#isTempPathSecure():::Returns true if the temporary file system supports security:::if->synchronized->if->temp->tempPath->if->temp->length->temp->charAt->temp->charAt->flags->temp->substring->volumeFlags->return
+AttachProviderImpl#tempPath()::: attach provider impl temp path:::
+AttachProviderImpl#volumeFlags(String)::: attach provider impl volume flags:::
+AttachProviderImpl#listJavaProcesses():::Returns a list of virtual machine descriptors derived from an enumeration of the process list.:::list->new->ArrayList<VirtualMachineDescriptor>->host->try->InetAddress->getLocalHost->getHostName->catch->finally->processes->new->intArr->count->enumProcesses->for->i->return
+AttachProviderImpl#enumProcesses(int[], int)::: attach provider impl enum processes:::
+AttachProviderImpl#isLibraryLoadedByProcess(String, int)::: attach provider impl is library loaded by process:::
+HotSpotAttachProvider#checkAttachPermission()::: hot spot attach provider check attach permission:::sm->System->getSecurityManager->if->sm->new->AttachPermission->checkPermission
+HotSpotAttachProvider#listVirtualMachines()::: hot spot attach provider list virtual machines:::result->new->ArrayList<VirtualMachineDescriptor>->host->vms->try->MonitoredHost->new->HostIdentifier->getMonitoredHost->host->activeVms->catch->if->t->getCause->if->throw->if->return->throw->new->InternalError->finally->foreach->pid->vmid->toString->name->isAttachable->mvm->try->host->new->VmIdentifier->getMonitoredVm->try->MonitoredVmUtil->isAttachable->MonitoredVmUtil->commandLine->catch->finally->if->result->new->HotSpotVirtualMachineDescriptor->add->catch->if->throw->finally->if->mvm->detach->return
 HotSpotAttachProvider#testAttachable(String):::Test if a VM is attachable:::mvm->try->vmid->new->VmIdentifier->host->MonitoredHost->getMonitoredHost->host->getMonitoredVm->if->MonitoredVmUtil->isAttachable->return->catch->if->td->throw->return->finally->if->mvm->detach->throw->new->AttachNotSupportedException
+HotSpotAttachProvider.HotSpotVirtualMachineDescriptor#isAttachable()::: hot spot virtual machine descriptor is attachable:::return
+HotSpotVirtualMachine#loadAgentLibrary(String, boolean, String)::: hot spot virtual machine load agent library:::if->throw->new->NullPointerException->msgPrefix->in->execute->try->reader->new->InputStreamReader->new->BufferedReader->result->reader->readLine->if->throw->new->AgentLoadException->else->if->result->startsWith->retCode->Integer->result->msgPrefix->length->substring->parseInt->if->throw->new->AgentInitializationException->else->throw->new->AgentLoadException->catch->finally
+HotSpotVirtualMachine#loadAgentLibrary(String, String)::: hot spot virtual machine load agent library:::loadAgentLibrary
+HotSpotVirtualMachine#loadAgentPath(String, String)::: hot spot virtual machine load agent path:::loadAgentLibrary
+HotSpotVirtualMachine#loadAgent(String, String)::: hot spot virtual machine load agent:::if->throw->new->NullPointerException->args->if->try->loadAgentLibrary->catch->rc->x->returnValue->switch->throw->new->AgentLoadException->throw->new->AgentLoadException->throw->new->AgentLoadException->throw->new->AgentInitializationException->throw->new->AgentLoadException->finally
+HotSpotVirtualMachine#getSystemProperties()::: hot spot virtual machine get system properties:::in->props->new->Properties->try->executeCommand->props->load->catch->finally->if->in->close->return
+HotSpotVirtualMachine#getAgentProperties()::: hot spot virtual machine get agent properties:::in->props->new->Properties->try->executeCommand->props->load->catch->finally->if->in->close->return
+HotSpotVirtualMachine#checkedKeyName(Object)::: hot spot virtual machine checked key name:::if->throw->new->IllegalArgumentException->if->startsWith->throw->new->IllegalArgumentException->return
+HotSpotVirtualMachine#stripKeyName(Object)::: hot spot virtual machine strip key name:::return->MANAGEMENT_PREFIX->length->substring
+HotSpotVirtualMachine#startManagementAgent(Properties)::: hot spot virtual machine start management agent:::if->throw->new->NullPointerException->args->agentProperties->entrySet->stream->entry->getKey->checkedKeyName->filter->entry->getKey->stripKeyName->entry->getValue->escape->map->Collectors->joining->collect->executeJCmd->close
+HotSpotVirtualMachine#escape(Object)::: hot spot virtual machine escape:::value->arg->toString->if->value->contains->return->return
+HotSpotVirtualMachine#startLocalManagementAgent()::: hot spot virtual machine start local management agent:::executeJCmd->close->prop->return->getAgentProperties->getProperty
+HotSpotVirtualMachine#localDataDump()::: hot spot virtual machine local data dump:::executeCommand->close
+HotSpotVirtualMachine#remoteDataDump(Object...)::: hot spot virtual machine remote data dump:::return->executeCommand
+HotSpotVirtualMachine#dumpHeap(Object...)::: hot spot virtual machine dump heap:::return->executeCommand
+HotSpotVirtualMachine#heapHisto(Object...)::: hot spot virtual machine heap histo:::return->executeCommand
+HotSpotVirtualMachine#setFlag(String, String)::: hot spot virtual machine set flag:::return->executeCommand
+HotSpotVirtualMachine#printFlag(String)::: hot spot virtual machine print flag:::return->executeCommand
+HotSpotVirtualMachine#executeJCmd(String)::: hot spot virtual machine execute cmd:::return->executeCommand
+HotSpotVirtualMachine#execute(String, Object...)::: hot spot virtual machine execute:::
+HotSpotVirtualMachine#executeCommand(String, Object...)::: hot spot virtual machine execute command:::try->return->execute->catch->throw->new->InternalError->finally
+HotSpotVirtualMachine#readInt(InputStream)::: hot spot virtual machine read int:::sb->new->StringBuilder->n->buf->new->byteArr->do->in->read->if->c->if->break->else->sb->append->while->if->sb->length->throw->new->IOException->value->try->Integer->sb->toString->parseInt->catch->throw->new->IOException->finally->return
+HotSpotVirtualMachine#readErrorMessage(InputStream)::: hot spot virtual machine read error message:::s->message->new->StringBuilder->br->new->InputStreamReader->new->BufferedReader->while->br->readLine->message->append->return->message->toString
+HotSpotVirtualMachine#attachTimeout()::: hot spot virtual machine attach timeout:::if->synchronized->if->try->s->System->getProperty->Long->parseLong->catch->finally->if->return
+VirtualMachineImpl#detach()::: virtual machine impl detach:::synchronized->if->closeProcess
+VirtualMachineImpl#execute(String, Object...)::: virtual machine impl execute:::rnd->new->Random->r->rnd->nextInt->pipeprefix->pipename->hPipe->try->createPipe->catch->rnd->nextInt->createPipe->finally->if->closePipe->throw->new->IOException->try->enqueue->connectPipe->in->new->PipedInputStream->status->readInt->if->message->readErrorMessage->in->close->if->cmd->equals->msg->if->message->isEmpty->throw->new->AgentLoadException->else->if->message->isEmpty->throw->new->AttachOperationFailedException->return->catch->closePipe->throw->finally
+VirtualMachineImpl.PipedInputStream#read()::: piped input stream read:::b->new->byteArr->n->this->read->if->return->else->return
+VirtualMachineImpl.PipedInputStream#read(byte[], int, int)::: piped input stream read:::if->throw->new->IndexOutOfBoundsException->else->if->return->return->VirtualMachineImpl->readPipe
+VirtualMachineImpl.PipedInputStream#close()::: piped input stream close:::if->VirtualMachineImpl->closePipe
+VirtualMachineImpl#init()::: virtual machine impl init:::
+VirtualMachineImpl#generateStub()::: virtual machine impl generate stub:::
+VirtualMachineImpl#openProcess(int)::: virtual machine impl open process:::
+VirtualMachineImpl#closeProcess(long)::: virtual machine impl close process:::
+VirtualMachineImpl#createPipe(String)::: virtual machine impl create pipe:::
+VirtualMachineImpl#closePipe(long)::: virtual machine impl close pipe:::
+VirtualMachineImpl#connectPipe(long)::: virtual machine impl connect pipe:::
+VirtualMachineImpl#readPipe(long, byte[], int, int)::: virtual machine impl read pipe:::
+VirtualMachineImpl#enqueue(long, byte[], String, String, Object...)::: virtual machine impl enqueue:::

@@ -1,14 +1,20 @@
 Architecture#toString():::Converts this architecture to a string.:::return->getName->toLowerCase
 Architecture#getWordSize():::Gets the natural size of words (typically registers and pointers) of this architecture, in bytes.:::return->wordKind->getSizeInBytes
+Architecture#getWordKind()::: architecture get word kind:::return
 Architecture#getName():::Gets the name of this architecture.:::return
 Architecture#getRegisters():::Gets the list of all registers that exist on this architecture:::return
 Architecture#getAvailableValueRegisters():::Gets a list of all registers available for storing values on this architecture:::return->getRegisters
+Architecture#getByteOrder()::: architecture get byte order:::return
+Architecture#supportsUnalignedMemoryAccess()::: architecture supports unaligned memory access:::return
 Architecture#getReturnAddressSize():::Gets the size of the return address pushed to the stack by a call instruction:::return
 Architecture#getMachineCodeCallDisplacementOffset():::Gets the offset in bytes from the beginning of a call instruction to the displacement.:::return
 Architecture#requiredBarriers(int):::Determines the barriers in a given barrier mask that are explicitly required on this architecture.:::return
 Architecture#canStoreValue(RegisterCategory, PlatformKind):::Determine whether a kind can be stored in a register of a given category.:::
 Architecture#getLargestStorableKind(RegisterCategory):::Return the largest kind that can be stored in a register of a given category.:::
 Architecture#getPlatformKind(JavaKind):::Gets the PlatformKind that is used to store values of a given JavaKind.:::
+Architecture#equals(Object)::: architecture equals:::if->return->if->that->if->equals->return->return
+Architecture#hashCode()::: architecture hash code:::return->name->hashCode
+BailoutException#isPermanent()::: bailout exception is permanent:::return
 BytecodeFrame#isPlaceholderBci(int):::Determines if a given BCI matches one of the placeholder BCI constants defined in this class.:::return
 BytecodeFrame#getPlaceholderBciName(int):::Gets the name of a given placeholder BCI.:::if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->return
 BytecodeFrame#validateFormat():::Ensure that the frame state is formatted as expected by the JVM, with null or Illegal in the slot following a double word item:::if->caller->caller->validateFormat->for->i->return
@@ -18,8 +24,14 @@ BytecodeFrame#getLocalValue(int):::Gets the value representing the specified loc
 BytecodeFrame#getStackValue(int):::Gets the value representing the specified stack slot.:::if->throw->new->IndexOutOfBoundsException->return
 BytecodeFrame#getLockValue(int):::Gets the value representing the specified lock.:::if->throw->new->IndexOutOfBoundsException->return
 BytecodeFrame#caller():::Gets the caller of this frame.:::return->getCaller
+BytecodeFrame#hashCode()::: bytecode frame hash code:::return
+BytecodeFrame#equals(Object)::: bytecode frame equals:::if->return->if->super->equals->that->if->Arrays->equals->return->return->return
+BytecodeFrame#toString()::: bytecode frame to string:::return->CodeUtil->new->StringBuilder->append->toString
 BytecodePosition#toString():::Converts this code position to a string representation.:::return->CodeUtil->new->StringBuilder->append->toString
 BytecodePosition#equals(Object):::Deep equality test.:::if->return->if->getClass->obj->getClass->that->if->Objects->this->getMethod->that->getMethod->equals->Objects->equals->return->return
+BytecodePosition#hashCode()::: bytecode position hash code:::hc->method->hashCode->if->caller->hashCode->return
+BytecodePosition#getBCI()::: bytecode position get i:::return
+BytecodePosition#getMethod()::: bytecode position get method:::return
 BytecodePosition#getCaller():::The position where this position has been called, null if none.:::return
 BytecodePosition#addCaller(BytecodePosition):::Adds a caller to the current position returning the new position.:::if->getCaller->return->getMethod->getBCI->new->BytecodePosition->else->return->getCaller->addCaller->getMethod->getBCI->new->BytecodePosition
 CallingConvention#getReturn():::Gets the location for the return value or Value#ILLEGAL if a void call.:::return
@@ -27,6 +39,8 @@ CallingConvention#getArgument(int):::Gets the location for the index'th argument
 CallingConvention#getStackSize():::Gets the amount of stack space (in bytes) required for the stack-based arguments of the call.:::return
 CallingConvention#getArgumentCount():::Gets the number of locations required for the arguments.:::return
 CallingConvention#getArguments():::Gets the locations required for the arguments.:::if->return->return->argumentLocations->clone
+CallingConvention#toString()::: calling convention to string:::sb->new->StringBuilder->sb->append->sep->foreach->sb->append->append->if->returnLocation->equals->sb->append->append->sb->append->return->sb->toString
+CallingConvention#verify()::: calling convention verify:::for->i->return
 CodeCacheProvider#addCode(ResolvedJavaMethod, CompiledCode, SpeculationLog, InstalledCode):::Installs code for a given method based on a given compilation result without making it the default implementation of the method.:::return->installCode
 CodeCacheProvider#setDefaultCode(ResolvedJavaMethod, CompiledCode):::Installs code for a given method based on a given compilation result and makes it the default implementation of the method.:::return->installCode
 CodeCacheProvider#installCode(ResolvedJavaMethod, CompiledCode, InstalledCode, SpeculationLog, boolean):::Installs code based on a given compilation result.:::
@@ -39,6 +53,8 @@ CodeCacheProvider#getTarget():::Gets a description of the target architecture.::
 CodeCacheProvider#createSpeculationLog():::Create a new speculation log for the target runtime.:::
 CodeCacheProvider#getMaxCallTargetOffset(long):::Returns the maximum absolute offset of a PC relative call to a given address from any position in the code cache or -1 when not applicable:::
 CodeCacheProvider#shouldDebugNonSafepoints():::Determines if debug info should also be emitted at non-safepoint locations.:::
+CodeUtil#isOdd(int)::: code util is odd:::return
+CodeUtil#isEven(int)::: code util is even:::return
 CodeUtil#isPowerOf2(int):::Checks whether the specified integer is a power of two.:::return
 CodeUtil#isPowerOf2(long):::Checks whether the specified long is a power of two.:::return
 CodeUtil#log2(int):::Computes the log (base 2) of the specified integer, rounding down:::return->Integer->numberOfLeadingZeros
@@ -54,32 +70,70 @@ CodeUtil#tabulateValues(BytecodeFrame):::Formats the values in a frame as a tabu
 CodeUtil#tabulate(Object[], int, int, int):::Formats a given table as a string:::rows->colWidths->new->intArr->for->col->sb->new->StringBuilder->nl->for->row->return->sb->toString
 CodeUtil#append(StringBuilder, BytecodePosition):::Appends a formatted code position to a StringBuilder.:::MetaUtil->sb->append->pos->getMethod->pos->getBCI->appendLocation->if->pos->getCaller->sb->append->pos->getCaller->append->return
 CodeUtil#append(StringBuilder, BytecodeFrame):::Appends a formatted frame to a StringBuilder.:::MetaUtil->sb->append->frame->getMethod->frame->getBCI->appendLocation->sb->sb->length->deleteCharAt->sb->append->append->append->append->append->if->sb->append->table->tabulateValues->rows->table->split->for->i->if->frame->caller->sb->append->frame->caller->append->else->if->frame->getCaller->sb->append->frame->getCaller->append->return
+CodeUtil.RefMapFormatter#formatStackSlot(int)::: ref map formatter format stack slot:::
+CodeUtil.DefaultRefMapFormatter#formatStackSlot(int)::: default ref map formatter format stack slot:::refMapOffset->fpOffset->if->return->return
+CodeUtil.NumberedRefMapFormatter#formatStackSlot(int)::: numbered ref map formatter format stack slot:::return
+CodeUtil.NumberedRefMapFormatter#formatRegister(int)::: numbered ref map formatter format register:::return
 CodeUtil#append(StringBuilder, DebugInfo, RefMapFormatter):::Appends a formatted debug info to a StringBuilder.:::formatter->if->new->NumberedRefMapFormatter->nl->refMap->info->getReferenceMap->if->sb->refMap->toString->append->calleeSaveInfo->info->getCalleeSaveInfo->if->sb->append->append->map->calleeSaveInfo->slotsToRegisters->foreach->map->entrySet->sb->append->e->getValue->append->append->formatter->e->getKey->formatStackSlot->append->append->frame->info->frame->if->append->else->if->info->getBytecodePosition->info->getBytecodePosition->append->return
 CodeUtil#getCallingConvention(CodeCacheProvider, CallingConvention.Type, ResolvedJavaMethod, ValueKindFactory):::Create a calling convention from a ResolvedJavaMethod.:::sig->method->getSignature->retType->sig->getReturnType->sigCount->sig->getParameterCount->argTypes->argIndex->if->method->isStatic->new->JavaTypeArr->method->getDeclaringClass->else->new->JavaTypeArr->for->i->registerConfig->codeCache->getRegisterConfig->return->registerConfig->getCallingConvention
 CompilationRequest#getMethod():::Gets the method to be compiled.:::return
 CompilationRequest#getEntryBCI():::Gets the bytecode index (BCI) at which to start compiling where -1 denotes a non-OSR compilation request and all other values denote an on stack replacement (OSR) compilation request.:::return
+CompilationRequest#toString()::: compilation request to string:::return->method->format
 CompilationRequestResult#getFailure():::Determines if the compilation was successful.:::
+DebugInfo#setReferenceMap(ReferenceMap)::: debug info set reference map:::
+DebugInfo#hasFrame()::: debug info has frame:::return->getBytecodePosition
 DebugInfo#frame():::Gets the deoptimization information for each inlined frame (if available).:::if->hasFrame->return->getBytecodePosition->return
+DebugInfo#toString()::: debug info to string:::return->CodeUtil->new->StringBuilder->append->toString
+DebugInfo#getBytecodePosition()::: debug info get bytecode position:::return
+DebugInfo#getReferenceMap()::: debug info get reference map:::return
+DebugInfo#getVirtualObjectMapping()::: debug info get virtual object mapping:::return
 DebugInfo#setCalleeSaveInfo(RegisterSaveLayout):::Sets the map from the registers (in the caller's frame) to the slots where they are saved in the current frame.:::
 DebugInfo#getCalleeSaveInfo():::Gets the map from the registers (in the caller's frame) to the slots where they are saved in the current frame:::return
+DebugInfo#hashCode()::: debug info hash code:::throw->new->UnsupportedOperationException
+DebugInfo#equals(Object)::: debug info equals:::if->return->if->that->if->Objects->equals->Objects->equals->Objects->equals->return->return
+InstalledCode#getAddress()::: installed code get address:::return
+InstalledCode#getEntryPoint()::: installed code get entry point:::return
+InstalledCode#getVersion()::: installed code get version:::return
 InstalledCode#getName():::Returns the name of this installed code.:::return
 InstalledCode#getStart():::Returns the start address of this installed code if it is #isValid() valid, 0 otherwise.:::return
+InstalledCode#isValid()::: installed code is valid:::return
+InstalledCode#isAlive()::: installed code is alive:::return
 InstalledCode#getCode():::Returns a copy of this installed code if it is #isValid() valid, null otherwise.:::return
 InstalledCode#invalidate():::Invalidates this installed code such that any subsequent #executeVarargs(Object...) invocation will throw an InvalidInstalledCodeException and all existing invocations will be deoptimized.:::throw->new->UnsupportedOperationException
 InstalledCode#executeVarargs(Object...):::Executes the installed code with a variable number of arguments.:::throw->new->UnsupportedOperationException
 Location#register(Register):::Create a Location for a register.:::return->new->Location
 Location#subregister(Register, int):::Create a Location for a vector subregister.:::return->new->Location
 Location#stack(int):::Create a Location for a stack slot.:::return->new->Location
+Location#isRegister()::: location is register:::return
+Location#isStack()::: location is stack:::return
+Location#toString()::: location to string:::regName->if->isRegister->else->return
+MemoryBarriers#barriersString(int)::: memory barriers barriers string:::sb->new->StringBuilder->sb->append->sb->append->sb->append->sb->append->return->sb->toString->trim
 Register#encoding():::The assembler calls this method to get the register's encoding.:::return
+Register.RegisterCategory#toString()::: register category to string:::return
+Register.RegisterCategory#hashCode()::: register category hash code:::return->name->hashCode
+Register.RegisterCategory#equals(Object)::: register category equals:::if->that->return->equals->return
+Register#getRegisterCategory()::: register get register category:::return
 Register#mayContainReference():::Determine whether this register needs to be part of the reference map.:::return
 Register#asValue(ValueKind):::Gets this register as a RegisterValue value with a specified kind.:::return->new->RegisterValue
 Register#asValue():::Gets this register as a RegisterValue value with no particular kind.:::return->asValue
 Register#isValid():::Determines if this is a valid register.:::return
+Register#toString()::: register to string:::return
+Register#compareTo(Register)::: register compare to:::if->return->if->return->return
+Register#hashCode()::: register hash code:::return->name->hashCode
+Register#equals(Object)::: register equals:::if->other->if->return->return
 RegisterArray#size():::Gets the number of registers.:::return
 RegisterArray#get(int):::Gets the register at a given index.:::return
+RegisterArray#addTo(Collection)::: register array add to:::collection->Arrays->asList->addAll
 RegisterArray#asList():::Gets an immutable view of the registers as a list.:::return->Collections->Arrays->asList->unmodifiableList
 RegisterArray#toArray():::Gets a copy of the registers as an array.:::return->registers->clone
+RegisterArray#iterator()::: register array iterator:::return->Arrays->asList->iterator
+RegisterArray#hashCode()::: register array hash code:::if->Arrays->hashCode->return
+RegisterArray#equals(Object)::: register array equals:::if->return->Arrays->equals->return
+RegisterArray#toString()::: register array to string:::return->Arrays->toString
 RegisterAttributes#createMap(RegisterConfig, RegisterArray):::Creates a map from register Register#number numbers to register RegisterAttributes attributes for a given register configuration and set of registers.:::map->registers->size->new->RegisterAttributesArr->callerSaveRegisters->registerConfig->getCallerSaveRegisters->asList->calleeSaveRegisters->registerConfig->getCalleeSaveRegisters->Collections->emptyList->registerConfig->getCalleeSaveRegisters->asList->allocatableRegisters->registerConfig->getAllocatableRegisters->asList->foreach->if->attr->callerSaveRegisters->contains->calleeSaveRegisters->contains->allocatableRegisters->contains->new->RegisterAttributes->if->Arrays->copyOf->for->i->return
+RegisterAttributes#isAllocatable()::: register attributes is allocatable:::return
+RegisterAttributes#isCalleeSave()::: register attributes is callee save:::return
+RegisterAttributes#isCallerSave()::: register attributes is caller save:::return
 RegisterConfig#getReturnRegister(JavaKind):::Gets the register to be used for returning a value of a given kind.:::
 RegisterConfig#getMaximumFrameSize():::Gets the maximum allowed size of the frame.:::return
 RegisterConfig#getFrameRegister():::Gets the register used as the frame pointer:::
@@ -94,12 +148,57 @@ RegisterConfig#areAllAllocatableRegistersCallerSaved():::Determines if all #getA
 RegisterSaveLayout#registerToSlot(Register):::Gets the frame slot index for a given register.:::for->i->throw->new->IllegalArgumentException
 RegisterSaveLayout#registersToSlots(boolean):::Gets this layout information as a Map from registers to slots.:::result->if->new->TreeMap<>->else->new->HashMap<>->for->i->return
 RegisterSaveLayout#slotsToRegisters(boolean):::Gets this layout information as a Map from slots to registers.:::result->if->new->TreeMap<>->else->new->HashMap<>->for->i->return
+RegisterSaveLayout#hashCode()::: register save layout hash code:::throw->new->UnsupportedOperationException
+RegisterSaveLayout#equals(Object)::: register save layout equals:::if->return->if->that->if->Arrays->equals->Arrays->equals->return->return
+RegisterSaveLayout#toString()::: register save layout to string:::return->registersToSlots->toString
+RegisterValue#toString()::: register value to string:::return->getRegister->getKindSuffix
+RegisterValue#getRegister()::: register value get register:::return
+RegisterValue#hashCode()::: register value hash code:::return->super->hashCode->reg->hashCode
+RegisterValue#equals(Object)::: register value equals:::if->other->return->super->equals->reg->equals->return
+StackLockValue#getOwner()::: stack lock value get owner:::return
+StackLockValue#setOwner(JavaValue)::: stack lock value set owner:::
+StackLockValue#getSlot()::: stack lock value get slot:::return
+StackLockValue#isEliminated()::: stack lock value is eliminated:::return
+StackLockValue#toString()::: stack lock value to string:::return
+StackLockValue#hashCode()::: stack lock value hash code:::prime->result->super->hashCode->owner->hashCode->slot->hashCode->return
+StackLockValue#equals(Object)::: stack lock value equals:::if->other->return->super->equals->owner->equals->slot->equals->return
+StackLockValue#setSlot(AllocatableValue)::: stack lock value set slot:::
 StackSlot#get(ValueKind, int, boolean):::Gets a StackSlot instance representing a stack slot at a given index holding a value of a given kind.:::return->new->StackSlot
 StackSlot#getOffset(int):::Gets the offset of this stack slot, relative to the stack pointer.:::result->return
+StackSlot#isInCallerFrame()::: stack slot is in caller frame:::return
+StackSlot#getRawOffset()::: stack slot get raw offset:::return
+StackSlot#getRawAddFrameSize()::: stack slot get raw add frame size:::return
+StackSlot#toString()::: stack slot to string:::if->return->getKindSuffix->else->if->return->getKindSuffix->else->return->getKindSuffix
 StackSlot#asOutArg():::Gets this stack slot used to pass an argument from the perspective of a caller.:::if->return->getValueKind->get->return
 StackSlot#asInArg():::Gets this stack slot used to pass an argument from the perspective of a callee.:::if->return->getValueKind->get->return
+StackSlot#hashCode()::: stack slot hash code:::prime->result->super->hashCode->return
+StackSlot#equals(Object)::: stack slot equals:::if->other->return->super->equals->return
+TargetDescription#hashCode()::: target description hash code:::throw->new->UnsupportedOperationException
+TargetDescription#equals(Object)::: target description equals:::if->return->if->that->if->equals->equals->return->return
+TargetDescription#toString()::: target description to string:::return->identityHashCodeString
+ValueKindFactory#getValueKind(JavaKind)::: value kind factory get value kind:::
+ValueUtil#isIllegal(Value)::: value util is illegal:::return->equals
+ValueUtil#isIllegalJavaValue(JavaValue)::: value util is illegal java value:::return->equals
+ValueUtil#isLegal(Value)::: value util is legal:::return->isIllegal
+ValueUtil#isVirtualObject(JavaValue)::: value util is virtual object:::return
+ValueUtil#asVirtualObject(JavaValue)::: value util as virtual object:::return
+ValueUtil#isConstantJavaValue(JavaValue)::: value util is constant java value:::return
+ValueUtil#asConstantJavaValue(JavaValue)::: value util as constant java value:::return
+ValueUtil#isAllocatableValue(Value)::: value util is allocatable value:::return
+ValueUtil#asAllocatableValue(Value)::: value util as allocatable value:::return
+ValueUtil#isStackSlot(Value)::: value util is stack slot:::return
+ValueUtil#asStackSlot(Value)::: value util as stack slot:::return
+ValueUtil#isRegister(Value)::: value util is register:::return
+ValueUtil#asRegister(Value)::: value util as register:::return->asRegisterValue->getRegister
+ValueUtil#asRegisterValue(Value)::: value util as register value:::return
+ValueUtil#asRegister(Value, PlatformKind)::: value util as register:::if->value->getPlatformKind->throw->value->getPlatformKind->new->InternalError->else->return->asRegister
 VirtualObject#get(ResolvedJavaType, int):::Creates a new VirtualObject for the given type, with the given fields:::return->new->VirtualObject
 VirtualObject#get(ResolvedJavaType, int, boolean):::Creates a new VirtualObject for the given type, with the given fields:::return->new->VirtualObject
+VirtualObject#appendValue(StringBuilder, JavaValue, Set)::: virtual object append value:::if->vo->buf->append->toJavaName->append->append->append->if->visited->contains->visited->add->buf->append->if->buf->append->else->if->isArray->for->i->else->fields->getInstanceFields->fieldIndex->for->i->for->buf->append->else->buf->append->return
+VirtualObject.LayoutVerifier#getOffset(ResolvedJavaField)::: layout verifier get offset:::
+VirtualObject.LayoutVerifier#getStorageKind(ResolvedJavaField)::: layout verifier get storage kind:::return->field->getType->getJavaKind
+VirtualObject#verifyLayout(LayoutVerifier)::: virtual object verify layout:::if->type->isArray->fields->type->getInstanceFields->fieldIndex->for->i->if->throw->new->JVMCIError
+VirtualObject#toString()::: virtual object to string:::visited->Collections->new->IdentityHashMap<VirtualObject,Boolean>->newSetFromMap->return->new->StringBuilder->appendValue->toString
 VirtualObject#getType():::Returns the type of the object whose allocation was removed during compilation:::return
 VirtualObject#getValues():::Returns the array containing all the values to be stored into the object when it is recreated:::return
 VirtualObject#getSlotKind(int):::Returns the kind of the value at index.:::return
@@ -107,3 +206,6 @@ VirtualObject#getId():::Returns the unique id that identifies the object within 
 VirtualObject#isAutoBox():::Returns true if the object is a box:::return
 VirtualObject#setIsAutoBox(boolean):::Sets the value of the box flag.:::
 VirtualObject#setValues(JavaValue[], JavaKind[]):::Overwrites the current set of values with a new one.:::
+VirtualObject#hashCode()::: virtual object hash code:::return->type->hashCode
+VirtualObject#equals(Object)::: virtual object equals:::if->return->if->l->if->equals->return->for->i->return->return
+VirtualObject#same(Object, Object)::: virtual object same:::return

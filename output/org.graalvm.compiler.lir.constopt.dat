@@ -1,2 +1,62 @@
+ConstantLoadOptimization_OptionDescriptors#get(String)::: constant load optimization_ option descriptors get:::switch->return->OptionDescriptor->create->return
+ConstantLoadOptimization_OptionDescriptors#iterator()::: constant load optimization_ option descriptors iterator:::return->new->Iterator<OptionDescriptor>
+ConstantLoadOptimization#run(TargetDescription, LIRGenerationResult, PreAllocationOptimizationContext)::: constant load optimization run:::lirGen->lirGenRes->getLIR->new->Optimization->apply
+ConstantLoadOptimization.Optimization#apply()::: optimization apply:::try->indent->debug->logAndIndent->try->s->debug->scope->foreach->lir->getControlFlowGraph->getBlocks->this->analyzeBlock->map->if->t->usageCount->return->else->singleUsageConstantsSkipped->increment->return->filter->map->tree->this->addUsageToBlockMap->forEach->forEach->catch->throw->debug->handle->finally->try->s->debug->scope->map->this->createConstantTree->forEach->foreach->lir->getControlFlowGraph->getBlocks->this->rewriteBlock->catch->throw->debug->handle->finally->catch->finally
+ConstantLoadOptimization.Optimization#verifyStates()::: optimization verify states:::map->this->verifyStateUsage->forEach->return
+ConstantLoadOptimization.Optimization#verifyStateUsage(DefUseTree)::: optimization verify state usage:::var->tree->getVariable->stateConsumer->new->ValueConsumer->foreach->lir->getControlFlowGraph->getBlocks->foreach->lir->getLIRforBlock->inst->visitEachState
+ConstantLoadOptimization.Optimization#isConstantLoad(LIRInstruction)::: optimization is constant load:::if->LoadConstantOp->isLoadConstantOp->return->return->LoadConstantOp->asLoadConstantOp->getResult->isVariable
+ConstantLoadOptimization.Optimization#addUsageToBlockMap(UseEntry)::: optimization add usage to block map:::block->entry->getBlock->list->blockMap->get->if->new->ArrayList<>->blockMap->put->list->add
+ConstantLoadOptimization.Optimization#analyzeBlock(AbstractBlockBase):::Collects def-use information for a block.:::try->indent->debug->logAndIndent->loadConsumer->if->isVariable->var->if->phiConstants->get->if->defined->get->defined->set->if->isConstantLoad->debug->log->map->new->DefUseTree->put->constantsTotal->increment->else->removed->map->remove->if->phiConstantsSkipped->increment->phiConstants->set->debug->log->else->useConsumer->if->isVariable->var->if->phiConstants->get->tree->map->get->if->tree->addUsage->debug->log->opId->foreach->lir->getLIRforBlock->inst->setId->inst->visitEachOutput->inst->visitEachInput->inst->visitEachAlive->catch->finally
+ConstantLoadOptimization.Optimization#createConstantTree(DefUseTree):::Creates the dominator tree and searches for an solution.:::constTree->lir->getControlFlowGraph->new->ConstantTree->constTree->tree->getBlock->set->tree->constTree->u->getBlock->set->forEach->if->constTree->tree->getBlock->get->usageAtDefinitionSkipped->increment->return->constTree->markBlocks->cost->ConstantTreeAnalyzer->tree->getBlock->analyze->usageCount->cost->getUsages->size->if->debug->isLogEnabled->try->i->debug->tree->getVariable->tree->getBlock->tree->getBlock->getRelativeFrequency->logAndIndent->debug->log->catch->finally->if->cost->getNumMaterializations->cost->getBestCost->tree->getBlock->getRelativeFrequency->try->s->debug->scope->i->debug->isLogEnabled->debug->tree->getVariable->tree->getConstant->toValueString->logAndIndent->deleteInstruction->constantsOptimized->increment->tree->getBlock->createLoads->catch->throw->debug->handle->finally->else->materializeAtDefinitionSkipped->increment->debug->tree->getVariable->dump
+ConstantLoadOptimization.Optimization#createLoads(DefUseTree, ConstantTree, AbstractBlockBase)::: optimization create loads:::worklist->new->ArrayDeque<>->worklist->add->while->worklist->isEmpty->block->worklist->pollLast->if->constTree->get->constTree->set->tree->getConstant->tree->getVariable->getValueKind->constTree->getCost->getUsages->insertLoad->else->dominated->block->getFirstDominated->while->if->constTree->isMarked->worklist->addLast->dominated->getDominatedSibling
+ConstantLoadOptimization.Optimization#insertLoad(Constant, ValueKind, AbstractBlockBase, List)::: optimization insert load:::variable->lirGen->newVariable->move->lirGen->getSpillMoveFactory->createLoad->getInsertionBuffer->append->debug->log->foreach->u->setValue->debug->u->getInstruction->log
+ConstantLoadOptimization.Optimization#rewriteBlock(AbstractBlockBase):::Inserts the constant loads created in #createConstantTree and deletes the original definition.:::buffer->insertionBuffers->get->if->buffer->finish->instructions->lir->getLIRforBlock->hasDead->foreach->if->else->inst->setId->if->instructions->Collections->singleton->removeAll
+ConstantLoadOptimization.Optimization#deleteInstruction(DefUseTree)::: optimization delete instruction:::block->tree->getBlock->instruction->tree->getInstruction->debug->log->lir->getLIRforBlock->instruction->id->set
+ConstantLoadOptimization.Optimization#getInsertionBuffer(AbstractBlockBase)::: optimization get insertion buffer:::insertionBuffer->insertionBuffers->get->if->new->LIRInsertionBuffer->insertionBuffers->put->instructions->lir->getLIRforBlock->insertionBuffer->init->return
+ConstantTree.NodeCost#forEachProperty(BiConsumer)::: node cost for each property:::action->Double->getBestCost->toString->accept->action->Integer->getNumMaterializations->toString->accept->action->Integer->usages->size->toString->accept
+ConstantTree.NodeCost#addUsage(UseEntry)::: node cost add usage:::if->new->ArrayList<>->usages->add
+ConstantTree.NodeCost#getUsages()::: node cost get usages:::if->return->Collections->emptyList->return
+ConstantTree.NodeCost#getBestCost()::: node cost get best cost:::return
+ConstantTree.NodeCost#getNumMaterializations()::: node cost get num materializations:::return
+ConstantTree.NodeCost#setBestCost(double)::: node cost set best cost:::
+ConstantTree.NodeCost#toString()::: node cost to string:::return->usages->size
+ConstantTree#getOrInitList(AbstractBlockBase)::: constant tree get or init list:::list->blockMap->get->if->new->ArrayList<>->blockMap->put->return
+ConstantTree#getUsages(AbstractBlockBase)::: constant tree get usages:::list->blockMap->get->if->return->Collections->emptyList->return->Collections->unmodifiableList
 ConstantTree#getOrInitCost(AbstractBlockBase):::Returns the cost object associated with block:::cost->getCost->if->block->getRelativeFrequency->blockMap->get->new->NodeCost->setCost->return
+ConstantTree#getName(Flags)::: constant tree get name:::switch->return->return->return->return->return->super->getName
+ConstantTree#forEachPropertyPair(AbstractBlockBase, BiConsumer)::: constant tree for each property pair:::if->get->block->getDominator->block->getDominator->get->action->accept->super->forEachPropertyPair
+ConstantTree#subTreeSize()::: constant tree sub tree size:::return->stream->count
+ConstantTree#getStartBlock()::: constant tree get start block:::return->stream->findFirst->get
+ConstantTree#markBlocks()::: constant tree mark blocks:::foreach->getBlocks->if->get->setDominatorPath
+ConstantTree#isMarked(AbstractBlockBase)::: constant tree is marked:::return->get
+ConstantTree#isLeafBlock(AbstractBlockBase)::: constant tree is leaf block:::dom->block->getFirstDominated->while->if->isMarked->return->dom->getDominatedSibling->return
+ConstantTree#setSolution(AbstractBlockBase)::: constant tree set solution:::set
+ConstantTree#size()::: constant tree size:::return->getBlocks
+ConstantTree#traverseTreeWhileTrue(AbstractBlockBase, Predicate>)::: constant tree traverse tree while true:::if->action->test->dom->block->getFirstDominated->while->if->this->isMarked->traverseTreeWhileTrue->dom->getDominatedSibling
+ConstantTreeAnalyzer#analyze(DebugContext, ConstantTree, AbstractBlockBase)::: constant tree analyzer analyze:::try->s->debug->scope->analyzer->new->ConstantTreeAnalyzer->analyzer->analyzeBlocks->return->tree->getCost->catch->throw->debug->handle->finally
+ConstantTreeAnalyzer#analyzeBlocks(DebugContext, AbstractBlockBase):::Queues all relevant blocks for #process processing:::worklist->new->ArrayDeque<>->worklist->offerLast->while->worklist->isEmpty->block->worklist->pollLast->try->i->debug->logAndIndent->if->isLeafBlock->debug->log->leafCost->continue->if->visited->block->getId->get->debug->log->worklist->offerLast->dominated->block->getFirstDominated->while->filteredPush->dominated->getDominatedSibling->visited->block->getId->set->else->debug->log->process->catch->finally
+ConstantTreeAnalyzer#process(AbstractBlockBase):::Calculates the cost of a block:::usages->new->ArrayList<>->bestCost->numMat->child->block->getFirstDominated->while->if->isMarked->childCost->tree->getCost->usages->childCost->getUsages->addAll->childCost->getNumMaterializations->childCost->getBestCost->child->getDominatedSibling->usagesBlock->tree->getUsages->probabilityBlock->block->getRelativeFrequency->if->usagesBlock->isEmpty->shouldMaterializerInCurrentBlock->usages->addAll->tree->set->else->nodeCost->new->NodeCost->tree->setCost
+ConstantTreeAnalyzer#shouldMaterializerInCurrentBlock(double, double, int):::This is the cost function that decides whether a materialization should be inserted in the current block:::return->Math->pow
+ConstantTreeAnalyzer#filteredPush(DebugContext, Deque>, AbstractBlockBase)::: constant tree analyzer filtered push:::if->isMarked->debug->log->worklist->offerLast
+ConstantTreeAnalyzer#leafCost(AbstractBlockBase)::: constant tree analyzer leaf cost:::tree->set->tree->getOrInitCost
+ConstantTreeAnalyzer#isMarked(AbstractBlockBase)::: constant tree analyzer is marked:::return->tree->isMarked
+ConstantTreeAnalyzer#isLeafBlock(AbstractBlockBase)::: constant tree analyzer is leaf block:::return->tree->isLeafBlock
+DefUseTree#getVariable()::: def use tree get variable:::return->instruction->getResult
+DefUseTree#getConstant()::: def use tree get constant:::return->instruction->getConstant
+DefUseTree#getInstruction()::: def use tree get instruction:::return
+DefUseTree#getBlock()::: def use tree get block:::return
+DefUseTree#toString()::: def use tree to string:::return
+DefUseTree#addUsage(AbstractBlockBase, LIRInstruction, Value)::: def use tree add usage:::uses->new->UseEntry->add
+DefUseTree#usageCount()::: def use tree usage count:::return->uses->size
+DefUseTree#forEach(Consumer)::: def use tree for each:::uses->forEach
+UseEntry#getInstruction()::: use entry get instruction:::return
+UseEntry#getBlock()::: use entry get block:::return
+UseEntry#setValue(Value)::: use entry set value:::replaceValue
+UseEntry#replaceValue(LIRInstruction, Value, Value)::: use entry replace value:::proc->value->identityEquals->op->forEachAlive->op->forEachInput->op->forEachOutput->op->forEachTemp->op->forEachState
+UseEntry#getValue()::: use entry get value:::return
+UseEntry#toString()::: use entry to string:::return->getValue
+VariableMap#get(Variable)::: variable map get:::if->content->size->return->return->content->get
+VariableMap#put(Variable, T)::: variable map put:::while->content->size->content->add->return->content->set
+VariableMap#remove(Variable)::: variable map remove:::if->content->size->return->return->content->set
+VariableMap#forEach(Consumer)::: variable map for each:::foreach->if->action->accept
 VariableMap#filter(Predicate):::Keeps only keys which match the given predicate.:::for->i->content->size

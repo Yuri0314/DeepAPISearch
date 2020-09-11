@@ -1,9 +1,16 @@
 AbstractAnnotationValueVisitor6#visit(AnnotationValue, P):::Visits any annotation value as if by passing itself to that value's AnnotationValue#accept accept:::return->av->accept
 AbstractAnnotationValueVisitor6#visit(AnnotationValue):::Visits an annotation value as if by passing itself to that value's AnnotationValue#accept accept method passing null for the additional parameter:::return->av->accept
+AbstractAnnotationValueVisitor6#visitUnknown(AnnotationValue, P)::: abstract annotation value visitor6 visit unknown:::throw->new->UnknownAnnotationValueException
 AbstractElementVisitor6#visit(Element, P):::Visits any program element as if by passing itself to that element's Element#accept accept method:::return->e->accept
 AbstractElementVisitor6#visit(Element):::Visits any program element as if by passing itself to that element's Element#accept accept method and passing null for the additional parameter:::return->e->accept
+AbstractElementVisitor6#visitUnknown(Element, P)::: abstract element visitor6 visit unknown:::throw->new->UnknownElementException
+AbstractElementVisitor6#visitModule(ModuleElement, P)::: abstract element visitor6 visit module:::return->ElementVisitor.super->visitModule
+AbstractElementVisitor9#visitModule(ModuleElement, P)::: abstract element visitor9 visit module:::
 AbstractTypeVisitor6#visit(TypeMirror, P):::Visits any type mirror as if by passing itself to that type mirror's TypeMirror#accept accept method:::return->t->accept
 AbstractTypeVisitor6#visit(TypeMirror):::Visits any type mirror as if by passing itself to that type mirror's TypeMirror#accept accept method and passing null for the additional parameter:::return->t->accept
+AbstractTypeVisitor6#visitUnion(UnionType, P)::: abstract type visitor6 visit union:::return->visitUnknown
+AbstractTypeVisitor6#visitIntersection(IntersectionType, P)::: abstract type visitor6 visit intersection:::return->visitUnknown
+AbstractTypeVisitor6#visitUnknown(TypeMirror, P)::: abstract type visitor6 visit unknown:::throw->new->UnknownTypeException
 AbstractTypeVisitor7#visitUnion(UnionType, P):::Visits a UnionType in a manner defined by a subclass.:::
 AbstractTypeVisitor8#visitIntersection(IntersectionType, P):::Visits an IntersectionType in a manner defined by a subclass.:::
 ElementFilter#fieldsIn(Iterable):::Returns a list of fields in elements.:::return->listFilter
@@ -18,12 +25,16 @@ ElementFilter#packagesIn(Iterable):::Returns a list of packages in elements.:::r
 ElementFilter#packagesIn(Set):::Returns a set of packages in elements.:::return->setFilter
 ElementFilter#modulesIn(Iterable):::Returns a list of modules in elements.:::return->listFilter
 ElementFilter#modulesIn(Set):::Returns a set of modules in elements.:::return->setFilter
+ElementFilter#listFilter(Iterable, Set, Class)::: element filter list filter:::list->new->ArrayList<>->foreach->if->targetKinds->e->getKind->contains->list->clazz->cast->add->return
+ElementFilter#setFilter(Set, Set, Class)::: element filter set filter:::set->new->LinkedHashSet<>->foreach->if->targetKinds->e->getKind->contains->set->clazz->cast->add->return
 ElementFilter#exportsIn(Iterable):::Returns a list of exports directives in directives.:::return->listFilter
 ElementFilter#opensIn(Iterable):::Returns a list of opens directives in directives.:::return->listFilter
 ElementFilter#providesIn(Iterable):::Returns a list of provides directives in directives.:::return->listFilter
 ElementFilter#requiresIn(Iterable):::Returns a list of requires directives in directives.:::return->listFilter
 ElementFilter#usesIn(Iterable):::Returns a list of uses directives in directives.:::return->listFilter
+ElementFilter#listFilter(Iterable, DirectiveKind, Class)::: element filter list filter:::list->new->ArrayList<>->foreach->if->d->getKind->list->clazz->cast->add->return
 ElementKindVisitor6#visitPackage(PackageElement, P):::The element argument has kind {@code PACKAGE.:::return->defaultAction
+ElementKindVisitor6#visitType(TypeElement, P)::: element kind visitor6 visit type:::k->e->getKind->switch->return->visitTypeAsAnnotationType->return->visitTypeAsClass->return->visitTypeAsEnum->return->visitTypeAsInterface->throw->new->AssertionError
 ElementKindVisitor6#visitTypeAsAnnotationType(TypeElement, P):::Visits an ANNOTATION_TYPE type element.:::return->defaultAction
 ElementKindVisitor6#visitTypeAsClass(TypeElement, P):::Visits a CLASS type element.:::return->defaultAction
 ElementKindVisitor6#visitTypeAsEnum(TypeElement, P):::Visits an ENUM type element.:::return->defaultAction
@@ -35,11 +46,14 @@ ElementKindVisitor6#visitVariableAsField(VariableElement, P):::Visits a FIELD va
 ElementKindVisitor6#visitVariableAsLocalVariable(VariableElement, P):::Visits a LOCAL_VARIABLE variable element.:::return->defaultAction
 ElementKindVisitor6#visitVariableAsParameter(VariableElement, P):::Visits a PARAMETER variable element.:::return->defaultAction
 ElementKindVisitor6#visitVariableAsResourceVariable(VariableElement, P):::Visits a RESOURCE_VARIABLE variable element.:::return->visitUnknown
+ElementKindVisitor6#visitExecutable(ExecutableElement, P)::: element kind visitor6 visit executable:::k->e->getKind->switch->return->visitExecutableAsConstructor->return->visitExecutableAsInstanceInit->return->visitExecutableAsMethod->return->visitExecutableAsStaticInit->throw->new->AssertionError
 ElementKindVisitor6#visitExecutableAsConstructor(ExecutableElement, P):::Visits a CONSTRUCTOR executable element.:::return->defaultAction
 ElementKindVisitor6#visitExecutableAsInstanceInit(ExecutableElement, P):::Visits an INSTANCE_INIT executable element.:::return->defaultAction
 ElementKindVisitor6#visitExecutableAsMethod(ExecutableElement, P):::Visits a METHOD executable element.:::return->defaultAction
 ElementKindVisitor6#visitExecutableAsStaticInit(ExecutableElement, P):::Visits a STATIC_INIT executable element.:::return->defaultAction
 ElementKindVisitor6#visitTypeParameter(TypeParameterElement, P):::The element argument has kind {@code TYPE_PARAMETER.:::return->defaultAction
+ElementKindVisitor7#visitVariableAsResourceVariable(VariableElement, P)::: element kind visitor7 visit variable as resource variable:::return->defaultAction
+ElementKindVisitor9#visitModule(ModuleElement, P)::: element kind visitor9 visit module:::return->defaultAction
 Elements#getPackageElement(CharSequence):::Returns a package given its fully qualified name if the package is unique in the environment:::
 Elements#getPackageElement(ModuleElement, CharSequence):::Returns a package given its fully qualified name, as seen from the given module.:::return
 Elements#getAllPackageElements(CharSequence):::Returns all package elements with the given canonical name:::modules->getAllModuleElements->if->modules->isEmpty->packageElt->getPackageElement->return->Collections->singleton->Collections->emptySet->else->result->new->LinkedHashSet<>->foreach->packageElt->getPackageElement->if->result->add->return->Collections->unmodifiableSet
@@ -69,10 +83,48 @@ Elements#isFunctionalInterface(TypeElement):::Returns true if the type element i
 ElementScanner6#scan(Iterable, P):::Iterates over the given elements and calls #scan(Element, Object) scan(Element, P) on each one:::result->foreach->scan->return
 ElementScanner6#scan(Element, P):::Processes an element by calling e.accept(this, p); this method may be overridden by subclasses.:::return->e->accept
 ElementScanner6#scan(Element):::Convenience method equivalent to v.scan(e, null).:::return->scan
+ElementScanner6#visitPackage(PackageElement, P)::: element scanner6 visit package:::return->e->getEnclosedElements->scan
+ElementScanner6#visitType(TypeElement, P)::: element scanner6 visit type:::return->e->getEnclosedElements->scan
+ElementScanner6#visitVariable(VariableElement, P)::: element scanner6 visit variable:::if->e->getKind->return->e->getEnclosedElements->scan->else->return->visitUnknown
+ElementScanner6#visitExecutable(ExecutableElement, P)::: element scanner6 visit executable:::return->e->getParameters->scan
+ElementScanner6#visitTypeParameter(TypeParameterElement, P)::: element scanner6 visit type parameter:::return->e->getEnclosedElements->scan
+ElementScanner7#visitVariable(VariableElement, P)::: element scanner7 visit variable:::return->e->getEnclosedElements->scan
+ElementScanner9#visitModule(ModuleElement, P)::: element scanner9 visit module:::return->e->getEnclosedElements->scan
 SimpleAnnotationValueVisitor6#defaultAction(Object, P):::The default action for visit methods.:::return
+SimpleAnnotationValueVisitor6#visitBoolean(boolean, P)::: simple annotation value visitor6 visit boolean:::return->defaultAction
+SimpleAnnotationValueVisitor6#visitByte(byte, P)::: simple annotation value visitor6 visit byte:::return->defaultAction
+SimpleAnnotationValueVisitor6#visitChar(char, P)::: simple annotation value visitor6 visit char:::return->defaultAction
+SimpleAnnotationValueVisitor6#visitDouble(double, P)::: simple annotation value visitor6 visit double:::return->defaultAction
+SimpleAnnotationValueVisitor6#visitFloat(float, P)::: simple annotation value visitor6 visit float:::return->defaultAction
+SimpleAnnotationValueVisitor6#visitInt(int, P)::: simple annotation value visitor6 visit int:::return->defaultAction
+SimpleAnnotationValueVisitor6#visitLong(long, P)::: simple annotation value visitor6 visit long:::return->defaultAction
+SimpleAnnotationValueVisitor6#visitShort(short, P)::: simple annotation value visitor6 visit short:::return->defaultAction
+SimpleAnnotationValueVisitor6#visitString(String, P)::: simple annotation value visitor6 visit string:::return->defaultAction
+SimpleAnnotationValueVisitor6#visitType(TypeMirror, P)::: simple annotation value visitor6 visit type:::return->defaultAction
+SimpleAnnotationValueVisitor6#visitEnumConstant(VariableElement, P)::: simple annotation value visitor6 visit enum constant:::return->defaultAction
+SimpleAnnotationValueVisitor6#visitAnnotation(AnnotationMirror, P)::: simple annotation value visitor6 visit annotation:::return->defaultAction
+SimpleAnnotationValueVisitor6#visitArray(List, P)::: simple annotation value visitor6 visit array:::return->defaultAction
 SimpleElementVisitor6#defaultAction(Element, P):::The default action for visit methods.:::return
+SimpleElementVisitor6#visitPackage(PackageElement, P)::: simple element visitor6 visit package:::return->defaultAction
+SimpleElementVisitor6#visitType(TypeElement, P)::: simple element visitor6 visit type:::return->defaultAction
+SimpleElementVisitor6#visitVariable(VariableElement, P)::: simple element visitor6 visit variable:::if->e->getKind->return->defaultAction->else->return->visitUnknown
+SimpleElementVisitor6#visitExecutable(ExecutableElement, P)::: simple element visitor6 visit executable:::return->defaultAction
+SimpleElementVisitor6#visitTypeParameter(TypeParameterElement, P)::: simple element visitor6 visit type parameter:::return->defaultAction
+SimpleElementVisitor7#visitVariable(VariableElement, P)::: simple element visitor7 visit variable:::return->defaultAction
+SimpleElementVisitor9#visitModule(ModuleElement, P)::: simple element visitor9 visit module:::return->defaultAction
 SimpleTypeVisitor6#defaultAction(TypeMirror, P):::The default action for visit methods.:::return
+SimpleTypeVisitor6#visitPrimitive(PrimitiveType, P)::: simple type visitor6 visit primitive:::return->defaultAction
 SimpleTypeVisitor6#visitNull(NullType, P):::This implementation calls {@code defaultAction.:::return->defaultAction
+SimpleTypeVisitor6#visitArray(ArrayType, P)::: simple type visitor6 visit array:::return->defaultAction
+SimpleTypeVisitor6#visitDeclared(DeclaredType, P)::: simple type visitor6 visit declared:::return->defaultAction
+SimpleTypeVisitor6#visitError(ErrorType, P)::: simple type visitor6 visit error:::return->defaultAction
+SimpleTypeVisitor6#visitTypeVariable(TypeVariable, P)::: simple type visitor6 visit type variable:::return->defaultAction
+SimpleTypeVisitor6#visitWildcard(WildcardType, P)::: simple type visitor6 visit wildcard:::return->defaultAction
+SimpleTypeVisitor6#visitExecutable(ExecutableType, P)::: simple type visitor6 visit executable:::return->defaultAction
+SimpleTypeVisitor6#visitNoType(NoType, P)::: simple type visitor6 visit no type:::return->defaultAction
+SimpleTypeVisitor7#visitUnion(UnionType, P)::: simple type visitor7 visit union:::return->defaultAction
+SimpleTypeVisitor8#visitIntersection(IntersectionType, P)::: simple type visitor8 visit intersection:::return->defaultAction
+TypeKindVisitor6#visitPrimitive(PrimitiveType, P)::: type kind visitor6 visit primitive:::k->t->getKind->switch->return->visitPrimitiveAsBoolean->return->visitPrimitiveAsByte->return->visitPrimitiveAsShort->return->visitPrimitiveAsInt->return->visitPrimitiveAsLong->return->visitPrimitiveAsChar->return->visitPrimitiveAsFloat->return->visitPrimitiveAsDouble->throw->new->AssertionError
 TypeKindVisitor6#visitPrimitiveAsBoolean(PrimitiveType, P):::Visits a BOOLEAN primitive type.:::return->defaultAction
 TypeKindVisitor6#visitPrimitiveAsByte(PrimitiveType, P):::Visits a BYTE primitive type.:::return->defaultAction
 TypeKindVisitor6#visitPrimitiveAsShort(PrimitiveType, P):::Visits a SHORT primitive type.:::return->defaultAction
@@ -81,10 +133,14 @@ TypeKindVisitor6#visitPrimitiveAsLong(PrimitiveType, P):::Visits a LONG primitiv
 TypeKindVisitor6#visitPrimitiveAsChar(PrimitiveType, P):::Visits a CHAR primitive type.:::return->defaultAction
 TypeKindVisitor6#visitPrimitiveAsFloat(PrimitiveType, P):::Visits a FLOAT primitive type.:::return->defaultAction
 TypeKindVisitor6#visitPrimitiveAsDouble(PrimitiveType, P):::Visits a DOUBLE primitive type.:::return->defaultAction
+TypeKindVisitor6#visitNoType(NoType, P)::: type kind visitor6 visit no type:::k->t->getKind->switch->return->visitNoTypeAsVoid->return->visitNoTypeAsPackage->return->visitNoTypeAsModule->return->visitNoTypeAsNone->throw->new->AssertionError
 TypeKindVisitor6#visitNoTypeAsVoid(NoType, P):::Visits a TypeKind#VOID VOID pseudo-type.:::return->defaultAction
 TypeKindVisitor6#visitNoTypeAsPackage(NoType, P):::Visits a TypeKind#PACKAGE PACKAGE pseudo-type.:::return->defaultAction
 TypeKindVisitor6#visitNoTypeAsModule(NoType, P):::Visits a TypeKind#MODULE MODULE pseudo-type.:::return->visitUnknown
 TypeKindVisitor6#visitNoTypeAsNone(NoType, P):::Visits a TypeKind#NONE NONE pseudo-type.:::return->defaultAction
+TypeKindVisitor7#visitUnion(UnionType, P)::: type kind visitor7 visit union:::return->defaultAction
+TypeKindVisitor8#visitIntersection(IntersectionType, P)::: type kind visitor8 visit intersection:::return->defaultAction
+TypeKindVisitor9#visitNoTypeAsModule(NoType, P)::: type kind visitor9 visit no type as module:::return->defaultAction
 Types#asElement(TypeMirror):::Returns the element corresponding to a type:::
 Types#isSameType(TypeMirror, TypeMirror):::Tests whether two TypeMirror objects represent the same type:::
 Types#isSubtype(TypeMirror, TypeMirror):::Tests whether one type is a subtype of another:::

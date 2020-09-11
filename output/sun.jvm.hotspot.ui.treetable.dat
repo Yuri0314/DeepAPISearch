@@ -1,10 +1,36 @@
+AbstractTreeTableModel#getRoot()::: abstract tree table model get root:::return
+AbstractTreeTableModel#isLeaf(Object)::: abstract tree table model is leaf:::return->getChildCount
+AbstractTreeTableModel#valueForPathChanged(TreePath, Object)::: abstract tree table model value for path changed:::
+AbstractTreeTableModel#getIndexOfChild(Object, Object)::: abstract tree table model get index of child:::for->i->getChildCount->return
+AbstractTreeTableModel#addTreeModelListener(TreeModelListener)::: abstract tree table model add tree model listener:::listenerList->add
+AbstractTreeTableModel#removeTreeModelListener(TreeModelListener)::: abstract tree table model remove tree model listener:::listenerList->remove
+AbstractTreeTableModel#fireTreeNodesChanged(Object, Object[], int[], Object[])::: abstract tree table model fire tree nodes changed:::listeners->listenerList->getListenerList->e->for->i
+AbstractTreeTableModel#fireTreeNodesInserted(Object, Object[], int[], Object[])::: abstract tree table model fire tree nodes inserted:::listeners->listenerList->getListenerList->e->for->i
+AbstractTreeTableModel#fireTreeNodesRemoved(Object, Object[], int[], Object[])::: abstract tree table model fire tree nodes removed:::listeners->listenerList->getListenerList->e->for->i
+AbstractTreeTableModel#fireTreeStructureChanged(Object, Object[], int[], Object[])::: abstract tree table model fire tree structure changed:::listeners->listenerList->getListenerList->e->for->i
+AbstractTreeTableModel#getColumnClass(int)::: abstract tree table model get column class:::return
 AbstractTreeTableModel#isCellEditable(Object, int):::By default, make the column with the Tree in it the only editable one:::return->getColumnClass
+AbstractTreeTableModel#setValueAt(Object, Object, int)::: abstract tree table model set value at:::
+JTreeTable#getTreeEditable()::: tree table get tree editable:::return
+JTreeTable#setTreeEditable(boolean)::: tree table set tree editable:::
+JTreeTable#getShowsIcons()::: tree table get shows icons:::return
+JTreeTable#setShowsIcons(boolean)::: tree table set shows icons:::
+JTreeTable#setRootVisible(boolean)::: tree table set root visible:::tree->setRootVisible
+JTreeTable#getShowsRootHandles()::: tree table get shows root handles:::return->tree->getShowsRootHandles
+JTreeTable#setShowsRootHandles(boolean)::: tree table set shows root handles:::tree->setShowsRootHandles
 JTreeTable#updateUI():::Overridden to message super and forward the method to the tree:::super->updateUI->if->tree->updateUI->new->TreeTableCellEditor->setDefaultEditor->LookAndFeel->installColorsAndFont
 JTreeTable#getEditingRow():::Workaround for BasicTableUI anomaly:::return->getColumnClass
+JTreeTable#realEditingRow():::Returns the actual row that is editing as getEditingRow will always return -1.:::return
 JTreeTable#sizeColumnsToFit(int):::This is overriden to invoke supers implementation, and then, if the receiver is editing a Tree column, the editors bounds is reset:::super->sizeColumnsToFit->if->getEditingColumn->getColumnClass->cellRect->realEditingRow->getEditingColumn->getCellRect->component->getEditorComponent->component->setBounds->component->validate
 JTreeTable#setRowHeight(int):::Overridden to pass the new rowHeight to the tree.:::super->setRowHeight->if->tree->getRowHeight->tree->getRowHeight->setRowHeight
 JTreeTable#getTree():::Returns the tree that is being shared between the model.:::return
 JTreeTable#editCellAt(int, int, EventObject):::Overriden to invoke repaint for the particular location if the column contains the tree:::retValue->super->editCellAt->if->getColumnClass->getCellRect->repaint->return
+JTreeTable.JTreeTableCellRenderer#getClosedIcon()::: tree table cell renderer get closed icon:::return->super->getClosedIcon
+JTreeTable.JTreeTableCellRenderer#getDefaultClosedIcon()::: tree table cell renderer get default closed icon:::return->super->getDefaultClosedIcon
+JTreeTable.JTreeTableCellRenderer#getDefaultLeafIcon()::: tree table cell renderer get default leaf icon:::return->super->getDefaultLeafIcon
+JTreeTable.JTreeTableCellRenderer#getDefaultOpenIcon()::: tree table cell renderer get default open icon:::return->super->getDefaultOpenIcon
+JTreeTable.JTreeTableCellRenderer#getLeafIcon()::: tree table cell renderer get leaf icon:::return->super->getLeafIcon
+JTreeTable.JTreeTableCellRenderer#getOpenIcon()::: tree table cell renderer get open icon:::return->super->getOpenIcon
 JTreeTable.TreeTableCellRenderer#updateUI():::updateUI is overridden to set the colors of the Tree's renderer to match that of the table.:::super->updateUI->tcr->getCellRenderer->if->dtcr->dtcr->UIManager->getColor->setTextSelectionColor->dtcr->UIManager->getColor->setBackgroundSelectionColor
 JTreeTable.TreeTableCellRenderer#setRowHeight(int):::Sets the row height of the tree, and forwards the row height to the table.:::if->super->setRowHeight->if->JTreeTable.this->getRowHeight->JTreeTable.this->getRowHeight->setRowHeight
 JTreeTable.TreeTableCellRenderer#setBounds(int, int, int, int):::This is overridden to set the height to match that of the JTable.:::super->JTreeTable.this->getHeight->setBounds
@@ -12,10 +38,18 @@ JTreeTable.TreeTableCellRenderer#paint(Graphics):::Sublcassed to translate the g
 JTreeTable.TreeTableCellRenderer#getTableCellRendererComponent(JTable, Object, boolean, boolean, int, int):::TreeCellRenderer method:::background->foreground->if->table->getSelectionBackground->table->getSelectionForeground->else->table->getBackground->table->getForeground->if->realEditingRow->getEditingColumn->UIManager->getColor->UIManager->getColor->else->if->UIManager->getBorder->if->isCellEditable->UIManager->getColor->UIManager->getColor->setBackground->tcr->getCellRenderer->if->dtcr->if->dtcr->setTextSelectionColor->dtcr->setBackgroundSelectionColor->else->dtcr->setTextNonSelectionColor->dtcr->setBackgroundNonSelectionColor->return
 JTreeTable.TreeTableCellEditor#getTableCellEditorComponent(JTable, Object, boolean, int, int):::Overriden to determine an offset that tree would place the editor at:::component->super->getTableCellEditorComponent->t->getTree->rv->t->isRootVisible->offsetRow->bounds->t->getRowBounds->offset->tcr->t->getCellRenderer->if->node->t->getPathForRow->getLastPathComponent->icon->if->t->getModel->isLeaf->getLeafIcon->else->if->tree->isExpanded->getOpenIcon->else->getClosedIcon->if->getIconTextGap->icon->getIconWidth->getComponent->return
 JTreeTable.TreeTableCellEditor#isCellEditable(EventObject):::This is overriden to forward the event to the tree:::if->me->if->me->getModifiers->me->getModifiers->for->counter->getColumnCount->if->me->getClickCount->return->return->if->return->return
+JTreeTable.TreeTableTextField#setBounds(int, int, int, int)::: tree table text field set bounds:::newX->Math->max->super->setBounds
 JTreeTable.ListToTreeSelectionModelWrapper#getListSelectionModel():::Returns the list selection model:::return
 JTreeTable.ListToTreeSelectionModelWrapper#resetRowSelection():::This is overridden to set updatingListSelectionModel and message super:::if->try->super->resetRowSelection->catch->finally
 JTreeTable.ListToTreeSelectionModelWrapper#createListSelectionListener():::Creates and returns an instance of ListSelectionHandler.:::return->new->ListSelectionHandler
 JTreeTable.ListToTreeSelectionModelWrapper#updateSelectedPathsFromSelectedRows():::If updatingListSelectionModel is false, this will reset the selected paths from the selected rows in the list selection model.:::if->try->min->listSelectionModel->getMinSelectionIndex->max->listSelectionModel->getMaxSelectionIndex->clearSelection->if->for->counter->catch->finally
+JTreeTable.ListToTreeSelectionModelWrapper.ListSelectionHandler#valueChanged(ListSelectionEvent)::: list selection handler value changed:::updateSelectedPathsFromSelectedRows
+SimpleTreeTableModel#getColumnCount()::: simple tree table model get column count:::return
+SimpleTreeTableModel#getColumnName(int)::: simple tree table model get column name:::switch->return->return->throw->new->RuntimeException
+SimpleTreeTableModel#getColumnClass(int)::: simple tree table model get column class:::switch->return->return->throw->new->RuntimeException
+SimpleTreeTableModel#getValueAt(Object, int)::: simple tree table model get value at:::realNode->switch->return->realNode->getName->return->realNode->getValue->throw->new->RuntimeException
+SimpleTreeTableModel#isCellEditable(Object, int)::: simple tree table model is cell editable:::switch->return->return->throw->new->RuntimeException
+SimpleTreeTableModel#setValueAt(Object, Object, int)::: simple tree table model set value at:::throw->new->RuntimeException
 SimpleTreeTableModel#getValuesEditable():::Defaults to true:::return
 SimpleTreeTableModel#setValuesEditable(boolean):::Defaults to true:::
 TreeTableModel#getColumnCount():::Returns the number ofs availible column.:::
@@ -24,4 +58,12 @@ TreeTableModel#getColumnClass(int):::Returns the type for column number column.:
 TreeTableModel#getValueAt(Object, int):::Returns the value to be displayed for node node, at column number column.:::
 TreeTableModel#isCellEditable(Object, int):::Indicates whether the the value for node node, at column number column is editable.:::
 TreeTableModel#setValueAt(Object, Object, int):::Sets the value for node node, at column number column.:::
+TreeTableModelAdapter#getColumnCount()::: tree table model adapter get column count:::return->treeTableModel->getColumnCount
+TreeTableModelAdapter#getColumnName(int)::: tree table model adapter get column name:::return->treeTableModel->getColumnName
+TreeTableModelAdapter#getColumnClass(int)::: tree table model adapter get column class:::return->treeTableModel->getColumnClass
+TreeTableModelAdapter#getRowCount()::: tree table model adapter get row count:::return->tree->getRowCount
+TreeTableModelAdapter#nodeForRow(int)::: tree table model adapter node for row:::treePath->tree->getPathForRow->return->treePath->getLastPathComponent
+TreeTableModelAdapter#getValueAt(int, int)::: tree table model adapter get value at:::return->treeTableModel->nodeForRow->getValueAt
+TreeTableModelAdapter#isCellEditable(int, int)::: tree table model adapter is cell editable:::return->treeTableModel->nodeForRow->isCellEditable
+TreeTableModelAdapter#setValueAt(Object, int, int)::: tree table model adapter set value at:::treeTableModel->nodeForRow->setValueAt
 TreeTableModelAdapter#delayedFireTableDataChanged():::Invokes fireTableDataChanged after all the pending events have been processed:::SwingUtilities->new->Runnable->invokeLater

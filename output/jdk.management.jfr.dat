@@ -1,3 +1,4 @@
+ConfigurationInfo#createMap(Object)::: configuration info create map:::if->td->values->td->values->map->values->size->new->HashMap<>->foreach->td->values->if->cdRow->k->cdRow->get->v->cdRow->get->if->map->put->return->Collections->unmodifiableMap->return->Collections->emptyMap
 ConfigurationInfo#getProvider():::Returns the provider of the configuration associated with this ConfigurationInfo (for example, "OpenJDK").:::return
 ConfigurationInfo#getContents():::Returns the textual representation of the configuration associated with this ConfigurationInfo, typically the contents of the configuration file that was used to create the configuration.:::return
 ConfigurationInfo#getSettings():::Returns the settings for the configuration associated with this ConfigurationInfo.:::return
@@ -6,6 +7,9 @@ ConfigurationInfo#getName():::Returns the name of the configuration associated w
 ConfigurationInfo#getDescription():::Returns a short sentence that describes the configuration associated with this ConfigurationInfo (for example, "Low overhead configuration safe for continuous use in production environments".:::return
 ConfigurationInfo#from(CompositeData):::Returns a ConfigurationInfo object represented by the specified CompositeData:::if->return->return->new->ConfigurationInfo
 ConfigurationInfo#toString():::Returns a description of the configuration that is associated with this ConfigurationInfo.:::s->new->Stringifier->s->add->s->add->s->add->s->add->return->s->toString
+EventTypeInfo#createCategoryNames(Object[])::: event type info create category names:::list->new->ArrayList<>->for->i->return->Collections->unmodifiableList
+EventTypeInfo#creatingSettingDescriptorInfos(EventType)::: event type info creating setting descriptor infos:::settings->eventType->getSettingDescriptors->settingDescriptorInfos->settings->size->new->ArrayList<>->foreach->settingDescriptorInfos->new->SettingDescriptorInfo->add->return->Collections->unmodifiableList
+EventTypeInfo#createSettings(Object)::: event type info create settings:::if->settings->getClass->isArray->settingsArray->list->new->ArrayList<>->foreach->if->list->SettingDescriptorInfo->from->add->return->Collections->unmodifiableList->return->Collections->emptyList
 EventTypeInfo#getLabel():::Returns the label, a human-readable name, associated with the event type for this EventTypeInfo (for example, "Garbage Collection").:::return
 EventTypeInfo#getCategoryNames():::Returns the list of human-readable names that makes up the category for this EventTypeInfo (for example, "Java Virtual Machine" or "Garbage Collector").:::return
 EventTypeInfo#getId():::Returns the unique ID for the event type associated with this EventTypeInfo, not guaranteed to be the same for different Java Virtual Machines (JVMs) instances.:::return
@@ -33,6 +37,49 @@ FlightRecorderMXBean#getRecordings():::Returns the list of the available recordi
 FlightRecorderMXBean#getConfigurations():::Returns the list of predefined configurations for this Java Virtual Machine (JVM):::
 FlightRecorderMXBean#getEventTypes():::Returns the list of currently registered event types:::
 FlightRecorderMXBean#copyTo(long, String):::Writes recording data to the specified file:::
+FlightRecorderMXBeanImpl.MXBeanListener#recordingStateChanged(Recording)::: bean listener recording state changed:::AccessController->new->PrivilegedAction<Void>->doPrivileged
+FlightRecorderMXBeanImpl#startRecording(long)::: flight recorder bean impl start recording:::MBeanUtils->checkControl->getExistingRecording->start
+FlightRecorderMXBeanImpl#stopRecording(long)::: flight recorder bean impl stop recording:::MBeanUtils->checkControl->return->getExistingRecording->stop
+FlightRecorderMXBeanImpl#closeRecording(long)::: flight recorder bean impl close recording:::MBeanUtils->checkControl->getExistingRecording->close
+FlightRecorderMXBeanImpl#openStream(long, Map)::: flight recorder bean impl open stream:::MBeanUtils->checkControl->if->FlightRecorder->isInitialized->throw->new->IllegalArgumentException->s->new->HashMap<>->new->HashMap<>->starttime->MBeanUtils->s->get->parseTimestamp->endtime->MBeanUtils->s->get->parseTimestamp->blockSize->MBeanUtils->s->get->parseBlockSize->is->getExistingRecording->getStream->if->throw->new->IOException->return->streamHandler->create->getId
+FlightRecorderMXBeanImpl#closeStream(long)::: flight recorder bean impl close stream:::MBeanUtils->checkControl->streamHandler->getStream->close
+FlightRecorderMXBeanImpl#readStream(long)::: flight recorder bean impl read stream:::MBeanUtils->checkMonitor->return->streamHandler->getStream->read
+FlightRecorderMXBeanImpl#getRecordings()::: flight recorder bean impl get recordings:::MBeanUtils->checkMonitor->if->FlightRecorder->isInitialized->return->Collections->emptyList->return->MBeanUtils->getRecorder->getRecordings->RecordingInfo->new->transformList
+FlightRecorderMXBeanImpl#getConfigurations()::: flight recorder bean impl get configurations:::MBeanUtils->checkMonitor->return->MBeanUtils->Configuration->getConfigurations->ConfigurationInfo->new->transformList
+FlightRecorderMXBeanImpl#getEventTypes()::: flight recorder bean impl get event types:::MBeanUtils->checkMonitor->eventTypes->AccessController->new->PrivilegedAction<List<EventType>>->new->FlightRecorderPermission->doPrivileged->return->MBeanUtils->EventTypeInfo->new->transformList
+FlightRecorderMXBeanImpl#getRecordingSettings(long)::: flight recorder bean impl get recording settings:::MBeanUtils->checkMonitor->return->getExistingRecording->getSettings
+FlightRecorderMXBeanImpl#setRecordingSettings(long, Map)::: flight recorder bean impl set recording settings:::Objects->requireNonNull->MBeanUtils->checkControl->getExistingRecording->setSettings
+FlightRecorderMXBeanImpl#newRecording()::: flight recorder bean impl new recording:::MBeanUtils->checkControl->getRecorder->return->AccessController->new->PrivilegedAction<Recording>->new->FlightRecorderPermission->doPrivileged->getId
+FlightRecorderMXBeanImpl#takeSnapshot()::: flight recorder bean impl take snapshot:::MBeanUtils->checkControl->return->getRecorder->takeSnapshot->getId
+FlightRecorderMXBeanImpl#setConfiguration(long, String)::: flight recorder bean impl set configuration:::Objects->requireNonNull->MBeanUtils->checkControl->try->c->Configuration->new->StringReader->create->getExistingRecording->c->getSettings->setSettings->catch->throw->new->IllegalArgumentException->finally
+FlightRecorderMXBeanImpl#setPredefinedConfiguration(long, String)::: flight recorder bean impl set predefined configuration:::Objects->requireNonNull->MBeanUtils->checkControl->r->getExistingRecording->foreach->Configuration->getConfigurations->if->c->getName->equals->r->c->getSettings->setSettings->return->throw->new->IllegalArgumentException
+FlightRecorderMXBeanImpl#copyTo(long, String)::: flight recorder bean impl copy to:::Objects->requireNonNull->MBeanUtils->checkControl->getExistingRecording->Paths->get->dump
+FlightRecorderMXBeanImpl#setRecordingOptions(long, Map)::: flight recorder bean impl set recording options:::Objects->requireNonNull->MBeanUtils->checkControl->ops->new->HashMap<String,String>->foreach->ops->entrySet->key->entry->getKey->value->entry->getValue->if->throw->new->IllegalArgumentException->if->OPTIONS->contains->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->r->getExistingRecording->MBeanUtils->booleanValue->validateOption->MBeanUtils->booleanValue->validateOption->Function->identity->validateOption->MBeanUtils->duration->validateOption->MBeanUtils->size->validateOption->MBeanUtils->duration->validateOption->MBeanUtils->destination->validateOption->MBeanUtils->booleanValue->r->setDumpOnExit->setOption->MBeanUtils->booleanValue->r->setToDisk->setOption->String->r->getId->valueOf->Function->identity->r->setName->setOption->MBeanUtils->duration->r->setMaxAge->setOption->MBeanUtils->size->r->setMaxSize->setOption->MBeanUtils->duration->r->setDuration->setOption->MBeanUtils->destination->setOptionDestination->setOption
+FlightRecorderMXBeanImpl#getRecordingOptions(long)::: flight recorder bean impl get recording options:::MBeanUtils->checkMonitor->r->getExistingRecording->options->new->HashMap<>->options->String->r->getDumpOnExit->valueOf->put->options->String->r->isToDisk->valueOf->put->options->String->r->getName->valueOf->put->options->ManagementSupport->r->getMaxAge->formatTimespan->put->maxSize->r->getMaxSize->options->String->maxSize->toString->valueOf->put->options->ManagementSupport->r->getDuration->formatTimespan->put->options->ManagementSupport->getDestinationOriginalText->put->return
+FlightRecorderMXBeanImpl#cloneRecording(long, boolean)::: flight recorder bean impl clone recording:::MBeanUtils->checkControl->return->getRecording->copy->getId
+FlightRecorderMXBeanImpl#getObjectName()::: flight recorder bean impl get object name:::return->MBeanUtils->createObjectName
+FlightRecorderMXBeanImpl#getExistingRecording(long)::: flight recorder bean impl get existing recording:::if->FlightRecorder->isInitialized->recording->getRecording->if->return->throw->new->IllegalArgumentException
+FlightRecorderMXBeanImpl#getRecording(long)::: flight recorder bean impl get recording:::recs->getRecorder->getRecordings->return->recs->stream->r->getId->filter->findFirst->orElse
+FlightRecorderMXBeanImpl#setOption(Map, String, String, Function, Consumer)::: flight recorder bean impl set option:::if->options->containsKey->return->v->options->get->if->try->setter->converter->apply->accept->catch->throw->iae->getMessage->new->IllegalArgumentException->finally
+FlightRecorderMXBeanImpl#setOptionDestination(Recording, String)::: flight recorder bean impl set option destination:::try->pathDestination->if->Paths->get->recording->setDestination->catch->iae->new->IllegalArgumentException->iae->addSuppressed->throw->finally
+FlightRecorderMXBeanImpl#validateOption(Map, String, Function)::: flight recorder bean impl validate option:::try->v->options->get->if->return->validator->apply->catch->throw->iae->getMessage->new->IllegalArgumentException->finally
+FlightRecorderMXBeanImpl#getRecorder()::: flight recorder bean impl get recorder:::synchronized->if->AccessController->new->PrivilegedAction<FlightRecorder>->new->FlightRecorderPermission->doPrivileged->return
+FlightRecorderMXBeanImpl#createNotificationInfo()::: flight recorder bean impl create notification info:::types->new->StringArr->name->getName->description->info->new->MBeanNotificationInfo->return->new->MBeanNotificationInfoArr
+FlightRecorderMXBeanImpl#addNotificationListener(NotificationListener, NotificationFilter, Object)::: flight recorder bean impl add notification listener:::mxbeanListener->new->MXBeanListener->listeners->add->AccessController->new->PrivilegedAction<Void>->new->FlightRecorderPermission->doPrivileged->super->addNotificationListener
+FlightRecorderMXBeanImpl#removeNotificationListener(NotificationListener)::: flight recorder bean impl remove notification listener:::removeListeners->super->removeNotificationListener
+FlightRecorderMXBeanImpl#removeNotificationListener(NotificationListener, NotificationFilter, Object)::: flight recorder bean impl remove notification listener:::removeListeners->super->removeNotificationListener
+FlightRecorderMXBeanImpl#removeListeners(Predicate)::: flight recorder bean impl remove listeners:::toBeRemoved->listeners->size->new->ArrayList<>->foreach->if->p->test->toBeRemoved->add->FlightRecorder->removeListener->listeners->removeAll
+FlightRecorderMXBeanImpl#createNotication(Recording)::: flight recorder bean impl create notication:::try->id->recording->getId->oldValue->changes->recording->getId->get->newValue->getAttribute->if->recording->getState->changes->put->else->changes->remove->return->getObjectName->sequenceNumber->incrementAndGet->System->currentTimeMillis->recording->getName->recording->getState->newValue->getClass->getName->new->AttributeChangeNotification->catch->throw->e->getMessage->new->RuntimeException->finally
+MBeanUtils#createObjectName()::: bean utils create object name:::try->return->new->ObjectName->catch->throw->new->Error->finally
+MBeanUtils#checkControl()::: bean utils check control:::secManager->System->getSecurityManager->if->secManager->checkPermission
+MBeanUtils#checkMonitor()::: bean utils check monitor:::secManager->System->getSecurityManager->if->secManager->checkPermission
+MBeanUtils#transformList(List, Function)::: bean utils transform list:::return->source->stream->map->Collectors->toList->collect
+MBeanUtils#booleanValue(String)::: bean utils boolean value:::if->equals->return->if->equals->return->throw->new->IllegalArgumentException
+MBeanUtils#duration(String)::: bean utils duration:::if->return->l->ManagementSupport->parseTimespan->if->return->return->Duration->ofNanos
+MBeanUtils#parseTimestamp(String, Instant)::: bean utils parse timestamp:::if->return->try->return->Instant->parse->catch->finally->try->return->Instant->Long->parseLong->ofEpochMilli->catch->throw->new->IllegalArgumentException->finally
+MBeanUtils#size(String)::: bean utils size:::size->Long->parseLong->if->throw->new->IllegalArgumentException->return
+MBeanUtils#parseBlockSize(String, int)::: bean utils parse block size:::if->return->size->Integer->parseInt->if->throw->new->IllegalArgumentException->return
+MBeanUtils#destination(Recording, String)::: bean utils destination:::try->ManagementSupport->checkSetDestination->return->catch->iae->new->IllegalArgumentException->iae->addSuppressed->throw->finally
 RecordingInfo#getName():::Returns the name of the recording associated with this RecordingInfo.:::return
 RecordingInfo#getId():::Returns the unique ID for the recording associated with this RecordingInfo.:::return
 RecordingInfo#getDumpOnExit():::Returns if the recording associated with this RecordingInfo should be dumped to file when the JVM exits.:::return
@@ -56,3 +103,15 @@ SettingDescriptorInfo#getContentType():::Returns the content type of the setting
 SettingDescriptorInfo#getDefaultValue():::Returns the default value of the setting associated this SettingDescriptorInfo (for example, "20 ms").:::return
 SettingDescriptorInfo#from(CompositeData):::Returns an SettingDescriptorInfo represented by the specified CompositeData  The supplied CompositeData must have the following item names and item types to be valid:::if->return->return->new->SettingDescriptorInfo
 SettingDescriptorInfo#toString():::Returns a String description of this SettingDescriptorInfo.:::s->new->Stringifier->s->add->s->add->s->add->s->add->s->add->s->add->return->s->toString
+Stream#touch()::: stream touch:::System->currentTimeMillis
+Stream#getLastTouched()::: stream get last touched:::return
+Stream#read()::: stream read:::touch->read->inputStream->read->if->return->if->smallerBuffer->new->byteArr->System->arraycopy->return->return
+Stream#close()::: stream close:::inputStream->close
+Stream#getId()::: stream get id:::return
+StreamCleanupTask#run()::: stream cleanup task run:::lastTouched->stream->getLastTouched->now->System->currentTimeMillis->if->manager->destroy->else->manager->scheduleAbort
+StreamManager#getStream(long)::: stream manager get stream:::stream->streams->get->if->throw->new->IllegalArgumentException->return
+StreamManager#create(InputStream, int)::: stream manager create:::stream->new->Stream->streams->stream->getId->put->System->currentTimeMillis->scheduleAbort->return
+StreamManager#destroy(Stream)::: stream manager destroy:::try->stream->close->catch->finally->streams->stream->getId->remove->if->streams->isEmpty->timer->cancel
+StreamManager#scheduleAbort(Stream, long)::: stream manager schedule abort:::if->new->Timer->timer->new->StreamCleanupTask->new->Date->schedule
+Stringifier#add(String, Object)::: stringifier add:::if->else->sb->append->isString->sb->append->append->if->sb->append->else->if->sb->append->sb->append->if->sb->append
+Stringifier#toString()::: stringifier to string:::return->sb->toString

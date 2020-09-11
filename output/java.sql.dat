@@ -11,6 +11,10 @@ Array#getResultSet(long, int, java.util.Map>):::Retrieves a result set holding t
 Array#free():::This method frees the Array object and releases the resources that it holds:::
 BatchUpdateException#getUpdateCounts():::Retrieves the update count for each update statement in the batch update that executed successfully before this exception occurred:::return->Arrays->copyOf
 BatchUpdateException#getLargeUpdateCounts():::Retrieves the update count for each update statement in the batch update that executed successfully before this exception occurred:::return->Arrays->copyOf
+BatchUpdateException#copyUpdateCount(int[])::: batch update exception copy update count:::copy->new->longArr->for->i->return
+BatchUpdateException#copyUpdateCount(long[])::: batch update exception copy update count:::copy->new->intArr->for->i->return
+BatchUpdateException#readObject(ObjectInputStream):::readObject is called to restore the state of the BatchUpdateException from a stream.:::fields->s->readFields->tmp->fields->get->tmp2->fields->get->if->throw->new->InvalidObjectException->if->tmp->clone->if->tmp2->clone->if->copyUpdateCount->if->copyUpdateCount
+BatchUpdateException#writeObject(ObjectOutputStream):::writeObject is called to save the state of the BatchUpdateException to a stream.:::fields->s->putFields->fields->put->fields->put->s->writeFields
 Blob#length():::Returns the number of bytes in the BLOB value designated by this Blob object.:::
 Blob#getBytes(long, int):::Retrieves all or part of the BLOB value that this Blob object represents, as an array of bytes:::
 Blob#getBinaryStream():::Retrieves the BLOB value designated by this Blob instance as a stream.:::
@@ -433,11 +437,20 @@ DriverManager#registerDriver(java.sql.Driver, DriverAction):::Registers the give
 DriverManager#deregisterDriver(Driver):::Removes the specified driver from the DriverManager's list of registered drivers:::if->return->sec->System->getSecurityManager->if->sec->checkPermission->println->aDriver->new->DriverInfo->synchronized->if->registeredDrivers->contains->if->Reflection->getCallerClass->isDriverAllowed->di->registeredDrivers->registeredDrivers->indexOf->get->if->di->action->di->action->deregister->registeredDrivers->remove->else->throw->new->SecurityException->else->println
 DriverManager#getDrivers():::Retrieves an Enumeration with all of the currently loaded JDBC drivers to which the current caller has access:::ensureDriversInitialized->return->Collections->Reflection->getCallerClass->getDrivers->enumeration
 DriverManager#drivers():::Retrieves a Stream with all of the currently loaded JDBC drivers to which the current caller has access.:::ensureDriversInitialized->return->Reflection->getCallerClass->getDrivers->stream
+DriverManager#getDrivers(Class)::: driver manager get drivers:::result->new->ArrayList<>->foreach->if->isDriverAllowed->result->add->else->aDriver->getClass->getName->println->return
 DriverManager#setLoginTimeout(int):::Sets the maximum time in seconds that a driver will wait while attempting to connect to a database once the driver has been identified.:::
 DriverManager#getLoginTimeout():::Gets the maximum time in seconds that a driver can wait when attempting to log in to a database.:::return
 DriverManager#setLogStream(java.io.PrintStream):::Sets the logging/tracing PrintStream that is used by the DriverManager and all drivers:::sec->System->getSecurityManager->if->sec->checkPermission->if->new->java.io.PrintWriter->else
 DriverManager#getLogStream():::Retrieves the logging/tracing PrintStream that is used by the DriverManager and all drivers.:::return
 DriverManager#println(String):::Prints a message to the current JDBC log stream.:::synchronized->if->logWriter->println->logWriter->flush
+DriverManager#isDriverAllowed(Driver, Class)::: driver manager is driver allowed:::callerCL->caller->getClassLoader->return->isDriverAllowed
+DriverManager#isDriverAllowed(Driver, ClassLoader)::: driver manager is driver allowed:::result->if->aClass->try->Class->driver->getClass->getName->forName->catch->finally->driver->getClass->return
+DriverManager#ensureDriversInitialized()::: driver manager ensure drivers initialized:::if->return->synchronized->if->return->drivers->try->AccessController->new->PrivilegedAction<String>->doPrivileged->catch->finally->AccessController->new->PrivilegedAction<Void>->doPrivileged->println->if->drivers->equals->driversList->drivers->split->println->foreach->try->println->Class->ClassLoader->getSystemClassLoader->forName->catch->println->finally->println
+DriverManager#getConnection(String, java.util.Properties, Class)::: driver manager get connection:::callerCL->caller->getClassLoader->if->ClassLoader->getPlatformClassLoader->Thread->currentThread->getContextClassLoader->if->throw->new->SQLException->println->ensureDriversInitialized->reason->foreach->if->isDriverAllowed->try->getClass->getName->println->con->connect->if->getClass->getName->println->return->catch->if->finally->else->aDriver->getClass->getName->println->if->println->throw->println->throw->new->SQLException
+DriverInfo#equals(Object)::: driver info equals:::return
+DriverInfo#hashCode()::: driver info hash code:::return->driver->hashCode
+DriverInfo#toString()::: driver info to string:::return
+DriverInfo#action()::: driver info action:::return
 ParameterMetaData#getParameterCount():::Retrieves the number of parameters in the PreparedStatement object for which this ParameterMetaData object contains information.:::
 ParameterMetaData#isNullable(int):::Retrieves whether null values are allowed in the designated parameter.:::
 ParameterMetaData#isSigned(int):::Retrieves whether values for the designated parameter can be signed numbers.:::

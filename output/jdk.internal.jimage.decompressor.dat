@@ -1,6 +1,39 @@
+CompressedResourceHeader#isTerminal()::: compressed resource header is terminal:::return
+CompressedResourceHeader#getDecompressorNameOffset()::: compressed resource header get decompressor name offset:::return
+CompressedResourceHeader#getContentOffset()::: compressed resource header get content offset:::return
+CompressedResourceHeader#getStoredContent(StringsProvider)::: compressed resource header get stored content:::Objects->requireNonNull->if->return->return->provider->getString
+CompressedResourceHeader#getUncompressedSize()::: compressed resource header get uncompressed size:::return
+CompressedResourceHeader#getResourceSize()::: compressed resource header get resource size:::return
+CompressedResourceHeader#getBytes(ByteOrder)::: compressed resource header get bytes:::Objects->requireNonNull->buffer->ByteBuffer->allocate->buffer->order->buffer->putInt->buffer->putLong->buffer->putLong->buffer->putInt->buffer->putInt->buffer->put->return->buffer->array
+CompressedResourceHeader#getSize()::: compressed resource header get size:::return
+CompressedResourceHeader#readFromResource(ByteOrder, byte[])::: compressed resource header read from resource:::Objects->requireNonNull->Objects->requireNonNull->if->getSize->return->buffer->ByteBuffer->wrap->buffer->order->magic->buffer->getInt->if->return->size->buffer->getLong->uncompressedSize->buffer->getLong->decompressorNameOffset->buffer->getInt->contentIndex->buffer->getInt->isTerminal->buffer->get->return->new->CompressedResourceHeader
+CompressIndexes#decompressFlow(byte[])::: compress indexes decompress flow:::lst->new->ArrayList<>->for->i->getHeaderLength->return
+CompressIndexes#readInt(DataInputStream)::: compress indexes read int:::header->cr->readByte->size->getHeaderLength->result->getHeaderValue->for->i->return
+CompressIndexes#isCompressed(byte)::: compress indexes is compressed:::return
+CompressIndexes#getHeaderLength(byte)::: compress indexes get header length:::return->isCompressed
+CompressIndexes#getHeaderValue(byte)::: compress indexes get header value:::return->isCompressed
+CompressIndexes#decompress(byte[], int)::: compress indexes decompress:::header->size->getHeaderLength->result->getHeaderValue->for->i->return
+CompressIndexes#compress(int)::: compress indexes compress:::if->throw->new->IllegalArgumentException->width->Integer->numberOfLeadingZeros->size->Math->min->result->new->byteArr->for->i->if->return
 Decompressor#decompressResource(ByteOrder, StringsProvider, byte[]):::Decompress a resource.:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->header->do->CompressedResourceHeader->readFromResource->if->decompressor->pluginsCache->header->getDecompressorNameOffset->get->if->pluginName->provider->header->getDecompressorNameOffset->getString->if->throw->new->IOException->storedContent->header->getStoredContent->props->new->Properties->if->try->stream->storedContent->getBytes->new->ByteArrayInputStream->props->loadFromXML->catch->finally->ResourceDecompressorRepository->newResourceDecompressor->if->throw->new->IOException->pluginsCache->header->getDecompressorNameOffset->put->try->decompressor->CompressedResourceHeader->getSize->header->getUncompressedSize->decompress->catch->throw->new->IOException->finally->while->return
+ResourceDecompressor.StringsProvider#getString(int)::: strings provider get string:::
 ResourceDecompressor#getName():::Decompressor unique name.:::
 ResourceDecompressor#decompress(StringsProvider, byte[], int, long):::Decompress a resource.:::
 ResourceDecompressorFactory#getName():::The Factory name.:::return
 ResourceDecompressorFactory#newDecompressor(Properties):::To build a new decompressor.:::
 ResourceDecompressorRepository#newResourceDecompressor(Properties, String):::Build a new decompressor for the passed name.:::fact->factories->get->if->return->fact->newDecompressor->return
+ResourceDecompressorRepository#registerReaderProvider(ResourceDecompressorFactory)::: resource decompressor repository register reader provider:::factories->factory->getName->put
+SignatureParser#reconstruct(String, List)::: signature parser reconstruct:::arg_index->chars->formatted->toCharArray->out->new->StringBuilder->for->i->return->out->toString
+SignatureParser#parseSignatureDescriptor(String)::: signature parser parse signature descriptor:::res->new->ParseResult->chars->str->toCharArray->type->formatted->new->StringBuilder->for->i->formatted->toString->return
+StringSharingDecompressor#getSizes()::: string sharing decompressor get sizes:::return->SIZES->clone
+StringSharingDecompressor#normalize(StringsProvider, byte[], int)::: string sharing decompressor normalize:::stream->new->ByteArrayInputStream->new->DataInputStream->outStream->new->ByteArrayOutputStream->out->new->DataOutputStream->header->new->byteArr->stream->readFully->out->write->count->stream->readUnsignedShort->out->writeShort->for->i->out->stream->available->stream->available->write->out->flush->return->outStream->toByteArray
+StringSharingDecompressor#reconstruct(StringsProvider, DataInputStream)::: string sharing decompressor reconstruct:::descIndex->CompressIndexes->readInt->desc->reader->getString->encodedDesc->getEncoded->indexes_length->CompressIndexes->readInt->bytes->new->byteArr->cr->readFully->indices->CompressIndexes->decompressFlow->buffer->ByteBuffer->allocate->buffer->order->argIndex->foreach->if->safeAdd->index->indices->get->pkg->reader->getString->if->pkg->length->encoded->getEncoded->safeAdd->classIndex->indices->get->clazz->reader->getString->encoded->getEncoded->safeAdd->else->safeAdd->encoded->buffer->array->result->ByteBuffer->allocate->result->order->result->buffer->position->putShort->result->buffer->position->put->stream->result->array->new->ByteArrayInputStream->inStream->new->DataInputStream->str->inStream->readUTF->return
+StringSharingDecompressor#getEncoded(String)::: string sharing decompressor get encoded:::resultStream->new->ByteArrayOutputStream->resultOut->new->DataOutputStream->resultOut->writeUTF->content->resultStream->toByteArray->if->return->new->byteArr->return->Arrays->copyOfRange
+StringSharingDecompressor#safeAdd(ByteBuffer, byte)::: string sharing decompressor safe add:::bytes->return->safeAdd
+StringSharingDecompressor#safeAdd(ByteBuffer, byte[])::: string sharing decompressor safe add:::if->current->remaining->newBuffer->ByteBuffer->current->capacity->allocate->newBuffer->order->newBuffer->current->array->current->position->put->current->put->return
+StringSharingDecompressor#getName()::: string sharing decompressor get name:::return
+StringSharingDecompressor#decompress(StringsProvider, byte[], int, long)::: string sharing decompressor decompress:::return->normalize
+StringSharingDecompressorFactory#newDecompressor(Properties)::: string sharing decompressor factory new decompressor:::return->new->StringSharingDecompressor
+ZipDecompressor#getName()::: zip decompressor get name:::return
+ZipDecompressor#decompress(byte[], int)::: zip decompressor decompress:::inflater->new->Inflater->inflater->setInput->stream->new->ByteArrayOutputStream->buffer->new->byteArr->while->inflater->finished->count->inflater->inflate->stream->write->stream->close->bytesOut->stream->toByteArray->inflater->end->return
+ZipDecompressor#decompress(StringsProvider, byte[], int, long)::: zip decompressor decompress:::decompressed->decompress->return
+ZipDecompressorFactory#newDecompressor(Properties)::: zip decompressor factory new decompressor:::return->new->ZipDecompressor

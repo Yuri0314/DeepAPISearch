@@ -2,18 +2,32 @@ AppConfigurationEntry#getLoginModuleName():::Get the class name of the configure
 AppConfigurationEntry#getControlFlag():::Return the controlFlag (either REQUIRED, REQUISITE, SUFFICIENT, or OPTIONAL) for this LoginModule.:::return
 AppConfigurationEntry#getOptions():::Get the options configured for this LoginModule.:::return
 AppConfigurationEntry.LoginModuleControlFlag#toString():::Return a String representation of this controlFlag:::return->getString
+Configuration#checkPermission(String)::: configuration check permission:::sm->System->getSecurityManager->if->sm->new->AuthPermission->checkPermission
 Configuration#getConfiguration():::Get the installed login Configuration.:::sm->System->getSecurityManager->if->sm->new->AuthPermission->checkPermission->synchronized->if->config_class->AccessController->new->PrivilegedAction<>->doPrivileged->if->try->finalClass->untrustedImpl->AccessController->new->PrivilegedExceptionAction<>->doPrivileged->AccessController->new->PrivilegedExceptionAction<>->Objects->requireNonNull->doPrivileged->catch->ee->e->getException->if->throw->ee->getCause->getMessage->new->SecurityException->ee->getCause->initCause->else->throw->ee->toString->new->SecurityException->initCause->finally->return
 Configuration#setConfiguration(Configuration):::Set the login Configuration.:::sm->System->getSecurityManager->if->sm->new->AuthPermission->checkPermission
 Configuration#getInstance(String, Configuration.Parameters):::Returns a Configuration object of the specified type:::Objects->requireNonNull->checkPermission->try->instance->GetInstance->getInstance->return->new->ConfigDelegate->catch->return->handleException->finally
 Configuration#getInstance(String, Configuration.Parameters, String):::Returns a Configuration object of the specified type:::Objects->requireNonNull->if->provider->length->throw->new->IllegalArgumentException->checkPermission->try->instance->GetInstance->getInstance->return->new->ConfigDelegate->catch->return->handleException->finally
 Configuration#getInstance(String, Configuration.Parameters, Provider):::Returns a Configuration object of the specified type:::Objects->requireNonNull->if->throw->new->IllegalArgumentException->checkPermission->try->instance->GetInstance->getInstance->return->new->ConfigDelegate->catch->return->handleException->finally
+Configuration#handleException(NoSuchAlgorithmException)::: configuration handle exception:::cause->nsae->getCause->if->throw->throw
 Configuration#getProvider():::Return the Provider of this Configuration:::return
 Configuration#getType():::Return the type of this Configuration:::return
 Configuration#getParameters():::Return Configuration parameters:::return
 Configuration#getAppConfigurationEntry(String):::Retrieve the AppConfigurationEntries for the specified name from this Configuration.:::
 Configuration#refresh():::Refresh and reload the Configuration:::
+Configuration.ConfigDelegate#getType()::: config delegate get type:::return
+Configuration.ConfigDelegate#getParameters()::: config delegate get parameters:::return
+Configuration.ConfigDelegate#getProvider()::: config delegate get provider:::return
+Configuration.ConfigDelegate#getAppConfigurationEntry(String)::: config delegate get app configuration entry:::return->spi->engineGetAppConfigurationEntry
+Configuration.ConfigDelegate#refresh()::: config delegate refresh:::spi->engineRefresh
 ConfigurationSpi#engineGetAppConfigurationEntry(String):::Retrieve the AppConfigurationEntries for the specified name.:::
 ConfigurationSpi#engineRefresh():::Refresh and reload the Configuration:::
+LoginContext#init(String)::: login context init:::sm->System->getSecurityManager->if->sm->new->AuthPermission->checkPermission->if->throw->ResourcesMgr->getString->new->LoginException->if->new->java.security.PrivilegedAction<Configuration>->doPrivileged->entries->config->getAppConfigurationEntry->if->if->sm->new->AuthPermission->checkPermission->config->getAppConfigurationEntry->if->form->ResourcesMgr->getString->new->MessageFormat->source->throw->form->format->new->LoginException->new->ModuleInfoArr->for->i->new->java.security.PrivilegedAction<ClassLoader>->doPrivileged
+LoginContext#loadDefaultCallbackHandler()::: login context load default callback handler:::try->finalLoader->new->java.security.PrivilegedExceptionAction<CallbackHandler>->doPrivileged->catch->throw->pae->getException->toString->new->LoginException->finally->if->getContext->new->SecureCallbackHandler
 LoginContext#login():::Perform the authentication:::if->new->Subject->try->invokePriv->invokePriv->catch->try->invokePriv->catch->throw->finally->throw->finally
 LoginContext#logout():::Logout the Subject:::if->throw->ResourcesMgr->getString->new->LoginException->invokePriv
 LoginContext#getSubject():::Return the authenticated Subject.:::if->return->return
+LoginContext#clearState()::: login context clear state:::
+LoginContext#throwException(LoginException, LoginException)::: login context throw exception:::clearState->error->throw
+LoginContext#invokePriv(String):::Invokes the login, commit, and logout methods from a LoginModule inside a doPrivileged block restricted by creatorAcc (may be null):::try->new->java.security.PrivilegedExceptionAction<Void>->doPrivileged->catch->throw->pae->getException->finally
+LoginContext#invoke(String)::: login context invoke:::for->i->if->throwException->else->if->throwException->else->if->ResourcesMgr->getString->new->LoginException->throwException->else->clearState->return
+LoginContext.SecureCallbackHandler#handle(Callback[])::: secure callback handler handle:::try->new->java.security.PrivilegedExceptionAction<Void>->doPrivileged->catch->if->pae->getException->throw->pae->getException->else->throw->pae->getException->finally

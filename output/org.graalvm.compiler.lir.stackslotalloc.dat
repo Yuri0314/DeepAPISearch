@@ -1,1 +1,61 @@
+LSStackSlotAllocator_OptionDescriptors#get(String)::: stack slot allocator_ option descriptors get:::switch->return->OptionDescriptor->create->return
+LSStackSlotAllocator_OptionDescriptors#iterator()::: stack slot allocator_ option descriptors iterator:::return->new->Iterator<OptionDescriptor>
 FixPointIntervalBuilder#build():::Builds the lifetime intervals for VirtualStackSlot virtual stack slots, sets up #stackSlotMap and returns a set of use positions, i.e:::worklist->new->ArrayDeque<>->blocks->lir->getControlFlowGraph->getBlocks->for->i->foreach->lir->getControlFlowGraph->getBlocks->liveInMap->new->BitSet->put->while->worklist->isEmpty->block->worklist->poll->processBlock->return
+FixPointIntervalBuilder#updateOutBlock(AbstractBlockBase):::Merge outSet with in-set of successors.:::union->new->BitSet->foreach->block->getSuccessors->union->liveInMap->get->or->outSet->liveOutMap->get->if->union->equals->liveOutMap->put->return->return
+FixPointIntervalBuilder#processBlock(AbstractBlockBase, Deque>)::: fix point interval builder process block:::debug->lir->getDebug->if->updateOutBlock->try->indent->debug->logAndIndent->instructions->lir->getLIRforBlock->outSet->liveOutMap->get->getBlockEnd->markOutInterval->printLiveSet->closure->outSet->clone->new->BlockClosure->for->i->instructions->size->foreach->block->getPredecessors->worklist->add->inSet->closure->getCurrentSet->liveInMap->put->getBlockBegin->markInInterval->printLiveSet->catch->finally
+FixPointIntervalBuilder#printLiveSet(String, BitSet)::: fix point interval builder print live set:::debug->lir->getDebug->if->debug->isLogEnabled->try->indent->debug->logAndIndent->debug->liveSetToString->log->catch->finally
+FixPointIntervalBuilder#liveSetToString(BitSet)::: fix point interval builder live set to string:::sb->new->StringBuilder->for->i->liveSet->nextSetBit->liveSet->nextSetBit->return->sb->toString
+FixPointIntervalBuilder#markOutInterval(BitSet, int)::: fix point interval builder mark out interval:::debug->lir->getDebug->for->i->outSet->nextSetBit->outSet->nextSetBit
+FixPointIntervalBuilder#markInInterval(BitSet, int)::: fix point interval builder mark in interval:::debug->lir->getDebug->for->i->inSet->nextSetBit->inSet->nextSetBit
+FixPointIntervalBuilder.BlockClosure#getCurrentSet()::: block closure get current set:::return
+FixPointIntervalBuilder.BlockClosure#processInstructionBottomUp(LIRInstruction):::Process all values of an instruction bottom-up, i.e:::debug->lir->getDebug->try->indent->debug->op->id->logAndIndent->op->visitEachTemp->op->visitEachOutput->op->visitEachAlive->op->visitEachState->op->visitEachInput->catch->finally
+FixPointIntervalBuilder.BlockClosure#addUse(VirtualStackSlot, LIRInstruction, EnumSet)::: block closure add use:::interval->getOrCreateInterval->if->flags->contains->debug->lir->getDebug->if->debug->isCountEnabled->interval->from->interval->to->uninitializedSlots->increment->interval->addFrom->interval->addTo->else->interval->inst->id->addTo
+FixPointIntervalBuilder.BlockClosure#addDef(VirtualStackSlot, LIRInstruction)::: block closure add def:::interval->getOrCreateInterval->interval->inst->id->addFrom
+FixPointIntervalBuilder.BlockClosure#addRegisterHint(LIRInstruction, VirtualStackSlot, OperandMode, EnumSet, boolean)::: block closure add register hint:::if->flags->contains->proc->new->InstructionValueProcedure->op->forEachRegisterHint
+FixPointIntervalBuilder#get(VirtualStackSlot)::: fix point interval builder get:::return->stackSlot->getId
+FixPointIntervalBuilder#put(VirtualStackSlot, StackInterval)::: fix point interval builder put:::stackSlot->getId
+FixPointIntervalBuilder#getOrCreateInterval(VirtualStackSlot)::: fix point interval builder get or create interval:::interval->get->if->stackSlot->getValueKind->new->StackInterval->put->return
+FixPointIntervalBuilder#getIntervalFromStackId(int)::: fix point interval builder get interval from stack id:::return
+FixPointIntervalBuilder#getBlockBegin(ArrayList)::: fix point interval builder get block begin:::return->instructions->get->id
+FixPointIntervalBuilder#getBlockEnd(ArrayList)::: fix point interval builder get block end:::return->instructions->instructions->size->get->id
+LSStackSlotAllocator#run(TargetDescription, LIRGenerationResult, AllocationContext)::: stack slot allocator run:::lirGenRes->getFrameMapBuilder->allocateStackSlots->lirGenRes->buildFrameMap
+LSStackSlotAllocator#allocateStackSlots(FrameMapBuilderTool, LIRGenerationResult)::: stack slot allocator allocate stack slots:::if->builder->getNumberOfStackSlots->try->t->MainTimer->res->getLIR->getDebug->start->res->getLIR->new->Allocator->allocate->catch->finally
+LSStackSlotAllocator.Allocator#allocate()::: allocator allocate:::debug->dump->allocationFramesizeEnabled->isEnabled->currentFrameSize->frameMapBuilder->getFrameMap->currentFrameSize->usePos->try->s->debug->scope->indent->debug->logAndIndent->t->BuildIntervalsTimer->start->buildIntervals->catch->finally->if->debug->areScopesEnabled->try->t->VerifyIntervalsTimer->start->catch->finally->if->debug->isDumpEnabled->dumpIntervals->try->t->AllocateSlotsTimer->start->allocateStackSlots->allocateStackSlots->catch->finally->if->debug->isDumpEnabled->dumpIntervals->try->t->AssignSlotsTimer->start->assignStackSlots->catch->finally->if->frameMapBuilder->getFrameMap->currentFrameSize->add
+LSStackSlotAllocator.Allocator#numberInstructions(LIR, AbstractBlockBase[]):::Numbers all instructions in all blocks.:::opId->index->foreach->instructions->lir->getLIRforBlock->numInst->instructions->size->for->j->return
+LSStackSlotAllocator.Allocator#buildIntervals()::: allocator build intervals:::return->maxOpId->new->FixPointIntervalBuilder->build
+LSStackSlotAllocator.Allocator#verifyIntervals()::: allocator verify intervals:::foreach->if->return
+LSStackSlotAllocator.Allocator#allocateStackSlots(Predicate)::: allocator allocate stack slots:::foreach->if->predicate->test->unhandled->add->for->current->activateNext->activateNext->active->clear
+LSStackSlotAllocator.Allocator#allocateSlot(StackInterval)::: allocator allocate slot:::virtualSlot->current->getOperand->location->if->slotRange->frameMapBuilder->getFrameMap->slotRange->getSlots->allocateStackSlots->frameMapBuilder->getFrameMap->slotRange->getSlots->spillSlotRangeSize->add->increment->else->slot->findFreeSlot->if->StackSlot->current->kind->slot->getRawOffset->slot->getRawAddFrameSize->get->increment->debug->log->else->frameMapBuilder->getFrameMap->virtualSlot->getValueKind->allocateSpillSlot->frameMapBuilder->getFrameMap->virtualSlot->getValueKind->spillSlotSize->add->increment->debug->log->debug->log->current->setLocation
+LSStackSlotAllocator.Allocator#getNullOrFreeSlots(int)::: allocator get null or free slots:::if->return->if->freeSlots->size->return->freeSlots->get->return
+LSStackSlotAllocator.Allocator#getOrInitFreeSlots(int)::: allocator get or init free slots:::freeList->if->new->ArrayList<>->else->if->freeSlots->size->freeSlots->get->if->requiredSize->for->i->freeSlots->size->new->ArrayDeque<>->freeSlots->set->return
+LSStackSlotAllocator.Allocator#findFreeSlot(SimpleVirtualStackSlot):::Gets a free stack slot for slot or null if there is none.:::size->slot->getValueKind->log2SpillSlotSize->freeList->getNullOrFreeSlots->if->return->return->freeList->pollLast
+LSStackSlotAllocator.Allocator#freeSlot(StackSlot):::Adds a stack slot to the list of free slots.:::size->slot->getValueKind->log2SpillSlotSize->getOrInitFreeSlots->addLast
+LSStackSlotAllocator.Allocator#log2SpillSlotSize(ValueKind)::: allocator log2 spill slot size:::size->frameMapBuilder->getFrameMap->spillSlotSize->return->CodeUtil->log2
+LSStackSlotAllocator.Allocator#activateNext():::Gets the next unhandled interval and finishes handled intervals.:::if->unhandled->isEmpty->return->next->unhandled->poll->for->id->next->from->activePeekId->debug->log->active->add->return
+LSStackSlotAllocator.Allocator#activePeekId():::Gets the lowest StackInterval#to() end position of all active intervals:::first->active->peek->if->return->return->first->to
+LSStackSlotAllocator.Allocator#finished(StackInterval):::Finishes interval by adding its location to the list of free stack slots.:::location->interval->location->debug->log->freeSlot
+LSStackSlotAllocator.Allocator#assignStackSlots(EconomicSet)::: allocator assign stack slots:::foreach->op->forEachInput->op->forEachAlive->op->forEachState->op->forEachTemp->op->forEachOutput
+LSStackSlotAllocator.Allocator#maxOpId():::Gets the highest instruction id.:::return
+LSStackSlotAllocator.Allocator#get(VirtualStackSlot)::: allocator get:::return->stackSlot->getId
+LSStackSlotAllocator.Allocator#dumpIntervals(String)::: allocator dump intervals:::debug->Arrays->copyOf->new->StackIntervalDumper->dump
+SimpleStackSlotAllocator#run(TargetDescription, LIRGenerationResult, AllocationContext)::: simple stack slot allocator run:::lirGenRes->getFrameMapBuilder->allocateStackSlots->lirGenRes->buildFrameMap
+SimpleStackSlotAllocator#allocateStackSlots(FrameMapBuilderTool, LIRGenerationResult)::: simple stack slot allocator allocate stack slots:::debug->res->getLIR->getDebug->mapping->builder->getNumberOfStackSlots->new->StackSlotArr->allocatedFramesizeEnabled->allocatedFramesize->isEnabled->currentFrameSize->builder->getFrameMap->currentFrameSize->foreach->builder->getStackSlots->slot->if->mapSimpleVirtualStackSlot->virtualFramesize->builder->getFrameMap->virtualSlot->getValueKind->spillSlotSize->add->else->if->slotRange->mapVirtualStackSlotRange->virtualFramesize->builder->getFrameMap->slotRange->getSlots->spillSlotRangeSize->add->else->throw->GraalError->shouldNotReachHere->allocatedSlots->increment->virtualSlot->getId->updateLIR->if->allocatedFramesize->builder->getFrameMap->currentFrameSize->add
+SimpleStackSlotAllocator#updateLIR(LIRGenerationResult, StackSlot[])::: simple stack slot allocator update r:::debug->res->getLIR->getDebug->try->scope->debug->scope->updateProc->if->isVirtualStackSlot->stackSlot->asVirtualStackSlot->getId->debug->log->return->return->foreach->res->getLIR->getControlFlowGraph->getBlocks->try->indent0->debug->logAndIndent->foreach->res->getLIR->getLIRforBlock->try->indent1->debug->inst->id->logAndIndent->inst->forEachAlive->inst->forEachInput->inst->forEachOutput->inst->forEachTemp->inst->forEachState->catch->finally->catch->finally->catch->finally
+SimpleStackSlotAllocator#mapSimpleVirtualStackSlot(FrameMapBuilderTool, SimpleVirtualStackSlot)::: simple stack slot allocator map simple virtual stack slot:::return->builder->getFrameMap->virtualStackSlot->getValueKind->allocateSpillSlot
+SimpleStackSlotAllocator#mapVirtualStackSlotRange(FrameMapBuilderTool, VirtualStackSlotRange)::: simple stack slot allocator map virtual stack slot range:::return->builder->getFrameMap->virtualStackSlot->getSlots->allocateStackSlots
+StackInterval#verify(int)::: stack interval verify:::return
+StackInterval#getOperand()::: stack interval get operand:::return
+StackInterval#addTo(int)::: stack interval add to:::if
+StackInterval#addFrom(int)::: stack interval add from:::if->if
+StackInterval#kind()::: stack interval kind:::return
+StackInterval#location()::: stack interval location:::return
+StackInterval#setLocation(StackSlot)::: stack interval set location:::
+StackInterval#from()::: stack interval from:::return
+StackInterval#to()::: stack interval to:::return
+StackInterval#fixFrom()::: stack interval fix from:::if
+StackInterval#isFixed()::: stack interval is fixed:::return
+StackInterval#toString()::: stack interval to string:::return->String->hint->getOperand->format
+StackInterval#setLocationHint(StackInterval)::: stack interval set location hint:::
+StackInterval#locationHint()::: stack interval location hint:::return
+StackIntervalDumper#visitIntervals(IntervalVisitor)::: stack interval dumper visit intervals:::foreach->if->printInterval
+StackIntervalDumper#printInterval(StackInterval, IntervalVisitor)::: stack interval dumper print interval:::hint->interval->locationHint->interval->locationHint->getOperand->operand->interval->getOperand->type->operand->getValueKind->getPlatformKind->toString->visitor->interval->location->visitIntervalStart->visitor->interval->from->interval->to->visitRange->visitor->visitIntervalEnd

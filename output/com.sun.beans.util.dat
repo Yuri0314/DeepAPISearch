@@ -2,3 +2,15 @@ Cache#create(K):::Creates a corresponding value for the specified key.:::
 Cache#get(K):::Returns the value to which the specified key is mapped, or null if there is no mapping for the key.:::Objects->requireNonNull->removeStaleEntries->hash->hash->table->current->index->getEntryValue->if->return->synchronized->index->getEntryValue->if->return->value->create->Objects->requireNonNull->index->index->new->CacheEntry<>->if->if->else->removeStaleEntries->newTable->transfer->if->else->transfer->removeStaleEntries->return
 Cache#remove(K):::Removes the cached value that corresponds to the specified key.:::if->synchronized->removeStaleEntries->hash->hash->index->index->prev->entry->while->next->if->entry->matches->if->else->entry->unlink->break
 Cache#clear():::Removes all of the mappings from this cache:::synchronized->index->while->entry->while->next->entry->unlink->while->poll
+Cache#hash(Object):::Retrieves object hash code and applies a supplemental hash function to the result hash, which defends against poor quality hash functions:::if->hash->System->identityHashCode->return->hash->key->hashCode->return
+Cache#index(int, Object[]):::Returns index of the specified hash code in the given table:::return
+Cache#newTable(int):::Creates a new array for the cache entries.:::return->new->CacheEntryArr
+Cache#getEntryValue(K, int, CacheEntry)::: cache get entry value:::while->if->entry->matches->return->getReferent->return
+Cache#removeStaleEntries()::: cache remove stale entries:::reference->poll->if->synchronized->do->if->ref->owner->ref->getOwner->if->index->index->prev->entry->while->next->if->if->else->entry->unlink->break->poll->while
+Cache#transfer(CacheEntry[], CacheEntry[])::: cache transfer:::oldIndex->while->entry->while->next->if->isStale->isStale->entry->unlink->else->newIndex->index
+Cache.CacheEntry#matches(int, Object):::Determines whether the entry has the given key with the given hash code.:::if->return->key->getReferent->return->key->equals
+Cache.CacheEntry#unlink():::Marks the entry as actually removed from the cache.:::removeOwner->removeOwner
+Cache.Ref#getOwner():::Returns the object that possesses information about the reference.:::
+Cache.Ref#getReferent():::Returns the object to refer.:::
+Cache.Ref#isStale():::Determines whether the referred object was taken by the garbage collector or not.:::
+Cache.Ref#removeOwner():::Marks this reference as removed from the cache.:::

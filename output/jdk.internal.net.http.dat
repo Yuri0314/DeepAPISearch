@@ -1,17 +1,147 @@
+AbstractAsyncSSLConnection#getConnectionFlow()::: abstract async connection get connection flow:::
+AbstractAsyncSSLConnection#getALPN()::: abstract async connection get n:::return->getConnectionFlow->getALPN
+AbstractAsyncSSLConnection#getEngine()::: abstract async connection get engine:::return
+AbstractAsyncSSLConnection#contains(String[], String)::: abstract async connection contains:::foreach->if->target->equalsIgnoreCase->return->return
+AbstractAsyncSSLConnection#createSSLParameters(HttpClientImpl, ServerName, String[])::: abstract async connection create parameters:::sslp->client->sslParameters->sslParameters->Utils->copySSLParameters->if->contains->l->new->ArrayDeque<>->foreach->sslParameters->getProtocols->if->proto->startsWith->proto->endsWith->proto->endsWith->l->add->a1->l->new->StringArr->toArray->sslParameters->setProtocols->if->sslParameters->setEndpointIdentificationAlgorithm->if->Log->Arrays->toString->logSSL->sslParameters->setApplicationProtocols->else->Log->logSSL->if->serverName->isLiteral->name->serverName->getName->if->name->length->sslParameters->List->new->SNIHostName->of->setServerNames->return
+AbstractAsyncSSLConnection#createEngine(SSLContext, String, int, SSLParameters)::: abstract async connection create engine:::engine->context->createSSLEngine->engine->setUseClientMode->engine->setSSLParameters->return
+AbstractAsyncSSLConnection#isSecure()::: abstract async connection is secure:::return
 AbstractSubscription#demand():::Returns the subscription's demand.:::return
 AsyncEvent#channel():::Returns the channel:::
 AsyncEvent#interestOps():::Returns the selector interest op flags OR'd:::
 AsyncEvent#handle():::Called when event occurs:::
 AsyncEvent#abort(IOException):::Called when an error occurs during registration, or when the selector has been shut down:::
+AsyncEvent#repeating()::: async event repeating:::return
+AsyncSSLConnection#connectAsync(Exchange)::: async connection connect async:::return->plainConnection->connectAsync->client->theExecutor->client->getSSLBufferSupplier->recycle->plainConnection->getConnectionFlow->new->SSLTube->return->thenApply
+AsyncSSLConnection#finishConnect()::: async connection finish connect:::return->getALPN->if->return->plainConnection->finishConnect->else->plainConnection->close->return->MinimalFuture->failedFuture->handle->Function->identity->thenCompose
+AsyncSSLConnection#connected()::: async connection connected:::return->plainConnection->connected
+AsyncSSLConnection#publisher()::: async connection publisher:::return
+AsyncSSLConnection#isProxied()::: async connection is proxied:::return
+AsyncSSLConnection#channel()::: async connection channel:::return->plainConnection->channel
+AsyncSSLConnection#cacheKey()::: async connection cache key:::return->ConnectionPool->cacheKey
+AsyncSSLConnection#close()::: async connection close:::plainConnection->close
+AsyncSSLConnection#getConnectionFlow()::: async connection get connection flow:::return
+AsyncSSLTunnelConnection#connectAsync(Exchange)::: async tunnel connection connect async:::if->debug->on->debug->log->return->plainConnection->connectAsync->if->debug->on->debug->log->client->theExecutor->client->getSSLBufferSupplier->recycle->plainConnection->getConnectionFlow->new->SSLTube->return->thenApply
+AsyncSSLTunnelConnection#finishConnect()::: async tunnel connection finish connect:::return->getALPN->if->return->plainConnection->finishConnect->else->plainConnection->close->return->MinimalFuture->failedFuture->handle->Function->identity->thenCompose
+AsyncSSLTunnelConnection#isTunnel()::: async tunnel connection is tunnel:::return
+AsyncSSLTunnelConnection#connected()::: async tunnel connection connected:::return->plainConnection->connected
+AsyncSSLTunnelConnection#publisher()::: async tunnel connection publisher:::return
+AsyncSSLTunnelConnection#toString()::: async tunnel connection to string:::return->super->toString
+AsyncSSLTunnelConnection#cacheKey()::: async tunnel connection cache key:::return->ConnectionPool->cacheKey
+AsyncSSLTunnelConnection#close()::: async tunnel connection close:::plainConnection->close
+AsyncSSLTunnelConnection#channel()::: async tunnel connection channel:::return->plainConnection->channel
+AsyncSSLTunnelConnection#isProxied()::: async tunnel connection is proxied:::return
+AsyncSSLTunnelConnection#getConnectionFlow()::: async tunnel connection get connection flow:::return
 AsyncTriggerEvent#channel():::Returns null:::return
 AsyncTriggerEvent#interestOps():::Returns 0:::return
+AsyncTriggerEvent#handle()::: async trigger event handle:::trigger->run
+AsyncTriggerEvent#abort(IOException)::: async trigger event abort:::errorHandler->accept
+AsyncTriggerEvent#repeating()::: async trigger event repeating:::return
+AuthenticationFilter#getCredentials(String, boolean, HttpRequestImpl)::: authentication filter get credentials:::client->exchange->client->auth->client->authenticator->new->IOException->orElseThrow->uri->req->uri->parser->new->HeaderParser->authscheme->parser->findKey->realm->parser->findValue->rtype->url->req->method->toURL->host->port->protocol->proxyAddress->if->req->proxy->req->proxy->proxyAddress->getHostString->proxyAddress->getPort->else->uri->getHost->uri->getPort->uri->getScheme->return->auth->requestPasswordAuthenticationInstance
+AuthenticationFilter#toURL(URI, String, boolean)::: authentication filter to l:::if->equalsIgnoreCase->uri->getScheme->equalsIgnoreCase->return->return->uri->toURL
+AuthenticationFilter#getProxyURI(HttpRequestImpl)::: authentication filter get proxy i:::proxy->r->proxy->if->return->scheme->r->uri->getScheme->try->return->proxy->getHostString->proxy->getPort->new->URI->catch->throw->new->InternalError->finally
+AuthenticationFilter#request(HttpRequestImpl, MultiExchange)::: authentication filter request:::cache->getCache->if->proxyURI->getProxyURI->if->ca->cache->get->if->new->AuthInfo->addBasicCredentials->if->ca->cache->r->uri->get->if->new->AuthInfo->addBasicCredentials
+AuthenticationFilter#addBasicCredentials(HttpRequestImpl, boolean, PasswordAuthentication)::: authentication filter add basic credentials:::hdrname->sb->new->StringBuilder->sb->pw->getUserName->append->append->pw->getPassword->append->s->encoder->sb->toString->getBytes->encodeToString->value->if->if->r->isConnect->if->test->Log->logError->return->else->if->r->proxy->if->test->Log->logError->return->r->setSystemHeader
+AuthenticationFilter.AuthInfo#retryWithCredentials(PasswordAuthentication)::: auth info retry with credentials:::res->new->AuthInfo->Objects->requireNonNull->return
+AuthenticationFilter#response(Response)::: authentication filter response:::cache->getCache->status->r->statusCode->hdrs->r->headers->req->r->request->if->if->au->cache->req->uri->store->if->au->proxyURI->getProxyURI->if->cache->store->return->proxy->authname->authval->hdrs->firstValue->orElse->if->if->exchange->client->authenticator->isPresent->throw->new->IOException->else->return->parser->new->HeaderParser->scheme->parser->findKey->if->scheme->equalsIgnoreCase->return->if->if->if->test->Log->logError->return->else->if->req->proxy->if->test->Log->logError->return->au->if->if->exchange->client->authenticator->isPresent->return->pw->getCredentials->if->throw->new->IOException->new->AuthInfo->if->else->HttpRequestImpl->newInstanceForAuthentication->addBasicCredentials->return->else->if->throw->Integer->toString->new->IOException->else->if->cache->remove->if->exchange->client->authenticator->isPresent->return->pw->getCredentials->if->throw->new->IOException->au->retryWithCredentials->if->else->HttpRequestImpl->newInstanceForAuthentication->addBasicCredentials->return
+AuthenticationFilter#getCache(MultiExchange)::: authentication filter get cache:::client->exchange->client->c->caches->get->if->new->Cache->caches->put->return
+AuthenticationFilter.Cache#get(URI, boolean)::: cache get:::foreach->if->entry->equalsKey->return->return
+AuthenticationFilter.Cache#remove(String, URI, boolean)::: cache remove:::foreach->if->entry->equalsKey->entries->remove
+AuthenticationFilter.Cache#remove(CacheEntry)::: cache remove:::entries->remove
+AuthenticationFilter.Cache#store(String, URI, boolean, PasswordAuthentication)::: cache store:::remove->entries->new->CacheEntry->add
+AuthenticationFilter#normalize(URI, boolean)::: authentication filter normalize:::path->uri->getPath->if->path->isEmpty->try->return->uri->getScheme->uri->getAuthority->new->URI->catch->throw->new->InternalError->finally->else->if->equals->return->uri->resolve->else->return
+AuthenticationFilter.CacheEntry#value()::: cache entry value:::return
+AuthenticationFilter.CacheEntry#equalsKey(URI, boolean)::: cache entry equals key:::if->return->other->String->normalize->valueOf->return->other->startsWith
+BufferingSubscriber#remaining(List):::Returns the number of bytes remaining in the given buffers.:::return->buffers->stream->ByteBuffer->remaining->mapToLong->sum
+BufferingSubscriber#hasEnoughAccumulatedBytes():::Tells whether, or not, there is at least a sufficient number of bytes accumulated in the internal buffers:::return
+BufferingSubscriber#fromInternalBuffers():::Returns a new, unmodifiable, List<ByteBuffer> containing exactly the amount of data as required before pushing downstream:::leftToFill->state->dsts->new->ArrayList<>->itr->internalBuffers->listIterator->while->itr->hasNext->b->itr->next->if->b->remaining->itr->remove->if->b->position->b->slice->dsts->add->b->remaining->b->remaining->if->break->else->prevLimit->b->limit->b->b->position->limit->slice->b->slice->dsts->add->b->limit->b->b->position->position->break->return->Collections->unmodifiableList
+BufferingSubscriber.DownstreamSubscription#request(long)::: downstream subscription request:::if->cancelled->get->return->if->subscription->request->return->demand->increase->pushDemanded
+BufferingSubscriber.DownstreamSubscription#pushDemanded()::: downstream subscription push demanded:::if->cancelled->get->return->pushDemandedScheduler->runOrSchedule
+BufferingSubscriber.DownstreamSubscription.PushDemandedTask#run()::: push demanded task run:::try->t->if->pushDemandedScheduler->stop->downstreamSubscriber->onError->return->while->item->synchronized->if->cancelled->get->return->if->hasEnoughAccumulatedBytes->break->if->demand->tryDecrement->break->fromInternalBuffers->downstreamSubscriber->onNext->if->cancelled->get->return->complete->synchronized->internalBuffers->isEmpty->if->pushDemandedScheduler->stop->downstreamSubscriber->onComplete->return->catch->cancel->throw->finally->requestMore->synchronized->if->hasEnoughAccumulatedBytes->demand->isFulfilled->if->subscription->request
+BufferingSubscriber.DownstreamSubscription#cancel()::: downstream subscription cancel:::if->cancelled->compareAndExchange->return->subscription->cancel->pushDemandedScheduler->stop
+BufferingSubscriber#onSubscribe(Flow.Subscription)::: buffering subscriber on subscribe:::Objects->requireNonNull->if->subscription->cancel->return->s->new->DownstreamSubscription->downstreamSubscriber->onSubscribe
+BufferingSubscriber#onNext(List)::: buffering subscriber on next:::Objects->requireNonNull->s->if->return->if->throw->new->InternalError->synchronized->internalBuffers->addAll->remaining->downstreamSubscription->pushDemanded
+BufferingSubscriber#onError(Throwable)::: buffering subscriber on error:::Objects->requireNonNull->s->t->downstreamSubscription->pushDemanded
+BufferingSubscriber#onComplete()::: buffering subscriber on complete:::s->downstreamSubscription->pushDemanded
+BufferingSubscriber#getBody()::: buffering subscriber get body:::return->downstreamSubscriber->getBody
+ConnectionPool.CacheKey#equals(Object)::: cache key equals:::if->return->if->getClass->obj->getClass->return->other->if->Objects->equals->return->if->Objects->equals->return->return
+ConnectionPool.CacheKey#hashCode()::: cache key hash code:::return->Objects->hash
+ConnectionPool#dbgString()::: connection pool dbg string:::return
+ConnectionPool#start()::: connection pool start:::
+ConnectionPool#cacheKey(InetSocketAddress, InetSocketAddress)::: connection pool cache key:::return->new->CacheKey
+ConnectionPool#getConnection(boolean, InetSocketAddress, InetSocketAddress)::: connection pool get connection:::if->return->key->new->CacheKey->c->findConnection->findConnection->return
 ConnectionPool#returnToPool(HttpConnection):::Returns the connection to the pool.:::Instant->now->returnToPool
+ConnectionPool#returnToPool(HttpConnection, Instant, long)::: connection pool return to pool:::cleanup->registerCleanupTrigger->toClose->synchronized->if->cleanup->isDone->return->else->if->conn->close->return->if->expiryList->size->expiryList->removeOldest->if->removeFromPool->if->putConnection->else->putConnection->expiryList->add->if->if->debug->on->debug->toClose->dbgString->log->close
+ConnectionPool#registerCleanupTrigger(HttpConnection)::: connection pool register cleanup trigger:::cleanup->new->CleanupTrigger->flow->conn->getConnectionFlow->if->debug->on->debug->log->flow->connectFlows->return
+ConnectionPool#findConnection(CacheKey, HashMap>)::: connection pool find connection:::l->pool->get->if->l->isEmpty->return->else->c->l->removeFirst->expiryList->remove->return
+ConnectionPool#removeFromPool(HttpConnection, HashMap>)::: connection pool remove from pool:::k->c->cacheKey->l->pool->get->if->l->isEmpty->pool->remove->return->return->l->remove
+ConnectionPool#putConnection(HttpConnection, HashMap>)::: connection pool put connection:::key->c->cacheKey->l->pool->get->if->new->LinkedList<>->pool->put->l->add
 ConnectionPool#purgeExpiredConnectionsAndReturnNextDeadline():::Purge expired connection and return the number of milliseconds in which the next connection is scheduled to expire:::if->expiryList->purgeMaybeRequired->return->return->Instant->now->purgeExpiredConnectionsAndReturnNextDeadline
+ConnectionPool#purgeExpiredConnectionsAndReturnNextDeadline(Instant)::: connection pool purge expired connections and return next deadline:::nextPurge->if->expiryList->purgeMaybeRequired->return->closelist->synchronized->expiryList->purgeUntil->foreach->if->wasPresent->removeFromPool->else->wasPresent->removeFromPool->now->expiryList->nextExpiryDeadline->orElse->until->closelist->this->close->forEach->return
+ConnectionPool#close(HttpConnection)::: connection pool close:::try->c->close->catch->finally
+ConnectionPool#stop()::: connection pool stop:::closelist->Collections->emptyList->try->synchronized->expiryList->stream->map->Collectors->toList->collect->expiryList->clear->plainPool->clear->sslPool->clear->catch->finally->closelist->this->close->forEach
+ConnectionPool.ExpiryList#size()::: expiry list size:::return->list->size
+ConnectionPool.ExpiryList#purgeMaybeRequired()::: expiry list purge maybe required:::return
+ConnectionPool.ExpiryList#nextExpiryDeadline()::: expiry list next expiry deadline:::if->list->isEmpty->return->Optional->empty->else->return->Optional->list->getLast->of
+ConnectionPool.ExpiryList#removeOldest()::: expiry list remove oldest:::entry->list->pollLast->return
+ConnectionPool.ExpiryList#add(HttpConnection)::: expiry list add:::Instant->now->add
+ConnectionPool.ExpiryList#add(HttpConnection, Instant, long)::: expiry list add:::then->now->truncatedTo->plus->li->list->listIterator->while->li->hasNext->entry->li->next->if->then->isAfter->li->previous->li->new->ExpiryEntry->add->return->list->new->ExpiryEntry->add
+ConnectionPool.ExpiryList#remove(HttpConnection)::: expiry list remove:::if->list->isEmpty->return->li->list->listIterator->while->li->hasNext->e->li->next->if->equals->li->remove->list->isEmpty->return
+ConnectionPool.ExpiryList#purgeUntil(Instant)::: expiry list purge until:::if->list->isEmpty->return->Collections->emptyList->closelist->new->ArrayList<>->li->list->descendingIterator->while->li->hasNext->entry->li->next->if->isAfter->li->remove->c->closelist->add->else->break->list->isEmpty->return
+ConnectionPool.ExpiryList#stream.Stream stream()::: expiry list stream:::return->list->stream
+ConnectionPool.ExpiryList#clear()::: expiry list clear:::list->clear
+ConnectionPool#removeFromPool(HttpConnection)::: connection pool remove from pool:::if->removeFromPool->else->removeFromPool
+ConnectionPool#contains(HttpConnection)::: connection pool contains:::key->c->cacheKey->list->if->plainPool->get->if->list->contains->return->if->sslPool->get->if->list->contains->return->return
+ConnectionPool#cleanup(HttpConnection, Throwable)::: connection pool cleanup:::if->debug->on->debug->String->c->getConnectionFlow->valueOf->log->synchronized->removeFromPool->expiryList->remove->c->close
+ConnectionPool.CleanupTrigger#isDone()::: cleanup trigger is done:::return
+ConnectionPool.CleanupTrigger#triggerCleanup(Throwable)::: cleanup trigger trigger cleanup:::cleanup
+ConnectionPool.CleanupTrigger#request(long)::: cleanup trigger request:::
+ConnectionPool.CleanupTrigger#cancel()::: cleanup trigger cancel:::
+ConnectionPool.CleanupTrigger#onSubscribe(Flow.Subscription)::: cleanup trigger on subscribe:::subscription->request
+ConnectionPool.CleanupTrigger#onError(Throwable)::: cleanup trigger on error:::triggerCleanup
+ConnectionPool.CleanupTrigger#onComplete()::: cleanup trigger on complete:::triggerCleanup
+ConnectionPool.CleanupTrigger#onNext(List)::: cleanup trigger on next:::new->IOException->triggerCleanup
+ConnectionPool.CleanupTrigger#subscribe(Flow.Subscriber>)::: cleanup trigger subscribe:::subscriber->onSubscribe
+ConnectionPool.CleanupTrigger#toString()::: cleanup trigger to string:::return->connection->getConnectionFlow
+CookieFilter#request(HttpRequestImpl, MultiExchange)::: cookie filter request:::client->e->client->cookieHandlerOpt->client->cookieHandler->if->cookieHandlerOpt->isPresent->cookieHandler->cookieHandlerOpt->get->userheaders->r->getUserHeaders->map->cookies->cookieHandler->r->uri->get->systemHeadersBuilder->r->getSystemHeadersBuilder->if->cookies->isEmpty->Log->r->uri->logTrace->else->Log->r->uri->logTrace->foreach->cookies->entrySet->hdrname->entry->getKey->if->hdrname->equalsIgnoreCase->hdrname->equalsIgnoreCase->continue->values->entry->getValue->if->values->isEmpty->continue->foreach->if->Utils->isValidValue->systemHeadersBuilder->addHeader->else->Log->r->uri->logTrace
+CookieFilter#response(Response)::: cookie filter response:::hdrs->r->headers->request->r->request->e->Log->request->uri->logTrace->cookieHandlerOpt->e->client->cookieHandler->if->cookieHandlerOpt->isPresent->cookieHandler->cookieHandlerOpt->get->Log->hdrs->map->logTrace->cookieHandler->request->uri->hdrs->map->put->else->Log->request->uri->logTrace->return
+Exchange#getPushGroup()::: exchange get push group:::return
+Exchange#executor()::: exchange executor:::return
+Exchange#request()::: exchange request:::return
+Exchange#client()::: exchange client:::return
+Exchange.ConnectionAborter#connection(HttpConnection)::: connection aborter connection:::
+Exchange.ConnectionAborter#closeConnection()::: connection aborter close connection:::connection->if->try->connection->close->catch->finally
+Exchange#readBodyAsync(HttpResponse.BodyHandler)::: exchange read body async:::if->return->MinimalFuture->completedFuture->return->exchImpl->request->isWebSocket->readBodyAsync->exchImpl->completed->whenComplete
 Exchange#ignoreBody():::Called after a redirect or similar kind of retry where a body might be sent but we don't want it:::if->return->return->exchImpl->ignoreBody
 Exchange#released():::Called when a new exchange is created to replace this exchange:::impl->if->impl->released
+Exchange#cancel()::: exchange cancel:::if->exchImpl->cancel->else->new->IOException->cancel
+Exchange#cancel(IOException)::: exchange cancel:::if->debug->on->debug->log->impl->if->if->debug->on->debug->log->impl->cancel->else->connectionAborter->closeConnection->checkCancelled
+Exchange#checkCancelled()::: exchange check cancelled:::impl->cause->cf->if->synchronized->if->return->if->if->debug->on->debug->log->impl->cancel->else->Log->request->uri->request->timeout->isPresent->request->timeout->get->getSeconds->request->timeout->get->getNano->logTrace->if->cf->completeExceptionally
+Exchange#h2Upgrade()::: exchange h2 upgrade:::request->client->client2->setH2Upgrade
+Exchange#getCancelCause()::: exchange get cancel cause:::return
+Exchange#establishExchange(HttpConnection)::: exchange establish exchange:::if->debug->on->debug->request->proxy->log->t->getCancelCause->checkCancelled->if->return->MinimalFuture->failedFuture->cf->res->ExchangeImpl->get->synchronized->cf->synchronized->if->whenComplete->checkCancelled->return->res->tt->getCancelCause->checkCancelled->if->return->MinimalFuture->failedFuture->else->return->MinimalFuture->completedFuture->thenCompose
+Exchange#responseAsync()::: exchange response async:::return->responseAsyncImpl
+Exchange#responseAsyncImpl(HttpConnection)::: exchange response async impl:::e->checkPermissions->if->return->MinimalFuture->failedFuture->else->return->responseAsyncImpl0
+Exchange#checkFor407(ExchangeImpl, Throwable, Function, CompletableFuture>)::: exchange check for407:::Utils->getCompletionCause->if->if->debug->on->debug->log->MinimalFuture->completedFuture->proxyResponse->c->ex->connection->syntheticResponse->new->Response->return->MinimalFuture->completedFuture->else->if->if->debug->on->debug->log->return->MinimalFuture->failedFuture->else->if->debug->on->debug->log->return->andThen->apply
+Exchange#expectContinue(ExchangeImpl)::: exchange expect continue:::return->ex->getResponseAsync->Log->r1->toString->logResponse->rcode->r1->statusCode->if->Log->logTrace->if->debug->on->debug->log->cf->exchImpl->sendBodyAsync->exIm->getResponseAsync->thenCompose->wrapForUpgrade->wrapForLog->return->else->Log->logTrace->if->debug->on->debug->log->if->failed->new->IOException->return->MinimalFuture->failedFuture->return->exchImpl->this->ignoreBody->readBodyAsync->thenApply->thenCompose
+Exchange#sendRequestBody(ExchangeImpl)::: exchange send request body:::if->debug->on->debug->log->cf->ex->sendBodyAsync->exIm->getResponseAsync->thenCompose->wrapForUpgrade->wrapForLog->return
+Exchange#responseAsyncImpl0(HttpConnection)::: exchange response async impl0:::after407Check->if->request->expectContinue->request->addSystemHeader->Log->logTrace->this->expectContinue->else->this->sendRequestBody->afterExch407Check->ex->sendHeadersAsync->this->checkFor407->handle->Function->identity->thenCompose->return->establishExchange->this->checkFor407->handle->Function->identity->thenCompose
+Exchange#wrapForUpgrade(CompletableFuture)::: exchange wrap for upgrade:::if->return->cf->checkForUpgradeAsync->thenCompose->return
+Exchange#wrapForLog(CompletableFuture)::: exchange wrap for log:::if->Log->requests->return->cf->Log->response->toString->logResponse->return->thenApply->return
+Exchange#ignoreBody(HttpResponse.ResponseInfo)::: exchange ignore body:::return->replacing
+Exchange#checkForUpgradeAsync(Response, ExchangeImpl)::: exchange check for upgrade async:::rcode->resp->statusCode->if->e->if->debug->on->debug->e->connection->log->return->e->this->ignoreBody->readBodyAsync->debug->log->return->Http2Connection->e->connection->client->client2->e->drainLeftOverBytes->createAsync->cached->c->offerConnection->s->c->getStream->if->t->c->getRecordedCause->ioe->if->if->c->close->new->IOException->else->new->IOException->return->MinimalFuture->failedFuture->exchImpl->released->t->synchronized->if->e->getCancelCause->if->s->cancelImpl->return->MinimalFuture->failedFuture->if->debug->on->debug->log->return->s->getResponseAsync->thenCompose->thenCompose->return->MinimalFuture->completedFuture
+Exchange#getURIForSecurityCheck()::: exchange get for security check:::u->method->request->method->authority->request->authority->uri->request->uri->if->method->equalsIgnoreCase->try->authority->getHostString->authority->getPort->new->URI->catch->throw->new->InternalError->finally->else->return
+Exchange#permissionForServer(URI, String, Map>):::Returns the security permission required for the given details:::if->method->equals->return->uri->toString->new->URLPermission->else->return->Utils->headers->keySet->stream->permissionForServer
+Exchange#checkPermissions():::Performs the necessary security permission checks required to retrieve the response:::method->request->method->sm->System->getSecurityManager->if->method->equals->return->userHeaders->request->getUserHeaders->u->getURIForSecurityCheck->p->userHeaders->map->permissionForServer->try->sm->checkPermission->catch->return->finally->ps->client->proxySelector->if->if->method->equals->proxyPerm->request->proxy->permissionForProxy->if->try->sm->checkPermission->catch->return->finally->return
+Exchange#version()::: exchange version:::return->multi->version
+Exchange#dbgString()::: exchange dbg string:::return
+ExchangeImpl#getExchange()::: exchange impl get exchange:::return
 ExchangeImpl#connection():::Returns the HttpConnection instance to which this exchange is assigned.:::
 ExchangeImpl#get(Exchange, HttpConnection):::Initiates a new exchange and assigns it to a connection if one exists already:::if->exchange->version->if->debug->on->debug->log->return->createHttp1Exchange->else->c2->exchange->client->client2->request->exchange->request->c2f->c2->getConnectionFor->if->debug->on->debug->log->return->c2f->createExchangeImpl->handle->Function->identity->thenCompose
+ExchangeImpl#createExchangeImpl(Http2Connection, Throwable, Exchange, HttpConnection)::: exchange impl create exchange impl:::if->debug->on->debug->log->secure->exchange->request->secure->if->if->debug->on->debug->log->Utils->getCompletionCause->if->ee->as->ee->getConnection->if->debug->on->debug->log->ex->createHttp1Exchange->return->else->if->debug->on->debug->log->return->MinimalFuture->failedFuture->if->if->debug->on->debug->log->ex->createHttp1Exchange->return->if->if->debug->on->debug->log->return->createHttp1Exchange->exchange->h2Upgrade->return->thenApply->else->if->debug->on->debug->log->s->c->createStream->ex->MinimalFuture->completedFuture->return
+ExchangeImpl#createHttp1Exchange(Exchange, HttpConnection)::: exchange impl create http1 exchange:::try->return->MinimalFuture->new->Http1Exchange<>->completedFuture->catch->return->MinimalFuture->failedFuture->finally
+ExchangeImpl#sendHeadersAsync()::: exchange impl send headers async:::
 ExchangeImpl#sendBodyAsync():::Sends a request body, after request headers have been sent.:::
+ExchangeImpl#readBodyAsync(HttpResponse.BodyHandler, boolean, Executor)::: exchange impl read body async:::
 ExchangeImpl#ignoreBody():::Ignore/consume the body.:::
 ExchangeImpl#getResponseAsync(Executor):::Gets the response headers:::
 ExchangeImpl#cancel():::Cancels a request:::
@@ -20,78 +150,866 @@ ExchangeImpl#released():::Called when the exchange is released, so that cleanup 
 ExchangeImpl#completed():::Called when the exchange is completed, so that cleanup actions may be performed - such as deregistering callbacks:::
 ExchangeImpl#isCanceled():::Returns true if this exchange was canceled.:::
 ExchangeImpl#getCancelCause():::Returns the cause for which this exchange was canceled, if available.:::
+FilterFactory#addFilter(Class)::: filter factory add filter:::filterClasses->add
+FilterFactory#getFilterChain()::: filter factory get filter chain:::l->new->LinkedList<>->foreach->try->headerFilter->clazz->getConstructor->newInstance->l->add->catch->throw->new->InternalError->finally->return
+HeaderFilter#request(HttpRequestImpl, MultiExchange)::: header filter request:::
 HeaderFilter#response(Response):::Returns null if response ok to be given to user:::
+HeaderParser#parse()::: header parser parse:::if->raw->trim->ca->raw->toCharArray->beg->end->i->inKey->inQuote->len->while->c->if->new->String->toLowerCase->else->if->if->new->String->do->while->else->else->if->if->continue->else->if->new->String->toLowerCase->else->new->String->while->else->if->ntab->new->StringArrs->System->arraycopy->if->if->if->new->String->else->new->String->else->new->String->toLowerCase->else->if->if->if->String->valueOf->else->String->valueOf->else->String->valueOf->toLowerCase
+HeaderParser#findKey(int)::: header parser find key:::if->return->return
+HeaderParser#findValue(int)::: header parser find value:::if->return->return
+HeaderParser#findValue(String)::: header parser find value:::return->findValue
+HeaderParser#findValue(String, String)::: header parser find value:::if->return->k->toLowerCase->for->i->return
+HeaderParser.ParserIterator#hasNext()::: parser iterator has next:::return
+HeaderParser.ParserIterator#next()::: parser iterator next:::if->throw->new->NoSuchElementException->return
+HeaderParser#keys()::: header parser keys:::return->new->ParserIterator
+HeaderParser#toString()::: header parser to string:::k->keys->sb->new->StringBuilder->sb->append->append->append->append->append->for->i->k->hasNext->sb->append->return->sb->toString
 Http1AsyncReceiver.Http1AsyncDelegate#tryAsyncReceive(ByteBuffer):::Receives and handles a byte buffer reference.:::
 Http1AsyncReceiver.Http1AsyncDelegate#onReadError(Throwable):::Called when an exception is raised.:::
 Http1AsyncReceiver.Http1AsyncDelegate#onSubscribe(AbstractSubscription):::Must be called before any other method on the delegate:::
 Http1AsyncReceiver.Http1AsyncDelegate#subscription():::Returns the subscription that was passed to onSubscribe:::
 Http1AsyncReceiver.Http1AsyncDelegate#close(Throwable):::Called to make sure resources are released when the when the Http1AsyncReceiver is stopped.:::
+Http1AsyncReceiver.Http1AsyncDelegateSubscription#request(long)::: http1 async delegate subscription request:::if->return->try->demand->demand->if->demand->increase->scheduler->runOrSchedule->catch->onError->accept->finally
+Http1AsyncReceiver.Http1AsyncDelegateSubscription#cancel()::: http1 async delegate subscription cancel:::onCancel->run
+Http1AsyncReceiver#flush()::: http1 async receiver flush:::buf->try->handlePendingDelegate->while->queue->peek->delegate->if->debug->on->debug->buf->remaining->log->if->hasDemand->return->if->debug->on->debug->buf->remaining->log->if->delegate->tryAsyncReceive->remaining->buf->remaining->if->debug->on->debug->remstr->scheduler->isStopped->remaining->return->log->canRequestMore->set->return->parsed->queue->remove->canRequestMore->queue->isEmpty->set->checkRequestMore->catch->x->if->if->debug->on->debug->log->finally->checkForErrors
+Http1AsyncReceiver#describe()::: http1 async receiver describe:::exchange->if->return->String->exchange->request->valueOf->return
+Http1AsyncReceiver#checkForErrors():::Must be called from within the scheduler main loop:::delegate->pendingDelegateRef->get->if->x->if->queue->isEmpty->captured->if->debug->on->debug->queue->isEmpty->log->scheduler->stop->delegate->onReadError->whenFinished->completeExceptionally->if->Log->channel->Log->describe->logChannel->if->exchg->stop->if->exchg->connection->close
+Http1AsyncReceiver#checkRequestMore():::Must be called from within the scheduler main loop:::delegate->more->get->hasDemand->hasDemand->if->debug->on->debug->log->if->subscriber->requestMore
+Http1AsyncReceiver#hasDemand(Http1AsyncDelegate):::Must be called from within the scheduler main loop:::if->return->subscription->delegate->subscription->demand->subscription->demand->get->if->debug->on->debug->log->return
+Http1AsyncReceiver#handlePendingDelegate():::Must be called from within the scheduler main loop:::pending->pendingDelegateRef->get->if->pendingDelegateRef->compareAndSet->delegate->if->unsubscribe->onSubscriptionError->setRetryOnError->onReadError->cancel->if->debug->on->debug->log->try->setRetryOnError->pending->close->new->IOException->onReadError->unsubscribe->catch->finally->exchg->stop->if->exchg->connection->close->subscription->new->Http1AsyncDelegateSubscription->try->pending->onSubscribe->catch->finally->captured->if->debug->on->debug->subscription->demand->get->canRequestMore->get->queue->isEmpty->log->return->return
+Http1AsyncReceiver#setRetryOnError(boolean)::: http1 async receiver set retry on error:::
+Http1AsyncReceiver#clear()::: http1 async receiver clear:::if->debug->on->debug->log->set
+Http1AsyncReceiver#subscribe(Http1AsyncDelegate)::: http1 async receiver subscribe:::synchronized->pendingDelegateRef->set->if->queue->isEmpty->canRequestMore->set->if->debug->on->debug->queue->isEmpty->log->if->client->isSelectorThread->scheduler->runOrSchedule->else->scheduler->runOrSchedule
+Http1AsyncReceiver#remaining()::: http1 async receiver remaining:::return->Utils->queue->toArray->remaining
+Http1AsyncReceiver#unsubscribe(Http1AsyncDelegate)::: http1 async receiver unsubscribe:::synchronized->if->if->debug->on->debug->log
+Http1AsyncReceiver#asyncReceive(ByteBuffer)::: http1 async receiver async receive:::if->debug->on->debug->buf->remaining->log->received->buf->remaining->addAndGet->queue->offer->scheduler->runOrSchedule
+Http1AsyncReceiver#onReadError(Throwable)::: http1 async receiver on read error:::delegate->recorded->if->debug->on->debug->log->synchronized->if->if->if->received->get->new->ConnectionExpiredException->t->if->debug->on->debug->queue->isEmpty->log->if->Log->errors->Log->describe->logError->if->queue->isEmpty->pendingDelegateRef->get->if->Log->errors->Log->describe->logError->scheduler->runOrSchedule
+Http1AsyncReceiver#stop()::: http1 async receiver stop:::if->debug->on->debug->log->if->Log->channel->scheduler->isStopped->Log->describe->logChannel->scheduler->stop->previous->if->previous->close->whenFinished->complete
 Http1AsyncReceiver#subscriber():::Returns the TubeSubscriber for reading from the connection flow.:::return
+Http1AsyncReceiver.Http1TubeSubscriber#onSubscribe(Flow.Subscription)::: http1 tube subscriber on subscribe:::if->debug->on->debug->log->if->Log->channel->Log->describe->logChannel->canRequestMore->set->if->scheduler->runOrSchedule->else->if->debug->on->debug->log
+Http1AsyncReceiver.Http1TubeSubscriber#requestMore()::: http1 tube subscriber request more:::s->if->return->if->canRequestMore->compareAndSet->if->if->debug->on->debug->log->s->request->return->if->debug->on->debug->log
+Http1AsyncReceiver.Http1TubeSubscriber#onNext(List)::: http1 tube subscriber on next:::canRequestMore->item->isEmpty->set->foreach->asyncReceive
+Http1AsyncReceiver.Http1TubeSubscriber#onError(Throwable)::: http1 tube subscriber on error:::onReadError
+Http1AsyncReceiver.Http1TubeSubscriber#onComplete()::: http1 tube subscriber on complete:::new->EOFException->onReadError
+Http1AsyncReceiver.Http1TubeSubscriber#dropSubscription()::: http1 tube subscriber drop subscription:::if->debug->on->debug->log
+Http1AsyncReceiver#drain(ByteBuffer)::: http1 async receiver drain:::b->if->queue->isEmpty->return->qbb->queue->queue->size->new->ByteBufferArr->toArray->size->Utils->remaining->remaining->b->remaining->free->b->capacity->b->position->if->debug->on->debug->log->if->if->debug->on->debug->log->ByteBuffer->allocate->Utils->copy->b->flip->pos->b->position->limit->b->limit->b->position->b->limit->count->for->i->b->limit->b->position->queue->clear->bb->if->debug->on->debug->bb->remaining->bb->position->bb->limit->log->return
+Http1AsyncReceiver#debugQBB(ByteBuffer[])::: http1 async receiver debug b:::msg->new->StringBuilder->lbb->Arrays->asList->sbb->Arrays->asList->new->HashSet<>->uniquebb->sbb->size->msg->append->lbb->size->append->append->append->append->append->sep->foreach->if->sbb->remove->msg->append->String->valueOf->append->append->b->remaining->append->append->b->position->append->append->b->capacity->append->append->return->msg->toString
+Http1AsyncReceiver#dbgString()::: http1 async receiver dbg string:::tag->if->flowTag->exchg->flow->exchg->connection->getConnectionFlow->String->valueOf->if->else->return
+Http1Exchange.DataPair#toString()::: data pair to string:::return
+Http1Exchange.Http1BodySubscriber#request(long)::: http1 body subscriber request:::if->debug->on->debug->log->subscription->request
 Http1Exchange.Http1BodySubscriber#currentStateMessage():::A current-state message suitable for inclusion in an exception detail message.:::
+Http1Exchange.Http1BodySubscriber#isSubscribed()::: http1 body subscriber is subscribed:::return
+Http1Exchange.Http1BodySubscriber#setSubscription(Flow.Subscription)::: http1 body subscriber set subscription:::whenSubscribed->complete
+Http1Exchange.Http1BodySubscriber#cancelSubscription()::: http1 body subscriber cancel subscription:::try->subscription->cancel->catch->msg->if->debug->on->debug->log->Log->logError->finally
+Http1Exchange.Http1BodySubscriber#completeSubscriber(Logger)::: http1 body subscriber complete subscriber:::return->new->Http1BodySubscriber
+Http1Exchange#toString()::: http1 exchange to string:::return->request->toString
+Http1Exchange#request()::: http1 exchange request:::return
+Http1Exchange#connection()::: http1 exchange connection:::return
+Http1Exchange#connectFlows(HttpConnection)::: http1 exchange connect flows:::tube->connection->getConnectionFlow->if->debug->on->debug->log->tube->asyncReceiver->subscriber->connectFlows
+Http1Exchange#sendHeadersAsync()::: http1 exchange send headers async:::if->debug->on->debug->log->asyncReceiver->setRetryOnError->if->new->Http1Response<>->if->debug->on->debug->log->connectCF->if->connection->connected->if->debug->on->debug->log->connection->connectAsync->connection->finishConnect->thenCompose->cancelled->synchronized->if->operations->add->if->if->client->isSelectorThread->executor->connectCF->completeExceptionally->execute->else->connectCF->completeExceptionally->else->new->MinimalFuture<>->connectCF->complete->return->connectCF->cf->new->MinimalFuture<>->try->if->if->debug->on->debug->log->if->headersSentCF->isDone->headersSentCF->completeAsync->whenComplete->connectFlows->if->debug->on->debug->log->data->requestAction->headers->synchronized->if->debug->on->debug->log->appendToOutgoing->cf->complete->return->catch->if->debug->on->debug->log->headersSentCF->completeExceptionally->bodySentCF->completeExceptionally->connection->close->cf->completeExceptionally->return->finally->thenCompose->thenCompose
+Http1Exchange#cancelIfFailed(Flow.Subscription)::: http1 exchange cancel if failed:::if->debug->on->debug->log->if->s->cancel->bodySentCF->complete->whenCompleteAsync
+Http1Exchange#sendBodyAsync()::: http1 exchange send body async:::if->debug->on->debug->log->try->requestAction->continueRequest->if->debug->on->debug->bodySubscriber->getClass->log->if->Http1BodySubscriber->completeSubscriber->appendToOutgoing->else->cancelIfFailed->thenAccept->requestMoreBody->thenAccept->catch->cancelImpl->bodySentCF->completeExceptionally->finally->return->Utils->wrapForDebug
+Http1Exchange#getResponseAsync(Executor)::: http1 exchange get response async:::if->debug->on->debug->log->cf->response->readHeadersAsync->cause->synchronized->operations->add->if->Log->request->uri->request->timeout->isPresent->request->timeout->get->getSeconds->request->timeout->get->getNano->logTrace->acknowledged->cf->completeExceptionally->if->debug->on->debug->log->return->Utils->wrapForDebug
+Http1Exchange#readBodyAsync(BodyHandler, boolean, Executor)::: http1 exchange read body async:::bs->handler->response->responseCode->response->responseHeaders->new->ResponseInfoImpl->apply->bodyCF->response->readBody->return
+Http1Exchange#ignoreBody()::: http1 exchange ignore body:::return->response->ignoreBody
+Http1Exchange#drainLeftOverBytes()::: http1 exchange drain left over bytes:::synchronized->asyncReceiver->stop->return->asyncReceiver->drain
+Http1Exchange#released()::: http1 exchange released:::resp->if->resp->completed->asyncReceiver->clear
+Http1Exchange#completed()::: http1 exchange completed:::resp->if->resp->completed
 Http1Exchange#cancel():::Cancel checks to see if request and responseAsync finished already:::new->IOException->cancelImpl
 Http1Exchange#cancel(IOException):::Cancel checks to see if request and responseAsync finished already:::cancelImpl
+Http1Exchange#cancelImpl(Throwable)::: http1 exchange cancel impl:::toComplete->count->error->synchronized->if->if->debug->on->debug->request->uri->log->if->requestAction->finished->response->finished->return->stop->if->operations->isEmpty->Log->request->uri->request->timeout->isPresent->request->timeout->get->getSeconds->request->timeout->get->getNano->logTrace->else->foreach->if->cf->isDone->if->new->LinkedList<>->toComplete->add->operations->clear->try->Log->logError->if->exec->client->isSelectorThread->runInline->x->while->toComplete->isEmpty->cf->toComplete->poll->exec->if->cf->completeExceptionally->if->debug->on->debug->request->uri->log->execute->catch->finally->connection->close
+Http1Exchange#runInline(Runnable)::: http1 exchange run inline:::run->run
 Http1Exchange#isCanceled():::Returns true if this exchange was canceled.:::synchronized->return
 Http1Exchange#getCancelCause():::Returns the cause for which this exchange was canceled, if available.:::synchronized->return
 Http1Exchange#appendToOutgoing(Throwable):::Convenience for #appendToOutgoing(DataPair), with just a Throwable.:::new->DataPair->appendToOutgoing
 Http1Exchange#appendToOutgoing(List):::Convenience for #appendToOutgoing(DataPair), with just data.:::new->DataPair->appendToOutgoing
+Http1Exchange#appendToOutgoing(DataPair)::: http1 exchange append to outgoing:::if->debug->on->debug->log->outgoing->add->runOrSchedule
+Http1Exchange#hasOutgoing():::Tells whether, or not, there is any outgoing data that can be published, or if there is an error.:::return->outgoing->isEmpty
+Http1Exchange#requestMoreBody()::: http1 exchange request more body:::try->if->debug->on->debug->log->bodySubscriber->request->catch->if->debug->on->debug->log->cancelImpl->bodySentCF->completeExceptionally->finally
+Http1Exchange#getOutgoing():::Returns the next portion of the HTTP request, or the error.:::exec->client->theExecutor->dp->outgoing->pollFirst->if->if->debug->on->debug->log->if->exec->bodySubscriber->cancelSubscription->execute->else->if->debug->on->debug->log->headersSentCF->completeAsync->bodySentCF->completeAsync->return->if->return->if->synchronized->exec->headersSentCF->completeExceptionally->bodySentCF->completeExceptionally->connection->close->execute->return->switch->synchronized->if->debug->on->debug->log->headersSentCF->completeAsync->break->if->synchronized->if->debug->on->debug->log->bodySentCF->completeAsync->else->exec->this->requestMoreBody->execute->break->return
+Http1Exchange.Http1Publisher#subscribe(Flow.Subscriber>)::: http1 publisher subscribe:::Objects->requireNonNull->if->debug->on->debug->log->s->onSubscribe
+Http1Exchange.Http1Publisher#dbgString()::: http1 publisher dbg string:::tag->flow->connection->getConnectionFlow->if->else->if->return
+Http1Exchange.Http1Publisher.WriteTask#run()::: write task run:::if->debug->on->debug->log->if->if->debug->on->debug->log->writeScheduler->stop->getOutgoing->return->if->if->debug->on->debug->log->return->if->debug->on->debug->hasOutgoing->log->while->hasOutgoing->demand->tryDecrement->dp->getOutgoing->if->break->if->if->debug->on->debug->log->writeScheduler->stop->else->data->if->synchronized->if->debug->on->debug->log->writeScheduler->stop->else->if->debug->on->debug->Utils->remaining->log->subscriber->onNext
+Http1Exchange.Http1Publisher.Http1WriteSubscription#request(long)::: http1 write subscription request:::if->return->demand->increase->if->debug->on->debug->log->writeScheduler->client->theExecutor->runOrSchedule
+Http1Exchange.Http1Publisher.Http1WriteSubscription#cancel()::: http1 write subscription cancel:::if->debug->on->debug->log->if->return->writeScheduler->client->theExecutor->runOrSchedule
+Http1Exchange#dbgString()::: http1 exchange dbg string:::return
 Http1HeaderParser#statusLine():::Returns the status-line.:::return
 Http1HeaderParser#responseCode():::Returns the response code.:::return
 Http1HeaderParser#headers():::Returns the headers, possibly empty.:::return
 Http1HeaderParser#currentStateMessage():::A current-state message suitable for inclusion in an exception detail message.:::stateName->state->name->msg->if->stateName->contains->return->format->else->if->stateName->contains->sb->toString->format->else->if->stateName->contains->headerName->sb->toString->if->headerName->indexOf->headerName->headerName->indexOf->substring->format->else->sb->toString->format->return->format
 Http1HeaderParser#parse(ByteBuffer):::Parses HTTP/1.X status-line and headers from the given bytes:::requireNonNull->while->canContinueParsing->switch->break->readResumeStatusLine->break->readStatusLineFeed->break->maybeStartHeaders->break->maybeEndHeaders->break->readResumeHeader->break->resumeOrLF->break->resumeOrSecondCR->break->resumeOrEndHeaders->break->throw->String->valueOf->new->InternalError->return
+Http1HeaderParser#canContinueParsing(ByteBuffer)::: http1 header parser can continue parsing:::switch->return->return->return->return->return->buffer->hasRemaining
+Http1HeaderParser#readResumeStatusLine(ByteBuffer)::: http1 header parser read resume status line:::c->while->input->hasRemaining->input->get->if->break->sb->append->if->else->if
+Http1HeaderParser#readStatusLineFeed(ByteBuffer)::: http1 header parser read status line feed:::c->input->get->if->throw->sb->toString->protocolException->sb->toString->new->StringBuilder->if->statusLine->startsWith->throw->protocolException->if->statusLine->length->throw->protocolException->Integer->statusLine->substring->parseInt
+Http1HeaderParser#maybeStartHeaders(ByteBuffer)::: http1 header parser maybe start headers:::c->input->get->if->else->if->else->sb->append
+Http1HeaderParser#maybeEndHeaders(ByteBuffer)::: http1 header parser maybe end headers:::c->input->get->if->HttpHeaders->of->else->throw->protocolException
+Http1HeaderParser#readResumeHeader(ByteBuffer)::: http1 header parser read resume header:::while->input->hasRemaining->c->input->get->if->break->else->if->break->if->sb->append
+Http1HeaderParser#addHeaderFromString(String)::: http1 header parser add header from string:::idx->headerString->indexOf->if->return->name->headerString->substring->trim->if->name->isEmpty->return->value->headerString->headerString->length->substring->trim->privateMap->name->toLowerCase->new->ArrayList<>->computeIfAbsent->add
+Http1HeaderParser#resumeOrLF(ByteBuffer)::: http1 header parser resume or f:::c->input->get->if->else->if->sb->append->else->new->StringBuilder->sb->append
+Http1HeaderParser#resumeOrSecondCR(ByteBuffer)::: http1 header parser resume or second r:::c->input->get->if->if->sb->length->headerString->sb->toString->new->StringBuilder->addHeaderFromString->if->else->HttpHeaders->of->else->if->sb->append->else->if->sb->length->headerString->sb->toString->new->StringBuilder->addHeaderFromString->sb->append
+Http1HeaderParser#resumeOrEndHeaders(ByteBuffer)::: http1 header parser resume or end headers:::c->input->get->if->HttpHeaders->of->else->throw->protocolException
+Http1HeaderParser#protocolException(String, Object...)::: http1 header parser protocol exception:::return->format->new->ProtocolException
+Http1Request#logHeaders(String)::: http1 request log headers:::if->Log->headers->s->completeHeaders->replaceAll->if->s->endsWith->s->s->length->substring->Log->logHeaders
+Http1Request#collectHeaders0(StringBuilder)::: http1 request collect headers0:::filter->connection->headerFilter->nocookies->NOCOOKIES->and->systemHeaders->systemHeadersBuilder->build->collectHeaders1->collectHeaders1->collectCookies->sb->append->append
+Http1Request#collectCookies(StringBuilder, HttpHeaders, HttpHeaders)::: http1 request collect cookies:::systemList->system->allValues->userList->user->allValues->found->if->foreach->if->sb->append->append->append->else->sb->append->append->sb->append->if->foreach->if->sb->append->append->append->else->sb->append->append->sb->append->if->sb->append->append
+Http1Request#collectHeaders1(StringBuilder, HttpHeaders, BiPredicate)::: http1 request collect headers1:::foreach->headers->map->entrySet->key->entry->getKey->values->entry->getValue->foreach->if->filter->test->continue->sb->append->append->append->append->append->append
+Http1Request#getPathAndQuery(URI)::: http1 request get path and query:::path->uri->getRawPath->query->uri->getRawQuery->if->path->equals->if->if->query->equals->return->Utils->encode->else->return->Utils->encode
+Http1Request#authorityString(InetSocketAddress)::: http1 request authority string:::return->addr->getHostString->addr->getPort
+Http1Request#hostString()::: http1 request host string:::uri->request->uri->port->uri->getPort->host->uri->getHost->defaultPort->if->else->if->request->secure->else->if->return->else->return->Integer->toString
+Http1Request#requestURI()::: http1 request request i:::uri->request->uri->method->request->method->if->request->proxy->method->equals->request->isWebSocket->return->getPathAndQuery->if->request->secure->if->request->method->equals->return->request->authority->authorityString->else->return->getPathAndQuery->if->request->method->equals->return->request->authority->authorityString->return->request->authority->authorityString->uri->toString
+Http1Request#finished()::: http1 request finished:::return
+Http1Request#setFinished()::: http1 request set finished:::
+Http1Request#headers()::: http1 request headers:::if->Log->requests->Log->request->toString->logRequest->uriString->requestURI->sb->new->StringBuilder->sb->request->method->append->append->append->append->uri->request->uri->if->systemHeadersBuilder->hostString->setHeader->if->else->requestPublisher->contentLength->if->systemHeadersBuilder->setHeader->else->if->systemHeadersBuilder->Long->toString->setHeader->else->systemHeadersBuilder->setHeader->collectHeaders0->hs->sb->toString->logHeaders->b->ByteBuffer->hs->getBytes->wrap->return->List->of
+Http1Request#continueRequest()::: http1 request continue request:::subscriber->if->new->StreamSubscriber->requestPublisher->subscribe->else->if->return->new->FixedContentSubscriber->requestPublisher->subscribe->return
+Http1Request.StreamSubscriber#onSubscribe(Flow.Subscription)::: stream subscriber on subscribe:::if->isSubscribed->t->new->IllegalStateException->http1Exchange->appendToOutgoing->else->setSubscription
+Http1Request.StreamSubscriber#onNext(ByteBuffer)::: stream subscriber on next:::Objects->requireNonNull->if->t->new->IllegalStateException->http1Exchange->appendToOutgoing->else->chunklen->item->remaining->l->new->ArrayList<>->l->getHeader->add->l->add->l->ByteBuffer->wrap->add->http1Exchange->appendToOutgoing
+Http1Request.StreamSubscriber#currentStateMessage()::: stream subscriber current state message:::return
+Http1Request.StreamSubscriber#onError(Throwable)::: stream subscriber on error:::if->return->cancelSubscription->http1Exchange->appendToOutgoing
+Http1Request.StreamSubscriber#onComplete()::: stream subscriber on complete:::if->t->new->IllegalStateException->http1Exchange->appendToOutgoing->else->l->new->ArrayList<>->l->ByteBuffer->wrap->add->l->ByteBuffer->wrap->add->http1Exchange->appendToOutgoing->http1Exchange->appendToOutgoing->setFinished
+Http1Request.FixedContentSubscriber#onSubscribe(Flow.Subscription)::: fixed content subscriber on subscribe:::if->isSubscribed->t->new->IllegalStateException->http1Exchange->appendToOutgoing->else->setSubscription
+Http1Request.FixedContentSubscriber#onNext(ByteBuffer)::: fixed content subscriber on next:::if->debug->on->debug->log->Objects->requireNonNull->if->t->new->IllegalStateException->http1Exchange->appendToOutgoing->else->writing->item->remaining->written->if->cancelSubscription->msg->connection->getConnectionFlow->Thread->currentThread->getName->http1Exchange->new->IOException->appendToOutgoing->else->http1Exchange->List->of->appendToOutgoing
+Http1Request.FixedContentSubscriber#currentStateMessage()::: fixed content subscriber current state message:::return->format
+Http1Request.FixedContentSubscriber#onError(Throwable)::: fixed content subscriber on error:::if->debug->on->debug->log->if->return->cancelSubscription->http1Exchange->appendToOutgoing
+Http1Request.FixedContentSubscriber#onComplete()::: fixed content subscriber on complete:::if->debug->on->debug->log->if->t->new->IllegalStateException->http1Exchange->appendToOutgoing->else->written->if->cancelSubscription->t->connection->getConnectionFlow->Thread->currentThread->getName->new->IOException->http1Exchange->appendToOutgoing->else->http1Exchange->appendToOutgoing
+Http1Request#getHeader(int):::Returns a header for a particular chunk size:::hexStr->Integer->toHexString->hexBytes->hexStr->getBytes->header->hexStr->length->new->byteArr->System->arraycopy->return->ByteBuffer->wrap
+Http1Response#dbgString()::: http1 response dbg string:::dbg->if->cdbg->if->else->return
+Http1Response.ClientRefCountTracker#acquire()::: client ref count tracker acquire:::if->if->debug->on->debug->log->client->reference->else->if->debug->on->debug->log
+Http1Response.ClientRefCountTracker#tryRelease()::: client ref count tracker try release:::if->if->debug->on->debug->log->client->unreference->else->if->if->debug->on->debug->log->else->if->if->debug->on->debug->log
+Http1Response#readHeadersAsync(Executor)::: http1 response read headers async:::if->debug->on->debug->asyncReceiver->remaining->log->if->if->debug->on->debug->log->else->asyncReceiver->unsubscribe->bodyReader->reset->new->Http1HeaderParser->headersReader->reset->headersReader->start->asyncReceiver->subscribe->cf->headersReader->completion->if->debug->on->debug->cf->isDone->log->lambda->if->debug->on->debug->log->asyncReceiver->unsubscribe->hd->responseCode->hd->headers->exchange->getExchange->new->Response->if->Log->headers->sb->new->StringBuilder->Log->dumpHeaders->Log->sb->toString->logHeaders->return->if->return->cf->thenApplyAsync->else->return->cf->thenApply
+Http1Response#completed()::: http1 response completed:::
+Http1Response#finished()::: http1 response finished:::return
 Http1Response#fixupContentLen(long):::Return known fixed content length or -1 if chunked, or -2 if no content-length information in which case, connection termination delimits the response body:::if->request->method->equalsIgnoreCase->return->if->if->headers->firstValue->orElse->equalsIgnoreCase->return->if->return->return->return
 Http1Response#ignoreBody(Executor):::Read up to MAX_IGNORE bytes discarding:::clen->headers->firstValueAsLong->orElse->if->connection->close->return->MinimalFuture->completedFuture->else->return->discarding->readBody
+Http1Response.Http1BodySubscriber#propagateError(Throwable)::: http1 body subscriber propagate error:::try->if->userSubscriber->onSubscribe->catch->finally->userSubscriber->onError
+Http1Response.Http1BodySubscriber#complete(Throwable)::: http1 body subscriber complete:::if->completed->compareAndSet->Utils->getCompletionCause->if->try->userSubscriber->onComplete->catch->Utils->getCompletionCause->propagateError->finally->else->propagateError
+Http1Response.Http1BodySubscriber#getBody()::: http1 body subscriber get body:::return->userSubscriber->getBody
+Http1Response.Http1BodySubscriber#onSubscribe(Flow.Subscription)::: http1 body subscriber on subscribe:::if->userSubscriber->onSubscribe->else
+Http1Response.Http1BodySubscriber#onNext(List)::: http1 body subscriber on next:::userSubscriber->onNext
+Http1Response.Http1BodySubscriber#onError(Throwable)::: http1 body subscriber on error:::complete
+Http1Response.Http1BodySubscriber#onComplete()::: http1 body subscriber on complete:::complete
+Http1Response#readBody(HttpResponse.BodySubscriber, boolean, Executor)::: http1 response read body:::subscriber->new->Http1BodySubscriber<>->cf->new->MinimalFuture<>->clen0->headers->firstValueAsLong->orElse->clen->fixupContentLen->asyncReceiver->unsubscribe->headersReader->reset->refCountTracker->new->ClientRefCountTracker->connection->client->reference->executor->try->this->onFinished->new->ResponseContent->if->cf->isCompletedExceptionally->connection->close->return->refCountTracker->acquire->content->try->if->try->subscriber->onError->catch->finally->cf->completeExceptionally->catch->finally->bodyReader->onComplete->if->connection->close->getBodyParser->bodyReader->start->bodyReaderCF->bodyReader->completion->asyncReceiver->subscribe->trailingOp->bodyReaderCF->Utils->getCompletionCause->try->if->if->debug->on->debug->log->if->subscriber->onError->cf->completeExceptionally->catch->asyncReceiver->onReadError->finally->refCountTracker->tryRelease->whenComplete->connection->addTrailingOperation->catch->if->debug->on->debug->log->try->subscriber->onError->cf->completeExceptionally->catch->finally->asyncReceiver->onReadError->finally->connection->client->unreference->execute->try->p->getBody->if->cf->complete->else->cf->completeExceptionally->whenComplete->catch->cf->completeExceptionally->asyncReceiver->setRetryOnError->asyncReceiver->onReadError->finally->return->cf->if->refCountTracker->tryRelease->whenComplete
+Http1Response#onFinished()::: http1 response on finished:::asyncReceiver->clear->if->Log->logTrace->if->debug->on->debug->connection->getConnectionFlow->log->connection->closeOrReturnToCache
+Http1Response#responseHeaders()::: http1 response response headers:::return
+Http1Response#responseCode()::: http1 response response code:::return
+Http1Response#onReadError(Throwable)::: http1 response on read error:::Log->logError->receiver->receiver->if->debug->log->cf->receiver->completion->debug->cf->isDone->log->if->cf->completeExceptionally->else->debug->log->debug->log->connection->close
+Http1Response#advance(State)::: http1 response advance:::switch->asyncReceiver->unsubscribe->return->asyncReceiver->unsubscribe->return->throw->new->InternalError
+Http1Response#receiver(State)::: http1 response receiver:::switch->return->return->return
+Http1Response.Receiver#start(T)::: receiver start:::
+Http1Response.Receiver#completion()::: receiver completion:::
+Http1Response.Receiver#tryAsyncReceive(ByteBuffer)::: receiver try async receive:::
+Http1Response.Receiver#onReadError(Throwable)::: receiver on read error:::
+Http1Response.Receiver#handle(ByteBuffer, T, CompletableFuture)::: receiver handle:::
+Http1Response.Receiver#reset()::: receiver reset:::
+Http1Response.Receiver#accept(ByteBuffer, T, CompletableFuture)::: receiver accept:::if->cf->isDone->return->handle->return->cf->isDone
+Http1Response.Receiver#onSubscribe(AbstractSubscription)::: receiver on subscribe:::
+Http1Response.Receiver#subscription()::: receiver subscription:::
+Http1Response.HeadersReader#subscription()::: headers reader subscription:::return
+Http1Response.HeadersReader#onSubscribe(AbstractSubscription)::: headers reader on subscribe:::s->request
+Http1Response.HeadersReader#reset()::: headers reader reset:::
+Http1Response.HeadersReader#start(Http1HeaderParser)::: headers reader start:::new->MinimalFuture<>
+Http1Response.HeadersReader#completion()::: headers reader completion:::return
+Http1Response.HeadersReader#tryAsyncReceive(ByteBuffer)::: headers reader try async receive:::hasDemand->subscription->demand->tryDecrement->needsMore->accept->if->subscription->request->return
+Http1Response.HeadersReader#onReadError(Throwable)::: headers reader on read error:::parser->currentStateMessage->wrapWithExtraDetail->Http1Response.this->onReadError
+Http1Response.HeadersReader#handle(ByteBuffer, Http1HeaderParser, CompletableFuture)::: headers reader handle:::try->b->remaining->if->debug->on->debug->b->remaining->b->capacity->log->if->parser->parse->b->remaining->if->debug->on->debug->log->onComplete->accept->cf->complete->catch->if->debug->on->debug->log->cf->completeExceptionally->finally
+Http1Response.HeadersReader#close(Throwable)::: headers reader close:::if->cf->if->if->debug->on->debug->log->cf->completeExceptionally
+Http1Response.BodyReader#reset()::: body reader reset:::
+Http1Response.BodyReader#start(BodyParser)::: body reader start:::new->MinimalFuture<>
+Http1Response.BodyReader#completion()::: body reader completion:::return
+Http1Response.BodyReader#tryAsyncReceive(ByteBuffer)::: body reader try async receive:::return->accept
+Http1Response.BodyReader#onReadError(Throwable)::: body reader on read error:::if->complete->return->parser->currentStateMessage->wrapWithExtraDetail->Http1Response.this->onReadError
+Http1Response.BodyReader#subscription()::: body reader subscription:::return
+Http1Response.BodyReader#onSubscribe(AbstractSubscription)::: body reader on subscribe:::try->parser->onSubscribe->catch->cf->completeExceptionally->throw->finally
+Http1Response.BodyReader#handle(ByteBuffer, BodyParser, CompletableFuture)::: body reader handle:::try->if->debug->on->debug->b->remaining->b->capacity->log->parser->accept->catch->if->debug->on->debug->log->if->cf->isDone->cf->completeExceptionally->finally
+Http1Response.BodyReader#onComplete(Throwable)::: body reader on complete:::if->cf->isDone->return->if->cf->completeExceptionally->else->onComplete->accept->cf->complete
+Http1Response.BodyReader#close(Throwable)::: body reader close:::cf->if->cf->isDone->if->if->debug->on->debug->log->cf->completeExceptionally->else->if->debug->on->debug->log->cf->complete
+Http1Response.BodyReader#toString()::: body reader to string:::return->super->toString->String->valueOf
 Http2ClientImpl#getConnectionFor(HttpRequestImpl, Exchange):::When HTTP/2 requested only:::uri->req->uri->proxy->req->proxy->key->Http2Connection->keyFor->synchronized->connection->connections->get->if->try->if->connection->reserveStream->if->debug->on->debug->log->deleteConnection->else->if->debug->on->debug->log->return->MinimalFuture->completedFuture->catch->return->MinimalFuture->failedFuture->finally->if->req->secure->failures->contains->if->debug->on->debug->log->return->MinimalFuture->completedFuture->return->Http2Connection->createAsync->synchronized->if->try->conn->reserveStream->catch->throw->new->UncheckedIOException->finally->offerConnection->else->cause->Utils->getCompletionCause->if->failures->add->whenComplete
+Http2ClientImpl#offerConnection(Http2Connection)::: http2 client impl offer connection:::if->debug->on->debug->log->if->c->finalStream->if->debug->on->debug->log->return->key->c->key->synchronized->c1->connections->putIfAbsent->if->c->setFinalStream->if->debug->on->debug->log->return->if->debug->on->debug->log->return
+Http2ClientImpl#deleteConnection(Http2Connection)::: http2 client impl delete connection:::if->debug->on->debug->log->synchronized->c1->connections->c->key->get->if->c1->equals->connections->c->key->remove->if->debug->on->debug->log
+Http2ClientImpl#stop()::: http2 client impl stop:::if->debug->on->debug->log->connections->values->this->close->forEach->connections->clear
+Http2ClientImpl#close(Http2Connection)::: http2 client impl close:::try->h2c->close->catch->finally
+Http2ClientImpl#client()::: http2 client impl client:::return
 Http2ClientImpl#getSettingsString():::Returns the client settings as a base64 (url) encoded string:::sf->getClientSettings->settings->sf->toByteArray->encoder->Base64->getUrlEncoder->withoutPadding->return->encoder->encodeToString
+Http2ClientImpl#getParameter(String, int, int, int)::: http2 client impl get parameter:::value->Utils->getIntegerNetProperty->if->Log->logError->return
+Http2ClientImpl#getConnectionWindowSize(SettingsFrame)::: http2 client impl get connection window size:::streamWindow->clientSettings->getParameter->defaultValue->Math->Math->max->min->return->getParameter
+Http2ClientImpl#getClientSettings()::: http2 client impl get client settings:::frame->new->SettingsFrame->frame->getParameter->setParameter->frame->getParameter->setParameter->frame->getParameter->setParameter->frame->getParameter->setParameter->frame->getParameter->setParameter->return
+Http2Connection.FramesController#processReceivedData(FramesDecoder, ByteBuffer)::: frames controller process received data:::if->if->debug->on->debug->buf->remaining->log->synchronized->if->if->new->ArrayList<>->pending->add->if->debug->on->debug->Utils->remaining->log->return->pending->if->if->debug->on->debug->Utils->remaining->log->foreach->decoder->decode->if->if->debug->on->debug->buf->remaining->log->decoder->decode->return
+Http2Connection.FramesController#markPrefaceSent()::: frames controller mark preface sent:::synchronized
+Http2Connection#createAsync(HttpConnection, Http2ClientImpl, Exchange, Supplier)::: http2 connection create async:::return->MinimalFuture->new->Http2Connection->supply
+Http2Connection#createAsync(HttpRequestImpl, Http2ClientImpl, Exchange)::: http2 connection create async:::connection->HttpConnection->request->getAddress->h2client->client->getConnection->connection->return->connection->connectAsync->connection->finishConnect->thenCompose->checkSSLConfig->thenCompose->cf->new->MinimalFuture<>->try->hc->new->Http2Connection->cf->complete->catch->cf->completeExceptionally->finally->return->thenCompose
+Http2Connection#connectFlows(HttpConnection)::: http2 connection connect flows:::tube->connection->getConnectionFlow->tube->connection->publisher->connectFlows
+Http2Connection#client()::: http2 connection client:::return->client2->client
+Http2Connection#reserveStream(boolean)::: http2 connection reserve stream:::if->return->if->setFinalStream->client2->deleteConnection->return->else->if->setFinalStream->client2->deleteConnection->return->if->else->if->maxConcurrentClientInitiatedStreams->throw->new->IOException->else->if->if->maxConcurrentServerInitiatedStreams->return->else->if->return
+Http2Connection#checkSSLConfig(AbstractAsyncSSLConnection):::Throws an IOException if h2 was not negotiated:::checkAlpnCF->cf->new->MinimalFuture<>->engine->aconn->getEngine->DEBUG_LOGGER->log->if->alpn->equals->msg->if->Log->logSSL->else->switch->Log->logSSL->break->Log->logSSL->break->Log->logSSL->cf->new->IOException->completeExceptionally->cf->new->ALPNException->completeExceptionally->return->cf->complete->return->return->aconn->getALPN->if->aconn->close->whenComplete->thenCompose
+Http2Connection#finalStream()::: http2 connection final stream:::return
 Http2Connection#setFinalStream():::Mark this connection so no more streams created on it and it will close when all are complete.:::
+Http2Connection#keyFor(HttpConnection)::: http2 connection key for:::isProxy->connection->isProxied->isSecure->connection->isSecure->addr->connection->address->return->addr->getHostString->addr->getPort->keyString
+Http2Connection#keyFor(URI, InetSocketAddress)::: http2 connection key for:::isSecure->uri->getScheme->equalsIgnoreCase->isProxy->host->port->if->proxy->getHostString->proxy->getPort->else->uri->getHost->uri->getPort->return->keyString
+Http2Connection#keyString(boolean, boolean, String, int)::: http2 connection key string:::if->else->if->return
+Http2Connection#key()::: http2 connection key:::return
+Http2Connection#offerConnection()::: http2 connection offer connection:::return->client2->offerConnection
+Http2Connection#publisher()::: http2 connection publisher:::return->connection->publisher
+Http2Connection#decodeHeaders(HeaderFrame, DecodingCallback)::: http2 connection decode headers:::if->debugHpack->on->debugHpack->log->endOfHeaders->frame->getFlag->buffers->frame->getHeaderBlock->len->buffers->size->for->i
+Http2Connection#getInitialSendWindowSize()::: http2 connection get initial send window size:::return->serverSettings->getParameter
+Http2Connection#maxConcurrentClientInitiatedStreams()::: http2 connection max concurrent client initiated streams:::return->serverSettings->getParameter
+Http2Connection#maxConcurrentServerInitiatedStreams()::: http2 connection max concurrent server initiated streams:::return->clientSettings->getParameter
+Http2Connection#close()::: http2 connection close:::Log->connection->address->logTrace->f->getBytes->new->GoAwayFrame->sendFrame
+Http2Connection#asyncReceive(ByteBuffer)::: http2 connection async receive:::try->bs->if->b->bs->get->if->b->hasRemaining->c->if->debug->on->debug->b->remaining->log->framesController->processReceivedData->b->if->if->debug->on->debug->log->prefaceSent->framesController->processReceivedData->if->debug->on->debug->log->else->c->if->debug->on->debug->b->remaining->log->framesController->processReceivedData->if->debug->on->debug->log->catch->msg->Utils->stackTrace->Log->logTrace->shutdown->finally
+Http2Connection#getRecordedCause()::: http2 connection get recorded cause:::return
+Http2Connection#shutdown(Throwable)::: http2 connection shutdown:::if->debug->on->debug->log->if->return->synchronized->if->return->if->Log->errors->if->isActive->Log->logError->else->if->Log->t->getMessage->logError->initialCause->if->client2->deleteConnection->c->streams->values->new->LinkedList<>->foreach->try->s->connectionClosing->catch->Log->logError->finally->connection->close
+Http2Connection#isServerInitiatedStream(int):::Streams initiated by a client MUST use odd-numbered stream identifiers; those initiated by the server MUST use even-numbered stream identifiers.:::return
 Http2Connection#processFrame(Http2Frame):::Handles stream 0 (common) frames that apply to whole connection and passes other stream specific frames to that Stream object:::Log->logFrames->streamid->frame->streamid->if->Log->getMessage->logError->if->framesDecoder->close->getErrorCode->getMessage->protocolError->else->if->debug->on->debug->getMessage->log->getErrorCode->resetStream->return->if->handleConnectionFrame->else->if->framesDecoder->close->protocolError->return->stream->getStream->if->if->decoder->new->ValidatingHeadersConsumer->try->decodeHeaders->catch->e->getMessage->protocolError->return->finally->if->if->dropDataFrame->if->isServerInitiatedStream->if->Log->logTrace->else->resetStream->else->if->resetStream->return->if->pp->try->handlePushPromise->catch->e->getMessage->protocolError->return->finally->else->if->try->stream->rspHeadersConsumer->decodeHeaders->catch->e->getMessage->protocolError->return->finally->stream->incoming->else->stream->incoming
+Http2Connection#dropDataFrame(DataFrame)::: http2 connection drop data frame:::if->return->if->debug->on->debug->df->streamid->df->payloadLength->log->ensureWindowUpdated
+Http2Connection#ensureWindowUpdated(DataFrame)::: http2 connection ensure window updated:::try->if->return->length->df->payloadLength->if->windowUpdater->update->catch->Log->logError->finally
+Http2Connection#handlePushPromise(Stream, PushPromiseFrame)::: http2 connection handle push promise:::decoder->new->HeaderDecoder->decodeHeaders->parentReq->promisedStreamid->pp->getPromisedStream->if->resetStream->return->else->if->reserveStream->resetStream->return->else->headers->decoder->headers->pushReq->HttpRequestImpl->createPushRequest->pushExch->new->Exchange<>->pushStream->createPushStream->pushStream->registerStream->parent->incoming_pushPromise
+Http2Connection#handleConnectionFrame(Http2Frame)::: http2 connection handle connection frame:::switch->frame->type->handleSettings->break->handlePing->break->handleGoAway->break->handleWindowUpdate->break->protocolError
+Http2Connection#resetStream(int, int)::: http2 connection reset stream:::try->if->connection->channel->isOpen->Log->logError->frame->new->ResetFrame->sendFrame->else->if->debug->on->debug->log->catch->finally->decrementStreamsCount->closeStream
+Http2Connection#decrementStreamsCount(int)::: http2 connection decrement streams count:::s->streams->get->if->s->deRegister->return->if->else
+Http2Connection#closeStream(int)::: http2 connection close stream:::if->debug->on->debug->log->isClient->s->streams->remove->if->client->streamUnreference->if->windowController->removeStream->if->finalStream->streams->isEmpty->close
+Http2Connection#handleWindowUpdate(WindowUpdateFrame):::Increments this connection's send Window by the amount in the given frame.:::amount->f->getUpdate->if->else->success->windowController->increaseConnectionWindow->if->protocolError
+Http2Connection#protocolError(int)::: http2 connection protocol error:::protocolError
+Http2Connection#protocolError(int, String)::: http2 connection protocol error:::frame->new->GoAwayFrame->sendFrame->new->IOException->shutdown
+Http2Connection#handleSettings(SettingsFrame)::: http2 connection handle settings:::if->frame->getFlag->newWindowSize->frame->getParameter->if->oldWindowSize->serverSettings->getParameter->diff->if->windowController->adjustActiveStreams->serverSettings->update->new->SettingsFrame->sendFrame
+Http2Connection#handlePing(PingFrame)::: http2 connection handle ping:::frame->setFlag->sendUnorderedFrame
+Http2Connection#handleGoAway(GoAwayFrame)::: http2 connection handle go away:::String->connection->channel->getLocalAddress->valueOf->new->IOException->shutdown
 Http2Connection#getMaxSendFrameSize():::Max frame size we are allowed to send:::param->serverSettings->getParameter->if->return
 Http2Connection#getMaxReceiveFrameSize():::Max frame size we will receive:::return->clientSettings->getParameter
+Http2Connection#sendConnectionPreface():::Sends Connection preface and Settings frame with current preferred values:::Log->connection->channel->getLocalAddress->connection->address->logTrace->sf->new->SettingsFrame->buf->framesEncoder->encodeConnectionPreface->Log->logFrames->publisher->publisher->publisher->List->of->enqueueUnordered->publisher->signalEnqueued->framesController->markPrefaceSent->Log->logTrace->Log->logTrace->len->if->if->Log->channel->Log->logChannel->windowUpdater->sendWindowUpdate->Log->logTrace->if->debug->on->debug->log->subscriber->List->of->onNext
 Http2Connection#getStream(int):::Returns an existing Stream with given id, or null if doesn't exist:::return->streams->get
 Http2Connection#createStream(Exchange):::Creates Stream with given id.:::stream->new->Stream<>->return
+Http2Connection#createPushStream(Stream, Exchange)::: http2 connection create push stream:::pg->getPushGroup->return->new->Stream.PushedStream<>
+Http2Connection#putStream(Stream, int)::: http2 connection put stream:::client->streamReference->streams->put
+Http2Connection#encodeHeaders(OutgoingHeaders>):::Encode the headers into a List<ByteBuffer> and then create HEADERS and CONTINUATION frames from the list and return the List<Http2Frame>.:::buffers->getMaxSendFrameSize->frame->getAttachment->getRequestPseudoHeaders->frame->getUserHeaders->frame->getSystemHeaders->encodeHeadersImpl->frames->buffers->size->new->ArrayList<>->bufIterator->buffers->iterator->oframe->frame->streamid->frame->getFlags->bufIterator->next->new->HeadersFrame->frames->add->while->bufIterator->hasNext->frame->streamid->bufIterator->next->new->ContinuationFrame->frames->add->oframe->setFlag->return
+Http2Connection#getHeaderBuffer(int)::: http2 connection get header buffer:::buf->ByteBuffer->allocate->buf->limit->return
+Http2Connection#encodeHeadersImpl(int, HttpHeaders...)::: http2 connection encode headers impl:::buffer->getHeaderBuffer->buffers->new->ArrayList<>->foreach->foreach->header->map->entrySet->lKey->e->getKey->toLowerCase->values->e->getValue->foreach->hpackOut->header->while->hpackOut->encode->buffer->flip->buffers->add->getHeaderBuffer->buffer->flip->buffers->add->return
+Http2Connection#encodeHeaders(OutgoingHeaders>, Stream)::: http2 connection encode headers:::oh->streamid->if->Log->headers->sb->new->StringBuilder->sb->append->append->Log->oh->getAttachment->getRequestPseudoHeaders->dumpHeaders->Log->oh->getSystemHeaders->dumpHeaders->Log->oh->getUserHeaders->dumpHeaders->Log->sb->toString->logHeaders->frames->encodeHeaders->return->encodeFrames
+Http2Connection#encodeFrames(List)::: http2 connection encode frames:::if->Log->frames->frames->Log->logFrames->forEach->return->framesEncoder->encodeFrames
+Http2Connection#registerNewStream(OutgoingHeaders>)::: http2 connection register new stream:::stream->oh->getAttachment->streamid->stream->registerStream->windowController->getInitialSendWindowSize->registerStream->return
+Http2Connection#sendFrame(Http2Frame)::: http2 connection send frame:::try->publisher->publisher->synchronized->if->oh->stream->registerNewStream->publisher->encodeHeaders->enqueue->else->publisher->encodeFrame->enqueue->publisher->signalEnqueued->catch->if->Log->logError->shutdown->finally
+Http2Connection#encodeFrame(Http2Frame)::: http2 connection encode frame:::Log->logFrames->return->framesEncoder->encodeFrame
+Http2Connection#sendDataFrame(DataFrame)::: http2 connection send data frame:::try->publisher->publisher->publisher->encodeFrame->enqueue->publisher->signalEnqueued->catch->if->Log->logError->shutdown->finally
+Http2Connection#sendUnorderedFrame(Http2Frame)::: http2 connection send unordered frame:::try->publisher->publisher->publisher->encodeFrame->enqueueUnordered->publisher->signalEnqueued->catch->if->Log->logError->shutdown->finally
+Http2Connection.Http2TubeSubscriber#processQueue()::: http2 tube subscriber process queue:::try->while->queue->isEmpty->scheduler->isStopped->buffer->queue->poll->if->debug->on->debug->buffer->remaining->log->asyncReceive->catch->x->if->finally->x->if->if->debug->on->debug->log->scheduler->stop->Http2Connection.this->shutdown
+Http2Connection.Http2TubeSubscriber#runOrSchedule()::: http2 tube subscriber run or schedule:::if->client->isSelectorThread->scheduler->client->theExecutor->runOrSchedule->else->scheduler->runOrSchedule
+Http2Connection.Http2TubeSubscriber#onSubscribe(Flow.Subscription)::: http2 tube subscriber on subscribe:::if->if->debug->on->debug->log->subscription->request->else->if->debug->on->debug->log
+Http2Connection.Http2TubeSubscriber#onNext(List)::: http2 tube subscriber on next:::if->debug->on->debug->Utils->remaining->item->size->log->queue->addAll->runOrSchedule
+Http2Connection.Http2TubeSubscriber#onError(Throwable)::: http2 tube subscriber on error:::if->debug->on->debug->log->runOrSchedule
+Http2Connection.Http2TubeSubscriber#onComplete()::: http2 tube subscriber on complete:::msg->isActive->if->debug->on->debug->log->new->EOFException->runOrSchedule
+Http2Connection.Http2TubeSubscriber#dropSubscription()::: http2 tube subscriber drop subscription:::if->debug->on->debug->log
+Http2Connection#isActive()::: http2 connection is active:::return
+Http2Connection#toString()::: http2 connection to string:::return->dbgString
+Http2Connection#dbgString()::: http2 connection dbg string:::return->connection->getConnectionFlow
+Http2Connection.HeaderDecoder#onDecoded(CharSequence, CharSequence)::: header decoder on decoded:::n->name->toString->v->value->toString->super->onDecoded->headersBuilder->addHeader
+Http2Connection.HeaderDecoder#headers()::: header decoder headers:::return->headersBuilder->build
 Http2Connection.ValidatingHeadersConsumer#reset():::Called when END_HEADERS was received:::
+Http2Connection.ValidatingHeadersConsumer#onDecoded(CharSequence, CharSequence)::: validating headers consumer on decoded:::n->name->toString->if->n->startsWith->if->throw->newException->else->if->PSEUDO_HEADERS->contains->throw->newException->else->if->Utils->isValidName->throw->newException->v->value->toString->if->Utils->isValidValue->throw->newException
+Http2Connection.ValidatingHeadersConsumer#newException(String, String)::: validating headers consumer new exception:::return->String->format->new->IOException->new->UncheckedIOException
+Http2Connection.ConnectionWindowUpdateSender#getStreamId()::: connection window update sender get stream id:::return
+Http2Connection.ALPNException#getConnection()::: exception get connection:::return
+HttpClientBuilderImpl#cookieHandler(CookieHandler)::: http client builder impl cookie handler:::requireNonNull->return
+HttpClientBuilderImpl#connectTimeout(Duration)::: http client builder impl connect timeout:::requireNonNull->if->duration->isNegative->equals->throw->new->IllegalArgumentException->return
+HttpClientBuilderImpl#sslContext(SSLContext)::: http client builder impl ssl context:::requireNonNull->return
+HttpClientBuilderImpl#sslParameters(SSLParameters)::: http client builder impl ssl parameters:::requireNonNull->Utils->copySSLParameters->return
+HttpClientBuilderImpl#executor(Executor)::: http client builder impl executor:::requireNonNull->return
+HttpClientBuilderImpl#followRedirects(HttpClient.Redirect)::: http client builder impl follow redirects:::requireNonNull->return
+HttpClientBuilderImpl#version(HttpClient.Version)::: http client builder impl version:::requireNonNull->return
+HttpClientBuilderImpl#priority(int)::: http client builder impl priority:::if->throw->new->IllegalArgumentException->return
+HttpClientBuilderImpl#proxy(ProxySelector)::: http client builder impl proxy:::requireNonNull->return
+HttpClientBuilderImpl#authenticator(Authenticator)::: http client builder impl authenticator:::requireNonNull->return
+HttpClientBuilderImpl#build()::: http client builder impl build:::return->HttpClientImpl->create
+HttpClientFacade#getOperationsTracker()::: http client facade get operations tracker:::return->impl->getOperationsTracker
+HttpClientFacade#cookieHandler()::: http client facade cookie handler:::return->impl->cookieHandler
+HttpClientFacade#connectTimeout()::: http client facade connect timeout:::return->impl->connectTimeout
+HttpClientFacade#followRedirects()::: http client facade follow redirects:::return->impl->followRedirects
+HttpClientFacade#proxy()::: http client facade proxy:::return->impl->proxy
+HttpClientFacade#sslContext()::: http client facade ssl context:::return->impl->sslContext
+HttpClientFacade#sslParameters()::: http client facade ssl parameters:::return->impl->sslParameters
+HttpClientFacade#authenticator()::: http client facade authenticator:::return->impl->authenticator
+HttpClientFacade#version()::: http client facade version:::return->impl->version
+HttpClientFacade#executor()::: http client facade executor:::return->impl->executor
+HttpClientFacade#send(HttpRequest, HttpResponse.BodyHandler)::: http client facade send:::try->return->impl->send->catch->finally->Reference->reachabilityFence
+HttpClientFacade#sendAsync(HttpRequest, HttpResponse.BodyHandler)::: http client facade send async:::try->return->impl->sendAsync->catch->finally->Reference->reachabilityFence
+HttpClientFacade#sendAsync(HttpRequest, BodyHandler, PushPromiseHandler)::: http client facade send async:::try->return->impl->sendAsync->catch->finally->Reference->reachabilityFence
+HttpClientFacade#newWebSocketBuilder()::: http client facade new web socket builder:::try->return->impl->newWebSocketBuilder->catch->finally->Reference->reachabilityFence
+HttpClientFacade#toString()::: http client facade to string:::return->impl->toString
+HttpClientImpl.DefaultThreadFactory#newThread(Runnable)::: default thread factory new thread:::name->nextId->getAndIncrement->t->if->System->getSecurityManager->new->Thread->else->InnocuousThread->newThread->t->setDaemon->return
+HttpClientImpl.DelegatingExecutor#delegate()::: delegating executor delegate:::return
+HttpClientImpl.DelegatingExecutor#execute(Runnable)::: delegating executor execute:::if->isInSelectorThread->getAsBoolean->delegate->execute->else->command->run
+HttpClientImpl.SingleFacadeFactory#createFacade(HttpClientImpl)::: single facade factory create facade:::return->new->HttpClientFacade
+HttpClientImpl#create(HttpClientBuilderImpl)::: http client impl create:::facadeFactory->new->SingleFacadeFactory->impl->new->HttpClientImpl->impl->start->return
+HttpClientImpl#start()::: http client impl start:::selmgr->start
+HttpClientImpl#stop()::: http client impl stop:::connections->stop->client2->stop
+HttpClientImpl#getDefaultParams(SSLContext)::: http client impl get default params:::params->ctx->getSupportedSSLParameters->protocols->params->getProtocols->found13->foreach->if->proto->equals->break->if->params->new->StringArr->setProtocols->else->params->new->StringArr->setProtocols->return
+HttpClientImpl#getDefaultProxySelector()::: http client impl get default proxy selector:::action->ProxySelector->getDefault->return->AccessController->doPrivileged
+HttpClientImpl#facade()::: http client impl facade:::return->facadeRef->get
+HttpClientImpl#reference()::: http client impl reference:::pendingHttpRequestCount->incrementAndGet->return->pendingOperationCount->incrementAndGet
+HttpClientImpl#unreference()::: http client impl unreference:::count->pendingOperationCount->decrementAndGet->httpCount->pendingHttpRequestCount->decrementAndGet->http2Count->pendingHttp2StreamCount->get->webSocketCount->pendingWebSocketCount->get->if->facade->selmgr->wakeupSelector->return
+HttpClientImpl#streamReference()::: http client impl stream reference:::pendingHttp2StreamCount->incrementAndGet->return->pendingOperationCount->incrementAndGet
+HttpClientImpl#streamUnreference()::: http client impl stream unreference:::count->pendingOperationCount->decrementAndGet->http2Count->pendingHttp2StreamCount->decrementAndGet->httpCount->pendingHttpRequestCount->get->webSocketCount->pendingWebSocketCount->get->if->facade->selmgr->wakeupSelector->return
+HttpClientImpl#webSocketOpen()::: http client impl web socket open:::pendingWebSocketCount->incrementAndGet->return->pendingOperationCount->incrementAndGet
+HttpClientImpl#webSocketClose()::: http client impl web socket close:::count->pendingOperationCount->decrementAndGet->webSocketCount->pendingWebSocketCount->decrementAndGet->httpCount->pendingHttpRequestCount->get->http2Count->pendingHttp2StreamCount->get->if->facade->selmgr->wakeupSelector->return
+HttpClientImpl#referenceCount()::: http client impl reference count:::return->pendingOperationCount->get
+HttpClientImpl.HttpClientTracker#getOutstandingOperations()::: http client tracker get outstanding operations:::return->operationsCount->get
+HttpClientImpl.HttpClientTracker#getOutstandingHttpOperations()::: http client tracker get outstanding http operations:::return->httpCount->get
+HttpClientImpl.HttpClientTracker#getOutstandingHttp2Streams()::: http client tracker get outstanding http2 streams:::return->http2Count->get
+HttpClientImpl.HttpClientTracker#getOutstandingWebSocketOperations()::: http client tracker get outstanding web socket operations:::return->websocketCount->get
+HttpClientImpl.HttpClientTracker#isFacadeReferenced()::: http client tracker is facade referenced:::return->reference->get
+HttpClientImpl.HttpClientTracker#getName()::: http client tracker get name:::return
+HttpClientImpl#getOperationsTracker()::: http client impl get operations tracker:::return->new->HttpClientTracker
+HttpClientImpl#isReferenced()::: http client impl is referenced:::facade->facade->return->referenceCount
 HttpClientImpl#registerEvent(AsyncEvent):::Wait for activity on given exchange:::selmgr->register
 HttpClientImpl#eventUpdated(AsyncEvent):::Allows an AsyncEvent to modify its interestOps.:::selmgr->eventUpdated
+HttpClientImpl#isSelectorThread()::: http client impl is selector thread:::return->Thread->currentThread
+HttpClientImpl#client2()::: http client impl client2:::return
+HttpClientImpl#debugCompleted(String, long, HttpRequest)::: http client impl debug completed:::if->debugelapsed->on->debugelapsed->System->nanoTime->req->method->req->uri->log
+HttpClientImpl#send(HttpRequest, BodyHandler)::: http client impl send:::cf->try->sendAsync->return->cf->get->catch->if->cf->cancel->throw->throwable->e->getCause->msg->throwable->getMessage->if->throw->new->IllegalArgumentException->else->if->throw->new->SecurityException->else->if->hcte->new->HttpConnectTimeoutException->hcte->initCause->throw->else->if->throw->new->HttpTimeoutException->else->if->ce->new->ConnectException->ce->initCause->throw->else->if->throw->new->IOException->else->throw->new->IOException->finally
+HttpClientImpl#sendAsync(HttpRequest, BodyHandler)::: http client impl send async:::return->sendAsync
+HttpClientImpl#sendAsync(HttpRequest, BodyHandler, PushPromiseHandler)::: http client impl send async:::return->sendAsync
+HttpClientImpl#sendAsync(HttpRequest, BodyHandler, PushPromiseHandler, Executor)::: http client impl send async:::Objects->requireNonNull->Objects->requireNonNull->acc->if->System->getSecurityManager->AccessController->getContext->requestImpl->new->HttpRequestImpl->if->requestImpl->method->equals->throw->new->IllegalArgumentException->start->System->nanoTime->reference->try->if->debugelapsed->on->debugelapsed->log->executor->mex->new->MultiExchange<>->res->mex->responseAsync->unreference->whenComplete->if->res->debugCompleted->whenComplete->if->res->whenCompleteAsync->return->catch->unreference->debugCompleted->throw->finally
+HttpClientImpl.SelectorManager#eventUpdated(AsyncEvent)::: selector manager event updated:::if->Thread->currentThread->key->e->channel->keyFor->if->key->isValid->sa->key->attachment->sa->register->else->if->e->interestOps->if->debug->on->debug->log->e->new->IOException->abort->else->register
+HttpClientImpl.SelectorManager#register(AsyncEvent)::: selector manager register:::registrations->add->selector->wakeup
+HttpClientImpl.SelectorManager#cancel(SocketChannel)::: selector manager cancel:::key->e->keyFor->if->key->cancel->selector->wakeup
+HttpClientImpl.SelectorManager#wakeupSelector()::: selector manager wakeup selector:::selector->wakeup
+HttpClientImpl.SelectorManager#shutdown()::: selector manager shutdown:::Log->getName->logTrace->if->debug->on->debug->log->try->selector->close->catch->finally->owner->stop
+HttpClientImpl.SelectorManager#run()::: selector manager run:::errorList->new->ArrayList<>->readyList->new->ArrayList<>->resetList->new->ArrayList<>->try->if->Log->channel->Log->getName->logChannel->while->Thread->currentThread->isInterrupted->synchronized->foreach->event->handle->deregistrations->clear->foreach->if->readyList->add->continue->chan->event->channel->key->try->chan->keyFor->sa->if->key->isValid->if->selector->selectNow->new->SelectorAttachment->else->key->attachment->sa->register->if->chan->isOpen->throw->new->IOException->catch->Log->getName->logTrace->if->debug->on->debug->e->getClass->getName->log->chan->close->errorList->new->Pair<>->add->if->key->cancel->selector->selectNow->finally->registrations->clear->selector->selectedKeys->clear->foreach->event->handle->readyList->clear->foreach->handleEvent->errorList->clear->if->owner->isReferenced->Log->getName->logTrace->return->nextTimeout->owner->purgeTimeoutsAndReturnNextDeadline->if->debugtimeout->on->debugtimeout->log->nextExpiry->pool->purgeExpiredConnectionsAndReturnNextDeadline->if->debugtimeout->on->debugtimeout->log->if->if->else->Math->min->millis->Math->min->if->debugtimeout->on->debugtimeout->log->n->selector->select->if->if->owner->isReferenced->Log->getName->logTrace->return->owner->purgeTimeoutsAndReturnNextDeadline->continue->keys->selector->selectedKeys->foreach->sa->key->attachment->if->key->isValid->ex->isOpen->new->IOException->new->ClosedChannelException->errorList->new->Pair<>->add->forEach->clear->continue->eventsOccurred->try->key->readyOps->catch->io->Utils->getIOException->errorList->new->Pair<>->add->forEach->clear->continue->finally->sa->events->readyList->add->forEach->resetList->sa->resetInterestOps->add->selector->selectNow->selector->selectedKeys->clear->readyList->handleEvent->forEach->readyList->clear->errorList->handleEvent->forEach->errorList->clear->resetList->r->run->forEach->resetList->clear->catch->if->err->Utils->stackTrace->Log->getName->logError->if->debug->on->debug->log->if->debug->on->e->printStackTrace->finally->if->Log->channel->Log->getName->logChannel->shutdown
+HttpClientImpl.SelectorManager#handleEvent(AsyncEvent, IOException):::Handles the given event:::if->event->abort->else->event->handle
+HttpClientImpl#debugInterestOps(SelectableChannel)::: http client impl debug interest ops:::try->key->channel->keyFor->if->return->keyInterestOps->key->isValid->key->interestOps->return->String->key->attachment->format->catch->return->String->valueOf->finally
+HttpClientImpl.SelectorAttachment#register(AsyncEvent)::: selector attachment register:::newOps->e->interestOps->reRegister->pending->add->if->debug->on->debug->log->if->try->chan->register->catch->abortPending->finally->else->if->chan->isOpen->new->ClosedChannelException->abortPending
+HttpClientImpl.SelectorAttachment#events(int):::Returns a Stream<AsyncEvents> containing only events that are registered with the given interestOps.:::return->pending->stream->ev->interestOps->filter
+HttpClientImpl.SelectorAttachment#resetInterestOps(int):::Removes any events with the given interestOps, and if no events remaining, cancels the associated SelectionKey.:::newOps->itr->pending->iterator->while->itr->hasNext->event->itr->next->evops->event->interestOps->if->event->repeating->continue->if->itr->remove->else->key->chan->keyFor->if->pending->isEmpty->key->cancel->else->try->if->key->isValid->throw->new->CancelledKeyException->key->interestOps->if->chan->isOpen->new->ClosedChannelException->abortPending->return->catch->if->debug->on->debug->log->abortPending->finally
+HttpClientImpl.SelectorAttachment#abortPending(Throwable)::: selector attachment abort pending:::if->pending->isEmpty->evts->pending->new->AsyncEventArr->toArray->pending->clear->io->Utils->getIOException->foreach->event->abort
+HttpClientImpl#theSSLContext()::: http client impl the context:::return
+HttpClientImpl#sslContext()::: http client impl ssl context:::return
+HttpClientImpl#sslParameters()::: http client impl ssl parameters:::return->Utils->copySSLParameters
+HttpClientImpl#authenticator()::: http client impl authenticator:::return->Optional->ofNullable
+HttpClientImpl#theExecutor()::: http client impl the executor:::return
+HttpClientImpl#executor()::: http client impl executor:::return->Optional->empty->Optional->delegatingExecutor->delegate->of
+HttpClientImpl#connectionPool()::: http client impl connection pool:::return
+HttpClientImpl#followRedirects()::: http client impl follow redirects:::return
+HttpClientImpl#cookieHandler()::: http client impl cookie handler:::return->Optional->ofNullable
+HttpClientImpl#connectTimeout()::: http client impl connect timeout:::return->Optional->ofNullable
+HttpClientImpl#proxy()::: http client impl proxy:::return
+HttpClientImpl#proxySelector()::: http client impl proxy selector:::return
+HttpClientImpl#newWebSocketBuilder()::: http client impl new web socket builder:::return->this->facade->new->BuilderImpl
+HttpClientImpl#version()::: http client impl version:::return
+HttpClientImpl#dbgString()::: http client impl dbg string:::return
+HttpClientImpl#toString()::: http client impl to string:::return->super->toString
+HttpClientImpl#initFilters()::: http client impl init filters:::addFilter->addFilter->if->addFilter
+HttpClientImpl#addFilter(Class)::: http client impl add filter:::filters->addFilter
+HttpClientImpl#filterChain()::: http client impl filter chain:::return->filters->getFilterChain
+HttpClientImpl#registerTimer(TimeoutEvent)::: http client impl register timer:::Log->logTrace->timeouts->add->selmgr->wakeupSelector
+HttpClientImpl#cancelTimer(TimeoutEvent)::: http client impl cancel timer:::Log->logTrace->timeouts->remove
+HttpClientImpl#purgeTimeoutsAndReturnNextDeadline():::Purges ( handles ) timer events that have passed their deadline, and returns the amount of time, in milliseconds, until the next earliest event:::diff->toHandle->remaining->synchronized->if->timeouts->isEmpty->return->now->Instant->now->itr->timeouts->iterator->while->itr->hasNext->event->itr->next->now->event->deadline->until->if->itr->remove->new->ArrayList<>->toHandle->add->else->break->timeouts->size->if->Log->trace->Log->toHandle->size->logTrace->if->failed->foreach->try->Log->logTrace->event->handle->catch->if->else->failed->addSuppressed->Log->logTrace->finally->if->throw->if->throw->return
+HttpClientImpl#getReceiveBufferSize()::: http client impl get receive buffer size:::return->Utils->getIntegerNetProperty
+HttpClientImpl#getSSLBufferSupplier()::: http client impl get buffer supplier:::return
+HttpClientImpl.SSLDirectBufferSupplier#get()::: direct buffer supplier get:::buf->if->if->debug->on->debug->log->ByteBuffer->allocateDirect->else->return
+HttpClientImpl.SSLDirectBufferSupplier#recycle(ByteBuffer)::: direct buffer supplier recycle:::buffer->position->buffer->buffer->capacity->limit->if
+HttpConnection.TrailingOperations#add(CompletionStage)::: trailing operations add:::synchronized->cf->remove->whenComplete->operations->put
+HttpConnection.TrailingOperations#remove(CompletionStage)::: trailing operations remove:::synchronized->return->operations->remove
+HttpConnection#addTrailingOperation(CompletionStage)::: http connection add trailing operation:::trailingOperations->add
+HttpConnection#client()::: http connection client:::return
 HttpConnection#connectAsync(Exchange):::Initiates the connect phase:::
 HttpConnection#finishConnect():::Finishes the connection phase:::
 HttpConnection#connected():::Tells whether, or not, this connection is connected to its destination.:::
 HttpConnection#isSecure():::Tells whether, or not, this connection is secure ( over SSL ):::
 HttpConnection#isProxied():::Tells whether, or not, this connection is proxied:::
 HttpConnection#isOpen():::Tells whether, or not, this connection is open.:::return->channel->isOpen->connected->getConnectionFlow->isFinished
+HttpConnection.HttpPublisher#enqueue(List)::: http publisher enqueue:::
+HttpConnection.HttpPublisher#enqueueUnordered(List)::: http publisher enqueue unordered:::
+HttpConnection.HttpPublisher#signalEnqueued()::: http publisher signal enqueued:::
 HttpConnection#publisher():::Returns the HTTP publisher associated with this connection:::
+HttpConnection#hasRequiredHTTP2TLSVersion(HttpClient):::Returns true if the given client's SSL parameter protocols contains at least one TLS version that HTTP/2 requires.:::protos->client->sslParameters->getProtocols->if->return->Arrays->stream->filter->findAny->isPresent->else->return
 HttpConnection#getConnection(InetSocketAddress, HttpClientImpl, HttpRequestImpl, Version):::Factory for retrieving HttpConnections:::proxy->Utils->request->proxy->resolveAddress->c->secure->request->secure->pool->client->connectionPool->if->pool->getConnection->if->c->isOpen->conn->if->DEBUG_LOGGER->on->DEBUG_LOGGER->conn->getConnectionFlow->log->return->else->return->getPlainConnection->else->if->pool->getConnection->if->c->isOpen->conn->if->DEBUG_LOGGER->on->DEBUG_LOGGER->conn->getConnectionFlow->log->return->else->alpn->if->hasRequiredHTTP2TLSVersion->new->StringArr->return->getSSLConnection
+HttpConnection#getSSLConnection(InetSocketAddress, InetSocketAddress, String[], HttpRequestImpl, HttpClientImpl)::: http connection get connection:::if->return->proxyTunnelHeaders->new->AsyncSSLTunnelConnection->else->return->new->AsyncSSLConnection
 HttpConnection#headerFilter(HttpRequestImpl):::This method is used to build a filter that will accept or veto (header-name, value) tuple for transmission on the wire:::if->isTunnel->return->else->if->request->isConnect->return->else->if->request->proxy->return->else->return
+HttpConnection#proxyTunnelHeaders(HttpRequestImpl)::: http connection proxy tunnel headers:::combined->new->TreeMap<>->combined->request->getSystemHeadersBuilder->map->putAll->combined->request->headers->map->putAll->return->HttpHeaders->of
+HttpConnection#getPlainConnection(InetSocketAddress, InetSocketAddress, HttpRequestImpl, HttpClientImpl)::: http connection get plain connection:::if->request->isWebSocket->return->proxyTunnelHeaders->new->PlainTunnelingConnection->if->return->new->PlainHttpConnection->else->return->new->PlainProxyConnection
+HttpConnection#closeOrReturnToCache(HttpHeaders)::: http connection close or return to cache:::if->Log->logTrace->close->return->client->client->if->Log->logTrace->close->return->pool->client->connectionPool->keepAlive->hdrs->firstValue->s->equalsIgnoreCase->map->orElse->if->isOpen->Log->logTrace->pool->returnToPool->else->Log->isOpen->logTrace->close
+HttpConnection#isTunnel()::: http connection is tunnel:::return
+HttpConnection#channel()::: http connection channel:::
+HttpConnection#address()::: http connection address:::return
+HttpConnection#cacheKey()::: http connection cache key:::
 HttpConnection#close():::Closes this connection, by returning the socket to its connection pool.:::
+HttpConnection#getConnectionFlow()::: http connection get connection flow:::
+HttpConnection.PlainHttpPublisher#subscribe(Flow.Subscriber>)::: plain http publisher subscribe:::synchronized->if->new->HttpWriteSubscription->subscriber->onSubscribe->signal
+HttpConnection.PlainHttpPublisher#flushTask(DeferredCompleter)::: plain http publisher flush task:::try->sub->if->sub->flush->catch->finally->completer->complete
+HttpConnection.PlainHttpPublisher#signal()::: plain http publisher signal:::writeScheduler->runOrSchedule
+HttpConnection.PlainHttpPublisher.HttpWriteSubscription#request(long)::: http write subscription request:::if->throw->new->IllegalArgumentException->demand->increase->if->debug->on->debug->getConnectionFlow->log->writeScheduler->runOrSchedule
+HttpConnection.PlainHttpPublisher.HttpWriteSubscription#cancel()::: http write subscription cancel:::if->debug->on->debug->getConnectionFlow->log
+HttpConnection.PlainHttpPublisher.HttpWriteSubscription#isEmpty()::: http write subscription is empty:::return->queue->isEmpty->priority->isEmpty
+HttpConnection.PlainHttpPublisher.HttpWriteSubscription#poll()::: http write subscription poll:::elem->priority->poll->return->queue->poll
+HttpConnection.PlainHttpPublisher.HttpWriteSubscription#flush()::: http write subscription flush:::while->isEmpty->demand->tryDecrement->elem->poll->if->debug->on->debug->Utils->remaining->elem->size->getConnectionFlow->log->subscriber->onNext
+HttpConnection.PlainHttpPublisher#enqueue(List)::: plain http publisher enqueue:::queue->add->bytes->buffers->stream->ByteBuffer->remaining->mapToInt->sum->debug->log
+HttpConnection.PlainHttpPublisher#enqueueUnordered(List)::: plain http publisher enqueue unordered:::bytes->buffers->stream->ByteBuffer->remaining->mapToInt->sum->priority->add->debug->log
+HttpConnection.PlainHttpPublisher#signalEnqueued()::: plain http publisher signal enqueued:::debug->log->signal
+HttpConnection#dbgString()::: http connection dbg string:::flow->getConnectionFlow->tag->if->this->getClass->getSimpleName->else->if->this->getClass->getSimpleName->return
+HttpConnection#toString()::: http connection to string:::return->channel->toString
+HttpRequestBuilderImpl#uri(URI)::: http request builder impl uri:::requireNonNull->checkURI->return
+HttpRequestBuilderImpl#checkURI(URI)::: http request builder impl check i:::scheme->uri->getScheme->if->throw->newIAE->scheme->toLowerCase->if->scheme->equals->scheme->equals->throw->newIAE->if->uri->getHost->throw->newIAE
+HttpRequestBuilderImpl#copy()::: http request builder impl copy:::b->new->HttpRequestBuilderImpl->structuralCopy->return
+HttpRequestBuilderImpl#checkNameAndValue(String, String)::: http request builder impl check name and value:::requireNonNull->requireNonNull->if->isValidName->throw->newIAE->if->test->throw->newIAE->if->isValidValue->throw->newIAE
+HttpRequestBuilderImpl#setHeader(String, String)::: http request builder impl set header:::checkNameAndValue->headersBuilder->setHeader->return
+HttpRequestBuilderImpl#header(String, String)::: http request builder impl header:::checkNameAndValue->headersBuilder->addHeader->return
+HttpRequestBuilderImpl#headers(String...)::: http request builder impl headers:::requireNonNull->if->throw->newIAE->for->i->return
+HttpRequestBuilderImpl#expectContinue(boolean)::: http request builder impl expect continue:::return
+HttpRequestBuilderImpl#version(HttpClient.Version)::: http request builder impl version:::requireNonNull->Optional->of->return
+HttpRequestBuilderImpl#headersBuilder()::: http request builder impl headers builder:::return
+HttpRequestBuilderImpl#uri()::: http request builder impl uri:::return
+HttpRequestBuilderImpl#method()::: http request builder impl method:::return
+HttpRequestBuilderImpl#expectContinue()::: http request builder impl expect continue:::return
+HttpRequestBuilderImpl#bodyPublisher()::: http request builder impl body publisher:::return
+HttpRequestBuilderImpl#version()::: http request builder impl version:::return
+HttpRequestBuilderImpl#GET()::: http request builder impl  t:::return->method0
+HttpRequestBuilderImpl#POST(BodyPublisher)::: http request builder impl  t:::return->requireNonNull->method0
+HttpRequestBuilderImpl#DELETE()::: http request builder impl  e:::return->method0
+HttpRequestBuilderImpl#PUT(BodyPublisher)::: http request builder impl  t:::return->requireNonNull->method0
+HttpRequestBuilderImpl#method(String, BodyPublisher)::: http request builder impl method:::requireNonNull->if->method->equals->throw->newIAE->if->method->equals->throw->newIAE->if->Utils->isValidName->throw->method->replace->replace->replace->newIAE->return->requireNonNull->method0
+HttpRequestBuilderImpl#method0(String, BodyPublisher)::: http request builder impl method0:::return
+HttpRequestBuilderImpl#build()::: http request builder impl build:::if->throw->new->IllegalStateException->return->new->ImmutableHttpRequest
+HttpRequestBuilderImpl#buildForWebSocket()::: http request builder impl build for web socket:::if->throw->new->IllegalStateException->return->new->HttpRequestImpl
+HttpRequestBuilderImpl#timeout(Duration)::: http request builder impl timeout:::requireNonNull->if->duration->isNegative->equals->throw->new->IllegalArgumentException->return
+HttpRequestBuilderImpl#timeout()::: http request builder impl timeout:::return
+HttpRequestImpl#userAgent()::: http request impl user agent:::pa->System->getProperty->version->AccessController->doPrivileged->return
+HttpRequestImpl#checkTimeout(Duration)::: http request impl check timeout:::if->if->duration->isNegative->equals->throw->new->IllegalArgumentException
 HttpRequestImpl#newInstanceForRedirection(URI, String, HttpRequestImpl):::Returns a new instance suitable for redirection.:::return->new->HttpRequestImpl
 HttpRequestImpl#newInstanceForAuthentication(HttpRequestImpl):::Returns a new instance suitable for authentication.:::return->other->uri->other->method->new->HttpRequestImpl
+HttpRequestImpl#isConnect()::: http request impl is connect:::return->equalsIgnoreCase
 HttpRequestImpl#createPushRequest(HttpRequestImpl, HttpHeaders):::Creates a HttpRequestImpl from the given set of Headers and the associated "parent" request:::return->new->HttpRequestImpl
+HttpRequestImpl#toString()::: http request impl to string:::return->uri->toString
+HttpRequestImpl#headers()::: http request impl headers:::return
+HttpRequestImpl#authority()::: http request impl authority:::return
+HttpRequestImpl#setH2Upgrade(Http2ClientImpl)::: http request impl set h2 upgrade:::systemHeadersBuilder->setHeader->systemHeadersBuilder->setHeader->systemHeadersBuilder->h2client->getSettingsString->setHeader
+HttpRequestImpl#expectContinue()::: http request impl expect continue:::return
+HttpRequestImpl#retrieveProxy(ProxySelector, URI):::Retrieves the proxy, from the given ProxySelector, if there is one.:::proxy->pl->ps->select->if->pl->isEmpty->p->pl->get->if->p->type->return
+HttpRequestImpl#proxy()::: http request impl proxy:::if->proxy->type->method->equalsIgnoreCase->return->return->proxy->address
+HttpRequestImpl#secure()::: http request impl secure:::return
+HttpRequestImpl#setProxy(Proxy)::: http request impl set proxy:::
+HttpRequestImpl#isWebSocket(boolean)::: http request impl is web socket:::
+HttpRequestImpl#isWebSocket()::: http request impl is web socket:::return
+HttpRequestImpl#bodyPublisher()::: http request impl body publisher:::return->Optional->empty->Optional->of
 HttpRequestImpl#method():::Returns the request method for this request:::return
+HttpRequestImpl#uri()::: http request impl uri:::return
+HttpRequestImpl#timeout()::: http request impl timeout:::return->Optional->empty->Optional->of
+HttpRequestImpl#getUserHeaders()::: http request impl get user headers:::return
+HttpRequestImpl#getSystemHeadersBuilder()::: http request impl get system headers builder:::return
+HttpRequestImpl#version()::: http request impl version:::return
+HttpRequestImpl#addSystemHeader(String, String)::: http request impl add system header:::systemHeadersBuilder->addHeader
+HttpRequestImpl#setSystemHeader(String, String)::: http request impl set system header:::systemHeadersBuilder->setHeader
+HttpRequestImpl#getAddress()::: http request impl get address:::uri->uri->if->return->authority->p->uri->getPort->if->if->uri->getScheme->equalsIgnoreCase->else->host->uri->getHost->port->if->proxy->pa->new->InetSocketAddress->return->AccessController->doPrivileged->else->return->InetSocketAddress->createUnresolved
+HttpResponseImpl#connection(Exchange)::: http response impl connection:::if->return->return->connection
+HttpResponseImpl#exchangeImpl()::: http response impl exchange impl:::return
+HttpResponseImpl#statusCode()::: http response impl status code:::return
+HttpResponseImpl#request()::: http response impl request:::return
+HttpResponseImpl#previousResponse()::: http response impl previous response:::return
+HttpResponseImpl#headers()::: http response impl headers:::return
+HttpResponseImpl#body()::: http response impl body:::return
+HttpResponseImpl#sslSession()::: http response impl ssl session:::return
+HttpResponseImpl#uri()::: http response impl uri:::return
+HttpResponseImpl#version()::: http response impl version:::return
 HttpResponseImpl#rawChannel():::Returns a RawChannel that may be used for WebSocket protocol.:::if->exchImpl->exchangeImpl->if->throw->new->UnsupportedOperationException->initial->drainLeftOverBytes->new->RawChannelTube->return
+HttpResponseImpl#toString()::: http response impl to string:::sb->new->StringBuilder->method->request->method->uri->request->uri->uristring->uri->toString->sb->append->append->append->append->append->statusCode->append->return->sb->toString
+ImmutableHttpRequest#method()::: immutable http request method:::return
+ImmutableHttpRequest#uri()::: immutable http request uri:::return
+ImmutableHttpRequest#headers()::: immutable http request headers:::return
+ImmutableHttpRequest#bodyPublisher()::: immutable http request body publisher:::return
+ImmutableHttpRequest#expectContinue()::: immutable http request expect continue:::return
+ImmutableHttpRequest#timeout()::: immutable http request timeout:::return
+ImmutableHttpRequest#version()::: immutable http request version:::return
+ImmutableHttpRequest#toString()::: immutable http request to string:::return->uri->toString
+LineSubscriberAdapter#onSubscribe(Subscription)::: line subscriber adapter on subscribe:::LineSubscription->create->subscriber->onSubscribe
+LineSubscriberAdapter#onNext(List)::: line subscriber adapter on next:::try->downstream->submit->catch->onError->finally
+LineSubscriberAdapter#onError(Throwable)::: line subscriber adapter on error:::try->downstream->signalError->catch->finally->cf->completeExceptionally
+LineSubscriberAdapter#onComplete()::: line subscriber adapter on complete:::try->downstream->signalComplete->catch->finally->cf->finisher->apply->complete
+LineSubscriberAdapter#getBody()::: line subscriber adapter get body:::return
+LineSubscriberAdapter#create(S, Function, Charset, String)::: line subscriber adapter create:::if->eol->isEmpty->throw->new->IllegalArgumentException->return->Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->new->LineSubscriberAdapter<>
+LineSubscriberAdapter.LineSubscription#request(long)::: line subscription request:::if->return->if->downstreamDemand->increase->scheduler->runOrSchedule
+LineSubscriberAdapter.LineSubscription#cancel()::: line subscription cancel:::upstreamSubscription->cancel
+LineSubscriberAdapter.LineSubscription#submit(List)::: line subscription submit:::queue->addAll->demanded->decrementAndGet->scheduler->runOrSchedule
+LineSubscriberAdapter.LineSubscription#signalComplete()::: line subscription signal complete:::scheduler->runOrSchedule
+LineSubscriberAdapter.LineSubscription#signalError(Throwable)::: line subscription signal error:::if->errorRef->Objects->requireNonNull->compareAndSet->scheduler->runOrSchedule
+LineSubscriberAdapter.LineSubscription#isUnderFlow(ByteBuffer, CharBuffer, boolean)::: line subscription is under flow:::limit->leftover->position->if->return->else->res->while->in->hasRemaining->leftover->position->leftover->limit->leftover->in->get->put->leftover->position->decoder->in->hasRemaining->decode->remaining->leftover->remaining->if->leftover->position->else->leftover->position->leftover->leftover->capacity->limit->if->res->isUnderflow->in->hasRemaining->continue->if->res->isError->res->throwException->return->return
+LineSubscriberAdapter.LineSubscription#take(StringBuilder, int, int)::: line subscription take:::line->if->return->b->substring->b->delete->return
+LineSubscriberAdapter.LineSubscription#endOfLine(StringBuilder, String, boolean)::: line subscription end of line:::len->b->length->if->i->b->indexOf->if->b->eol->length->delete->return->else->crfound->for->i->if->b->delete->return->return
+LineSubscriberAdapter.LineSubscription#nextLine(StringBuilder, String, boolean)::: line subscription next line:::next->endOfLine->return->take
+LineSubscriberAdapter.LineSubscription#nextLine()::: line subscription next line:::while->endOfInput->queue->isEmpty->leftover->position->nextLine->if->return->b->while->queue->peek->if->b->hasRemaining->queue->poll->continue->while->b->hasRemaining->buffer->position->buffer->buffer->capacity->limit->endofInput->queue->size->if->isUnderFlow->if->buffer->position->buffer->flip->builder->append->continue->res->decoder->decode->if->res->isError->res->throwException->if->buffer->position->buffer->flip->builder->append->continue->if->res->isUnderflow->b->hasRemaining->leftover->put->continue->if->leftover->flip->buffer->position->buffer->buffer->capacity->limit->res->decoder->decode->if->buffer->position->buffer->flip->builder->append->if->res->isError->res->throwException->buffer->position->buffer->buffer->capacity->limit->decoder->flush->if->buffer->position->buffer->flip->builder->append->if->res->isError->res->throwException->leftover->position->leftover->leftover->capacity->limit->decoder->reset->return->nextLine->return->return
+LineSubscriberAdapter.LineSubscription#loop()::: line subscription loop:::try->while->error->errorRef->get->if->scheduler->stop->upstream->onError->cf->completeExceptionally->return->if->nextLine->if->if->scheduler->stop->if->leftover->position->errorRef->leftover->position->new->IllegalStateException->compareAndSet->continue->else->upstream->onComplete->return->else->if->demanded->get->downstreamDemand->isFulfilled->incr->Math->downstreamDemand->get->max->demanded->addAndGet->upstreamSubscription->request->continue->else->return->if->downstreamDemand->tryDecrement->forward->upstream->onNext->else->return->catch->try->upstreamSubscription->cancel->catch->finally->signalError->finally
+LineSubscriberAdapter.LineSubscription#create(Flow.Subscription, Charset, String, Flow.Subscriber, CompletableFuture)::: line subscription create:::return->Objects->requireNonNull->Objects->requireNonNull->newDecoder->onMalformedInput->onUnmappableCharacter->Objects->requireNonNull->Objects->requireNonNull->new->LineSubscription
+MultiExchange#getExchange()::: multi exchange get exchange:::return
+MultiExchange#client()::: multi exchange client:::return
+MultiExchange#version()::: multi exchange version:::vers->request->version->client->version->orElse->if->request->secure->request->proxy->return
+MultiExchange#setExchange(Exchange)::: multi exchange set exchange:::if->released
+MultiExchange#cancelTimer()::: multi exchange cancel timer:::if->client->cancelTimer
+MultiExchange#requestFilters(HttpRequestImpl)::: multi exchange request filters:::Log->logTrace->foreach->Log->logTrace->filter->request->Log->logTrace
+MultiExchange#responseFilters(Response)::: multi exchange response filters:::Log->logTrace->reverseItr->filters->descendingIterator->while->reverseItr->hasNext->filter->reverseItr->next->Log->logTrace->newreq->filter->response->if->Log->logTrace->return->Log->logTrace->return
+MultiExchange#cancel(IOException)::: multi exchange cancel:::getExchange->cancel
+MultiExchange#responseAsync(Executor)::: multi exchange response async:::start->new->MinimalFuture<>->cf->responseAsync0->start->completeAsync->return
+MultiExchange#bodyNotPermitted(Response)::: multi exchange body not permitted:::return
+MultiExchange#bodyIsPresent(Response)::: multi exchange body is present:::headers->r->headers->if->headers->firstValueAsLong->orElse->return->if->headers->firstValue->isPresent->return->return
+MultiExchange#handleNoBody(Response, Exchange)::: multi exchange handle no body:::bs->responseHandler->r->statusCode->r->headers->r->version->new->ResponseInfoImpl->apply->cs->bs->getBody->bs->new->NullSubscription->onSubscribe->bs->onComplete->result->new->MinimalFuture<>->cs->if->result->completeExceptionally->else->r->request->new->HttpResponseImpl<>->result->complete->whenComplete->return
+MultiExchange#responseAsync0(CompletableFuture)::: multi exchange response async0:::return->start->responseAsyncImpl->thenCompose->exch->getExchange->if->bodyNotPermitted->if->bodyIsPresent->ioe->new->IOException->exch->cancel->return->MinimalFuture->failedFuture->else->return->handleNoBody->return->exch->readBodyAsync->r->request->new->HttpResponseImpl<>->return->thenApply->thenCompose
+MultiExchange.NullSubscription#request(long)::: null subscription request:::
+MultiExchange.NullSubscription#cancel()::: null subscription cancel:::
+MultiExchange#responseAsyncImpl()::: multi exchange response async impl:::cf->if->attempts->incrementAndGet->new->IOException->failedFuture->else->if->currentreq->timeout->isPresent->ResponseTimerEvent->of->client->registerTimer->try->if->requestFilters->catch->return->failedFuture->finally->exch->getExchange->exch->responseAsync->newrequest->try->responseFilters->catch->return->failedFuture->finally->if->if->attempts->get->Log->logError->return->completedFuture->else->new->HttpResponseImpl<>->oldExch->return->exch->ignoreBody->new->Exchange<>->setExchange->return->responseAsyncImpl->handle->Function->identity->thenCompose->thenCompose->cancelTimer->if->return->completedFuture->errorCF->getExceptionalCF->if->return->responseAsyncImpl->else->return->handle->Function->identity->thenCompose->return
+MultiExchange#retryPostValue()::: multi exchange retry post value:::s->Utils->getNetProperty->if->return->return->s->isEmpty->Boolean->parseBoolean
+MultiExchange#retryConnect()::: multi exchange retry connect:::s->Utils->getNetProperty->if->return->return->s->isEmpty->Boolean->parseBoolean
+MultiExchange#isIdempotentRequest(HttpRequest):::Returns true is given request has an idempotent method.:::method->request->method->switch->return->return
+MultiExchange#canRetryRequest(HttpRequest):::Returns true if the given request can be automatically retried.:::if->return->if->isIdempotentRequest->return->return
+MultiExchange#retryOnFailure(Throwable)::: multi exchange retry on failure:::return
+MultiExchange#retryCause(Throwable)::: multi exchange retry cause:::cause->t->getCause->return
+MultiExchange#getExceptionalCF(Throwable):::Takes a Throwable and returns a suitable CompletableFuture that is completed exceptionally, or null.:::if->if->t->getCause->t->getCause->if->if->toTimeoutException->else->if->retryOnFailure->cause->retryCause->if->if->canRetryRequest->return->failedFuture->if->if->debug->on->debug->t->getClass->getSimpleName->log->return->else->if->debug->on->debug->t->getClass->getSimpleName->log->return->failedFuture
+MultiExchange#toTimeoutException(IOException)::: multi exchange to timeout exception:::t->exchange->getExchange->if->exchangeImpl->if->if->exchangeImpl->connection->connected->new->HttpTimeoutException->t->initCause->if->new->HttpConnectTimeoutException->t->new->ConnectException->initCause->return
+PlainHttpConnection#newConnectTimer(Exchange, CompletableFuture):::Returns a ConnectTimerEvent iff there is a connect timeout duration, otherwise null.:::duration->client->connectTimeout->orElse->if->cte->new->ConnectTimerEvent->return->return
+PlainHttpConnection.ConnectTimerEvent#handle()::: connect timer event handle:::if->debug->on->debug->log->ce->new->ConnectException->cancel->client->theExecutor->cf->completeExceptionally->execute
+PlainHttpConnection.ConnectTimerEvent#toString()::: connect timer event to string:::return->super->toString
+PlainHttpConnection.ConnectEvent#channel()::: connect event channel:::return
+PlainHttpConnection.ConnectEvent#interestOps()::: connect event interest ops:::return
+PlainHttpConnection.ConnectEvent#handle()::: connect event handle:::try->if->debug->on->debug->log->finished->chan->finishConnect->if->debug->on->debug->chan->getLocalAddress->log->cf->client->theExecutor->completeAsync->catch->t->Utils->toConnectException->client->theExecutor->cf->completeExceptionally->execute->close->finally
+PlainHttpConnection.ConnectEvent#abort(IOException)::: connect event abort:::client->theExecutor->cf->completeExceptionally->execute->close
+PlainHttpConnection#connectAsync(Exchange)::: plain http connection connect async:::cf->new->MinimalFuture<>->try->finished->newConnectTimer->if->if->debug->on->debug->log->client->registerTimer->pa->chan->Utils->resolveAddress->connect->try->AccessController->doPrivileged->catch->throw->e->getCause->finally->if->if->debug->on->debug->log->cf->complete->else->if->debug->on->debug->log->client->new->ConnectEvent->registerEvent->catch->cf->Utils->toConnectException->completeExceptionally->try->close->catch->if->debug->on->debug->log->finally->finally->return
+PlainHttpConnection#finishConnect()::: plain http connection finish connect:::if->debug->on->debug->log->if->client->cancelTimer->return->MinimalFuture->completedFuture
+PlainHttpConnection#channel()::: plain http connection channel:::return
+PlainHttpConnection#getConnectionFlow()::: plain http connection get connection flow:::return
+PlainHttpConnection#getInitialBufferSize()::: plain http connection get initial buffer size:::try->return->chan->getOption->catch->if->debug->on->debug->log->finally->return
+PlainHttpConnection#trySetReceiveBufferSize(int)::: plain http connection try set receive buffer size:::try->if->chan->setOption->catch->if->debug->on->debug->log->finally
+PlainHttpConnection#publisher()::: plain http connection publisher:::return
+PlainHttpConnection#toString()::: plain http connection to string:::return->super->toString
 PlainHttpConnection#close():::Closes this connection:::synchronized->if->return->try->Log->toString->logTrace->if->debug->on->debug->client->debugInterestOps->log->if->client->cancelTimer->chan->close->tube->signalClosed->catch->Log->logTrace->finally
+PlainHttpConnection#cacheKey()::: plain http connection cache key:::return->new->ConnectionPool.CacheKey
+PlainHttpConnection#connected()::: plain http connection connected:::return
+PlainHttpConnection#isSecure()::: plain http connection is secure:::return
+PlainHttpConnection#isProxied()::: plain http connection is proxied:::return
+PlainProxyConnection#cacheKey()::: plain proxy connection cache key:::return->new->ConnectionPool.CacheKey
+PlainProxyConnection#isProxied()::: plain proxy connection is proxied:::return
+PlainTunnelingConnection#connectAsync(Exchange)::: plain tunneling connection connect async:::if->debug->on->debug->log->return->delegate->connectAsync->delegate->finishConnect->thenCompose->if->debug->on->debug->log->client->client->req->new->HttpRequestImpl->mulEx->discarding->new->MultiExchange<>->connectExchange->mulEx->getExchange->return->connectExchange->responseAsyncImpl->cf->new->MinimalFuture<>->if->debug->on->debug->resp->statusCode->log->if->resp->statusCode->return->connectExchange->ignoreBody->delegate->close->authenticationRequired->new->ProxyAuthenticationRequired->cf->completeExceptionally->return->handle->Function->identity->thenCompose->else->if->resp->statusCode->delegate->close->cf->resp->statusCode->new->IOException->completeExceptionally->else->b->drainLeftOverBytes->remaining->b->remaining->cf->complete->return->thenCompose->if->return->MinimalFuture->completedFuture->else->if->debug->on->debug->ex->toString->log->t->if->t->getCause->if->msg->new->HttpTimeoutException->t->initCause->return->MinimalFuture->failedFuture->handle->Function->identity->thenCompose->thenCompose
+PlainTunnelingConnection#finishConnect()::: plain tunneling connection finish connect:::return->MinimalFuture->completedFuture
+PlainTunnelingConnection#isTunnel()::: plain tunneling connection is tunnel:::return
+PlainTunnelingConnection#publisher()::: plain tunneling connection publisher:::return->delegate->publisher
+PlainTunnelingConnection#connected()::: plain tunneling connection connected:::return
+PlainTunnelingConnection#channel()::: plain tunneling connection channel:::return->delegate->channel
+PlainTunnelingConnection#getConnectionFlow()::: plain tunneling connection get connection flow:::return->delegate->getConnectionFlow
+PlainTunnelingConnection#cacheKey()::: plain tunneling connection cache key:::return->new->ConnectionPool.CacheKey
+PlainTunnelingConnection#close()::: plain tunneling connection close:::delegate->close
+PlainTunnelingConnection#isSecure()::: plain tunneling connection is secure:::return
+PlainTunnelingConnection#isProxied()::: plain tunneling connection is proxied:::return
+PrivilegedExecutor.PrivilegedRunnable#run()::: privileged runnable run:::pa->r->run->return->AccessController->doPrivileged
+PrivilegedExecutor#execute(Runnable)::: privileged executor execute:::executor->new->PrivilegedRunnable->execute
+PullPublisher#subscribe(Flow.Subscriber)::: pull publisher subscribe:::sub->if->new->Subscription->else->iterable->iterator->new->Subscription->subscriber->onSubscribe->if->runOrSchedule
+PullPublisher.Subscription.PullTask#run()::: pull task run:::if->return->t->if->pullScheduler->stop->subscriber->onError->return->while->demand->tryDecrement->if->iter->hasNext->break->else->subscriber->iter->next->onNext->if->iter->hasNext->pullScheduler->stop->subscriber->onComplete
+PullPublisher.Subscription#request(long)::: subscription request:::if->return->if->new->IllegalArgumentException->else->demand->increase->pullScheduler->runOrSchedule
+PullPublisher.Subscription#cancel()::: subscription cancel:::
+PushGroup.Acceptor#bodyHandler()::: acceptor body handler:::
+PushGroup.Acceptor#cf()::: acceptor cf:::
+PushGroup.Acceptor#accepted()::: acceptor accepted:::
+PushGroup.AcceptorImpl#accept(BodyHandler)::: acceptor impl accept:::Objects->requireNonNull->if->throw->new->IllegalStateException->new->MinimalFuture<>->return->cf->whenCompleteAsync
+PushGroup.AcceptorImpl#bodyHandler()::: acceptor impl body handler:::return
+PushGroup.AcceptorImpl#cf()::: acceptor impl cf:::return
+PushGroup.AcceptorImpl#accepted()::: acceptor impl accepted:::return
+PushGroup#acceptPushRequest(HttpRequest)::: push group accept push request:::acceptor->new->AcceptorImpl<>->try->pushPromiseHandler->acceptor->accept->applyPushPromise->catch->if->acceptor->accepted->cf->acceptor->cf->cf->completeExceptionally->throw->finally->synchronized->if->acceptor->accepted->return
+PushGroup#noMorePushes(boolean)::: push group no more pushes:::checkIfCompleted->noMorePushesCF->complete
+PushGroup#pushesCF()::: push group pushes f:::return
+PushGroup#noMorePushes()::: push group no more pushes:::return
+PushGroup#pushCompleted()::: push group push completed:::checkIfCompleted
+PushGroup#checkIfCompleted()::: push group check if completed:::if->Log->trace->Log->error->getClass->getSimpleName->logTrace->if->if->Log->trace->Log->logTrace
+PushGroup#pushError(Throwable)::: push group push error:::if->return
+RawChannelTube.CleanupChecker#run()::: cleanup checker run:::if->closed->get->debug->log
+RawChannelTube#connectFlows()::: raw channel tube connect flows:::if->debug->on->debug->log->tube->connectFlows
+RawChannelTube.WriteSubscription#request(long)::: write subscription request:::if->debug->on->debug->log->demand->increase->event->while->poll->if->debug->on->debug->log->event->handle->if->demand->isFulfilled->break
+RawChannelTube.WriteSubscription#cancel()::: write subscription cancel:::if->debug->on->debug->log->shutdownOutput->event->while->poll->if->debug->on->debug->log->event->handle
+RawChannelTube.WritePublisher#subscribe(Flow.Subscriber>)::: write publisher subscribe:::if->debug->on->debug->log->subscription->new->WriteSubscription->subscriber->onSubscribe
+RawChannelTube.ReadSubscriber#checkEvents()::: read subscriber check events:::subscription->if->error->errorRef->get->while->buffers->isEmpty->closed->get->event->events->poll->if->break->if->debug->on->debug->log->event->handle
+RawChannelTube.ReadSubscriber#onSubscribe(Flow.Subscription)::: read subscriber on subscribe:::n->synchronized->if->debug->on->debug->log->if->error->errorRef->get->if->closed->get->if->debug->on->debug->log->subscription->request->checkEvents
+RawChannelTube.ReadSubscriber#onNext(List)::: read subscriber on next:::if->debug->on->debug->Utils->remaining->log->buffers->addAll->checkEvents
+RawChannelTube.ReadSubscriber#onError(Throwable)::: read subscriber on error:::if->closed->get->errorRef->compareAndSet->if->debug->on->debug->log->if->buffers->isEmpty->checkEvents->shutdownInput
+RawChannelTube.ReadSubscriber#onComplete()::: read subscriber on complete:::if->debug->on->debug->log->if->buffers->isEmpty->checkEvents->shutdownInput
+RawChannelTube#registerEvent(RawEvent)::: raw channel tube register event:::interestOps->event->interestOps->if->if->debug->on->debug->log->if->outputClosed->get->throw->new->IOException->add->writeSubscription->if->while->isFulfilled->poll->if->break->event->handle->if->if->debug->on->debug->log->if->inputClosed->get->throw->new->IOException->add->readSubscriber->checkEvents->if->isEmpty->isEmpty->readSubscription->if->synchronized->if->return->if->debug->on->debug->log->readSubscription->request
 RawChannelTube#initialByteBuffer():::Hands over the initial bytes:::if->inited->compareAndSet->return->initial->get->else->throw->new->IllegalStateException
+RawChannelTube#read()::: raw channel tube read:::if->debug->on->debug->log->readSubscription->if->return->buffer->poll->if->if->debug->on->debug->buffer->remaining->log->return->error->get->if->Utils->getIOException->if->if->debug->on->debug->log->shutdownInput->return->if->if->debug->on->debug->log->if->closed->get->return->shutdownInput->throw->Utils->getIOException->if->if->debug->on->debug->log->shutdownInput->return->if->inputClosed->get->if->debug->on->debug->log->throw->new->IOException->if->debug->on->debug->log->return
+RawChannelTube#write(ByteBuffer[], int, int)::: raw channel tube write:::if->outputClosed->get->if->debug->on->debug->log->throw->new->IOException->writeSubscription->if->if->debug->on->debug->log->return->if->if->debug->on->debug->log->shutdownOutput->throw->new->IOException->if->tryDecrement->buffers->copy->res->Utils->remaining->if->debug->on->debug->log->onNext->return->else->if->debug->on->debug->log->return
 RawChannelTube#shutdownInput():::Shutdown the connection for reading without closing the channel:::if->inputClosed->compareAndSet->if->debug->on->debug->log
 RawChannelTube#shutdownOutput():::Shutdown the connection for writing without closing the channel:::if->outputClosed->compareAndSet->if->debug->on->debug->log
 RawChannelTube#close():::Closes this channel.:::if->closed->compareAndSet->if->debug->on->debug->log->connection->client->webSocketClose->connection->close
+RawChannelTube#copy(ByteBuffer[], int, int)::: raw channel tube copy:::count->Math->min->if->return->if->return->List->Utils->copy->of->if->return->List->Utils->copy->Utils->copy->of->list->new->ArrayList<>->for->i->return
+RedirectFilter#request(HttpRequestImpl, MultiExchange)::: redirect filter request:::e->client->client->followRedirects->r->method->r->uri
+RedirectFilter#response(Response)::: redirect filter response:::return->handleResponse
+RedirectFilter#redirectedMethod(int, String)::: redirect filter redirected method:::switch->return->orig->equals->return->return->return
+RedirectFilter#handleResponse(Response):::Checks to see if a new request is needed and returns it:::rcode->r->statusCode->if->return->if->return->if->redir->r->headers->getRedirectedURI->newMethod->redirectedMethod->Log->logTrace->if->canRedirect->Log->logTrace->return->HttpRequestImpl->newInstanceForRedirection->else->Log->logTrace->return->return
+RedirectFilter#getRedirectedURI(HttpHeaders)::: redirect filter get redirected i:::redirectedURI->headers->firstValue->URI->create->map->new->IOException->new->UncheckedIOException->orElseThrow->uri->resolve->return
+RedirectFilter#canRedirect(URI)::: redirect filter can redirect:::newScheme->redir->getScheme->oldScheme->uri->getScheme->switch->return->return->return->newScheme->equalsIgnoreCase->newScheme->equalsIgnoreCase->throw->new->InternalError
+RequestPublishers.ByteArrayPublisher#copy(byte[], int, int)::: byte array publisher copy:::bufs->new->ArrayList<>->while->b->ByteBuffer->Math->min->allocate->max->b->capacity->tocopy->Math->min->b->put->b->flip->bufs->add->return
+RequestPublishers.ByteArrayPublisher#subscribe(Flow.Subscriber)::: byte array publisher subscribe:::copy->copy->delegate->new->PullPublisher<>->delegate->subscribe
+RequestPublishers.ByteArrayPublisher#contentLength()::: byte array publisher content length:::return
+RequestPublishers.IterablePublisher.ByteBufferIterator#hasNext()::: byte buffer iterator has next:::return->buffers->isEmpty->iterator->hasNext
+RequestPublishers.IterablePublisher.ByteBufferIterator#next()::: byte buffer iterator next:::buffer->buffers->poll->while->copy->buffers->poll->return
+RequestPublishers.IterablePublisher.ByteBufferIterator#getBuffer()::: byte buffer iterator get buffer:::return->Utils->getBuffer
+RequestPublishers.IterablePublisher.ByteBufferIterator#copy()::: byte buffer iterator copy:::bytes->iterator->next->length->if->iterator->hasNext->return->offset->do->b->getBuffer->max->b->capacity->tocopy->Math->min->b->put->b->flip->buffers->add->while
+RequestPublishers.IterablePublisher#iterator()::: iterable publisher iterator:::return->new->ByteBufferIterator
+RequestPublishers.IterablePublisher#subscribe(Flow.Subscriber)::: iterable publisher subscribe:::iterable->this->iterator->delegate->new->PullPublisher<>->delegate->subscribe
+RequestPublishers.IterablePublisher#computeLength(Iterable)::: iterable publisher compute length:::len->foreach->Math->addExact->return
+RequestPublishers.IterablePublisher#contentLength()::: iterable publisher content length:::if->synchronized->if->computeLength->return
+RequestPublishers.EmptyPublisher#contentLength()::: empty publisher content length:::return
+RequestPublishers.EmptyPublisher#subscribe(Flow.Subscriber)::: empty publisher subscribe:::delegate->subscribe
+RequestPublishers.FilePublisher#pathForSecurityCheck(Path)::: file publisher path for security check:::return->path->toFile->getPath
 RequestPublishers.FilePublisher#create(Path):::Factory for creating FilePublisher:::filePermission->sm->System->getSecurityManager->if->fn->pathForSecurityCheck->readPermission->new->FilePermission->sm->checkPermission->if->Files->notExists->throw->new->FileNotFoundException->return->new->FilePublisher
+RequestPublishers.FilePublisher#subscribe(Flow.Subscriber)::: file publisher subscribe:::is->if->System->getSecurityManager->try->new->FileInputStream->catch->throw->new->UncheckedIOException->finally->else->try->pa->new->FileInputStream->AccessController->doPrivileged->catch->throw->pae->getCause->new->UncheckedIOException->finally->publisher->new->StreamIterator->new->PullPublisher<>->publisher->subscribe
+RequestPublishers.FilePublisher#contentLength()::: file publisher content length:::if->System->getSecurityManager->return->file->length->else->pa->file->length->return->AccessController->doPrivileged
+RequestPublishers.StreamIterator#read()::: stream iterator read:::bufSupplier->get->nextBuffer->clear->buf->nextBuffer->array->offset->nextBuffer->arrayOffset->cap->nextBuffer->capacity->try->n->is->read->if->is->close->return->nextBuffer->limit->nextBuffer->position->return->catch->return->finally
+RequestPublishers.StreamIterator#hasNext()::: stream iterator has next:::if->read->if->return->return
+RequestPublishers.StreamIterator#next()::: stream iterator next:::if->hasNext->throw->new->NoSuchElementException->return
+RequestPublishers.InputStreamPublisher#subscribe(Flow.Subscriber)::: input stream publisher subscribe:::publisher->is->streamSupplier->get->if->t->new->IOException->new->PullPublisher<>->else->iterableOf->new->PullPublisher<>->publisher->subscribe
+RequestPublishers.InputStreamPublisher#iterableOf(InputStream)::: input stream publisher iterable of:::return->new->StreamIterator
+RequestPublishers.InputStreamPublisher#contentLength()::: input stream publisher content length:::return
+RequestPublishers.PublisherAdapter#contentLength()::: publisher adapter content length:::return
+RequestPublishers.PublisherAdapter#subscribe(Flow.Subscriber)::: publisher adapter subscribe:::publisher->subscribe
+Response#request()::: response request:::return
+Response#version()::: response version:::return
+Response#headers()::: response headers:::return
+Response#statusCode()::: response status code:::return
+Response#getSSLSession()::: response get session:::return
+Response#toString()::: response to string:::sb->new->StringBuilder->method->request->method->uri->request->uri->uristring->uri->toString->sb->append->append->append->append->append->statusCode->append->sb->append->append->if->sb->append->localAddress->getPort->append->return->sb->toString
+ResponseBodyHandlers#pathForSecurityCheck(Path)::: response body handlers path for security check:::return->path->toFile->getPath
 ResponseBodyHandlers.PathBodyHandler#create(Path, List):::Factory for creating PathBodyHandler:::filePermission->sm->System->getSecurityManager->if->fn->pathForSecurityCheck->writePermission->new->FilePermission->sm->checkPermission->return->new->PathBodyHandler
+ResponseBodyHandlers.PathBodyHandler#apply(ResponseInfo)::: path body handler apply:::return->new->PathSubscriber
+ResponseBodyHandlers.PushPromisesHandlerWithMap#applyPushPromise(HttpRequest, HttpRequest, Function, CompletableFuture>>)::: push promises handler with map apply push promise:::initiatingURI->initiatingRequest->uri->pushRequestURI->pushRequest->uri->if->initiatingURI->getHost->pushRequestURI->getHost->equalsIgnoreCase->return->initiatingPort->initiatingURI->getPort->if->if->initiatingURI->getScheme->equalsIgnoreCase->else->pushPort->pushRequestURI->getPort->if->if->pushRequestURI->getScheme->equalsIgnoreCase->else->if->return->cf->acceptor->pushPromiseHandler->apply->apply->pushPromisesMap->put
 ResponseBodyHandlers.FileDownloadBodyHandler#create(Path, List):::Factory for creating FileDownloadBodyHandler:::filePermissions->sm->System->getSecurityManager->if->fn->pathForSecurityCheck->writePermission->new->FilePermission->writePathPerm->writeInDirPermission->new->FilePermission->sm->checkPermission->readPermission->new->FilePermission->sm->checkPermission->new->FilePermissionArr->if->Files->notExists->throw->new->IllegalArgumentException->if->Files->isDirectory->throw->new->IllegalArgumentException->if->Files->isWritable->throw->new->IllegalArgumentException->return->new->FileDownloadBodyHandler
+ResponseBodyHandlers.FileDownloadBodyHandler#unchecked(ResponseInfo, String)::: file download body handler unchecked:::s->String->rinfo->statusCode->rinfo->headers->format->return->new->IOException->new->UncheckedIOException
+ResponseBodyHandlers.FileDownloadBodyHandler#apply(ResponseInfo)::: file download body handler apply:::dispoHeader->responseInfo->headers->firstValue->unchecked->orElseThrow->if->dispoHeader->DISPOSITION_TYPE->length->regionMatches->throw->unchecked->matcher->FILENAME->matcher->if->matcher->find->throw->unchecked->n->matcher->end->semi->dispoHeader->substring->indexOf->filenameParam->if->dispoHeader->substring->else->dispoHeader->substring->x->filenameParam->lastIndexOf->if->filenameParam->substring->filenameParam->lastIndexOf->if->filenameParam->substring->filenameParam->trim->if->filenameParam->startsWith->if->filenameParam->endsWith->filenameParam->length->throw->unchecked->filenameParam->filenameParam->length->substring->else->if->filenameParam->contains->throw->unchecked->if->PROHIBITED->contains->throw->unchecked->file->Paths->directory->toString->get->if->file->startsWith->throw->file->toString->unchecked->return->new->PathSubscriber
+ResponseContent#contentChunked()::: response content content chunked:::if->return->if->return->if->tc->headers->firstValue->orElse->if->tc->equals->if->tc->equalsIgnoreCase->else->throw->new->IOException->else->return
+ResponseContent.BodyParser#onSubscribe(AbstractSubscription)::: body parser on subscribe:::
+ResponseContent.BodyParser#currentStateMessage()::: body parser current state message:::
+ResponseContent#getBodyParser(Consumer)::: response content get body parser:::if->contentChunked->return->new->ChunkedBodyParser->else->return->new->UnknownLengthBodyParser->new->FixedLengthBodyParser
+ResponseContent.ChunkedBodyParser#dbgString()::: chunked body parser dbg string:::return
+ResponseContent.ChunkedBodyParser#onSubscribe(AbstractSubscription)::: chunked body parser on subscribe:::if->debug->on->debug->pusher->getClass->getName->log->pusher->onSubscribe
+ResponseContent.ChunkedBodyParser#currentStateMessage()::: chunked body parser current state message:::return->format
+ResponseContent.ChunkedBodyParser#accept(ByteBuffer)::: chunked body parser accept:::if->if->debug->on->debug->log->return->completed->try->out->new->ArrayList<>->do->if->tryPushOneHunk->if->out->isEmpty->hasDemand->sub->demand->tryDecrement->pusher->Collections->unmodifiableList->onNext->if->debug->on->debug->log->if->debug->on->debug->log->onFinished->run->pusher->onComplete->if->debug->on->debug->log->onComplete->accept->break->while->b->hasRemaining->if->out->isEmpty->hasDemand->sub->demand->tryDecrement->pusher->Collections->unmodifiableList->onNext->if->debug->on->debug->log->catch->if->debug->on->debug->log->if->onComplete->accept->finally
+ResponseContent.ChunkedBodyParser#tryReadChunkLen(ByteBuffer)::: chunked body parser try read chunk len:::while->chunkbuf->hasRemaining->c->chunkbuf->get->if->if->return->else->throw->new->IOException->if->else->digit->toDigit->return
+ResponseContent.ChunkedBodyParser#tryConsumeBytes(ByteBuffer)::: chunked body parser try consume bytes:::n->if->e->Math->chunkbuf->remaining->min->if->tmp->chunkbuf->slice->chunkbuf->chunkbuf->position->position->return
 ResponseContent.ChunkedBodyParser#tryReadOneHunk(ByteBuffer):::Returns a ByteBuffer containing chunk of data or a "hunk" of data (a chunk of a chunk if the chunk size is larger than our ByteBuffers):::unfulfilled->toconsume->st->if->if->debug->on->debug->chunk->remaining->log->clen->tryReadChunkLen->if->return->if->debug->on->debug->log->if->else->if->if->debug->on->debug->chunk->remaining->log->if->tryConsumeBytes->return->if->clen->if->debug->on->debug->log->return->clen->returnBuffer->if->bytesread->chunk->remaining->if->debug->on->debug->log->bytes2return->Math->min->if->debug->on->debug->log->Utils->sliceWithLimitedCapacity->asReadOnlyBuffer->if->if->if->debug->on->debug->log->if->tryConsumeBytes->if->debug->on->debug->log->if->if->debug->on->debug->log->return
+ResponseContent.ChunkedBodyParser#tryPushOneHunk(ByteBuffer, List)::: chunked body parser try push one hunk:::b1->tryReadOneHunk->if->if->b1->hasRemaining->if->debug->on->debug->b1->remaining->log->out->add->return->else->return
+ResponseContent.ChunkedBodyParser#toDigit(int)::: chunked body parser to digit:::if->return->if->return->if->return->throw->new->IOException
+ResponseContent.UnknownLengthBodyParser#dbgString()::: unknown length body parser dbg string:::return
+ResponseContent.UnknownLengthBodyParser#onSubscribe(AbstractSubscription)::: unknown length body parser on subscribe:::if->debug->on->debug->pusher->getClass->getName->log->pusher->onSubscribe
+ResponseContent.UnknownLengthBodyParser#currentStateMessage()::: unknown length body parser current state message:::return->format
+ResponseContent.UnknownLengthBodyParser#accept(ByteBuffer)::: unknown length body parser accept:::if->if->debug->on->debug->log->return->completed->try->if->debug->on->debug->b->remaining->log->if->b->hasRemaining->hasDemand->sub->demand->tryDecrement->b->remaining->pusher->List->b->asReadOnlyBuffer->of->onNext->catch->if->debug->on->debug->log->if->onComplete->accept->finally
 ResponseContent.UnknownLengthBodyParser#complete():::Must be called externally when connection has closed and therefore no more bytes can be read:::if->debug->on->debug->log->onFinished->run->pusher->onComplete->onComplete->accept
+ResponseContent.FixedLengthBodyParser#dbgString()::: fixed length body parser dbg string:::return
+ResponseContent.FixedLengthBodyParser#onSubscribe(AbstractSubscription)::: fixed length body parser on subscribe:::if->debug->on->debug->pusher->getClass->getName->log->pusher->onSubscribe->try->if->onFinished->run->pusher->onComplete->onComplete->accept->catch->try->pusher->onError->catch->finally->onComplete->accept->finally
+ResponseContent.FixedLengthBodyParser#currentStateMessage()::: fixed length body parser current state message:::return->format
+ResponseContent.FixedLengthBodyParser#accept(ByteBuffer)::: fixed length body parser accept:::if->if->debug->on->debug->log->return->completed->try->unfulfilled->if->debug->on->debug->b->remaining->log->if->return->if->b->hasRemaining->hasDemand->sub->demand->tryDecrement->amount->Math->b->remaining->min->buffer->Utils->sliceWithLimitedCapacity->pusher->List->buffer->asReadOnlyBuffer->of->onNext->if->if->debug->on->debug->log->onFinished->run->pusher->onComplete->onComplete->accept->else->catch->if->debug->on->debug->log->if->onComplete->accept->finally
 ResponseInfoImpl#statusCode():::Provides the response status code:::return
 ResponseInfoImpl#headers():::Provides the response headers:::return
 ResponseInfoImpl#version():::provides the response protocol version:::return
+ResponseSubscribers.ConsumerSubscriber#getBody()::: consumer subscriber get body:::return
+ResponseSubscribers.ConsumerSubscriber#onSubscribe(Flow.Subscription)::: consumer subscriber on subscribe:::if->subscribed->compareAndSet->subscription->cancel->else->subscription->request
+ResponseSubscribers.ConsumerSubscriber#onNext(List)::: consumer subscriber on next:::foreach->buf->item->remaining->new->byteArr->item->get->consumer->Optional->of->accept->subscription->request
+ResponseSubscribers.ConsumerSubscriber#onError(Throwable)::: consumer subscriber on error:::result->completeExceptionally
+ResponseSubscribers.ConsumerSubscriber#onComplete()::: consumer subscriber on complete:::consumer->Optional->empty->accept->result->complete
+ResponseSubscribers.PathSubscriber#pathForSecurityCheck(Path)::: path subscriber path for security check:::return->path->toFile->getPath
 ResponseSubscribers.PathSubscriber#create(Path, List):::Factory for creating PathSubscriber:::filePermission->sm->System->getSecurityManager->if->fn->pathForSecurityCheck->writePermission->new->FilePermission->sm->checkPermission->return->new->PathSubscriber
+ResponseSubscribers.PathSubscriber#onSubscribe(Flow.Subscription)::: path subscriber on subscribe:::if->System->getSecurityManager->try->FileChannel->open->catch->result->completeExceptionally->return->finally->else->try->pa->FileChannel->open->AccessController->doPrivileged->catch->t->pae->getCause->pae->getCause->result->completeExceptionally->subscription->cancel->return->finally->subscription->request
+ResponseSubscribers.PathSubscriber#onNext(List)::: path subscriber on next:::try->out->items->toArray->write->catch->Utils->close->subscription->cancel->result->completeExceptionally->finally->subscription->request
+ResponseSubscribers.PathSubscriber#onError(Throwable)::: path subscriber on error:::result->completeExceptionally->Utils->close
+ResponseSubscribers.PathSubscriber#onComplete()::: path subscriber on complete:::Utils->close->result->complete
+ResponseSubscribers.PathSubscriber#getBody()::: path subscriber get body:::return
+ResponseSubscribers.ByteArraySubscriber#onSubscribe(Flow.Subscription)::: byte array subscriber on subscribe:::if->subscription->cancel->return->subscription->request
+ResponseSubscribers.ByteArraySubscriber#onNext(List)::: byte array subscriber on next:::received->addAll
+ResponseSubscribers.ByteArraySubscriber#onError(Throwable)::: byte array subscriber on error:::received->clear->result->completeExceptionally
+ResponseSubscribers.ByteArraySubscriber#join(List)::: byte array subscriber join:::size->Utils->remaining->res->new->byteArr->from->foreach->l->b->remaining->b->get->return
+ResponseSubscribers.ByteArraySubscriber#onComplete()::: byte array subscriber on complete:::try->result->finisher->join->apply->complete->received->clear->catch->result->completeExceptionally->finally
+ResponseSubscribers.ByteArraySubscriber#getBody()::: byte array subscriber get body:::return
+ResponseSubscribers.HttpResponseInputStream#getBody()::: http response input stream get body:::return->CompletableFuture->completedStage
+ResponseSubscribers.HttpResponseInputStream#current()::: http response input stream current:::while->currentBuffer->hasRemaining->if->throw->new->IOException->if->break->try->if->currentListItr->hasNext->if->debug->on->debug->log->lb->buffers->take->lb->iterator->if->debug->on->debug->log->if->throw->new->IOException->if->break->s->if->if->debug->on->debug->log->s->request->if->lb->isEmpty->continue->if->debug->on->debug->log->currentListItr->next->catch->finally->return
+ResponseSubscribers.HttpResponseInputStream#read(byte[], int, int)::: http response input stream read:::buffer->if->current->return->read->Math->buffer->remaining->min->buffer->get->return
+ResponseSubscribers.HttpResponseInputStream#read()::: http response input stream read:::buffer->if->current->return->return->buffer->get
+ResponseSubscribers.HttpResponseInputStream#onSubscribe(Flow.Subscription)::: http response input stream on subscribe:::try->if->subscribed->compareAndSet->s->cancel->else->closed->synchronized->if->if->s->cancel->return->if->debug->on->debug->Math->buffers->remainingCapacity->max->log->s->Math->buffers->remainingCapacity->max->request->catch->try->close->catch->finally->onError->finally
+ResponseSubscribers.HttpResponseInputStream#onNext(List)::: http response input stream on next:::Objects->requireNonNull->try->if->debug->on->debug->log->if->buffers->offer->throw->new->IllegalStateException->if->debug->on->debug->log->catch->try->close->catch->finally->onError->finally
+ResponseSubscribers.HttpResponseInputStream#onError(Throwable)::: http response input stream on error:::Objects->requireNonNull->buffers->offer
+ResponseSubscribers.HttpResponseInputStream#onComplete()::: http response input stream on complete:::onNext
+ResponseSubscribers.HttpResponseInputStream#close()::: http response input stream close:::s->synchronized->if->return->try->if->s->cancel->catch->finally->buffers->offer->super->close
+ResponseSubscribers#createLineStream()::: response subscribers create line stream:::return->createLineStream
+ResponseSubscribers#createLineStream(Charset)::: response subscribers create line stream:::Objects->requireNonNull->s->new->HttpResponseInputStream->return->return->new->InputStreamReader->new->BufferedReader->lines->Utils->close->onClose->new->MappingSubscriber<InputStream,Stream<String>>
+ResponseSubscribers.NullSubscriber#onSubscribe(Flow.Subscription)::: null subscriber on subscribe:::if->subscribed->compareAndSet->subscription->cancel->else->subscription->request
+ResponseSubscribers.NullSubscriber#onNext(List)::: null subscriber on next:::Objects->requireNonNull
+ResponseSubscribers.NullSubscriber#onError(Throwable)::: null subscriber on error:::cf->completeExceptionally
+ResponseSubscribers.NullSubscriber#onComplete()::: null subscriber on complete:::if->result->isPresent->cf->result->get->complete->else->cf->complete
+ResponseSubscribers.NullSubscriber#getBody()::: null subscriber get body:::return
+ResponseSubscribers.SubscriberAdapter#onSubscribe(Subscription)::: subscriber adapter on subscribe:::Objects->requireNonNull->if->subscription->cancel->else->subscriber->onSubscribe
+ResponseSubscribers.SubscriberAdapter#onNext(List)::: subscriber adapter on next:::Objects->requireNonNull->try->subscriber->onNext->catch->subscription->cancel->onError->finally
+ResponseSubscribers.SubscriberAdapter#onError(Throwable)::: subscriber adapter on error:::Objects->requireNonNull->try->subscriber->onError->catch->finally->cf->completeExceptionally
+ResponseSubscribers.SubscriberAdapter#onComplete()::: subscriber adapter on complete:::try->subscriber->onComplete->catch->finally->try->cf->finisher->apply->complete->catch->cf->completeExceptionally->finally
+ResponseSubscribers.SubscriberAdapter#getBody()::: subscriber adapter get body:::return
+ResponseSubscribers.MappingSubscriber#getBody()::: mapping subscriber get body:::return->upstream->getBody->thenApply
+ResponseSubscribers.MappingSubscriber#onSubscribe(Flow.Subscription)::: mapping subscriber on subscribe:::upstream->onSubscribe
+ResponseSubscribers.MappingSubscriber#onNext(List)::: mapping subscriber on next:::upstream->onNext
+ResponseSubscribers.MappingSubscriber#onError(Throwable)::: mapping subscriber on error:::upstream->onError
+ResponseSubscribers.MappingSubscriber#onComplete()::: mapping subscriber on complete:::upstream->onComplete
+ResponseSubscribers.PublishingBodySubscriber.SubscriberRef#get()::: subscriber ref get:::return
+ResponseSubscribers.PublishingBodySubscriber.SubscriberRef#clear()::: subscriber ref clear:::res->return
+ResponseSubscribers.PublishingBodySubscriber.SubscriptionRef#request(long)::: subscription ref request:::if->subscriberRef->get->subscription->request
+ResponseSubscribers.PublishingBodySubscriber.SubscriptionRef#cancel()::: subscription ref cancel:::subscription->cancel->subscriberRef->clear
+ResponseSubscribers.PublishingBodySubscriber.SubscriptionRef#subscribe()::: subscription ref subscribe:::subscriber->subscriberRef->get->if->subscriber->onSubscribe
+ResponseSubscribers.PublishingBodySubscriber.SubscriptionRef#toString()::: subscription ref to string:::return->subscription->getClass->getName->System->identityHashCode
+ResponseSubscribers.PublishingBodySubscriber#complete(SubscriberRef, Throwable)::: publishing body subscriber complete:::s->ref->clear->if->return->if->try->s->onComplete->catch->s->onError->finally->else->s->onError
+ResponseSubscribers.PublishingBodySubscriber#signalError(Throwable)::: publishing body subscriber signal error:::if->new->NullPointerException->completionCF->completeExceptionally
+ResponseSubscribers.PublishingBodySubscriber#signalComplete()::: publishing body subscriber signal complete:::completionCF->complete
+ResponseSubscribers.PublishingBodySubscriber#subscribe(Flow.Subscriber>)::: publishing body subscriber subscribe:::Objects->requireNonNull->ref->new->SubscriberRef->if->subscriberRef->compareAndSet->subscriptionCF->subscription->new->SubscriptionRef->try->subscription->subscribe->subscribedCF->complete->catch->if->Log->errors->Log->logError->Log->logError->subscription->cancel->finally->thenAccept->else->subscriber->new->Flow.Subscription->onSubscribe->subscriber->new->IllegalStateException->onError
+ResponseSubscribers.PublishingBodySubscriber#onSubscribe(Flow.Subscription)::: publishing body subscriber on subscribe:::subscriptionCF->complete
+ResponseSubscribers.PublishingBodySubscriber#onNext(List)::: publishing body subscriber on next:::try->ref->subscriberRef->get->subscriber->ref->get->if->subscriber->onNext->catch->signalError->subscriptionCF->s->cancel->thenAccept->finally
+ResponseSubscribers.PublishingBodySubscriber#onError(Throwable)::: publishing body subscriber on error:::signalError
+ResponseSubscribers.PublishingBodySubscriber#onComplete()::: publishing body subscriber on complete:::if->subscriptionCF->isDone->new->InternalError->signalError->else->signalComplete
+ResponseSubscribers.PublishingBodySubscriber#getBody()::: publishing body subscriber get body:::return
+ResponseSubscribers.PublishingBodySubscriber#suppress(boolean, String, Throwable)::: publishing body subscriber suppress:::if->if->carrier->new->AssertionError->addSuppressed->else->if->Log->errors->Log->new->AssertionError->logError->return
+ResponseSubscribers#createPublisher()::: response subscribers create publisher:::return->new->PublishingBodySubscriber
+ResponseTimerEvent#of(MultiExchange)::: response timer event of:::return->new->ResponseTimerEvent
+ResponseTimerEvent#handle()::: response timer event handle:::if->debug->on->debug->log->t->exchange->multiExchange->getExchange->if->exchangeImpl->if->if->exchangeImpl->connection->connected->new->HttpTimeoutException->if->new->HttpConnectTimeoutException->t->new->ConnectException->initCause->multiExchange->cancel
+ResponseTimerEvent#toString()::: response timer event to string:::return->super->toString
 SocketTube#isFinished():::Returns true if this flow is finished:::subscription->return->errorRef->get
+SocketTube#subscribe(Flow.Subscriber>)::: socket tube subscribe:::Objects->requireNonNull->readPublisher->subscribe
+SocketTube#onSubscribe(Flow.Subscription)::: socket tube on subscribe:::writeSubscriber->onSubscribe
+SocketTube#onNext(List)::: socket tube on next:::writeSubscriber->onNext
+SocketTube#onError(Throwable)::: socket tube on error:::writeSubscriber->onError
+SocketTube#onComplete()::: socket tube on complete:::writeSubscriber->onComplete
+SocketTube#signalClosed()::: socket tube signal closed:::if->Log->channel->Log->channelDescr->logChannel->new->IOException->signalError
+SocketTube.SocketFlowTask#run(DeferredCompleter)::: socket flow task run:::try->synchronized->task->run->catch->finally->taskCompleter->complete
+SocketTube#debugState(String)::: socket tube debug state:::if->debug->on->state->new->StringBuilder->sub->readEvent->rdemand->writeEvent->wdemand->rops->readEvent->interestOps->rd->rdemand->get->wops->writeEvent->interestOps->wd->wdemand->get->state->append->append->append->append->append->append->isStopped->append->append->append->append->append->append->debug->state->toString->log
+SocketTube.SocketFlowEvent#registered()::: socket flow event registered:::return
+SocketTube.SocketFlowEvent#resume()::: socket flow event resume:::
+SocketTube.SocketFlowEvent#pause()::: socket flow event pause:::
+SocketTube.SocketFlowEvent#channel()::: socket flow event channel:::return
+SocketTube.SocketFlowEvent#interestOps()::: socket flow event interest ops:::return
+SocketTube.SocketFlowEvent#handle()::: socket flow event handle:::pause->signalEvent
+SocketTube.SocketFlowEvent#abort(IOException)::: socket flow event abort:::debug->log->pause->signalError
+SocketTube.SocketFlowEvent#signalEvent()::: socket flow event signal event:::
+SocketTube.SocketFlowEvent#signalError(Throwable)::: socket flow event signal error:::
+SocketTube.SocketFlowEvent#debug()::: socket flow event debug:::
+SocketTube.InternalWriteSubscriber#onSubscribe(Flow.Subscription)::: internal write subscriber on subscribe:::previous->if->debug->on->debug->log->try->needEvent->if->if->previous->dropSubscription->new->WriteSubscription->if->if->debug->on->debug->log->client->registerEvent->catch->signalError->finally
+SocketTube.InternalWriteSubscriber#onNext(List)::: internal write subscriber on next:::client->isSelectorThread->tryFlushCurrent->debugState
+SocketTube.InternalWriteSubscriber#tryFlushCurrent(boolean)::: internal write subscriber try flush current:::bufs->if->return->try->remaining->Utils->remaining->if->debug->on->debug->log->written->writeAvailable->if->debug->on->debug->log->if->if->writeDemand->tryDecrement->requestMore->this->requestMore->if->client->theExecutor->execute->else->requestMore->run->else->resumeWriteEvent->catch->signalError->finally
+SocketTube.InternalWriteSubscriber#startSubscription()::: internal write subscriber start subscription:::try->if->debug->on->debug->log->if->Log->channel->Log->channelDescr->logChannel->handlePending->if->debug->on->debug->log->client->theExecutor->this->requestMore->execute->catch->signalError->finally
+SocketTube.InternalWriteSubscriber#requestMore()::: internal write subscriber request more:::subscription->subscription->requestMore
+SocketTube.InternalWriteSubscriber#onError(Throwable)::: internal write subscriber on error:::signalError
+SocketTube.InternalWriteSubscriber#onComplete()::: internal write subscriber on complete:::bufs->remaining->Utils->remaining->if->debug->on->debug->log->debugState
+SocketTube.InternalWriteSubscriber#resumeWriteEvent(boolean)::: internal write subscriber resume write event:::if->debug->on->debug->log->this->signalError->resumeEvent
+SocketTube.InternalWriteSubscriber#signalWritable()::: internal write subscriber signal writable:::if->debug->on->debug->log->tryFlushCurrent
+SocketTube.InternalWriteSubscriber#signalError(Throwable)::: internal write subscriber signal error:::debug->log->if->Log->channel->Log->channelDescr->logChannel->readPublisher->signalError->subscription->if->subscription->cancel
+SocketTube.InternalWriteSubscriber.WriteEvent#signalEvent()::: write event signal event:::try->client->eventUpdated->sub->signalWritable->catch->sub->signalError->finally
+SocketTube.InternalWriteSubscriber.WriteEvent#signalError(Throwable)::: write event signal error:::sub->signalError
+SocketTube.InternalWriteSubscriber.WriteEvent#debug()::: write event debug:::return
+SocketTube.InternalWriteSubscriber.WriteSubscription#request(long)::: write subscription request:::if->return->upstreamSubscription->request
+SocketTube.InternalWriteSubscriber.WriteSubscription#cancel()::: write subscription cancel:::if->return->if->debug->on->debug->log->if->Log->channel->Log->logChannel->dropSubscription->upstreamSubscription->cancel
+SocketTube.InternalWriteSubscriber.WriteSubscription#dropSubscription()::: write subscription drop subscription:::synchronized->if->debug->on->debug->log->writeDemand->reset
+SocketTube.InternalWriteSubscriber.WriteSubscription#requestMore()::: write subscription request more:::try->if->return->requestMore->d->synchronized->if->return->writeDemand->get->writeDemand->increaseIfFulfilled->if->if->debug->on->debug->log->upstreamSubscription->request->else->if->debug->on->debug->log->catch->if->debug->on->debug->log->signalError->finally->debugState
+SocketTube.InternalReadPublisher#subscribe(Flow.Subscriber>)::: internal read publisher subscribe:::Objects->requireNonNull->sub->FlowTube->asTubeSubscriber->target->new->ReadSubscription->previous->pendingSubscription->getAndSet->if->if->debug->on->debug->log->errorRef->get->compareAndSet->previous->signalOnSubscribe->if->previous->signalCompletion->else->dropSubscription->if->debug->on->debug->log->subscriptionImpl->signalSubscribe->debugState
+SocketTube.InternalReadPublisher#signalError(Throwable)::: internal read publisher signal error:::if->debug->on->debug->log->if->errorRef->compareAndSet->return->if->Log->channel->Log->channelDescr->logChannel->subscriptionImpl->handleError
+SocketTube.InternalReadPublisher.ReadSubscription#cancel()::: read subscription cancel:::
+SocketTube.InternalReadPublisher.ReadSubscription#request(long)::: read subscription request:::if->impl->request->else->if->debug->on->debug->log
+SocketTube.InternalReadPublisher.ReadSubscription#signalCompletion()::: read subscription signal completion:::if->return->synchronized->if->return->error->errorRef->get->if->if->debug->on->debug->log->subscriber->onError->else->if->debug->on->debug->log->subscriber->onComplete
+SocketTube.InternalReadPublisher.ReadSubscription#signalOnSubscribe()::: read subscription signal on subscribe:::if->return->synchronized->if->return->subscriber->onSubscribe->if->debug->on->debug->log->if->errorRef->get->signalCompletion
+SocketTube.InternalReadPublisher.InternalReadSubscription#signalSubscribe()::: internal read subscription signal subscribe:::if->readScheduler->isStopped->if->debug->on->debug->log->handlePending->else->try->if->debug->on->debug->log->client->registerEvent->catch->signalError->handlePending->finally
+SocketTube.InternalReadPublisher.InternalReadSubscription#handleSubscribeEvent()::: internal read subscription handle subscribe event:::debug->log->if->Log->channel->Log->channelDescr->logChannel->readScheduler->runOrSchedule->if->readScheduler->isStopped->if->debug->on->debug->log->handlePending
+SocketTube.InternalReadPublisher.InternalReadSubscription#request(long)::: internal read subscription request:::if->wasFulfilled->demand->increase->if->if->debug->on->debug->log->resumeReadEvent->else->new->IllegalArgumentException->signalError->debugState
+SocketTube.InternalReadPublisher.InternalReadSubscription#cancel()::: internal read subscription cancel:::pauseReadEvent->if->Log->channel->Log->channelDescr->logChannel->readScheduler->stop
+SocketTube.InternalReadPublisher.InternalReadSubscription#resumeReadEvent()::: internal read subscription resume read event:::if->debug->on->debug->log->this->signalError->resumeEvent
+SocketTube.InternalReadPublisher.InternalReadSubscription#pauseReadEvent()::: internal read subscription pause read event:::if->debug->on->debug->log->this->signalError->pauseEvent
+SocketTube.InternalReadPublisher.InternalReadSubscription#handleError()::: internal read subscription handle error:::readScheduler->runOrSchedule
+SocketTube.InternalReadPublisher.InternalReadSubscription#signalError(Throwable)::: internal read subscription signal error:::if->errorRef->compareAndSet->return->if->debug->on->debug->log->if->Log->channel->Log->channelDescr->logChannel->readScheduler->runOrSchedule
+SocketTube.InternalReadPublisher.InternalReadSubscription#signalReadable()::: internal read subscription signal readable:::readScheduler->runOrSchedule
+SocketTube.InternalReadPublisher.InternalReadSubscription#read():::The body of the task that runs in SequentialScheduler.:::try->while->readScheduler->isStopped->if->return->if->handlePending->if->debug->on->debug->log->return->current->error->errorRef->get->if->if->debug->on->debug->log->return->subscriber->if->pauseReadEvent->if->debug->on->debug->log->if->Log->channel->Log->channelDescr->logChannel->compareAndSet->current->signalCompletion->readScheduler->stop->debugState->return->if->demand->tryDecrement->try->bytes->readAvailable->if->if->if->debug->on->debug->log->if->Log->channel->Log->channelDescr->logChannel->pauseReadEvent->current->signalCompletion->readScheduler->stop->debugState->return->else->if->Utils->remaining->if->debug->on->debug->Utils->remaining->log->subscriber->onNext->resumeReadEvent->debugState->return->else->if->debug->on->debug->log->demand->increase->resumeReadEvent->debugState->return->catch->signalError->continue->finally->else->if->debug->on->debug->log->debugState->break->catch->if->debug->on->debug->log->signalError->finally->if->readScheduler->isStopped->if->debug->on->debug->log->if->Log->channel->Log->channelDescr->logChannel->handlePending
+SocketTube.InternalReadPublisher.InternalReadSubscription#handlePending()::: internal read subscription handle pending:::pending->pendingSubscription->getAndSet->if->return->if->debug->on->debug->log->current->if->dropSubscription->if->debug->on->debug->log->reset->errorRef->get->compareAndSet->if->readScheduler->isStopped->else->if->debug->on->debug->log->if->debug->on->debug->log->pending->signalOnSubscribe->if->errorRef->get->compareAndSet->pending->signalCompletion->return
+SocketTube.InternalReadPublisher.ReadEvent#signalEvent()::: read event signal event:::try->client->eventUpdated->sub->signalReadable->catch->sub->signalError->finally
+SocketTube.InternalReadPublisher.ReadEvent#signalError(Throwable)::: read event signal error:::sub->signalError
+SocketTube.InternalReadPublisher.ReadEvent#debug()::: read event debug:::return
 SocketTube.BufferSource#getBuffer():::Returns a buffer to read data from the socket.:::
 SocketTube.BufferSource#append(List, ByteBuffer, int):::Appends the read-data in buffer to the list of buffer to be sent downstream to the subscriber:::
 SocketTube.BufferSource#returnUnused(ByteBuffer):::Returns the given unused buffer, previously obtained from getBuffer.:::
+SocketTube.SliceBufferSource#getBuffer()::: slice buffer source get buffer:::buf->buf->hasRemaining->factory->get->return
+SocketTube.SliceBufferSource#append(List, ByteBuffer, int)::: slice buffer source append:::limit->buf->limit->buf->buf->position->limit->buf->position->slice->buf->slice->buf->buf->limit->position->buf->limit->return->SocketTube->slice->asReadOnlyBuffer->listOf
+SocketTube.SSLDirectBufferSource#getBuffer()::: direct buffer source get buffer:::buf->if->factory->get->return
+SocketTube.SSLDirectBufferSource#append(List, ByteBuffer, int)::: direct buffer source append:::buf->buf->position->limit->buf->position->return->SocketTube->listOf
+SocketTube.SSLDirectBufferSource#returnUnused(ByteBuffer)::: direct buffer source return unused:::buf->if->buf->buf->position->limit->factory->recycle
+SocketTube#readAvailable(BufferSource)::: socket tube read available:::buf->buffersSource->getBuffer->read->pos->buf->position->list->while->buf->hasRemaining->try->while->channel->read->if->buf->hasRemaining->break->catch->if->buf->position->buffersSource->returnUnused->throw->else->errorRef->compareAndSet->finally->if->buf->position->buffersSource->returnUnused->if->break->buffersSource->append->if->list->size->break->buffersSource->getBuffer->buf->position->return
+SocketTube#listOf(List, T)::: socket tube list of:::size->list->size->switch->return->List->of->return->List->list->get->of->return->List->list->get->list->get->of->res->new->ArrayList<>->res->add->return
+SocketTube#writeAvailable(List)::: socket tube write available:::srcs->bytes->toArray->remaining->Utils->remaining->written->while->try->w->channel->write->if->break->catch->if->throw->else->break->finally->return
+SocketTube#resumeEvent(SocketFlowEvent, Consumer)::: socket tube resume event:::registrationRequired->synchronized->event->registered->event->resume->try->if->client->registerEvent->else->client->eventUpdated->catch->errorSignaler->accept->finally
+SocketTube#pauseEvent(SocketFlowEvent, Consumer)::: socket tube pause event:::synchronized->event->pause->try->client->eventUpdated->catch->errorSignaler->accept->finally
+SocketTube#connectFlows(TubePublisher, TubeSubscriber)::: socket tube connect flows:::if->debug->on->debug->log->this->subscribe->writePublisher->subscribe
+SocketTube#toString()::: socket tube to string:::return->dbgString
+SocketTube#dbgString()::: socket tube dbg string:::return
+SocketTube#channelDescr()::: socket tube channel descr:::return->String->valueOf
+Stream#connection()::: stream connection:::return
+Stream#schedule():::Invoked either from incoming() -> {receiveDataFrame() or receiveResetFrame() } of after user subscription window has re-opened, from SubscriptionBase.request():::onCompleteCalled->subscriber->try->if->if->return->else->if->debug->on->debug->log->subscriber->onSubscribe->while->inputQ->isEmpty->frame->inputQ->peek->if->inputQ->remove->handleReset->return->df->finished->df->getFlag->buffers->df->getData->dsts->Collections->unmodifiableList->size->Utils->remaining->if->inputQ->remove->connection->ensureWindowUpdated->Log->logTrace->if->debug->on->debug->log->sched->stop->connection->decrementStreamsCount->subscriber->onComplete->setEndStreamReceived->return->else->if->userSubscription->tryDecrement->inputQ->remove->Log->logTrace->if->debug->on->debug->log->try->subscriber->onNext->catch->connection->dropDataFrame->throw->finally->if->consumed->Log->logTrace->if->debug->on->debug->log->sched->stop->connection->decrementStreamsCount->subscriber->onComplete->setEndStreamReceived->return->else->if->break->return->catch->errorRef->compareAndSet->finally->if->sched->isStopped->drainInputQueue->t->errorRef->get->if->sched->stop->try->if->if->debug->on->debug->log->subscriber->onError->else->if->debug->on->debug->log->catch->Log->logError->finally->cancelImpl->drainInputQueue
+Stream#drainInputQueue()::: stream drain input queue:::frame->while->inputQ->poll->if->connection->dropDataFrame
+Stream#consumed(DataFrame)::: stream consumed:::len->df->payloadLength->endStream->df->getFlag->if->return->update->if->windowUpdater->update->return
+Stream#deRegister()::: stream de register:::return->deRegistered->compareAndSet
+Stream#readBodyAsync(HttpResponse.BodyHandler, boolean, Executor)::: stream read body async:::try->Log->logTrace->debug->log->bodySubscriber->handler->new->ResponseInfoImpl->apply->cf->receiveData->pg->exchange->getPushGroup->if->cf->pg->pushError->whenComplete->return->catch->cancelImpl->return->MinimalFuture->failedFuture->finally
+Stream#toString()::: stream to string:::sb->new->StringBuilder->sb->append->append->return->sb->toString
+Stream#receiveDataFrame(DataFrame)::: stream receive data frame:::inputQ->add->sched->runOrSchedule
+Stream#receiveResetFrame(ResetFrame):::Handles a RESET frame:::inputQ->add->sched->runOrSchedule
+Stream#receiveData(BodySubscriber, Executor)::: stream receive data:::new->MinimalFuture<>->executor->try->bodySubscriber->getBody->if->responseBodyCF->complete->else->responseBodyCF->completeExceptionally->whenComplete->catch->cancelImpl->finally->execute->if->isCanceled->t->getCancelCause->responseBodyCF->completeExceptionally->else->sched->runOrSchedule->return
+Stream#sendBodyAsync()::: stream send body async:::return->sendBodyImpl->thenApply
 Stream#incoming(Http2Frame):::Entry point from Http2Connection reader thread:::if->debug->on->debug->log->if->hframe->if->hframe->endHeaders->Log->logTrace->handleResponse->if->hframe->getFlag->List->of->new->DataFrame->receiveDataFrame->else->if->receiveDataFrame->else->otherFrame
+Stream#otherFrame(Http2Frame)::: stream other frame:::switch->frame->type->incoming_windowUpdate->break->incoming_reset->break->incoming_priority->break->msg->frame->toString->throw->new->IOException
+Stream#rspHeadersConsumer()::: stream rsp headers consumer:::return
+Stream#handleResponse()::: stream handle response:::responseHeaders->responseHeadersBuilder->build->responseHeaders->firstValueAsLong->new->IOException->orElseThrow->connection->new->Response->responseHeaders->firstValueAsLong->if->Log->headers->sb->new->StringBuilder->Log->dumpHeaders->Log->sb->toString->logHeaders->rspHeadersConsumer->reset->completeResponse
+Stream#incoming_reset(ResetFrame)::: stream incoming_reset:::Log->logTrace->if->endStreamReceived->Log->logTrace->else->if->Log->logTrace->else->subscriber->if->handleReset->else->receiveResetFrame->Log->logTrace
+Stream#handleReset(ResetFrame, Flow.Subscriber)::: stream handle reset:::Log->logTrace->if->synchronized->if->if->debug->on->debug->log->return->try->error->frame->getErrorCode->e->ErrorFrame->stringForCode->new->IOException->if->errorRef->compareAndSet->if->subscriber->onError->completeResponseExceptionally->if->requestBodyCF->isDone->requestBodyCF->errorRef->get->completeExceptionally->if->responseBodyCF->errorRef->get->completeExceptionally->catch->finally->connection->decrementStreamsCount->connection->closeStream->else->Log->logTrace
+Stream#incoming_priority(PriorityFrame)::: stream incoming_priority:::throw->new->UnsupportedOperationException
+Stream#incoming_windowUpdate(WindowUpdateFrame)::: stream incoming_window update:::amount->frame->getUpdate->if->Log->logTrace->connection->resetStream->else->success->windowController->increaseStreamWindow->if->connection->resetStream
+Stream#incoming_pushPromise(HttpRequestImpl, PushedStream)::: stream incoming_push promise:::if->Log->requests->Log->pushRequest->toString->logRequest->pushGroup->exchange->getPushGroup->if->Log->logTrace->connection->resetStream->pushStream->close->return->acceptor->accepted->try->pushGroup->acceptPushRequest->acceptor->accepted->catch->if->debug->on->debug->log->finally->if->ex->new->IOException->if->Log->trace->Log->ex->getMessage->logTrace->pushStream->cancelImpl->return->pushResponseCF->acceptor->cf->pushHandler->acceptor->bodyHandler->pushStream->requestSent->pushStream->setPushHandler->cf->pushStream->responseCF->cf->Utils->getCompletionCause->if->Log->trace->Log->logTrace->if->pushGroup->pushError->pushResponseCF->completeExceptionally->else->pushResponseCF->complete->pushGroup->pushCompleted->whenComplete
+Stream#headerFrame(long)::: stream header frame:::h->request->getSystemHeadersBuilder->if->h->Long->toString->setHeader->sysh->h->build->filterHeaders->userh->request->getUserHeaders->filterHeaders->f->new->OutgoingHeaders<>->if->f->setFlag->return
+Stream#hasProxyAuthorization(HttpHeaders)::: stream has proxy authorization:::return->headers->firstValue->isPresent
+Stream#needsFiltering(HttpHeaders, BiPredicate)::: stream needs filtering:::if->return->Utils->proxyHasDisabledSchemes->hasProxyAuthorization->else->return->hasProxyAuthorization
+Stream#filterHeaders(HttpHeaders)::: stream filter headers:::conn->connection->filter->conn->headerFilter->if->needsFiltering->return->HttpHeaders->headers->map->of->return
+Stream#createPseudoHeaders(HttpRequest)::: stream create pseudo headers:::hdrs->new->HttpHeadersBuilder->method->request->method->hdrs->setHeader->uri->request->uri->hdrs->uri->getScheme->setHeader->hdrs->uri->getAuthority->setHeader->query->uri->getRawQuery->path->uri->getRawPath->if->path->isEmpty->if->method->equalsIgnoreCase->else->if->hdrs->Utils->encode->setHeader->return->hdrs->build
+Stream#getRequestPseudoHeaders()::: stream get request pseudo headers:::return
 Stream#setEndStreamReceived():::Sets endStreamReceived:::responseReceived
+Stream#endStreamReceived():::Tells whether, or not, the END_STREAM Flag has been seen in any frame  received on this stream.:::return
+Stream#sendHeadersAsync()::: stream send headers async:::if->debug->on->debug->log->if->Log->requests->Log->request->toString->logRequest->if->requestPublisher->contentLength->else->f->headerFrame->connection->sendFrame->cf->new->MinimalFuture<>->cf->complete->return
+Stream#released()::: stream released:::if->if->debug->on->debug->log->connection->decrementStreamsCount->connection->closeStream->else->if->debug->on->debug->log
+Stream#completed()::: stream completed:::
+Stream#registerStream(int)::: stream register stream:::connection->putStream->if->debug->on->debug->log
+Stream#signalWindowUpdate()::: stream signal window update:::subscriber->if->debug->on->debug->log->runOrSchedule
+Stream.RequestSubscriber#onSubscribe(Flow.Subscription)::: request subscriber on subscribe:::if->throw->new->IllegalStateException->if->debug->on->debug->log->subscription->request
+Stream.RequestSubscriber#onNext(ByteBuffer)::: request subscriber on next:::if->debug->on->debug->item->remaining->log->size->outgoing->size->onNextImpl
+Stream.RequestSubscriber#onNextImpl(ByteBuffer)::: request subscriber on next impl:::if->requestBodyCF->isDone->sendScheduler->stop->subscription->cancel->return->outgoing->add->sendScheduler->runOrSchedule
+Stream.RequestSubscriber#onError(Throwable)::: request subscriber on error:::if->debug->on->debug->log->if->errorRef->compareAndSet->sendScheduler->runOrSchedule
+Stream.RequestSubscriber#onComplete()::: request subscriber on complete:::if->debug->on->debug->log->size->outgoing->size->onNextImpl
+Stream.RequestSubscriber#trySend()::: request subscriber try send:::try->t->errorRef->get->if->sendScheduler->stop->if->requestBodyCF->isDone->return->subscription->cancel->requestBodyCF->completeExceptionally->cancelImpl->return->do->item->outgoing->peekFirst->if->return->else->if->sendScheduler->stop->complete->return->while->item->hasRemaining->if->debug->on->debug->item->remaining->log->df->getDataFrame->if->if->debug->on->debug->item->remaining->log->return->if->df->getDataLength->if->msg->connection->getConnectionFlow->Thread->currentThread->getName->connection->resetStream->throw->new->IOException->else->if->df->setFlag->if->debug->on->debug->df->getDataLength->log->connection->sendDataFrame->b->outgoing->removeFirst->while->outgoing->peekFirst->if->debug->on->debug->log->subscription->request->catch->if->debug->on->debug->log->sendScheduler->stop->subscription->cancel->requestBodyCF->completeExceptionally->cancelImpl->finally
+Stream.RequestSubscriber#complete()::: request subscriber complete:::remaining->written->if->connection->resetStream->throw->connection->getConnectionFlow->Thread->currentThread->getName->new->IOException->if->connection->getEmptyEndStreamDataFrame->sendDataFrame->requestBodyCF->complete
 Stream#ignoreBody():::Send a RESET frame to tell server to stop sending data on this stream:::try->connection->resetStream->return->MinimalFuture->completedFuture->catch->Log->e->toString->logTrace->return->MinimalFuture->failedFuture->finally
+Stream#getDataFrame(ByteBuffer)::: stream get data frame:::requestAmount->Math->connection->getMaxSendFrameSize->buffer->remaining->min->actualAmount->windowController->tryAcquire->if->return->outBuf->Utils->sliceWithLimitedCapacity->df->new->DataFrame->return
+Stream#getEmptyEndStreamDataFrame()::: stream get empty end stream data frame:::return->List->of->new->DataFrame
+Stream#getResponseAsync(Executor)::: stream get response async:::cf->synchronized->if->response_cfs->isEmpty->response_cfs->remove->else->new->MinimalFuture<>->response_cfs->add->if->cf->isDone->cf->thenApplyAsync->Log->logTrace->pg->exchange->getPushGroup->if->cf->pg->Utils->getCompletionCause->pushError->whenComplete->return
 Stream#completeResponse(Response):::Completes the first uncompleted CF on list, and removes it:::synchronized->cf->cfs_len->response_cfs->size->for->i->MinimalFuture->completedFuture->Log->logTrace->if->debug->on->debug->log->response_cfs->add
+Stream#requestSent()::: stream request sent:::if->close
+Stream#responseReceived()::: stream response received:::if->close
 Stream#completeResponseExceptionally(Throwable):::same as above but for errors:::synchronized->for->i->response_cfs->size->response_cfs->MinimalFuture->failedFuture->add
+Stream#sendBodyImpl()::: stream send body impl:::requestBodyCF->requestSent->whenComplete->try->if->subscriber->new->RequestSubscriber->requestPublisher->subscribe->else->requestBodyCF->complete->catch->cancelImpl->requestBodyCF->completeExceptionally->finally->return
+Stream#cancel()::: stream cancel:::new->IOException->cancel
+Stream#onSubscriptionError(Throwable)::: stream on subscription error:::errorRef->compareAndSet->if->debug->on->debug->log->sched->runOrSchedule
+Stream#cancel(IOException)::: stream cancel:::cancelImpl
+Stream#connectionClosing(Throwable)::: stream connection closing:::subscriber->errorRef->compareAndSet->if->sched->isStopped->inputQ->isEmpty->sched->runOrSchedule->else->cancelImpl
+Stream#cancelImpl(Throwable)::: stream cancel impl:::errorRef->compareAndSet->if->debug->on->debug->log->if->Log->trace->Log->logTrace->closing->if->synchronized->if->if->if->sched->runOrSchedule->completeResponseExceptionally->if->requestBodyCF->isDone->requestBodyCF->errorRef->get->completeExceptionally->if->responseBodyCF->errorRef->get->completeExceptionally->try->if->connection->decrementStreamsCount->Utils->getCompletionCause->if->connection->closeStream->else->connection->resetStream->catch->Log->logError->finally
+Stream#close()::: stream close:::if->return->synchronized->if->return->Log->logTrace->connection->closeStream->Log->logTrace
+Stream.PushedStream#responseCF()::: pushed stream response f:::return
+Stream.PushedStream#setPushHandler(HttpResponse.BodyHandler)::: pushed stream set push handler:::
+Stream.PushedStream#getPushHandler()::: pushed stream get push handler:::return
+Stream.PushedStream#sendBodyAsync()::: pushed stream send body async:::return->super->sendBodyAsync->pushGroup->Utils->getCompletionCause->pushError->whenComplete
+Stream.PushedStream#sendHeadersAsync()::: pushed stream send headers async:::return->super->sendHeadersAsync->pushGroup->Utils->getCompletionCause->pushError->whenComplete
+Stream.PushedStream#getResponseAsync(Executor)::: pushed stream get response async:::cf->pushCF->pushGroup->Utils->getCompletionCause->pushError->whenComplete->if->cf->isDone->cf->thenApplyAsync->return
+Stream.PushedStream#readBodyAsync(HttpResponse.BodyHandler, boolean, Executor)::: pushed stream read body async:::return->super->readBodyAsync->pushGroup->pushError->whenComplete
+Stream.PushedStream#completeResponse(Response)::: pushed stream complete response:::Log->r->toString->logResponse->pushCF->complete->start->new->MinimalFuture<>->start->getPushHandler->getExchange->executor->readBodyAsync->thenCompose->if->responseCF->completeExceptionally->else->resp->getExchange->new->HttpResponseImpl<>->responseCF->complete->whenComplete->start->getExchange->executor->completeAsync
+Stream.PushedStream#completeResponseExceptionally(Throwable)::: pushed stream complete response exceptionally:::pushCF->completeExceptionally
+Stream.PushedStream#handleResponse()::: pushed stream handle response:::responseHeaders->responseHeadersBuilder->build->responseHeaders->firstValueAsLong->orElse->if->new->IOException->completeResponseExceptionally->connection->new->Response->responseHeaders->firstValueAsLong->if->Log->headers->sb->new->StringBuilder->sb->append->append->append->Log->dumpHeaders->Log->sb->toString->logHeaders->rspHeadersConsumer->reset->completeResponse
+Stream.StreamWindowUpdateSender#getStreamId()::: stream window update sender get stream id:::return
+Stream.StreamWindowUpdateSender#dbgString()::: stream window update sender dbg string:::dbg->if->return->if->return->connection->dbgString->else->connection->dbgString->return
 Stream#isCanceled():::Returns true if this exchange was canceled.:::return->errorRef->get
 Stream#getCancelCause():::Returns the cause for which this exchange was canceled, if available.:::return->errorRef->get
+Stream#dbgString()::: stream dbg string:::return->connection->dbgString
+Stream.HeadersConsumer#reset()::: headers consumer reset:::super->reset->responseHeadersBuilder->clear->debug->log
+Stream.HeadersConsumer#onDecoded(CharSequence, CharSequence)::: headers consumer on decoded:::n->name->toString->v->value->toString->super->onDecoded->responseHeadersBuilder->addHeader->if->Log->headers->Log->trace->Log->logTrace
+TimeoutEvent#handle()::: timeout event handle:::
+TimeoutEvent#deadline()::: timeout event deadline:::return
+TimeoutEvent#compareTo(TimeoutEvent)::: timeout event compare to:::if->return->compareDeadline->compareTo->if->this->equals->diff->if->return->else->if->return->else->return
+TimeoutEvent#toString()::: timeout event to string:::return
 WindowController#registerStream(int, int):::Registers the given stream with this controller.:::controllerLock->lock->try->old->streams->put->if->throw->new->InternalError->catch->finally->controllerLock->unlock
 WindowController#removeStream(int):::Removes/De-registers the given stream with this controller.:::controllerLock->lock->try->old->streams->remove->isClientStream->if->throw->new->InternalError->else->if->throw->new->InternalError->catch->finally->controllerLock->unlock
 WindowController#tryAcquire(int, int, Stream):::Attempts to acquire the requested amount of Send Window for the given stream:::controllerLock->lock->try->streamSize->streams->get->if->throw->new->InternalError->x->Math->Math->min->min->if->if->debug->on->debug->Math->min->log->pending->Map->entry->put->return->pending->remove->streams->put->if->debug->on->debug->Math->min->log->return->catch->finally->controllerLock->unlock
@@ -100,3 +1018,7 @@ WindowController#increaseStreamWindow(int, int):::Increases the Send Window size
 WindowController#adjustActiveStreams(int):::Adjusts, either increases or decreases, the active streams registered with this controller:::controllerLock->lock->try->foreach->streams->entrySet->streamid->entry->getKey->if->size->entry->getValue->streams->put->if->debug->on->debug->log->catch->finally->controllerLock->unlock
 WindowController#connectionWindowSize():::Returns the Send Window size for the connection.:::controllerLock->lock->try->return->catch->finally->controllerLock->unlock
 WindowController#streamWindowSize(int):::Returns the Send Window size for the given stream.:::controllerLock->lock->try->size->streams->get->if->throw->new->InternalError->return->catch->finally->controllerLock->unlock
+WindowUpdateSender#getStreamId()::: window update sender get stream id:::
+WindowUpdateSender#update(int)::: window update sender update:::rcv->received->addAndGet->if->debug->on->debug->log->if->synchronized->tosend->received->get->if->received->getAndAdd->sendWindowUpdate
+WindowUpdateSender#sendWindowUpdate(int)::: window update sender send window update:::if->debug->on->debug->log->connection->getStreamId->new->WindowUpdateFrame->sendUnorderedFrame
+WindowUpdateSender#dbgString()::: window update sender dbg string:::dbg->if->return->tube->getConnectionFlow->if->return->getStreamId->else->streamId->getStreamId->connection->dbgString->return

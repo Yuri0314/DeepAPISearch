@@ -1,15 +1,29 @@
 AbstractChronology#registerChrono(Chronology):::Register a Chronology by its ID and type for lookup by #of(String):::return->chrono->getId->registerChrono
 AbstractChronology#registerChrono(Chronology, String):::Register a Chronology by ID and type for lookup by #of(String):::prev->CHRONOS_BY_ID->putIfAbsent->if->type->chrono->getCalendarType->if->CHRONOS_BY_TYPE->putIfAbsent->return
+AbstractChronology#initCache():::Initialization of the maps from id and type to Chronology:::if->CHRONOS_BY_ID->get->registerChrono->registerChrono->registerChrono->registerChrono->loader->ServiceLoader->load->foreach->id->chrono->getId->if->id->equals->registerChrono->logger->PlatformLogger->getLogger->logger->warning->registerChrono->return->return
 AbstractChronology#ofLocale(Locale):::Obtains an instance of Chronology from a locale:::Objects->requireNonNull->type->locale->getUnicodeLocaleType->if->equals->equals->return->do->chrono->CHRONOS_BY_TYPE->get->if->return->while->initCache->loader->ServiceLoader->load->foreach->if->type->chrono->getCalendarType->equals->return->throw->new->DateTimeException
 AbstractChronology#of(String):::Obtains an instance of Chronology from a chronology ID or calendar system type:::Objects->requireNonNull->do->chrono->of0->if->return->while->initCache->loader->ServiceLoader->load->foreach->if->id->chrono->getId->equals->id->chrono->getCalendarType->equals->return->throw->new->DateTimeException
+AbstractChronology#of0(String):::Obtains an instance of Chronology from a chronology ID or calendar system type.:::chrono->CHRONOS_BY_ID->get->if->CHRONOS_BY_TYPE->get->return
 AbstractChronology#getAvailableChronologies():::Returns the available chronologies:::initCache->chronos->CHRONOS_BY_ID->values->new->HashSet<>->loader->ServiceLoader->load->foreach->chronos->add->return
 AbstractChronology#resolveDate(Map, ResolverStyle):::Resolves parsed ChronoField values into a date during parsing:::if->fieldValues->containsKey->return->fieldValues->remove->dateEpochDay->resolveProlepticMonth->resolved->resolveYearOfEra->if->return->if->fieldValues->containsKey->if->fieldValues->containsKey->if->fieldValues->containsKey->return->resolveYMD->if->fieldValues->containsKey->if->fieldValues->containsKey->return->resolveYMAA->if->fieldValues->containsKey->return->resolveYMAD->if->fieldValues->containsKey->return->resolveYD->if->fieldValues->containsKey->if->fieldValues->containsKey->return->resolveYAA->if->fieldValues->containsKey->return->resolveYAD->return
+AbstractChronology#resolveProlepticMonth(Map, ResolverStyle)::: abstract chronology resolve proleptic month:::pMonth->fieldValues->remove->if->if->PROLEPTIC_MONTH->checkValidValue->chronoDate->dateNow->with->with->chronoDate->get->addFieldValue->chronoDate->get->addFieldValue
+AbstractChronology#resolveYearOfEra(Map, ResolverStyle)::: abstract chronology resolve year of era:::yoeLong->fieldValues->remove->if->eraLong->fieldValues->remove->yoe->if->range->checkValidIntValue->else->Math->toIntExact->if->eraObj->range->checkValidIntValue->eraOf->prolepticYear->addFieldValue->else->if->fieldValues->containsKey->year->range->fieldValues->get->checkValidIntValue->chronoDate->dateYearDay->chronoDate->getEra->prolepticYear->addFieldValue->else->if->fieldValues->put->else->eras->eras->if->eras->isEmpty->addFieldValue->else->eraObj->eras->eras->size->get->prolepticYear->addFieldValue->else->if->fieldValues->containsKey->range->fieldValues->get->checkValidValue->return
+AbstractChronology#resolveYMD(Map, ResolverStyle)::: abstract chronology resolve d:::y->range->fieldValues->remove->checkValidIntValue->if->months->Math->fieldValues->remove->subtractExact->days->Math->fieldValues->remove->subtractExact->return->date->plus->plus->moy->range->fieldValues->remove->checkValidIntValue->domRange->range->dom->domRange->fieldValues->remove->checkValidIntValue->if->try->return->date->catch->return->date->TemporalAdjusters->lastDayOfMonth->with->finally->return->date
+AbstractChronology#resolveYD(Map, ResolverStyle)::: abstract chronology resolve d:::y->range->fieldValues->remove->checkValidIntValue->if->days->Math->fieldValues->remove->subtractExact->return->dateYearDay->plus->doy->range->fieldValues->remove->checkValidIntValue->return->dateYearDay
+AbstractChronology#resolveYMAA(Map, ResolverStyle)::: abstract chronology resolve a:::y->range->fieldValues->remove->checkValidIntValue->if->months->Math->fieldValues->remove->subtractExact->weeks->Math->fieldValues->remove->subtractExact->days->Math->fieldValues->remove->subtractExact->return->date->plus->plus->plus->moy->range->fieldValues->remove->checkValidIntValue->aw->range->fieldValues->remove->checkValidIntValue->ad->range->fieldValues->remove->checkValidIntValue->date->date->plus->if->date->get->throw->new->DateTimeException->return
+AbstractChronology#resolveYMAD(Map, ResolverStyle)::: abstract chronology resolve d:::y->range->fieldValues->remove->checkValidIntValue->if->months->Math->fieldValues->remove->subtractExact->weeks->Math->fieldValues->remove->subtractExact->dow->Math->fieldValues->remove->subtractExact->return->date->resolveAligned->moy->range->fieldValues->remove->checkValidIntValue->aw->range->fieldValues->remove->checkValidIntValue->dow->range->fieldValues->remove->checkValidIntValue->date->date->plus->DayOfWeek->of->nextOrSame->with->if->date->get->throw->new->DateTimeException->return
+AbstractChronology#resolveYAA(Map, ResolverStyle)::: abstract chronology resolve a:::y->range->fieldValues->remove->checkValidIntValue->if->weeks->Math->fieldValues->remove->subtractExact->days->Math->fieldValues->remove->subtractExact->return->dateYearDay->plus->plus->aw->range->fieldValues->remove->checkValidIntValue->ad->range->fieldValues->remove->checkValidIntValue->date->dateYearDay->plus->if->date->get->throw->new->DateTimeException->return
+AbstractChronology#resolveYAD(Map, ResolverStyle)::: abstract chronology resolve d:::y->range->fieldValues->remove->checkValidIntValue->if->weeks->Math->fieldValues->remove->subtractExact->dow->Math->fieldValues->remove->subtractExact->return->dateYearDay->resolveAligned->aw->range->fieldValues->remove->checkValidIntValue->dow->range->fieldValues->remove->checkValidIntValue->date->dateYearDay->plus->DayOfWeek->of->nextOrSame->with->if->date->get->throw->new->DateTimeException->return
+AbstractChronology#resolveAligned(ChronoLocalDate, long, long, long)::: abstract chronology resolve aligned:::date->base->plus->plus->if->date->plus->else->if->date->Math->subtractExact->plus->return->date->DayOfWeek->of->nextOrSame->with
 AbstractChronology#addFieldValue(Map, ChronoField, long):::Adds a field-value pair to the map, checking for conflicts:::old->fieldValues->get->if->old->longValue->throw->new->DateTimeException->fieldValues->put
 AbstractChronology#compareTo(Chronology):::Compares this chronology to another chronology:::return->getId->other->getId->compareTo
 AbstractChronology#equals(Object):::Checks if this chronology is equal to another chronology:::if->return->if->return->compareTo->return
 AbstractChronology#hashCode():::A hash code for this chronology:::return->getClass->hashCode->getId->hashCode
 AbstractChronology#toString():::Outputs this chronology as a String, using the chronology ID.:::return->getId
 AbstractChronology#writeReplace():::Writes the Chronology using a dedicated serialized form:::return->new->Ser
+AbstractChronology#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+AbstractChronology#writeExternal(DataOutput)::: abstract chronology write external:::out->getId->writeUTF
+AbstractChronology#readExternal(DataInput)::: abstract chronology read external:::id->in->readUTF->return->Chronology->of
 ChronoLocalDate#timeLineOrder():::Gets a comparator that compares ChronoLocalDate in time-line order ignoring the chronology:::return->return->Long->date1->toEpochDay->date2->toEpochDay->compare
 ChronoLocalDate#from(TemporalAccessor):::Obtains an instance of ChronoLocalDate from a temporal object:::if->return->Objects->requireNonNull->chrono->temporal->TemporalQueries->chronology->query->if->throw->temporal->getClass->new->DateTimeException->return->chrono->date
 ChronoLocalDate#getChronology():::Gets the chronology of this date:::
@@ -19,6 +33,12 @@ ChronoLocalDate#lengthOfMonth():::Returns the length of the month represented by
 ChronoLocalDate#lengthOfYear():::Returns the length of the year represented by this date, as defined by the calendar system:::return->isLeapYear
 ChronoLocalDate#isSupported(TemporalField):::Checks if the specified field is supported:::if->return->field->isDateBased->return->field->isSupportedBy
 ChronoLocalDate#isSupported(TemporalUnit):::Checks if the specified unit is supported:::if->return->unit->isDateBased->return->unit->isSupportedBy
+ChronoLocalDate#with(TemporalAdjuster)::: chrono local date with:::return->ChronoLocalDateImpl->getChronology->Temporal.super->with->ensureValid
+ChronoLocalDate#with(TemporalField, long)::: chrono local date with:::if->throw->new->UnsupportedTemporalTypeException->return->ChronoLocalDateImpl->getChronology->field->adjustInto->ensureValid
+ChronoLocalDate#plus(TemporalAmount)::: chrono local date plus:::return->ChronoLocalDateImpl->getChronology->Temporal.super->plus->ensureValid
+ChronoLocalDate#plus(long, TemporalUnit)::: chrono local date plus:::if->throw->new->UnsupportedTemporalTypeException->return->ChronoLocalDateImpl->getChronology->unit->addTo->ensureValid
+ChronoLocalDate#minus(TemporalAmount)::: chrono local date minus:::return->ChronoLocalDateImpl->getChronology->Temporal.super->minus->ensureValid
+ChronoLocalDate#minus(long, TemporalUnit)::: chrono local date minus:::return->ChronoLocalDateImpl->getChronology->Temporal.super->minus->ensureValid
 ChronoLocalDate#query(TemporalQuery):::Queries this date using the specified query:::if->TemporalQueries->zoneId->TemporalQueries->zone->TemporalQueries->offset->return->else->if->TemporalQueries->localTime->return->else->if->TemporalQueries->chronology->return->getChronology->else->if->TemporalQueries->precision->return->return->query->queryFrom
 ChronoLocalDate#adjustInto(Temporal):::Adjusts the specified temporal object to have the same date as this object:::return->temporal->toEpochDay->with
 ChronoLocalDate#until(Temporal, TemporalUnit):::Calculates the amount of time until another date in terms of the specified unit:::
@@ -34,6 +54,12 @@ ChronoLocalDate#equals(Object):::Checks if this date is equal to another date, i
 ChronoLocalDate#hashCode():::A hash code for this date.:::
 ChronoLocalDate#toString():::Outputs this date as a String:::
 ChronoLocalDateImpl#ensureValid(Chronology, Temporal):::Casts the Temporal to ChronoLocalDate ensuring it bas the specified chronology.:::other->if->chrono->other->getChronology->equals->throw->chrono->getId->other->getChronology->getId->new->ClassCastException->return
+ChronoLocalDateImpl#with(TemporalAdjuster)::: chrono local date impl with:::return->ChronoLocalDate.super->with
+ChronoLocalDateImpl#with(TemporalField, long)::: chrono local date impl with:::return->ChronoLocalDate.super->with
+ChronoLocalDateImpl#plus(TemporalAmount)::: chrono local date impl plus:::return->ChronoLocalDate.super->plus
+ChronoLocalDateImpl#plus(long, TemporalUnit)::: chrono local date impl plus:::if->f->switch->return->plusDays->return->Math->multiplyExact->plusDays->return->plusMonths->return->plusYears->return->Math->multiplyExact->plusYears->return->Math->multiplyExact->plusYears->return->Math->multiplyExact->plusYears->return->Math->getLong->addExact->with->throw->new->UnsupportedTemporalTypeException->return->ChronoLocalDate.super->plus
+ChronoLocalDateImpl#minus(TemporalAmount)::: chrono local date impl minus:::return->ChronoLocalDate.super->minus
+ChronoLocalDateImpl#minus(long, TemporalUnit)::: chrono local date impl minus:::return->ChronoLocalDate.super->minus
 ChronoLocalDateImpl#plusYears(long):::Returns a copy of this date with the specified number of years added:::
 ChronoLocalDateImpl#plusMonths(long):::Returns a copy of this date with the specified number of months added:::
 ChronoLocalDateImpl#plusWeeks(long):::Returns a copy of this date with the specified number of weeks added:::return->Math->multiplyExact->plusDays
@@ -42,6 +68,12 @@ ChronoLocalDateImpl#minusYears(long):::Returns a copy of this date with the spec
 ChronoLocalDateImpl#minusMonths(long):::Returns a copy of this date with the specified number of months subtracted:::return->plusMonths->plusMonths->plusMonths
 ChronoLocalDateImpl#minusWeeks(long):::Returns a copy of this date with the specified number of weeks subtracted:::return->plusWeeks->plusWeeks->plusWeeks
 ChronoLocalDateImpl#minusDays(long):::Returns a copy of this date with the specified number of days subtracted:::return->plusDays->plusDays->plusDays
+ChronoLocalDateImpl#until(Temporal, TemporalUnit)::: chrono local date impl until:::Objects->requireNonNull->end->getChronology->date->if->switch->return->daysUntil->return->daysUntil->return->monthsUntil->return->monthsUntil->return->monthsUntil->return->monthsUntil->return->monthsUntil->return->end->getLong->getLong->throw->new->UnsupportedTemporalTypeException->Objects->requireNonNull->return->unit->between
+ChronoLocalDateImpl#daysUntil(ChronoLocalDate)::: chrono local date impl days until:::return->end->toEpochDay->toEpochDay
+ChronoLocalDateImpl#monthsUntil(ChronoLocalDate)::: chrono local date impl months until:::range->getChronology->range->if->range->getMaximum->throw->new->IllegalStateException->packed1->getLong->get->packed2->end->getLong->end->get->return
+ChronoLocalDateImpl#equals(Object)::: chrono local date impl equals:::if->return->if->return->compareTo->return
+ChronoLocalDateImpl#hashCode()::: chrono local date impl hash code:::epDay->toEpochDay->return->getChronology->hashCode
+ChronoLocalDateImpl#toString()::: chrono local date impl to string:::yoe->getLong->moy->getLong->dom->getLong->buf->new->StringBuilder->buf->getChronology->toString->append->append->getEra->append->append->append->append->append->append->append->return->buf->toString
 ChronoLocalDateTime#timeLineOrder():::Gets a comparator that compares ChronoLocalDateTime in time-line order ignoring the chronology:::return->cmp->Long->dateTime1->toLocalDate->toEpochDay->dateTime2->toLocalDate->toEpochDay->compare->if->Long->dateTime1->toLocalTime->toNanoOfDay->dateTime2->toLocalTime->toNanoOfDay->compare->return
 ChronoLocalDateTime#from(TemporalAccessor):::Obtains an instance of ChronoLocalDateTime from a temporal object:::if->return->Objects->requireNonNull->chrono->temporal->TemporalQueries->chronology->query->if->throw->temporal->getClass->new->DateTimeException->return->chrono->localDateTime
 ChronoLocalDateTime#getChronology():::Gets the chronology of this date-time:::return->toLocalDate->getChronology
@@ -49,6 +81,12 @@ ChronoLocalDateTime#toLocalDate():::Gets the local date part of this date-time::
 ChronoLocalDateTime#toLocalTime():::Gets the local time part of this date-time:::
 ChronoLocalDateTime#isSupported(TemporalField):::Checks if the specified field is supported:::
 ChronoLocalDateTime#isSupported(TemporalUnit):::Checks if the specified unit is supported:::if->return->return->unit->isSupportedBy
+ChronoLocalDateTime#with(TemporalAdjuster)::: chrono local date time with:::return->ChronoLocalDateTimeImpl->getChronology->Temporal.super->with->ensureValid
+ChronoLocalDateTime#with(TemporalField, long)::: chrono local date time with:::
+ChronoLocalDateTime#plus(TemporalAmount)::: chrono local date time plus:::return->ChronoLocalDateTimeImpl->getChronology->Temporal.super->plus->ensureValid
+ChronoLocalDateTime#plus(long, TemporalUnit)::: chrono local date time plus:::
+ChronoLocalDateTime#minus(TemporalAmount)::: chrono local date time minus:::return->ChronoLocalDateTimeImpl->getChronology->Temporal.super->minus->ensureValid
+ChronoLocalDateTime#minus(long, TemporalUnit)::: chrono local date time minus:::return->ChronoLocalDateTimeImpl->getChronology->Temporal.super->minus->ensureValid
 ChronoLocalDateTime#query(TemporalQuery):::Queries this date-time using the specified query:::if->TemporalQueries->zoneId->TemporalQueries->zone->TemporalQueries->offset->return->else->if->TemporalQueries->localTime->return->toLocalTime->else->if->TemporalQueries->chronology->return->getChronology->else->if->TemporalQueries->precision->return->return->query->queryFrom
 ChronoLocalDateTime#adjustInto(Temporal):::Adjusts the specified temporal object to have the same date and time as this object:::return->temporal->toLocalDate->toEpochDay->with->toLocalTime->toNanoOfDay->with
 ChronoLocalDateTime#format(DateTimeFormatter):::Formats this date-time using the specified formatter:::Objects->requireNonNull->return->formatter->format
@@ -64,6 +102,31 @@ ChronoLocalDateTime#hashCode():::A hash code for this date-time.:::
 ChronoLocalDateTime#toString():::Outputs this date-time as a String:::
 ChronoLocalDateTimeImpl#of(R, LocalTime):::Obtains an instance of ChronoLocalDateTime from a date and time.:::return->new->ChronoLocalDateTimeImpl<>
 ChronoLocalDateTimeImpl#ensureValid(Chronology, Temporal):::Casts the Temporal to ChronoLocalDateTime ensuring it bas the specified chronology.:::other->if->chrono->other->getChronology->equals->throw->chrono->getId->other->getChronology->getId->new->ClassCastException->return
+ChronoLocalDateTimeImpl#with(Temporal, LocalTime):::Returns a copy of this date-time with the new date and time, checking to see if a new object is in fact required.:::if->return->cd->ChronoLocalDateImpl->date->getChronology->ensureValid->return->new->ChronoLocalDateTimeImpl<>
+ChronoLocalDateTimeImpl#toLocalDate()::: chrono local date time impl to local date:::return
+ChronoLocalDateTimeImpl#toLocalTime()::: chrono local date time impl to local time:::return
+ChronoLocalDateTimeImpl#isSupported(TemporalField)::: chrono local date time impl is supported:::if->f->return->f->isDateBased->f->isTimeBased->return->field->isSupportedBy
+ChronoLocalDateTimeImpl#range(TemporalField)::: chrono local date time impl range:::if->f->return->f->isTimeBased->time->range->date->range->return->field->rangeRefinedBy
+ChronoLocalDateTimeImpl#get(TemporalField)::: chrono local date time impl get:::if->f->return->f->isTimeBased->time->get->date->get->return->range->getLong->checkValidIntValue
+ChronoLocalDateTimeImpl#getLong(TemporalField)::: chrono local date time impl get long:::if->f->return->f->isTimeBased->time->getLong->date->getLong->return->field->getFrom
+ChronoLocalDateTimeImpl#with(TemporalAdjuster)::: chrono local date time impl with:::if->return->with->else->if->return->with->else->if->return->ChronoLocalDateTimeImpl->date->getChronology->ensureValid->return->ChronoLocalDateTimeImpl->date->getChronology->adjuster->adjustInto->ensureValid
+ChronoLocalDateTimeImpl#with(TemporalField, long)::: chrono local date time impl with:::if->f->if->f->isTimeBased->return->time->with->with->else->return->date->with->with->return->ChronoLocalDateTimeImpl->date->getChronology->field->adjustInto->ensureValid
+ChronoLocalDateTimeImpl#plus(long, TemporalUnit)::: chrono local date time impl plus:::if->f->switch->return->plusNanos->return->plusDays->plusNanos->return->plusDays->plusNanos->return->plusSeconds->return->plusMinutes->return->plusHours->return->plusDays->plusHours->return->date->plus->with->return->ChronoLocalDateTimeImpl->date->getChronology->unit->addTo->ensureValid
+ChronoLocalDateTimeImpl#plusDays(long)::: chrono local date time impl plus days:::return->date->plus->with
+ChronoLocalDateTimeImpl#plusHours(long)::: chrono local date time impl plus hours:::return->plusWithOverflow
+ChronoLocalDateTimeImpl#plusMinutes(long)::: chrono local date time impl plus minutes:::return->plusWithOverflow
+ChronoLocalDateTimeImpl#plusSeconds(long)::: chrono local date time impl plus seconds:::return->plusWithOverflow
+ChronoLocalDateTimeImpl#plusNanos(long)::: chrono local date time impl plus nanos:::return->plusWithOverflow
+ChronoLocalDateTimeImpl#plusWithOverflow(D, long, long, long, long)::: chrono local date time impl plus with overflow:::if->return->with->totDays->totNanos->curNoD->time->toNanoOfDay->Math->floorDiv->newNoD->Math->floorMod->newTime->LocalTime->ofNanoOfDay->return->newDate->plus->with
+ChronoLocalDateTimeImpl#atZone(ZoneId)::: chrono local date time impl at zone:::return->ChronoZonedDateTimeImpl->ofBest
+ChronoLocalDateTimeImpl#until(Temporal, TemporalUnit)::: chrono local date time impl until:::Objects->requireNonNull->end->getChronology->localDateTime->if->if->unit->isTimeBased->amount->end->getLong->date->getLong->switch->Math->multiplyExact->break->Math->multiplyExact->break->Math->multiplyExact->break->Math->multiplyExact->break->Math->multiplyExact->break->Math->multiplyExact->break->Math->multiplyExact->break->return->Math->time->end->toLocalTime->until->addExact->endDate->end->toLocalDate->if->end->toLocalTime->isBefore->endDate->minus->return->date->until->Objects->requireNonNull->return->unit->between
+ChronoLocalDateTimeImpl#writeReplace():::Writes the ChronoLocalDateTime using a dedicated serialized form.:::return->new->Ser
+ChronoLocalDateTimeImpl#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+ChronoLocalDateTimeImpl#writeExternal(ObjectOutput)::: chrono local date time impl write external:::out->writeObject->out->writeObject
+ChronoLocalDateTimeImpl#readExternal(ObjectInput)::: chrono local date time impl read external:::date->in->readObject->time->in->readObject->return->date->atTime
+ChronoLocalDateTimeImpl#equals(Object)::: chrono local date time impl equals:::if->return->if->return->compareTo->return
+ChronoLocalDateTimeImpl#hashCode()::: chrono local date time impl hash code:::return->toLocalDate->hashCode->toLocalTime->hashCode
+ChronoLocalDateTimeImpl#toString()::: chrono local date time impl to string:::return->toLocalDate->toString->toLocalTime->toString
 Chronology#from(TemporalAccessor):::Obtains an instance of Chronology from a temporal object:::Objects->requireNonNull->obj->temporal->TemporalQueries->chronology->query->return->Objects->requireNonNullElse
 Chronology#ofLocale(Locale):::Obtains an instance of Chronology from a locale:::return->AbstractChronology->ofLocale
 Chronology#of(String):::Obtains an instance of Chronology from a chronology ID or calendar system type:::return->AbstractChronology->of
@@ -112,9 +175,32 @@ ChronoPeriod#subtractFrom(Temporal):::Subtracts this period from the specified t
 ChronoPeriod#equals(Object):::Checks if this period is equal to another period, including the chronology:::
 ChronoPeriod#hashCode():::A hash code for this period.:::
 ChronoPeriod#toString():::Outputs this period as a String:::
+ChronoPeriodImpl#get(TemporalUnit)::: chrono period impl get:::if->return->else->if->return->else->if->return->else->throw->new->UnsupportedTemporalTypeException
+ChronoPeriodImpl#getUnits()::: chrono period impl get units:::return
+ChronoPeriodImpl#getChronology()::: chrono period impl get chronology:::return
+ChronoPeriodImpl#isZero()::: chrono period impl is zero:::return
+ChronoPeriodImpl#isNegative()::: chrono period impl is negative:::return
+ChronoPeriodImpl#plus(TemporalAmount)::: chrono period impl plus:::amount->validateAmount->return->Math->addExact->Math->addExact->Math->addExact->new->ChronoPeriodImpl
+ChronoPeriodImpl#minus(TemporalAmount)::: chrono period impl minus:::amount->validateAmount->return->Math->subtractExact->Math->subtractExact->Math->subtractExact->new->ChronoPeriodImpl
+ChronoPeriodImpl#validateAmount(TemporalAmount):::Obtains an instance of ChronoPeriodImpl from a temporal amount.:::Objects->requireNonNull->if->throw->amount->getClass->new->DateTimeException->period->if->chrono->period->getChronology->equals->throw->chrono->getId->period->getChronology->getId->new->ClassCastException->return
+ChronoPeriodImpl#multipliedBy(int)::: chrono period impl multiplied by:::if->this->isZero->return->return->Math->multiplyExact->Math->multiplyExact->Math->multiplyExact->new->ChronoPeriodImpl
+ChronoPeriodImpl#normalized()::: chrono period impl normalized:::monthRange->monthRange->if->totalMonths->splitYears->splitMonths->if->return->return->Math->toIntExact->new->ChronoPeriodImpl->return
+ChronoPeriodImpl#monthRange():::Calculates the range of months.:::startRange->chrono->range->if->startRange->isFixed->startRange->isIntValue->return->startRange->getMaximum->startRange->getMinimum->return
+ChronoPeriodImpl#addTo(Temporal)::: chrono period impl add to:::validateChrono->if->if->temporal->plus->else->monthRange->monthRange->if->temporal->plus->else->if->temporal->plus->temporal->plus->if->temporal->plus->return
+ChronoPeriodImpl#subtractFrom(Temporal)::: chrono period impl subtract from:::validateChrono->if->if->temporal->minus->else->monthRange->monthRange->if->temporal->minus->else->if->temporal->minus->temporal->minus->if->temporal->minus->return
+ChronoPeriodImpl#validateChrono(TemporalAccessor):::Validates that the temporal has the correct chronology.:::Objects->requireNonNull->temporalChrono->temporal->TemporalQueries->chronology->query->if->chrono->equals->throw->chrono->getId->temporalChrono->getId->new->DateTimeException
+ChronoPeriodImpl#equals(Object)::: chrono period impl equals:::if->return->if->other->return->chrono->equals->return
+ChronoPeriodImpl#hashCode()::: chrono period impl hash code:::return->Integer->rotateLeft->Integer->rotateLeft->chrono->hashCode
+ChronoPeriodImpl#toString()::: chrono period impl to string:::if->isZero->return->getChronology->toString->else->buf->new->StringBuilder->buf->getChronology->toString->append->append->append->if->buf->append->append->if->buf->append->append->if->buf->append->append->return->buf->toString
 ChronoPeriodImpl#writeReplace():::Writes the Chronology using a dedicated serialized form:::return->new->Ser
+ChronoPeriodImpl#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+ChronoPeriodImpl#writeExternal(DataOutput)::: chrono period impl write external:::out->chrono->getId->writeUTF->out->writeInt->out->writeInt->out->writeInt
+ChronoPeriodImpl#readExternal(DataInput)::: chrono period impl read external:::chrono->Chronology->in->readUTF->of->years->in->readInt->months->in->readInt->days->in->readInt->return->new->ChronoPeriodImpl
 ChronoZonedDateTime#timeLineOrder():::Gets a comparator that compares ChronoZonedDateTime in time-line order ignoring the chronology:::return->cmp->Long->dateTime1->toEpochSecond->dateTime2->toEpochSecond->compare->if->Long->dateTime1->toLocalTime->getNano->dateTime2->toLocalTime->getNano->compare->return
 ChronoZonedDateTime#from(TemporalAccessor):::Obtains an instance of ChronoZonedDateTime from a temporal object:::if->return->Objects->requireNonNull->chrono->temporal->TemporalQueries->chronology->query->if->throw->temporal->getClass->new->DateTimeException->return->chrono->zonedDateTime
+ChronoZonedDateTime#range(TemporalField)::: chrono zoned date time range:::if->if->return->field->range->return->toLocalDateTime->range->return->field->rangeRefinedBy
+ChronoZonedDateTime#get(TemporalField)::: chrono zoned date time get:::if->switch->throw->new->UnsupportedTemporalTypeException->return->getOffset->getTotalSeconds->return->toLocalDateTime->get->return->Temporal.super->get
+ChronoZonedDateTime#getLong(TemporalField)::: chrono zoned date time get long:::if->switch->return->toEpochSecond->return->getOffset->getTotalSeconds->return->toLocalDateTime->getLong->return->field->getFrom
 ChronoZonedDateTime#toLocalDate():::Gets the local date part of this date-time:::return->toLocalDateTime->toLocalDate
 ChronoZonedDateTime#toLocalTime():::Gets the local time part of this date-time:::return->toLocalDateTime->toLocalTime
 ChronoZonedDateTime#toLocalDateTime():::Gets the local date-time part of this date-time:::
@@ -127,6 +213,12 @@ ChronoZonedDateTime#withZoneSameLocal(ZoneId):::Returns a copy of this date-time
 ChronoZonedDateTime#withZoneSameInstant(ZoneId):::Returns a copy of this date-time with a different time-zone, retaining the instant:::
 ChronoZonedDateTime#isSupported(TemporalField):::Checks if the specified field is supported:::
 ChronoZonedDateTime#isSupported(TemporalUnit):::Checks if the specified unit is supported:::if->return->return->unit->isSupportedBy
+ChronoZonedDateTime#with(TemporalAdjuster)::: chrono zoned date time with:::return->ChronoZonedDateTimeImpl->getChronology->Temporal.super->with->ensureValid
+ChronoZonedDateTime#with(TemporalField, long)::: chrono zoned date time with:::
+ChronoZonedDateTime#plus(TemporalAmount)::: chrono zoned date time plus:::return->ChronoZonedDateTimeImpl->getChronology->Temporal.super->plus->ensureValid
+ChronoZonedDateTime#plus(long, TemporalUnit)::: chrono zoned date time plus:::
+ChronoZonedDateTime#minus(TemporalAmount)::: chrono zoned date time minus:::return->ChronoZonedDateTimeImpl->getChronology->Temporal.super->minus->ensureValid
+ChronoZonedDateTime#minus(long, TemporalUnit)::: chrono zoned date time minus:::return->ChronoZonedDateTimeImpl->getChronology->Temporal.super->minus->ensureValid
 ChronoZonedDateTime#query(TemporalQuery):::Queries this date-time using the specified query:::if->TemporalQueries->zone->TemporalQueries->zoneId->return->getZone->else->if->TemporalQueries->offset->return->getOffset->else->if->TemporalQueries->localTime->return->toLocalTime->else->if->TemporalQueries->chronology->return->getChronology->else->if->TemporalQueries->precision->return->return->query->queryFrom
 ChronoZonedDateTime#format(DateTimeFormatter):::Formats this date-time using the specified formatter:::Objects->requireNonNull->return->formatter->format
 ChronoZonedDateTime#toInstant():::Converts this date-time to an Instant:::return->Instant->toEpochSecond->toLocalTime->getNano->ofEpochSecond
@@ -140,7 +232,26 @@ ChronoZonedDateTime#hashCode():::A hash code for this date-time.:::
 ChronoZonedDateTime#toString():::Outputs this date-time as a String:::
 ChronoZonedDateTimeImpl#ofBest(ChronoLocalDateTimeImpl, ZoneId, ZoneOffset):::Obtains an instance from a local date-time using the preferred offset if possible.:::Objects->requireNonNull->Objects->requireNonNull->if->return->new->ChronoZonedDateTimeImpl<>->rules->zone->getRules->isoLDT->LocalDateTime->from->validOffsets->rules->getValidOffsets->offset->if->validOffsets->size->validOffsets->get->else->if->validOffsets->size->trans->rules->getTransition->localDateTime->trans->getDuration->getSeconds->plusSeconds->trans->getOffsetAfter->else->if->validOffsets->contains->else->validOffsets->get->Objects->requireNonNull->return->new->ChronoZonedDateTimeImpl<>
 ChronoZonedDateTimeImpl#ofInstant(Chronology, Instant, ZoneId):::Obtains an instance from an instant using the specified time-zone.:::rules->zone->getRules->offset->rules->getOffset->Objects->requireNonNull->ldt->LocalDateTime->instant->getEpochSecond->instant->getNano->ofEpochSecond->cldt->chrono->localDateTime->return->new->ChronoZonedDateTimeImpl<>
+ChronoZonedDateTimeImpl#create(Instant, ZoneId):::Obtains an instance from an Instant.:::return->getChronology->ofInstant
 ChronoZonedDateTimeImpl#ensureValid(Chronology, Temporal):::Casts the Temporal to ChronoZonedDateTimeImpl ensuring it bas the specified chronology.:::other->if->chrono->other->getChronology->equals->throw->chrono->getId->other->getChronology->getId->new->ClassCastException->return
+ChronoZonedDateTimeImpl#getOffset()::: chrono zoned date time impl get offset:::return
+ChronoZonedDateTimeImpl#withEarlierOffsetAtOverlap()::: chrono zoned date time impl with earlier offset at overlap:::trans->getZone->getRules->LocalDateTime->from->getTransition->if->trans->isOverlap->earlierOffset->trans->getOffsetBefore->if->earlierOffset->equals->return->new->ChronoZonedDateTimeImpl<>->return
+ChronoZonedDateTimeImpl#withLaterOffsetAtOverlap()::: chrono zoned date time impl with later offset at overlap:::trans->getZone->getRules->LocalDateTime->from->getTransition->if->offset->trans->getOffsetAfter->if->offset->getOffset->equals->return->new->ChronoZonedDateTimeImpl<>->return
+ChronoZonedDateTimeImpl#toLocalDateTime()::: chrono zoned date time impl to local date time:::return
+ChronoZonedDateTimeImpl#getZone()::: chrono zoned date time impl get zone:::return
+ChronoZonedDateTimeImpl#withZoneSameLocal(ZoneId)::: chrono zoned date time impl with zone same local:::return->ofBest
+ChronoZonedDateTimeImpl#withZoneSameInstant(ZoneId)::: chrono zoned date time impl with zone same instant:::Objects->requireNonNull->return->equals->dateTime->toInstant->create
+ChronoZonedDateTimeImpl#isSupported(TemporalField)::: chrono zoned date time impl is supported:::return->field->isSupportedBy
+ChronoZonedDateTimeImpl#with(TemporalField, long)::: chrono zoned date time impl with:::if->f->switch->return->toEpochSecond->plus->offset->ZoneOffset->f->checkValidIntValue->ofTotalSeconds->return->dateTime->toInstant->create->return->dateTime->with->ofBest->return->ChronoZonedDateTimeImpl->getChronology->field->adjustInto->ensureValid
+ChronoZonedDateTimeImpl#plus(long, TemporalUnit)::: chrono zoned date time impl plus:::if->return->dateTime->plus->with->return->ChronoZonedDateTimeImpl->getChronology->unit->addTo->ensureValid
+ChronoZonedDateTimeImpl#until(Temporal, TemporalUnit)::: chrono zoned date time impl until:::Objects->requireNonNull->end->getChronology->zonedDateTime->if->end->withZoneSameInstant->return->dateTime->end->toLocalDateTime->until->Objects->requireNonNull->return->unit->between
+ChronoZonedDateTimeImpl#writeReplace():::Writes the ChronoZonedDateTime using a dedicated serialized form.:::return->new->Ser
+ChronoZonedDateTimeImpl#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+ChronoZonedDateTimeImpl#writeExternal(ObjectOutput)::: chrono zoned date time impl write external:::out->writeObject->out->writeObject->out->writeObject
+ChronoZonedDateTimeImpl#readExternal(ObjectInput)::: chrono zoned date time impl read external:::dateTime->in->readObject->offset->in->readObject->zone->in->readObject->return->dateTime->atZone->withZoneSameLocal
+ChronoZonedDateTimeImpl#equals(Object)::: chrono zoned date time impl equals:::if->return->if->return->compareTo->return
+ChronoZonedDateTimeImpl#hashCode()::: chrono zoned date time impl hash code:::return->toLocalDateTime->hashCode->getOffset->hashCode->Integer->getZone->hashCode->rotateLeft
+ChronoZonedDateTimeImpl#toString()::: chrono zoned date time impl to string:::str->toLocalDateTime->toString->getOffset->toString->if->getOffset->getZone->getZone->toString->return
 Era#getValue():::Gets the numeric value associated with the era as defined by the chronology:::
 Era#isSupported(TemporalField):::Checks if the specified field is supported:::if->return->return->field->isSupportedBy
 Era#range(TemporalField):::Gets the range of valid values for the specified field:::return->TemporalAccessor.super->range
@@ -149,6 +260,7 @@ Era#getLong(TemporalField):::Gets the value of the specified field from this era
 Era#query(TemporalQuery):::Queries this era using the specified query:::if->TemporalQueries->precision->return->return->TemporalAccessor.super->query
 Era#adjustInto(Temporal):::Adjusts the specified temporal object to have the same era as this object:::return->temporal->getValue->with
 Era#getDisplayName(TextStyle, Locale):::Gets the textual representation of this era:::return->new->DateTimeFormatterBuilder->appendText->toFormatter->format
+HijrahChronology#checkCalendarInit():::Check and ensure that the calendar data has been initialized:::if->loadCalendarData
 HijrahChronology#getId():::Gets the ID of the chronology:::return
 HijrahChronology#getCalendarType():::Gets the calendar type of the Islamic calendar:::return
 HijrahChronology#date(Era, int, int, int):::Obtains a local date in Hijrah calendar system from the era, year-of-era, month-of-year and day-of-month fields.:::return->prolepticYear->date
@@ -156,8 +268,22 @@ HijrahChronology#date(int, int, int):::Obtains a local date in Hijrah calendar s
 HijrahChronology#dateYearDay(Era, int, int):::Obtains a local date in Hijrah calendar system from the era, year-of-era and day-of-year fields.:::return->prolepticYear->dateYearDay
 HijrahChronology#dateYearDay(int, int):::Obtains a local date in Hijrah calendar system from the proleptic-year and day-of-year fields.:::date->HijrahDate->of->if->date->lengthOfYear->throw->new->DateTimeException->return->date->plusDays
 HijrahChronology#dateEpochDay(long):::Obtains a local date in the Hijrah calendar system from the epoch-day.:::return->HijrahDate->ofEpochDay
+HijrahChronology#dateNow()::: hijrah chronology date now:::return->Clock->systemDefaultZone->dateNow
+HijrahChronology#dateNow(ZoneId)::: hijrah chronology date now:::return->Clock->system->dateNow
+HijrahChronology#dateNow(Clock)::: hijrah chronology date now:::return->LocalDate->now->date
+HijrahChronology#date(TemporalAccessor)::: hijrah chronology date:::if->return->return->HijrahDate->temporal->getLong->ofEpochDay
+HijrahChronology#localDateTime(TemporalAccessor)::: hijrah chronology local date time:::return->super->localDateTime
+HijrahChronology#zonedDateTime(TemporalAccessor)::: hijrah chronology zoned date time:::return->super->zonedDateTime
+HijrahChronology#zonedDateTime(Instant, ZoneId)::: hijrah chronology zoned date time:::return->super->zonedDateTime
+HijrahChronology#isLeapYear(long)::: hijrah chronology is leap year:::checkCalendarInit->if->getMinimumYear->getMaximumYear->return->len->getYearLength->return
+HijrahChronology#prolepticYear(Era, int)::: hijrah chronology proleptic year:::if->throw->new->ClassCastException->return
 HijrahChronology#eraOf(int):::Creates the HijrahEra object from the numeric value:::switch->return->throw->new->DateTimeException
+HijrahChronology#eras()::: hijrah chronology eras:::return->List->HijrahEra->values->of
+HijrahChronology#range(ChronoField)::: hijrah chronology range:::checkCalendarInit->if->f->switch->return->ValueRange->getMinimumMonthLength->getMaximumMonthLength->of->return->ValueRange->getMaximumDayOfYear->of->return->ValueRange->of->return->ValueRange->getMinimumYear->getMaximumYear->of->return->ValueRange->of->return->field->range->return->field->range
+HijrahChronology#resolveDate(Map, ResolverStyle)::: hijrah chronology resolve date:::return->super->resolveDate
 HijrahChronology#checkValidYear(long):::Check the validity of a year.:::if->getMinimumYear->getMaximumYear->throw->new->DateTimeException->return
+HijrahChronology#checkValidDayOfYear(int)::: hijrah chronology check valid day of year:::if->getMaximumDayOfYear->throw->new->DateTimeException
+HijrahChronology#checkValidMonth(int)::: hijrah chronology check valid month:::if->throw->new->DateTimeException
 HijrahChronology#getHijrahDateInfo(int):::Returns an array containing the Hijrah year, month and day computed from the epoch day.:::checkCalendarInit->if->throw->new->DateTimeException->epochMonth->epochDayToEpochMonth->year->epochMonthToYear->month->epochMonthToMonth->day1->epochMonthToEpochDay->date->dateInfo->new->intArr->return
 HijrahChronology#getEpochDay(int, int, int):::Return the epoch day computed from Hijrah year, month, and day.:::checkCalendarInit->checkValidMonth->epochMonth->yearToEpochMonth->if->throw->new->DateTimeException->if->getMonthLength->throw->new->DateTimeException->return->epochMonthToEpochDay
 HijrahChronology#getDayOfYear(int, int):::Returns day of year for the year and month.:::return->yearMonthToDayOfYear
@@ -169,7 +295,20 @@ HijrahChronology#getMaximumMonthLength():::Returns maximum day-of-month.:::retur
 HijrahChronology#getMinimumMonthLength():::Returns smallest maximum day-of-month.:::return
 HijrahChronology#getMaximumDayOfYear():::Returns maximum day-of-year.:::return
 HijrahChronology#getSmallestMaximumDayOfYear():::Returns smallest maximum day-of-year.:::return
+HijrahChronology#epochDayToEpochMonth(int):::Returns the epochMonth found by locating the epochDay in the table:::ndx->Arrays->binarySearch->if->return
+HijrahChronology#epochMonthToYear(int):::Returns the year computed from the epochMonth:::return
+HijrahChronology#yearToEpochMonth(int):::Returns the epochMonth for the Hijrah Year.:::return
+HijrahChronology#epochMonthToMonth(int):::Returns the Hijrah month from the epochMonth.:::return
+HijrahChronology#epochMonthToEpochDay(int):::Returns the epochDay for the start of the epochMonth.:::return
+HijrahChronology#yearMonthToDayOfYear(int, int):::Returns the day of year for the requested HijrahYear and month.:::epochMonthFirst->yearToEpochMonth->return->epochMonthToEpochDay->epochMonthToEpochDay
+HijrahChronology#epochMonthLength(int):::Returns the length of the epochMonth:::return
+HijrahChronology#readConfigProperties(String):::Return the configuration properties from the resource:::resourceName->getResourceAction->getResourceAsStream->perm1->new->FilePermission->perm2->new->RuntimePermission->try->is->AccessController->doPrivileged->if->throw->new->RuntimeException->props->new->Properties->props->load->return->catch->finally
+HijrahChronology#loadCalendarData():::Loads and processes the Hijrah calendar properties file for this calendarType:::try->props->readConfigProperties->years->new->HashMap<>->minYear->maxYear->id->type->version->isoStart->foreach->props->entrySet->key->entry->getKey->switch->entry->getValue->break->entry->getValue->break->entry->getValue->break->ymd->entry->getValue->parseYMD->LocalDate->of->toEpochDay->break->try->year->Integer->parseInt->months->entry->getValue->parseMonths->years->put->Math->max->Math->min->catch->throw->new->IllegalArgumentException->finally->if->getId->equals->throw->new->IllegalArgumentException->if->getCalendarType->equals->throw->new->IllegalArgumentException->if->version->isEmpty->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->createEpochMonths->for->year->catch->logger->PlatformLogger->getLogger->logger->severe->throw->new->DateTimeException->finally
+HijrahChronology#createEpochMonths(int, int, int, Map):::Converts the map of year to month lengths ranging from minYear to maxYear into a linear contiguous array of epochDays:::numMonths->epochMonth->epochMonths->new->intArr->for->year->if->throw->new->IllegalStateException->return
+HijrahChronology#parseMonths(String):::Parses the 12 months lengths from a property value for a specific year.:::months->new->intArr->numbers->line->split->if->throw->Arrays->toString->new->IllegalArgumentException->for->i->return
+HijrahChronology#parseYMD(String):::Parse yyyy-MM-dd into a 3 element array [yyyy, mm, dd].:::string->trim->try->if->string->charAt->string->charAt->throw->new->IllegalArgumentException->ymd->new->intArr->Integer->parseInt->Integer->parseInt->Integer->parseInt->return->catch->throw->new->IllegalArgumentException->finally
 HijrahChronology#writeReplace():::Writes the Chronology using a dedicated serialized form.:::return->super->writeReplace
+HijrahChronology#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
 HijrahDate#of(HijrahChronology, int, int, int):::Obtains an instance of HijrahDate from the Hijrah proleptic year, month-of-year and day-of-month.:::return->new->HijrahDate
 HijrahDate#ofEpochDay(HijrahChronology, long):::Returns a HijrahDate for the chronology and epochDay.:::return->new->HijrahDate
 HijrahDate#now():::Obtains the current HijrahDate of the Islamic Umm Al-Qura calendar in the default time-zone:::return->Clock->systemDefaultZone->now
@@ -181,10 +320,38 @@ HijrahDate#getChronology():::Gets the chronology of this date, which is the Hijr
 HijrahDate#getEra():::Gets the era applicable at this date:::return
 HijrahDate#lengthOfMonth():::Returns the length of the month represented by this date:::return->chrono->getMonthLength
 HijrahDate#lengthOfYear():::Returns the length of the year represented by this date:::return->chrono->getYearLength
+HijrahDate#range(TemporalField)::: hijrah date range:::if->if->isSupported->f->switch->return->ValueRange->lengthOfMonth->of->return->ValueRange->lengthOfYear->of->return->ValueRange->of->return->getChronology->range->throw->new->UnsupportedTemporalTypeException->return->field->rangeRefinedBy
+HijrahDate#getLong(TemporalField)::: hijrah date get long:::if->switch->return->getDayOfWeek->return->return->getDayOfYear->return->return->this->getDayOfYear->return->toEpochDay->return->return->getDayOfYear->return->return->getProlepticMonth->return->return->return->getEraValue->throw->new->UnsupportedTemporalTypeException->return->field->getFrom
+HijrahDate#getProlepticMonth()::: hijrah date get proleptic month:::return
+HijrahDate#with(TemporalField, long)::: hijrah date with:::if->f->chrono->range->checkValidValue->nvalue->switch->return->getDayOfWeek->plusDays->return->getLong->plusDays->return->getLong->plusDays->return->resolvePreviousValid->return->Math->lengthOfYear->min->getDayOfYear->plusDays->return->new->HijrahDate->return->getLong->plusDays->return->getLong->plusDays->return->resolvePreviousValid->return->getProlepticMonth->plusMonths->return->resolvePreviousValid->return->resolvePreviousValid->return->resolvePreviousValid->throw->new->UnsupportedTemporalTypeException->return->super->with
+HijrahDate#resolvePreviousValid(int, int, int)::: hijrah date resolve previous valid:::monthDays->chrono->getMonthLength->if->return->HijrahDate->of
+HijrahDate#with(TemporalAdjuster)::: hijrah date with:::return->super->with
 HijrahDate#withVariant(HijrahChronology):::Returns a HijrahDate with the Chronology requested:::if->return->monthDays->chronology->getDayOfYear->return->HijrahDate->of
+HijrahDate#plus(TemporalAmount)::: hijrah date plus:::return->super->plus
+HijrahDate#minus(TemporalAmount)::: hijrah date minus:::return->super->minus
+HijrahDate#toEpochDay()::: hijrah date to epoch day:::return->chrono->getEpochDay
+HijrahDate#getDayOfYear():::Gets the day-of-year field:::return->chrono->getDayOfYear
+HijrahDate#getDayOfWeek():::Gets the day-of-week value.:::dow0->Math->toEpochDay->floorMod->return
+HijrahDate#getEraValue():::Gets the Era of this date.:::return
 HijrahDate#isLeapYear():::Checks if the year is a leap year, according to the Hijrah calendar system rules.:::return->chrono->isLeapYear
+HijrahDate#plusYears(long)::: hijrah date plus years:::if->return->newYear->Math->addExact->return->resolvePreviousValid
+HijrahDate#plusMonths(long)::: hijrah date plus months:::if->return->monthCount->calcMonths->newYear->chrono->Math->floorDiv->checkValidYear->newMonth->Math->floorMod->return->resolvePreviousValid
+HijrahDate#plusWeeks(long)::: hijrah date plus weeks:::return->super->plusWeeks
+HijrahDate#plusDays(long)::: hijrah date plus days:::return->toEpochDay->new->HijrahDate
+HijrahDate#plus(long, TemporalUnit)::: hijrah date plus:::return->super->plus
+HijrahDate#minus(long, TemporalUnit)::: hijrah date minus:::return->super->minus
+HijrahDate#minusYears(long)::: hijrah date minus years:::return->super->minusYears
+HijrahDate#minusMonths(long)::: hijrah date minus months:::return->super->minusMonths
+HijrahDate#minusWeeks(long)::: hijrah date minus weeks:::return->super->minusWeeks
+HijrahDate#minusDays(long)::: hijrah date minus days:::return->super->minusDays
+HijrahDate#atTime(LocalTime)::: hijrah date at time:::return->super->atTime
+HijrahDate#until(ChronoLocalDate)::: hijrah date until:::end->getChronology->date->totalMonths->days->if->calcDate->this->plusMonths->end->toEpochDay->calcDate->toEpochDay->else->if->end->lengthOfMonth->years->months->return->getChronology->Math->toIntExact->period
 HijrahDate#equals(Object):::Compares this date to another date, including the chronology:::if->return->if->otherDate->return->getChronology->otherDate->getChronology->equals->return
 HijrahDate#hashCode():::A hash code for this date.:::yearValue->monthValue->dayValue->return->getChronology->getId->hashCode
+HijrahDate#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+HijrahDate#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+HijrahDate#writeExternal(ObjectOutput)::: hijrah date write external:::out->getChronology->writeObject->out->get->writeInt->out->get->writeByte->out->get->writeByte
+HijrahDate#readExternal(ObjectInput)::: hijrah date read external:::chrono->in->readObject->year->in->readInt->month->in->readByte->dayOfMonth->in->readByte->return->chrono->date
 IsoChronology#getId():::Gets the ID of the chronology - 'ISO':::return
 IsoChronology#getCalendarType():::Gets the calendar type of the underlying calendar system - 'iso8601':::return
 IsoChronology#date(Era, int, int, int):::Obtains an ISO local date from the era, year-of-era, month-of-year and day-of-month fields.:::return->prolepticYear->date
@@ -194,6 +361,7 @@ IsoChronology#dateYearDay(int, int):::Obtains an ISO local date from the prolept
 IsoChronology#dateEpochDay(long):::Obtains an ISO local date from the epoch-day:::return->LocalDate->ofEpochDay
 IsoChronology#date(TemporalAccessor):::Obtains an ISO local date from another date-time object:::return->LocalDate->from
 IsoChronology#epochSecond(int, int, int, int, int, int, ZoneOffset):::Gets the number of seconds from the epoch of 1970-01-01T00:00:00Z:::YEAR->checkValidValue->MONTH_OF_YEAR->checkValidValue->DAY_OF_MONTH->checkValidValue->HOUR_OF_DAY->checkValidValue->MINUTE_OF_HOUR->checkValidValue->SECOND_OF_MINUTE->checkValidValue->Objects->requireNonNull->if->dom->numberOfDaysOfMonth->if->if->throw->new->DateTimeException->else->throw->Month->of->name->new->DateTimeException->totalDays->timeinSec->if->else->if->if->isLeapYear->return->Math->Math->multiplyExact->zoneOffset->getTotalSeconds->addExact
+IsoChronology#numberOfDaysOfMonth(int, int):::Gets the number of days for the given month in the given year.:::dom->switch->isLeapYear->break->break->break->return
 IsoChronology#localDateTime(TemporalAccessor):::Obtains an ISO local date-time from another date-time object:::return->LocalDateTime->from
 IsoChronology#zonedDateTime(TemporalAccessor):::Obtains an ISO zoned date-time from another date-time object:::return->ZonedDateTime->from
 IsoChronology#zonedDateTime(Instant, ZoneId):::Obtains an ISO zoned date-time in this chronology from an Instant:::return->ZonedDateTime->ofInstant
@@ -201,9 +369,17 @@ IsoChronology#dateNow():::Obtains the current ISO local date from the system clo
 IsoChronology#dateNow(ZoneId):::Obtains the current ISO local date from the system clock in the specified time-zone:::return->Clock->system->dateNow
 IsoChronology#dateNow(Clock):::Obtains the current ISO local date from the specified clock:::Objects->requireNonNull->return->LocalDate->now->date
 IsoChronology#isLeapYear(long):::Checks if the year is a leap year, according to the ISO proleptic calendar system rules:::return
+IsoChronology#prolepticYear(Era, int)::: iso chronology proleptic year:::if->throw->new->ClassCastException->return
+IsoChronology#eraOf(int)::: iso chronology era of:::return->IsoEra->of
+IsoChronology#eras()::: iso chronology eras:::return->List->IsoEra->values->of
 IsoChronology#resolveDate(Map, ResolverStyle):::Resolves parsed ChronoField values into a date during parsing:::return->super->resolveDate
+IsoChronology#resolveProlepticMonth(Map, ResolverStyle)::: iso chronology resolve proleptic month:::pMonth->fieldValues->remove->if->if->PROLEPTIC_MONTH->checkValidValue->Math->floorMod->addFieldValue->Math->floorDiv->addFieldValue
+IsoChronology#resolveYearOfEra(Map, ResolverStyle)::: iso chronology resolve year of era:::yoeLong->fieldValues->remove->if->if->YEAR_OF_ERA->checkValidValue->era->fieldValues->remove->if->year->fieldValues->get->if->if->Math->subtractExact->addFieldValue->else->fieldValues->put->else->Math->subtractExact->addFieldValue->else->if->era->longValue->addFieldValue->else->if->era->longValue->Math->subtractExact->addFieldValue->else->throw->new->DateTimeException->else->if->fieldValues->containsKey->ERA->fieldValues->get->checkValidValue->return
+IsoChronology#resolveYMD(Map, ResolverStyle)::: iso chronology resolve d:::y->YEAR->fieldValues->remove->checkValidIntValue->if->months->Math->fieldValues->remove->subtractExact->days->Math->fieldValues->remove->subtractExact->return->LocalDate->of->plusMonths->plusDays->moy->MONTH_OF_YEAR->fieldValues->remove->checkValidIntValue->dom->DAY_OF_MONTH->fieldValues->remove->checkValidIntValue->if->if->Math->min->else->if->Math->Year->isLeap->length->min->return->LocalDate->of
+IsoChronology#range(ChronoField)::: iso chronology range:::return->field->range
 IsoChronology#period(int, int, int):::Obtains a period for this chronology based on years, months and days:::return->Period->of
 IsoChronology#writeReplace():::Writes the Chronology using a dedicated serialized form.:::return->super->writeReplace
+IsoChronology#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
 JapaneseChronology#getId():::Gets the ID of the chronology - 'Japanese':::return
 JapaneseChronology#getCalendarType():::Gets the calendar type of the underlying calendar system - 'japanese':::return
 JapaneseChronology#date(Era, int, int, int):::Obtains a local date in Japanese calendar system from the era, year-of-era, month-of-year and day-of-month fields:::if->throw->new->ClassCastException->return->JapaneseDate->of
@@ -211,9 +387,26 @@ JapaneseChronology#date(int, int, int):::Obtains a local date in Japanese calend
 JapaneseChronology#dateYearDay(Era, int, int):::Obtains a local date in Japanese calendar system from the era, year-of-era and day-of-year fields:::return->JapaneseDate->ofYearDay
 JapaneseChronology#dateYearDay(int, int):::Obtains a local date in Japanese calendar system from the proleptic-year and day-of-year fields:::return->LocalDate->ofYearDay->new->JapaneseDate
 JapaneseChronology#dateEpochDay(long):::Obtains a local date in the Japanese calendar system from the epoch-day.:::return->LocalDate->ofEpochDay->new->JapaneseDate
+JapaneseChronology#dateNow()::: japanese chronology date now:::return->Clock->systemDefaultZone->dateNow
+JapaneseChronology#dateNow(ZoneId)::: japanese chronology date now:::return->Clock->system->dateNow
+JapaneseChronology#dateNow(Clock)::: japanese chronology date now:::return->LocalDate->now->date
+JapaneseChronology#date(TemporalAccessor)::: japanese chronology date:::if->return->return->LocalDate->from->new->JapaneseDate
+JapaneseChronology#localDateTime(TemporalAccessor)::: japanese chronology local date time:::return->super->localDateTime
+JapaneseChronology#zonedDateTime(TemporalAccessor)::: japanese chronology zoned date time:::return->super->zonedDateTime
+JapaneseChronology#zonedDateTime(Instant, ZoneId)::: japanese chronology zoned date time:::return->super->zonedDateTime
 JapaneseChronology#isLeapYear(long):::Checks if the specified year is a leap year:::return->isLeapYear
+JapaneseChronology#prolepticYear(Era, int)::: japanese chronology proleptic year:::if->throw->new->ClassCastException->jera->gregorianYear->jera->getPrivateEra->getSinceDate->getYear->if->return->if->jdate->JCAL->newCalendarDate->jdate->jera->getPrivateEra->setEra->setDate->if->validate->return->throw->new->DateTimeException
 JapaneseChronology#eraOf(int):::Returns the calendar system era object from the given numeric value:::return->JapaneseEra->of
+JapaneseChronology#eras()::: japanese chronology eras:::return->List->JapaneseEra->values->of
+JapaneseChronology#getCurrentEra()::: japanese chronology get current era:::eras->JapaneseEra->values->return
+JapaneseChronology#range(ChronoField)::: japanese chronology range:::switch->throw->new->UnsupportedTemporalTypeException->jcal->Calendar->getInstance->startYear->getCurrentEra->getPrivateEra->getSinceDate->getYear->return->ValueRange->jcal->getGreatestMinimum->jcal->getLeastMaximum->of->jcal->Calendar->getInstance->fieldIndex->return->ValueRange->jcal->getMinimum->jcal->getGreatestMinimum->jcal->getLeastMaximum->jcal->getMaximum->of->return->ValueRange->getYear->of->return->ValueRange->getValue->getCurrentEra->getValue->of->return->field->range
+JapaneseChronology#resolveDate(Map, ResolverStyle)::: japanese chronology resolve date:::return->super->resolveDate
+JapaneseChronology#resolveYearOfEra(Map, ResolverStyle)::: japanese chronology resolve year of era:::eraLong->fieldValues->get->era->if->range->checkValidIntValue->eraOf->yoeLong->fieldValues->get->yoe->if->range->checkValidIntValue->if->fieldValues->containsKey->JapaneseEra->values->JapaneseEra->values->if->if->fieldValues->containsKey->if->fieldValues->containsKey->return->resolveYMD->if->fieldValues->containsKey->return->resolveYD->return
+JapaneseChronology#prolepticYearLenient(JapaneseEra, int)::: japanese chronology proleptic year lenient:::return->era->getPrivateEra->getSinceDate->getYear
+JapaneseChronology#resolveYMD(JapaneseEra, int, Map, ResolverStyle)::: japanese chronology resolve d:::fieldValues->remove->fieldValues->remove->if->y->prolepticYearLenient->months->Math->fieldValues->remove->subtractExact->days->Math->fieldValues->remove->subtractExact->return->date->plus->plus->moy->range->fieldValues->remove->checkValidIntValue->dom->range->fieldValues->remove->checkValidIntValue->if->if->throw->new->DateTimeException->y->prolepticYearLenient->result->try->date->catch->date->TemporalAdjusters->lastDayOfMonth->with->finally->if->result->getEra->result->get->throw->new->DateTimeException->return->return->date
+JapaneseChronology#resolveYD(JapaneseEra, int, Map, ResolverStyle)::: japanese chronology resolve d:::fieldValues->remove->fieldValues->remove->if->y->prolepticYearLenient->days->Math->fieldValues->remove->subtractExact->return->dateYearDay->plus->doy->range->fieldValues->remove->checkValidIntValue->return->dateYearDay
 JapaneseChronology#writeReplace():::Writes the Chronology using a dedicated serialized form.:::return->super->writeReplace
+JapaneseChronology#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
 JapaneseDate#now():::Obtains the current JapaneseDate from the system clock in the default time-zone:::return->Clock->systemDefaultZone->now
 JapaneseDate#now(ZoneId):::Obtains the current JapaneseDate from the system clock in the specified time-zone:::return->Clock->system->now
 JapaneseDate#now(Clock):::Obtains the current JapaneseDate from the specified clock:::return->LocalDate->now->new->JapaneseDate
@@ -224,16 +417,55 @@ JapaneseDate#from(TemporalAccessor):::Obtains a JapaneseDate from a temporal obj
 JapaneseDate#getChronology():::Gets the chronology of this date, which is the Japanese calendar system:::return
 JapaneseDate#getEra():::Gets the era applicable at this date:::return
 JapaneseDate#lengthOfMonth():::Returns the length of the month represented by this date:::return->isoDate->lengthOfMonth
+JapaneseDate#lengthOfYear()::: japanese date length of year:::jcal->Calendar->getInstance->jcal->era->getValue->set->jcal->isoDate->getMonthValue->isoDate->getDayOfMonth->set->return->jcal->getActualMaximum
 JapaneseDate#isSupported(TemporalField):::Checks if the specified field is supported:::if->return->return->super->isSupported
+JapaneseDate#range(TemporalField)::: japanese date range:::if->if->isSupported->f->switch->return->ValueRange->lengthOfMonth->of->return->ValueRange->lengthOfYear->of->jcal->Calendar->getInstance->jcal->era->getValue->set->jcal->isoDate->getMonthValue->isoDate->getDayOfMonth->set->return->ValueRange->jcal->getActualMaximum->of->return->getChronology->range->throw->new->UnsupportedTemporalTypeException->return->field->rangeRefinedBy
+JapaneseDate#getLong(TemporalField)::: japanese date get long:::if->switch->throw->new->UnsupportedTemporalTypeException->return->return->era->getValue->jcal->Calendar->getInstance->jcal->era->getValue->set->jcal->isoDate->getMonthValue->isoDate->getDayOfMonth->set->return->jcal->get->return->isoDate->getLong->return->field->getFrom
+JapaneseDate#toPrivateJapaneseDate(LocalDate):::Returns a LocalGregorianCalendar.Date converted from the given isoDate.:::jdate->newCalendarDate->sunEra->JapaneseEra->privateEraFrom->year->isoDate->getYear->if->sunEra->getSinceDate->getYear->jdate->setEra->setYear->isoDate->getMonthValue->setMonth->isoDate->getDayOfMonth->setDayOfMonth->normalize->return
+JapaneseDate#with(TemporalField, long)::: japanese date with:::if->f->if->getLong->return->switch->nvalue->getChronology->range->checkValidIntValue->switch->return->this->withYear->return->isoDate->withYear->with->return->this->JapaneseEra->of->withYear->return->isoDate->with->with->return->super->with
+JapaneseDate#with(TemporalAdjuster)::: japanese date with:::return->super->with
+JapaneseDate#plus(TemporalAmount)::: japanese date plus:::return->super->plus
+JapaneseDate#minus(TemporalAmount)::: japanese date minus:::return->super->minus
+JapaneseDate#withYear(JapaneseEra, int):::Returns a copy of this date with the year altered:::year->prolepticYear->return->isoDate->withYear->with
+JapaneseDate#withYear(int):::Returns a copy of this date with the year-of-era altered:::return->getEra->withYear
+JapaneseDate#plusYears(long)::: japanese date plus years:::return->isoDate->plusYears->with
+JapaneseDate#plusMonths(long)::: japanese date plus months:::return->isoDate->plusMonths->with
+JapaneseDate#plusWeeks(long)::: japanese date plus weeks:::return->isoDate->plusWeeks->with
+JapaneseDate#plusDays(long)::: japanese date plus days:::return->isoDate->plusDays->with
+JapaneseDate#plus(long, TemporalUnit)::: japanese date plus:::return->super->plus
+JapaneseDate#minus(long, TemporalUnit)::: japanese date minus:::return->super->minus
+JapaneseDate#minusYears(long)::: japanese date minus years:::return->super->minusYears
+JapaneseDate#minusMonths(long)::: japanese date minus months:::return->super->minusMonths
+JapaneseDate#minusWeeks(long)::: japanese date minus weeks:::return->super->minusWeeks
+JapaneseDate#minusDays(long)::: japanese date minus days:::return->super->minusDays
+JapaneseDate#with(LocalDate)::: japanese date with:::return->newDate->equals->new->JapaneseDate
+JapaneseDate#atTime(LocalTime)::: japanese date at time:::return->super->atTime
+JapaneseDate#until(ChronoLocalDate)::: japanese date until:::period->isoDate->until->return->getChronology->period->getYears->period->getMonths->period->getDays->period
+JapaneseDate#toEpochDay()::: japanese date to epoch day:::return->isoDate->toEpochDay
 JapaneseDate#equals(Object):::Compares this date to another date, including the chronology:::if->return->if->otherDate->return->equals->return
 JapaneseDate#hashCode():::A hash code for this date.:::return->getChronology->getId->hashCode->isoDate->hashCode
+JapaneseDate#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+JapaneseDate#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+JapaneseDate#writeExternal(DataOutput)::: japanese date write external:::out->get->writeInt->out->get->writeByte->out->get->writeByte
+JapaneseDate#readExternal(DataInput)::: japanese date read external:::year->in->readInt->month->in->readByte->dayOfMonth->in->readByte->return->date
 JapaneseEra#getPrivateEra():::Returns the Sun private Era instance corresponding to this JapaneseEra.:::return->ordinal
 JapaneseEra#of(int):::Obtains an instance of JapaneseEra from an int value:::i->ordinal->if->throw->new->DateTimeException->return
 JapaneseEra#valueOf(String):::Returns the JapaneseEra with the name:::Objects->requireNonNull->foreach->if->era->getName->equals->return->throw->new->IllegalArgumentException
 JapaneseEra#values():::Returns an array of JapaneseEras:::return->Arrays->copyOf
+JapaneseEra#getDisplayName(TextStyle, Locale)::: japanese era get display name:::if->getValue->Objects->requireNonNull->return->style->asNormal->getAbbreviation->getName->return->new->DateTimeFormatterBuilder->appendText->toFormatter->withChronology->format
 JapaneseEra#from(LocalDate):::Obtains an instance of JapaneseEra from a date.:::if->date->isBefore->throw->new->DateTimeException->for->i->return
+JapaneseEra#toJapaneseEra(sun.util.calendar.Era)::: japanese era to japanese era:::for->i->return
+JapaneseEra#privateEraFrom(LocalDate)::: japanese era private era from:::for->i->return
+JapaneseEra#ordinal(int):::Returns the index into the arrays from the Era value:::return
 JapaneseEra#getValue():::Gets the numeric era int value:::return
 JapaneseEra#range(TemporalField):::Gets the range of valid values for the specified field:::if->return->range->return->Era.super->range
+JapaneseEra#getAbbreviation()::: japanese era get abbreviation:::return->getValue->ordinal->getAbbreviation
+JapaneseEra#getName()::: japanese era get name:::return->getValue->ordinal->getName
+JapaneseEra#toString()::: japanese era to string:::return->getName
+JapaneseEra#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+JapaneseEra#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+JapaneseEra#writeExternal(DataOutput)::: japanese era write external:::out->this->getValue->writeByte
+JapaneseEra#readExternal(DataInput)::: japanese era read external:::eraValue->in->readByte->return->JapaneseEra->of
 MinguoChronology#getId():::Gets the ID of the chronology - 'Minguo':::return
 MinguoChronology#getCalendarType():::Gets the calendar type of the underlying calendar system - 'roc':::return
 MinguoChronology#date(Era, int, int, int):::Obtains a local date in Minguo calendar system from the era, year-of-era, month-of-year and day-of-month fields.:::return->prolepticYear->date
@@ -241,8 +473,21 @@ MinguoChronology#date(int, int, int):::Obtains a local date in Minguo calendar s
 MinguoChronology#dateYearDay(Era, int, int):::Obtains a local date in Minguo calendar system from the era, year-of-era and day-of-year fields.:::return->prolepticYear->dateYearDay
 MinguoChronology#dateYearDay(int, int):::Obtains a local date in Minguo calendar system from the proleptic-year and day-of-year fields.:::return->LocalDate->ofYearDay->new->MinguoDate
 MinguoChronology#dateEpochDay(long):::Obtains a local date in the Minguo calendar system from the epoch-day.:::return->LocalDate->ofEpochDay->new->MinguoDate
+MinguoChronology#dateNow()::: minguo chronology date now:::return->Clock->systemDefaultZone->dateNow
+MinguoChronology#dateNow(ZoneId)::: minguo chronology date now:::return->Clock->system->dateNow
+MinguoChronology#dateNow(Clock)::: minguo chronology date now:::return->LocalDate->now->date
+MinguoChronology#date(TemporalAccessor)::: minguo chronology date:::if->return->return->LocalDate->from->new->MinguoDate
+MinguoChronology#localDateTime(TemporalAccessor)::: minguo chronology local date time:::return->super->localDateTime
+MinguoChronology#zonedDateTime(TemporalAccessor)::: minguo chronology zoned date time:::return->super->zonedDateTime
+MinguoChronology#zonedDateTime(Instant, ZoneId)::: minguo chronology zoned date time:::return->super->zonedDateTime
 MinguoChronology#isLeapYear(long):::Checks if the specified year is a leap year:::return->isLeapYear
+MinguoChronology#prolepticYear(Era, int)::: minguo chronology proleptic year:::if->throw->new->ClassCastException->return
+MinguoChronology#eraOf(int)::: minguo chronology era of:::return->MinguoEra->of
+MinguoChronology#eras()::: minguo chronology eras:::return->List->MinguoEra->values->of
+MinguoChronology#range(ChronoField)::: minguo chronology range:::switch->range->PROLEPTIC_MONTH->range->return->ValueRange->range->getMinimum->range->getMaximum->of->range->YEAR->range->return->ValueRange->range->getMaximum->range->getMinimum->of->range->YEAR->range->return->ValueRange->range->getMinimum->range->getMaximum->of->return->field->range
+MinguoChronology#resolveDate(Map, ResolverStyle)::: minguo chronology resolve date:::return->super->resolveDate
 MinguoChronology#writeReplace():::Writes the Chronology using a dedicated serialized form.:::return->super->writeReplace
+MinguoChronology#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
 MinguoDate#now():::Obtains the current MinguoDate from the system clock in the default time-zone:::return->Clock->systemDefaultZone->now
 MinguoDate#now(ZoneId):::Obtains the current MinguoDate from the system clock in the specified time-zone:::return->Clock->system->now
 MinguoDate#now(Clock):::Obtains the current MinguoDate from the specified clock:::return->LocalDate->now->new->MinguoDate
@@ -251,10 +496,40 @@ MinguoDate#from(TemporalAccessor):::Obtains a MinguoDate from a temporal object:
 MinguoDate#getChronology():::Gets the chronology of this date, which is the Minguo calendar system:::return
 MinguoDate#getEra():::Gets the era applicable at this date:::return->getProlepticYear
 MinguoDate#lengthOfMonth():::Returns the length of the month represented by this date:::return->isoDate->lengthOfMonth
+MinguoDate#range(TemporalField)::: minguo date range:::if->if->isSupported->f->switch->return->isoDate->range->range->YEAR->range->max->getProlepticYear->range->getMinimum->range->getMaximum->return->ValueRange->of->return->getChronology->range->throw->new->UnsupportedTemporalTypeException->return->field->rangeRefinedBy
+MinguoDate#getLong(TemporalField)::: minguo date get long:::if->switch->return->getProlepticMonth->prolepticYear->getProlepticYear->return->return->getProlepticYear->return->getProlepticYear->return->isoDate->getLong->return->field->getFrom
+MinguoDate#getProlepticMonth()::: minguo date get proleptic month:::return->getProlepticYear->isoDate->getMonthValue
+MinguoDate#getProlepticYear()::: minguo date get proleptic year:::return->isoDate->getYear
+MinguoDate#with(TemporalField, long)::: minguo date with:::if->f->if->getLong->return->switch->getChronology->range->checkValidValue->return->getProlepticMonth->plusMonths->nvalue->getChronology->range->checkValidIntValue->switch->return->isoDate->getProlepticYear->withYear->with->return->isoDate->withYear->with->return->isoDate->getProlepticYear->withYear->with->return->isoDate->with->with->return->super->with
+MinguoDate#with(TemporalAdjuster)::: minguo date with:::return->super->with
+MinguoDate#plus(TemporalAmount)::: minguo date plus:::return->super->plus
+MinguoDate#minus(TemporalAmount)::: minguo date minus:::return->super->minus
+MinguoDate#plusYears(long)::: minguo date plus years:::return->isoDate->plusYears->with
+MinguoDate#plusMonths(long)::: minguo date plus months:::return->isoDate->plusMonths->with
+MinguoDate#plusWeeks(long)::: minguo date plus weeks:::return->super->plusWeeks
+MinguoDate#plusDays(long)::: minguo date plus days:::return->isoDate->plusDays->with
+MinguoDate#plus(long, TemporalUnit)::: minguo date plus:::return->super->plus
+MinguoDate#minus(long, TemporalUnit)::: minguo date minus:::return->super->minus
+MinguoDate#minusYears(long)::: minguo date minus years:::return->super->minusYears
+MinguoDate#minusMonths(long)::: minguo date minus months:::return->super->minusMonths
+MinguoDate#minusWeeks(long)::: minguo date minus weeks:::return->super->minusWeeks
+MinguoDate#minusDays(long)::: minguo date minus days:::return->super->minusDays
+MinguoDate#with(LocalDate)::: minguo date with:::return->newDate->equals->new->MinguoDate
+MinguoDate#atTime(LocalTime)::: minguo date at time:::return->super->atTime
+MinguoDate#until(ChronoLocalDate)::: minguo date until:::period->isoDate->until->return->getChronology->period->getYears->period->getMonths->period->getDays->period
+MinguoDate#toEpochDay()::: minguo date to epoch day:::return->isoDate->toEpochDay
 MinguoDate#equals(Object):::Compares this date to another date, including the chronology:::if->return->if->otherDate->return->equals->return
 MinguoDate#hashCode():::A hash code for this date.:::return->getChronology->getId->hashCode->isoDate->hashCode
+MinguoDate#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+MinguoDate#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+MinguoDate#writeExternal(DataOutput)::: minguo date write external:::out->get->writeInt->out->get->writeByte->out->get->writeByte
+MinguoDate#readExternal(DataInput)::: minguo date read external:::year->in->readInt->month->in->readByte->dayOfMonth->in->readByte->return->date
 Ser#writeExternal(ObjectOutput):::Implements the Externalizable interface to write the object.:::writeInternal
+Ser#writeInternal(byte, Object, ObjectOutput)::: ser write internal:::out->writeByte->switch->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->throw->new->InvalidClassException
 Ser#readExternal(ObjectInput):::Implements the Externalizable interface to read the object.:::in->readByte->readInternal
+Ser#read(ObjectInput)::: ser read:::type->in->readByte->return->readInternal
+Ser#readInternal(byte, ObjectInput)::: ser read internal:::switch->return->AbstractChronology->readExternal->return->ChronoLocalDateTimeImpl->readExternal->return->ChronoZonedDateTimeImpl->readExternal->return->JapaneseDate->readExternal->return->JapaneseEra->readExternal->return->HijrahDate->readExternal->return->MinguoDate->readExternal->return->ThaiBuddhistDate->readExternal->return->ChronoPeriodImpl->readExternal->throw->new->StreamCorruptedException
+Ser#readResolve():::Returns the object that will replace this one.:::return
 ThaiBuddhistChronology#getId():::Gets the ID of the chronology - 'ThaiBuddhist':::return
 ThaiBuddhistChronology#getCalendarType():::Gets the calendar type of the underlying calendar system - 'buddhist':::return
 ThaiBuddhistChronology#date(Era, int, int, int):::Obtains a local date in Thai Buddhist calendar system from the era, year-of-era, month-of-year and day-of-month fields.:::return->prolepticYear->date
@@ -262,8 +537,21 @@ ThaiBuddhistChronology#date(int, int, int):::Obtains a local date in Thai Buddhi
 ThaiBuddhistChronology#dateYearDay(Era, int, int):::Obtains a local date in Thai Buddhist calendar system from the era, year-of-era and day-of-year fields.:::return->prolepticYear->dateYearDay
 ThaiBuddhistChronology#dateYearDay(int, int):::Obtains a local date in Thai Buddhist calendar system from the proleptic-year and day-of-year fields.:::return->LocalDate->ofYearDay->new->ThaiBuddhistDate
 ThaiBuddhistChronology#dateEpochDay(long):::Obtains a local date in the Thai Buddhist calendar system from the epoch-day.:::return->LocalDate->ofEpochDay->new->ThaiBuddhistDate
+ThaiBuddhistChronology#dateNow()::: thai buddhist chronology date now:::return->Clock->systemDefaultZone->dateNow
+ThaiBuddhistChronology#dateNow(ZoneId)::: thai buddhist chronology date now:::return->Clock->system->dateNow
+ThaiBuddhistChronology#dateNow(Clock)::: thai buddhist chronology date now:::return->LocalDate->now->date
+ThaiBuddhistChronology#date(TemporalAccessor)::: thai buddhist chronology date:::if->return->return->LocalDate->from->new->ThaiBuddhistDate
+ThaiBuddhistChronology#localDateTime(TemporalAccessor)::: thai buddhist chronology local date time:::return->super->localDateTime
+ThaiBuddhistChronology#zonedDateTime(TemporalAccessor)::: thai buddhist chronology zoned date time:::return->super->zonedDateTime
+ThaiBuddhistChronology#zonedDateTime(Instant, ZoneId)::: thai buddhist chronology zoned date time:::return->super->zonedDateTime
 ThaiBuddhistChronology#isLeapYear(long):::Checks if the specified year is a leap year:::return->isLeapYear
+ThaiBuddhistChronology#prolepticYear(Era, int)::: thai buddhist chronology proleptic year:::if->throw->new->ClassCastException->return
+ThaiBuddhistChronology#eraOf(int)::: thai buddhist chronology era of:::return->ThaiBuddhistEra->of
+ThaiBuddhistChronology#eras()::: thai buddhist chronology eras:::return->List->ThaiBuddhistEra->values->of
+ThaiBuddhistChronology#range(ChronoField)::: thai buddhist chronology range:::switch->range->PROLEPTIC_MONTH->range->return->ValueRange->range->getMinimum->range->getMaximum->of->range->YEAR->range->return->ValueRange->range->getMinimum->range->getMaximum->of->range->YEAR->range->return->ValueRange->range->getMinimum->range->getMaximum->of->return->field->range
+ThaiBuddhistChronology#resolveDate(Map, ResolverStyle)::: thai buddhist chronology resolve date:::return->super->resolveDate
 ThaiBuddhistChronology#writeReplace():::Writes the Chronology using a dedicated serialized form.:::return->super->writeReplace
+ThaiBuddhistChronology#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
 ThaiBuddhistDate#now():::Obtains the current ThaiBuddhistDate from the system clock in the default time-zone:::return->Clock->systemDefaultZone->now
 ThaiBuddhistDate#now(ZoneId):::Obtains the current ThaiBuddhistDate from the system clock in the specified time-zone:::return->Clock->system->now
 ThaiBuddhistDate#now(Clock):::Obtains the current ThaiBuddhistDate from the specified clock:::return->LocalDate->now->new->ThaiBuddhistDate
@@ -272,5 +560,31 @@ ThaiBuddhistDate#from(TemporalAccessor):::Obtains a ThaiBuddhistDate from a temp
 ThaiBuddhistDate#getChronology():::Gets the chronology of this date, which is the Thai Buddhist calendar system:::return
 ThaiBuddhistDate#getEra():::Gets the era applicable at this date:::return->getProlepticYear
 ThaiBuddhistDate#lengthOfMonth():::Returns the length of the month represented by this date:::return->isoDate->lengthOfMonth
+ThaiBuddhistDate#range(TemporalField)::: thai buddhist date range:::if->if->isSupported->f->switch->return->isoDate->range->range->YEAR->range->max->getProlepticYear->range->getMinimum->range->getMaximum->return->ValueRange->of->return->getChronology->range->throw->new->UnsupportedTemporalTypeException->return->field->rangeRefinedBy
+ThaiBuddhistDate#getLong(TemporalField)::: thai buddhist date get long:::if->switch->return->getProlepticMonth->prolepticYear->getProlepticYear->return->return->getProlepticYear->return->getProlepticYear->return->isoDate->getLong->return->field->getFrom
+ThaiBuddhistDate#getProlepticMonth()::: thai buddhist date get proleptic month:::return->getProlepticYear->isoDate->getMonthValue
+ThaiBuddhistDate#getProlepticYear()::: thai buddhist date get proleptic year:::return->isoDate->getYear
+ThaiBuddhistDate#with(TemporalField, long)::: thai buddhist date with:::if->f->if->getLong->return->switch->getChronology->range->checkValidValue->return->getProlepticMonth->plusMonths->nvalue->getChronology->range->checkValidIntValue->switch->return->isoDate->getProlepticYear->withYear->with->return->isoDate->withYear->with->return->isoDate->getProlepticYear->withYear->with->return->isoDate->with->with->return->super->with
+ThaiBuddhistDate#with(TemporalAdjuster)::: thai buddhist date with:::return->super->with
+ThaiBuddhistDate#plus(TemporalAmount)::: thai buddhist date plus:::return->super->plus
+ThaiBuddhistDate#minus(TemporalAmount)::: thai buddhist date minus:::return->super->minus
+ThaiBuddhistDate#plusYears(long)::: thai buddhist date plus years:::return->isoDate->plusYears->with
+ThaiBuddhistDate#plusMonths(long)::: thai buddhist date plus months:::return->isoDate->plusMonths->with
+ThaiBuddhistDate#plusWeeks(long)::: thai buddhist date plus weeks:::return->super->plusWeeks
+ThaiBuddhistDate#plusDays(long)::: thai buddhist date plus days:::return->isoDate->plusDays->with
+ThaiBuddhistDate#plus(long, TemporalUnit)::: thai buddhist date plus:::return->super->plus
+ThaiBuddhistDate#minus(long, TemporalUnit)::: thai buddhist date minus:::return->super->minus
+ThaiBuddhistDate#minusYears(long)::: thai buddhist date minus years:::return->super->minusYears
+ThaiBuddhistDate#minusMonths(long)::: thai buddhist date minus months:::return->super->minusMonths
+ThaiBuddhistDate#minusWeeks(long)::: thai buddhist date minus weeks:::return->super->minusWeeks
+ThaiBuddhistDate#minusDays(long)::: thai buddhist date minus days:::return->super->minusDays
+ThaiBuddhistDate#with(LocalDate)::: thai buddhist date with:::return->newDate->equals->new->ThaiBuddhistDate
+ThaiBuddhistDate#atTime(LocalTime)::: thai buddhist date at time:::return->super->atTime
+ThaiBuddhistDate#until(ChronoLocalDate)::: thai buddhist date until:::period->isoDate->until->return->getChronology->period->getYears->period->getMonths->period->getDays->period
+ThaiBuddhistDate#toEpochDay()::: thai buddhist date to epoch day:::return->isoDate->toEpochDay
 ThaiBuddhistDate#equals(Object):::Compares this date to another date, including the chronology:::if->return->if->otherDate->return->equals->return
 ThaiBuddhistDate#hashCode():::A hash code for this date.:::return->getChronology->getId->hashCode->isoDate->hashCode
+ThaiBuddhistDate#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+ThaiBuddhistDate#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+ThaiBuddhistDate#writeExternal(DataOutput)::: thai buddhist date write external:::out->this->get->writeInt->out->this->get->writeByte->out->this->get->writeByte
+ThaiBuddhistDate#readExternal(DataInput)::: thai buddhist date read external:::year->in->readInt->month->in->readByte->dayOfMonth->in->readByte->return->date

@@ -1,14 +1,28 @@
 AttributesImplSerializer#getIndex(String):::This method gets the index of an attribute given its qName.:::index->if->super->getLength->super->getIndex->return->i->m_indexFromQName->get->if->else->i->intValue->return
 AttributesImplSerializer#addAttribute(String, String, String, String, String):::This method adds the attribute, but also records its qName/index pair in the hashtable for fast lookup by getIndex(qName).:::index->super->getLength->super->addAttribute->if->return->else->if->switchOverToHash->else->i->m_indexFromQName->put->m_buff->setLength->m_buff->append->append->append->append->key->m_buff->toString->m_indexFromQName->put
+AttributesImplSerializer#switchOverToHash(int):::We are switching over to having a hash table for quick look up of attributes, but up until now we haven't kept any information in the Map, so we now update the Map:::for->index
 AttributesImplSerializer#clear():::This method clears the accumulated attributes.:::len->super->getLength->super->clear->if->m_indexFromQName->clear
 AttributesImplSerializer#setAttributes(Attributes):::This method sets the attributes, previous attributes are cleared, it also keeps the hashtable up to date for quick lookup via getIndex(qName).:::super->setAttributes->numAtts->atts->getLength->if->switchOverToHash
 AttributesImplSerializer#getIndex(String, String):::This method gets the index of an attribute given its uri and locanName.:::index->if->super->getLength->super->getIndex->return->m_buff->setLength->m_buff->append->append->append->append->key->m_buff->toString->i->m_indexFromQName->get->if->else->return
+CharInfo#defineEntity(String, char):::Defines a new character reference:::sb->new->StringBuilder->sb->append->sb->append->entityString->sb->toString->defineChar2StringMapping
 CharInfo#getOutputStringForChar(char):::Map a character to a String:::charKey->new->CharKey->charKey->setChar->return->m_charToString->get
 CharInfo#isSpecialAttrChar(int):::Tell if the character argument that is from an attribute value should have special treatment.:::if->return->return->get
 CharInfo#isSpecialTextChar(int):::Tell if the character argument that is from a text node should have special treatment.:::if->return->return->get
 CharInfo#isTextASCIIClean(int):::This method is used to determine if an ASCII character in a text node (not an attribute value) is "clean".:::return
 CharInfo#getCharInfoInternal(String, String):::Read an internal resource file that describes the mapping of characters to entity references; Construct a CharInfo object.:::charInfo->m_getCharInfoCache->get->if->return->new->CharInfo->m_getCharInfoCache->put->return
 CharInfo#getCharInfo(String, String):::Constructs a CharInfo object using the following process to try reading the entitiesFileName parameter:    1) attempt to load it as a ResourceBundle   2) try using the class loader to find the specified file   3) try opening it as an URI  In case of 2 and 3, the resource file must be encoded in UTF-8 and have the following format:  # First char # is a comment Entity numericValue quot 34 amp 38 :::try->return->new->CharInfo->catch->finally->absoluteEntitiesFileName->if->entitiesFileName->indexOf->SystemIDResolver->getAbsoluteURIFromRelative->else->try->SystemIDResolver->getAbsoluteURI->catch->throw->new->WrappedRuntimeException->finally->return->new->CharInfo
+CharInfo#arrayIndex(int):::Returns the array element holding the bit value for the given integer:::return
+CharInfo#bit(int):::For a given integer in the set it returns the single bit value used within a given word that represents whether the integer is in the set or not.:::ret->return
+CharInfo#createEmptySetOfIntegers(int):::Creates a new empty set of integers (characters):::arr->arrayIndex->new->intArr->return
+CharInfo#set(int):::Adds the integer (character) to the set of integers.:::setASCIIdirty->j->k->if
+CharInfo#get(int):::Return true if the integer (character)is in the set of integers:::in_the_set->j->if->return
+CharInfo#extraEntity(int)::: char info extra entity:::extra->if->switch->break->return
+CharInfo#setASCIIdirty(int):::If the character is a printable ASCII character then mark it as not clean and needing replacement with a String on output.:::if
+CharInfo#setASCIIclean(int):::If the character is a printable ASCII character then mark it as and not needing replacement with a String on output.:::if
+CharInfo#defineChar2StringMapping(String, char)::: char info define char2 string mapping:::character->new->CharKey->m_charToString->put->set
+CharInfo.CharKey#setChar(char):::Get the hash value of the character.:::
+CharInfo.CharKey#hashCode():::Get the hash value of the character.:::return
+CharInfo.CharKey#equals(Object):::Override of equals() for this object:::return
 DOM3Serializer#serializeDOM3(Node):::Serializes the Level 3 DOM node:::
 DOM3Serializer#setErrorHandler(DOMErrorHandler):::Sets a DOMErrorHandler on the DOM Level 3 Serializer:::
 DOM3Serializer#getErrorHandler():::Returns a DOMErrorHandler set on the DOM Level 3 Serializer:::
@@ -19,16 +33,133 @@ DOMSerializer#serialize(Node):::Serializes the DOM node:::
 ElemContext#pop():::Pop the current "stack frame".:::return
 ElemContext#push():::This method pushes an element "stack frame" but with no initialization of values in that frame:::frame->if->new->ElemContext->return
 ElemContext#push(String, String, String):::Push an element context on the stack:::frame->if->new->ElemContext->return
+ElemDesc#is(int):::Tell if this element type has the basic bit properties that are passed as an argument.:::return
+ElemDesc#getFlags()::: elem desc get flags:::return
 ElemDesc#setAttr(String, int):::Set an attribute name and it's bit properties.:::if->new->StringToIntTable->m_attrs->put
 ElemDesc#isAttrFlagSet(String, int):::Tell if any of the bits of interest are set for a named attribute type.:::return->m_attrs->getIgnoreCase
+EmptySerializer#couldThrowIOException()::: empty serializer could throw exception:::return
+EmptySerializer#couldThrowSAXException()::: empty serializer could throw exception:::return
+EmptySerializer#couldThrowSAXException(char[], int, int)::: empty serializer could throw exception:::return
+EmptySerializer#couldThrowSAXException(String)::: empty serializer could throw exception:::return
+EmptySerializer#aMethodIsCalled()::: empty serializer a method is called:::return
+EmptySerializer#asContentHandler()::: empty serializer as content handler:::couldThrowIOException->return
+EmptySerializer#setContentHandler(ContentHandler)::: empty serializer set content handler:::aMethodIsCalled
+EmptySerializer#close()::: empty serializer close:::aMethodIsCalled
+EmptySerializer#getOutputFormat()::: empty serializer get output format:::aMethodIsCalled->return
+EmptySerializer#getOutputStream()::: empty serializer get output stream:::aMethodIsCalled->return
+EmptySerializer#getWriter()::: empty serializer get writer:::aMethodIsCalled->return
+EmptySerializer#reset()::: empty serializer reset:::aMethodIsCalled->return
+EmptySerializer#serialize(Node)::: empty serializer serialize:::couldThrowIOException
+EmptySerializer#setCdataSectionElements(List)::: empty serializer set cdata section elements:::aMethodIsCalled
+EmptySerializer#setEscaping(boolean)::: empty serializer set escaping:::couldThrowSAXException->return
+EmptySerializer#setIndent(boolean)::: empty serializer set indent:::aMethodIsCalled
+EmptySerializer#setIndentAmount(int)::: empty serializer set indent amount:::aMethodIsCalled
+EmptySerializer#setIsStandalone(boolean)::: empty serializer set is standalone:::aMethodIsCalled
+EmptySerializer#setOutputFormat(Properties)::: empty serializer set output format:::aMethodIsCalled
+EmptySerializer#setOutputStream(OutputStream)::: empty serializer set output stream:::aMethodIsCalled
+EmptySerializer#setVersion(String)::: empty serializer set version:::aMethodIsCalled
+EmptySerializer#setWriter(Writer)::: empty serializer set writer:::aMethodIsCalled
+EmptySerializer#setTransformer(Transformer)::: empty serializer set transformer:::aMethodIsCalled
+EmptySerializer#getTransformer()::: empty serializer get transformer:::aMethodIsCalled->return
+EmptySerializer#flushPending()::: empty serializer flush pending:::couldThrowSAXException
+EmptySerializer#addAttribute(String, String, String, String, String, boolean)::: empty serializer add attribute:::couldThrowSAXException
+EmptySerializer#addAttributes(Attributes)::: empty serializer add attributes:::couldThrowSAXException
+EmptySerializer#addAttribute(String, String)::: empty serializer add attribute:::aMethodIsCalled
+EmptySerializer#characters(String)::: empty serializer characters:::couldThrowSAXException
+EmptySerializer#endElement(String)::: empty serializer end element:::couldThrowSAXException
+EmptySerializer#startDocument()::: empty serializer start document:::couldThrowSAXException
+EmptySerializer#startElement(String, String, String)::: empty serializer start element:::couldThrowSAXException
+EmptySerializer#startElement(String)::: empty serializer start element:::couldThrowSAXException
+EmptySerializer#namespaceAfterStartElement(String, String)::: empty serializer namespace after start element:::couldThrowSAXException
+EmptySerializer#startPrefixMapping(String, String, boolean)::: empty serializer start prefix mapping:::couldThrowSAXException->return
+EmptySerializer#entityReference(String)::: empty serializer entity reference:::couldThrowSAXException
+EmptySerializer#getNamespaceMappings()::: empty serializer get namespace mappings:::aMethodIsCalled->return
+EmptySerializer#getPrefix(String)::: empty serializer get prefix:::aMethodIsCalled->return
+EmptySerializer#getNamespaceURI(String, boolean)::: empty serializer get namespace i:::aMethodIsCalled->return
+EmptySerializer#getNamespaceURIFromPrefix(String)::: empty serializer get namespace from prefix:::aMethodIsCalled->return
+EmptySerializer#setDocumentLocator(Locator)::: empty serializer set document locator:::aMethodIsCalled
+EmptySerializer#endDocument()::: empty serializer end document:::couldThrowSAXException
+EmptySerializer#startPrefixMapping(String, String)::: empty serializer start prefix mapping:::couldThrowSAXException
+EmptySerializer#endPrefixMapping(String)::: empty serializer end prefix mapping:::couldThrowSAXException
+EmptySerializer#startElement(String, String, String, Attributes)::: empty serializer start element:::couldThrowSAXException
+EmptySerializer#endElement(String, String, String)::: empty serializer end element:::couldThrowSAXException
+EmptySerializer#characters(char[], int, int)::: empty serializer characters:::couldThrowSAXException
+EmptySerializer#ignorableWhitespace(char[], int, int)::: empty serializer ignorable whitespace:::couldThrowSAXException
+EmptySerializer#processingInstruction(String, String)::: empty serializer processing instruction:::couldThrowSAXException
+EmptySerializer#skippedEntity(String)::: empty serializer skipped entity:::couldThrowSAXException
+EmptySerializer#comment(String)::: empty serializer comment:::couldThrowSAXException
+EmptySerializer#startDTD(String, String, String)::: empty serializer start d:::couldThrowSAXException
+EmptySerializer#endDTD()::: empty serializer end d:::couldThrowSAXException
+EmptySerializer#startEntity(String)::: empty serializer start entity:::couldThrowSAXException
+EmptySerializer#endEntity(String)::: empty serializer end entity:::couldThrowSAXException
+EmptySerializer#startCDATA()::: empty serializer start a:::couldThrowSAXException
+EmptySerializer#endCDATA()::: empty serializer end a:::couldThrowSAXException
+EmptySerializer#comment(char[], int, int)::: empty serializer comment:::couldThrowSAXException
+EmptySerializer#getDoctypePublic()::: empty serializer get doctype public:::aMethodIsCalled->return
+EmptySerializer#getDoctypeSystem()::: empty serializer get doctype system:::aMethodIsCalled->return
+EmptySerializer#getEncoding()::: empty serializer get encoding:::aMethodIsCalled->return
+EmptySerializer#getIndent()::: empty serializer get indent:::aMethodIsCalled->return
+EmptySerializer#getIndentAmount()::: empty serializer get indent amount:::aMethodIsCalled->return
+EmptySerializer#getMediaType()::: empty serializer get media type:::aMethodIsCalled->return
+EmptySerializer#getOmitXMLDeclaration()::: empty serializer get omit declaration:::aMethodIsCalled->return
+EmptySerializer#getStandalone()::: empty serializer get standalone:::aMethodIsCalled->return
+EmptySerializer#getVersion()::: empty serializer get version:::aMethodIsCalled->return
+EmptySerializer#setDoctype(String, String)::: empty serializer set doctype:::aMethodIsCalled
+EmptySerializer#setDoctypePublic(String)::: empty serializer set doctype public:::aMethodIsCalled
+EmptySerializer#setDoctypeSystem(String)::: empty serializer set doctype system:::aMethodIsCalled
+EmptySerializer#setEncoding(String)::: empty serializer set encoding:::aMethodIsCalled
+EmptySerializer#setMediaType(String)::: empty serializer set media type:::aMethodIsCalled
+EmptySerializer#setOmitXMLDeclaration(boolean)::: empty serializer set omit declaration:::aMethodIsCalled
+EmptySerializer#setStandalone(String)::: empty serializer set standalone:::aMethodIsCalled
+EmptySerializer#elementDecl(String, String)::: empty serializer element decl:::couldThrowSAXException
+EmptySerializer#attributeDecl(String, String, String, String, String)::: empty serializer attribute decl:::couldThrowSAXException
+EmptySerializer#internalEntityDecl(String, String)::: empty serializer internal entity decl:::couldThrowSAXException
+EmptySerializer#externalEntityDecl(String, String, String)::: empty serializer external entity decl:::couldThrowSAXException
+EmptySerializer#warning(SAXParseException)::: empty serializer warning:::couldThrowSAXException
+EmptySerializer#error(SAXParseException)::: empty serializer error:::couldThrowSAXException
+EmptySerializer#fatalError(SAXParseException)::: empty serializer fatal error:::couldThrowSAXException
+EmptySerializer#asDOMSerializer()::: empty serializer as serializer:::couldThrowIOException->return
+EmptySerializer#setNamespaceMappings(NamespaceMappings)::: empty serializer set namespace mappings:::aMethodIsCalled
+EmptySerializer#setSourceLocator(SourceLocator)::: empty serializer set source locator:::aMethodIsCalled
+EmptySerializer#addUniqueAttribute(String, String, int)::: empty serializer add unique attribute:::couldThrowSAXException
+EmptySerializer#characters(Node)::: empty serializer characters:::couldThrowSAXException
+EmptySerializer#addXSLAttribute(String, String, String)::: empty serializer add attribute:::aMethodIsCalled
+EmptySerializer#addAttribute(String, String, String, String, String)::: empty serializer add attribute:::couldThrowSAXException
+EmptySerializer#notationDecl(String, String, String)::: empty serializer notation decl:::couldThrowSAXException
+EmptySerializer#unparsedEntityDecl(String, String, String, String)::: empty serializer unparsed entity decl:::couldThrowSAXException
+EmptySerializer#setDTDEntityExpansion(boolean)::: empty serializer set entity expansion:::aMethodIsCalled
+EmptySerializer#getOutputProperty(String)::: empty serializer get output property:::aMethodIsCalled->return
+EmptySerializer#getOutputPropertyDefault(String)::: empty serializer get output property default:::aMethodIsCalled->return
+EmptySerializer#setOutputProperty(String, String)::: empty serializer set output property:::aMethodIsCalled
+EmptySerializer#setOutputPropertyDefault(String, String)::: empty serializer set output property default:::aMethodIsCalled
+EmptySerializer#asDOM3Serializer()::: empty serializer as m3 serializer:::couldThrowIOException->return
 EncodingInfo#isInEncoding(char):::This is not a public API:::if->new->EncodingImpl->return->m_encoding->isInEncoding
 EncodingInfo#isInEncoding(char, char):::This is not a public API:::if->new->EncodingImpl->return->m_encoding->isInEncoding
+EncodingInfo.InEncoding#isInEncoding(char):::Returns true if the char is in the encoding:::
+EncodingInfo.InEncoding#isInEncoding(char, char):::Returns true if the high/low surrogate pair forms a character that is in the encoding.:::
+EncodingInfo.EncodingImpl#isInEncoding(char)::: encoding impl is in encoding:::ret->codePoint->Encodings->toCodePoint->if->if->new->EncodingImpl->m_before->isInEncoding->else->if->if->new->EncodingImpl->m_after->isInEncoding->else->idx->if->else->inEncoding->return
+EncodingInfo.EncodingImpl#isInEncoding(char, char)::: encoding impl is in encoding:::ret->codePoint->Encodings->toCodePoint->if->if->new->EncodingImpl->m_before->isInEncoding->else->if->if->new->EncodingImpl->m_after->isInEncoding->else->idx->if->else->inEncoding->return
+EncodingInfo#inEncoding(char, String):::This is heart of the code that determines if a given character is in the given encoding:::isInEncoding->try->cArray->new->charArr->s->new->String->bArray->s->getBytes->inEncoding->catch->if->finally->return
+EncodingInfo#inEncoding(char, char, String):::This is heart of the code that determines if a given high/low surrogate pair forms a character that is in the given encoding:::isInEncoding->try->cArray->new->charArr->s->new->String->bArray->s->getBytes->inEncoding->catch->finally->return
+EncodingInfo#inEncoding(char, byte[]):::This method is the core of determining if character is in the encoding:::isInEncoding->if->else->if->else->if->else->return
 Encodings#getWriter(OutputStream, String):::Returns a writer for the specified encoding based on an output stream.:::ei->_encodingInfos->toUpperCaseFast->findEncoding->if->try->return->new->OutputStreamWriter->new->BufferedWriter->catch->finally->return->new->OutputStreamWriter->new->BufferedWriter
 Encodings#getLastPrintable():::Returns the last printable character for an unspecified encoding.:::return
 Encodings#getEncodingInfo(String):::Returns the EncodingInfo object for the specified encoding:::ei->normalizedEncoding->toUpperCaseFast->_encodingInfos->findEncoding->if->try->c->Charset->forName->name->c->name->new->EncodingInfo->_encodingInfos->putEncoding->catch->new->EncodingInfo->finally->return
 Encodings#isRecognizedEncoding(String):::Determines if the encoding specified was recognized by the serializer or not.:::ei->normalizedEncoding->toUpperCaseFast->_encodingInfos->findEncoding->if->return->return
+Encodings#toUpperCaseFast(String):::A fast and cheap way to uppercase a String that is only made of printable ASCII characters:::different->mx->s->length->chars->new->charArr->for->i->upper->if->String->valueOf->else->return
 Encodings#getMimeEncoding(String):::Get the proper mime encoding:::if->try->SecuritySupport->getSystemProperty->if->jencoding->encoding->equalsIgnoreCase->encoding->equalsIgnoreCase->encoding->equalsIgnoreCase->encoding->equalsIgnoreCase->convertJava2MimeEncoding->else->catch->finally->else->convertJava2MimeEncoding->return
+Encodings#convertJava2MimeEncoding(String):::Try the best we can to convert a Java encoding to a XML-style encoding.:::enc->_encodingInfos->toUpperCaseFast->getEncodingFromJavaKey->if->return->return
 Encodings#convertMime2JavaEncoding(String):::Try the best we can to convert a Java encoding to a XML-style encoding.:::info->_encodingInfos->toUpperCaseFast->findEncoding->return
+Encodings.EncodingInfos#openEncodingsFileStream()::: encoding infos open encodings file stream:::urlString->is->try->SecuritySupport->getSystemProperty->catch->finally->if->urlString->length->url->new->URL->url->openStream->if->SecuritySupport->getResourceAsStream->return
+Encodings.EncodingInfos#loadProperties()::: encoding infos load properties:::props->new->Properties->try->is->openEncodingsFileStream->if->props->load->else->catch->finally->return
+Encodings.EncodingInfos#parseMimeTypes(String)::: encoding infos parse mime types:::pos->val->indexOf->if->return->new->StringArr->st->val->substring->new->StringTokenizer->values->st->countTokens->new->StringArr->for->i->st->hasMoreTokens->return
+Encodings.EncodingInfos#findCharsetNameFor(String)::: encoding infos find charset name for:::try->return->Charset->forName->name->catch->return->finally
+Encodings.EncodingInfos#findCharsetNameFor(String, String[])::: encoding infos find charset name for:::cs->findCharsetNameFor->if->return->foreach->findCharsetNameFor->if->break->return
+Encodings.EncodingInfos#loadEncodingInfo():::Loads a list of all the supported encodings:::try->props->loadProperties->keys->props->keys->canonicals->new->HashMap<>->while->keys->hasMoreElements->javaName->keys->nextElement->mimes->props->getProperty->parseMimeTypes->charsetName->findCharsetNameFor->if->kj->toUpperCaseFast->kc->toUpperCaseFast->for->i->else->foreach->_encodingTableKeyJava->entrySet->e->canonicals->e->getValue->toUpperCaseFast->get->setValue->catch->throw->new->com.sun.org.apache.xml.internal.serializer.utils.WrappedRuntimeException->throw->new->com.sun.org.apache.xml.internal.serializer.utils.WrappedRuntimeException->finally
+Encodings.EncodingInfos#findEncoding(String)::: encoding infos find encoding:::info->_encodingTableKeyJava->get->if->_encodingTableKeyMime->get->if->_encodingDynamicTable->get->return
+Encodings.EncodingInfos#getEncodingFromMimeKey(String)::: encoding infos get encoding from mime key:::return->_encodingTableKeyMime->get
+Encodings.EncodingInfos#getEncodingFromJavaKey(String)::: encoding infos get encoding from java key:::return->_encodingTableKeyJava->get
+Encodings.EncodingInfos#putEncoding(String, EncodingInfo)::: encoding infos put encoding:::_encodingDynamicTable->put
 Encodings#isHighUTF16Surrogate(char):::Return true if the character is the high member of a surrogate pair:::return
 Encodings#isLowUTF16Surrogate(char):::Return true if the character is the low member of a surrogate pair:::return
 Encodings#toCodePoint(char, char):::Return the unicode code point represented by the high/low surrogate pair:::codePoint->return
@@ -53,17 +184,25 @@ ExtendedContentHandler#addUniqueAttribute(String, String, int):::Add a unique at
 ExtendedContentHandler#addXSLAttribute(String, String, String):::Add an attribute from an xsl:attribute element.:::
 ExtendedContentHandler#addAttribute(String, String, String, String, String):::Add at attribute to the current element, not from an xsl:attribute element.:::
 ExtendedLexicalHandler#comment(String):::This method is used to notify of a comment:::
+NamespaceMappings#initNamespaces():::This method initializes the namespace object with appropriate stacks and predefines a few prefix/uri pairs which always exist.:::stack->m_namespaces->new->Stack<>->put->stack->new->MappingRecord->push->m_namespaces->new->Stack<>->put->stack->new->MappingRecord->push->m_nodeStack->new->MappingRecord->push
 NamespaceMappings#lookupNamespace(String):::Use a namespace prefix to lookup a namespace URI.:::stack->m_namespaces->get->return->stack->isEmpty->stack->peek
+NamespaceMappings#getMappingFromPrefix(String)::: namespace mappings get mapping from prefix:::stack->m_namespaces->get->return->stack->isEmpty->stack->peek
 NamespaceMappings#lookupPrefix(String):::Given a namespace uri, and the namespaces mappings for the current element, return the current prefix for that uri.:::foundPrefix->itr->m_namespaces->keySet->iterator->while->itr->hasNext->prefix->itr->next->uri2->lookupNamespace->if->uri2->equals->break->return
+NamespaceMappings#getMappingFromURI(String)::: namespace mappings get mapping from i:::foundMap->itr->m_namespaces->keySet->iterator->while->itr->hasNext->prefix->itr->next->map2->getMappingFromPrefix->if->equals->break->return
 NamespaceMappings#popNamespace(String):::Undeclare the namespace that is currently pointed to by a given prefix:::if->prefix->startsWith->return->stack->if->m_namespaces->get->stack->pop->return->return
 NamespaceMappings#pushNamespace(String, String, int):::Declare a mapping of a prefix to namespace URI at the given element depth.:::if->prefix->startsWith->return->stack->if->m_namespaces->get->m_namespaces->new->Stack<>->put->if->stack->empty->uri->stack->peek->equals->return->map->new->MappingRecord->stack->push->m_nodeStack->push->return
 NamespaceMappings#popNamespaces(int, ContentHandler):::Pop, or undeclare all namespace definitions that are currently declared at the given element depth, or deepter.:::while->if->m_nodeStack->isEmpty->return->map->m_nodeStack->peek->depth->if->return->m_nodeStack->pop->prefix->popNamespace->if->try->saxHandler->endPrefixMapping->catch->finally
 NamespaceMappings#generateNextPrefix():::Generate a new namespace prefix ( ns0, ns1 ...) not used before:::return
 NamespaceMappings#clone():::This method makes a clone of this object.:::clone->new->NamespaceMappings->m_nodeStack->clone->m_namespaces->clone->return
+NamespaceMappings#reset()::: namespace mappings reset:::clear->clear->initNamespaces
+OutputPropertiesFactory#findAccessControllerClass()::: output properties factory find access controller class:::try->return->Class->forName->catch->finally->return
 OutputPropertiesFactory#getDefaultMethodProperties(String):::Creates an empty OutputProperties with the property key/value defaults specified by a property file:::fileName->defaultProperties->try->synchronized->if->loadPropertiesFile->if->method->equals->else->if->method->equals->if->loadPropertiesFile->else->if->method->equals->if->loadPropertiesFile->if->m_text_properties->getProperty->mimeEncoding->Encodings->getMimeEncoding->m_text_properties->put->else->if->method->equals->if->loadPropertiesFile->else->catch->throw->new->ObjectArr->createMessage->new->WrappedRuntimeException->finally->return->new->Properties
+OutputPropertiesFactory#loadPropertiesFile(String, Properties):::Load the properties file from a resource stream:::props->new->Properties->is->bis->try->if->AccessController->new->PrivilegedAction<InputStream>->doPrivileged->else->getResourceAsStream->new->BufferedInputStream->props->load->catch->if->throw->else->throw->new->ObjectArr->createMessage->new->WrappedRuntimeException->if->throw->else->throw->new->ObjectArr->createMessage->new->WrappedRuntimeException->finally->if->bis->close->if->is->close->keys->props->clone->keys->while->keys->hasMoreElements->key->keys->nextElement->value->try->SecuritySupport->getSystemProperty->catch->finally->if->props->get->newKey->fixupPropertyString->newValue->try->SecuritySupport->getSystemProperty->catch->finally->if->fixupPropertyString->else->fixupPropertyString->if->props->remove->props->put->return
+OutputPropertiesFactory#fixupPropertyString(String, boolean):::Fix up a string in an output properties file according to the rules of #loadPropertiesFile.:::index->if->s->startsWith->s->substring->if->s->startsWith->s->substring->if->s->indexOf->temp->s->substring->s->substring->return
 OutputPropertyUtils#getBooleanProperty(String, Properties):::Searches for the boolean property with the specified key in the property list:::s->props->getProperty->if->s->equals->return->else->return
 OutputPropertyUtils#getIntProperty(String, Properties):::Searches for the int property with the specified key in the property list:::s->props->getProperty->if->return->else->return->Integer->parseInt
 SerializationHandler#setContentHandler(ContentHandler):::Set the SAX Content handler that the serializer sends its output to:::
+SerializationHandler#close()::: serialization handler close:::
 SerializationHandler#serialize(Node):::Notify that the serializer should take this DOM node as input to be serialized.:::
 SerializationHandler#setEscaping(boolean):::Turns special character escaping on/off:::
 SerializationHandler#setIndentAmount(int):::Set the number of spaces to indent for each indentation level.:::
@@ -102,6 +241,7 @@ SerializerBase#initCDATA():::Initialize global variables:::
 SerializerBase#getEncoding():::Returns the character encoding to be used in the output document.:::return->getOutputProperty
 SerializerBase#setEncoding(String):::Sets the character encoding coming from the xsl:output encoding stylesheet attribute.:::setOutputProperty
 SerializerBase#setOmitXMLDeclaration(boolean):::Sets the value coming from the xsl:output omit-xml-declaration stylesheet attribute:::val->setOutputProperty
+SerializerBase#getOmitXMLDeclaration()::: serializer base get omit declaration:::return
 SerializerBase#getDoctypePublic():::Returns the previously set value of the value to be used as the public identifier in the document type declaration (DTD).:::return
 SerializerBase#setDoctypePublic(String):::Set the value coming from the xsl:output doctype-public stylesheet attribute.:::setOutputProperty
 SerializerBase#getDoctypeSystem():::Returns the previously set value of the value to be used as the system identifier in the document type declaration (DTD).:::return
@@ -110,15 +250,18 @@ SerializerBase#setDoctype(String, String):::Set the value coming from the xsl:ou
 SerializerBase#setStandalone(String):::Sets the value coming from the xsl:output standalone stylesheet attribute.:::setOutputProperty
 SerializerBase#setStandaloneInternal(String):::Sets the XSL standalone attribute, but does not remember if this is a default or explicite setting.:::if->equals->else
 SerializerBase#getStandalone():::Gets the XSL standalone attribute:::return
+SerializerBase#getIndent()::: serializer base get indent:::return
 SerializerBase#getMediaType():::Gets the mediatype the media-type or MIME type associated with the output document.:::return
 SerializerBase#getVersion():::Gets the version of the output format.:::return
 SerializerBase#setVersion(String):::Sets the value coming from the xsl:output version attribute.:::setOutputProperty
 SerializerBase#setMediaType(String):::Sets the value coming from the xsl:output media-type stylesheet attribute.:::setOutputProperty
+SerializerBase#getIndentAmount()::: serializer base get indent amount:::return
 SerializerBase#setIndentAmount(int):::Sets the indentation amount.:::
 SerializerBase#setIndent(boolean):::Sets the value coming from the xsl:output indent stylesheet attribute.:::val->setOutputProperty
 SerializerBase#setIsStandalone(boolean):::Sets the isStandalone property:::
 SerializerBase#namespaceAfterStartElement(String, String):::This method is used when a prefix/uri namespace mapping is indicated after the element was started with a startElement() and before and endElement():::
 SerializerBase#asDOMSerializer():::Return a DOMSerializer interface into this serializer:::return
+SerializerBase#subPartMatch(String, String):::Tell if two strings are equal, without worry if the first string is null.:::return->p->equals
 SerializerBase#getPrefixPart(String):::Returns the local name of a qualified name:::col->qname->indexOf->return->qname->substring
 SerializerBase#getNamespaceMappings():::Some users of the serializer may need the current namespace mappings:::return
 SerializerBase#getPrefix(String):::Returns the prefix currently pointing to the given URI (if any).:::prefix->m_prefixMap->lookupPrefix->return
@@ -128,7 +271,11 @@ SerializerBase#entityReference(String):::Entity reference event.:::flushPending-
 SerializerBase#setTransformer(Transformer):::Sets the transformer associated with this serializer:::if->hasTraceListeners->else
 SerializerBase#getTransformer():::Gets the transformer associated with this serializer:::return
 SerializerBase#characters(org.w3c.dom.Node):::This method gets the nodes value as a String and uses that String as if it were an input character notification.:::flushPending->data->node->getNodeValue->if->length->data->length->if->new->charArr->data->getChars->characters
+SerializerBase#error(SAXParseException)::: serializer base error:::
+SerializerBase#fatalError(SAXParseException)::: serializer base fatal error:::
+SerializerBase#warning(SAXParseException)::: serializer base warning:::
 SerializerBase#fireStartEntity(String):::To fire off start entity trace event:::if->flushMyWriter->m_tracer->fireGenerateEvent
+SerializerBase#flushMyWriter():::This method is only used internally when flushing the writer from the various fire...() trace events:::if->try->m_writer->flush->catch->finally
 SerializerBase#fireCDATAEvent(char[], int, int):::Report the CDATA trace event:::if->flushMyWriter->m_tracer->fireGenerateEvent
 SerializerBase#fireCommentEvent(char[], int, int):::Report the comment trace event:::if->flushMyWriter->m_tracer->new->String->fireGenerateEvent
 SerializerBase#fireEndEntity(String):::To fire off end entity trace event:::if->flushMyWriter
@@ -139,19 +286,31 @@ SerializerBase#fireEscapingEvent(String, String):::To fire off the PI trace even
 SerializerBase#fireEntityReference(String):::To fire off the entity reference trace event:::if->flushMyWriter->m_tracer->fireGenerateEvent
 SerializerBase#startDocument():::Receive notification of the beginning of a document:::startDocumentInternal->return
 SerializerBase#startDocumentInternal():::This method handles what needs to be done at a startDocument() call, whether from an external caller, or internally called in the serializer:::if->this->fireStartDoc
+SerializerBase#setDocumentInfo()::: serializer base set document info:::if->return->try->strVersion->getXMLVersion->if->setVersion->catch->finally
 SerializerBase#setSourceLocator(SourceLocator):::This method is used to set the source locator, which might be used to generated an error message.:::
 SerializerBase#setNamespaceMappings(NamespaceMappings):::Used only by TransformerSnapshotImpl to restore the serialization to a previous state.:::
+SerializerBase#reset()::: serializer base reset:::resetSerializerBase->return
+SerializerBase#resetSerializerBase():::Reset all of the fields owned by SerializerBase:::clear->new->ElemContext->if->reset
 SerializerBase#inTemporaryOutputState():::Returns true if the serializer is used for temporary output rather than final output:::return->getEncoding
 SerializerBase#addAttribute(String, String, String, String, String):::This method adds an attribute the the current element, but should not be used for an xsl:attribute child.:::if->addAttributeAlways
+SerializerBase#notationDecl(String, String, String)::: serializer base notation decl:::
+SerializerBase#unparsedEntityDecl(String, String, String, String)::: serializer base unparsed entity decl:::
 SerializerBase#setDTDEntityExpansion(boolean):::If set to false the serializer does not expand DTD entities, but leaves them as is, the default value is true.:::
+SerializerBase#initCdataElems(String)::: serializer base init cdata elems:::if->max->s->length->inCurly->foundURI->buf->new->StringBuilder->uri->localName->for->i->if->buf->length->buf->toString->if->addCDATAElement
+SerializerBase#addCDATAElement(String, String)::: serializer base add element:::if->new->java.util.HashMap<>->h->m_CdataElems->get->if->new->HashMap<>->m_CdataElems->put->h->put
 SerializerBase#documentIsEmpty():::Return true if nothing has been sent to this result tree yet:::return
 SerializerBase#isCdataSection():::Return true if the current element in m_elemContext is a CDATA section:::b->if->if->localName->getLocalName->if->getElementURI->else->if->length->if->else->if->length->length->getElementURI->h->if->m_CdataElems->get->if->obj->h->get->if->return
+SerializerBase#getElementURI():::Before this call m_elementContext.m_elementURI is null, which means it is not yet known:::uri->prefix->getPrefixPart->if->m_prefixMap->lookupNamespace->else->m_prefixMap->lookupNamespace->if->return
 SerializerBase#getOutputProperty(String):::Get the value of an output property, the explicit value, if any, otherwise the default value, if any, otherwise null.:::val->getOutputPropertyNonDefault->if->getOutputPropertyDefault->return
 SerializerBase#getOutputPropertyNonDefault(String):::Get the value of an output property, not the default value:::return->getProp
 SerializerBase#asDOM3Serializer():::Return a DOM3Serializer interface into this serializer:::return->new->com.sun.org.apache.xml.internal.serializer.dom3.DOM3SerializerImpl
 SerializerBase#getOutputPropertyDefault(String):::Get the default value of an xsl:output property, which would be null only if no default value exists for the property.:::return->getProp
 SerializerBase#setOutputProperty(String, String):::Set the value for the output property, typically from an xsl:output element, but this does not change what the default value is.:::setProp
 SerializerBase#setOutputPropertyDefault(String, String):::Set the default value for an output property, but this does not impact any explicitly set value.:::setProp
+SerializerBase#getOutputPropDefaultKeys()::: serializer base get output prop default keys:::return->m_OutputPropsDefault->keySet
+SerializerBase#getOutputPropKeys()::: serializer base get output prop keys:::return->m_OutputProps->keySet
+SerializerBase#getProp(String, boolean)::: serializer base get prop:::if->new->HashMap<>->new->HashMap<>->val->if->m_OutputPropsDefault->get->else->m_OutputProps->get->return
+SerializerBase#setProp(String, String, boolean)::: serializer base set prop:::if->new->HashMap<>->new->HashMap<>->if->m_OutputPropsDefault->put->else->if->equals->initCdataElems->oldVal->m_OutputProps->get->newVal->if->else->m_OutputProps->put->else->m_OutputProps->put
 SerializerBase#getFirstCharLocName(String):::Get the first char of the local name:::first->i->name->indexOf->if->name->charAt->else->name->charAt->return
 SerializerFactory#getSerializer(Properties):::Returns a serializer for the specified output method:::ser->try->method->format->getProperty->if->msg->new->ObjectArr->createMessage->throw->new->IllegalArgumentException->className->format->getProperty->if->methodDefaults->OutputPropertiesFactory->getDefaultMethodProperties->methodDefaults->getProperty->if->msg->new->ObjectArr->createMessage->throw->new->IllegalArgumentException->cls->ObjectFactory->findProviderClass->obj->cls->getConstructor->newInstance->if->ser->setOutputFormat->else->if->ObjectFactory->findProviderClass->sh->cls->getConstructor->newInstance->sh->setContentHandler->sh->setOutputFormat->else->throw->new->ObjectArr->createMessage->new->Exception->catch->throw->new->com.sun.org.apache.xml.internal.serializer.utils.WrappedRuntimeException->finally->return
 SerializerTrace#hasTraceListeners():::Tell if trace listeners are present.:::
@@ -160,6 +319,8 @@ SerializerTrace#fireGenerateEvent(int, String, Attributes):::Fire startElement, 
 SerializerTrace#fireGenerateEvent(int, char[], int, int):::Fire characters, cdata events.:::
 SerializerTrace#fireGenerateEvent(int, String, String):::Fire processingInstruction events.:::
 SerializerTrace#fireGenerateEvent(int, String):::Fire comment and entity ref events.:::
+SerializerTraceWriter#setBufferSize(int):::Creates or replaces the internal buffer, and makes sure it has a few extra bytes slight overflow of the last UTF8 encoded character.:::new->byteArr
+SerializerTraceWriter#flushBuffer():::Flush out the collected characters by sending them to the trace listener:::if->chars->new->charArr->for->i->if->m_tracer->fireGenerateEvent
 SerializerTraceWriter#flush():::Flush the internal buffer and flush the Writer:::if->m_writer->flush->flushBuffer
 SerializerTraceWriter#close():::Flush the internal buffer and close the Writer:::if->m_writer->close->flushBuffer
 SerializerTraceWriter#write(int):::Write a single character:::if->m_writer->write->if->flushBuffer->if->else->if->else
@@ -179,6 +340,7 @@ ToHTMLSAXHandler#setOutputStream(OutputStream):::Does nothing.:::
 ToHTMLSAXHandler#setWriter(Writer):::Does nothing.:::
 ToHTMLSAXHandler#attributeDecl(String, String, String, String, String):::Does nothing.:::
 ToHTMLSAXHandler#elementDecl(String, String):::Does nothing.:::return
+ToHTMLSAXHandler#externalEntityDecl(String, String, String)::: to handler external entity decl:::
 ToHTMLSAXHandler#internalEntityDecl(String, String):::Does nothing.:::
 ToHTMLSAXHandler#endElement(String, String, String):::Receive notification of the end of an element:::flushPending->m_saxHandler->endElement->if->super->fireEndElem
 ToHTMLSAXHandler#endPrefixMapping(String):::Does nothing.:::
@@ -205,10 +367,15 @@ ToHTMLSAXHandler#startPrefixMapping(String, String, boolean):::Handle a prefix/u
 ToHTMLSAXHandler#startPrefixMapping(String, String):::Begin the scope of a prefix-URI Namespace mapping just before another element is about to start:::startPrefixMapping
 ToHTMLSAXHandler#namespaceAfterStartElement(String, String):::This method is used when a prefix/uri namespace mapping is indicated after the element was started with a startElement() and before and endElement():::if->prefix1->getPrefixPart->if->EMPTYSTRING->equals->startPrefixMapping
 ToHTMLSAXHandler#reset():::Try's to reset the super class and reset this class for re-use, so that you don't need to create a new serializer (mostly for performance reasons).:::wasReset->if->super->reset->resetToHTMLSAXHandler->return
+ToHTMLSAXHandler#resetToHTMLSAXHandler():::Reset all of the fields owned by ToHTMLSAXHandler class:::
+ToHTMLStream#initTagReference(Trie)::: to stream init tag reference:::m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->m_elementFlags->new->ElemDesc->put->elemDesc->m_elementFlags->get->elemDesc->setAttr->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->elemDesc->setAttr->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->elemDesc->setAttr->elemDesc->setAttr->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->elemDesc->setAttr->elemDesc->setAttr->elemDesc->setAttr->elemDesc->setAttr->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->elemDesc->setAttr->elemDesc->setAttr->elemDesc->setAttr->elemDesc->setAttr->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->elemDesc->setAttr->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr->m_elementFlags->get->elemDesc->setAttr
 ToHTMLStream#setSpecialEscapeURLs(boolean):::Tells if the formatter should use special URL escaping.:::
 ToHTMLStream#setOmitMetaTag(boolean):::Tells if the formatter should omit the META tag.:::
 ToHTMLStream#setOutputFormat(Properties):::Specifies an output format for this serializer:::OutputPropertyUtils->getBooleanProperty->OutputPropertyUtils->getBooleanProperty->super->setOutputFormat
+ToHTMLStream#getSpecialEscapeURLs():::Tells if the formatter should use special URL escaping.:::return
+ToHTMLStream#getOmitMetaTag():::Tells if the formatter should omit the META tag.:::return
 ToHTMLStream#getElemDesc(String):::Get a description of the given element.:::obj->m_elementFlags->get->if->return->return
+ToHTMLStream#getElemDesc2(String):::Calls to this method could be replaced with calls to getElemDesc(name), but this one should be faster.:::obj->m_htmlInfo->get2->if->return->return
 ToHTMLStream#startDocumentInternal():::Receive notification of the beginning of a document.:::super->startDocumentInternal->setOmitXMLDeclaration->if->doctypeSystem->getDoctypeSystem->doctypePublic->getDoctypePublic->if->writer->try->writer->write->if->writer->write->writer->write->writer->write->if->if->writer->write->else->writer->write->writer->write->writer->write->writer->write->outputLineSep->catch->throw->new->SAXException->finally
 ToHTMLStream#endDocument():::Receive notification of the end of a document.:::if->flushCharactersBuffer->flushPending->if->try->outputLineSep->catch->throw->new->SAXException->finally->flushWriter->if->super->fireEndDoc
 ToHTMLStream#shouldIndentForText():::If the previous is an inline element, won't insert a new line before the text.:::return->super->shouldIndentForText
@@ -216,21 +383,29 @@ ToHTMLStream#shouldFormatOutput():::Only check m_doIndent, disregard m_ispreserv
 ToHTMLStream#startElement(String, String, String, Attributes):::Receive notification of the beginning of an element.:::if->flushCharactersBuffer->elemContext->if->closeStartTag->else->if->closeCDATA->else->if->startDocumentInternal->if->namespaceURI->length->super->startElement->return->try->elemDesc->getElemDesc2->elemFlags->elemDesc->getFlags->if->isBlockElement->if->indent->if->addAttributes->writer->writer->write->writer->write->if->m_childNodeNumStack->add->if->firePseudoAttributes->if->elemContext->push->return->else->elemContext->push->if->isBlockElement->if->if->closeStartTag->if->if->indent->writer->write->encoding->getEncoding->encode->Encodings->getMimeEncoding->writer->write->writer->write->catch->throw->new->SAXException->finally
 ToHTMLStream#endElement(String, String, String)::: Receive notification of the end of an element.:::if->flushCharactersBuffer->if->closeCDATA->if->namespaceURI->length->super->endElement->return->try->elemContext->elemDesc->elemFlags->elemDesc->getFlags->elemEmpty->if->isBlockElement->shouldIndent->if->if->indent->writer->if->writer->write->writer->write->writer->write->else->if->super->fireStartElem->nAttrs->m_attributes->getLength->if->processAttributes->m_attributes->clear->if->writer->write->writer->write->writer->write->else->writer->write->if->m_childNodeNumStack->m_childNodeNumStack->size->remove->if->super->fireEndElem->if->return->catch->throw->new->SAXException->finally
 ToHTMLStream#processAttribute(java.io.Writer, String, String, ElemDesc):::Process an attribute.:::writer->write->if->value->length->value->equalsIgnoreCase->elemDesc->isAttrFlagSet->writer->write->else->writer->write->writer->write->if->elemDesc->isAttrFlagSet->writeAttrURI->else->this->getEncoding->writeAttrString->writer->write
+ToHTMLStream#isASCIIDigit(char):::Tell if a character is an ASCII digit.:::return
+ToHTMLStream#makeHHString(int):::Make an integer into an HH hex value:::s->Integer->toHexString->toUpperCase->if->s->length->return
+ToHTMLStream#isHHSign(String):::Dmitri Ilyin: Makes sure if the String is HH encoded sign.:::sign->try->r->Integer->parseInt->catch->finally->return
 ToHTMLStream#writeAttrURI(java.io.Writer, String, boolean):::Write the specified <var>string</var> after substituting non ASCII characters, with <CODE>%HH</CODE>, where HH is the hex of the byte value.:::end->string->length->if->new->charArr->string->getChars->chars->cleanStart->cleanLength->ch->for->i->if->if->writer->write->else->writer->write->else->if->writer->write
 ToHTMLStream#writeAttrString(java.io.Writer, String, String):::Writes the specified <var>string</var> after substituting <VAR>specials</VAR>, and UTF-16 surrogates for character references <CODE>&amp;#xnn</CODE>.:::end->string->length->if->new->charArr->string->getChars->chars->cleanStart->cleanLength->ch->for->i->if->if->writer->write->else->writer->write->else->if->writer->write
 ToHTMLStream#characters(char[], int, int):::Receive notification of character data:::if->try->if->closeStartTag->writeNormalizedChars->if->super->fireCharEvent->return->catch->throw->createMessage->new->org.xml.sax.SAXException->finally->else->super->characters
 ToHTMLStream#cdata(char[], int, int)::: Receive notification of cdata:::if->equalsIgnoreCase->equalsIgnoreCase->try->if->closeStartTag->if->shouldIndent->indent->writeNormalizedChars->catch->throw->createMessage->new->org.xml.sax.SAXException->finally->else->super->cdata
 ToHTMLStream#processingInstruction(String, String)::: Receive notification of a processing instruction.:::if->flushCharactersBuffer->flushPending->if->target->equals->startNonEscaping->else->if->target->equals->endNonEscaping->else->try->if->closeStartTag->else->if->startDocumentInternal->if->shouldIndent->indent->writer->writer->write->writer->write->if->data->length->Character->data->charAt->isSpaceChar->writer->write->writer->write->writer->write->if->outputLineSep->catch->throw->new->SAXException->finally->if->super->fireEscapingEvent
 ToHTMLStream#entityReference(String):::Receive notivication of a entityReference.:::try->writer->writer->write->writer->write->writer->write->catch->throw->new->SAXException->finally
+ToHTMLStream#endElement(String)::: to stream end element:::endElement
 ToHTMLStream#processAttributes(java.io.Writer, int):::Process the attributes, which means to write out the currently collected attributes to the writer:::for->i
 ToHTMLStream#closeStartTag():::For the enclosing elements starting tag write out out any attributes followed by ">":::try->if->super->fireStartElem->nAttrs->m_attributes->getLength->if->processAttributes->m_attributes->clear->m_writer->write->if->isCdataSection->catch->throw->new->SAXException->finally
 ToHTMLStream#namespaceAfterStartElement(String, String):::This method is used when a prefix/uri namespace mapping is indicated after the element was started with a startElement() and before and endElement():::if->prefix1->getPrefixPart->if->EMPTYSTRING->equals->startPrefixMapping
+ToHTMLStream#startDTD(String, String, String)::: to stream start d:::super->startDTD
 ToHTMLStream#endDTD():::Report the end of DTD declarations.:::
 ToHTMLStream#attributeDecl(String, String, String, String, String):::This method does nothing.:::
 ToHTMLStream#elementDecl(String, String):::This method does nothing.:::
 ToHTMLStream#internalEntityDecl(String, String):::This method does nothing.:::
 ToHTMLStream#externalEntityDecl(String, String, String):::This method does nothing.:::
 ToHTMLStream#addUniqueAttribute(String, String, int):::This method is used to add an attribute to the currently open element:::try->writer->if->writer->write->writer->write->writer->write->writer->write->writer->write->else->if->value->length->value->equalsIgnoreCase->writer->write->writer->write->else->writer->write->writer->write->writer->write->if->writeAttrURI->else->this->getEncoding->writeAttrString->writer->write->catch->throw->new->SAXException->finally
+ToHTMLStream#comment(char[], int, int)::: to stream comment:::if->return->super->comment
+ToHTMLStream#reset()::: to stream reset:::ret->super->reset->if->return->initToHTMLStream->return
+ToHTMLStream#initToHTMLStream()::: to stream init to stream:::
 ToHTMLStream.Trie#put(String, Object):::Put an object into the trie for lookup.:::len->key->length->if->new->charArr->node->for->i->ret->return
 ToHTMLStream.Trie#get(String):::Get an object that matches the key.:::len->key->length->if->return->node->switch->return->ch->key->charAt->if->if->return->return->for->i->return
 ToHTMLStream.Trie#get2(String):::Get an object that matches the key:::len->key->length->if->return->node->switch->return->ch->key->charAt->if->if->return->return->key->getChars->for->i->return
@@ -240,6 +415,8 @@ ToSAXHandler#startDTD(String, String, String):::Do nothing.:::
 ToSAXHandler#characters(String):::Receive notification of character data.:::len->chars->length->if->new->charArr->if->chars->getChars->characters
 ToSAXHandler#comment(String):::Receive notification of a comment.:::flushPending->if->len->comment->length->if->new->charArr->comment->getChars->m_lexHandler->comment->if->super->fireCommentEvent
 ToSAXHandler#processingInstruction(String, String):::Do nothing as this is an abstract class:::
+ToSAXHandler#closeStartTag()::: to handler close start tag:::
+ToSAXHandler#closeCDATA()::: to handler close a:::
 ToSAXHandler#startElement(String, String, String, Attributes):::Receive notification of the beginning of an element, although this is a SAX method additional namespace or attribute information can occur before or after this call, that is associated with this element.:::if->m_state->getTransformer->resetState->if->super->fireStartElem
 ToSAXHandler#setLexHandler(LexicalHandler):::Sets the LexicalHandler.:::
 ToSAXHandler#setContentHandler(ContentHandler):::Sets the SAX ContentHandler.:::if
@@ -251,7 +428,11 @@ ToSAXHandler#setTransformState(TransformStateSetter):::Pass in a reference to a 
 ToSAXHandler#startElement(String, String, String):::Receives notification that an element starts, but attributes are not fully known yet.:::if->m_state->getTransformer->resetState->if->super->fireStartElem
 ToSAXHandler#startElement(String):::An element starts, but attributes are not fully known yet.:::if->m_state->getTransformer->resetState->if->super->fireStartElem
 ToSAXHandler#characters(org.w3c.dom.Node):::This method gets the node's value as a String and uses that String as if it were an input character notification.:::if->m_state->setCurrentNode->data->node->getNodeValue->if->this->characters
+ToSAXHandler#fatalError(SAXParseException)::: to handler fatal error:::super->fatalError->if->fatalError
+ToSAXHandler#error(SAXParseException)::: to handler error:::super->error->if->error
+ToSAXHandler#warning(SAXParseException)::: to handler warning:::super->warning->if->warning
 ToSAXHandler#reset():::Try's to reset the super class and reset this class for re-use, so that you don't need to create a new serializer (mostly for performance reasons).:::wasReset->if->super->reset->resetToSAXHandler->return
+ToSAXHandler#resetToSAXHandler():::Reset all of the fields owned by ToSAXHandler class:::
 ToSAXHandler#addUniqueAttribute(String, String, int):::Add a unique attribute:::addAttribute
 ToStream#closeCDATA():::This helper method to writes out "]]>" when closing a CDATA section.:::try->m_writer->write->catch->throw->new->SAXException->finally
 ToStream#serialize(Node):::Serializes the DOM node:::try->walker->new->TreeWalker->walker->traverse->catch->throw->new->WrappedRuntimeException->finally
@@ -262,13 +443,18 @@ ToStream#elementDecl(String, String):::  Report an element type declaration:::if
 ToStream#internalEntityDecl(String, String):::Report an internal entity declaration:::if->return->try->DTDprolog->outputEntityDecl->catch->throw->new->SAXException->finally
 ToStream#outputEntityDecl(String, String):::Output the doc type declaration.:::writer->writer->write->writer->write->writer->write->writer->write->writer->write->writer->write
 ToStream#outputLineSep():::Output a system-dependent line break.:::m_writer->write
+ToStream#setProp(String, String, boolean)::: to stream set prop:::if->first->getFirstCharLocName->switch->if->equals->addCdataSectionElements->break->if->equals->else->if->equals->if->val->startsWith->break->newEncoding->if->equals->possible_encoding->Encodings->getMimeEncoding->if->super->setProp->oldExplicitEncoding->getOutputPropertyNonDefault->oldDefaultEncoding->getOutputPropertyDefault->if->oldDefaultEncoding->equalsIgnoreCase->oldExplicitEncoding->equalsIgnoreCase->encodingInfo->Encodings->getEncodingInfo->if->msg->new->ObjectArr->createMessage->msg2->try->tran->super->getTransformer->if->errHandler->tran->getErrorListener->if->errHandler->new->TransformerException->warning->errHandler->new->TransformerException->warning->else->println->println->else->println->println->catch->finally->Encodings->getEncodingInfo->if->if->newEncoding->equals->os->getOutputStream->if->w->getWriter->oldEncoding->getOutputProperty->if->newEncoding->equalsIgnoreCase->super->setProp->setOutputStreamInternal->break->if->equals->Integer->parseInt->setIndentAmount->else->if->equals->b->val->endsWith->break->if->equals->val->toCharArray->break->if->equals->break->if->equals->b->val->endsWith->break->if->equals->if->setStandaloneInternal->else->setStandaloneInternal->break->if->equals->break->break->super->setProp
 ToStream#setOutputFormat(Properties):::Specifies an output format for this serializer:::shouldFlush->if->propNames->format->propertyNames->while->propNames->hasMoreElements->key->propNames->nextElement->value->format->getProperty->explicitValue->format->get->if->this->setOutputPropertyDefault->if->this->setOutputProperty->entitiesFileName->format->get->if->method->format->get->CharInfo->getCharInfo
 ToStream#getOutputFormat():::Returns the output format for this serializer.:::def->new->Properties->s->getOutputPropDefaultKeys->foreach->val->getOutputPropertyDefault->def->put->props->new->Properties->s->getOutputPropKeys->foreach->val->getOutputPropertyNonDefault->if->props->put->return
 ToStream#setWriter(Writer):::Specifies a writer to which the document should be serialized:::setWriterInternal
+ToStream#setWriterInternal(Writer, boolean)::: to stream set writer internal:::if->noTracerYet->w2->while->if->break->getWriter->if->new->SerializerTraceWriter
 ToStream#setLineSepUse(boolean):::Set if the operating systems end-of-line line separator should be used when serializing:::oldValue->return
 ToStream#setOutputStream(OutputStream):::Specifies an output stream to which the document should be serialized:::setOutputStreamInternal
+ToStream#setOutputStreamInternal(OutputStream, boolean)::: to stream set output stream internal:::encoding->getOutputProperty->if->equalsIgnoreCase->try->new->WriterToUTF8Buffered->setWriterInternal->catch->e->printStackTrace->finally->else->if->equals->equals->equals->new->WriterToASCI->setWriterInternal->else->if->osw->try->Encodings->getWriter->catch->finally->if->println->setEncoding->try->Encodings->getWriter->catch->e->printStackTrace->finally->setWriterInternal->else->osw->new->OutputStreamWriter->setWriterInternal
+ToStream#setEscaping(boolean)::: to stream set escaping:::temp->return
 ToStream#indent(int):::Might print a newline character and the indentation amount of the given depth.:::if->outputLineSep->printSpace
 ToStream#indent():::Indent at the current element nesting depth.:::indent
+ToStream#printSpace(int):::Prints <var>n</var> spaces.:::writer->for->i
 ToStream#attributeDecl(String, String, String, String, String):::Report an attribute type declaration:::if->return->try->writer->DTDprolog->writer->write->writer->write->writer->write->writer->write->writer->write->writer->write->if->writer->write->writer->write->writer->write->writer->write->catch->throw->new->SAXException->finally
 ToStream#getWriter():::Get the character stream where the events will be serialized to.:::return
 ToStream#externalEntityDecl(String, String, String):::Report a parsed external entity declaration:::try->DTDprolog->m_writer->write->m_writer->write->if->m_writer->write->m_writer->write->else->m_writer->write->m_writer->write->m_writer->write->m_writer->write->catch->e->printStackTrace->finally
@@ -276,18 +462,29 @@ ToStream#escapingNotNeeded(char):::Tell if this character can be written without
 ToStream#writeUTF16Surrogate(char, char[], int, int):::Once a surrogate has been detected, write out the pair of characters if it is in the encoding, or if there is no encoding, otherwise write out an entity reference of the value of the unicode code point of the character represented by the high/low surrogate pair:::status->if->return->high->low->if->else->if->Encodings->isLowUTF16Surrogate->throwIOE->writer->if->m_encodingInfo->isInEncoding->writer->new->charArr->write->else->encoding->getEncoding->if->writeCharRef->else->writer->new->charArr->write->return
 ToStream#accumDefaultEntity(Writer, char, int, char[], int, boolean, boolean):::Handle one of the default entities, return false if it is not a default entity.:::if->writer->write->else->if->m_charInfo->isSpecialTextChar->m_charInfo->isSpecialAttrChar->outputStringForChar->m_charInfo->getOutputStringForChar->if->writer->write->else->return->else->return->return
 ToStream#writeNormalizedChars(char[], int, int, boolean, boolean):::Normalize the characters, but don't escape.:::writer->end->for->i
+ToStream#handleEscaping(Writer, char, char[], int, int):::Handles escaping, writes either with a surrogate pair or a character reference.:::if->Encodings->isHighUTF16Surrogate->Encodings->isLowUTF16Surrogate->if->writeUTF16Surrogate->if->Encodings->isHighUTF16Surrogate->else->writeCharRef->return
 ToStream#endNonEscaping():::Ends an un-escaping section.:::m_disableOutputEscapingStates->pop
 ToStream#startNonEscaping():::Starts an un-escaping section:::m_disableOutputEscapingStates->push
 ToStream#cdata(char[], int, int):::Receive notification of cdata:::try->old_start->if->closeStartTag->if->shouldIndent->indent->writeCDataBrackets->escapingNotNeeded->if->m_writer->write->if->isEscapingDisabled->charactersRaw->else->writeNormalizedChars->if->if->closeCDATA->if->super->fireCDATAEvent->catch->throw->createMessage->new->org.xml.sax.SAXException->finally
+ToStream#isEscapingDisabled():::Tell if the character escaping should be disabled for the current state.:::return->m_disableOutputEscapingStates->peekOrFalse
 ToStream#charactersRaw(char[], int, int):::If available, when the disable-output-escaping attribute is used, output raw text without escaping.:::if->isInEntityRef->return->try->if->closeStartTag->m_writer->write->catch->throw->new->SAXException->finally
 ToStream#characters(char[], int, int):::Receive notification of character data:::if->isInEntityRef->return->shouldNotFormat->shouldFormatOutput->if->closeStartTag->else->if->startDocumentInternal->if->cdata->return->if->closeCDATA->if->m_disableOutputEscapingStates->peekOrFalse->if->charactersRaw->else->m_charactersBuffer->addRawText->if->super->fireCharEvent->return->if->closeStartTag->if->outputCharacters->else->m_charactersBuffer->addText->if->super->fireCharEvent
 ToStream#shouldFormatOutput():::This method checks if the content in current element should be formatted.:::return
+ToStream#getIndent()::: to stream get indent:::return->shouldFormatOutput
+ToStream#outputCharacters(char[], int, int):::Write out the characters.:::try->i->ch1->startClean->end->lastDirty->for->isXML10->XMLVERSION10->getVersion->equals->for->if->lengthClean->m_writer->write->catch->throw->new->SAXException->finally
 ToStream#flushCharactersBuffer():::Used to flush the buffered characters when indentation is on, this method will be called when the next node is traversed.:::try->if->shouldFormatOutput->m_charactersBuffer->isAnyCharactersBuffered->if->chars->m_charactersBuffer->toChars->cdata->return->skipBeginningNewlines->if->shouldIndentForText->indent->m_charactersBuffer->flush->catch->throw->new->SAXException->finally->m_charactersBuffer->clear
 ToStream#shouldIndentForText():::True if should indent in flushCharactersBuffer method:::return->shouldIndent
+ToStream#isCharacterInC0orC1Range(char):::This method checks if a given character is between C0 or C1 range of Control characters:::if->return->else->return
+ToStream#isNELorLSEPCharacter(char):::This method checks if a given character either NEL (0x85) or LSEP (0x2028) These are new end of line charcters added in XML 1.1:::return
+ToStream#processDirty(char[], int, int, char, int, boolean):::Process a dirty character and any preeceding clean characters that were not yet processed.:::startClean->if->lengthClean->m_writer->write->if->m_writer->write->else->accumDefaultEscape->return
 ToStream#characters(String):::Receive notification of character data.:::if->isInEntityRef->return->length->s->length->if->new->charArr->s->getChars->characters
 ToStream#accumDefaultEscape(Writer, char, int, char[], int, boolean, boolean):::Escape and writer.write a character.:::pos->accumDefaultEntity->if->if->if->Encodings->isLowUTF16Surrogate->throwIOE->writeCharRef->return->if->Encodings->isHighUTF16Surrogate->if->else->next->if->Encodings->isLowUTF16Surrogate->throwIOE->writeCharRef->else->if->isCharacterInC0orC1Range->XMLVERSION11->getVersion->equals->isNELorLSEPCharacter->writeCharRef->else->if->escapingNotNeeded->m_charInfo->isSpecialTextChar->m_charInfo->isSpecialAttrChar->writeCharRef->else->writer->write->return
+ToStream#writeCharRef(Writer, char):::Writes out a character reference.:::if->closeCDATA->writer->write->writer->Integer->toString->write->writer->write
+ToStream#writeCharRef(Writer, char, char):::Writes out a pair of surrogates as a character reference:::if->closeCDATA->codePoint->Encodings->toCodePoint->writer->write->writer->Integer->toString->write->writer->write->return
+ToStream#throwIOE(char, char)::: to stream throw e:::throw->new->ObjectArr->Integer->toHexString->Integer->toHexString->createMessage->new->IOException
 ToStream#startElement(String, String, String, Attributes):::Receive notification of the beginning of an element, although this is a SAX method additional namespace or attribute information can occur before or after this call, that is associated with this element.:::if->isInEntityRef->return->if->flushCharactersBuffer->if->startDocumentInternal->else->if->closeCDATA->try->if->getDoctypeSystem->outputDocTypeDecl->if->closeStartTag->if->ensurePrefixIsDeclared->if->shouldIndent->indent->writer->writer->write->writer->write->catch->throw->new->SAXException->finally->if->addAttributes->if->m_preserveSpaces->peekOrFalse->m_preserveSpaces->push->m_childNodeNumStack->add->m_elemContext->push->if->firePseudoAttributes
 ToStream#startElement(String, String, String):::Receive notification of the beginning of an element, additional namespace or attribute information can occur before or after this call, that is associated with this element.:::startElement
+ToStream#startElement(String)::: to stream start element:::startElement
 ToStream#outputDocTypeDecl(String, boolean):::Output the doc type declaration.:::if->closeCDATA->try->writer->writer->write->writer->write->doctypePublic->getDoctypePublic->if->writer->write->writer->write->writer->write->doctypeSystem->getDoctypeSystem->if->if->writer->write->else->writer->write->writer->write->if->writer->write->writer->write->else->writer->write->dothis->if->if->writer->write->writer->write->catch->throw->new->SAXException->finally
 ToStream#processAttributes(Writer, int):::Process the attributes, which means to write out the currently collected attributes to the writer:::encoding->getEncoding->for->i
 ToStream#writeAttrString(Writer, String, String):::Returns the specified <var>string</var> after substituting <VAR>specials</VAR>, and UTF-16 surrogates for chracter references <CODE>&amp;#xnn</CODE>.:::len->string->length->if->new->charArr->string->getChars->stringChars->for->i
@@ -303,17 +500,30 @@ ToStream#ignorableWhitespace(char[], int, int):::Receive notification of ignorab
 ToStream#skippedEntity(String):::Receive notification of a skipped entity.:::
 ToStream#startCDATA():::Report the start of a CDATA section.:::if->flushCharactersBuffer
 ToStream#startEntity(String):::Report the beginning of an entity:::if->name->equals->if->if->isInEntityRef->if->shouldFormatOutput->m_charactersBuffer->addEntityReference->else->outputEntityReference
+ToStream#outputEntityReference(String):::Write out the entity reference with the form as "&amp;entityName;".:::startNonEscaping->characters->endNonEscaping
 ToStream#closeStartTag():::For the enclosing elements starting tag write out out any attributes followed by ">":::if->try->if->super->fireStartElem->nAttrs->m_attributes->getLength->if->processAttributes->m_attributes->clear->m_writer->write->catch->throw->new->SAXException->finally->if->isCdataSection
 ToStream#startDTD(String, String, String):::Report the start of DTD declarations, if any:::setDoctypeSystem->setDoctypePublic
 ToStream#getIndentAmount():::Returns the m_indentAmount.:::return
 ToStream#setIndentAmount(int):::Sets the m_indentAmount.:::
 ToStream#shouldIndent():::Tell if, based on space preservation constraints and the doIndent property, if an indent should occur.:::return->shouldFormatOutput
+ToStream#setCdataSectionElements(String, Properties):::Searches for the list of qname properties with the specified key in the property list:::s->props->getProperty->if->al->new->ArrayList<>->l->s->length->inCurly->buf->new->StringBuilder->for->i->if->buf->length->buf->toString->addCdataSectionElement->buf->setLength->setCdataSectionElements
+ToStream#addCdataSectionElement(String, List):::Adds a URI/LocalName pair of strings to the list.:::tokenizer->new->StringTokenizer->s1->tokenizer->nextToken->s2->tokenizer->hasMoreTokens->tokenizer->nextToken->if->al->add->al->add->else->al->add->al->add
 ToStream#setCdataSectionElements(List):::Remembers the cdata sections specified in the cdata-section-elements:::if->len->URI_and_localNames->size->if->sb->new->StringBuilder->for->i->sb->toString->initCdataElems
 ToStream#ensureAttributesNamespaceIsDeclared(String, String, String):::Makes sure that the namespace URI for the given qualified attribute name is declared.:::if->ns->length->index->prefixFromRawName->rawName->indexOf->rawName->substring->if->uri->m_prefixMap->lookupNamespace->if->uri->equals->return->else->this->startPrefixMapping->this->addAttribute->return->else->prefix->m_prefixMap->lookupPrefix->if->m_prefixMap->generateNextPrefix->this->startPrefixMapping->this->addAttribute->return->return
+ToStream#ensurePrefixIsDeclared(String, String)::: to stream ensure prefix is declared:::if->ns->length->index->no_prefix->rawName->indexOf->prefix->rawName->substring->if->foundURI->m_prefixMap->lookupNamespace->if->foundURI->equals->this->startPrefixMapping->this->addAttributeAlways
 ToStream#flushPending():::This method flushes any pending events, which can be startDocument() closing the opening tag of an element, or closing an open CDATA section.:::if->startDocumentInternal->if->closeStartTag->if->closeCDATA
+ToStream#setContentHandler(ContentHandler)::: to stream set content handler:::
 ToStream#addAttributeAlways(String, String, String, String, String, boolean):::Adds the given attribute to the set of attributes, even if there is no currently open element:::if->m_charactersBuffer->isAnyCharactersBuffered->return->doAddAttributeAlways->else->return->m_attributes->getIndex
+ToStream#doAddAttributeAlways(String, String, String, String, String, boolean):::Does really add the attribute to the set of attributes.:::was_added->index->m_attributes->getIndex->if->old_value->if->m_attributes->getValue->if->value->equals->m_attributes->setValue->if->firePseudoAttributes->else->if->colonIndex->rawName->indexOf->if->prefix->rawName->substring->existing_mapping->m_prefixMap->getMappingFromPrefix->if->equals->m_prefixMap->lookupPrefix->if->m_prefixMap->generateNextPrefix->try->prefixUsed->ensureAttributesNamespaceIsDeclared->catch->e->printStackTrace->finally->m_attributes->addAttribute->if->firePseudoAttributes->if->rawName->equals->if->value->equals->if->m_preserveSpaces->size->m_preserveSpaces->setTop->else->if->value->equals->if->m_preserveSpaces->size->m_preserveSpaces->setTop->return
 ToStream#firePseudoAttributes():::To fire off the pseudo characters of attributes, as they currently exist:::if->try->m_writer->flush->sb->new->StringBuffer->nAttrs->m_attributes->getLength->if->writer->new->ToStream.WritertoStringBuffer->processAttributes->sb->append->ch->sb->toString->toCharArray->m_tracer->fireGenerateEvent->catch->finally
+ToStream.WritertoStringBuffer#write(char[], int, int)::: writerto string buffer write:::m_stringbuf->append
+ToStream.WritertoStringBuffer#flush()::: writerto string buffer flush:::
+ToStream.WritertoStringBuffer#close()::: writerto string buffer close:::
+ToStream.WritertoStringBuffer#write(int)::: writerto string buffer write:::m_stringbuf->append
+ToStream.WritertoStringBuffer#write(String)::: writerto string buffer write:::m_stringbuf->append
+ToStream#setTransformer(Transformer)::: to stream set transformer:::super->setTransformer->if->new->SerializerTraceWriter
 ToStream#reset():::Try's to reset the super class and reset this class for re-use, so that you don't need to create a new serializer (mostly for performance reasons).:::wasReset->if->super->reset->resetToStream->return
+ToStream#resetToStream():::Reset all of the fields owned by ToStream class:::clear->clear->clear->clear
 ToStream#setEncoding(String):::Sets the character encoding coming from the xsl:output encoding stylesheet attribute.:::setOutputProperty
 ToStream.BoolStack#size():::Get the length of the list.:::return
 ToStream.BoolStack#clear():::Clears the stack.:::
@@ -325,16 +535,60 @@ ToStream.BoolStack#peek():::Looks at the object at the top of this stack without
 ToStream.BoolStack#peekOrFalse():::Looks at the object at the top of this stack without removing it from the stack:::return
 ToStream.BoolStack#peekOrTrue():::Looks at the object at the top of this stack without removing it from the stack:::return
 ToStream.BoolStack#isEmpty():::Tests if this stack is empty.:::return
+ToStream.BoolStack#grow():::Grows the size of the stack:::newVector->new->booleanArr->System->arraycopy
+ToStream.CharacterBuffer.GenericCharacters#flush(boolean)::: generic characters flush:::
+ToStream.CharacterBuffer.GenericCharacters#toChars():::Converts this GenericCharacters to a new character array:::
+ToStream.CharacterBuffer#addText(char[], int, int):::Append a text node to the buffer.:::bufferedCharacters->new->GenericCharacters->add
+ToStream.CharacterBuffer#addEntityReference(String):::Append an entity reference to the buffer.:::bufferedCharacters->new->GenericCharacters->add
+ToStream.CharacterBuffer#addRawText(char[], int, int):::Append a raw text to the buffer:::bufferedCharacters->new->GenericCharacters->add
+ToStream.CharacterBuffer#isAnyCharactersBuffered()::: character buffer is any characters buffered:::return->bufferedCharacters->size
+ToStream.CharacterBuffer#flush(boolean):::Flush all buffered GenericCharacters.:::itr->bufferedCharacters->iterator->continueSkipBeginningNewlines->while->itr->hasNext->element->itr->next->element->flush->itr->remove
+ToStream.CharacterBuffer#toChars():::Converts all buffered GenericCharacters to a new character array.:::sb->new->StringBuilder->foreach->sb->element->toChars->append->return->sb->toString->toCharArray
+ToStream.CharacterBuffer#clear():::Clear the buffer.:::bufferedCharacters->clear
 ToStream#notationDecl(String, String, String):::If this method is called, the serializer is used as a DTDHandler, which changes behavior how the serializer handles document entities.:::try->DTDprolog->m_writer->write->m_writer->write->if->m_writer->write->m_writer->write->else->m_writer->write->m_writer->write->m_writer->write->m_writer->write->catch->e->printStackTrace->finally
 ToStream#unparsedEntityDecl(String, String, String, String):::If this method is called, the serializer is used as a DTDHandler, which changes behavior how the serializer handles document entities.:::try->DTDprolog->m_writer->write->m_writer->write->if->m_writer->write->m_writer->write->else->m_writer->write->m_writer->write->m_writer->write->m_writer->write->m_writer->write->m_writer->write->catch->e->printStackTrace->finally
+ToStream#DTDprolog():::A private helper method to output the:::writer->if->outputDocTypeDecl->if->writer->write->writer->write
 ToStream#setDTDEntityExpansion(boolean):::If set to false the serializer does not expand DTD entities, but leaves them as is, the default value is true;:::
 ToStream#addCdataSectionElements(String):::Remembers the cdata sections specified in the cdata-section-elements by appending the given cdata section elements to the list:::if->initCdataElems->if->else
 ToTextSAXHandler#endElement(String):::From XSLTC:::if->super->fireEndElem
+ToTextSAXHandler#endElement(String, String, String)::: to text handler end element:::if->super->fireEndElem
+ToTextSAXHandler#comment(char[], int, int)::: to text handler comment:::if->super->fireCommentEvent
+ToTextSAXHandler#comment(String)::: to text handler comment:::length->data->length->if->new->charArr->data->getChars->comment
+ToTextSAXHandler#getOutputFormat()::: to text handler get output format:::return
+ToTextSAXHandler#getOutputStream()::: to text handler get output stream:::return
+ToTextSAXHandler#getWriter()::: to text handler get writer:::return
 ToTextSAXHandler#indent(int):::Does nothing because the indent attribute is ignored for text output.:::
+ToTextSAXHandler#reset()::: to text handler reset:::return
+ToTextSAXHandler#serialize(Node)::: to text handler serialize:::
+ToTextSAXHandler#setEscaping(boolean)::: to text handler set escaping:::return
+ToTextSAXHandler#setIndent(boolean)::: to text handler set indent:::
+ToTextSAXHandler#setOutputFormat(Properties)::: to text handler set output format:::
+ToTextSAXHandler#setOutputStream(OutputStream)::: to text handler set output stream:::
+ToTextSAXHandler#setWriter(Writer)::: to text handler set writer:::
+ToTextSAXHandler#addAttribute(String, String, String, String, String, boolean)::: to text handler add attribute:::
+ToTextSAXHandler#attributeDecl(String, String, String, String, String)::: to text handler attribute decl:::
+ToTextSAXHandler#elementDecl(String, String)::: to text handler element decl:::
+ToTextSAXHandler#externalEntityDecl(String, String, String)::: to text handler external entity decl:::
+ToTextSAXHandler#internalEntityDecl(String, String)::: to text handler internal entity decl:::
+ToTextSAXHandler#endPrefixMapping(String)::: to text handler end prefix mapping:::
+ToTextSAXHandler#ignorableWhitespace(char[], int, int)::: to text handler ignorable whitespace:::
 ToTextSAXHandler#processingInstruction(String, String):::From XSLTC:::if->super->fireEscapingEvent
+ToTextSAXHandler#setDocumentLocator(Locator)::: to text handler set document locator:::super->setDocumentLocator
+ToTextSAXHandler#skippedEntity(String)::: to text handler skipped entity:::
+ToTextSAXHandler#startElement(String, String, String, Attributes)::: to text handler start element:::flushPending->super->startElement
+ToTextSAXHandler#endCDATA()::: to text handler end a:::
+ToTextSAXHandler#endDTD()::: to text handler end d:::
+ToTextSAXHandler#startCDATA()::: to text handler start a:::
+ToTextSAXHandler#startEntity(String)::: to text handler start entity:::
 ToTextSAXHandler#startElement(String, String, String):::From XSLTC:::super->startElement
+ToTextSAXHandler#startElement(String)::: to text handler start element:::super->startElement
 ToTextSAXHandler#endDocument():::From XSLTC:::flushPending->m_saxHandler->endDocument->if->super->fireEndDoc
+ToTextSAXHandler#characters(String)::: to text handler characters:::length->characters->length->if->new->charArr->characters->getChars->m_saxHandler->characters
+ToTextSAXHandler#characters(char[], int, int)::: to text handler characters:::m_saxHandler->characters->if->super->fireCharEvent
 ToTextSAXHandler#addAttribute(String, String):::From XSLTC:::
+ToTextSAXHandler#startPrefixMapping(String, String, boolean)::: to text handler start prefix mapping:::return
+ToTextSAXHandler#startPrefixMapping(String, String)::: to text handler start prefix mapping:::
+ToTextSAXHandler#namespaceAfterStartElement(String, String)::: to text handler namespace after start element:::
 ToTextStream#startDocumentInternal():::Receive notification of the beginning of a document:::super->startDocumentInternal
 ToTextStream#endDocument():::Receive notification of the end of a document:::flushPending->flushWriter->if->super->fireEndDoc
 ToTextStream#startElement(String, String, String, Attributes):::Receive notification of the beginning of an element:::if->super->fireStartElem->this->firePseudoAttributes->return
@@ -348,12 +602,25 @@ ToTextStream#processingInstruction(String, String):::Receive notification of a p
 ToTextStream#comment(String):::Called when a Comment is to be constructed:::length->data->length->if->new->charArr->data->getChars->comment
 ToTextStream#comment(char[], int, int):::Report an XML comment anywhere in the document:::flushPending->if->super->fireCommentEvent
 ToTextStream#entityReference(String):::Receive notivication of a entityReference.:::if->super->fireEntityReference
+ToTextStream#addAttribute(String, String, String, String, String, boolean)::: to text stream add attribute:::
+ToTextStream#endCDATA()::: to text stream end a:::
+ToTextStream#endElement(String)::: to text stream end element:::if->super->fireEndElem
 ToTextStream#startElement(String, String, String):::From XSLTC:::if->startDocumentInternal->if->super->fireStartElem->this->firePseudoAttributes->return
 ToTextStream#characters(String):::From XSLTC:::length->characters->length->if->new->charArr->characters->getChars->characters
 ToTextStream#addAttribute(String, String):::From XSLTC:::
 ToTextStream#addUniqueAttribute(String, String, int):::Add a unique attribute:::
+ToTextStream#startPrefixMapping(String, String, boolean)::: to text stream start prefix mapping:::return
+ToTextStream#startPrefixMapping(String, String)::: to text stream start prefix mapping:::
+ToTextStream#namespaceAfterStartElement(String, String)::: to text stream namespace after start element:::
+ToTextStream#flushPending()::: to text stream flush pending:::if->startDocumentInternal
+ToUnknownStream#asContentHandler()::: to unknown stream as content handler:::return
+ToUnknownStream#close()::: to unknown stream close:::m_handler->close
+ToUnknownStream#getOutputFormat()::: to unknown stream get output format:::return->m_handler->getOutputFormat
+ToUnknownStream#getOutputStream()::: to unknown stream get output stream:::return->m_handler->getOutputStream
+ToUnknownStream#getWriter()::: to unknown stream get writer:::return->m_handler->getWriter
 ToUnknownStream#reset():::passes the call on to the underlying HTML or XML handler:::return->m_handler->reset
 ToUnknownStream#serialize(Node):::Converts the DOM node to output:::if->flush->m_handler->serialize
+ToUnknownStream#setEscaping(boolean)::: to unknown stream set escaping:::return->m_handler->setEscaping
 ToUnknownStream#setOutputFormat(Properties):::Set the properties of the handler:::m_handler->setOutputFormat
 ToUnknownStream#setOutputStream(OutputStream):::Sets the output stream to write to:::m_handler->setOutputStream
 ToUnknownStream#setWriter(Writer):::Sets the writer to write to:::m_handler->setWriter
@@ -363,8 +630,14 @@ ToUnknownStream#addAttribute(String, String):::Adds an attribute to the currenly
 ToUnknownStream#addUniqueAttribute(String, String, int):::Adds a unique attribute to the currenly open tag:::if->flush->m_handler->addUniqueAttribute
 ToUnknownStream#characters(String):::Converts the String to a character array and calls the SAX method characters(char[],int,int);:::len->chars->length->if->new->charArr->if->chars->getChars->this->characters
 ToUnknownStream#endElement(String):::Pass the call on to the underlying handler:::if->flush->m_handler->endElement
+ToUnknownStream#startPrefixMapping(String, String)::: to unknown stream start prefix mapping:::this->startPrefixMapping
 ToUnknownStream#namespaceAfterStartElement(String, String):::This method is used when a prefix/uri namespace mapping is indicated after the element was started with a startElement() and before and endElement():::if->prefix1->getPrefixPart->if->EMPTYSTRING->equals->startPrefixMapping
+ToUnknownStream#startPrefixMapping(String, String, boolean)::: to unknown stream start prefix mapping:::pushed->if->if->flush->m_handler->startPrefixMapping->else->if->new->ArrayList<>->new->ArrayList<>->m_namespacePrefix->add->m_namespaceURI->add->if->if->prefix->equals->else->m_handler->startPrefixMapping->return
 ToUnknownStream#setVersion(String):::This method cannot be cached because default is different in HTML and XML (we need more than a boolean).:::m_handler->setVersion
+ToUnknownStream#startDocument()::: to unknown stream start document:::
+ToUnknownStream#startElement(String)::: to unknown stream start element:::this->startElement
+ToUnknownStream#startElement(String, String, String)::: to unknown stream start element:::this->startElement
+ToUnknownStream#startElement(String, String, String, Attributes)::: to unknown stream start element:::if->super->setDocumentInfo->if->if->flush->m_handler->startElement->else->getPrefixPartUnknown->if->firePseudoElement->if->super->addAttributes->if->flush->else->m_handler->startElement
 ToUnknownStream#comment(String):::Pass the call on to the underlying handler:::if->emitFirstTag->else->if->m_handler->startDocument->m_handler->comment
 ToUnknownStream#getDoctypePublic():::Pass the call on to the underlying handler:::return->m_handler->getDoctypePublic
 ToUnknownStream#getDoctypeSystem():::Pass the call on to the underlying handler:::return->m_handler->getDoctypeSystem
@@ -375,11 +648,13 @@ ToUnknownStream#getMediaType():::Pass the call on to the underlying handler:::re
 ToUnknownStream#getOmitXMLDeclaration():::Pass the call on to the underlying handler:::return->m_handler->getOmitXMLDeclaration
 ToUnknownStream#getStandalone():::Pass the call on to the underlying handler:::return->m_handler->getStandalone
 ToUnknownStream#getVersion():::Pass the call on to the underlying handler:::return->m_handler->getVersion
+ToUnknownStream#setDoctype(String, String)::: to unknown stream set doctype:::m_handler->setDoctypePublic->m_handler->setDoctypeSystem
 ToUnknownStream#setDoctypePublic(String):::Set the doctype in the underlying XML handler:::m_handler->setDoctypePublic
 ToUnknownStream#setDoctypeSystem(String):::Set the doctype in the underlying XML handler:::m_handler->setDoctypeSystem
 ToUnknownStream#setEncoding(String):::Pass the call on to the underlying handler:::m_handler->setEncoding
 ToUnknownStream#setIndent(boolean):::Pass the call on to the underlying handler:::m_handler->setIndent
 ToUnknownStream#setIndentAmount(int):::Pass the call on to the underlying handler:::m_handler->setIndentAmount
+ToUnknownStream#setMediaType(String)::: to unknown stream set media type:::m_handler->setMediaType
 ToUnknownStream#setOmitXMLDeclaration(boolean):::Pass the call on to the underlying handler:::m_handler->setOmitXMLDeclaration
 ToUnknownStream#setStandalone(String):::Pass the call on to the underlying handler:::m_handler->setStandalone
 ToUnknownStream#attributeDecl(String, String, String, String, String):::Pass the call on to the underlying handler:::m_handler->attributeDecl
@@ -401,17 +676,68 @@ ToUnknownStream#endEntity(String):::Pass the call on to the underlying handler::
 ToUnknownStream#startCDATA():::Pass the call on to the underlying handler:::m_handler->startCDATA
 ToUnknownStream#startDTD(String, String, String):::Pass the call on to the underlying handler:::m_handler->startDTD
 ToUnknownStream#startEntity(String):::Pass the call on to the underlying handler:::m_handler->startEntity
+ToUnknownStream#initStreamOutput():::Initialize the wrapped output stream (XML or HTML):::firstElementIsHTML->isFirstElemHTML->if->oldHandler->htmlProperties->OutputPropertiesFactory->getDefaultMethodProperties->serializer->SerializerFactory->getSerializer->writer->oldHandler->getWriter->if->m_handler->setWriter->else->os->oldHandler->getOutputStream->if->m_handler->setOutputStream->m_handler->oldHandler->getVersion->setVersion->m_handler->oldHandler->getDoctypeSystem->setDoctypeSystem->m_handler->oldHandler->getDoctypePublic->setDoctypePublic->m_handler->oldHandler->getMediaType->setMediaType->m_handler->oldHandler->getTransformer->setTransformer->if->m_handler->startDocument
+ToUnknownStream#emitFirstTag()::: to unknown stream emit first tag:::if->if->initStreamOutput->m_handler->startElement->if->n->m_namespacePrefix->size->for->i
+ToUnknownStream#getLocalNameUnknown(String):::Utility function for calls to local-name():::idx->value->lastIndexOf->if->value->substring->value->lastIndexOf->if->value->substring->return
+ToUnknownStream#getPrefixPartUnknown(String):::Utility function to return prefix  Don't want to override static function on SerializerBase So added Unknown suffix to method name.:::index->qname->indexOf->return->qname->substring
+ToUnknownStream#isFirstElemHTML():::Determine if the firts element in the document is <html> or <HTML> This uses the cached first element name, first element prefix and the cached namespaces from previous method calls:::isHTML->getLocalNameUnknown->equalsIgnoreCase->if->EMPTYSTRING->equals->if->max->m_namespacePrefix->size->for->i->return
+ToUnknownStream#asDOMSerializer()::: to unknown stream as serializer:::return->m_handler->asDOMSerializer
+ToUnknownStream#setCdataSectionElements(List)::: to unknown stream set cdata section elements:::m_handler->setCdataSectionElements
+ToUnknownStream#addAttributes(Attributes)::: to unknown stream add attributes:::m_handler->addAttributes
 ToUnknownStream#getNamespaceMappings():::Get the current namespace mappings:::mappings->if->m_handler->getNamespaceMappings->return
+ToUnknownStream#flushPending()::: to unknown stream flush pending:::flush->m_handler->flushPending
+ToUnknownStream#flush()::: to unknown stream flush:::try->if->emitFirstTag->if->m_handler->startDocument->catch->throw->e->toString->new->RuntimeException->finally
+ToUnknownStream#getPrefix(String)::: to unknown stream get prefix:::return->m_handler->getPrefix
+ToUnknownStream#entityReference(String)::: to unknown stream entity reference:::m_handler->entityReference
+ToUnknownStream#getNamespaceURI(String, boolean)::: to unknown stream get namespace i:::return->m_handler->getNamespaceURI
+ToUnknownStream#getNamespaceURIFromPrefix(String)::: to unknown stream get namespace from prefix:::return->m_handler->getNamespaceURIFromPrefix
+ToUnknownStream#setTransformer(Transformer)::: to unknown stream set transformer:::m_handler->setTransformer->if->hasTraceListeners->else
+ToUnknownStream#getTransformer()::: to unknown stream get transformer:::return->m_handler->getTransformer
+ToUnknownStream#setContentHandler(ContentHandler)::: to unknown stream set content handler:::m_handler->setContentHandler
 ToUnknownStream#setSourceLocator(SourceLocator):::This method is used to set the source locator, which might be used to generated an error message.:::m_handler->setSourceLocator
+ToUnknownStream#firePseudoElement(String)::: to unknown stream fire pseudo element:::if->sb->new->StringBuffer->sb->append->sb->append->ch->sb->toString->toCharArray->m_tracer->fireGenerateEvent
+ToUnknownStream#asDOM3Serializer()::: to unknown stream as m3 serializer:::return->m_handler->asDOM3Serializer
+ToXMLSAXHandler#getOutputFormat()::: to handler get output format:::return
+ToXMLSAXHandler#getOutputStream()::: to handler get output stream:::return
+ToXMLSAXHandler#getWriter()::: to handler get writer:::return
 ToXMLSAXHandler#indent(int):::Do nothing for SAX.:::
+ToXMLSAXHandler#serialize(Node)::: to handler serialize:::
+ToXMLSAXHandler#setEscaping(boolean)::: to handler set escaping:::oldEscapeSetting->if->processingInstruction->else->processingInstruction->return
+ToXMLSAXHandler#setOutputFormat(Properties)::: to handler set output format:::
+ToXMLSAXHandler#setOutputStream(OutputStream)::: to handler set output stream:::
+ToXMLSAXHandler#setWriter(Writer)::: to handler set writer:::
+ToXMLSAXHandler#attributeDecl(String, String, String, String, String)::: to handler attribute decl:::
+ToXMLSAXHandler#elementDecl(String, String)::: to handler element decl:::
+ToXMLSAXHandler#externalEntityDecl(String, String, String)::: to handler external entity decl:::
+ToXMLSAXHandler#internalEntityDecl(String, String)::: to handler internal entity decl:::
 ToXMLSAXHandler#endDocument():::Receives notification of the end of the document.:::flushPending->m_saxHandler->endDocument->if->super->fireEndDoc
 ToXMLSAXHandler#closeStartTag():::This method is called when all the data needed for a call to the SAX handler's startElement() method has been gathered.:::localName->getLocalName->uri->getNamespaceURI->if->startDocumentInternal->m_saxHandler->startElement->m_attributes->clear->if->m_state->setCurrentNode
 ToXMLSAXHandler#closeCDATA():::Closes ane open cdata tag, and unlike the this.endCDATA() method (from the LexicalHandler) interface, this "internal" method will send the endCDATA() call to the wrapped handler.:::if->m_lexHandler->endCDATA
+ToXMLSAXHandler#endElement(String, String, String)::: to handler end element:::flushPending->if->if->else->getNamespaceURI->if->if->else->getLocalName->m_saxHandler->endElement->if->super->fireEndElem->m_prefixMap->popNamespaces
+ToXMLSAXHandler#endPrefixMapping(String)::: to handler end prefix mapping:::return
+ToXMLSAXHandler#ignorableWhitespace(char[], int, int)::: to handler ignorable whitespace:::m_saxHandler->ignorableWhitespace
+ToXMLSAXHandler#setDocumentLocator(Locator)::: to handler set document locator:::super->setDocumentLocator->m_saxHandler->setDocumentLocator
+ToXMLSAXHandler#skippedEntity(String)::: to handler skipped entity:::m_saxHandler->skippedEntity
+ToXMLSAXHandler#startPrefixMapping(String, String)::: to handler start prefix mapping:::startPrefixMapping
+ToXMLSAXHandler#startPrefixMapping(String, String, boolean)::: to handler start prefix mapping:::pushed->pushDepth->if->flushPending->else->m_prefixMap->pushNamespace->if->m_saxHandler->startPrefixMapping->if->getShouldOutputNSAttr->name->if->EMPTYSTRING->equals->addAttributeAlways->else->if->EMPTYSTRING->equals->addAttributeAlways->return
+ToXMLSAXHandler#comment(char[], int, int)::: to handler comment:::flushPending->if->m_lexHandler->comment->if->super->fireCommentEvent
+ToXMLSAXHandler#endCDATA()::: to handler end a:::
+ToXMLSAXHandler#endDTD()::: to handler end d:::if->m_lexHandler->endDTD
+ToXMLSAXHandler#startEntity(String)::: to handler start entity:::if->m_lexHandler->startEntity
+ToXMLSAXHandler#characters(String)::: to handler characters:::length->chars->length->if->new->charArr->chars->getChars->this->characters
 ToXMLSAXHandler#startElement(String, String, String):::Start an element in the output document:::startElement
+ToXMLSAXHandler#startElement(String)::: to handler start element:::startElement
+ToXMLSAXHandler#characters(char[], int, int)::: to handler characters:::if->startDocumentInternal->if->closeStartTag->if->m_lexHandler->startCDATA->m_saxHandler->characters->if->fireCharEvent
+ToXMLSAXHandler#endElement(String)::: to handler end element:::endElement
 ToXMLSAXHandler#namespaceAfterStartElement(String, String):::Send a namespace declaration in the output document:::startPrefixMapping
+ToXMLSAXHandler#processingInstruction(String, String)::: to handler processing instruction:::flushPending->m_saxHandler->processingInstruction->if->super->fireEscapingEvent
 ToXMLSAXHandler#popNamespace(String):::Undeclare the namespace that is currently pointed to by a given prefix:::try->if->m_prefixMap->popNamespace->m_saxHandler->endPrefixMapping->return->catch->finally->return
+ToXMLSAXHandler#startCDATA()::: to handler start a:::if->flushPending->if->m_lexHandler->startCDATA
+ToXMLSAXHandler#startElement(String, String, String, Attributes)::: to handler start element:::flushPending->super->startElement->if->doctypeSystem->getDoctypeSystem->if->doctypePublic->getDoctypePublic->if->m_lexHandler->startDTD->m_elemContext->push->if->ensurePrefixIsDeclared->if->addAttributes->isCdataSection
+ToXMLSAXHandler#ensurePrefixIsDeclared(String, String)::: to handler ensure prefix is declared:::if->ns->length->index->no_prefix->rawName->indexOf->prefix->rawName->substring->if->foundURI->m_prefixMap->lookupNamespace->if->foundURI->equals->this->startPrefixMapping->if->getShouldOutputNSAttr->this->addAttributeAlways
 ToXMLSAXHandler#addAttribute(String, String, String, String, String, boolean):::Adds the given attribute to the set of attributes, and also makes sure that the needed prefix/uri mapping is declared, but only if there is a currently open element.:::if->ensurePrefixIsDeclared->addAttributeAlways
 ToXMLSAXHandler#reset():::Try's to reset the super class and reset this class for re-use, so that you don't need to create a new serializer (mostly for performance reasons).:::wasReset->if->super->reset->resetToXMLSAXHandler->return
+ToXMLSAXHandler#resetToXMLSAXHandler():::Reset all of the fields owned by ToXMLSAXHandler class:::
 ToXMLStream#CopyFrom(ToXMLStream):::Copy properties from another SerializerToXML.:::encoding->xmlListener->getEncoding->setEncoding->xmlListener->getOmitXMLDeclaration->setOmitXMLDeclaration->xmlListener->getIndentAmount->setIndentAmount->xmlListener->getDoctypeSystem->setDoctypeSystem->xmlListener->getDoctypePublic->setDoctypePublic->xmlListener->getStandalone->setStandalone->xmlListener->getMediaType->setMediaType
 ToXMLStream#startDocumentInternal():::Receive notification of the beginning of a document.:::if->super->startDocumentInternal->if->isInEntityRef->return->if->getOmitXMLDeclaration->encoding->Encodings->getEncoding->getMimeEncoding->version->getVersion->if->standalone->if->getStandalone->else->try->writer->writer->write->writer->write->writer->write->writer->write->writer->write->writer->write->writer->write->if->if->getDoctypePublic->getDoctypeSystem->writer->write->catch->throw->new->SAXException->finally
 ToXMLStream#endDocument():::Receive notification of the end of a document.:::if->flushCharactersBuffer->flushPending->if->try->outputLineSep->catch->throw->new->SAXException->finally->flushWriter->if->super->fireEndDoc
@@ -421,14 +747,18 @@ ToXMLStream#processingInstruction(String, String):::Receive notification of a pr
 ToXMLStream#entityReference(String):::Receive notivication of a entityReference.:::if->closeStartTag->try->if->shouldIndent->indent->writer->writer->write->writer->write->writer->write->catch->throw->new->SAXException->finally->if->super->fireEntityReference
 ToXMLStream#addUniqueAttribute(String, String, int):::This method is used to add an attribute to the currently open element:::if->try->patchedName->patchName->writer->if->writer->write->writer->write->writer->write->writer->write->writer->write->else->writer->write->writer->write->writer->write->this->getEncoding->writeAttrString->writer->write->catch->throw->new->SAXException->finally
 ToXMLStream#addAttribute(String, String, String, String, String, boolean):::Add an attribute to the current element.:::if->was_added->addAttributeAlways->if->rawName->startsWith->prefixUsed->ensureAttributesNamespaceIsDeclared->if->rawName->startsWith->addAttributeAlways->else->msg->new->ObjectArr->createMessage->try->tran->super->getTransformer->errHandler->tran->getErrorListener->if->errHandler->new->TransformerException->warning->else->println->catch->finally
+ToXMLStream#endElement(String)::: to stream end element:::endElement
 ToXMLStream#namespaceAfterStartElement(String, String):::This method is used to notify the serializer of a namespace mapping (or node) that applies to the current element whose startElement() call has already been seen:::if->prefix1->getPrefixPart->if->EMPTYSTRING->equals->startPrefixMapping->return
 ToXMLStream#pushNamespace(String, String):::From XSLTC Declare a prefix to point to a namespace URI:::try->if->m_prefixMap->pushNamespace->startPrefixMapping->return->catch->finally->return
 ToXMLStream#reset():::Try's to reset the super class and reset this class for re-use, so that you don't need to create a new serializer (mostly for performance reasons).:::wasReset->if->super->reset->resetToXMLStream->return
+ToXMLStream#resetToXMLStream():::Reset all of the fields owned by ToStream class:::
+ToXMLStream#getXMLVersion():::This method checks for the XML version of output document:::xmlVersion->getVersion->if->xmlVersion->equals->else->if->xmlVersion->equals->else->msg->new->ObjectArr->createMessage->try->tran->super->getTransformer->errHandler->tran->getErrorListener->if->errHandler->new->TransformerException->warning->else->println->catch->finally->return
 TransformStateSetter#setCurrentNode(Node):::Set the current node.:::
 TransformStateSetter#resetState(Transformer):::Reset the state on the given transformer object.:::
 TreeWalker#getContentHandler():::Get the ContentHandler used for the tree walk.:::return
 TreeWalker#traverse(Node):::Perform a pre-order traversal non-recursive style:::startDocument->top->while->startNode->nextNode->pos->getFirstChild->while->endNode->if->top->equals->break->pos->getNextSibling->if->pos->getParentNode->if->top->equals->if->endNode->break->endDocument
 TreeWalker#traverse(Node, Node):::Perform a pre-order traversal non-recursive style:::startDocument->while->startNode->nextNode->pos->getFirstChild->while->endNode->if->top->equals->break->pos->getNextSibling->if->pos->getParentNode->if->top->equals->break->endDocument
+TreeWalker#dispatachChars(Node):::Optimized dispatch of characters.:::if->characters->else->data->getData->data->toCharArray->data->length->characters
 TreeWalker#startNode(Node):::Start processing given node:::if->loc->m_locator->loc->getColumnNumber->setColumnNumber->m_locator->loc->getLineNumber->setLineNumber->m_locator->loc->getPublicId->setPublicId->m_locator->loc->getSystemId->setSystemId->else->m_locator->setColumnNumber->m_locator->setLineNumber->switch->node->getNodeType->data->getData->if->lh->lh->data->toCharArray->data->length->comment->break->break->break->elem_node->uri->elem_node->getNamespaceURI->if->prefix->elem_node->getPrefix->if->startPrefixMapping->atts->elem_node->getAttributes->nAttrs->atts->getLength->for->i->ns->DOM2Helper->getNamespaceOfNode->if->DOM2Helper->getLocalNameOfNode->node->getNodeName->new->AttList->startElement->break->pi->name->pi->getNodeName->if->name->equals->else->pi->getNodeName->pi->getData->processingInstruction->break->isLexH->lh->if->lh->startCDATA->dispatachChars->if->lh->endCDATA->break->if->m_contentHandler->processingInstruction->dispatachChars->m_contentHandler->processingInstruction->else->dispatachChars->break->eref->if->eref->getNodeName->startEntity->else->break
 TreeWalker#endNode(Node):::End processing of given node:::switch->node->getNodeType->break->ns->DOM2Helper->getNamespaceOfNode->if->DOM2Helper->getLocalNameOfNode->node->getNodeName->endElement->if->elem_node->atts->elem_node->getAttributes->nAttrs->atts->getLength->for->i->uri->elem_node->getNamespaceURI->if->prefix->elem_node->getPrefix->if->endPrefixMapping->break->break->eref->if->lh->lh->eref->getNodeName->endEntity->break
 Version#getVersion():::Get the basic version string for the current Serializer:::return->getProduct->getImplementationLanguage->getMajorVersionNum->getReleaseVersionNum->getDevelopmentVersionNum->getDevelopmentVersionNum->getMaintenanceVersionNum
@@ -462,8 +792,16 @@ WriterToUTF8Buffered#flushBuffer():::Flush the internal buffer:::if->m_os->write
 WriterToUTF8Buffered#flush():::Flush the stream:::flushBuffer->m_os->flush
 WriterToUTF8Buffered#close():::Close the stream, flushing it first:::flushBuffer->m_os->close
 WriterToUTF8Buffered#getOutputStream():::Get the output stream where the events will be serialized to.:::return
+WriterToUTF8Buffered#getWriter()::: writer to f8 buffered get writer:::return
 XSLOutputAttributes#getDoctypePublic():::Returns the previously set value of the value to be used as the public identifier in the document type declaration (DTD).:::
 XSLOutputAttributes#getDoctypeSystem():::Returns the previously set value of the value to be used as the system identifier in the document type declaration (DTD).:::
+XSLOutputAttributes#getEncoding()::: output attributes get encoding:::
+XSLOutputAttributes#getIndent()::: output attributes get indent:::
+XSLOutputAttributes#getIndentAmount()::: output attributes get indent amount:::
+XSLOutputAttributes#getMediaType()::: output attributes get media type:::
+XSLOutputAttributes#getOmitXMLDeclaration()::: output attributes get omit declaration:::
+XSLOutputAttributes#getStandalone()::: output attributes get standalone:::
+XSLOutputAttributes#getVersion()::: output attributes get version:::
 XSLOutputAttributes#setCdataSectionElements(List):::Sets the value coming from the xsl:output cdata-section-elements stylesheet property:::
 XSLOutputAttributes#setDoctype(String, String):::Set the value coming from the xsl:output doctype-public and doctype-system stylesheet properties:::
 XSLOutputAttributes#setDoctypePublic(String):::Set the value coming from the xsl:output doctype-public stylesheet attribute.:::

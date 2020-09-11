@@ -1,6 +1,7 @@
 BaseRowSet#initParams():::Performs the necessary internal configurations and initializations to allow any JDBC RowSet implementation to start using the standard facilities provided by a BaseRowSet instance:::new->Hashtable<Integer,Object>
 BaseRowSet#addRowSetListener(RowSetListener):::The listener will be notified whenever an event occurs on this RowSet object:::listeners->add
 BaseRowSet#removeRowSetListener(RowSetListener):::Removes the designated object from this RowSet object's list of listeners:::listeners->remove
+BaseRowSet#checkforRowSetInterface():::Determine if instance of this class extends the RowSet interface.:::if->throw->new->SQLException
 BaseRowSet#notifyCursorMoved():::Notifies all of the listeners registered with this RowSet object that its cursor has moved:::checkforRowSetInterface->if->listeners->isEmpty->event->new->RowSetEvent->foreach->rsl->cursorMoved
 BaseRowSet#notifyRowChanged():::Notifies all of the listeners registered with this RowSet object that one of its rows has changed:::checkforRowSetInterface->if->listeners->isEmpty->event->new->RowSetEvent->foreach->rsl->rowChanged
 BaseRowSet#notifyRowSetChanged():::Notifies all of the listeners registered with this RowSet object that its entire contents have changed:::checkforRowSetInterface->if->listeners->isEmpty->event->new->RowSetEvent->foreach->rsl->rowSetChanged
@@ -38,6 +39,7 @@ BaseRowSet#getFetchDirection():::Retrieves this RowSet object's current setting 
 BaseRowSet#setFetchSize(int):::Sets the fetch size for this RowSet object to the given number of rows:::if->getMaxRows->return->if->getMaxRows->throw->new->SQLException
 BaseRowSet#getFetchSize():::Returns the fetch size for this RowSet object:::return
 BaseRowSet#getConcurrency():::Returns the concurrency for this RowSet object:::return
+BaseRowSet#checkParamIndex(int):::Checks the given index to see whether it is less than 1 and throws an SQLException object if it is:::if->throw->new->SQLException
 BaseRowSet#setNull(int, int):::Sets the designated parameter to SQL NULL:::nullVal->checkParamIndex->new->ObjectArr->Integer->valueOf->if->throw->new->SQLException->params->Integer->valueOf->put
 BaseRowSet#setNull(int, int, String):::Sets the designated parameter to SQL NULL:::nullVal->checkParamIndex->new->ObjectArr->Integer->valueOf->if->throw->new->SQLException->params->Integer->valueOf->put
 BaseRowSet#setBoolean(int, boolean):::Sets the designated parameter to the given boolean in the Java programming language:::checkParamIndex->if->throw->new->SQLException->params->Integer->valueOf->Boolean->valueOf->put
@@ -211,6 +213,8 @@ RowSetFactory#createFilteredRowSet():::Creates a new instance of a FilteredRowSe
 RowSetFactory#createJdbcRowSet():::Creates a new instance of a JdbcRowSet.:::
 RowSetFactory#createJoinRowSet():::Creates a new instance of a JoinRowSet.:::
 RowSetFactory#createWebRowSet():::Creates a new instance of a WebRowSet.:::
+RowSetMetaDataImpl#checkColRange(int):::Checks to see that the designated column is a valid column number for the RowSet object for which this RowSetMetaDataImpl was created:::if->throw->new->SQLException
+RowSetMetaDataImpl#checkColType(int):::Checks to see that the given SQL type is a valid column type and throws an SQLException object if it is not:::try->c->publicFields->c->getFields->fieldValue->for->i->catch->throw->e->getMessage->new->SQLException->finally->throw->new->SQLException
 RowSetMetaDataImpl#setColumnCount(int):::Sets to the given number the number of columns in the RowSet object for which this RowSetMetaDataImpl object was created.:::if->throw->new->SQLException->if->new->ColInfoArr->for->i
 RowSetMetaDataImpl#setAutoIncrement(int, boolean):::Sets whether the designated column is automatically numbered, thus read-only, to the given boolean value.:::checkColRange
 RowSetMetaDataImpl#setCaseSensitive(int, boolean):::Sets whether the name of the designated column is case sensitive to the given boolean.:::checkColRange
@@ -252,7 +256,13 @@ RowSetMetaDataImpl#getColumnClassName(int):::Retrieves the fully-qualified name 
 RowSetMetaDataImpl#unwrap(java.lang.Class):::Returns an object that implements the given interface to allow access to non-standard methods, or standard methods not exposed by the proxy:::if->isWrapperFor->return->iface->cast->else->throw->new->SQLException
 RowSetMetaDataImpl#isWrapperFor(Class):::Returns true if this either implements the interface argument or is directly or indirectly a wrapper for an object that does:::return->interfaces->isInstance
 RowSetProvider#newFactory():::Creates a new instance of a RowSetFactory implementation:::factory->factoryClassName->try->trace->getSystemProperty->if->trace->if->factoryClassName->equals->return->defaultRowSetFactory->o->getFactoryClass->newInstance->catch->throw->new->SQLException->finally->if->loadViaServiceLoader->return->defaultRowSetFactory
+RowSetProvider#defaultRowSetFactory()::: row set provider default row set factory:::return->new->com.sun.rowset.RowSetFactoryImpl
 RowSetProvider#newFactory(String, ClassLoader):::Creates  a new instance of a RowSetFactory from the specified factory class name:::trace->if->throw->new->SQLException->try->ReflectUtil->checkPackageAccess->catch->throw->new->SQLException->finally->try->providerClass->getFactoryClass->instance->providerClass->newInstance->if->trace->return->catch->throw->new->SQLException->throw->new->SQLException->finally
+RowSetProvider#getContextClassLoader()::: row set provider get context class loader:::return->AccessController->new->PrivilegedAction<ClassLoader>->doPrivileged
+RowSetProvider#getFactoryClass(String, ClassLoader, boolean):::Attempt to load a class using the class loader supplied:::factoryClass->try->if->getContextClassLoader->if->throw->new->ClassNotFoundException->else->cl->loadClass->else->cl->loadClass->catch->if->Class->getClassLoader->forName->else->throw->finally->ReflectUtil->checkPackageAccess->return
+RowSetProvider#loadViaServiceLoader():::Use the ServiceLoader mechanism to load  the default RowSetFactory:::theFactory->try->trace->foreach->ServiceLoader->load->factory->getClass->getName->trace->break->catch->throw->new->SQLException->finally->return
+RowSetProvider#getSystemProperty(String):::Returns the requested System Property:::property->try->AccessController->new->PrivilegedAction<String>->new->PropertyPermission->doPrivileged->catch->trace->if->se->printStackTrace->finally->return
+RowSetProvider#trace(String):::Debug routine which will output tracing if the System Property -Djavax.sql.rowset.RowSetFactory.debug is set:::if->println
 RowSetWarning#getNextWarning():::Retrieves the warning chained to this RowSetWarning object.:::warning->getNextException->if->return->else->throw->new->Error
 RowSetWarning#setNextWarning(RowSetWarning):::Sets warning as the next warning, that is, the warning chained to this RowSetWarning object.:::setNextException
 WebRowSet#readXml(java.io.Reader):::Reads a WebRowSet object in its XML format from the given Reader object.:::

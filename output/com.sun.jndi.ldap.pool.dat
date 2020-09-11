@@ -3,14 +3,35 @@ ConnectionDesc#hashCode():::Hashcode is that of PooledConnection to facilitate s
 ConnectionDesc#release():::Changes the state of a ConnectionDesc from BUSY to IDLE and records the current time so that we will know how long it has been idle.:::d->if->System->currentTimeMillis->return->else->return
 ConnectionDesc#tryUse():::If ConnectionDesc is IDLE, change its state to BUSY and return its connection.:::d->if->return->return
 ConnectionDesc#expire(long):::If ConnectionDesc is IDLE and has expired, close the corresponding PooledConnection.:::if->d->conn->closeConnection->return->else->d->return
+ConnectionDesc#toString()::: connection desc to string:::return->conn->toString
+ConnectionDesc#getState()::: connection desc get state:::return
+ConnectionDesc#getUseCount()::: connection desc get use count:::return
+ConnectionDesc#d d(String)::: connection desc d:::if->toString->println
 Connections#get(long, PooledConnectionFactory):::Retrieves a PooledConnection from this list of connections:::conn->start->System->currentTimeMillis->waittime->d->while->getOrCreateConnection->if->throw->new->CommunicationException->try->d->if->wait->else->wait->catch->throw->new->InterruptedNamingException->finally->if->now->System->currentTimeMillis->d->return
+Connections#getOrCreateConnection(PooledConnectionFactory):::Retrieves an idle connection from this list if one is available:::size->conns->size->conn->if->entry->for->i->if->return->factory->createPooledConnection->td->conns->new->ConnectionDesc->add->return
 Connections#releasePooledConnection(PooledConnection):::Releases connection back into list:::entry->loc->conns->new->ConnectionDesc->indexOf->d->if->if->conns->size->d->td->conns->remove->conn->closeConnection->else->d->td->conns->get->entry->release->notifyAll->d->return->else->return
 Connections#removePooledConnection(PooledConnection):::Removes PooledConnection from list of connections:::if->conns->new->ConnectionDesc->remove->d->notifyAll->d->td->if->conns->isEmpty->return->else->d->return
 Connections#expire(long):::Goes through all entries in list, removes and closes ones that have been idle before threshold.:::clonedConns->synchronized->new->ArrayList<>->expired->new->ArrayList<>->foreach->d->if->entry->expire->expired->add->td->synchronized->conns->removeAll->return->conns->isEmpty
 Connections#close():::Called when this instance of Connections has been removed from Pool:::System->currentTimeMillis->expire
+Connections#getStats()::: connections get stats:::idle->busy->expired->use->len->synchronized->conns->size->entry->for->i->return
+Connections#d d(String, Object)::: connections d:::if->d
+Connections#d d(String, int)::: connections d:::if->d
+Connections#d d(String)::: connections d:::if->conns->size->println
+Connections#td(String, Object, Object)::: connections td:::if->td
+Connections#td(String, Object)::: connections td:::if->td
+Connections#td(String)::: connections td:::if->println
+ConnectionsRef#getConnections()::: connections ref get connections:::return
+ConnectionsWeakRef#getConnections()::: connections weak ref get connections:::return
 Pool#getPooledConnection(Object, long, PooledConnectionFactory):::Gets a pooled connection for id:::d->if->synchronized->map->size->d->expungeStaleConnections->conns->synchronized->getConnections->if->d->new->Connections->connsRef->new->ConnectionsRef->map->put->weakRef->new->ConnectionsWeakRef->weakRefs->add->map->size->d->return->conns->get
+Pool#getConnections(Object)::: pool get connections:::ref->map->get->return->ref->getConnections
 Pool#expire(long):::Goes through the connections in this Pool and expires ones that have been idle before 'threshold':::copy->synchronized->map->values->new->ArrayList<>->removed->new->ArrayList<>->conns->foreach->ref->getConnections->if->conns->expire->d->removed->add->synchronized->map->values->removeAll->expungeStaleConnections
+Pool#expungeStaleConnections()::: pool expunge stale connections:::releaseRef->while->queue->poll->conns->releaseRef->getConnections->if->println->conns->close->weakRefs->remove->releaseRef->clear
+Pool#showStats(PrintStream)::: pool show stats:::id->conns->out->println->out->println->out->println->out->println->synchronized->out->map->size->println->foreach->map->entrySet->entry->getKey->entry->getValue->getConnections->out->conns->getStats->println->out->println
+Pool#toString()::: pool to string:::synchronized->return->super->toString->map->toString
+Pool#d d(String, int)::: pool d:::if->println
+Pool#d d(String, Object)::: pool d:::if->println
 PoolCallback#releasePooledConnection(PooledConnection):::Releases a useable connection back to the pool.:::
 PoolCallback#removePooledConnection(PooledConnection):::Removes a connection from the pool:::
+PoolCleaner#run()::: pool cleaner run:::threshold->while->synchronized->try->wait->catch->finally->System->currentTimeMillis->for->i
 PooledConnection#closeConnection():::Closes the physical connection.:::
 PooledConnectionFactory#createPooledConnection(PoolCallback):::Creates a pooled connection.:::

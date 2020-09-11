@@ -6,6 +6,10 @@ AnnotationElement#getValue(String):::Returns a value for this AnnotationElement.
 AnnotationElement#hasValue(String):::Returns true if an annotation value with the specified name exists in this AnnotationElement.:::Objects->requireNonNull->foreach->if->name->equals->return->return
 AnnotationElement#getAnnotation(Class):::Returns the first annotation for the specified type if an AnnotationElement with the same name exists, else null.:::Objects->requireNonNull->return->type->getAnnotation
 AnnotationElement#getTypeId():::Returns the type ID for this AnnotationElement:::return->type->getId
+AnnotationElement#getType()::: annotation element get type:::return
+AnnotationElement#checkType(Class)::: annotation element check type:::if->type->isPrimitive->return->if->return->throw->new->IllegalArgumentException
+AnnotationElement#isKnownJFRAnnotation(Class)::: annotation element is known annotation:::if->return->if->return->if->return->if->return->if->return->return
+AnnotationElement#isInBoot()::: annotation element is in boot:::return
 Configuration#getSettings():::Returns the settings that specifies how a recording is configured:::return->new->LinkedHashMap<String,String>
 Configuration#getName():::Returns an identifying name (for example, "default" or "profile").:::return
 Configuration#getLabel():::Returns a human-readable name (for example, "Continuous" or "Profiling"}.:::return
@@ -46,6 +50,8 @@ EventType#getAnnotation(Class):::Returns the first annotation for the specified 
 EventType#getEventType(Class):::Returns the event type for an event class, or null if it doesn't exist.:::Objects->requireNonNull->Utils->ensureValidEventSubclass->JVMSupport->ensureWithInternalError->return->MetadataRepository->getInstance->getEventType
 EventType#getSettingDescriptors():::Returns an immutable list of the setting descriptors that describe the available event settings for this event type.:::return->Collections->platformEventType->getSettings->unmodifiableList
 EventType#getCategoryNames():::Returns the list of human-readable names that makes up the categories for this event type (for example, "Java Application", "Statistics").:::c->platformEventType->getAnnotation->if->return->return->Collections->Arrays->c->value->asList->unmodifiableList
+EventType#getType()::: event type get type:::return
+EventType#getPlatformEventType()::: event type get platform event type:::return
 FlightRecorder#getRecordings():::Returns an immutable list of the available recordings:::recs->new->ArrayList<>->foreach->internal->getRecordings->recs->r->getRecording->add->return->Collections->unmodifiableList
 FlightRecorder#takeSnapshot():::Creates a snapshot of all available recorded data:::snapshot->new->Recording->snapshot->setName->internal->snapshot->getInternal->fillWithRecordedData->return
 FlightRecorder#register(Class):::Registers an event class:::Objects->requireNonNull->if->JVMSupport->isNotAvailable->return->Utils->ensureValidEventSubclass->MetadataRepository->getInstance->register
@@ -58,8 +64,26 @@ FlightRecorder#addListener(FlightRecorderListener):::Adds a recorder listener an
 FlightRecorder#removeListener(FlightRecorderListener):::Removes a recorder listener:::Objects->requireNonNull->Utils->checkAccessFlightRecorder->if->JVMSupport->isNotAvailable->return->return->PlatformRecorder->removeListener
 FlightRecorder#isAvailable():::Returns true if the Java Virtual Machine (JVM) has Flight Recorder capabilities:::if->JVMSupport->isNotAvailable->return->return->JVM->getJVM->isAvailable
 FlightRecorder#isInitialized():::Returns true if Flight Recorder is initialized.:::return
+FlightRecorder#getInternal()::: flight recorder get internal:::return
 FlightRecorderListener#recorderInitialized(FlightRecorder):::Receives notification when Flight Recorder is initialized:::
 FlightRecorderListener#recordingStateChanged(Recording):::Receives notification when the state of a recording changes:::
+FlightRecorderPermission.InternalAccess#getType(Object)::: internal access get type:::if->return->getType->if->return->getType->if->return->getType->if->return->getType->throw->o->getClass->new->Error
+FlightRecorderPermission.InternalAccess#newConfiguration(String, String, String, String, Map, String)::: internal access new configuration:::return->new->Configuration
+FlightRecorderPermission.InternalAccess#newEventType(PlatformEventType)::: internal access new event type:::return->new->EventType
+FlightRecorderPermission.InternalAccess#newAnnotation(Type, List, boolean)::: internal access new annotation:::return->new->AnnotationElement
+FlightRecorderPermission.InternalAccess#newValueDescriptor(String, Type, List, int, boolean, String)::: internal access new value descriptor:::return->new->ValueDescriptor
+FlightRecorderPermission.InternalAccess#getPlatformRecording(Recording)::: internal access get platform recording:::return->r->getInternal
+FlightRecorderPermission.InternalAccess#getPlatformEventType(EventType)::: internal access get platform event type:::return->eventType->getPlatformEventType
+FlightRecorderPermission.InternalAccess#isConstantPool(ValueDescriptor)::: internal access is constant pool:::return->v->isConstantPool
+FlightRecorderPermission.InternalAccess#setAnnotations(ValueDescriptor, List)::: internal access set annotations:::v->setAnnotations
+FlightRecorderPermission.InternalAccess#setAnnotations(SettingDescriptor, List)::: internal access set annotations:::s->setAnnotations
+FlightRecorderPermission.InternalAccess#getFieldName(ValueDescriptor)::: internal access get field name:::return->v->getJavaFieldName
+FlightRecorderPermission.InternalAccess#newValueDescriptor(Class, String)::: internal access new value descriptor:::return->Collections->emptyList->new->ValueDescriptor
+FlightRecorderPermission.InternalAccess#newSettingDescriptor(Type, String, String, List)::: internal access new setting descriptor:::return->new->SettingDescriptor
+FlightRecorderPermission.InternalAccess#isUnsigned(ValueDescriptor)::: internal access is unsigned:::return->v->isUnsigned
+FlightRecorderPermission.InternalAccess#getPlatformRecorder()::: internal access get platform recorder:::return->FlightRecorder->getFlightRecorder->getInternal
+Recording.RecordingSettings#with(String, String)::: recording settings with:::Objects->requireNonNull->recording->setSetting->return
+Recording.RecordingSettings#toMap()::: recording settings to map:::return->recording->getSettings
 Recording#start():::Starts this recording:::internal->start
 Recording#scheduleStart(Duration):::Starts this recording after a delay:::Objects->requireNonNull->internal->scheduleStart
 Recording#stop():::Stops this recording:::return->internal->stop
@@ -92,9 +116,12 @@ Recording#enable(String):::Enables the event with the specified name:::Objects->
 Recording#disable(String):::Disables event with the specified name:::Objects->requireNonNull->rs->new->RecordingSettings->rs->with->return
 Recording#enable(Class):::Enables event.:::Objects->requireNonNull->rs->new->RecordingSettings->rs->with->return
 Recording#disable(Class):::Disables event.:::Objects->requireNonNull->rs->new->RecordingSettings->rs->with->return
+Recording#getInternal()::: recording get internal:::return
+Recording#setSetting(String, String)::: recording set setting:::Objects->requireNonNull->Objects->requireNonNull->internal->setSetting
 SettingControl#combine(Set):::Combines the setting values for all running recordings into one value when multiple recordings are running at the same time,  The semantics of how setting values are combined depends on the setting control that is implemented, but all recordings should get at least all the events they request:::
 SettingControl#setValue(String):::Sets the value for this setting:::
 SettingControl#getValue():::Returns the currently used value for this setting, not null:::
+SettingDescriptor#setAnnotations(List)::: setting descriptor set annotations:::annotationConstruct->setAnnotationElements
 SettingDescriptor#getName():::Returns the name of the setting (for example, "threshold").:::return
 SettingDescriptor#getLabel():::Returns a human-readable name that describes the setting (for example, "Threshold"):::label->annotationConstruct->getLabel->if->type->getLabel->return
 SettingDescriptor#getDescription():::Returns a sentence that describes the setting (for example "Record event with duration above or equal to threshold"):::description->annotationConstruct->getDescription->if->type->getDescription->return
@@ -104,6 +131,7 @@ SettingDescriptor#getTypeId():::Returns a unique ID for the type in the Java Vir
 SettingDescriptor#getAnnotation(Class):::Returns the first annotation for the specified type if an annotation element with the same name is available, null otherwise.:::Objects->requireNonNull->return->annotationConstruct->getAnnotation
 SettingDescriptor#getAnnotationElements():::Returns an immutable list of annotation elements for this value descriptor.:::return->Collections->annotationConstruct->getUnmodifiableAnnotationElements->unmodifiableList
 SettingDescriptor#getDefaultValue():::Returns the default value for this setting descriptor.:::return
+SettingDescriptor#getType()::: setting descriptor get type:::return
 ValueDescriptor#getLabel():::Returns a human-readable name that describes the value (for example, "Maximum Throughput").:::return->annotationConstruct->getLabel
 ValueDescriptor#getName():::Returns the name of the value (for example, "maxThroughput").:::return
 ValueDescriptor#getDescription():::Returns a sentence describing the value (for example, {@code "Maximum throughput in the transaction system:::return->annotationConstruct->getDescription
@@ -114,3 +142,8 @@ ValueDescriptor#isArray():::Returns if this value descriptor is an array type.::
 ValueDescriptor#getAnnotation(Class):::Returns the first annotation for the specified type if an annotation element with the same name is directly present for this value descriptor, null otherwise.:::Objects->requireNonNull->return->annotationConstruct->getAnnotation
 ValueDescriptor#getAnnotationElements():::Returns an immutable list of annotation elements for this value descriptor.:::return->annotationConstruct->getUnmodifiableAnnotationElements
 ValueDescriptor#getFields():::Returns an immutable list of value descriptors if the type is complex, else an empty list.:::if->type->isSimpleType->return->Collections->emptyList->return->type->getFields
+ValueDescriptor#getType()::: value descriptor get type:::return
+ValueDescriptor#setAnnotations(List)::: value descriptor set annotations:::annotationConstruct->setAnnotationElements
+ValueDescriptor#isConstantPool()::: value descriptor is constant pool:::return
+ValueDescriptor#getJavaFieldName()::: value descriptor get java field name:::return
+ValueDescriptor#isUnsigned()::: value descriptor is unsigned:::return->annotationConstruct->hasUnsigned

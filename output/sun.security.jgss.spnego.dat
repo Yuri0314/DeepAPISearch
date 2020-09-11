@@ -1,3 +1,16 @@
+NegTokenInit#encode()::: neg token init encode:::try->initToken->new->DerOutputStream->if->initToken->DerValue->createTag->write->if->flags->new->DerOutputStream->flags->putUnalignedBitString->initToken->DerValue->createTag->write->if->dataValue->new->DerOutputStream->dataValue->putOctetString->initToken->DerValue->createTag->write->if->if->println->mic->new->DerOutputStream->mic->putOctetString->initToken->DerValue->createTag->write->out->new->DerOutputStream->out->write->return->out->toByteArray->catch->throw->e->getMessage->new->GSSException->finally
+NegTokenInit#parseToken(byte[])::: neg token init parse token:::try->der->new->DerValue->if->der->isContextSpecific->throw->new->IOException->tmp1->getDerValue->if->throw->new->IOException->lastField->while->available->tmp2->getDerValue->if->tmp2->isContextSpecific->checkNextField->mValue->mValue->toByteArray->mList->mValue->getSequence->new->OidArr->mech->for->i->else->if->tmp2->isContextSpecific->checkNextField->else->if->tmp2->isContextSpecific->checkNextField->if->println->getOctetString->else->if->tmp2->isContextSpecific->checkNextField->if->GSSUtil->useMSInterop->getOctetString->if->getHexBytes->println->catch->throw->e->getMessage->new->GSSException->finally
+NegTokenInit#getMechTypes()::: neg token init get mech types:::return
+NegTokenInit#getMechTypeList()::: neg token init get mech type list:::return
+NegTokenInit#getReqFlags()::: neg token init get req flags:::return
+NegTokenInit#getMechToken()::: neg token init get mech token:::return
+NegTokenInit#getMechListMIC()::: neg token init get mech list c:::return
+NegTokenTarg#encode()::: neg token targ encode:::try->targToken->new->DerOutputStream->result->new->DerOutputStream->result->putEnumerated->targToken->DerValue->createTag->write->if->mech->new->DerOutputStream->mechType->supportedMech->getDER->mech->write->targToken->DerValue->createTag->write->if->rspToken->new->DerOutputStream->rspToken->putOctetString->targToken->DerValue->createTag->write->if->if->println->mic->new->DerOutputStream->mic->putOctetString->targToken->DerValue->createTag->write->else->if->GSSUtil->useMSInterop->if->if->println->rspToken->new->DerOutputStream->rspToken->putOctetString->targToken->DerValue->createTag->write->out->new->DerOutputStream->out->write->return->out->toByteArray->catch->throw->e->getMessage->new->GSSException->finally
+NegTokenTarg#parseToken(byte[])::: neg token targ parse token:::try->der->new->DerValue->if->der->isContextSpecific->throw->new->IOException->tmp1->getDerValue->if->throw->new->IOException->lastField->while->available->tmp2->getDerValue->if->tmp2->isContextSpecific->checkNextField->getEnumerated->if->getNegoResultString->println->else->if->tmp2->isContextSpecific->checkNextField->mech->getOID->mech->toString->new->Oid->if->println->else->if->tmp2->isContextSpecific->checkNextField->getOctetString->else->if->tmp2->isContextSpecific->checkNextField->if->GSSUtil->useMSInterop->getOctetString->if->getHexBytes->println->catch->throw->e->getMessage->new->GSSException->finally
+NegTokenTarg#getNegotiatedResult()::: neg token targ get negotiated result:::return
+NegTokenTarg#getSupportedMech()::: neg token targ get supported mech:::return
+NegTokenTarg#getResponseToken()::: neg token targ get response token:::return
+NegTokenTarg#getMechListMIC()::: neg token targ get mech list c:::return
 SpNegoContext#requestConf(boolean):::Requests that confidentiality be available.:::if->isInitiator
 SpNegoContext#getConfState():::Is confidentiality available?:::return
 SpNegoContext#requestInteg(boolean):::Requests that integrity be available.:::if->isInitiator
@@ -9,19 +22,70 @@ SpNegoContext#getCredDelegState():::Is credential delegation enabled?:::if->isIn
 SpNegoContext#requestMutualAuth(boolean):::Requests that mutual authentication be done during context establishment:::if->isInitiator
 SpNegoContext#getMutualAuthState():::Is mutual authentication enabled? Since this is from the client's perspective, it essentially meas that the server is being authenticated.:::return
 SpNegoContext#getMech():::Returns the mechanism oid.:::if->isEstablished->return->getNegotiatedMech->return
+SpNegoContext#getNegotiatedMech()::: sp nego context get negotiated mech:::return
+SpNegoContext#getProvider()::: sp nego context get provider:::return
+SpNegoContext#dispose()::: sp nego context dispose:::
 SpNegoContext#isInitiator():::Tests if this is the initiator side of the context.:::return
 SpNegoContext#isProtReady():::Tests if the context can be used for per-message service:::return
 SpNegoContext#initSecContext(InputStream, int):::Initiator context establishment call:::retVal->initToken->mechToken->errorCode->if->printState->println->if->isInitiator->throw->new->GSSException->try->if->mechList->getAvailableMechs->getEncodedMechs->GSS_initSecContext->getContextFlags->new->NegTokenInit->if->SpNegoToken->initToken->getType->getTokenName->println->initToken->getEncoded->else->if->if->throw->new->GSSException->server_token->is->available->new->byteArr->SpNegoToken->readFully->if->SpNegoToken->getHexBytes->println->targToken->new->NegTokenTarg->if->SpNegoToken->targToken->getType->getTokenName->println->targToken->getSupportedMech->if->throw->new->GSSException->negoResult->result->targToken->getNegotiatedResult->switch->break->break->break->break->if->throw->internal_mech->toString->new->GSSException->if->accept_token->targToken->getResponseToken->if->if->isMechContextEstablished->throw->new->GSSException->else->GSS_initSecContext->if->GSSUtil->useMSInterop->micToken->targToken->getMechListMIC->if->verifyMechListMIC->throw->new->GSSException->if->isMechContextEstablished->if->GSSUtil->getMechStr->println->else->new->NegTokenInit->if->SpNegoToken->initToken->getType->getTokenName->println->initToken->getEncoded->else->if->println->if->if->SpNegoToken->getHexBytes->println->catch->gssException->e->getMessage->new->GSSException->gssException->initCause->throw->gssException->e->getMessage->new->GSSException->gssException->initCause->throw->finally->return
 SpNegoContext#acceptSecContext(InputStream, int):::Acceptor's context establishment call:::retVal->negoResult->valid->if->printState->println->if->isInitiator->throw->new->GSSException->try->if->token->is->available->new->byteArr->SpNegoToken->readFully->if->SpNegoToken->getHexBytes->println->initToken->new->NegTokenInit->if->SpNegoToken->initToken->getType->getTokenName->println->mechList->initToken->getMechTypeList->initToken->getMechTypes->if->supported_mechSet->getAvailableMechs->mech_wanted->negotiate_mech_type->if->accept_token->if->equals->GSSUtil->isKerberosMech->GSSUtil->isKerberosMech->if->mech_wanted->equals->println->mechToken->initToken->getMechToken->if->throw->new->GSSException->GSS_acceptSecContext->else->if->GSSUtil->useMSInterop->initToken->getMechListMIC->verifyMechListMIC->if->if->isMechContextEstablished->setContextFlags->if->GSSUtil->getMechStr->println->else->else->if->println->println->targToken->negoResult->ordinal->new->NegTokenTarg->if->SpNegoToken->targToken->getType->getTokenName->println->targToken->getEncoded->else->if->token->is->available->new->byteArr->SpNegoToken->readFully->if->SpNegoToken->getHexBytes->println->inputToken->new->NegTokenTarg->if->SpNegoToken->inputToken->getType->getTokenName->println->client_token->inputToken->getResponseToken->accept_token->GSS_acceptSecContext->if->if->if->isMechContextEstablished->else->else->targToken->negoResult->ordinal->new->NegTokenTarg->if->SpNegoToken->targToken->getType->getTokenName->println->targToken->getEncoded->else->if->println->if->SpNegoToken->getHexBytes->println->catch->gssException->e->getMessage->new->GSSException->gssException->initCause->throw->finally->if->setContextFlags->return
+SpNegoContext#getAvailableMechs():::obtain the available mechanisms:::if->mechs->new->OidArr->myCred->getInternalMech->return->else->return
+SpNegoContext#getEncodedMechs(Oid[]):::get ther DER encoded MechList:::mech->new->DerOutputStream->for->i->mechTypeList->new->DerOutputStream->mechTypeList->write->encoded->mechTypeList->toByteArray->return
+SpNegoContext#getContextFlags():::get the context flags:::out->new->BitArray->if->getCredDelegState->out->set->if->getMutualAuthState->out->set->if->getReplayDetState->out->set->if->getSequenceDetState->out->set->if->getConfState->out->set->if->getIntegState->out->set->return
+SpNegoContext#setContextFlags()::: sp nego context set context flags:::if->if->mechContext->getCredDelegState->if->mechContext->getMutualAuthState->if->mechContext->getReplayDetState->if->mechContext->getSequenceDetState->if->mechContext->getIntegState->if->mechContext->getConfState
+SpNegoContext#verifyMechListMIC(byte[], byte[]):::verify MIC on MechList:::if->if->println->return->if->mechContext->getIntegState->if->println->return->valid->try->prop->new->MessageProp->verifyMIC->catch->if->e->getMessage->println->finally->return
+SpNegoContext#GSS_initSecContext(byte[]):::call gss_init_sec_context for the corresponding underlying mechanism:::tok->if->serverName->peerName->toString->peerName->getStringNameType->createName->cred->if->myCred->getInternalCred->new->GSSCredentialImpl->createContext->mechContext->requestConf->mechContext->requestInteg->mechContext->requestCredDeleg->mechContext->requestMutualAuth->mechContext->requestReplayDet->mechContext->requestSequenceDet->if->requestDelegPolicy->if->else->new->byteArr->init_token->mechContext->initSecContext->return
+SpNegoContext#GSS_acceptSecContext(byte[]):::call gss_accept_sec_context for the corresponding underlying mechanism:::if->cred->if->myCred->getInternalCred->new->GSSCredentialImpl->createContext->accept_token->mechContext->acceptSecContext->return
+SpNegoContext#negotiate_mech_type(Oid[], Oid[]):::This routine compares the recieved mechset to the mechset that this server can support:::for->i->return
+SpNegoContext#isEstablished()::: sp nego context is established:::return
+SpNegoContext#isMechContextEstablished()::: sp nego context is mech context established:::if->return->mechContext->isEstablished->else->if->println->return
+SpNegoContext#export()::: sp nego context export:::throw->new->GSSException
 SpNegoContext#setChannelBinding(ChannelBinding):::Sets the channel bindings to be used during context establishment.:::
+SpNegoContext#getChannelBinding()::: sp nego context get channel binding:::return
+SpNegoContext#requestAnonymity(boolean)::: sp nego context request anonymity:::
+SpNegoContext#getAnonymityState()::: sp nego context get anonymity state:::return
 SpNegoContext#requestLifetime(int):::Requests the desired lifetime:::if->isInitiator
 SpNegoContext#getLifetime():::The lifetime remaining for this context.:::if->return->mechContext->getLifetime->else->return
+SpNegoContext#isTransferable()::: sp nego context is transferable:::return
 SpNegoContext#requestSequenceDet(boolean):::Requests that sequence checking be done on the GSS wrap and MIC tokens.:::if->isInitiator
 SpNegoContext#getSequenceDetState():::Is sequence checking enabled on the GSS Wrap and MIC tokens? We enable sequence checking if replay detection is enabled.:::return
 SpNegoContext#requestReplayDet(boolean):::Requests that replay detection be done on the GSS wrap and MIC tokens.:::if->isInitiator
 SpNegoContext#getReplayDetState():::Is replay detection enabled on the GSS wrap and MIC tokens? We enable replay detection if sequence checking is enabled.:::return
+SpNegoContext#getTargName()::: sp nego context get targ name:::if->targName->mechContext->getTargName->targName->getElement->return->else->if->println->return
+SpNegoContext#getSrcName()::: sp nego context get src name:::if->srcName->mechContext->getSrcName->srcName->getElement->return->else->if->println->return
 SpNegoContext#getDelegCred():::Returns the delegated credential for the context:::if->throw->new->GSSException->if->delegCred->mechContext->getDelegCred->if->return->initiate->if->delegCred->getUsage->mechCred->delegCred->getElement->cred->new->SpNegoCredElement->return->cred->getInternalCred->else->throw->new->GSSException
+SpNegoContext#getWrapSizeLimit(int, boolean, int)::: sp nego context get wrap size limit:::if->return->mechContext->getWrapSizeLimit->else->throw->new->GSSException
+SpNegoContext#wrap(byte[], int, int, MessageProp)::: sp nego context wrap:::if->return->mechContext->wrap->else->throw->new->GSSException
+SpNegoContext#wrap(InputStream, OutputStream, MessageProp)::: sp nego context wrap:::if->mechContext->wrap->else->throw->new->GSSException
+SpNegoContext#unwrap(byte[], int, int, MessageProp)::: sp nego context unwrap:::if->return->mechContext->unwrap->else->throw->new->GSSException
+SpNegoContext#unwrap(InputStream, OutputStream, MessageProp)::: sp nego context unwrap:::if->mechContext->unwrap->else->throw->new->GSSException
+SpNegoContext#getMIC(byte[], int, int, MessageProp)::: sp nego context get c:::if->return->mechContext->getMIC->else->throw->new->GSSException
+SpNegoContext#getMIC(InputStream, OutputStream, MessageProp)::: sp nego context get c:::if->mechContext->getMIC->else->throw->new->GSSException
+SpNegoContext#verifyMIC(byte[], int, int, byte[], int, int, MessageProp)::: sp nego context verify c:::if->mechContext->verifyMIC->else->throw->new->GSSException
+SpNegoContext#verifyMIC(InputStream, InputStream, MessageProp)::: sp nego context verify c:::if->mechContext->verifyMIC->else->throw->new->GSSException
+SpNegoContext#printState(int)::: sp nego context print state:::switch->return->return->return->return->return
 SpNegoContext#inquireSecContext(String):::Retrieve attribute of the context for type.:::if->throw->new->GSSException->if->return->inquireSecContext->else->throw->new->GSSException
+SpNegoCredElement#getInternalMech()::: sp nego cred element get internal mech:::return->cred->getMechanism
+SpNegoCredElement#getInternalCred()::: sp nego cred element get internal cred:::return
+SpNegoCredElement#getProvider()::: sp nego cred element get provider:::return
+SpNegoCredElement#dispose()::: sp nego cred element dispose:::cred->dispose
+SpNegoCredElement#getName()::: sp nego cred element get name:::return->cred->getName
+SpNegoCredElement#getInitLifetime()::: sp nego cred element get init lifetime:::return->cred->getInitLifetime
+SpNegoCredElement#getAcceptLifetime()::: sp nego cred element get accept lifetime:::return->cred->getAcceptLifetime
+SpNegoCredElement#isInitiatorCredential()::: sp nego cred element is initiator credential:::return->cred->isInitiatorCredential
+SpNegoCredElement#isAcceptorCredential()::: sp nego cred element is acceptor credential:::return->cred->isAcceptorCredential
+SpNegoCredElement#getMechanism()::: sp nego cred element get mechanism:::return
+SpNegoCredElement#impersonate(GSSNameSpi)::: sp nego cred element impersonate:::return->cred->impersonate
+SpNegoMechFactory#getCredFromSubject(GSSNameSpi, boolean)::: sp nego mech factory get cred from subject:::creds->GSSUtil->searchSubject->result->creds->isEmpty->creds->firstElement->if->cred->result->getInternalCred->if->GSSUtil->cred->getMechanism->isKerberosMech->if->krbCred->Krb5MechFactory->krbCred->getName->checkInitCredPermission->else->krbCred->Krb5MechFactory->krbCred->getName->checkAcceptCredPermission->return
+SpNegoMechFactory#getNameElement(String, Oid)::: sp nego mech factory get name element:::return->manager->getNameElement
+SpNegoMechFactory#getNameElement(byte[], Oid)::: sp nego mech factory get name element:::return->manager->getNameElement
+SpNegoMechFactory#getCredentialElement(GSSNameSpi, int, int, int)::: sp nego mech factory get credential element:::credElement->getCredFromSubject->if->manager->getCredentialElement->new->SpNegoCredElement->return
+SpNegoMechFactory#getMechanismContext(GSSNameSpi, GSSCredentialSpi, int)::: sp nego mech factory get mechanism context:::if->getCredFromSubject->else->if->cred->new->SpNegoCredElement->return->new->SpNegoContext->return->new->SpNegoContext
+SpNegoMechFactory#getMechanismContext(GSSCredentialSpi)::: sp nego mech factory get mechanism context:::if->getCredFromSubject->else->if->cred->new->SpNegoCredElement->return->new->SpNegoContext->return->new->SpNegoContext
+SpNegoMechFactory#getMechanismContext(byte[])::: sp nego mech factory get mechanism context:::return->new->SpNegoContext
+SpNegoMechFactory#getMechanismOid()::: sp nego mech factory get mechanism oid:::return
+SpNegoMechFactory#getProvider()::: sp nego mech factory get provider:::return
+SpNegoMechFactory#getNameTypes()::: sp nego mech factory get name types:::return
 SpNegoToken#encode():::Returns the individual encoded SPNEGO token:::
 SpNegoToken#getEncoded():::Returns the encoded SPNEGO token Note: inserts the required CHOICE tags:::token->new->DerOutputStream->token->encode->write->switch->initToken->new->DerOutputStream->initToken->DerValue->createTag->write->return->initToken->toByteArray->targToken->new->DerOutputStream->targToken->DerValue->createTag->write->return->targToken->toByteArray->return->token->toByteArray
 SpNegoToken#getType():::Returns the SPNEGO token type:::return

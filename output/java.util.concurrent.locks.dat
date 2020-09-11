@@ -3,8 +3,22 @@ AbstractOwnableSynchronizer#getExclusiveOwnerThread():::Returns the thread last 
 AbstractQueuedLongSynchronizer#getState():::Returns the current value of synchronization state:::return
 AbstractQueuedLongSynchronizer#setState(long):::Sets the value of synchronization state:::STATE->setVolatile
 AbstractQueuedLongSynchronizer#compareAndSetState(long, long):::Atomically sets synchronization state to the given updated value if the current state value equals the expected value:::return->STATE->compareAndSet
+AbstractQueuedLongSynchronizer#enq(Node):::Inserts node into queue, initializing if necessary:::for
+AbstractQueuedLongSynchronizer#addWaiter(Node):::Creates and enqueues node for current thread and given mode.:::node->new->Node->for
+AbstractQueuedLongSynchronizer#setHead(Node):::Sets head of queue to be node, thus dequeuing:::
+AbstractQueuedLongSynchronizer#unparkSuccessor(Node):::Wakes up node's successor, if one exists.:::ws->if->node->compareAndSetWaitStatus->s->if->for->p->if->LockSupport->unpark
+AbstractQueuedLongSynchronizer#doReleaseShared():::Release action for shared mode -- signals successor and ensures propagation:::for
+AbstractQueuedLongSynchronizer#setHeadAndPropagate(Node, long):::Sets head of queue, and checks if successor may be waiting in shared mode, if so propagating if either propagate > 0 or PROPAGATE status was set.:::h->setHead->if->s->if->s->isShared->doReleaseShared
+AbstractQueuedLongSynchronizer#cancelAcquire(Node):::Cancels an ongoing attempt to acquire.:::if->return->pred->while->predNext->if->compareAndSetTail->pred->compareAndSetNext->else->ws->if->pred->compareAndSetWaitStatus->next->if->pred->compareAndSetNext->else->unparkSuccessor
+AbstractQueuedLongSynchronizer#shouldParkAfterFailedAcquire(Node, Node):::Checks and updates status for a node that failed to acquire:::ws->if->return->if->do->while->else->pred->compareAndSetWaitStatus->return
 AbstractQueuedLongSynchronizer#selfInterrupt():::Convenience method to interrupt current thread.:::Thread->currentThread->interrupt
+AbstractQueuedLongSynchronizer#parkAndCheckInterrupt():::Convenience method to park and then check if interrupted.:::LockSupport->park->return->Thread->interrupted
 AbstractQueuedLongSynchronizer#acquireQueued(Node, long):::Acquires in exclusive uninterruptible mode for thread already in queue:::interrupted->try->for->catch->cancelAcquire->if->selfInterrupt->throw->finally
+AbstractQueuedLongSynchronizer#doAcquireInterruptibly(long):::Acquires in exclusive interruptible mode.:::node->addWaiter->try->for->catch->cancelAcquire->throw->finally
+AbstractQueuedLongSynchronizer#doAcquireNanos(long, long):::Acquires in exclusive timed mode.:::if->return->deadline->System->nanoTime->node->addWaiter->try->for->catch->cancelAcquire->throw->finally
+AbstractQueuedLongSynchronizer#doAcquireShared(long):::Acquires in shared uninterruptible mode.:::node->addWaiter->interrupted->try->for->catch->cancelAcquire->throw->finally->if->selfInterrupt
+AbstractQueuedLongSynchronizer#doAcquireSharedInterruptibly(long):::Acquires in shared interruptible mode.:::node->addWaiter->try->for->catch->cancelAcquire->throw->finally
+AbstractQueuedLongSynchronizer#doAcquireSharedNanos(long, long):::Acquires in shared timed mode.:::if->return->deadline->System->nanoTime->node->addWaiter->try->for->catch->cancelAcquire->throw->finally
 AbstractQueuedLongSynchronizer#tryAcquire(long):::Attempts to acquire in exclusive mode:::throw->new->UnsupportedOperationException
 AbstractQueuedLongSynchronizer#tryRelease(long):::Attempts to set the state to reflect a release in exclusive mode:::throw->new->UnsupportedOperationException
 AbstractQueuedLongSynchronizer#tryAcquireShared(long):::Attempts to acquire in shared mode:::throw->new->UnsupportedOperationException
@@ -21,6 +35,7 @@ AbstractQueuedLongSynchronizer#releaseShared(long):::Releases in shared mode:::i
 AbstractQueuedLongSynchronizer#hasQueuedThreads():::Queries whether any threads are waiting to acquire:::for->p->h->return
 AbstractQueuedLongSynchronizer#hasContended():::Queries whether any threads have ever contended to acquire this synchronizer; that is, if an acquire method has ever blocked:::return
 AbstractQueuedLongSynchronizer#getFirstQueuedThread():::Returns the first (longest-waiting) thread in the queue, or null if no threads are currently queued:::return->fullGetFirstQueuedThread
+AbstractQueuedLongSynchronizer#fullGetFirstQueuedThread():::Version of getFirstQueuedThread called when fastpath fails.:::h->s->st->if->return->firstThread->for->p->return
 AbstractQueuedLongSynchronizer#isQueued(Thread):::Returns true if the given thread is currently queued:::if->throw->new->NullPointerException->for->p->return
 AbstractQueuedLongSynchronizer#apparentlyFirstQueuedIsExclusive():::Returns true if the apparent first queued thread, if one exists, is waiting in exclusive mode:::h->s->return->s->isShared
 AbstractQueuedLongSynchronizer#hasQueuedPredecessors():::Queries whether any threads have been waiting to acquire longer than the current thread:::h->s->if->if->for->p->if->Thread->currentThread->return->return
@@ -30,6 +45,7 @@ AbstractQueuedLongSynchronizer#getExclusiveQueuedThreads():::Returns a collectio
 AbstractQueuedLongSynchronizer#getSharedQueuedThreads():::Returns a collection containing threads that may be waiting to acquire in shared mode:::list->new->ArrayList<>->for->p->return
 AbstractQueuedLongSynchronizer#toString():::Returns a string identifying this synchronizer, as well as its state:::return->super->toString->getState->hasQueuedThreads
 AbstractQueuedLongSynchronizer#isOnSyncQueue(Node):::Returns true if a node, always one that was initially placed on a condition queue, is now waiting to reacquire on sync queue.:::if->return->if->return->return->findNodeFromTail
+AbstractQueuedLongSynchronizer#findNodeFromTail(Node):::Returns true if node is on sync queue by searching backwards from tail:::for->p
 AbstractQueuedLongSynchronizer#transferForSignal(Node):::Transfers a node from a condition queue onto sync queue:::if->node->compareAndSetWaitStatus->return->p->enq->ws->if->p->compareAndSetWaitStatus->LockSupport->unpark->return
 AbstractQueuedLongSynchronizer#transferAfterCancelledWait(Node):::Transfers node, if necessary, to sync queue after a cancelled wait:::if->node->compareAndSetWaitStatus->enq->return->while->isOnSyncQueue->Thread->yield->return
 AbstractQueuedLongSynchronizer#fullyRelease(Node):::Invokes release with current state value; returns saved state:::try->savedState->getState->if->release->return->throw->new->IllegalMonitorStateException->catch->throw->finally
@@ -37,9 +53,15 @@ AbstractQueuedLongSynchronizer#owns(ConditionObject):::Queries whether the given
 AbstractQueuedLongSynchronizer#hasWaiters(ConditionObject):::Queries whether any threads are waiting on the given condition associated with this synchronizer:::if->owns->throw->new->IllegalArgumentException->return->condition->hasWaiters
 AbstractQueuedLongSynchronizer#getWaitQueueLength(ConditionObject):::Returns an estimate of the number of threads waiting on the given condition associated with this synchronizer:::if->owns->throw->new->IllegalArgumentException->return->condition->getWaitQueueLength
 AbstractQueuedLongSynchronizer#getWaitingThreads(ConditionObject):::Returns a collection containing those threads that may be waiting on the given condition associated with this synchronizer:::if->owns->throw->new->IllegalArgumentException->return->condition->getWaitingThreads
+AbstractQueuedLongSynchronizer.ConditionObject#addConditionWaiter():::Adds a new waiter to wait queue.:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->t->if->unlinkCancelledWaiters->node->new->Node->if->else->return
+AbstractQueuedLongSynchronizer.ConditionObject#doSignal(Node):::Removes and transfers nodes until hit non-cancelled one or null:::do->if->while->transferForSignal
+AbstractQueuedLongSynchronizer.ConditionObject#doSignalAll(Node):::Removes and transfers all nodes.:::do->next->transferForSignal->while
+AbstractQueuedLongSynchronizer.ConditionObject#unlinkCancelledWaiters():::Unlinks cancelled waiter nodes from condition queue:::t->trail->while->next->if->if->else->if->else
 AbstractQueuedLongSynchronizer.ConditionObject#signal():::Moves the longest-waiting thread, if one exists, from the wait queue for this condition to the wait queue for the owning lock.:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->first->if->doSignal
 AbstractQueuedLongSynchronizer.ConditionObject#signalAll():::Moves all threads from the wait queue for this condition to the wait queue for the owning lock.:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->first->if->doSignalAll
 AbstractQueuedLongSynchronizer.ConditionObject#awaitUninterruptibly():::Implements uninterruptible condition wait:::node->addConditionWaiter->savedState->fullyRelease->interrupted->while->isOnSyncQueue->LockSupport->park->if->Thread->interrupted->if->acquireQueued->selfInterrupt
+AbstractQueuedLongSynchronizer.ConditionObject#checkInterruptWhileWaiting(Node):::Checks for interrupt, returning THROW_IE if interrupted before signalled, REINTERRUPT if after signalled, or 0 if not interrupted.:::return->Thread->interrupted->transferAfterCancelledWait
+AbstractQueuedLongSynchronizer.ConditionObject#reportInterruptAfterWait(int):::Throws InterruptedException, reinterrupts current thread, or does nothing, depending on mode.:::if->throw->new->InterruptedException->else->if->selfInterrupt
 AbstractQueuedLongSynchronizer.ConditionObject#await():::Implements interruptible condition wait:::if->Thread->interrupted->throw->new->InterruptedException->node->addConditionWaiter->savedState->fullyRelease->interruptMode->while->isOnSyncQueue->LockSupport->park->if->checkInterruptWhileWaiting->break->if->acquireQueued->if->unlinkCancelledWaiters->if->reportInterruptAfterWait
 AbstractQueuedLongSynchronizer.ConditionObject#awaitNanos(long):::Implements timed condition wait:::if->Thread->interrupted->throw->new->InterruptedException->deadline->System->nanoTime->initialNanos->node->addConditionWaiter->savedState->fullyRelease->interruptMode->while->isOnSyncQueue->if->transferAfterCancelledWait->break->if->LockSupport->parkNanos->if->checkInterruptWhileWaiting->break->System->nanoTime->if->acquireQueued->if->unlinkCancelledWaiters->if->reportInterruptAfterWait->remaining->System->nanoTime->return
 AbstractQueuedLongSynchronizer.ConditionObject#awaitUntil(Date):::Implements absolute timed condition wait:::abstime->deadline->getTime->if->Thread->interrupted->throw->new->InterruptedException->node->addConditionWaiter->savedState->fullyRelease->timedout->interruptMode->while->isOnSyncQueue->if->System->currentTimeMillis->transferAfterCancelledWait->break->LockSupport->parkUntil->if->checkInterruptWhileWaiting->break->if->acquireQueued->if->unlinkCancelledWaiters->if->reportInterruptAfterWait->return
@@ -48,15 +70,32 @@ AbstractQueuedLongSynchronizer.ConditionObject#isOwnedBy(AbstractQueuedLongSynch
 AbstractQueuedLongSynchronizer.ConditionObject#hasWaiters():::Queries whether any threads are waiting on this condition:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->for->w->return
 AbstractQueuedLongSynchronizer.ConditionObject#getWaitQueueLength():::Returns an estimate of the number of threads waiting on this condition:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->n->for->w->return
 AbstractQueuedLongSynchronizer.ConditionObject#getWaitingThreads():::Returns a collection containing those threads that may be waiting on this Condition:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->list->new->ArrayList<>->for->w->return
+AbstractQueuedLongSynchronizer#initializeSyncQueue():::Initializes head and tail fields on first contention.:::h->if->HEAD->new->Node->compareAndSet
+AbstractQueuedLongSynchronizer#compareAndSetTail(Node, Node):::CASes tail field.:::return->TAIL->compareAndSet
 AbstractQueuedSynchronizer.Node#isShared():::Returns true if node is waiting in shared mode.:::return
 AbstractQueuedSynchronizer.Node#predecessor():::Returns previous node, or throws NullPointerException if null:::p->if->throw->new->NullPointerException->else->return
 AbstractQueuedSynchronizer.Node#compareAndSetWaitStatus(int, int):::CASes waitStatus field.:::return->WAITSTATUS->compareAndSet
 AbstractQueuedSynchronizer.Node#compareAndSetNext(Node, Node):::CASes next field.:::return->NEXT->compareAndSet
+AbstractQueuedSynchronizer.Node#setPrevRelaxed(Node)::: node set prev relaxed:::PREV->set
 AbstractQueuedSynchronizer#getState():::Returns the current value of synchronization state:::return
 AbstractQueuedSynchronizer#setState(int):::Sets the value of synchronization state:::
 AbstractQueuedSynchronizer#compareAndSetState(int, int):::Atomically sets synchronization state to the given updated value if the current state value equals the expected value:::return->STATE->compareAndSet
+AbstractQueuedSynchronizer#enq(Node):::Inserts node into queue, initializing if necessary:::for
+AbstractQueuedSynchronizer#addWaiter(Node):::Creates and enqueues node for current thread and given mode.:::node->new->Node->for
+AbstractQueuedSynchronizer#setHead(Node):::Sets head of queue to be node, thus dequeuing:::
+AbstractQueuedSynchronizer#unparkSuccessor(Node):::Wakes up node's successor, if one exists.:::ws->if->node->compareAndSetWaitStatus->s->if->for->p->if->LockSupport->unpark
+AbstractQueuedSynchronizer#doReleaseShared():::Release action for shared mode -- signals successor and ensures propagation:::for
+AbstractQueuedSynchronizer#setHeadAndPropagate(Node, int):::Sets head of queue, and checks if successor may be waiting in shared mode, if so propagating if either propagate > 0 or PROPAGATE status was set.:::h->setHead->if->s->if->s->isShared->doReleaseShared
+AbstractQueuedSynchronizer#cancelAcquire(Node):::Cancels an ongoing attempt to acquire.:::if->return->pred->while->predNext->if->compareAndSetTail->pred->compareAndSetNext->else->ws->if->pred->compareAndSetWaitStatus->next->if->pred->compareAndSetNext->else->unparkSuccessor
+AbstractQueuedSynchronizer#shouldParkAfterFailedAcquire(Node, Node):::Checks and updates status for a node that failed to acquire:::ws->if->return->if->do->while->else->pred->compareAndSetWaitStatus->return
 AbstractQueuedSynchronizer#selfInterrupt():::Convenience method to interrupt current thread.:::Thread->currentThread->interrupt
+AbstractQueuedSynchronizer#parkAndCheckInterrupt():::Convenience method to park and then check if interrupted.:::LockSupport->park->return->Thread->interrupted
 AbstractQueuedSynchronizer#acquireQueued(Node, int):::Acquires in exclusive uninterruptible mode for thread already in queue:::interrupted->try->for->catch->cancelAcquire->if->selfInterrupt->throw->finally
+AbstractQueuedSynchronizer#doAcquireInterruptibly(int):::Acquires in exclusive interruptible mode.:::node->addWaiter->try->for->catch->cancelAcquire->throw->finally
+AbstractQueuedSynchronizer#doAcquireNanos(int, long):::Acquires in exclusive timed mode.:::if->return->deadline->System->nanoTime->node->addWaiter->try->for->catch->cancelAcquire->throw->finally
+AbstractQueuedSynchronizer#doAcquireShared(int):::Acquires in shared uninterruptible mode.:::node->addWaiter->interrupted->try->for->catch->cancelAcquire->throw->finally->if->selfInterrupt
+AbstractQueuedSynchronizer#doAcquireSharedInterruptibly(int):::Acquires in shared interruptible mode.:::node->addWaiter->try->for->catch->cancelAcquire->throw->finally
+AbstractQueuedSynchronizer#doAcquireSharedNanos(int, long):::Acquires in shared timed mode.:::if->return->deadline->System->nanoTime->node->addWaiter->try->for->catch->cancelAcquire->throw->finally
 AbstractQueuedSynchronizer#tryAcquire(int):::Attempts to acquire in exclusive mode:::throw->new->UnsupportedOperationException
 AbstractQueuedSynchronizer#tryRelease(int):::Attempts to set the state to reflect a release in exclusive mode:::throw->new->UnsupportedOperationException
 AbstractQueuedSynchronizer#tryAcquireShared(int):::Attempts to acquire in shared mode:::throw->new->UnsupportedOperationException
@@ -73,6 +112,7 @@ AbstractQueuedSynchronizer#releaseShared(int):::Releases in shared mode:::if->tr
 AbstractQueuedSynchronizer#hasQueuedThreads():::Queries whether any threads are waiting to acquire:::for->p->h->return
 AbstractQueuedSynchronizer#hasContended():::Queries whether any threads have ever contended to acquire this synchronizer; that is, if an acquire method has ever blocked:::return
 AbstractQueuedSynchronizer#getFirstQueuedThread():::Returns the first (longest-waiting) thread in the queue, or null if no threads are currently queued:::return->fullGetFirstQueuedThread
+AbstractQueuedSynchronizer#fullGetFirstQueuedThread():::Version of getFirstQueuedThread called when fastpath fails.:::h->s->st->if->return->firstThread->for->p->return
 AbstractQueuedSynchronizer#isQueued(Thread):::Returns true if the given thread is currently queued:::if->throw->new->NullPointerException->for->p->return
 AbstractQueuedSynchronizer#apparentlyFirstQueuedIsExclusive():::Returns true if the apparent first queued thread, if one exists, is waiting in exclusive mode:::h->s->return->s->isShared
 AbstractQueuedSynchronizer#hasQueuedPredecessors():::Queries whether any threads have been waiting to acquire longer than the current thread:::h->s->if->if->for->p->if->Thread->currentThread->return->return
@@ -82,6 +122,7 @@ AbstractQueuedSynchronizer#getExclusiveQueuedThreads():::Returns a collection co
 AbstractQueuedSynchronizer#getSharedQueuedThreads():::Returns a collection containing threads that may be waiting to acquire in shared mode:::list->new->ArrayList<>->for->p->return
 AbstractQueuedSynchronizer#toString():::Returns a string identifying this synchronizer, as well as its state:::return->super->toString->getState->hasQueuedThreads
 AbstractQueuedSynchronizer#isOnSyncQueue(Node):::Returns true if a node, always one that was initially placed on a condition queue, is now waiting to reacquire on sync queue.:::if->return->if->return->return->findNodeFromTail
+AbstractQueuedSynchronizer#findNodeFromTail(Node):::Returns true if node is on sync queue by searching backwards from tail:::for->p
 AbstractQueuedSynchronizer#transferForSignal(Node):::Transfers a node from a condition queue onto sync queue:::if->node->compareAndSetWaitStatus->return->p->enq->ws->if->p->compareAndSetWaitStatus->LockSupport->unpark->return
 AbstractQueuedSynchronizer#transferAfterCancelledWait(Node):::Transfers node, if necessary, to sync queue after a cancelled wait:::if->node->compareAndSetWaitStatus->enq->return->while->isOnSyncQueue->Thread->yield->return
 AbstractQueuedSynchronizer#fullyRelease(Node):::Invokes release with current state value; returns saved state:::try->savedState->getState->if->release->return->throw->new->IllegalMonitorStateException->catch->throw->finally
@@ -89,9 +130,15 @@ AbstractQueuedSynchronizer#owns(ConditionObject):::Queries whether the given Con
 AbstractQueuedSynchronizer#hasWaiters(ConditionObject):::Queries whether any threads are waiting on the given condition associated with this synchronizer:::if->owns->throw->new->IllegalArgumentException->return->condition->hasWaiters
 AbstractQueuedSynchronizer#getWaitQueueLength(ConditionObject):::Returns an estimate of the number of threads waiting on the given condition associated with this synchronizer:::if->owns->throw->new->IllegalArgumentException->return->condition->getWaitQueueLength
 AbstractQueuedSynchronizer#getWaitingThreads(ConditionObject):::Returns a collection containing those threads that may be waiting on the given condition associated with this synchronizer:::if->owns->throw->new->IllegalArgumentException->return->condition->getWaitingThreads
+AbstractQueuedSynchronizer.ConditionObject#addConditionWaiter():::Adds a new waiter to wait queue.:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->t->if->unlinkCancelledWaiters->node->new->Node->if->else->return
+AbstractQueuedSynchronizer.ConditionObject#doSignal(Node):::Removes and transfers nodes until hit non-cancelled one or null:::do->if->while->transferForSignal
+AbstractQueuedSynchronizer.ConditionObject#doSignalAll(Node):::Removes and transfers all nodes.:::do->next->transferForSignal->while
+AbstractQueuedSynchronizer.ConditionObject#unlinkCancelledWaiters():::Unlinks cancelled waiter nodes from condition queue:::t->trail->while->next->if->if->else->if->else
 AbstractQueuedSynchronizer.ConditionObject#signal():::Moves the longest-waiting thread, if one exists, from the wait queue for this condition to the wait queue for the owning lock.:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->first->if->doSignal
 AbstractQueuedSynchronizer.ConditionObject#signalAll():::Moves all threads from the wait queue for this condition to the wait queue for the owning lock.:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->first->if->doSignalAll
 AbstractQueuedSynchronizer.ConditionObject#awaitUninterruptibly():::Implements uninterruptible condition wait:::node->addConditionWaiter->savedState->fullyRelease->interrupted->while->isOnSyncQueue->LockSupport->park->if->Thread->interrupted->if->acquireQueued->selfInterrupt
+AbstractQueuedSynchronizer.ConditionObject#checkInterruptWhileWaiting(Node):::Checks for interrupt, returning THROW_IE if interrupted before signalled, REINTERRUPT if after signalled, or 0 if not interrupted.:::return->Thread->interrupted->transferAfterCancelledWait
+AbstractQueuedSynchronizer.ConditionObject#reportInterruptAfterWait(int):::Throws InterruptedException, reinterrupts current thread, or does nothing, depending on mode.:::if->throw->new->InterruptedException->else->if->selfInterrupt
 AbstractQueuedSynchronizer.ConditionObject#await():::Implements interruptible condition wait:::if->Thread->interrupted->throw->new->InterruptedException->node->addConditionWaiter->savedState->fullyRelease->interruptMode->while->isOnSyncQueue->LockSupport->park->if->checkInterruptWhileWaiting->break->if->acquireQueued->if->unlinkCancelledWaiters->if->reportInterruptAfterWait
 AbstractQueuedSynchronizer.ConditionObject#awaitNanos(long):::Implements timed condition wait:::if->Thread->interrupted->throw->new->InterruptedException->deadline->System->nanoTime->initialNanos->node->addConditionWaiter->savedState->fullyRelease->interruptMode->while->isOnSyncQueue->if->transferAfterCancelledWait->break->if->LockSupport->parkNanos->if->checkInterruptWhileWaiting->break->System->nanoTime->if->acquireQueued->if->unlinkCancelledWaiters->if->reportInterruptAfterWait->remaining->System->nanoTime->return
 AbstractQueuedSynchronizer.ConditionObject#awaitUntil(Date):::Implements absolute timed condition wait:::abstime->deadline->getTime->if->Thread->interrupted->throw->new->InterruptedException->node->addConditionWaiter->savedState->fullyRelease->timedout->interruptMode->while->isOnSyncQueue->if->System->currentTimeMillis->transferAfterCancelledWait->break->LockSupport->parkUntil->if->checkInterruptWhileWaiting->break->if->acquireQueued->if->unlinkCancelledWaiters->if->reportInterruptAfterWait->return
@@ -100,6 +147,8 @@ AbstractQueuedSynchronizer.ConditionObject#isOwnedBy(AbstractQueuedSynchronizer)
 AbstractQueuedSynchronizer.ConditionObject#hasWaiters():::Queries whether any threads are waiting on this condition:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->for->w->return
 AbstractQueuedSynchronizer.ConditionObject#getWaitQueueLength():::Returns an estimate of the number of threads waiting on this condition:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->n->for->w->return
 AbstractQueuedSynchronizer.ConditionObject#getWaitingThreads():::Returns a collection containing those threads that may be waiting on this Condition:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->list->new->ArrayList<>->for->w->return
+AbstractQueuedSynchronizer#initializeSyncQueue():::Initializes head and tail fields on first contention.:::h->if->HEAD->new->Node->compareAndSet
+AbstractQueuedSynchronizer#compareAndSetTail(Node, Node):::CASes tail field.:::return->TAIL->compareAndSet
 Condition#await():::Causes the current thread to wait until it is signalled or Thread#interrupt interrupted:::
 Condition#awaitUninterruptibly():::Causes the current thread to wait until it is signalled:::
 Condition#awaitNanos(long):::Causes the current thread to wait until it is signalled or interrupted, or the specified waiting time elapses:::
@@ -113,6 +162,7 @@ Lock#tryLock():::Acquires the lock only if it is free at the time of invocation:
 Lock#tryLock(long, TimeUnit):::Acquires the lock if it is free within the given waiting time and the current thread has not been Thread#interrupt interrupted:::
 Lock#unlock():::Releases the lock:::
 Lock#newCondition():::Returns a new Condition instance that is bound to this Lock instance:::
+LockSupport#setBlocker(Thread, Object)::: lock support set blocker:::U->putObject
 LockSupport#unpark(Thread):::Makes available the permit for the given thread, if it was not already available:::if->U->unpark
 LockSupport#park(Object):::Disables the current thread for thread scheduling purposes unless the permit is available:::t->Thread->currentThread->setBlocker->U->park->setBlocker
 LockSupport#parkNanos(Object, long):::Disables the current thread for thread scheduling purposes, for up to the specified waiting time, unless the permit is available:::if->t->Thread->currentThread->setBlocker->U->park->setBlocker
@@ -126,6 +176,14 @@ LockSupport#getThreadId(Thread):::Returns the thread id for the given thread:::r
 ReadWriteLock#readLock():::Returns the lock used for reading.:::
 ReadWriteLock#writeLock():::Returns the lock used for writing.:::
 ReentrantLock.Sync#nonfairTryAcquire(int):::Performs non-fair tryLock:::current->Thread->currentThread->c->getState->if->if->compareAndSetState->setExclusiveOwnerThread->return->else->if->getExclusiveOwnerThread->nextc->if->throw->new->Error->setState->return->return
+ReentrantLock.Sync#tryRelease(int)::: sync try release:::c->getState->if->Thread->currentThread->getExclusiveOwnerThread->throw->new->IllegalMonitorStateException->free->if->setExclusiveOwnerThread->setState->return
+ReentrantLock.Sync#isHeldExclusively()::: sync is held exclusively:::return->getExclusiveOwnerThread->Thread->currentThread
+ReentrantLock.Sync#newCondition()::: sync new condition:::return->new->ConditionObject
+ReentrantLock.Sync#getOwner()::: sync get owner:::return->getState->getExclusiveOwnerThread
+ReentrantLock.Sync#getHoldCount()::: sync get hold count:::return->isHeldExclusively->getState
+ReentrantLock.Sync#isLocked()::: sync is locked:::return->getState
+ReentrantLock.Sync#readObject(java.io.ObjectInputStream):::Reconstitutes the instance from a stream (that is, deserializes it).:::s->defaultReadObject->setState
+ReentrantLock.NonfairSync#tryAcquire(int)::: nonfair sync try acquire:::return->nonfairTryAcquire
 ReentrantLock.FairSync#tryAcquire(int):::Fair version of tryAcquire:::current->Thread->currentThread->c->getState->if->if->hasQueuedPredecessors->compareAndSetState->setExclusiveOwnerThread->return->else->if->getExclusiveOwnerThread->nextc->if->throw->new->Error->setState->return->return
 ReentrantLock#lock():::Acquires the lock:::sync->acquire
 ReentrantLock#lockInterruptibly():::Acquires the lock unless the current thread is Thread#interrupt interrupted:::sync->acquireInterruptibly
@@ -146,13 +204,34 @@ ReentrantLock#hasWaiters(Condition):::Queries whether any threads are waiting on
 ReentrantLock#getWaitQueueLength(Condition):::Returns an estimate of the number of threads waiting on the given condition associated with this lock:::if->throw->new->NullPointerException->if->throw->new->IllegalArgumentException->return->sync->getWaitQueueLength
 ReentrantLock#getWaitingThreads(Condition):::Returns a collection containing those threads that may be waiting on the given condition associated with this lock:::if->throw->new->NullPointerException->if->throw->new->IllegalArgumentException->return->sync->getWaitingThreads
 ReentrantLock#toString():::Returns a string identifying this lock, as well as its lock state:::o->sync->getOwner->return->super->toString->o->getName
+ReentrantReadWriteLock#writeLock()::: reentrant read write lock write lock:::return
+ReentrantReadWriteLock#readLock()::: reentrant read write lock read lock:::return
 ReentrantReadWriteLock.Sync#sharedCount(int):::Returns the number of shared holds represented in count.:::return
 ReentrantReadWriteLock.Sync#exclusiveCount(int):::Returns the number of exclusive holds represented in count.:::return
+ReentrantReadWriteLock.Sync.ThreadLocalHoldCounter#initialValue()::: thread local hold counter initial value:::return->new->HoldCounter
 ReentrantReadWriteLock.Sync#readerShouldBlock():::Returns true if the current thread, when trying to acquire the read lock, and otherwise eligible to do so, should block because of policy for overtaking other waiting threads.:::
 ReentrantReadWriteLock.Sync#writerShouldBlock():::Returns true if the current thread, when trying to acquire the write lock, and otherwise eligible to do so, should block because of policy for overtaking other waiting threads.:::
+ReentrantReadWriteLock.Sync#tryRelease(int)::: sync try release:::if->isHeldExclusively->throw->new->IllegalMonitorStateException->nextc->getState->free->exclusiveCount->if->setExclusiveOwnerThread->setState->return
+ReentrantReadWriteLock.Sync#tryAcquire(int)::: sync try acquire:::current->Thread->currentThread->c->getState->w->exclusiveCount->if->if->getExclusiveOwnerThread->return->if->exclusiveCount->throw->new->Error->setState->return->if->writerShouldBlock->compareAndSetState->return->setExclusiveOwnerThread->return
+ReentrantReadWriteLock.Sync#tryReleaseShared(int)::: sync try release shared:::current->Thread->currentThread->if->if->else->else->rh->if->LockSupport->getThreadId->readHolds->get->count->if->readHolds->remove->if->throw->unmatchedUnlockException->for
+ReentrantReadWriteLock.Sync#unmatchedUnlockException()::: sync unmatched unlock exception:::return->new->IllegalMonitorStateException
+ReentrantReadWriteLock.Sync#tryAcquireShared(int)::: sync try acquire shared:::current->Thread->currentThread->c->getState->if->exclusiveCount->getExclusiveOwnerThread->return->r->sharedCount->if->readerShouldBlock->compareAndSetState->if->else->if->else->rh->if->LockSupport->getThreadId->readHolds->get->else->if->readHolds->set->return->return->fullTryAcquireShared
 ReentrantReadWriteLock.Sync#fullTryAcquireShared(Thread):::Full version of acquire for reads, that handles CAS misses and reentrant reads not dealt with in tryAcquireShared.:::rh->for
 ReentrantReadWriteLock.Sync#tryWriteLock():::Performs tryLock for write, enabling barging in both modes:::current->Thread->currentThread->c->getState->if->w->exclusiveCount->if->getExclusiveOwnerThread->return->if->throw->new->Error->if->compareAndSetState->return->setExclusiveOwnerThread->return
 ReentrantReadWriteLock.Sync#tryReadLock():::Performs tryLock for read, enabling barging in both modes:::current->Thread->currentThread->for
+ReentrantReadWriteLock.Sync#isHeldExclusively()::: sync is held exclusively:::return->getExclusiveOwnerThread->Thread->currentThread
+ReentrantReadWriteLock.Sync#newCondition()::: sync new condition:::return->new->ConditionObject
+ReentrantReadWriteLock.Sync#getOwner()::: sync get owner:::return->getState->exclusiveCount->getExclusiveOwnerThread
+ReentrantReadWriteLock.Sync#getReadLockCount()::: sync get read lock count:::return->getState->sharedCount
+ReentrantReadWriteLock.Sync#isWriteLocked()::: sync is write locked:::return->getState->exclusiveCount
+ReentrantReadWriteLock.Sync#getWriteHoldCount()::: sync get write hold count:::return->isHeldExclusively->getState->exclusiveCount
+ReentrantReadWriteLock.Sync#getReadHoldCount()::: sync get read hold count:::if->getReadLockCount->return->current->Thread->currentThread->if->return->rh->if->LockSupport->getThreadId->return->count->readHolds->get->if->readHolds->remove->return
+ReentrantReadWriteLock.Sync#readObject(java.io.ObjectInputStream):::Reconstitutes the instance from a stream (that is, deserializes it).:::s->defaultReadObject->new->ThreadLocalHoldCounter->setState
+ReentrantReadWriteLock.Sync#getCount()::: sync get count:::return->getState
+ReentrantReadWriteLock.NonfairSync#writerShouldBlock()::: nonfair sync writer should block:::return
+ReentrantReadWriteLock.NonfairSync#readerShouldBlock()::: nonfair sync reader should block:::return->apparentlyFirstQueuedIsExclusive
+ReentrantReadWriteLock.FairSync#writerShouldBlock()::: fair sync writer should block:::return->hasQueuedPredecessors
+ReentrantReadWriteLock.FairSync#readerShouldBlock()::: fair sync reader should block:::return->hasQueuedPredecessors
 ReentrantReadWriteLock.ReadLock#lock():::Acquires the read lock:::sync->acquireShared
 ReentrantReadWriteLock.ReadLock#lockInterruptibly():::Acquires the read lock unless the current thread is Thread#interrupt interrupted:::sync->acquireSharedInterruptibly
 ReentrantReadWriteLock.ReadLock#tryLock():::Acquires the read lock only if the write lock is not held by another thread at the time of invocation:::return->sync->tryReadLock
@@ -186,6 +265,8 @@ ReentrantReadWriteLock#hasWaiters(Condition):::Queries whether any threads are w
 ReentrantReadWriteLock#getWaitQueueLength(Condition):::Returns an estimate of the number of threads waiting on the given condition associated with the write lock:::if->throw->new->NullPointerException->if->throw->new->IllegalArgumentException->return->sync->getWaitQueueLength
 ReentrantReadWriteLock#getWaitingThreads(Condition):::Returns a collection containing those threads that may be waiting on the given condition associated with the write lock:::if->throw->new->NullPointerException->if->throw->new->IllegalArgumentException->return->sync->getWaitingThreads
 ReentrantReadWriteLock#toString():::Returns a string identifying this lock, as well as its lock state:::c->sync->getCount->w->Sync->exclusiveCount->r->Sync->sharedCount->return->super->toString
+StampedLock#casState(long, long)::: stamped lock cas state:::return->STATE->compareAndSet
+StampedLock#tryWriteLock(long)::: stamped lock try write lock:::next->if->casState->VarHandle->storeStoreFence->return->return
 StampedLock#writeLock():::Exclusively acquires the lock, blocking if necessary until available.:::next->return->tryWriteLock->acquireWrite
 StampedLock#tryWriteLock():::Exclusively acquires the lock if it is immediately available.:::s->return->tryWriteLock
 StampedLock#tryWriteLock(long, TimeUnit):::Exclusively acquires the lock if it is available within the given time and the current thread has not been interrupted:::nanos->unit->toNanos->if->Thread->interrupted->next->deadline->if->tryWriteLock->return->if->return->if->System->nanoTime->if->acquireWrite->return->throw->new->InterruptedException
@@ -196,6 +277,8 @@ StampedLock#tryReadLock(long, TimeUnit):::Non-exclusively acquires the lock if i
 StampedLock#readLockInterruptibly():::Non-exclusively acquires the lock, blocking if necessary until available or the current thread is interrupted:::s->next->if->Thread->interrupted->casState->acquireRead->return->throw->new->InterruptedException
 StampedLock#tryOptimisticRead():::Returns a stamp that can later be validated, or zero if exclusively locked.:::s->return
 StampedLock#validate(long):::Returns true if the lock has not been exclusively acquired since issuance of the given stamp:::VarHandle->acquireFence->return
+StampedLock#unlockWriteState(long):::Returns an unlocked state, incrementing the version and avoiding special failure value 0L.:::return
+StampedLock#unlockWriteInternal(long)::: stamped lock unlock write internal:::next->h->STATE->unlockWriteState->setVolatile->if->release->return
 StampedLock#unlockWrite(long):::If the lock state matches the given stamp, releases the exclusive lock.:::if->throw->new->IllegalMonitorStateException->unlockWriteInternal
 StampedLock#unlockRead(long):::If the lock state matches the given stamp, releases the non-exclusive lock.:::s->m->h->while->if->if->casState->if->release->return->else->if->tryDecReaderOverflow->return->throw->new->IllegalMonitorStateException
 StampedLock#unlock(long):::If the lock state matches the given stamp, releases the corresponding mode of the lock.:::if->unlockWrite->else->unlockRead
@@ -204,6 +287,7 @@ StampedLock#tryConvertToReadLock(long):::If the lock state matches the given sta
 StampedLock#tryConvertToOptimisticRead(long):::If the lock state matches the given stamp then, atomically, if the stamp represents holding a lock, releases it and returns an observation stamp:::a->m->s->next->h->VarHandle->acquireFence->while->if->if->break->return->unlockWriteInternal->else->if->return->else->if->break->else->if->if->casState->if->release->return->else->if->tryDecReaderOverflow->return->return
 StampedLock#tryUnlockWrite():::Releases the write lock if it is held, without requiring a stamp value:::s->if->unlockWriteInternal->return->return
 StampedLock#tryUnlockRead():::Releases one hold of the read lock if it is held, without requiring a stamp value:::s->m->h->while->if->if->casState->if->release->return->else->if->tryDecReaderOverflow->return->return
+StampedLock#getReadLockCount(long):::Returns combined state-held and overflow read count for given state s.:::readers->if->return
 StampedLock#isWriteLocked():::Returns true if the lock is currently held exclusively.:::return
 StampedLock#isReadLocked():::Returns true if the lock is currently held non-exclusively.:::return
 StampedLock#isWriteLockStamp(long):::Tells whether a stamp represents holding a lock exclusively:::return
@@ -215,3 +299,26 @@ StampedLock#toString():::Returns a string identifying this lock, as well as its 
 StampedLock#asReadLock():::Returns a plain Lock view of this StampedLock in which the Lock#lock method is mapped to #readLock, and similarly for other methods:::v->if->return->return->new->ReadLockView
 StampedLock#asWriteLock():::Returns a plain Lock view of this StampedLock in which the Lock#lock method is mapped to #writeLock, and similarly for other methods:::v->if->return->return->new->WriteLockView
 StampedLock#asReadWriteLock():::Returns a ReadWriteLock view of this StampedLock in which the ReadWriteLock#readLock() method is mapped to #asReadLock(), and ReadWriteLock#writeLock() to #asWriteLock().:::v->if->return->return->new->ReadWriteLockView
+StampedLock.ReadLockView#lock()::: read lock view lock:::readLock
+StampedLock.ReadLockView#lockInterruptibly()::: read lock view lock interruptibly:::readLockInterruptibly
+StampedLock.ReadLockView#tryLock()::: read lock view try lock:::return->tryReadLock
+StampedLock.ReadLockView#tryLock(long, TimeUnit)::: read lock view try lock:::return->tryReadLock
+StampedLock.ReadLockView#unlock()::: read lock view unlock:::unstampedUnlockRead
+StampedLock.ReadLockView#newCondition()::: read lock view new condition:::throw->new->UnsupportedOperationException
+StampedLock.WriteLockView#lock()::: write lock view lock:::writeLock
+StampedLock.WriteLockView#lockInterruptibly()::: write lock view lock interruptibly:::writeLockInterruptibly
+StampedLock.WriteLockView#tryLock()::: write lock view try lock:::return->tryWriteLock
+StampedLock.WriteLockView#tryLock(long, TimeUnit)::: write lock view try lock:::return->tryWriteLock
+StampedLock.WriteLockView#unlock()::: write lock view unlock:::unstampedUnlockWrite
+StampedLock.WriteLockView#newCondition()::: write lock view new condition:::throw->new->UnsupportedOperationException
+StampedLock.ReadWriteLockView#readLock()::: read write lock view read lock:::return->asReadLock
+StampedLock.ReadWriteLockView#writeLock()::: read write lock view write lock:::return->asWriteLock
+StampedLock#unstampedUnlockWrite()::: stamped lock unstamped unlock write:::s->if->throw->new->IllegalMonitorStateException->unlockWriteInternal
+StampedLock#unstampedUnlockRead()::: stamped lock unstamped unlock read:::s->m->h->while->if->if->casState->if->release->return->else->if->tryDecReaderOverflow->return->throw->new->IllegalMonitorStateException
+StampedLock#readObject(java.io.ObjectInputStream)::: stamped lock read object:::s->defaultReadObject->STATE->setVolatile
+StampedLock#tryIncReaderOverflow(long):::Tries to increment readerOverflow by first setting state access bits value to RBITS, indicating hold of spinlock, then updating, then releasing.:::if->if->casState->STATE->setVolatile->return->else->if->LockSupport->nextSecondarySeed->Thread->yield->else->Thread->onSpinWait->return
+StampedLock#tryDecReaderOverflow(long):::Tries to decrement readerOverflow.:::if->if->casState->r->next->if->else->STATE->setVolatile->return->else->if->LockSupport->nextSecondarySeed->Thread->yield->else->Thread->onSpinWait->return
+StampedLock#release(WNode):::Wakes up the successor of h (normally whead):::if->q->w->WSTATUS->compareAndSet->if->for->t->if->LockSupport->unpark
+StampedLock#acquireWrite(boolean, long):::See above for explanation.:::node->p->for->spins->wasInterrupted->for->spins
+StampedLock#acquireRead(boolean, long):::See above for explanation.:::wasInterrupted->node->p->for->spins->for->spins
+StampedLock#cancelWaiter(WNode, WNode, boolean):::If node non-null, forces cancel status and unsplices it from queue if possible and wakes up any cowaiters (of the node, or group, as applicable), and in any case helps release current first waiter if lock is free:::if->w->for->p->q->if->for->r->for->pred->h->while->s->q->if->for->t->if->if->release->break->return->Thread->interrupted

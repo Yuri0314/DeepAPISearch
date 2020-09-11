@@ -54,12 +54,16 @@ FieldElementHandler#getContextBean():::Returns the context of the field:::return
 FieldElementHandler#getValue(String):::Returns the value of the field with specified name.:::try->return->getContextBean->getFieldValue->catch->getOwner->handleException->finally->return
 FieldElementHandler#setValue(String, Object):::Sets the new value for the field with specified name.:::try->getContextBean->setFieldValue->catch->getOwner->handleException->finally
 FieldElementHandler#getFieldValue(Object, String):::Performs the search of the field with specified name in specified context and returns its value.:::return->findField->get
+FieldElementHandler#setFieldValue(Object, String, Object):::Performs the search of the field with specified name in specified context and updates its value.:::findField->set
+FieldElementHandler#findField(Object, String):::Performs the search of the field with specified name in specified context.:::return->FieldFinder->findStaticField->FieldFinder->bean->getClass->findField
 FloatElementHandler#getValue(String):::Creates float value from the text of the body of this element.:::return->Float->valueOf
 IntElementHandler#getValue(String):::Creates int value from the text of the body of this element.:::return->Integer->decode
 JavaElementHandler#addAttribute(String, String):::Parses attributes of the element:::if->name->equals->else->if->name->equals->getOwner->findClass->else->super->addAttribute
 JavaElementHandler#addArgument(Object):::Adds the argument to the list of readed objects.:::getOwner->addObject
 JavaElementHandler#isArgument():::Tests whether the value of this element can be used as an argument of the element that contained in this one.:::return
 JavaElementHandler#getValueObject():::Returns the value of this element.:::if->ValueObjectImpl->getValue->create->return
+JavaElementHandler#getValue():::Returns the owner of the owner document handler as a value of &lt;java&gt; element.:::owner->getOwner->getOwner->if->isValid->return->if->decoder->decoder->getOwner->if->isValid->return->throw->owner->getClass->getName->new->IllegalStateException
+JavaElementHandler#isValid(Object):::Validates the owner of the &lt;java&gt; element:::return->isInstance
 LongElementHandler#getValue(String):::Creates long value from the text of the body of this element.:::return->Long->decode
 MethodElementHandler#addAttribute(String, String):::Parses attributes of the element:::if->name->equals->else->super->addAttribute
 MethodElementHandler#getValueObject(Class, Object[]):::Returns the result of method execution.:::bean->getContextBean->types->getArgumentTypes->method->MethodFinder->findStaticMethod->MethodFinder->bean->getClass->findMethod->if->method->isVarArgs->method->getParameterTypes->getArguments->value->MethodUtil->invoke->return->method->getReturnType->equals->ValueObjectImpl->create
@@ -81,6 +85,11 @@ PropertyElementHandler#addAttribute(String, String):::Parses attributes of the e
 PropertyElementHandler#isArgument():::Tests whether the value of this element can be used as an argument of the element that contained in this one.:::return
 PropertyElementHandler#getValue(String):::Returns the value of the property with specified name.:::try->return->getContextBean->getPropertyValue->catch->getOwner->handleException->finally->return
 PropertyElementHandler#setValue(String, Object):::Sets the new value for the property with specified name.:::try->getContextBean->setPropertyValue->catch->getOwner->handleException->finally
+PropertyElementHandler#getPropertyValue(Object, String, Integer):::Performs the search of the getter for the property with specified name in specified class and returns value of the property.:::type->bean->getClass->if->return->MethodUtil->findGetter->new->ObjectArr->invoke->else->if->type->isArray->return->Array->get->else->return->MethodUtil->findGetter->new->ObjectArr->invoke
+PropertyElementHandler#setPropertyValue(Object, String, Integer, Object):::Performs the search of the setter for the property with specified name in specified class and updates value of the property.:::type->bean->getClass->param->value->getClass->if->MethodUtil->findSetter->new->ObjectArr->invoke->else->if->type->isArray->Array->set->else->MethodUtil->findSetter->new->ObjectArr->invoke
+PropertyElementHandler#findGetter(Class, String, Class...):::Performs the search of the getter for the property with specified name in specified class.:::if->return->MethodFinder->findInstanceMethod->pd->getProperty->if->method->pd->getReadMethod->if->return->else->if->ipd->method->ipd->getIndexedReadMethod->if->return->throw->new->IntrospectionException
+PropertyElementHandler#findSetter(Class, String, Class...):::Performs the search of the setter for the property with specified name in specified class.:::if->return->MethodFinder->findInstanceMethod->pd->getProperty->if->method->pd->getWriteMethod->if->return->else->if->ipd->method->ipd->getIndexedWriteMethod->if->return->throw->new->IntrospectionException
+PropertyElementHandler#getProperty(Class, String):::Performs the search of the descriptor for the property with specified name in specified class.:::foreach->Introspector->getBeanInfo->getPropertyDescriptors->if->name->pd->getName->equals->return->throw->new->IntrospectionException
 ShortElementHandler#getValue(String):::Creates short value from the text of the body of this element.:::return->Short->decode
 StringElementHandler#addCharacter(char):::Adds the character that contained in this element.:::if->throw->new->IllegalStateException->append
 StringElementHandler#addArgument(Object):::Adds the string value of the argument to the string value of this element.:::if->throw->new->IllegalStateException->append

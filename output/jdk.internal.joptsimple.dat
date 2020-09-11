@@ -1,3 +1,19 @@
+AbstractOptionSpec#options()::: abstract option spec options:::return->unmodifiableList
+AbstractOptionSpec#values(OptionSet)::: abstract option spec values:::return->detectedOptions->valuesOf
+AbstractOptionSpec#value(OptionSet)::: abstract option spec value:::return->detectedOptions->valueOf
+AbstractOptionSpec#description()::: abstract option spec description:::return
+AbstractOptionSpec#forHelp()::: abstract option spec for help:::return
+AbstractOptionSpec#isForHelp()::: abstract option spec is for help:::return
+AbstractOptionSpec#representsNonOptions()::: abstract option spec represents non options:::return
+AbstractOptionSpec#convert(String)::: abstract option spec convert:::
+AbstractOptionSpec#convertWith(ValueConverter, String)::: abstract option spec convert with:::try->return->Reflection->convertWith->catch->throw->new->OptionArgumentConversionException->finally
+AbstractOptionSpec#argumentTypeIndicatorFrom(ValueConverter)::: abstract option spec argument type indicator from:::if->return->pattern->converter->valuePattern->return->converter->valueType->getName
+AbstractOptionSpec#handleOption(OptionParser, ArgumentList, OptionSet, String)::: abstract option spec handle option:::
+AbstractOptionSpec#arrangeOptions(List)::: abstract option spec arrange options:::if->unarranged->size->options->addAll->return->shortOptions->new->ArrayList<>->longOptions->new->ArrayList<>->foreach->if->each->length->shortOptions->add->else->longOptions->add->sort->sort->options->addAll->options->addAll
+AbstractOptionSpec#equals(Object)::: abstract option spec equals:::if->return->other->return->options->equals
+AbstractOptionSpec#hashCode()::: abstract option spec hash code:::return->options->hashCode
+AbstractOptionSpec#toString()::: abstract option spec to string:::return->options->toString
+AlternativeLongOptionSpec#detectOptionArgument(OptionParser, ArgumentList, OptionSet)::: alternative long option spec detect option argument:::if->arguments->hasMore->throw->new->OptionMissingRequiredArgumentException->arguments->treatNextAsLongOption
 ArgumentAcceptingOptionSpec#ofType(Class):::Specifies a type to which arguments of this spec's option are to be converted.  JOpt Simple accepts types that have either:  <ol>   <li>a public static method called valueOf which accepts a single argument of type String   and whose return type is the same as the class on which the method is declared:::return->findConverter->withValuesConvertedBy
 ArgumentAcceptingOptionSpec#withValuesConvertedBy(ValueConverter):::Specifies a converter to use to translate arguments of this spec's option into Java objects:::if->throw->new->NullPointerException->return
 ArgumentAcceptingOptionSpec#describedAs(String):::Specifies a description for the argument of the option that this spec represents:::return
@@ -6,6 +22,25 @@ ArgumentAcceptingOptionSpec#withValuesSeparatedBy(String):::Specifies a value se
 ArgumentAcceptingOptionSpec#defaultsTo(V, V...):::Specifies a set of default values for the argument of the option that this spec represents.:::addDefaultValue->defaultsTo->return
 ArgumentAcceptingOptionSpec#defaultsTo(V[]):::Specifies a set of default values for the argument of the option that this spec represents.:::foreach->addDefaultValue->return
 ArgumentAcceptingOptionSpec#required():::Marks this option as required:::return
+ArgumentAcceptingOptionSpec#isRequired()::: argument accepting option spec is required:::return
+ArgumentAcceptingOptionSpec#addDefaultValue(V)::: argument accepting option spec add default value:::requireNonNull->defaultValues->add
+ArgumentAcceptingOptionSpec#handleOption(OptionParser, ArgumentList, OptionSet, String)::: argument accepting option spec handle option:::if->detectOptionArgument->else->addArguments
+ArgumentAcceptingOptionSpec#addArguments(OptionSet, String)::: argument accepting option spec add arguments:::lexer->new->StringTokenizer->if->lexer->hasMoreTokens->detectedOptions->addWithArgument->else->while->lexer->hasMoreTokens->detectedOptions->lexer->nextToken->addWithArgument
+ArgumentAcceptingOptionSpec#detectOptionArgument(OptionParser, ArgumentList, OptionSet)::: argument accepting option spec detect option argument:::
+ArgumentAcceptingOptionSpec#convert(String)::: argument accepting option spec convert:::return->convertWith
+ArgumentAcceptingOptionSpec#canConvertArgument(String)::: argument accepting option spec can convert argument:::lexer->new->StringTokenizer->try->while->lexer->hasMoreTokens->lexer->nextToken->convert->return->catch->return->finally
+ArgumentAcceptingOptionSpec#isArgumentOfNumberType()::: argument accepting option spec is argument of number type:::return->converter->valueType->isAssignableFrom
+ArgumentAcceptingOptionSpec#acceptsArguments()::: argument accepting option spec accepts arguments:::return
+ArgumentAcceptingOptionSpec#requiresArgument()::: argument accepting option spec requires argument:::return
+ArgumentAcceptingOptionSpec#argumentDescription()::: argument accepting option spec argument description:::return
+ArgumentAcceptingOptionSpec#argumentTypeIndicator()::: argument accepting option spec argument type indicator:::return->argumentTypeIndicatorFrom
+ArgumentAcceptingOptionSpec#defaultValues()::: argument accepting option spec default values:::return->unmodifiableList
+ArgumentAcceptingOptionSpec#equals(Object)::: argument accepting option spec equals:::if->super->equals->return->other->return->requiresArgument->other->requiresArgument
+ArgumentAcceptingOptionSpec#hashCode()::: argument accepting option spec hash code:::return->super->hashCode
+ArgumentList#hasMore()::: argument list has more:::return
+ArgumentList#next()::: argument list next:::return
+ArgumentList#peek()::: argument list peek:::return
+ArgumentList#treatNextAsLongOption()::: argument list treat next as long option:::if->charAt
 BuiltinHelpFormatter#format(Map):::This implementation: <ul>     <li>Sorts the given descriptors by their first elements of {@link OptionDescriptor#options()</li>     <li>Passes the resulting sorted set to #addRows(java.util.Collection)</li>     <li>Returns the result of #formattedHelpOutput()</li> </ul>:::optionRows->reset->nonOptionRows->reset->comparator->new->Comparator<OptionDescriptor>->sorted->new->TreeSet<>->sorted->options->values->addAll->addRows->return->formattedHelpOutput
 BuiltinHelpFormatter#addOptionRow(String):::Adds a row of option help output in the left column, with empty space in the right column.:::addOptionRow
 BuiltinHelpFormatter#addOptionRow(String, String):::Adds a row of option help output in the left and right columns.:::optionRows->add
@@ -33,9 +68,32 @@ BuiltinHelpFormatter#createDescriptionDisplay(OptionDescriptor):::Gives a string
 BuiltinHelpFormatter#createDefaultValuesDisplay(List):::Gives a display string for the default values of an option's argument.  This implementation gives the Object#toString() of the first value if there is only one value, otherwise gives the Object#toString() of the whole list.:::return->defaultValues->size->defaultValues->get->toString->defaultValues->toString
 BuiltinHelpFormatter#message(String, Object...):::Looks up and gives a resource bundle message.  This implementation looks in the bundle "jdk.internal.joptsimple.HelpFormatterMessages" in the default locale, using a key that is the concatenation of this class's fully qualified name, '.', and the given key suffix, formats the corresponding value using the given arguments, and returns the result.:::return->Messages->Locale->getDefault->message
 HelpFormatter#format(Map):::Produces help text, given a set of option descriptors.:::
+IllegalOptionSpecificationException#messageArguments()::: illegal option specification exception message arguments:::return->new->ObjectArr->singleOptionString
+MissingRequiredOptionsException#messageArguments()::: missing required options exception message arguments:::return->new->ObjectArr->multipleOptionString
+MultipleArgumentsForOptionException#messageArguments()::: multiple arguments for option exception message arguments:::return->new->ObjectArr->singleOptionString
+NoArgumentOptionSpec#handleOption(OptionParser, ArgumentList, OptionSet, String)::: no argument option spec handle option:::detectedOptions->add
+NoArgumentOptionSpec#acceptsArguments()::: no argument option spec accepts arguments:::return
+NoArgumentOptionSpec#requiresArgument()::: no argument option spec requires argument:::return
+NoArgumentOptionSpec#isRequired()::: no argument option spec is required:::return
+NoArgumentOptionSpec#argumentDescription()::: no argument option spec argument description:::return
+NoArgumentOptionSpec#argumentTypeIndicator()::: no argument option spec argument type indicator:::return
+NoArgumentOptionSpec#convert(String)::: no argument option spec convert:::return
+NoArgumentOptionSpec#defaultValues()::: no argument option spec default values:::return->emptyList
 NonOptionArgumentSpec#ofType(Class):::Specifies a type to which the non-option arguments are to be converted.  JOpt Simple accepts types that have either:  <ol>   <li>a public static method called valueOf which accepts a single argument of type String   and whose return type is the same as the class on which the method is declared:::findConverter->return
 NonOptionArgumentSpec#withValuesConvertedBy(ValueConverter):::Specifies a converter to use to translate non-option arguments into Java objects:::if->throw->new->NullPointerException->return
 NonOptionArgumentSpec#describedAs(String):::Specifies a description for the non-option arguments that this spec represents:::return
+NonOptionArgumentSpec#convert(String)::: non option argument spec convert:::return->convertWith
+NonOptionArgumentSpec#handleOption(OptionParser, ArgumentList, OptionSet, String)::: non option argument spec handle option:::detectedOptions->addWithArgument
+NonOptionArgumentSpec#defaultValues()::: non option argument spec default values:::return->emptyList
+NonOptionArgumentSpec#isRequired()::: non option argument spec is required:::return
+NonOptionArgumentSpec#acceptsArguments()::: non option argument spec accepts arguments:::return
+NonOptionArgumentSpec#requiresArgument()::: non option argument spec requires argument:::return
+NonOptionArgumentSpec#argumentDescription()::: non option argument spec argument description:::return
+NonOptionArgumentSpec#argumentTypeIndicator()::: non option argument spec argument type indicator:::return->argumentTypeIndicatorFrom
+NonOptionArgumentSpec#representsNonOptions()::: non option argument spec represents non options:::return
+OptionalArgumentOptionSpec#detectOptionArgument(OptionParser, ArgumentList, OptionSet)::: optional argument option spec detect option argument:::if->arguments->hasMore->nextArgument->arguments->peek->if->parser->looksLikeAnOption->canConvertArgument->handleOptionArgument->else->if->isArgumentOfNumberType->canConvertArgument->arguments->next->addArguments->else->detectedOptions->add->else->detectedOptions->add
+OptionalArgumentOptionSpec#handleOptionArgument(OptionParser, OptionSet, ArgumentList)::: optional argument option spec handle option argument:::if->parser->posixlyCorrect->detectedOptions->add->parser->noMoreOptions->else->arguments->next->addArguments
+OptionArgumentConversionException#messageArguments()::: option argument conversion exception message arguments:::return->new->ObjectArr->singleOptionString
 OptionDeclarer#accepts(String):::Tells the parser to recognize the given option:::
 OptionDeclarer#accepts(String, String):::Tells the parser to recognize the given option.:::
 OptionDeclarer#acceptsAll(List):::Tells the parser to recognize the given options, and treat them as synonymous.:::
@@ -54,13 +112,69 @@ OptionDescriptor#requiresArgument():::Does this option OptionSpecBuilder#withReq
 OptionDescriptor#argumentDescription():::Gives a short ArgumentAcceptingOptionSpec#describedAs(String) description of the option's argument.:::
 OptionDescriptor#argumentTypeIndicator():::Gives an indication of the ArgumentAcceptingOptionSpec#ofType(Class) expected type of the option's argument.:::
 OptionDescriptor#representsNonOptions():::Tells whether this object represents the non-option arguments of a command line.:::
+OptionException#specsToStrings(Collection>)::: option exception specs to strings:::strings->new->ArrayList<>->foreach->strings->specToString->add->return
+OptionException#specToString(OptionSpec)::: option exception spec to string:::return->Strings->option->options->new->ArrayList<>->join
 OptionException#options():::Gives the option being considered when the exception was created.:::return->unmodifiableList
+OptionException#singleOptionString()::: option exception single option string:::return->options->get->singleOptionString
+OptionException#singleOptionString(String)::: option exception single option string:::return
+OptionException#multipleOptionString()::: option exception multiple option string:::buffer->new->StringBuilder->asSet->new->LinkedHashSet<String>->for->iter->asSet->iterator->iter->hasNext->buffer->append->return->buffer->toString
+OptionException#unrecognizedOption(String)::: option exception unrecognized option:::return->new->UnrecognizedOptionException
+OptionException#getMessage()::: option exception get message:::return->Locale->getDefault->localizedMessage
+OptionException#localizedMessage(Locale)::: option exception localized message:::return->formattedMessage
+OptionException#formattedMessage(Locale)::: option exception formatted message:::return->getClass->messageArguments->message
+OptionException#messageArguments()::: option exception message arguments:::
+OptionMissingRequiredArgumentException#messageArguments()::: option missing required argument exception message arguments:::return->new->ObjectArr->singleOptionString
+OptionParser#accepts(String)::: option parser accepts:::return->singletonList->acceptsAll
+OptionParser#accepts(String, String)::: option parser accepts:::return->singletonList->acceptsAll
+OptionParser#acceptsAll(List)::: option parser accepts all:::return->acceptsAll
+OptionParser#acceptsAll(List, String)::: option parser accepts all:::if->options->isEmpty->throw->new->IllegalArgumentException->ensureLegalOptions->return->new->OptionSpecBuilder
+OptionParser#nonOptions()::: option parser non options:::spec->new->NonOptionArgumentSpec<>->recognize->return
+OptionParser#nonOptions(String)::: option parser non options:::spec->new->NonOptionArgumentSpec<>->recognize->return
+OptionParser#posixlyCorrect(boolean)::: option parser posixly correct:::moreOptions
+OptionParser#posixlyCorrect()::: option parser posixly correct:::return
+OptionParser#allowsUnrecognizedOptions()::: option parser allows unrecognized options:::
+OptionParser#doesAllowsUnrecognizedOptions()::: option parser does allows unrecognized options:::return
+OptionParser#recognizeAlternativeLongOptions(boolean)::: option parser recognize alternative long options:::if->new->AlternativeLongOptionSpec->recognize->else->recognizedOptions->String->valueOf->remove
+OptionParser#recognize(AbstractOptionSpec)::: option parser recognize:::recognizedOptions->spec->options->putAll->trainingOrder->add
 OptionParser#printHelpOn(OutputStream):::Writes information about the options this parser recognizes to the given output sink:::new->OutputStreamWriter->printHelpOn
 OptionParser#printHelpOn(Writer):::Writes information about the options this parser recognizes to the given output sink:::sink->helpFormatter->_recognizedOptions->format->write->sink->flush
 OptionParser#formatHelpWith(HelpFormatter):::Tells the parser to use the given formatter when asked to #printHelpOn(java.io.Writer) print help.:::if->throw->new->NullPointerException
 OptionParser#recognizedOptions():::Retrieves all options-spec pairings which have been configured for the parser in the same order as declared during training:::return->_recognizedOptions->new->LinkedHashMap<String,OptionSpec<?>>
+OptionParser#_recognizedOptions()::: option parser _recognized options:::options->new->LinkedHashMap<>->foreach->foreach->spec->options->options->put->return
 OptionParser#parse(String...):::Parses the given command line arguments according to the option specifications given to the parser.:::argumentList->new->ArgumentList->detected->recognizedOptions->toJavaUtilMap->new->OptionSet->detected->recognizedOptions->get->add->while->argumentList->hasMore->state->handleArgument->reset->ensureRequiredOptions->ensureAllowedOptions->return
 OptionParser#mutuallyExclusive(OptionSpecBuilder...):::Mandates mutual exclusiveness for the options built by the specified builders.:::for->i
+OptionParser#ensureRequiredOptions(OptionSet)::: option parser ensure required options:::missingRequiredOptions->missingRequiredOptions->helpOptionPresent->isHelpOptionPresent->if->missingRequiredOptions->isEmpty->throw->new->MissingRequiredOptionsException
+OptionParser#ensureAllowedOptions(OptionSet)::: option parser ensure allowed options:::forbiddenOptions->unavailableOptions->helpOptionPresent->isHelpOptionPresent->if->forbiddenOptions->isEmpty->throw->new->UnavailableOptionException
+OptionParser#missingRequiredOptions(OptionSet)::: option parser missing required options:::missingRequiredOptions->new->ArrayList<>->foreach->recognizedOptions->toJavaUtilMap->values->if->each->isRequired->options->has->missingRequiredOptions->add->foreach->requiredIf->entrySet->required->each->getKey->iterator->next->specFor->if->each->getValue->optionsHasAnyOf->options->has->missingRequiredOptions->add->foreach->requiredUnless->entrySet->required->each->getKey->iterator->next->specFor->if->each->getValue->optionsHasAnyOf->options->has->missingRequiredOptions->add->return
+OptionParser#unavailableOptions(OptionSet)::: option parser unavailable options:::unavailableOptions->new->ArrayList<>->foreach->availableIf->entrySet->forbidden->eachEntry->getKey->iterator->next->specFor->if->eachEntry->getValue->optionsHasAnyOf->options->has->unavailableOptions->add->foreach->availableUnless->entrySet->forbidden->eachEntry->getKey->iterator->next->specFor->if->eachEntry->getValue->optionsHasAnyOf->options->has->unavailableOptions->add->return
+OptionParser#optionsHasAnyOf(OptionSet, Collection>)::: option parser options has any of:::foreach->if->options->has->return->return
+OptionParser#isHelpOptionPresent(OptionSet)::: option parser is help option present:::helpOptionPresent->foreach->recognizedOptions->toJavaUtilMap->values->if->each->isForHelp->options->has->break->return
+OptionParser#handleLongOptionToken(String, ArgumentList, OptionSet)::: option parser handle long option token:::optionAndArgument->parseLongOptionWithArgument->if->isRecognized->throw->unrecognizedOption->optionSpec->specFor->optionSpec->handleOption
+OptionParser#handleShortOptionToken(String, ArgumentList, OptionSet)::: option parser handle short option token:::optionAndArgument->parseShortOptionWithArgument->if->isRecognized->specFor->handleOption->else->handleShortOptionCluster
+OptionParser#handleShortOptionCluster(String, ArgumentList, OptionSet)::: option parser handle short option cluster:::options->extractShortOptionsFrom->validateOptionCharacters->for->i
+OptionParser#handleNonOptionArgument(String, ArgumentList, OptionSet)::: option parser handle non option argument:::specFor->handleOption
+OptionParser#noMoreOptions()::: option parser no more options:::OptionParserState->noMoreOptions
+OptionParser#looksLikeAnOption(String)::: option parser looks like an option:::return->isShortOptionToken->isLongOptionToken
+OptionParser#isRecognized(String)::: option parser is recognized:::return->recognizedOptions->contains
+OptionParser#requiredIf(List, String)::: option parser required if:::specFor->requiredIf
+OptionParser#requiredIf(List, OptionSpec)::: option parser required if:::putDependentOption
+OptionParser#requiredUnless(List, String)::: option parser required unless:::specFor->requiredUnless
+OptionParser#requiredUnless(List, OptionSpec)::: option parser required unless:::putDependentOption
+OptionParser#availableIf(List, String)::: option parser available if:::specFor->availableIf
+OptionParser#availableIf(List, OptionSpec)::: option parser available if:::putDependentOption
+OptionParser#availableUnless(List, String)::: option parser available unless:::specFor->availableUnless
+OptionParser#availableUnless(List, OptionSpec)::: option parser available unless:::putDependentOption
+OptionParser#putDependentOption(List, OptionSpec, Map, Set>>)::: option parser put dependent option:::foreach->spec->specFor->if->throw->new->UnconfiguredOptionException->associated->target->get->if->new->HashSet<>->target->put->associated->add
+OptionParser#specFor(char)::: option parser spec for:::return->String->valueOf->specFor
+OptionParser#specFor(String)::: option parser spec for:::return->recognizedOptions->get
+OptionParser#reset()::: option parser reset:::moreOptions
+OptionParser#extractShortOptionsFrom(String)::: option parser extract short options from:::options->argument->length->new->charArr->argument->argument->length->getChars->return
+OptionParser#validateOptionCharacters(char[])::: option parser validate option characters:::foreach->option->String->valueOf->if->isRecognized->throw->unrecognizedOption->if->specFor->acceptsArguments->return
+OptionParser#parseLongOptionWithArgument(String)::: option parser parse long option with argument:::return->KeyValuePair->argument->substring->valueOf
+OptionParser#parseShortOptionWithArgument(String)::: option parser parse short option with argument:::return->KeyValuePair->argument->substring->valueOf
+OptionParserState#noMoreOptions()::: option parser state no more options:::return->new->OptionParserState
+OptionParserState#moreOptions(boolean)::: option parser state more options:::return->new->OptionParserState
+OptionParserState#handleArgument(OptionParser, ArgumentList, OptionSet)::: option parser state handle argument:::
 OptionSet#hasOptions():::Tells whether any options were detected.:::return->detectedOptions->size->detectedOptions->values->iterator->next->representsNonOptions
 OptionSet#has(String):::Tells whether the given option was detected.:::return->detectedOptions->containsKey
 OptionSet#has(OptionSpec):::Tells whether the given option was detected:::return->optionsToArguments->containsKey
@@ -72,9 +186,19 @@ OptionSet#valuesOf(String):::Gives any arguments associated with the given optio
 OptionSet#valuesOf(OptionSpec):::Gives any arguments associated with the given option:::requireNonNull->values->optionsToArguments->get->if->values->isEmpty->return->defaultValueFor->spec->convertedValues->new->ArrayList<>->foreach->convertedValues->spec->convert->add->return->unmodifiableList
 OptionSet#specs():::Gives the set of options that were detected, in the form of OptionSpecs, in the order in which the options were found on the command line.:::specs->specs->detectedOptions->get->singletonList->removeAll->return->unmodifiableList
 OptionSet#asMap():::Gives all declared options as a map of string to OptionSpec.:::map->new->HashMap<>->foreach->recognizedSpecs->values->if->spec->representsNonOptions->map->valuesOf->put->return->unmodifiableMap
+OptionSet#nonOptionArguments()::: option set non option arguments:::spec->detectedOptions->get->return->valuesOf
+OptionSet#add(AbstractOptionSpec)::: option set add:::addWithArgument
+OptionSet#addWithArgument(AbstractOptionSpec, String)::: option set add with argument:::detectedSpecs->add->foreach->spec->options->detectedOptions->put->optionArguments->optionsToArguments->get->if->new->ArrayList<>->optionsToArguments->put->if->optionArguments->add
+OptionSet#equals(Object)::: option set equals:::if->return->if->getClass->that->getClass->equals->return->other->thisOptionsToArguments->new->HashMap<>->otherOptionsToArguments->new->HashMap<>->return->detectedOptions->equals->thisOptionsToArguments->equals
+OptionSet#hashCode()::: option set hash code:::thisOptionsToArguments->new->HashMap<>->return->detectedOptions->hashCode->thisOptionsToArguments->hashCode
+OptionSet#defaultValuesFor(String)::: option set default values for:::if->defaultValues->containsKey->return->defaultValues->get->unmodifiableList->return->emptyList
+OptionSet#defaultValueFor(OptionSpec)::: option set default value for:::return->option->options->iterator->next->defaultValuesFor
+OptionSet#defaultValues(Map>)::: option set default values:::defaults->new->HashMap<>->foreach->recognizedSpecs->entrySet->defaults->each->getKey->each->getValue->defaultValues->put->return
 OptionSpec#values(OptionSet):::Gives any arguments associated with the given option in the given set of detected options:::
 OptionSpec#value(OptionSet):::Gives the argument associated with the given option in the given set of detected options:::
+OptionSpec#options()::: option spec options:::
 OptionSpec#isForHelp():::Tells whether this option is designated as a "help" option:::
+OptionSpecBuilder#attachToParser()::: option spec builder attach to parser:::parser->recognize
 OptionSpecBuilder#withRequiredArg():::Informs an option parser that this builder's option requires an argument.:::newSpec->options->description->new->RequiredArgumentOptionSpec<>->parser->recognize->return
 OptionSpecBuilder#withOptionalArg():::Informs an option parser that this builder's option accepts an optional argument.:::newSpec->options->description->new->OptionalArgumentOptionSpec<>->parser->recognize->return
 OptionSpecBuilder#requiredIf(String, String...):::Informs an option parser that this builder's option is required if the given option is present on the command line.  For a given option, you should not mix this with #requiredUnless(String, String...) requiredUnless to avoid conflicts.:::dependents->validatedDependents->foreach->parser->options->requiredIf->return
@@ -85,6 +209,24 @@ OptionSpecBuilder#availableIf(String, String...):::Informs an option parser that
 OptionSpecBuilder#availableIf(OptionSpec, OptionSpec...):::Informs an option parser that this builder's option is allowed if the given option is present on the command line.  For a given option, you should not mix this with #availableUnless(OptionSpec, OptionSpec[]) requiredUnless to avoid conflicts.  This method recognizes only instances of options returned from the fluent interface methods.:::parser->options->availableIf->foreach->parser->options->availableIf->return
 OptionSpecBuilder#availableUnless(String, String...):::Informs an option parser that this builder's option is allowed if the given option is absent on the command line.  For a given option, you should not mix this with #availableIf(OptionSpec, OptionSpec[]) requiredIf to avoid conflicts.:::dependents->validatedDependents->foreach->parser->options->availableUnless->return
 OptionSpecBuilder#availableUnless(OptionSpec, OptionSpec...):::Informs an option parser that this builder's option is allowed if the given option is absent on the command line.  For a given option, you should not mix this with #availableIf(OptionSpec, OptionSpec[]) requiredIf to avoid conflicts.  This method recognizes only instances of options returned from the fluent interface methods.:::parser->options->availableUnless->foreach->parser->options->availableUnless->return
+OptionSpecBuilder#validatedDependents(String, String...)::: option spec builder validated dependents:::dependents->new->ArrayList<>->dependents->add->Collections->addAll->foreach->if->parser->isRecognized->throw->new->UnconfiguredOptionException->return
+OptionSpecTokenizer#hasMore()::: option spec tokenizer has more:::return->specification->length
+OptionSpecTokenizer#next()::: option spec tokenizer next:::if->hasMore->throw->new->NoSuchElementException->optionCandidate->String->specification->charAt->valueOf->spec->if->RESERVED_FOR_EXTENSIONS->equals->handleReservedForExtensionsToken->if->return->ensureLegalOption->if->hasMore->forHelp->if->specification->charAt->hasMore->specification->charAt->handleArgumentAcceptingOption->new->NoArgumentOptionSpec->if->spec->forHelp->else->new->NoArgumentOptionSpec->return
+OptionSpecTokenizer#configure(OptionParser)::: option spec tokenizer configure:::adjustForPosixlyCorrect->while->hasMore->parser->next->recognize
+OptionSpecTokenizer#adjustForPosixlyCorrect(OptionParser)::: option spec tokenizer adjust for posixly correct:::if->specification->charAt->parser->posixlyCorrect->specification->substring
+OptionSpecTokenizer#handleReservedForExtensionsToken()::: option spec tokenizer handle reserved for extensions token:::if->hasMore->return->new->NoArgumentOptionSpec->if->specification->charAt->return->new->AlternativeLongOptionSpec->return
+OptionSpecTokenizer#handleArgumentAcceptingOption(String)::: option spec tokenizer handle argument accepting option:::if->hasMore->specification->charAt->return->new->OptionalArgumentOptionSpec<String>->return->new->RequiredArgumentOptionSpec<String>
+ParserRules#isShortOptionToken(String)::: parser rules is short option token:::return->argument->startsWith->HYPHEN->equals->isLongOptionToken
+ParserRules#isLongOptionToken(String)::: parser rules is long option token:::return->argument->startsWith->isOptionTerminator
+ParserRules#isOptionTerminator(String)::: parser rules is option terminator:::return->OPTION_TERMINATOR->equals
+ParserRules#ensureLegalOption(String)::: parser rules ensure legal option:::if->option->startsWith->throw->String->valueOf->new->IllegalOptionSpecificationException->for->i->option->length
+ParserRules#ensureLegalOptions(List)::: parser rules ensure legal options:::foreach->ensureLegalOption
+ParserRules#ensureLegalOptionCharacter(char)::: parser rules ensure legal option character:::if->isLetterOrDigit->isAllowedPunctuation->throw->String->valueOf->new->IllegalOptionSpecificationException
+ParserRules#isAllowedPunctuation(char)::: parser rules is allowed punctuation:::allowedPunctuation->return->allowedPunctuation->indexOf
+RequiredArgumentOptionSpec#detectOptionArgument(OptionParser, ArgumentList, OptionSet)::: required argument option spec detect option argument:::if->arguments->hasMore->throw->new->OptionMissingRequiredArgumentException->arguments->next->addArguments
+UnavailableOptionException#messageArguments()::: unavailable option exception message arguments:::return->new->ObjectArr->multipleOptionString
+UnconfiguredOptionException#messageArguments()::: unconfigured option exception message arguments:::return->new->ObjectArr->multipleOptionString
+UnrecognizedOptionException#messageArguments()::: unrecognized option exception message arguments:::return->new->ObjectArr->singleOptionString
 ValueConverter#convert(String):::Converts the given string value into a Java type.:::
 ValueConverter#valueType():::Gives the class of the type of values this converter converts to.:::
 ValueConverter#valuePattern():::Gives a string that describes the pattern of the values this converter expects, if any:::

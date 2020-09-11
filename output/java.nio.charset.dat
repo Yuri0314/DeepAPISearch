@@ -1,5 +1,14 @@
+Charset#checkName(String):::Checks that the given string is a legal charset name:::n->s->length->if->throw->new->IllegalCharsetNameException->for->i
+Charset#cache(String, Charset)::: charset cache:::new->ObjectArr
+Charset#providers()::: charset providers:::return->new->Iterator<>
+Charset#lookupViaProviders(String)::: charset lookup via providers:::if->VM->isBooted->return->if->gate->get->return->try->gate->set->return->AccessController->new->PrivilegedAction<>->doPrivileged->catch->finally->gate->set
+Charset.ExtendedProviderHolder#extendedProviders()::: extended provider holder extended providers:::return->AccessController->new->PrivilegedAction<>->doPrivileged
+Charset#lookupExtendedCharset(String)::: charset lookup extended charset:::if->VM->isBooted->return->ecps->foreach->cs->cp->charsetForName->if->return->return
+Charset#lookup(String)::: charset lookup:::if->throw->new->IllegalArgumentException->a->if->charsetName->equals->return->return->lookup2
+Charset#lookup2(String)::: charset lookup2:::a->if->charsetName->equals->return->cs->if->standardProvider->charsetForName->lookupExtendedCharset->lookupViaProviders->cache->return->checkName->return
 Charset#isSupported(String):::Tells whether the named charset is supported.:::return->lookup
 Charset#forName(String):::Returns a charset object for the named charset.:::cs->lookup->if->return->throw->new->UnsupportedCharsetException
+Charset#put(Iterator, Map)::: charset put:::while->i->hasNext->cs->i->next->if->m->cs->name->containsKey->m->cs->name->put
 Charset#availableCharsets():::Constructs a sorted map from canonical charset names to charset objects:::return->AccessController->new->PrivilegedAction<>->doPrivileged
 Charset#defaultCharset():::Returns the default charset of this Java virtual machine:::if->synchronized->csn->GetPropertyAction->privilegedGetProperty->cs->lookup->if->else->return
 Charset#name():::Returns this charset's canonical name.:::return
@@ -40,6 +49,7 @@ CharsetDecoder#decode(ByteBuffer):::Convenience method that decodes the remainin
 CharsetDecoder#isAutoDetecting():::Tells whether or not this decoder implements an auto-detecting charset:::return
 CharsetDecoder#isCharsetDetected():::Tells whether or not this decoder has yet detected a charset&nbsp;&nbsp;(optional operation):::throw->new->UnsupportedOperationException
 CharsetDecoder#detectedCharset():::Retrieves the charset that was detected by this decoder&nbsp;&nbsp;(optional operation):::throw->new->UnsupportedOperationException
+CharsetDecoder#throwIllegalStateException(int, int)::: charset decoder throw illegal state exception:::throw->new->IllegalStateException
 CharsetEncoder#charset():::Returns the charset that created this encoder.:::return
 CharsetEncoder#replacement():::Returns this encoder's replacement value.:::return->Arrays->copyOf
 CharsetEncoder#replaceWith(byte[]):::Changes this encoder's replacement value:::if->throw->new->IllegalArgumentException->len->if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->if->isLegalReplacement->throw->new->IllegalArgumentException->Arrays->copyOf->implReplaceWith->return
@@ -60,8 +70,10 @@ CharsetEncoder#reset():::Resets this encoder, clearing any internal state:::impl
 CharsetEncoder#implReset():::Resets this encoder, clearing any charset-specific internal state:::
 CharsetEncoder#encodeLoop(CharBuffer, ByteBuffer):::Encodes one or more characters into one or more bytes:::
 CharsetEncoder#encode(CharBuffer):::Convenience method that encodes the remaining content of a single input character buffer into a newly-allocated byte buffer:::n->in->remaining->averageBytesPerChar->out->ByteBuffer->allocate->if->in->remaining->return->reset->for->out->flip->return
+CharsetEncoder#canEncode(CharBuffer)::: charset encoder can encode:::if->reset->else->if->throwIllegalStateException->ma->malformedInputAction->ua->unmappableCharacterAction->try->onMalformedInput->onUnmappableCharacter->encode->catch->return->finally->onMalformedInput->onUnmappableCharacter->reset->return
 CharsetEncoder#canEncode(char):::Tells whether or not this encoder can encode the given character:::cb->CharBuffer->allocate->cb->put->cb->flip->return->canEncode
 CharsetEncoder#canEncode(CharSequence):::Tells whether or not this encoder can encode the given character sequence:::cb->if->duplicate->else->CharBuffer->cs->toString->wrap->return->canEncode
+CharsetEncoder#throwIllegalStateException(int, int)::: charset encoder throw illegal state exception:::throw->new->IllegalStateException
 CoderResult#toString():::Returns a string describing this coder result.:::nm->return->isError
 CoderResult#isUnderflow():::Tells whether or not this object describes an underflow condition.:::return
 CoderResult#isOverflow():::Tells whether or not this object describes an overflow condition.:::return

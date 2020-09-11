@@ -1,5 +1,6 @@
 LogHandler#initialSnapshot():::Creates and returns the initial state of data structure that needs to be stably stored:::
 LogHandler#snapshot(OutputStream, Object):::Writes the snapshot object to a stream:::s->new->MarshalOutputStream->s->writeObject->s->flush
+LogHandler#recover(InputStream)::: log handler recover:::s->new->MarshalInputStream->return->s->readObject
 LogHandler#writeUpdate(LogOutputStream, Object):::Writes the representation (a serializable object) of an update to a stream:::s->new->MarshalOutputStream->s->writeObject->s->flush
 LogHandler#readUpdate(LogInputStream, Object):::Reads a stably logged update (a serializable object) from a stream:::s->new->MarshalInputStream->return->s->readObject->applyUpdate
 LogHandler#applyUpdate(Object, Object):::Reads a stably logged update (a serializable object) from a stream:::
@@ -17,9 +18,27 @@ LogOutputStream#close():::Can not close a LogOutputStream, so this does nothing.
 ReliableLog#recover():::Returns an object which is the value recorded in the current snapshot:::if->println->if->return->snapshot->fname->versionName->snapshotFile->new->File->in->new->FileInputStream->new->BufferedInputStream->if->println->try->try->handler->recover->catch->throw->if->println->throw->new->IOException->finally->snapshotFile->length->catch->finally->in->close->return->recoverUpdates
 ReliableLog#update(Object):::Records this update in the log file (does not force update to disk):::update
 ReliableLog#update(Object, boolean):::Records this update in the log file:::if->throw->new->IOException->entryStart->log->getFilePointer->spansBoundary->log->checkSpansBoundary->writeInt->try->handler->new->LogOutputStream->writeUpdate->catch->throw->throw->new->IOException->initCause->finally->log->sync->entryEnd->log->getFilePointer->updateLen->log->seek->if->writeInt->log->sync->log->seek->log->writeByte->log->sync->else->writeInt->log->sync->log->seek->System->currentTimeMillis
+ReliableLog#getLogClassConstructor():::Returns the constructor for the log file if the system property sun.rmi.log.class is non-null and the class specified by the property a) can be loaded, b) is a subclass of LogFile, and c) has a public two-arg constructor (String, String); otherwise returns null.:::logClassName->AccessController->System->getProperty->doPrivileged->if->try->loader->AccessController->new->PrivilegedAction<ClassLoader>->doPrivileged->cl->loader->loadClass->asSubclass->return->cl->getConstructor->catch->println->e->printStackTrace->finally->return
 ReliableLog#snapshot(Object):::Records this value as the current snapshot by invoking the client supplied "snapshot" callback and then empties the log.:::oldVersion->incrVersion->fname->versionName->snapshotFile->new->File->out->new->FileOutputStream->try->try->handler->snapshot->catch->throw->throw->new->IOException->finally->System->currentTimeMillis->catch->finally->out->close->snapshotFile->length->openLogFile->writeVersionFile->commitToNewVersion->deleteSnapshot->deleteLogFile
 ReliableLog#close():::Close the stable storage directory in an orderly manner.:::if->return->try->log->close->catch->finally
 ReliableLog#snapshotSize():::Returns the size of the snapshot file in bytes;:::return
 ReliableLog#logSize():::Returns the size of the log file in bytes;:::return
+ReliableLog#writeInt(DataOutput, int):::Write an int value in single write operation:::out->write
+ReliableLog#fName(String):::Generates a filename prepended with the stable storage directory path.:::return->dir->getPath
+ReliableLog#versionName(String):::Generates a version 0 filename prepended with the stable storage directory path:::return->versionName
+ReliableLog#versionName(String, int):::Generates a version filename prepended with the stable storage directory path with the version number as a suffix.:::return->fName->String->valueOf
+ReliableLog#incrVersion():::Increments the directory version number.:::do->while
+ReliableLog#deleteFile(String):::Delete a file.:::f->new->File->if->f->delete->throw->new->IOException
+ReliableLog#deleteNewVersionFile():::Removes the new version number file.:::fName->deleteFile
+ReliableLog#deleteSnapshot(int):::Removes the snapshot file.:::if->return->versionName->deleteFile
+ReliableLog#deleteLogFile(int):::Removes the log file.:::if->return->versionName->deleteFile
+ReliableLog#openLogFile(boolean):::Opens the log file in read/write mode:::try->close->catch->finally->versionName->try->new->LogFile->logClassConstructor->newInstance->catch->throw->new->IOException->initCause->finally->if->initializeLogFile
+ReliableLog#initializeLogFile():::Creates a new log file, truncated and initialized with the format version number preferred by this implementation:::log->setLength->writeInt->writeInt
+ReliableLog#writeVersionFile(boolean):::Writes out version number to file.:::name->if->else->try->fos->fName->new->FileOutputStream->out->new->DataOutputStream->writeInt->catch->finally
+ReliableLog#createFirstVersion():::Creates the initial version file:::writeVersionFile
+ReliableLog#commitToNewVersion():::Commits (atomically) the new version.:::writeVersionFile->deleteNewVersionFile
+ReliableLog#readVersion(String):::Reads version number from a file.:::try->in->new->FileInputStream->new->DataInputStream->return->in->readInt->catch->finally
+ReliableLog#getVersion():::Sets the version:::try->fName->readVersion->commitToNewVersion->catch->try->deleteNewVersionFile->catch->finally->try->fName->readVersion->catch->createFirstVersion->finally->finally
+ReliableLog#recoverUpdates(Object):::Applies outstanding updates to the snapshot.:::if->return->fname->versionName->in->new->FileInputStream->new->BufferedInputStream->dataIn->new->DataInputStream->if->println->try->dataIn->readInt->dataIn->readInt->catch->openLogFile->finally->if->if->println->throw->new->IOException->try->while->updateLen->try->dataIn->readInt->catch->if->println->break->finally->if->if->Integer->toHexString->println->break->if->in->available->if->println->break->if->println->try->handler->new->LogInputStream->readUpdate->catch->throw->e->printStackTrace->throw->new->IOException->finally->catch->finally->if->in->close->if->println->openLogFile->if->throw->new->IOException->log->seek->log->setLength->return
 ReliableLog.LogFile#sync():::Invokes sync on the file descriptor for this log file.:::fd->sync
 ReliableLog.LogFile#checkSpansBoundary(long):::Returns true if writing 4 bytes starting at the specified file position, would span a 512 byte sector boundary; otherwise returns false.:::return

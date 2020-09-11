@@ -1,13 +1,54 @@
 AggregateCompleter#getCompleters():::Retrieve the collection of completers currently being aggregated.:::return
 AggregateCompleter#complete(String, int, List):::Perform a completion operation across all aggregated completers.:::checkNotNull->completions->completers->size->new->ArrayList<Completion>->max->foreach->completion->new->Completion->completion->complete->Math->max->completions->add->foreach->if->candidates->addAll->return
+AggregateCompleter#toString()::: aggregate completer to string:::return->getClass->getSimpleName
+AggregateCompleter.Completion#complete(Completer, String, int)::: completion complete:::checkNotNull->completer->complete
+AnsiStringsCompleter#getStrings()::: ansi strings completer get strings:::return->strings->values
+AnsiStringsCompleter#complete(String, int, List)::: ansi strings completer complete:::checkNotNull->if->candidates->strings->values->addAll->else->Ansi->stripAnsi->foreach->strings->tailMap->entrySet->if->match->getKey->startsWith->break->candidates->match->getValue->add->return->candidates->isEmpty
 ArgumentCompleter#setStrict(boolean):::If true, a completion at argument index N will only succeed if all the completions from 0-(N-1) also succeed.:::
 ArgumentCompleter#isStrict():::Returns whether a completion at argument index N will success if all the completions from arguments 0-(N-1) also succeed.:::return
+ArgumentCompleter#getDelimiter()::: argument completer get delimiter:::return
+ArgumentCompleter#getCompleters()::: argument completer get completers:::return
+ArgumentCompleter#complete(String, int, List)::: argument completer complete:::checkNotNull->delim->getDelimiter->list->delim->delimit->argpos->list->getArgumentPosition->argIndex->list->getCursorArgumentIndex->if->return->completers->getCompleters->completer->if->completers->size->completers->completers->size->get->else->completers->get->for->i->isStrict->ret->completer->list->getCursorArgument->complete->if->return->pos->list->getBufferPosition->if->buffer->length->delim->isDelimiter->for->i->candidates->size->Log->trace->return
 ArgumentCompleter.ArgumentDelimiter#delimit(CharSequence, int):::Break the specified buffer into individual tokens that can be completed on their own.:::
 ArgumentCompleter.ArgumentDelimiter#isDelimiter(CharSequence, int):::Returns true if the specified character is a whitespace parameter.:::
+ArgumentCompleter.AbstractArgumentDelimiter#setQuoteChars(char[])::: abstract argument delimiter set quote chars:::
+ArgumentCompleter.AbstractArgumentDelimiter#getQuoteChars()::: abstract argument delimiter get quote chars:::return
+ArgumentCompleter.AbstractArgumentDelimiter#setEscapeChars(char[])::: abstract argument delimiter set escape chars:::
+ArgumentCompleter.AbstractArgumentDelimiter#getEscapeChars()::: abstract argument delimiter get escape chars:::return
+ArgumentCompleter.AbstractArgumentDelimiter#delimit(CharSequence, int)::: abstract argument delimiter delimit:::args->new->LinkedList<String>->arg->new->StringBuilder->argpos->bindex->quoteStart->for->i->buffer->length->if->buffer->length->args->size->arg->length->if->arg->length->args->arg->toString->add->return->args->args->size->new->StringArr->toArray->new->ArgumentList
 ArgumentCompleter.AbstractArgumentDelimiter#isDelimiter(CharSequence, int):::Returns true if the specified character is a whitespace parameter:::return->isQuoted->isEscaped->isDelimiterChar
+ArgumentCompleter.AbstractArgumentDelimiter#isQuoted(CharSequence, int)::: abstract argument delimiter is quoted:::return
+ArgumentCompleter.AbstractArgumentDelimiter#isQuoteChar(CharSequence, int)::: abstract argument delimiter is quote char:::if->return->for->i->return
 ArgumentCompleter.AbstractArgumentDelimiter#isEscapeChar(CharSequence, int):::Check if this character is a valid escape char (i.e:::if->return->for->i->return
 ArgumentCompleter.AbstractArgumentDelimiter#isEscaped(CharSequence, int):::Check if a character is escaped (i.e:::if->return->return->isEscapeChar
 ArgumentCompleter.AbstractArgumentDelimiter#isDelimiterChar(CharSequence, int):::Returns true if the character at the specified position if a delimiter:::
 ArgumentCompleter.WhitespaceArgumentDelimiter#isDelimiterChar(CharSequence, int):::The character is a delimiter if it is whitespace, and the preceding character is not an escape character.:::return->Character->buffer->charAt->isWhitespace
+ArgumentCompleter.ArgumentList#setCursorArgumentIndex(int)::: argument list set cursor argument index:::
+ArgumentCompleter.ArgumentList#getCursorArgumentIndex()::: argument list get cursor argument index:::return
+ArgumentCompleter.ArgumentList#getCursorArgument()::: argument list get cursor argument:::if->return->return
+ArgumentCompleter.ArgumentList#setArgumentPosition(int)::: argument list set argument position:::
+ArgumentCompleter.ArgumentList#getArgumentPosition()::: argument list get argument position:::return
+ArgumentCompleter.ArgumentList#setArguments(String[])::: argument list set arguments:::
+ArgumentCompleter.ArgumentList#getArguments()::: argument list get arguments:::return
+ArgumentCompleter.ArgumentList#setBufferPosition(int)::: argument list set buffer position:::
+ArgumentCompleter.ArgumentList#getBufferPosition()::: argument list get buffer position:::return
+CandidateListCompletionHandler#getPrintSpaceAfterFullCompletion()::: candidate list completion handler get print space after full completion:::return
+CandidateListCompletionHandler#setPrintSpaceAfterFullCompletion(boolean)::: candidate list completion handler set print space after full completion:::
+CandidateListCompletionHandler#isStripAnsi()::: candidate list completion handler is strip ansi:::return
+CandidateListCompletionHandler#setStripAnsi(boolean)::: candidate list completion handler set strip ansi:::
+CandidateListCompletionHandler#complete(ConsoleReader, List, int)::: candidate list completion handler complete:::buf->reader->getCursorBuffer->if->candidates->size->value->Ansi->candidates->get->toString->stripAnsi->if->length->value->endsWith->if->value->buf->toString->equals->return->setBuffer->return->else->if->candidates->size->value->getUnambiguousCompletions->setBuffer->printCandidates->reader->drawLine->return
+CandidateListCompletionHandler#setBuffer(ConsoleReader, CharSequence, int)::: candidate list completion handler set buffer:::while->reader->getCursorBuffer->reader->backspace->reader->putString->reader->value->length->setCursorPosition
 CandidateListCompletionHandler#printCandidates(ConsoleReader, Collection):::Print out the candidates:::distinct->new->HashSet<CharSequence>->if->distinct->size->reader->getAutoprintThreshold->reader->println->reader->distinct->size->format->print->reader->flush->c->noOpt->format->yesOpt->format->allowed->yesOpt->charAt->noOpt->charAt->while->reader->readCharacter->tmp->new->charArr->new->String->if->noOpt->startsWith->reader->println->return->else->if->yesOpt->startsWith->break->else->reader->beep->if->distinct->size->candidates->size->copy->new->ArrayList<CharSequence>->foreach->if->copy->contains->copy->add->reader->println->reader->printColumns
+CandidateListCompletionHandler#getUnambiguousCompletions(List):::Returns a root that matches all the String elements of the specified List, or null if there are no commonalities:::if->candidates->isEmpty->return->if->candidates->size->return->candidates->get->toString->first->strings->candidates->size->new->StringArr->for->i->candidates->size->candidate->new->StringBuilder->for->i->first->length->return->candidate->toString
+CandidateListCompletionHandler#startsWith(String, String[])::: candidate list completion handler starts with:::foreach->if->candidate->toLowerCase->starts->toLowerCase->startsWith->return->return
 Completer#complete(String, int, List):::Populates candidates with a list of possible completions for the buffer:::
+CompletionHandler#complete(ConsoleReader, List, int)::: completion handler complete:::
+FileNameCompleter#complete(String, int, List)::: file name completer complete:::checkNotNull->if->if->buffer->replace->translated->homeDir->getUserHome->if->translated->separator->startsWith->homeDir->getPath->translated->substring->else->if->translated->startsWith->homeDir->getParentFile->getAbsolutePath->else->if->new->File->isAbsolute->cwd->getUserDir->getAbsolutePath->separator->file->new->File->dir->if->translated->separator->endsWith->else->file->getParentFile->entries->new->FileArr->dir->listFiles->return->matchFiles
+FileNameCompleter#separator()::: file name completer separator:::return
+FileNameCompleter#getUserHome()::: file name completer get user home:::return->Configuration->getUserHome
+FileNameCompleter#getUserDir()::: file name completer get user dir:::return->new->File
+FileNameCompleter#matchFiles(String, String, File[], List)::: file name completer match files:::if->return->matches->foreach->if->file->getAbsolutePath->startsWith->foreach->if->file->getAbsolutePath->startsWith->name->file->getName->file->isDirectory->separator->candidates->render->toString->add->index->buffer->separator->lastIndexOf->return->separator->length
+FileNameCompleter#render(File, CharSequence)::: file name completer render:::return
+NullCompleter#complete(String, int, List)::: null completer complete:::return
+StringsCompleter#getStrings()::: strings completer get strings:::return
+StringsCompleter#complete(String, int, List)::: strings completer complete:::checkNotNull->if->candidates->addAll->else->foreach->strings->tailSet->if->match->startsWith->break->candidates->add->return->candidates->isEmpty

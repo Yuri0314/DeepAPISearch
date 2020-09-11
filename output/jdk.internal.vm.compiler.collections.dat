@@ -12,6 +12,56 @@ EconomicMap#create(UnmodifiableEconomicMap):::Creates a new map that guarantees 
 EconomicMap#create(Equivalence, UnmodifiableEconomicMap):::Creates a new map that guarantees insertion order on the key set and copies all elements from the specified existing map.:::return->EconomicMapImpl->create
 EconomicMap#create(Equivalence, int):::Creates a new map that guarantees insertion order on the key set and initializes with a specified capacity.:::return->EconomicMapImpl->create
 EconomicMap#wrapMap(Map):::Wraps an existing Map as an EconomicMap.:::return->new->EconomicMap<K,V>
+EconomicMapImpl#intercept(EconomicMapImpl):::Intercept method for debugging purposes.:::return
+EconomicMapImpl#create(Equivalence, boolean)::: economic map impl create:::return->new->EconomicMapImpl<>->intercept
+EconomicMapImpl#create(Equivalence, int, boolean)::: economic map impl create:::return->new->EconomicMapImpl<>->intercept
+EconomicMapImpl#create(Equivalence, UnmodifiableEconomicMap, boolean)::: economic map impl create:::return->new->EconomicMapImpl<>->intercept
+EconomicMapImpl#create(Equivalence, UnmodifiableEconomicSet, boolean)::: economic map impl create:::return->new->EconomicMapImpl<>->intercept
+EconomicMapImpl#initFrom(Object)::: economic map impl init from:::if->otherMap->if->if->clone->if->clone->return->return
+EconomicMapImpl#init(int)::: economic map impl init:::if->new->ObjectArr
+EconomicMapImpl#get(K)::: economic map impl get:::Objects->requireNonNull->index->find->if->return->getValue->return
+EconomicMapImpl#find(K)::: economic map impl find:::if->hasHashArray->return->findHash->else->return->findLinear
+EconomicMapImpl#findLinear(K)::: economic map impl find linear:::for->i->return
+EconomicMapImpl#compareKeys(Object, Object)::: economic map impl compare keys:::if->return->if->if->return->key->equals->else->return->strategy->equals->return
+EconomicMapImpl#findHash(K)::: economic map impl find hash:::index->getHashIndex->getHashArray->if->entryKey->getKey->if->compareKeys->return->else->entryValue->getRawValue->if->return->findWithCollision->return
+EconomicMapImpl#findWithCollision(K, CollisionLink)::: economic map impl find with collision:::index->entryKey->entryValue->while->collisionLink->getKey->if->compareKeys->return->else->value->getRawValue->if->getRawValue->else->return
+EconomicMapImpl#getHashArray(int)::: economic map impl get hash array:::if->return->else->if->adjustedIndex->return->else->adjustedIndex->return
+EconomicMapImpl#setHashArray(int, int)::: economic map impl set hash array:::if->else->if->adjustedIndex->else->adjustedIndex
+EconomicMapImpl#findAndRemoveHash(Object)::: economic map impl find and remove hash:::hashIndex->getHashIndex->index->getHashArray->if->entryKey->getKey->if->compareKeys->value->getRawValue->nextIndex->if->collisionLink->setHashArray->return->else->entryValue->getRawValue->if->return->findAndRemoveWithCollision->return
+EconomicMapImpl#findAndRemoveWithCollision(Object, CollisionLink, int)::: economic map impl find and remove with collision:::index->entryKey->entryValue->lastIndex->while->collisionLink->getKey->if->compareKeys->value->getRawValue->if->thisCollisionLink->new->CollisionLink->setRawValue->else->setRawValue->return->else->value->getRawValue->if->getRawValue->else->return
+EconomicMapImpl#getHashIndex(Object)::: economic map impl get hash index:::hash->if->if->System->identityHashCode->else->strategy->hashCode->else->key->hashCode->return->getHashTableSize
+EconomicMapImpl#put(K, V)::: economic map impl put:::if->throw->new->UnsupportedOperationException->index->find->if->oldValue->getValue->setValue->return->nextEntryIndex->if->new->ObjectArr->else->if->grow->setKey->setValue->if->hasHashArray->rehashOnCollision->getHashTableSize->size->size->putHashEntry->else->if->getHashThreshold->createHash->return
+EconomicMapImpl#getHashThreshold():::Number of entries above which a hash table should be constructed.:::if->return->else->return
+EconomicMapImpl#grow()::: economic map impl grow:::entriesLength->newSize->Math->max->if->throw->new->UnsupportedOperationException->newEntries->new->ObjectArr->System->arraycopy->if->createHash
+EconomicMapImpl#maybeCompress(int):::Compresses the graph if there is a large number of deleted entries and returns the translated new next index.:::if->return->compressLarge->return
+EconomicMapImpl#compressLarge(int):::Compresses the graph and returns the translated new next index.:::size->remaining->while->Math->max->newEntries->new->ObjectArr->z->newNextIndex->for->i->if->getHashThreshold->else->createHash->return
+EconomicMapImpl#getHashTableSize()::: economic map impl get hash table size:::if->return->else->if->return->else->return
+EconomicMapImpl#createHash()::: economic map impl create hash:::entryCount->size->size->getHashThreshold->while->if->else->if->else->new->byteArr->for->i
+EconomicMapImpl#putHashEntry(Object, int, boolean)::: economic map impl put hash entry:::hashIndex->getHashIndex->oldIndex->getHashArray->if->this->createHash->return->setHashArray->value->getRawValue->if->if->collisionLink->new->CollisionLink->setRawValue->else->getRawValue->new->CollisionLink->setRawValue->else->if->collisionLink->setRawValue
+EconomicMapImpl#size()::: economic map impl size:::return
+EconomicMapImpl#containsKey(K)::: economic map impl contains key:::return->find
+EconomicMapImpl#clear()::: economic map impl clear:::
+EconomicMapImpl#hasHashArray()::: economic map impl has hash array:::return
+EconomicMapImpl#removeKey(K)::: economic map impl remove key:::if->throw->new->UnsupportedOperationException->index->if->hasHashArray->this->findAndRemoveHash->else->this->findLinear->if->value->getValue->remove->return->return
+EconomicMapImpl#remove(int):::Removes the element at the specific index and returns the index of the next element:::index->entriesAfterIndex->result->if->hasHashArray->while->getKey->setKey->getRawValue->setRawValue->setKey->setRawValue->if->while->getKey->else->maybeCompress->return
+EconomicMapImpl.SparseMapIterator#hasNext()::: sparse map iterator has next:::return
+EconomicMapImpl.SparseMapIterator#remove()::: sparse map iterator remove:::if->hasHashArray->EconomicMapImpl.this->getKey->findAndRemoveHash->EconomicMapImpl.this->remove
+EconomicMapImpl#getValues()::: economic map impl get values:::return->new->Iterable<V>
+EconomicMapImpl#getKeys()::: economic map impl get keys:::return
+EconomicMapImpl#isEmpty()::: economic map impl is empty:::return->this->size
+EconomicMapImpl#getEntries()::: economic map impl get entries:::return->new->MapCursor<K,V>
+EconomicMapImpl#replaceAll(BiFunction)::: economic map impl replace all:::for->i
+EconomicMapImpl#getKey(int)::: economic map impl get key:::return
+EconomicMapImpl#setKey(int, Object)::: economic map impl set key:::
+EconomicMapImpl#setValue(int, Object)::: economic map impl set value:::oldValue->getRawValue->if->collisionLink->new->CollisionLink->setRawValue->else->setRawValue
+EconomicMapImpl#setRawValue(int, Object)::: economic map impl set raw value:::
+EconomicMapImpl#getRawValue(int)::: economic map impl get raw value:::return
+EconomicMapImpl#getValue(int)::: economic map impl get value:::object->getRawValue->if->return->return
+EconomicMapImpl#toString()::: economic map impl to string:::builder->new->StringBuilder->builder->append->size->append->append->sep->cursor->getEntries->while->cursor->advance->builder->append->if->builder->cursor->getKey->append->else->builder->append->cursor->getKey->append->append->cursor->getValue->append->append->builder->append->return->builder->toString
+EconomicMapImpl#iterator()::: economic map impl iterator:::return->new->SparseMapIterator<K>
+EconomicMapImpl#contains(K)::: economic map impl contains:::return->containsKey
+EconomicMapImpl#add(K)::: economic map impl add:::return->put
+EconomicMapImpl#remove(K)::: economic map impl remove:::removeKey
 EconomicSet#add(E):::Adds element to this set if it is not already present.:::
 EconomicSet#remove(E):::Removes element from this set if it is present:::
 EconomicSet#clear():::Removes all of the elements from this set:::
@@ -37,6 +87,9 @@ Pair#createRight(R):::Constructs a pair with its right value being right, or ret
 Pair#create(L, R):::Constructs a pair with its left value being left, and its right value being right, or returns an empty pair if both inputs are null.:::if->return->empty->else->return->new->Pair<>
 Pair#getLeft():::Returns the left value of this pair.:::return
 Pair#getRight():::Returns the right value of this pair.:::return
+Pair#hashCode()::: pair hash code:::return->Objects->hashCode->Objects->hashCode
+Pair#equals(Object)::: pair equals:::if->return->if->pair->return->Objects->equals->Objects->equals->return
+Pair#toString()::: pair to string:::return->String->format
 UnmodifiableEconomicMap#get(K):::Returns the value to which key is mapped, or null if this map contains no mapping for key.:::
 UnmodifiableEconomicMap#get(K, V):::Returns the value to which key is mapped, or defaultValue if this map contains no mapping for key.:::v->get->if->return->return
 UnmodifiableEconomicMap#containsKey(K):::Returns true if this map contains a mapping for key.:::

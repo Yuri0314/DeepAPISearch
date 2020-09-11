@@ -1,12 +1,31 @@
+ArrayType#getElementType()::: array type get element type:::return
+ArrayType#getArrayDimension()::: array type get array dimension:::return->elemType->getArrayDimension
+ArrayType#typeString(String, boolean, boolean)::: array type type string:::return->getElementType->typeString
 BinaryAttribute#load(DataInputStream, BinaryConstantPool, int):::Load a list of attributes:::atts->natt->in->readUnsignedShort->for->i->return
+BinaryAttribute#write(BinaryAttribute, DataOutputStream, BinaryConstantPool, Environment)::: binary attribute write:::attributeCount->for->att->out->writeShort->for->att
+BinaryAttribute#getName()::: binary attribute get name:::return
+BinaryAttribute#getData()::: binary attribute get data:::return
+BinaryAttribute#getNextAttribute()::: binary attribute get next attribute:::return
 BinaryClass#basicCheck(Environment):::Ready a BinaryClass for further checking:::if->env->getName->dtEnter->if->if->env->getName->dtExit->return->if->env->getName->dtEvent->super->basicCheck->if->collectInheritedMethods->if->env->getName->dtExit
 BinaryClass#load(Environment, DataInputStream):::Load a binary class:::return->load
+BinaryClass#load(Environment, DataInputStream, int)::: binary class load:::magic->in->readInt->if->throw->new->ClassFormatError->minor_version->in->readUnsignedShort->version->in->readUnsignedShort->if->throw->String->valueOf->getText->new->ClassFormatError->else->if->throw->getText->new->ClassFormatError->cpool->new->BinaryConstantPool->dependencies->cpool->getDependencies->classMod->in->readUnsignedShort->classDecl->cpool->in->readUnsignedShort->getDeclaration->superClassDecl->cpool->in->readUnsignedShort->getDeclaration->interfaces->in->readUnsignedShort->new->ClassDeclarationArr->for->i->c->new->BinaryClass->c->addDependency->nfields->in->readUnsignedShort->for->i->nmethods->in->readUnsignedShort->for->i->BinaryAttribute->load->data->c->getAttribute->if->dataStream->new->ByteArrayInputStream->new->DataInputStream->cpool->dataStream->readUnsignedShort->getString->c->getAttribute->if->new->ByteArrayInputStream->new->DataInputStream->readUTF->if->c->getAttribute->if->c->getAttribute->return
+BinaryClass#loadNested(Environment)::: binary class load nested:::loadNested
+BinaryClass#loadNested(Environment, int)::: binary class load nested:::if->if->env->dtEvent->return->try->data->getAttribute->if->initInnerClasses->catch->env->getClassDeclaration->error->if->env->dtEvent->finally
+BinaryClass#initInnerClasses(Environment, byte[], int)::: binary class init inner classes:::ds->new->ByteArrayInputStream->new->DataInputStream->nrec->ds->readUnsignedShort->for->i
+BinaryClass#initInner(ClassDefinition, int)::: binary class init inner:::if->getOuterClass->return->if->else->if->if->if->outerClass->isInterface->setOuterClass->for->field->getFirstMember->field->getNextMember
+BinaryClass#initOuter(ClassDefinition, int)::: binary class init outer:::if->initInner->new->BinaryMember->addMember
 BinaryClass#write(Environment, OutputStream):::Write the class out to a given stream:::data->new->DataOutputStream->data->writeInt->data->env->getMinorVersion->writeShort->data->env->getMajorVersion->writeShort->cpool->write->data->getModifiers->writeShort->data->cpool->getClassDeclaration->indexObject->writeShort->data->getSuperClass->cpool->getSuperClass->indexObject->writeShort->data->writeShort->for->i->fieldCount->methodCount->for->f->f->getNextMember->data->writeShort->for->f->f->getNextMember->data->writeShort->for->f->f->getNextMember->BinaryAttribute->write->data->flush
 BinaryClass#getDependencies():::Get the dependencies:::return->dependencies->elements
 BinaryClass#addDependency(ClassDeclaration):::Add a dependency:::if->dependencies->contains->dependencies->addElement
 BinaryClass#getConstants():::Get the constant pool:::return
 BinaryClass#getAttribute(Identifier):::Get a class attribute:::for->att->return
+BinaryCode#getExceptionHandlers()::: binary code get exception handlers:::return
+BinaryCode#getCode()::: binary code get code:::return
+BinaryCode#getMaxStack()::: binary code get max stack:::return
+BinaryCode#getMaxLocals()::: binary code get max locals:::return
+BinaryCode#getAttributes()::: binary code get attributes:::return
 BinaryCode#load(BinaryMember, BinaryConstantPool, Environment):::Load a binary class:::code->bf->getAttribute->return->new->BinaryCode
+BinaryConstantPool#readBytes(DataInputStream, int)::: binary constant pool read bytes:::b->new->byteArr->in->readFully->return
 BinaryConstantPool#getInteger(int):::get a integer:::return->intValue
 BinaryConstantPool#getValue(int):::get a value:::return
 BinaryConstantPool#getString(int):::get a string:::return
@@ -19,13 +38,17 @@ BinaryConstantPool#getConstant(int, Environment):::get the n-th constant from th
 BinaryConstantPool#getDependencies(Environment):::Get a list of dependencies, ie: all the classes referenced in this constant pool.:::v->new->Vector<>->for->i->return
 BinaryConstantPool#indexObject(Object, Environment):::Find the index of an Object in the constant pool:::if->createIndexHash->result->indexHashObject->get->if->throw->obj->getClass->new->IndexOutOfBoundsException->return->result->intValue
 BinaryConstantPool#indexString(String, Environment):::Find the index of an ascii string in the constant pool:::if->createIndexHash->result->indexHashAscii->get->if->if->new->Vector<>->MoreStuff->size->MoreStuff->addElement->indexHashAscii->put->return->result->intValue
+BinaryConstantPool#createIndexHash(Environment)::: binary constant pool create index hash:::new->Hashtable<>->new->Hashtable<>->for->i
 BinaryConstantPool#write(DataOutputStream, Environment):::Write out the contents of the constant pool, including any additions that have been added.:::length->if->MoreStuff->size->out->writeShort->for->i->for->i
 BinaryMember#isInlineable(Environment, boolean):::Inline allowed (currently only allowed for the constructor of Object).:::return->isConstructor->getClassDefinition->getSuperClass
 BinaryMember#getArguments():::Get arguments:::if->isConstructor->getClassDefinition->getSuperClass->v->new->Vector<>->v->getClassDefinition->getClassDefinition->getType->new->LocalMember->addElement->return->return
 BinaryMember#getExceptions(Environment):::Get exceptions:::if->isMethod->return->data->getAttribute->if->return->new->ClassDeclarationArr->try->cpool->getClassDefinition->getConstants->in->new->ByteArrayInputStream->new->DataInputStream->n->in->readUnsignedShort->new->ClassDeclarationArr->for->i->return->catch->throw->new->CompilerError->finally
 BinaryMember#getDocumentation():::Get documentation:::if->return->data->getAttribute->if->return->try->return->new->ByteArrayInputStream->new->DataInputStream->readUTF->catch->throw->new->CompilerError->finally
+BinaryMember#isConstant()::: binary member is constant:::if->isFinal->isVariable->getAttribute->return
 BinaryMember#getValue(Environment):::Get the value:::if->isMethod->return->if->isFinal->return->if->getValue->return->getValue->data->getAttribute->if->return->try->cpool->getClassDefinition->getConstants->obj->cpool->new->ByteArrayInputStream->new->DataInputStream->readUnsignedShort->getValue->switch->getType->getTypeCode->intValue->new->BooleanExpression->setValue->break->intValue->new->IntExpression->setValue->break->longValue->new->LongExpression->setValue->break->floatValue->new->FloatExpression->setValue->break->doubleValue->new->DoubleExpression->setValue->break->cpool->intValue->getValue->new->StringExpression->setValue->break->return->getValue->catch->throw->new->CompilerError->finally
 BinaryMember#getAttribute(Identifier):::Get a field attribute:::for->att->return
+BinaryMember#deleteAttribute(Identifier)::: binary member delete attribute:::walker->next->succeed->while->equals->for->for->return
+BinaryMember#addAttribute(Identifier, byte[], Environment)::: binary member add attribute:::new->BinaryAttribute->name->toString->indexString
 ClassDeclaration#getStatus():::Get the status of the class:::return
 ClassDeclaration#getName():::Get the name of the class:::return->type->getClassName
 ClassDeclaration#getType():::Get the type of the class:::return
@@ -35,7 +58,9 @@ ClassDeclaration#getClassDefinition(Environment):::Get the definition of this cl
 ClassDeclaration#getClassDefinitionNoCheck(Environment):::Get the definition of this class, if the class is not yet defined, load the definition:::if->env->getName->getStatus->dtEvent->for
 ClassDeclaration#setDefinition(ClassDefinition, int):::Set the class definition:::if->getName->definition->getName->equals->throw->new->CompilerError
 ClassDeclaration#equals(Object):::Equality:::if->return->type->equals->return
+ClassDeclaration#hashCode()::: class declaration hash code:::return->type->hashCode
 ClassDeclaration#toString():::toString:::name->getName->toString->type->nested->getName->isInner->if->getClassDefinition->if->getClassDefinition->isInterface->else->if->getClassDefinition->isTopLevel->if->getClassDefinition->isLocal->if->getClassDefinition->isAnonymous->getClassDefinition->getLocalName->return
+ClassDefinition#getClassContext()::: class definition get class context:::return
 ClassDefinition#getSource():::Get the source of the class:::return
 ClassDefinition#getError():::Check if there were any errors in this class.:::return
 ClassDefinition#setError():::Mark this class to be erroneous.:::setNestError
@@ -44,7 +69,10 @@ ClassDefinition#setNestError():::Mark this class, and all siblings in its class 
 ClassDefinition#getWhere():::Get the position in the input:::return
 ClassDefinition#getClassDeclaration():::Get the class declaration:::return
 ClassDefinition#getModifiers():::Get the class' modifiers:::return
+ClassDefinition#subModifiers(int)::: class definition sub modifiers:::
+ClassDefinition#addModifiers(int)::: class definition add modifiers:::
 ClassDefinition#getSuperClass():::Get the class' super class:::if->throw->new->CompilerError->return
+ClassDefinition#getSuperClass(Environment)::: class definition get super class:::return->getSuperClass
 ClassDefinition#getInterfaces():::Get the class' interfaces:::if->throw->new->CompilerError->return
 ClassDefinition#getOuterClass():::Get the class' enclosing class (or null if not inner):::return
 ClassDefinition#setOuterClass(ClassDefinition):::Set the class' enclosing class:::if->throw->new->CompilerError
@@ -52,6 +80,7 @@ ClassDefinition#setOuterMember(MemberDefinition):::Set the class' enclosing curr
 ClassDefinition#isInnerClass():::Tell if the class is inner:::return
 ClassDefinition#isMember():::Tell if the class is a member of another class:::return->isLocal
 ClassDefinition#isTopLevel():::Tell if the class is "top-level", which is either a package member, or a static member of another top-level class.:::return->isStatic->isInterface
+ClassDefinition#isInsideLocal()::: class definition is inside local:::return->isLocal->outerClass->isInsideLocal
 ClassDefinition#isInsideLocalOrAnonymous():::Tell if the class is local or anonymous class, or inside such a class, which means it cannot be mentioned outside of its file.:::return->isLocal->isAnonymous->outerClass->isInsideLocalOrAnonymous
 ClassDefinition#getLocalName():::Return a simple identifier for this class (idNull if anonymous).:::if->return->return->getName->getFlatName->getName
 ClassDefinition#setLocalName(Identifier):::Set the local name of a class:::if->isLocal
@@ -60,11 +89,27 @@ ClassDefinition#findOuterMember():::If inner, return an innermost uplevel self p
 ClassDefinition#isStatic():::See if this is a (nested) static class.:::return
 ClassDefinition#getTopClass():::Get the class' top-level enclosing class:::p->q->for->return
 ClassDefinition#getFirstMember():::Get the class' first field or first match:::return
+ClassDefinition#getFirstMatch(Identifier)::: class definition get first match:::return->fieldHash->get
 ClassDefinition#getName():::Get the class' name:::return->declaration->getName
 ClassDefinition#getType():::Get the class' type:::return->declaration->getType
 ClassDefinition#getDocumentation():::Get the class' documentation:::return
 ClassDefinition#containsDeprecated(String):::Return true if the given documentation string contains a deprecation paragraph:::if->return->for->scan->documentation->indexOf->paraDeprecated->length->return
+ClassDefinition#inSamePackage(ClassDeclaration)::: class definition in same package:::return->c->getName->getQualifier->inSamePackage
+ClassDefinition#inSamePackage(ClassDefinition)::: class definition in same package:::return->c->getName->getQualifier->inSamePackage
+ClassDefinition#inSamePackage(Identifier)::: class definition in same package:::return->getName->getQualifier->equals
 ClassDefinition#isInterface():::Checks:::return->getModifiers
+ClassDefinition#isClass()::: class definition is class:::return->getModifiers
+ClassDefinition#isPublic()::: class definition is public:::return->getModifiers
+ClassDefinition#isPrivate()::: class definition is private:::return->getModifiers
+ClassDefinition#isProtected()::: class definition is protected:::return->getModifiers
+ClassDefinition#isPackagePrivate()::: class definition is package private:::return
+ClassDefinition#isFinal()::: class definition is final:::return->getModifiers
+ClassDefinition#isAbstract()::: class definition is abstract:::return->getModifiers
+ClassDefinition#isSynthetic()::: class definition is synthetic:::return->getModifiers
+ClassDefinition#isDeprecated()::: class definition is deprecated:::return->getModifiers
+ClassDefinition#isAnonymous()::: class definition is anonymous:::return->getModifiers
+ClassDefinition#isLocal()::: class definition is local:::return->getModifiers
+ClassDefinition#hasConstructor()::: class definition has constructor:::return->getFirstMatch
 ClassDefinition#mustBeAbstract(Environment):::Check to see if a class must be abstract:::if->isAbstract->return->collectInheritedMethods->methods->getMethods->while->methods->hasNext->method->methods->next->if->method->isAbstract->return->return->getPermanentlyAbstractMethods->hasNext
 ClassDefinition#superClassOf(Environment, ClassDeclaration):::Check if this is a super class of another class:::while->if->getClassDeclaration->equals->return->otherClass->getClassDefinition->getSuperClass->return
 ClassDefinition#enclosingClassOf(ClassDefinition):::Check if this is an enclosing class of another class:::while->otherClass->getOuterClass->if->return->return
@@ -73,39 +118,52 @@ ClassDefinition#implementedBy(Environment, ClassDeclaration):::Check if this cla
 ClassDefinition#couldImplement(ClassDefinition):::Check to see if a class which implements interface `this' could possibly implement the interface `intDef':::if->throw->new->CompilerError->if->isInterface->intDef->isInterface->throw->new->CompilerError->if->throw->new->CompilerError->otherMethods->intDef->getMethods->while->otherMethods->hasNext->method->otherMethods->next->name->method->getName->type->method->getType->myMethod->allMethods->lookupSig->if->if->myMethod->sameReturnType->return->return
 ClassDefinition#extendsCanAccess(Environment, ClassDeclaration):::Check if another class can be accessed from the 'extends' or 'implements' clause of this class.:::if->return->outerClass->canAccess->cdef->c->getClassDefinition->if->cdef->isLocal->throw->new->CompilerError->if->cdef->isInnerClass->f->cdef->getInnerClassMember->if->f->isPublic->return->if->f->isPrivate->return->getClassDeclaration->f->getTopClass->getClassDeclaration->equals->return->getName->getQualifier->f->getClassDeclaration->getName->getQualifier->equals->if->cdef->isPublic->return->return->getName->getQualifier->c->getName->getQualifier->equals
 ClassDefinition#canAccess(Environment, ClassDeclaration):::Check if another class can be accessed from within the body of this class.:::cdef->c->getClassDefinition->if->cdef->isLocal->return->if->cdef->isInnerClass->return->cdef->getInnerClassMember->canAccess->if->cdef->isPublic->return->return->getName->getQualifier->c->getName->getQualifier->equals
+ClassDefinition#canAccess(Environment, MemberDefinition)::: class definition can access:::if->f->isPublic->return->if->f->isProtected->f->getClassDeclaration->subClassOf->return->if->f->isPrivate->return->getTopClass->getClassDeclaration->f->getTopClass->getClassDeclaration->equals->return->getName->getQualifier->f->getClassDeclaration->getName->getQualifier->equals
 ClassDefinition#permitInlinedAccess(Environment, ClassDeclaration):::Check if a class is entitled to inline access to a class from another class.:::return->env->opt->c->equals->env->opt_interclass->canAccess
 ClassDefinition#permitInlinedAccess(Environment, MemberDefinition):::Check if a class is entitled to inline access to a method from another class.:::return->env->opt->getClassDeclaration->equals->env->opt_interclass->canAccess
 ClassDefinition#protectedAccess(Environment, MemberDefinition, Type):::We know the field is marked protected (and not public) and that the field is visible (as per canAccess):::return->f->isStatic->accessorType->isType->f->getName->f->getType->getArgumentTypes->accessorType->isType->env->accessorType->getClassName->getClassDefinition->getClassDeclaration->subClassOf->getName->getQualifier->f->getClassDeclaration->getName->getQualifier->equals
 ClassDefinition#getAccessMember(Environment, Context, MemberDefinition, boolean):::Find or create an access method for a private member, or return null if this is not possible.:::throw->new->CompilerError
 ClassDefinition#getUpdateMember(Environment, Context, MemberDefinition, boolean):::Find or create an update method for a private member, or return null if this is not possible.:::throw->new->CompilerError
 ClassDefinition#getVariable(Environment, Identifier, ClassDefinition):::Get a field from this class:::return->getVariable0
+ClassDefinition#getVariable0(Environment, Identifier, ClassDefinition, boolean, boolean)::: class definition get variable0:::for->member->getFirstMatch->member->getNextMatch->sup->getSuperClass->field->if->sup->getClassDefinition->inSamePackage->getVariable0->for->i->return
 ClassDefinition#reportDeprecated(Environment):::Tells whether to report a deprecation error for this class.:::return->isDeprecated->outerClass->reportDeprecated
 ClassDefinition#noteUsedBy(ClassDefinition, long, Environment):::Note that this class is being used somehow by ref:::if->reportDeprecated->env->error
 ClassDefinition#getInnerClass(Environment, Identifier):::Get an inner class:::for->field->getFirstMatch->field->getNextMatch->sup->getSuperClass->if->return->sup->getClassDefinition->getInnerClass->return
+ClassDefinition#matchMethod(Environment, ClassDefinition, Identifier, Type[], boolean, Identifier):::Lookup a method:::if->allMethods->isFrozen->throw->new->CompilerError->tentative->candidateList->methods->allMethods->lookupName->while->methods->hasNext->method->methods->next->if->env->isApplicable->continue->if->if->accessor->canAccess->continue->else->if->if->method->isPrivate->method->isPackagePrivate->inSamePackage->continue->else->if->else->if->env->isMoreSpecific->else->if->env->isMoreSpecific->if->new->ArrayList<>->candidateList->add->if->candidates->candidateList->iterator->while->candidates->hasNext->method->candidates->next->if->env->isMoreSpecific->throw->new->AmbiguousMember->return
 ClassDefinition#matchMethod(Environment, ClassDefinition, Identifier, Type[]):::Lookup a method:::return->matchMethod
 ClassDefinition#matchMethod(Environment, ClassDefinition, Identifier):::Lookup a method:::return->matchMethod
 ClassDefinition#matchAnonConstructor(Environment, Identifier, Type[]):::A version of matchMethod to be used only for constructors when we cannot pass in a sourceClass argument:::return->matchMethod
 ClassDefinition#findMethod(Environment, Identifier, Type):::Find a method, ie: exact match in this class or any of the super classes:::f->for->getFirstMatch->f->getNextMatch->if->nm->equals->return->sup->getSuperClass->if->return->return->sup->getClassDefinition->findMethod
+ClassDefinition#basicCheck(Environment)::: class definition basic check:::if->outerClass->basicCheck
 ClassDefinition#check(Environment):::Check this class.:::
+ClassDefinition#checkLocalClass(Environment, Context, Vset, ClassDefinition, Expression[], Type[])::: class definition check local class:::throw->new->CompilerError
 ClassDefinition#getPermanentlyAbstractMethods():::This method returns an Iterator of all abstract methods in our superclasses which we are unable to implement.:::if->throw->new->CompilerError->return->permanentlyAbstractMethods->iterator
 ClassDefinition#turnOffInheritanceChecks():::This is a workaround to allow javadoc to turn off certain inheritance/override checks which interfere with javadoc badly:::
+ClassDefinition#collectOneClass(Environment, ClassDeclaration, MethodSet, MethodSet, MethodSet):::Add all of the methods declared in or above `parent' to `allMethods', the set of methods in the current class:::try->pClass->parent->getClassDefinition->methods->pClass->getMethods->while->methods->hasNext->method->methods->next->if->method->isPrivate->method->isConstructor->pClass->isInterface->method->isAbstract->continue->name->method->getName->type->method->getType->override->myMethods->lookupSig->if->method->isPackagePrivate->method->getClassDeclaration->inSamePackage->if->env->method->getWhere->override->getClassDeclaration->method->getClassDeclaration->error->if->method->isAbstract->permanentlyAbstractMethods->add->continue->if->override->checkOverride->else->formerMethod->allMethods->lookupSig->if->if->pClass->isInterface->isInterface->new->sun.tools.javac.SourceMember->mirandaMethods->add->allMethods->add->else->if->isInterface->formerMethod->isAbstract->method->isAbstract->allMethods->replace->else->if->formerMethod->this->getClassDeclaration->checkMeet->continue->if->formerMethod->couldOverride->continue->if->method->couldOverride->if->pClass->isInterface->isInterface->new->sun.tools.javac.SourceMember->mirandaMethods->replace->allMethods->replace->continue->env->formerMethod->getClassDefinition->method->getClassDeclaration->error->catch->env->getWhere->error->finally
 ClassDefinition#collectInheritedMethods(Environment):::Collect all methods defined in this class or inherited from any of our superclasses or interfaces:::myMethods->mirandaMethods->if->if->allMethods->isFrozen->return->else->throw->new->CompilerError->new->MethodSet->new->MethodSet->if->env->version12->else->new->MethodSet->for->member->getFirstMember->scDecl->getSuperClass->if->collectOneClass->sc->scDecl->getClassDefinition->supIter->sc->getPermanentlyAbstractMethods->while->supIter->hasNext->permanentlyAbstractMethods->supIter->next->add->for->i->allMethods->freeze->if->mirandaMethods->size->mirandaMethods->iterator->addMirandaMethods
+ClassDefinition#methodSetAdd(Environment, MethodSet, MemberDefinition)::: class definition method set add:::oldMethod->methodSet->newMethod->getName->newMethod->getType->lookupSig->if->oldReturnType->oldMethod->getType->getReturnType->newReturnType->newMethod->getType->getReturnType->try->if->env->isMoreSpecific->methodSet->replace->catch->finally->else->methodSet->add
 ClassDefinition#getMethods(Environment):::Get an Iterator of all methods which could be accessed in an instance of this class.:::if->collectInheritedMethods->return->getMethods
 ClassDefinition#getMethods():::Get an Iterator of all methods which could be accessed in an instance of this class:::if->throw->new->CompilerError->return->allMethods->iterator
 ClassDefinition#addMirandaMethods(Environment, Iterator):::Add a list of methods to this class as miranda methods:::
+ClassDefinition#inlineLocalClass(Environment)::: class definition inline local class:::
+ClassDefinition#resolveTypeStructure(Environment)::: class definition resolve type structure:::
 ClassDefinition#resolveName(Environment, Identifier):::Look up an inner class name, from somewhere inside this class:::if->env->dtEvent->if->name->isQualified->rhead->name->getHead->resolveName->if->rhead->hasAmbigPrefix->return->if->env->classExists->return->env->resolvePackageQualifiedName->try->return->env->getClassDefinition->name->getTail->resolveInnerClass->catch->return->Identifier->name->getTail->lookupInner->finally->ls->lf->if->classContext->getLocalClass->if->lf->getScopeNumber->for->c->if->return->lf->getInnerClass->getName->return->env->resolveName
 ClassDefinition#resolveInnerClass(Environment, Identifier):::Interpret a qualified class name, which may have further subcomponents.:::if->nm->isInner->throw->new->CompilerError->if->nm->isQualified->rhead->nm->getHead->resolveInnerClass->try->return->env->getClassDefinition->nm->getTail->resolveInnerClass->catch->return->Identifier->nm->getTail->lookupInner->finally->else->try->f->getInnerClass->if->return->f->getInnerClass->getName->catch->finally->return->Identifier->this->getName->lookupInner
 ClassDefinition#innerClassExists(Identifier):::While resolving import directives, the question has arisen: does a given inner class exist?  If the top-level class exists, we ask it about an inner class via this method:::for->field->nm->getHead->getFirstMatch->field->getNextMatch->return
 ClassDefinition#findAnyMethod(Environment, Identifier):::Find any method with a given name.:::f->for->getFirstMatch->f->getNextMatch->sup->getSuperClass->if->return->return->sup->getClassDefinition->findAnyMethod
 ClassDefinition#diagnoseMismatch(Environment, Identifier, Type[], int, Type[]):::Given the fact that this class has no method "nm" matching "argTypes", find out if the mismatch can be blamed on a particular actual argument which disagrees with all of the overloadings:::haveMatch->new->intArr->margType->new->TypeArr->if->diagnoseMismatch->return->for->i->return
+ClassDefinition#diagnoseMismatch(Environment, Identifier, Type[], int, int[], Type[])::: class definition diagnose mismatch:::haveOne->f->for->getFirstMatch->f->getNextMatch->if->nm->equals->return->sup->getSuperClass->if->if->sup->getClassDefinition->diagnoseMismatch->return
 ClassDefinition#addMember(MemberDefinition):::Add a field (no checks):::if->else->if->field->isSynthetic->field->isFinal->field->isVariable->fieldHash->get->else->fieldHash->get->fieldHash->put
 ClassDefinition#addMember(Environment, MemberDefinition):::Add a field (subclasses make checks):::addMember->if->field->resolveTypeStructure
 ClassDefinition#getReference(LocalMember):::Find or create an uplevel reference for the given target.:::for->r->r->getNext->return->addReference
+ClassDefinition#addReference(LocalMember)::: class definition add reference:::if->target->getClassDefinition->throw->new->CompilerError->referencesMustNotBeFrozen->r->new->UplevelReference->r->insertInto->return
 ClassDefinition#getReferences():::Return the list of all uplevel references.:::return
 ClassDefinition#getReferencesFrozen():::Return the same value as getReferences:::return
 ClassDefinition#referencesMustNotBeFrozen():::assertion check:::if->throw->new->CompilerError
 ClassDefinition#getClassLiteralLookup(long):::Get helper method for class literal lookup.:::throw->new->CompilerError
 ClassDefinition#addDependency(ClassDeclaration):::Add a dependency:::throw->new->CompilerError
+ClassDefinition#getLocalClass(String)::: class definition get local class:::if->return->else->return->localClasses->get
+ClassDefinition#addLocalClass(ClassDefinition, String)::: class definition add local class:::if->new->Hashtable<>->localClasses->put
 ClassDefinition#print(PrintStream):::Print for debugging:::if->isPublic->out->print->if->isInterface->out->print->else->out->print->out->getName->print->if->getSuperClass->out->getSuperClass->getName->print->if->out->print->for->i->out->println->for->f->getFirstMember->f->getNextMember->out->println
 ClassDefinition#toString():::Convert to String:::return->getClassDeclaration->toString
 ClassDefinition#cleanup(Environment):::After the class has been written to disk, try to free up some storage.:::if->env->dump->env->getName->output->for->f->getFirstMember->f->getNextMember
@@ -121,22 +179,48 @@ ClassFile#getPath():::Get file path:::
 ClassFile#getName():::Get name of file entry excluding directory name:::
 ClassFile#getAbsoluteName():::Get absolute name of file entry:::
 ClassFile#length():::Get length of file:::
+ClassPath#getJrtFileSystem()::: class path get jrt file system:::return->FileSystems->URI->create->getFileSystem
+ClassPath#init(String)::: class path init:::i->j->n->if->pathstr->length->new->ClassPathEntryArr->while->pathstr->indexOf->path->new->ClassPathEntryArr->len->pathstr->length->for->try->fs->getJrtFileSystem->new->JrtClassPathEntry->catch->finally->new->ClassPathEntryArr->System->arraycopy
+ClassPath#init(String[])::: class path init:::if->else->sb->new->StringBuilder->for->i->sb->toString->path->new->ClassPathEntryArr->n->foreach->file->new->File->if->file->isFile->try->zip->new->ZipFile->new->ZipClassPathEntry->catch->finally->else->new->DirClassPathEntry->try->fs->getJrtFileSystem->new->JrtClassPathEntry->catch->finally->new->ClassPathEntryArr->System->arraycopy
 ClassPath#getDirectory(String):::Find the specified directory in the class path:::return->getFile
 ClassPath#getFile(String):::Load the specified file from the class path:::return->getFile
+ClassPath#getFile(String, boolean)::: class path get file:::subdir->basename->if->i->name->lastIndexOf->name->substring->name->substring->else->if->subdir->equals->subdir->endsWith->for->i->return
 ClassPath#getFiles(String, String):::Returns list of files given a package name and extension.:::files->new->Hashtable<>->for->i->return->files->elements
 ClassPath#close():::Release resources.:::for->i
 ClassPath#toString():::Returns original class path string:::return
+ClassPathEntry#getFile(String, String, String, boolean)::: class path entry get file:::
+ClassPathEntry#fillFiles(String, String, Hashtable)::: class path entry fill files:::
+ClassPathEntry#close()::: class path entry close:::
+DirClassPathEntry#getFiles(String)::: dir class path entry get files:::files->subdirs->get->if->computeFiles->subdirs->put->return
+DirClassPathEntry#computeFiles(String)::: dir class path entry compute files:::sd->dir->getPath->new->File->files->if->sd->isDirectory->sd->list->if->new->StringArr->if->nonEmpty->else->new->StringArr->return
+DirClassPathEntry#getFile(String, String, String, boolean)::: dir class path entry get file:::file->dir->getPath->new->File->list->getFiles->if->if->return->ClassFile->newClassFile->else->for->j->return
+DirClassPathEntry#fillFiles(String, String, Hashtable)::: dir class path entry fill files:::list->getFiles->for->j
+DirClassPathEntry#close()::: dir class path entry close:::
+ZipClassPathEntry#close()::: zip class path entry close:::zip->close
+ZipClassPathEntry#getFile(String, String, String, boolean)::: zip class path entry get file:::newname->name->replace->entry->zip->getEntry->return->ClassFile->newClassFile
+ZipClassPathEntry#fillFiles(String, String, Hashtable)::: zip class path entry fill files:::e->zip->entries->while->e->hasMoreElements->entry->e->nextElement->name->entry->getName->name->replace->if->name->startsWith->name->endsWith->files->ClassFile->newClassFile->put
+JrtClassPathEntry#close()::: jrt class path entry close:::
+JrtClassPathEntry#getPackagePath(String)::: jrt class path entry get package path:::if->pkgDirs->containsKey->return->pkgDirs->get->pkgLink->fs->pkgName->replace->getPath->if->Files->isDirectory->try->stream->Files->newDirectoryStream->foreach->if->Files->isSymbolicLink->modDir->Files->readSymbolicLink->if->Files->isDirectory->pkgDir->fs->modDir->toString->getPath->if->Files->isDirectory->try->pstream->Files->newDirectoryStream->foreach->if->Files->isRegularFile->f->toString->endsWith->pkgDirs->put->return->catch->finally->catch->finally->return
+JrtClassPathEntry#getClassPath(String)::: jrt class path entry get class path:::index->clsName->lastIndexOf->if->return->pkgPath->clsName->substring->getPackagePath->return->fs->clsName->substring->getPath
+JrtClassPathEntry#getFile(String, String, String, boolean)::: jrt class path entry get file:::try->name->replace->cp->getClassPath->return->ClassFile->newClassFile->catch->throw->new->UncheckedIOException->finally
+JrtClassPathEntry#fillFiles(String, String, Hashtable)::: jrt class path entry fill files:::dir->try->getPackagePath->if->return->catch->throw->new->UncheckedIOException->finally->try->stream->Files->newDirectoryStream->foreach->name->p->toString->name->replace->if->name->startsWith->name->endsWith->files->ClassFile->newClassFile->put->catch->throw->new->UncheckedIOException->finally
+ClassType#getClassName()::: class type get class name:::return
+ClassType#typeString(String, boolean, boolean)::: class type type string:::s->getClassName->getFlatName->Identifier->getClassName->getQualifier->getClassName->getFlatName->lookup->toString->return->id->length
+CompilerError#printStackTrace()::: compiler error print stack trace:::if->super->printStackTrace->else->e->printStackTrace
 Environment#isExemptPackage(Identifier):::Tells whether an Identifier refers to a package which should be exempt from the "exists" check in Imports#resolve().:::return->env->isExemptPackage
 Environment#getClassDeclaration(Identifier):::Return a class declaration given a fully qualified class name.:::return->env->getClassDeclaration
 Environment#getClassDefinition(Identifier):::Return a class definition given a fully qualified class name:::if->nm->isInner->c->nm->getTopName->getClassDefinition->tail->nm->getFlatName->while->tail->isQualified->tail->getTail->head->tail->getHead->hname->head->toString->if->hname->length->Character->hname->charAt->isDigit->localClass->c->getLocalClass->if->continue->else->for->f->c->getFirstMatch->f->getNextMatch->throw->Identifier->c->getName->lookupInner->new->ClassNotFound->return->return->getClassDeclaration->getClassDefinition
 Environment#getClassDeclaration(Type):::Return a class declaration given a type:::return->t->getClassName->getClassDeclaration
 Environment#getClassDefinition(Type):::Return a class definition given a type:::return->t->getClassName->getClassDefinition
 Environment#classExists(Identifier):::Check if a class exists (without actually loading it):::return->env->classExists
+Environment#classExists(Type)::: environment class exists:::return->t->isType->t->getClassName->classExists
 Environment#getPackage(Identifier):::Get the package path for a package:::return->env->getPackage
 Environment#loadDefinition(ClassDeclaration):::Load the definition of a class.:::env->loadDefinition
 Environment#getSource():::Return the source of the environment (ie: the thing being compiled/parsed).:::return
 Environment#resolve(long, ClassDefinition, Type):::Resolve a type:::switch->t->getTypeCode->def->try->nm->t->getClassName->if->nm->isQualified->nm->isInner->classExists->resolve->getQualifiedClassDefinition->if->c->def->getClassDeclaration->canAccess->error->return->def->noteUsedBy->catch->error->return->try->if->isInner->getTopName->getPackage->exists->env->getTopName->error->catch->env->error->finally->error->return->finally->return->return->t->getElementType->resolve->ok->t->getReturnType->resolve->args->t->getArgumentTypes->for->i->return->return
 Environment#resolveByName(long, ClassDefinition, Identifier):::Given its fully-qualified name, verify that a class is defined and accessible:::return->resolveByName
+Environment#resolveExtendsByName(long, ClassDefinition, Identifier)::: environment resolve extends by name:::return->resolveByName
+Environment#resolveByName(long, ClassDefinition, Identifier, boolean)::: environment resolve by name:::def->try->if->nm->isQualified->nm->isInner->classExists->resolve->getQualifiedClassDefinition->decl->def->getClassDeclaration->if->c->canAccess->c->extendsCanAccess->error->return->catch->error->return->try->if->isInner->getTopName->getPackage->exists->env->getTopName->error->catch->env->error->finally->error->return->finally->return
 Environment#getQualifiedClassDefinition(long, Identifier, ClassDefinition, boolean):::Like 'getClassDefinition(env)', but check access on each component:::if->nm->isInner->c->nm->getTopName->getClassDefinition->tail->nm->getFlatName->while->tail->isQualified->tail->getTail->head->tail->getHead->hname->head->toString->if->hname->length->Character->hname->charAt->isDigit->localClass->c->getLocalClass->if->continue->else->for->f->c->getFirstMatch->f->getNextMatch->throw->Identifier->c->getName->lookupInner->new->ClassNotFound->return->return->getClassDeclaration->getClassDefinition
 Environment#resolveNames(ClassDefinition, Type, boolean):::Resolve the names within a type, returning the adjusted type:::if->dtEvent->switch->t->getTypeCode->name->t->getClassName->rname->if->resolvePackageQualifiedName->else->c->resolveName->if->Type->tClass->break->Type->t->getElementType->resolveNames->tArray->break->ret->t->getReturnType->rret->resolveNames->args->t->getArgumentTypes->rargs->new->TypeArr->changed->for->i->if->Type->tMethod->break->return
 Environment#resolveName(Identifier):::Resolve a class name, using only package and import directives:::if->name->isQualified->rhead->name->getHead->resolveName->if->rhead->hasAmbigPrefix->return->if->this->classExists->return->this->resolvePackageQualifiedName->try->return->this->getClassDefinition->name->getTail->resolveInnerClass->catch->return->Identifier->name->getTail->lookupInner->finally->try->return->resolve->catch->if->name->hasAmbigPrefix->return->else->return->name->addAmbigPrefix->imports->getImports->if->return->imports->forceResolve->finally->return
@@ -145,12 +229,17 @@ Environment#resolve(Identifier):::Resolve a class name, using only package and i
 Environment#getImports():::Get the imports used to resolve class names.:::if->return->return->env->getImports
 Environment#makeClassDefinition(Environment, long, IdentifierToken, String, int, IdentifierToken, IdentifierToken[], ClassDefinition):::Create a new class.:::if->return->return->env->makeClassDefinition
 Environment#makeMemberDefinition(Environment, long, ClassDefinition, String, int, Type, Identifier, IdentifierToken[], IdentifierToken[], Object):::Create a new field.:::if->return->return->env->makeMemberDefinition
+Environment#isApplicable(MemberDefinition, Type[])::: environment is applicable:::mType->m->getType->if->mType->isType->return->mArgs->mType->getArgumentTypes->if->return->for->i->return
 Environment#isMoreSpecific(MemberDefinition, MemberDefinition):::Returns true if "best" is in every argument at least as good as "other":::bestType->best->getClassDeclaration->getType->otherType->other->getClassDeclaration->getType->result->isMoreSpecific->best->getType->getArgumentTypes->isApplicable->return
+Environment#isMoreSpecific(Type, Type)::: environment is more specific:::return->implicitCast
 Environment#implicitCast(Type, Type):::Return true if an implicit cast from this type to the given type is allowed.:::if->return->toTypeCode->to->getTypeCode->switch->from->getTypeCode->if->return->if->return->if->return->if->return->if->return->return->return->to->inMask->if->to->isType->return->else->do->from->getElementType->to->getElementType->while->from->isType->to->isType->if->from->inMask->to->inMask->return->isMoreSpecific->else->return->from->getTypeCode->to->getTypeCode->if->fromDef->getClassDefinition->toDef->getClassDefinition->return->toDef->fromDef->getClassDeclaration->implementedBy->else->return
 Environment#explicitCast(Type, Type):::Return true if an explicit cast from this type to the given type is allowed.:::if->implicitCast->return->if->from->inMask->return->to->inMask->if->from->isType->to->isType->fromClass->getClassDefinition->toClass->getClassDefinition->if->toClass->isFinal->return->fromClass->toClass->getClassDeclaration->implementedBy->if->fromClass->isFinal->return->toClass->fromClass->getClassDeclaration->implementedBy->if->toClass->isInterface->fromClass->isInterface->return->toClass->couldImplement->return->toClass->isInterface->fromClass->isInterface->fromClass->toClass->getClassDeclaration->superClassOf->if->to->isType->if->from->isType->t1->from->getElementType->t2->to->getElementType->while->t1->getTypeCode->t2->getTypeCode->t1->getElementType->t2->getElementType->if->t1->inMask->t2->inMask->return->explicitCast->else->if->return->return
 Environment#getFlags():::Flags.:::return->env->getFlags
 Environment#debug_lines():::Debugging flags:::return->getFlags
+Environment#debug_vars()::: environment debug_vars:::return->getFlags
+Environment#debug_source()::: environment debug_source:::return->getFlags
 Environment#opt():::Optimization flags:::return->getFlags
+Environment#opt_interclass()::: environment opt_interclass:::return->getFlags
 Environment#verbose():::Verbose:::return->getFlags
 Environment#dump():::Dump debugging stuff:::return->getFlags
 Environment#warnings():::Verbose:::return->getFlags
@@ -161,7 +250,12 @@ Environment#version12():::Do not support virtual machines before version 1.2:::r
 Environment#strictdefault():::Floating point is strict by default:::return->getFlags
 Environment#shutdown():::Release resources, if any.:::if->env->shutdown
 Environment#error(Object, long, String, Object, Object, Object):::Issue an error:::env->error
+Environment#error(long, String, Object, Object, Object)::: environment error:::error
+Environment#error(long, String, Object, Object)::: environment error:::error
+Environment#error(long, String, Object)::: environment error:::error
+Environment#error(long, String)::: environment error:::error
 Environment#output(String):::Output a string:::env->output
+Environment#debugOutput(Object)::: environment debug output:::if->msg->toString->println
 Environment#setCharacterEncoding(String):::set character encoding name:::
 Environment#getCharacterEncoding():::Return character encoding name:::return
 Environment#getMajorVersion():::Return major version to use in generated class files.:::if->return->return->env->getMajorVersion
@@ -169,6 +263,20 @@ Environment#getMinorVersion():::Return minor version to use in generated class f
 Environment#coverage()::: get coverage flag:::return->getFlags
 Environment#covdata()::: get flag of generation the coverage data file:::return->getFlags
 Environment#getcovFile():::Return the coverage data file:::return->env->getcovFile
+Environment#dtEnter(String)::: environment dt enter:::if->println
+Environment#dtExit(String)::: environment dt exit:::if->println
+Environment#dtEvent(String)::: environment dt event:::if->println
+Environment#dumpModifiers()::: environment dump modifiers:::return
+FileClassFile#isZipped()::: file class file is zipped:::return
+FileClassFile#getInputStream()::: file class file get input stream:::return->new->FileInputStream
+FileClassFile#exists()::: file class file exists:::return->file->exists
+FileClassFile#isDirectory()::: file class file is directory:::return->file->isDirectory
+FileClassFile#lastModified()::: file class file last modified:::return->file->lastModified
+FileClassFile#getPath()::: file class file get path:::return->file->getPath
+FileClassFile#getName()::: file class file get name:::return->file->getName
+FileClassFile#getAbsoluteName()::: file class file get absolute name:::absoluteName->try->file->getCanonicalPath->catch->file->getAbsolutePath->finally->return
+FileClassFile#length()::: file class file length:::return->file->length
+FileClassFile#toString()::: file class file to string:::return->file->toString
 Identifier#getType():::Get the type of the identifier.:::return->intValue
 Identifier#setType(int):::Set the type of the identifier.:::
 Identifier#lookup(String):::Lookup an identifier.:::id->hash->get->if->hash->new->Identifier->put->return
@@ -180,26 +288,33 @@ Identifier#getQualifier():::Return the qualifier:::return->isQualified
 Identifier#getName():::Return the unqualified name:::return->isQualified->Identifier->name->length->substring->lookup
 Identifier#isInner():::Check if the name is inner (ie: it contains a ' ').:::return
 Identifier#getFlatName():::Return the class name, without its qualifier, and with any nesting flattened into a new qualfication structure:::if->isQualified->return->getName->getFlatName->if->name->charAt->if->name->length->return->Identifier->name->substring->lookup->n->name->substring->t->name->substring->return->Identifier->lookup->return
+Identifier#getTopName()::: identifier get top name:::if->isInner->return->return->Identifier->getQualifier->getFlatName->getHead->lookup
 Identifier#getHead():::Yet another way to slice qualified identifiers: The head of an identifier is its first qualifier component, and the tail is the rest of them.:::id->while->id->isQualified->id->getQualifier->return
+Identifier#getTail()::: identifier get tail:::id->getHead->if->return->else->return->Identifier->name->length->substring->lookup
 Identifier#hasAmbigPrefix():::Determine whether an Identifier has been marked as ambiguous.:::return->name->startsWith
 Identifier#addAmbigPrefix():::Add ambigPrefix to `this' to make a new Identifier marked as ambiguous:::return->Identifier->lookup
 Identifier#removeAmbigPrefix():::Remove the ambigPrefix from `this' to get the original identifier.:::if->hasAmbigPrefix->return->Identifier->name->ambigPrefix->length->substring->lookup->else->return
 IdentifierToken#getWhere():::The source location of this identifier occurrence.:::return
 IdentifierToken#getName():::The identifier itself (possibly qualified).:::return
 IdentifierToken#getModifiers():::The modifiers associated with the occurrence, if any.:::return
+IdentifierToken#toString()::: identifier token to string:::return->id->toString
 IdentifierToken#getWhere(IdentifierToken, long):::Return defaultWhere if id is null or id.where is missing (0):::return
 Imports#resolve(Environment):::Check the names of the imports.:::if->return->resolvedPackages->new->Vector<>->for->e->packages->elements->e->hasMoreElements->for->e->singles->elements->e->hasMoreElements
 Imports#resolve(Environment, Identifier):::Lookup a class, given the current set of imports, AmbiguousClass exception is thrown if the name can be resolved in more than one way:::if->env->dtEnter->if->nm->hasAmbigPrefix->nm->removeAmbigPrefix->if->nm->isQualified->if->env->dtExit->return->if->resolve->className->classes->get->if->if->env->dtExit->return->id->Identifier->lookup->if->importable->else->e->packages->elements->while->e->hasMoreElements->t->e->nextElement->Identifier->t->getName->lookup->if->importable->if->else->if->env->dtExit->throw->new->AmbiguousClass->if->if->env->dtExit->throw->new->ClassNotFound->classes->put->if->env->dtExit->return
 Imports#importable(Identifier, Environment):::Check to see if 'id' names an importable class in `env':::if->id->isInner->return->env->classExists->else->if->env->id->getTopName->classExists->return->else->try->decl->env->id->getTopName->getClassDeclaration->c->decl->getClassDefinitionNoCheck->return->c->id->getFlatName->getTail->innerClassExists->catch->return->finally
 Imports#forceResolve(Environment, Identifier):::Suppose a resolve() call has failed:::if->nm->isQualified->return->className->classes->get->if->return->Identifier->lookup->classes->put->return
 Imports#addClass(IdentifierToken):::Add a class import:::singles->addElement
+Imports#addClass(Identifier)::: imports add class:::new->IdentifierToken->addClass
 Imports#addPackage(IdentifierToken):::Add a package import, or perhaps an inner class scope:::name->t->getName->if->return->size->packages->size->for->i->packages->addElement
+Imports#addPackage(Identifier)::: imports add package:::new->IdentifierToken->addPackage
 Imports#setCurrentPackage(IdentifierToken):::Specify the current package with an IdentifierToken.:::t->getName->t->getWhere
 Imports#setCurrentPackage(Identifier):::Specify the current package:::
 Imports#getCurrentPackage():::Report the current package:::return
 Imports#getImportedPackages():::Return an unmodifiable list of IdentifierToken representing packages specified as imports.:::return->Collections->unmodifiableList
 Imports#getImportedClasses():::Return an unmodifiable list of IdentifierToken representing classes specified as imports.:::return->Collections->unmodifiableList
 Imports#newEnvironment(Environment):::Extend an environment with my resolve() method.:::return->new->ImportEnvironment
+ImportEnvironment#resolve(Identifier)::: import environment resolve:::return->imports->resolve
+ImportEnvironment#getImports()::: import environment get imports:::return
 MemberDefinition#makeProxyMember(MemberDefinition, ClassDefinition, Environment):::Create a member which is externally the same as `field' but is defined in class `classDef':::if->new->HashMap<>->key->field->toString->classDef->toString->proxy->proxyCache->get->if->return->field->getWhere->field->getModifiers->field->getType->field->getName->field->getExceptionIds->new->MemberDefinition->field->getExceptions->proxyCache->put->return
 MemberDefinition#getWhere():::Get the position in the input:::return
 MemberDefinition#getClassDeclaration():::Get the class declaration:::return->clazz->getClassDeclaration
@@ -208,33 +323,70 @@ MemberDefinition#getDefiningClassDeclaration():::Get the class declaration in wh
 MemberDefinition#getClassDefinition():::Get the class definition:::return
 MemberDefinition#getTopClass():::Get the field's top-level enclosing class:::return->clazz->getTopClass
 MemberDefinition#getModifiers():::Get the field's modifiers:::return
+MemberDefinition#subModifiers(int)::: member definition sub modifiers:::
+MemberDefinition#addModifiers(int)::: member definition add modifiers:::
 MemberDefinition#getType():::Get the field's type:::return
 MemberDefinition#getName():::Get the field's name:::return
 MemberDefinition#getArguments():::Get arguments (a vector of LocalMember):::return->isMethod->new->Vector<>
 MemberDefinition#getExceptions(Environment):::Get the exceptions that are thrown by this method.:::if->if->new->ClassDeclarationArr->else->throw->new->CompilerError->return
+MemberDefinition#getExceptionIds()::: member definition get exception ids:::return
 MemberDefinition#getInnerClass():::Get an inner class.:::return
 MemberDefinition#isUplevelValue():::Is this a synthetic field which holds a copy of, or reference to, a local variable or enclosing instance?:::if->isSynthetic->isVariable->isStatic->return->name->toString->return->name->startsWith->name->startsWith->name->startsWith
+MemberDefinition#isAccessMethod()::: member definition is access method:::return->isSynthetic->isMethod
 MemberDefinition#getAccessMethodTarget():::Is this a synthetic method which provides access to a visible private member?:::if->isAccessMethod->for->f->return
+MemberDefinition#setAccessMethodTarget(MemberDefinition)::: member definition set access method target:::if->getAccessMethodTarget->if->throw->new->CompilerError
 MemberDefinition#getAccessUpdateMember():::If this method is a getter for a private field, return the setter.:::if->isAccessMethod->for->f->return
+MemberDefinition#setAccessUpdateMember(MemberDefinition)::: member definition set access update member:::if->getAccessUpdateMember->if->isAccessMethod->updater->getAccessMethodTarget->getAccessMethodTarget->throw->new->CompilerError
 MemberDefinition#isSuperAccessMethod():::Is this an access method for a field selection or method call of the form '...super.foo' or '...super.foo()'?:::return
 MemberDefinition#setIsSuperAccessMethod(boolean):::Mark this member as an access method for a field selection or method call via the 'super' keyword.:::
 MemberDefinition#isBlankFinal():::Tell if this is a final variable without an initializer:::return->isFinal->isSynthetic->getValue
+MemberDefinition#isNeverNull()::: member definition is never null:::if->isUplevelValue->return->name->toString->startsWith->return
 MemberDefinition#getValue(Environment):::Get the field's final value (may return null):::return
+MemberDefinition#getValue()::: member definition get value:::return
+MemberDefinition#setValue(Node)::: member definition set value:::
+MemberDefinition#getInitialValue()::: member definition get initial value:::return
 MemberDefinition#getNextMember():::Get the next field or the next match:::return
+MemberDefinition#getNextMatch()::: member definition get next match:::return
 MemberDefinition#getDocumentation():::Get the field's documentation:::return
 MemberDefinition#check(Environment):::Request a check of the field definition.:::
 MemberDefinition#check(Environment, Context, Vset):::Really check the field definition.:::return
 MemberDefinition#code(Environment, Assembler):::Generate code:::throw->new->CompilerError
+MemberDefinition#codeInit(Environment, Context, Assembler)::: member definition code init:::throw->new->CompilerError
 MemberDefinition#reportDeprecated(Environment):::Tells whether to report a deprecation error for this field.:::return->isDeprecated->clazz->reportDeprecated
 MemberDefinition#canReach(Environment, MemberDefinition):::Check if a field can reach another field (only considers forward references, not the access modifiers).:::if->f->isLocal->f->isVariable->isVariable->isInitializer->return->if->getClassDeclaration->f->getClassDeclaration->equals->isStatic->f->isStatic->while->f->getNextMember->return->return
+MemberDefinition#getAccessLevel():::Return the access modifier of this member as a number:::if->isPublic->return->else->if->isProtected->return->else->if->isPackagePrivate->return->else->if->isPrivate->return->else->throw->new->CompilerError
+MemberDefinition#reportError(Environment, String, ClassDeclaration, MemberDefinition):::Munge our error message to report whether the override conflict came from an inherited method or a declared method.:::if->env->getWhere->getClassDeclaration->method->getClassDeclaration->error->else->env->clazz->getClassDefinition->getWhere->getClassDeclaration->method->getClassDeclaration->error
 MemberDefinition#sameReturnType(MemberDefinition):::Convenience method to see if two methods return the same type:::if->isMethod->method->isMethod->throw->new->CompilerError->myReturnType->getType->getReturnType->yourReturnType->method->getType->getReturnType->return
 MemberDefinition#checkOverride(Environment, MemberDefinition):::Check to see if `this' can override/hide `method':::return->checkOverride
+MemberDefinition#checkOverride(Environment, MemberDefinition, ClassDeclaration):::Checks whether `this' can override `method':::success->if->isMethod->throw->new->CompilerError->if->isSynthetic->if->method->isFinal->method->isConstructor->method->isStatic->isStatic->return->if->getName->method->getName->getType->method->getType->equalArguments->throw->new->CompilerError->if->method->isStatic->isStatic->reportError->if->method->isStatic->isStatic->reportError->if->method->isFinal->reportError->if->method->reportDeprecated->isDeprecated->reportError->if->getAccessLevel->method->getAccessLevel->reportError->if->sameReturnType->if->exceptionsFit->reportError->return
 MemberDefinition#checkMeet(Environment, MemberDefinition, ClassDeclaration):::Check to see if two method definitions are compatible, that is do they have a `meet':::if->isMethod->throw->new->CompilerError->if->isAbstract->method->isAbstract->throw->new->CompilerError->else->if->isAbstract->return->checkOverride->else->if->method->isAbstract->return->method->checkOverride->if->getName->method->getName->getType->method->getType->equalArguments->throw->new->CompilerError->if->sameReturnType->env->clazz->getClassDefinition->getWhere->this->getClassDeclaration->method->getClassDeclaration->error->return->return
 MemberDefinition#couldOverride(Environment, MemberDefinition):::This method is meant to be used to determine if one of two inherited methods could override the other:::if->isMethod->throw->new->CompilerError->if->method->isAbstract->return->if->getAccessLevel->method->getAccessLevel->return->if->exceptionsFit->return->return
+MemberDefinition#exceptionsFit(Environment, MemberDefinition):::Check to see if the exceptions of `this' fit within the exceptions of `method'.:::e1->getExceptions->e2->method->getExceptions->for->i->return
 MemberDefinition#isPublic():::Checks:::return
+MemberDefinition#isPrivate()::: member definition is private:::return
+MemberDefinition#isProtected()::: member definition is protected:::return
+MemberDefinition#isPackagePrivate()::: member definition is package private:::return
+MemberDefinition#isFinal()::: member definition is final:::return
+MemberDefinition#isStatic()::: member definition is static:::return
+MemberDefinition#isSynchronized()::: member definition is synchronized:::return
+MemberDefinition#isAbstract()::: member definition is abstract:::return
+MemberDefinition#isNative()::: member definition is native:::return
+MemberDefinition#isVolatile()::: member definition is volatile:::return
+MemberDefinition#isTransient()::: member definition is transient:::return
+MemberDefinition#isMethod()::: member definition is method:::return->type->isType
+MemberDefinition#isVariable()::: member definition is variable:::return->type->isType
+MemberDefinition#isSynthetic()::: member definition is synthetic:::return
+MemberDefinition#isDeprecated()::: member definition is deprecated:::return
+MemberDefinition#isStrict()::: member definition is strict:::return
+MemberDefinition#isInnerClass()::: member definition is inner class:::return
+MemberDefinition#isInitializer()::: member definition is initializer:::return->getName->equals
+MemberDefinition#isConstructor()::: member definition is constructor:::return->getName->equals
+MemberDefinition#isLocal()::: member definition is local:::return
+MemberDefinition#isInlineable(Environment, boolean)::: member definition is inlineable:::return->isStatic->isPrivate->isFinal->isConstructor->isSynchronized->isNative
 MemberDefinition#isConstant():::Check if constant:  Will it inline away to a constant?:::if->isFinal->isVariable->try->return->isConstant->catch->finally->return
 MemberDefinition#toString():::toString:::name->getClassDefinition->getName->if->isInitializer->return->isStatic->else->if->isConstructor->sb->new->StringBuilder->sb->append->sb->append->argTypes->getType->getArgumentTypes->for->i->sb->append->return->sb->toString->else->if->isInnerClass->return->getInnerClass->toString->return->type->getName->toString->typeString
 MemberDefinition#print(PrintStream):::Print for debugging:::if->isPublic->out->print->if->isPrivate->out->print->if->isProtected->out->print->if->isFinal->out->print->if->isStatic->out->print->if->isSynchronized->out->print->if->isAbstract->out->print->if->isNative->out->print->if->isVolatile->out->print->if->isTransient->out->print->out->toString->println
+MemberDefinition#cleanup(Environment)::: member definition cleanup:::if->isMethod->cost->if->isPrivate->isInitializer->else->if->costInline->else->try->if->isInlineable->catch->finally->if->env->dump->env->getName->output->else->if->isVariable->if->isPrivate->isFinal->type->isType
 MethodSet#size():::Returns the number of distinct methods stored in the MethodSet.:::return
 MethodSet#add(MemberDefinition):::Adds `method' to the MethodSet:::if->throw->new->CompilerError->name->method->getName->methodList->lookupMap->get->if->new->ArrayList<>->lookupMap->put->size->methodList->size->for->i->methodList->add
 MethodSet#replace(MemberDefinition):::Adds `method' to the MethodSet, replacing any previous definition with the same signature.:::if->throw->new->CompilerError->name->method->getName->methodList->lookupMap->get->if->new->ArrayList<>->lookupMap->put->size->methodList->size->for->i->methodList->add
@@ -244,17 +396,36 @@ MethodSet#iterator():::Returns an Iterator of all methods in the MethodSet:::ret
 MethodSet#freeze():::After freeze() is called, the MethodSet becomes (mostly) immutable:::
 MethodSet#isFrozen():::Tells whether freeze() has been called on this MethodSet.:::return
 MethodSet#toString():::Returns a (big) string representation of this MethodSet:::len->size->sb->new->StringBuilder->all->iterator->sb->append->while->all->hasNext->sb->all->next->toString->append->if->sb->append->sb->append->return->sb->toString
+MethodType#getReturnType()::: method type get return type:::return
+MethodType#getArgumentTypes()::: method type get argument types:::return
+MethodType#equalArguments(Type)::: method type equal arguments:::if->return->m->if->return->for->i->return
+MethodType#stackSize()::: method type stack size:::n->for->i->return
+MethodType#typeString(String, boolean, boolean)::: method type type string:::sb->new->StringBuilder->sb->append->sb->append->for->i->sb->append->return->getReturnType->sb->toString->typeString->sb->toString
 Package#classExists(Identifier):::Check if a class is defined in this package:::return->getBinaryFile->className->isInner->getSourceFile
 Package#exists():::Check if the package exists:::dir->binaryPath->getDirectory->if->dir->isDirectory->return->if->sourcePath->getDirectory->if->dir->isDirectory->return->prefix->return->binaryPath->getFiles->hasMoreElements->sourcePath->getFiles->hasMoreElements
+Package#makeName(String)::: package make name:::return->pkg->equals
 Package#getBinaryFile(Identifier):::Get the .class file of a class:::Type->mangleInnerType->fileName->className->toString->return->binaryPath->makeName->getFile
 Package#getSourceFile(Identifier):::Get the .java file of a class:::className->getTopName->fileName->className->toString->return->sourcePath->makeName->getFile
+Package#getSourceFile(String)::: package get source file:::if->fileName->endsWith->return->sourcePath->makeName->getFile->return
+Package#getSourceFiles()::: package get source files:::return->sourcePath->getFiles
+Package#getBinaryFiles()::: package get binary files:::return->binaryPath->getFiles
+Package#toString()::: package to string:::if->pkg->equals->return->return
 Parser#packageDeclaration(long, IdentifierToken):::package declaration:::packageDeclaration
+Parser#packageDeclaration(long, Identifier)::: parser package declaration:::throw->new->RuntimeException
 Parser#importClass(long, IdentifierToken):::import class:::importClass
+Parser#importClass(long, Identifier)::: parser import class:::throw->new->RuntimeException
 Parser#importPackage(long, IdentifierToken):::import package:::importPackage
+Parser#importPackage(long, Identifier)::: parser import package:::throw->new->RuntimeException
 Parser#beginClass(long, String, int, IdentifierToken, IdentifierToken, IdentifierToken[]):::Define class:::supId->implIds->if->new->IdentifierArr->for->i->beginClass->return->getCurrentClass
+Parser#beginClass(long, String, int, Identifier, Identifier, Identifier[])::: parser begin class:::throw->new->RuntimeException
 Parser#getCurrentClass():::Report the current class under construction:::return
 Parser#endClass(long, ClassDefinition):::End class:::c->getName->getFlatName->getName->endClass
+Parser#endClass(long, Identifier)::: parser end class:::throw->new->RuntimeException
 Parser#defineField(long, ClassDefinition, String, int, Type, IdentifierToken, IdentifierToken[], IdentifierToken[], Node):::Define a field:::argIds->expIds->if->new->IdentifierArr->for->i->if->new->IdentifierArr->for->i->defineField
+Parser#defineField(long, String, int, Type, Identifier, Identifier[], Identifier[], Node)::: parser define field:::throw->new->RuntimeException
+Parser#addArgument(Node)::: parser add argument:::if->newArgs->new->NodeArr->System->arraycopy
+Parser#exprArgs(int)::: parser expr args:::e->new->ExpressionArr->System->arraycopy->return
+Parser#statArgs(int)::: parser stat args:::s->new->StatementArr->System->arraycopy->return
 Parser#expect(int):::Expect a token, return its value, scan the next token or throw an exception.:::if->switch->env->error->break->env->error->break->throw->new->SyntaxError->scan
 Parser#parseTypeExpression():::Parse a type expression:::switch->return->scan->new->TypeExpression->return->scan->new->TypeExpression->return->scan->new->TypeExpression->return->scan->new->TypeExpression->return->scan->new->TypeExpression->return->scan->new->TypeExpression->return->scan->new->TypeExpression->return->scan->new->TypeExpression->return->scan->new->TypeExpression->e->new->IdentifierExpression->scan->while->scan->new->FieldExpression->expect->return->env->error->throw->new->SyntaxError
 Parser#parseMethodExpression(Expression, Identifier):::Parse a method invocation:::p->scan->i->if->parseExpression->addArgument->while->scan->parseExpression->addArgument->expect->return->exprArgs->new->MethodExpression
@@ -266,28 +437,62 @@ Parser#recoverStatement():::Recover after a syntax error in a statement:::while-
 Parser#parseDeclaration(long, int, Expression):::Parse declaration, called after the type expression has been parsed and the current token is IDENT.:::i->if->parseExpression->new->VarDeclarationStatement->addArgument->while->scan->parseExpression->new->VarDeclarationStatement->addArgument->return->statArgs->new->DeclarationStatement
 Parser#topLevelExpression(Expression):::Check if an expression is a legal toplevel expression:::switch->e->getOp->return->env->e->getWhere->error
 Parser#parseStatement():::Parse a statement.:::switch->return->scan->new->StatementArr->new->CompoundStatement->return->parseBlockStatement->p->scan->expect->c->parseExpression->expect->t->parseStatement->if->scan->return->parseStatement->new->IfStatement->else->return->new->IfStatement->env->scan->error->return->parseStatement->p->scan->init->cond->inc->expect->if->p2->mod->parseModifiers->e->parseExpression->if->parseDeclaration->else->if->expect->topLevelExpression->while->p3->scan->e2->parseExpression->topLevelExpression->new->CommaExpression->new->ExpressionStatement->expect->if->parseExpression->expect->if->parseExpression->topLevelExpression->while->p2->scan->e2->parseExpression->topLevelExpression->new->CommaExpression->expect->return->parseStatement->new->ForStatement->p->scan->expect->cond->parseExpression->expect->return->parseStatement->new->WhileStatement->p->scan->body->parseStatement->expect->expect->cond->parseExpression->expect->expect->return->new->DoStatement->p->scan->label->if->scan->expect->return->new->BreakStatement->p->scan->label->if->scan->expect->return->new->ContinueStatement->p->scan->e->if->parseExpression->expect->return->new->ReturnStatement->p->scan->i->expect->e->parseExpression->expect->expect->while->j->try->switch->scan->parseExpression->new->CaseStatement->addArgument->expect->break->scan->new->CaseStatement->addArgument->expect->break->parseStatement->addArgument->break->catch->if->recoverStatement->throw->finally->expect->return->statArgs->new->SwitchStatement->env->error->while->scan->parseExpression->expect->return->parseStatement->env->error->scan->expect->return->parseStatement->p->scan->init->i->catches->if->expect->p2->mod->parseModifiers->e->parseExpression->if->parseDeclaration->else->if->expect->new->ExpressionStatement->expect->s->parseBlockStatement->if->while->pp->expect->expect->mod->parseModifiers->t->parseExpression->id->scanner->getIdToken->expect->expect->parseBlockStatement->new->CatchStatement->addArgument->if->statArgs->new->TryStatement->if->scan->return->parseBlockStatement->new->FinallyStatement->else->if->return->else->env->error->return->new->TryStatement->env->error->s->do->scan->expect->parseModifiers->parseExpression->expect->expect->parseBlockStatement->while->if->scan->parseBlockStatement->return->env->error->scan->return->parseBlockStatement->p->scan->e->parseExpression->expect->return->new->ThrowStatement->p->scan->expect->expect->env->error->return->new->StatementArr->new->CompoundStatement->p->scan->expect->e->parseExpression->expect->return->parseBlockStatement->new->SynchronizedStatement->return->parseLocalClass->p->mod->parseModifiers->switch->return->parseLocalClass->if->expect->e->parseExpression->if->expect->s->parseDeclaration->expect->return->env->error->throw->new->SyntaxError->env->error->throw->new->SyntaxError->p->e->parseExpression->if->s->parseDeclaration->expect->return->if->scan->s->parseStatement->s->setLabel->return->topLevelExpression->expect->return->new->ExpressionStatement
+Parser#parseBlockStatement()::: parser parse block statement:::if->env->error->return->parseStatement->p->scan->i->while->j->try->parseStatement->addArgument->catch->if->recoverStatement->throw->finally->expect->return->statArgs->new->CompoundStatement
 Parser#parseName(boolean):::Parse an identifier:::res->scanner->getIdToken->expect->if->return->sb->toString->new->StringBuilder->while->scan->if->scan->sb->append->break->sb->append->if->sb->append->expect->Identifier->sb->toString->lookup->return
+Parser#parseIdentifier(boolean)::: parser parse identifier:::return->parseName
 Parser#parseType():::Parse a type expression, this results in a Type:::t->switch->Type->parseName->tClass->break->scan->break->scan->break->scan->break->scan->break->scan->break->scan->break->scan->break->scan->break->scan->break->env->error->throw->new->SyntaxError->return->parseArrayBrackets
 Parser#parseArrayBrackets(Type):::Parse the tail of a type expression, which might be array brackets:::while->scan->if->env->error->parseExpression->expect->Type->tArray->return
+Parser#addArgument(int, Type, IdentifierToken)::: parser add argument:::if->newATypes->new->TypeArr->System->arraycopy->newANames->new->IdentifierTokenArr->System->arraycopy
 Parser#parseModifiers(int):::Parse a possibly-empty sequence of modifier keywords:::mod->while->if->env->error->scan->nextmod->switch->break->break->break->break->break->break->break->break->break->break->break->if->break->if->env->error->scan->return
 Parser#parseField():::Parse a field.:::if->scan->return->doc->p->mod->parseModifiers->if->actions->Type->tMethod->new->IdentifierToken->parseStatement->defineField->return->if->parseNamedClass->return->t->parseType->id->switch->scanner->getIdToken->scan->break->new->IdentifierToken->if->env->error->break->expect->if->scan->if->am->parseModifiers->at->parseType->an->scanner->getIdToken->expect->parseArrayBrackets->addArgument->while->scan->parseModifiers->parseType->scanner->getIdToken->expect->parseArrayBrackets->addArgument->expect->parseArrayBrackets->atypes->new->TypeArr->System->arraycopy->anames->new->IdentifierTokenArr->System->arraycopy->Type->tMethod->exp->if->v->new->Vector<>->scan->v->parseName->addElement->while->scan->v->parseName->addElement->v->size->new->IdentifierTokenArr->v->copyInto->switch->oldFPstate->if->else->actions->parseStatement->defineField->break->scan->actions->defineField->break->if->expect->else->expect->return->while->vt->parseArrayBrackets->init->if->scan->parseExpression->actions->defineField->if->expect->return->scan->scanner->getIdToken->expect
 Parser#recoverField(ClassDefinition):::Recover after a syntax error in a field:::while->switch->return->match->scan->break->match->scan->break->match->scan->break->actions->endClass->throw->new->SyntaxError->scan->break
 Parser#parseClass():::Parse a top-level class or interface declaration.:::doc->mod->parseModifiers->parseNamedClass
 Parser#parseLocalClass(int):::Parse a block-local class or interface declaration.:::p->body->parseNamedClass->ds->new->LocalMember->new->VarDeclarationStatement->type->body->getType->new->TypeExpression->return->new->DeclarationStatement
 Parser#parseNamedClass(int, int, String):::Parse a named class or interface declaration, starting at "class" or "interface".:::switch->scan->break->scan->break->env->error->break->oldFPstate->if->else->nm->scanner->getIdToken->p->expect->ext->new->Vector<>->impl->new->Vector<>->parseInheritance->tmp->parseClassBody->return
+Parser#parseInheritance(Vector, Vector)::: parser parse inheritance:::if->scan->ext->parseName->addElement->while->scan->ext->parseName->addElement->if->scan->impl->parseName->addElement->while->scan->impl->parseName->addElement
 Parser#parseClassBody(IdentifierToken, int, int, String, Vector, Vector, long):::Parse the body of a class or interface declaration, starting at the left brace.:::sup->if->if->impl->size->env->impl->elementAt->getWhere->error->else->if->ext->size->if->ext->size->env->ext->elementAt->getWhere->error->ext->elementAt->oldClass->implids->impl->size->new->IdentifierTokenArr->impl->copyInto->newClass->actions->beginClass->expect->while->try->parseField->catch->recoverField->finally->expect->actions->endClass->return
 Parser#recoverFile():::Recover after a syntax error in the file:::while->switch->return->match->scan->break->match->scan->break->match->scan->break->return->scan->break
 Parser#parseFile():::Parse an Java file.:::try->try->if->p->scan->id->parseName->expect->actions->packageDeclaration->catch->recoverFile->finally->while->try->p->scan->id->parseName->expect->if->getName->equals->getQualifier->actions->importPackage->else->actions->importClass->catch->recoverFile->finally->while->try->switch->parseClass->break->scan->break->return->env->error->throw->new->SyntaxError->catch->recoverFile->finally->catch->env->env->getSource->error->return->finally
+Parser#scan()::: parser scan:::if->result->scanner->scan->return->return->super->scan
+Parser#match(int, int)::: parser match:::if->scanner->match->return->super->match
 ParserActions#packageDeclaration(long, IdentifierToken):::package declaration:::
 ParserActions#importClass(long, IdentifierToken):::import class:::
 ParserActions#importPackage(long, IdentifierToken):::import package:::
 ParserActions#beginClass(long, String, int, IdentifierToken, IdentifierToken, IdentifierToken[]):::Define class:::
 ParserActions#endClass(long, ClassDefinition):::End class:::
 ParserActions#defineField(long, ClassDefinition, String, int, Type, IdentifierToken, IdentifierToken[], IdentifierToken[], Node):::Define a field:::
+PathClassFile#isZipped()::: path class file is zipped:::return
+PathClassFile#getInputStream()::: path class file get input stream:::return->Files->newInputStream
+PathClassFile#exists()::: path class file exists:::return
+PathClassFile#isDirectory()::: path class file is directory:::return->attrs->isDirectory
+PathClassFile#lastModified()::: path class file last modified:::return->attrs->lastModifiedTime->toMillis
+PathClassFile#getPath()::: path class file get path:::return->path->toUri->toString
+PathClassFile#getName()::: path class file get name:::return->path->getFileName->toString
+PathClassFile#getAbsoluteName()::: path class file get absolute name:::return->path->toAbsolutePath->toUri->toString
+PathClassFile#length()::: path class file length:::return->attrs->size
+PathClassFile#toString()::: path class file to string:::return->path->toString
+Scanner#growBuffer()::: scanner grow buffer:::newBuffer->new->charArr->System->arraycopy
+Scanner#putc(int)::: scanner putc:::if->growBuffer
+Scanner#bufferString()::: scanner buffer string:::return->new->String
 Scanner#useInputStream(InputStream):::Setup input from the given input stream, and scan the first token from it.:::try->new->ScannerInputReader->catch->env->setCharacterEncoding->new->ScannerInputReader->finally->read->scan
+Scanner#defineKeyword(int):::Define a keyword.:::Identifier->lookup->setType
+Scanner#skipComment():::Scan a comment:::while->switch->env->error->return->if->in->read->in->read->return->break->in->read->break
+Scanner#scanDocComment():::Scan a doc comment:::c->in->buffer->count->while->in->read->if->in->read->return->if->in->read->while->while->switch->in->read->break->break->if->do->in->read->while->if->in->read->break->while->switch->env->error->break->in->read->if->in->read->break->if->growBuffer->break->if->growBuffer->in->read->break->if->growBuffer->in->read->break->if->i->while->switch->break->break->return->new->String->else->return
+Scanner#scanNumber():::Scan a number:::seenNonOctal->overflow->seenDigit->value->putc->for->if->Character->isJavaLetterOrDigit->env->error->do->in->read->while->Character->isJavaLetterOrDigit->else->if->env->error->else->if->env->error->else->if->if->switch->env->error->break->env->error->break->env->error->break->throw->new->CompilerError->else->if->switch->env->error->break->env->error->break->env->error->break->throw->new->CompilerError
+Scanner#scanReal():::Scan a float:::seenExponent->isSingleFloat->lastChar->if->putc->in->read->for->in->read->if->Character->isJavaLetterOrDigit->env->error->do->in->read->while->Character->isJavaLetterOrDigit->else->try->if->env->error->else->if->string->bufferString->Float->valueOf->floatValue->if->Float->isInfinite->env->error->else->if->looksLikeZero->env->error->else->string->bufferString->Double->valueOf->doubleValue->if->Double->isInfinite->env->error->else->if->looksLikeZero->env->error->catch->env->error->finally->return
+Scanner#looksLikeZero(String)::: scanner looks like zero:::length->token->length->for->i->return
+Scanner#scanEscapeChar():::Scan an escape character.:::p->switch->in->read->n->for->i->in->read->if->env->error->return->in->read->return->in->read->return->in->read->return->in->read->return->in->read->return->in->read->return->in->read->return->in->read->return->env->error->in->read->return
+Scanner#scanString():::Scan a string:::in->read->while->switch->env->error->bufferString->return->in->read->env->error->bufferString->return->in->read->bufferString->return->c->scanEscapeChar->if->putc->break->putc->in->read->break
+Scanner#scanCharacter():::Scan a character:::switch->in->read->c->scanEscapeChar->break->env->error->in->read->while->in->read->return->env->error->return->in->read->break->if->in->read->else->env->error->while->switch->in->read->return->return->in->read
+Scanner#scanIdentifier():::Scan an Identifier:::while->putc->switch->in->read->break->if->Character->isJavaLetterOrDigit->Identifier->bufferString->lookup->idValue->getType->return
+Scanner#getEndPos()::: scanner get end pos:::return
 Scanner#getIdToken():::If the current token is IDENT, return the identifier occurrence:::return->new->IdentifierToken
 Scanner#scan():::Scan the next token.:::return->xscan
+Scanner#xscan()::: scanner xscan:::in->retPos->while->switch->return->if->return->in->read->break->switch->in->read->while->in->read->if->return->break->in->read->if->scanDocComment->else->skipComment->if->return->break->in->read->return->return->break->scanString->return->scanCharacter->return->scanNumber->return->switch->in->read->putc->scanReal->break->return->in->read->return->in->read->return->in->read->return->in->read->return->in->read->return->in->read->return->in->read->return->in->read->return->in->read->return->in->read->return->in->read->return->switch->in->read->in->read->return->in->read->return->return->switch->in->read->in->read->return->in->read->return->return->switch->in->read->if->in->read->in->read->return->return->in->read->return->return->switch->in->read->switch->in->read->in->read->return->if->in->read->in->read->return->return->return->in->read->return->return->switch->in->read->in->read->return->in->read->return->return->switch->in->read->in->read->return->in->read->return->return->if->in->read->in->read->return->return->if->in->read->in->read->return->return->if->in->read->in->read->return->return->if->in->read->in->read->return->return->if->in->read->in->read->return->return->scanIdentifier->return->if->in->read->return->env->error->in->read->break->if->Character->isJavaLetter->scanIdentifier->return->env->error->in->read->break
 Scanner#match(int, int):::Scan to a matching '}', ']' or ')':::depth->while->scan->if->else->if->if->return->else->if->env->error->return
+ScannerInputReader#getNextChar():::Get the next character from our buffer:::if->in->read->if->return->return
+ScannerInputReader#read(char[], int, int)::: scanner input reader read:::throw->new->CompilerError
+ScannerInputReader#read()::: scanner input reader read:::c->if->try->if->in->read->if->break->catch->env->error->return->finally->else->switch->return->if->getNextChar->return->while->getNextChar->d->for->i->getNextChar->switch->return->if->getNextChar->else->return->return->return->if->getNextChar->else->return->return
 Type#getTypeSignature():::Return the Java type signature.:::return
 Type#getTypeCode():::Return the type code.:::return
 Type#getTypeMask():::Return the type mask:::return
@@ -299,6 +504,7 @@ Type#getElementType():::Return the element type of an array type:::throw->new->C
 Type#getArrayDimension():::Return the array dimension:::return
 Type#tClass(Identifier):::Create a class type.:::if->className->isInner->t->mangleInnerType->tClass->if->t->getClassName->t->getClassName->changeClassName->return->if->return->sig->className->toString->replace->new->String->t->typeHash->get->if->new->ClassType->return
 Type#getClassName():::Return the ClassName:::throw->new->CompilerError
+Type#mangleInnerType(Identifier)::: type mangle inner type:::if->className->isInner->return->mname->Identifier->className->getFlatName->toString->replace->lookup->if->mname->isInner->throw->new->CompilerError->return->Identifier->className->getQualifier->lookup
 Type#changeClassName(Identifier, Identifier):::We have learned that a signature means something other that what we thought it meant:::Type->tClass
 Type#tMethod(Type):::Create a method type with no arguments.:::return->tMethod
 Type#tMethod(Type, Type[]):::Create a method type with arguments.:::sb->new->StringBuilder->sb->append->for->i->sb->append->sb->returnType->getTypeSignature->append->sig->sb->toString->t->typeHash->get->if->new->MethodType->return
@@ -311,3 +517,13 @@ Type#getTypeCodeOffset():::Return the type code offset:::switch->return->return-
 Type#typeString(String, boolean, boolean):::Convert a Type to a string, if abbrev is true class names are not fully qualified, if ret is true the return type is included.:::s->switch->break->break->break->break->break->break->break->break->break->break->if->break->return->id->length
 Type#typeString(String):::Create a type string, given an identifier.:::return->typeString
 Type#toString():::Convert to a String:::return->typeString
+ZipClassFile#isZipped()::: zip class file is zipped:::return
+ZipClassFile#getInputStream()::: zip class file get input stream:::try->return->zipFile->getInputStream->catch->throw->e->getMessage->new->IOException->finally
+ZipClassFile#exists()::: zip class file exists:::return
+ZipClassFile#isDirectory()::: zip class file is directory:::return->zipEntry->getName->endsWith
+ZipClassFile#lastModified()::: zip class file last modified:::return->zipEntry->getTime
+ZipClassFile#getPath()::: zip class file get path:::return->zipFile->getName->zipEntry->getName
+ZipClassFile#getName()::: zip class file get name:::return->zipEntry->getName
+ZipClassFile#getAbsoluteName()::: zip class file get absolute name:::return->zipFile->getName->zipEntry->getName
+ZipClassFile#length()::: zip class file length:::return->zipEntry->getSize
+ZipClassFile#toString()::: zip class file to string:::return->zipEntry->toString

@@ -1,41 +1,468 @@
+ArrayCacheConst#getBucket(int)::: array cache const get bucket:::for->i->return
 ArrayCacheConst#getNewSize(int, int):::Return the new array size (~ x2):::if->throw->new->ArrayIndexOutOfBoundsException->initial->size->if->else->if->if->return
 ArrayCacheConst#getNewLargeSize(long, long):::Return the new array size (~ x2):::if->throw->new->ArrayIndexOutOfBoundsException->size->if->else->if->else->if->else->if->if->return
+ArrayCacheConst.CacheStats#reset()::: cache stats reset:::for->i
+ArrayCacheConst.CacheStats#dumpStats()::: cache stats dump stats:::totalCacheBytes->if->for->i->if->getTotalInitialBytes->logInfo->if->logInfo->for->i->return
+ArrayCacheConst.CacheStats#getByteFactor()::: cache stats get byte factor:::factor->if->name->contains->name->contains->else->if->name->contains->return
+ArrayCacheConst.CacheStats#getTotalInitialBytes()::: cache stats get total initial bytes:::return->getByteFactor
+ArrayCacheConst.BucketStats#reset()::: bucket stats reset:::
+ArrayCacheConst.BucketStats#updateMaxSize(int)::: bucket stats update max size:::if
+ByteArrayCache#getCacheBucket(int)::: byte array cache get cache bucket:::bucket->ArrayCacheConst->getBucket->return->getBuckets
+ByteArrayCache#getBuckets()::: byte array cache get buckets:::buckets->refBuckets->get->if->new->BucketArr->for->i->new->WeakReference<Bucket[]>->return
+ByteArrayCache#createRef(int)::: byte array cache create ref:::return->new->Reference
+ByteArrayCache.Reference#getArray(int)::: reference get array:::if->return->cache->getCacheBucket->getArray->if->if->getLogPrefix->logInfo->return->createArray
+ByteArrayCache.Reference#widenArray(byte[], int, int)::: reference widen array:::length->if->return->if->res->ArrayCacheConst->getNewSize->getArray->System->arraycopy->putArray->if->getLogPrefix->logInfo->return
+ByteArrayCache.Reference#putArray(byte[])::: reference put array:::return->putArray
+ByteArrayCache.Reference#putArray(byte[], int, int)::: reference put array:::if->if->fill->if->cache->getCacheBucket->putArray->return
+ByteArrayCache.Bucket#getArray()::: bucket get array:::if->if->array->return->if->return->createArray
+ByteArrayCache.Bucket#putArray(byte[])::: bucket put array:::if->getLogPrefix->logInfo->return->if->if->if->stats->updateMaxSize->else->if->getLogPrefix->logInfo
+ByteArrayCache#createArray(int)::: byte array cache create array:::return->new->byteArr
+ByteArrayCache#fill(byte[], int, int, byte)::: byte array cache fill:::Arrays->fill->if->check
+ByteArrayCache#check(byte[], int, int, byte)::: byte array cache check:::if->for->i
+ByteArrayCache#getLogPrefix(boolean)::: byte array cache get log prefix:::return
+CollinearSimplifier#init(PathConsumer2D)::: collinear simplifier init:::return
+CollinearSimplifier#pathDone()::: collinear simplifier path done:::emitStashedLine->delegate->pathDone
+CollinearSimplifier#closePath()::: collinear simplifier close path:::emitStashedLine->delegate->closePath
+CollinearSimplifier#getNativeConsumer()::: collinear simplifier get native consumer:::return
+CollinearSimplifier#quadTo(float, float, float, float)::: collinear simplifier quad to:::emitStashedLine->delegate->quadTo
+CollinearSimplifier#curveTo(float, float, float, float, float, float)::: collinear simplifier curve to:::emitStashedLine->delegate->curveTo
+CollinearSimplifier#moveTo(float, float)::: collinear simplifier move to:::emitStashedLine->delegate->moveTo
+CollinearSimplifier#lineTo(float, float)::: collinear simplifier line to:::switch->delegate->lineTo->return->getSlope->return->slope->getSlope->if->Math->abs->return->delegate->lineTo->return
+CollinearSimplifier#emitStashedLine()::: collinear simplifier emit stashed line:::if->delegate->lineTo
+CollinearSimplifier#getSlope(float, float, float, float)::: collinear simplifier get slope:::dy->if->return->return
+Curve#set(float[], int)::: curve set:::if->set->else->if->set->else->set
+Curve#set(float, float, float, float, float, float, float, float)::: curve set:::dx32->dy32->dx21->dy21
+Curve#set(float, float, float, float, float, float)::: curve set:::dx21->dy21
+Curve#set(float, float, float, float)::: curve set:::dx21->dy21
+Curve#dxRoots(float[], int)::: curve dx roots:::return->Helpers->quadraticRoots
+Curve#dyRoots(float[], int)::: curve dy roots:::return->Helpers->quadraticRoots
+Curve#infPoints(float[], int)::: curve inf points:::a->b->c->return->Helpers->quadraticRoots
+Curve#xPoints(float[], int, float)::: curve x points:::return->Helpers->cubicRootsInAB
+Curve#yPoints(float[], int, float)::: curve y points:::return->Helpers->cubicRootsInAB
+Curve#perpendiculardfddf(float[], int)::: curve perpendiculardfddf:::a->b->c->d->return->Helpers->cubicRootsInAB
+Curve#rootsOfROCMinusW(float[], int, float, float)::: curve roots of minus w:::ret->end->perpendiculardfddf->t0->ft0->ROCsq->for->i->return
+Curve#eliminateInf(float)::: curve eliminate inf:::return
+Curve#falsePositionROCsqMinusX(float, float, float, float)::: curve false position csq minus x:::iterLimit->side->t->ft->ROCsq->eliminateInf->s->fs->ROCsq->eliminateInf->r->fr->for->i->Math->abs->Math->abs->return
+Curve#sameSign(float, float)::: curve same sign:::return
+Curve#ROCsq(float)::: curve  csq:::dx->dy->ddx->ddy->dx2dy2->ddx2ddy2->ddxdxddydy->return
 Dasher#init(PathConsumer2D, float[], int, float, boolean):::Initialize the Dasher.:::sidx->sum->for->i->cycles->if->if->else->fullcycles->FloatMath->floor_int->if->while->if->else->if->if->else->fullcycles->FloatMath->floor_int->if->d->while->if->else->return
 Dasher#dispose():::Disposes this dasher: clean up before reusing this instance:::if->Arrays->fill->if->dashes_ref->putArray->firstSegmentsBuffer_ref->putArray
+Dasher#copyDashArray(float[])::: dasher copy dash array:::len->newDashes->if->else->if->add->dashes_ref->getArray->System->arraycopy->return
+Dasher#moveTo(float, float)::: dasher move to:::if->out->moveTo->emitFirstSegments->if->outcode->Helpers->outcode
+Dasher#emitSeg(float[], int, int)::: dasher emit seg:::switch->out->lineTo->return->out->curveTo->return->out->quadTo->return
+Dasher#emitFirstSegments()::: dasher emit first segments:::fSegBuf->for->i->len
+Dasher#goTo(float[], int, int, boolean)::: dasher go to:::index->x->y->if->if->goTo_starting->else->if->out->moveTo->emitSeg->else->if
+Dasher#goTo_starting(float[], int, int)::: dasher go to_starting:::len->segIdx->buf->if->if->add->firstSegmentsBuffer_ref->widenArray->System->arraycopy
+Dasher#lineTo(float, float)::: dasher line to:::outcode0->if->outcode1->Helpers->outcode->orCode->if->sideCode->if->if->ret->curveSplitter->splitLine->if->return->else->skipLineTo->return->if->skipLen->_lineTo
+Dasher#_lineTo(float, float)::: dasher _line to:::dx->dy->len->if->return->Math->sqrt->cx->cy->_curCurvepts->_dash->_dashLen->_idx->_dashOn->_phase->leftInThisDashSegment->rem->while->if->goTo->if->Math->abs->break->goTo
+Dasher#skipLineTo(float, float)::: dasher skip line to:::dx->dy->len->if->Math->sqrt
+Dasher#skipLen()::: dasher skip len:::len->_dash->_dashLen->_idx->_dashOn->_phase->fullcycles->Math->floor->if->iterations->leftInThisDashSegment->rem->while->if->if->Math->abs->break
+Dasher#somethingTo(int)::: dasher something to:::_curCurvepts->if->pointCurve->return->_li->_dash->_dashLen->_li->initializeIterationOnCurve->_idx->_dashOn->_phase->curCurveoff->prevT->t->leftInThisDashSegment->while->_li->next->if->Helpers->subdivideAt->goTo->goTo->_li->lastSegLen->if->_li->reset
+Dasher#skipSomethingTo(int)::: dasher skip something to:::_curCurvepts->if->pointCurve->return->_li->_li->initializeIterationOnCurve->len->_li->totalLength
+Dasher#pointCurve(float[], int)::: dasher point curve:::for->i->return
 Dasher.LengthIterator#reset():::Reset this LengthIterator.:::if->recLimit->for->i->Arrays->fill->Arrays->fill->Arrays->fill->Arrays->fill
+Dasher.LengthIterator#initializeIterationOnCurve(float[], int)::: length iterator initialize iteration on curve:::System->arraycopy->goLeft->if->else
+Dasher.LengthIterator#haveLowAcceleration(float)::: length iterator have low acceleration:::if->len1->len2->if->Helpers->within->return->if->len3->errLen3->if->Helpers->within->Helpers->within->return->return->return
+Dasher.LengthIterator#next(float)::: length iterator next:::targetLength->while->if->return->goToNextLeaf->leaflen->t->if->haveLowAcceleration->_flatLeafCoefCache->if->x->y->if->z->else->if->a->b->c->d->n->Helpers->cubicRootsInAB->if->Float->isNaN->if->return
+Dasher.LengthIterator#totalLength()::: length iterator total length:::while->goToNextLeaf->reset->return
+Dasher.LengthIterator#lastSegLen()::: length iterator last seg len:::return
+Dasher.LengthIterator#goToNextLeaf()::: length iterator go to next leaf:::_sides->_recLevel->while->if->return->System->arraycopy->goLeft
+Dasher.LengthIterator#goLeft()::: length iterator go left:::len->onLeaf->if->else->Helpers->subdivide->goLeft
+Dasher.LengthIterator#onLeaf()::: length iterator on leaf:::curve->_curveType->polyLen->x0->y0->for->i->lineLen->Helpers->linelen->if->return->return
+Dasher#curveTo(float, float, float, float, float, float)::: dasher curve to:::outcode0->if->outcode1->Helpers->outcode->outcode2->Helpers->outcode->outcode3->Helpers->outcode->orCode->if->sideCode->if->if->ret->curveSplitter->splitCurve->if->return->else->skipCurveTo->return->if->skipLen->_curveTo
+Dasher#_curveTo(float, float, float, float, float, float)::: dasher _curve to:::_curCurvepts->monotonizer->curve->nSplits->mid->for->i->off
+Dasher#skipCurveTo(float, float, float, float, float, float)::: dasher skip curve to:::_curCurvepts->skipSomethingTo
+Dasher#quadTo(float, float, float, float)::: dasher quad to:::outcode0->if->outcode1->Helpers->outcode->outcode2->Helpers->outcode->orCode->if->sideCode->if->if->ret->curveSplitter->splitQuad->if->return->else->skipQuadTo->return->if->skipLen->_quadTo
+Dasher#_quadTo(float, float, float, float)::: dasher _quad to:::_curCurvepts->monotonizer->quad->nSplits->mid->for->i->off
+Dasher#skipQuadTo(float, float, float, float)::: dasher skip quad to:::_curCurvepts->skipSomethingTo
+Dasher#closePath()::: dasher close path:::if->lineTo->if->if->out->moveTo->emitFirstSegments->moveTo
+Dasher#pathDone()::: dasher path done:::if->out->moveTo->emitFirstSegments->out->pathDone->dispose
+Dasher#getNativeConsumer()::: dasher get native consumer:::throw->new->InternalError
+DCollinearSimplifier#init(DPathConsumer2D)::: collinear simplifier init:::return
+DCollinearSimplifier#pathDone()::: collinear simplifier path done:::emitStashedLine->delegate->pathDone
+DCollinearSimplifier#closePath()::: collinear simplifier close path:::emitStashedLine->delegate->closePath
+DCollinearSimplifier#getNativeConsumer()::: collinear simplifier get native consumer:::return
+DCollinearSimplifier#quadTo(double, double, double, double)::: collinear simplifier quad to:::emitStashedLine->delegate->quadTo
+DCollinearSimplifier#curveTo(double, double, double, double, double, double)::: collinear simplifier curve to:::emitStashedLine->delegate->curveTo
+DCollinearSimplifier#moveTo(double, double)::: collinear simplifier move to:::emitStashedLine->delegate->moveTo
+DCollinearSimplifier#lineTo(double, double)::: collinear simplifier line to:::switch->delegate->lineTo->return->getSlope->return->slope->getSlope->if->Math->abs->return->delegate->lineTo->return
+DCollinearSimplifier#emitStashedLine()::: collinear simplifier emit stashed line:::if->delegate->lineTo
+DCollinearSimplifier#getSlope(double, double, double, double)::: collinear simplifier get slope:::dy->if->return->return
+DCurve#set(double[], int)::: curve set:::if->set->else->if->set->else->set
+DCurve#set(double, double, double, double, double, double, double, double)::: curve set:::dx32->dy32->dx21->dy21
+DCurve#set(double, double, double, double, double, double)::: curve set:::dx21->dy21
+DCurve#set(double, double, double, double)::: curve set:::dx21->dy21
+DCurve#dxRoots(double[], int)::: curve dx roots:::return->DHelpers->quadraticRoots
+DCurve#dyRoots(double[], int)::: curve dy roots:::return->DHelpers->quadraticRoots
+DCurve#infPoints(double[], int)::: curve inf points:::a->b->c->return->DHelpers->quadraticRoots
+DCurve#xPoints(double[], int, double)::: curve x points:::return->DHelpers->cubicRootsInAB
+DCurve#yPoints(double[], int, double)::: curve y points:::return->DHelpers->cubicRootsInAB
+DCurve#perpendiculardfddf(double[], int)::: curve perpendiculardfddf:::a->b->c->d->return->DHelpers->cubicRootsInAB
+DCurve#rootsOfROCMinusW(double[], int, double, double)::: curve roots of minus w:::ret->end->perpendiculardfddf->t0->ft0->ROCsq->for->i->return
+DCurve#eliminateInf(double)::: curve eliminate inf:::return
+DCurve#falsePositionROCsqMinusX(double, double, double, double)::: curve false position csq minus x:::iterLimit->side->t->ft->ROCsq->eliminateInf->s->fs->ROCsq->eliminateInf->r->fr->for->i->Math->abs->Math->abs->return
+DCurve#sameSign(double, double)::: curve same sign:::return
+DCurve#ROCsq(double)::: curve  csq:::dx->dy->ddx->ddy->dx2dy2->ddx2ddy2->ddxdxddydy->return
 DDasher#init(DPathConsumer2D, double[], int, double, boolean):::Initialize the DDasher.:::sidx->sum->for->i->cycles->if->if->else->fullcycles->FloatMath->floor_int->if->while->if->else->if->if->else->fullcycles->FloatMath->floor_int->if->d->while->if->else->return
 DDasher#dispose():::Disposes this dasher: clean up before reusing this instance:::if->Arrays->fill->if->dashes_ref->putArray->firstSegmentsBuffer_ref->putArray
+DDasher#copyDashArray(float[])::: dasher copy dash array:::len->newDashes->if->else->if->add->dashes_ref->getArray->for->i->return
+DDasher#moveTo(double, double)::: dasher move to:::if->out->moveTo->emitFirstSegments->if->outcode->DHelpers->outcode
+DDasher#emitSeg(double[], int, int)::: dasher emit seg:::switch->out->lineTo->return->out->curveTo->return->out->quadTo->return
+DDasher#emitFirstSegments()::: dasher emit first segments:::fSegBuf->for->i->len
+DDasher#goTo(double[], int, int, boolean)::: dasher go to:::index->x->y->if->if->goTo_starting->else->if->out->moveTo->emitSeg->else->if
+DDasher#goTo_starting(double[], int, int)::: dasher go to_starting:::len->segIdx->buf->if->if->add->firstSegmentsBuffer_ref->widenArray->System->arraycopy
+DDasher#lineTo(double, double)::: dasher line to:::outcode0->if->outcode1->DHelpers->outcode->orCode->if->sideCode->if->if->ret->curveSplitter->splitLine->if->return->else->skipLineTo->return->if->skipLen->_lineTo
+DDasher#_lineTo(double, double)::: dasher _line to:::dx->dy->len->if->return->Math->sqrt->cx->cy->_curCurvepts->_dash->_dashLen->_idx->_dashOn->_phase->leftInThisDashSegment->rem->while->if->goTo->if->Math->abs->break->goTo
+DDasher#skipLineTo(double, double)::: dasher skip line to:::dx->dy->len->if->Math->sqrt
+DDasher#skipLen()::: dasher skip len:::len->_dash->_dashLen->_idx->_dashOn->_phase->fullcycles->Math->floor->if->iterations->leftInThisDashSegment->rem->while->if->if->Math->abs->break
+DDasher#somethingTo(int)::: dasher something to:::_curCurvepts->if->pointCurve->return->_li->_dash->_dashLen->_li->initializeIterationOnCurve->_idx->_dashOn->_phase->curCurveoff->prevT->t->leftInThisDashSegment->while->_li->next->if->DHelpers->subdivideAt->goTo->goTo->_li->lastSegLen->if->_li->reset
+DDasher#skipSomethingTo(int)::: dasher skip something to:::_curCurvepts->if->pointCurve->return->_li->_li->initializeIterationOnCurve->len->_li->totalLength
+DDasher#pointCurve(double[], int)::: dasher point curve:::for->i->return
 DDasher.LengthIterator#reset():::Reset this LengthIterator.:::if->recLimit->for->i->Arrays->fill->Arrays->fill->Arrays->fill->Arrays->fill
+DDasher.LengthIterator#initializeIterationOnCurve(double[], int)::: length iterator initialize iteration on curve:::System->arraycopy->goLeft->if->else
+DDasher.LengthIterator#haveLowAcceleration(double)::: length iterator have low acceleration:::if->len1->len2->if->DHelpers->within->return->if->len3->errLen3->if->DHelpers->within->DHelpers->within->return->return->return
+DDasher.LengthIterator#next(double)::: length iterator next:::targetLength->while->if->return->goToNextLeaf->leaflen->t->if->haveLowAcceleration->_flatLeafCoefCache->if->x->y->if->z->else->if->a->b->c->d->n->DHelpers->cubicRootsInAB->if->Double->isNaN->if->return
+DDasher.LengthIterator#totalLength()::: length iterator total length:::while->goToNextLeaf->reset->return
+DDasher.LengthIterator#lastSegLen()::: length iterator last seg len:::return
+DDasher.LengthIterator#goToNextLeaf()::: length iterator go to next leaf:::_sides->_recLevel->while->if->return->System->arraycopy->goLeft
+DDasher.LengthIterator#goLeft()::: length iterator go left:::len->onLeaf->if->else->DHelpers->subdivide->goLeft
+DDasher.LengthIterator#onLeaf()::: length iterator on leaf:::curve->_curveType->polyLen->x0->y0->for->i->lineLen->DHelpers->linelen->if->return->return
+DDasher#curveTo(double, double, double, double, double, double)::: dasher curve to:::outcode0->if->outcode1->DHelpers->outcode->outcode2->DHelpers->outcode->outcode3->DHelpers->outcode->orCode->if->sideCode->if->if->ret->curveSplitter->splitCurve->if->return->else->skipCurveTo->return->if->skipLen->_curveTo
+DDasher#_curveTo(double, double, double, double, double, double)::: dasher _curve to:::_curCurvepts->monotonizer->curve->nSplits->mid->for->i->off
+DDasher#skipCurveTo(double, double, double, double, double, double)::: dasher skip curve to:::_curCurvepts->skipSomethingTo
+DDasher#quadTo(double, double, double, double)::: dasher quad to:::outcode0->if->outcode1->DHelpers->outcode->outcode2->DHelpers->outcode->orCode->if->sideCode->if->if->ret->curveSplitter->splitQuad->if->return->else->skipQuadTo->return->if->skipLen->_quadTo
+DDasher#_quadTo(double, double, double, double)::: dasher _quad to:::_curCurvepts->monotonizer->quad->nSplits->mid->for->i->off
+DDasher#skipQuadTo(double, double, double, double)::: dasher skip quad to:::_curCurvepts->skipSomethingTo
+DDasher#closePath()::: dasher close path:::if->lineTo->if->if->out->moveTo->emitFirstSegments->moveTo
+DDasher#pathDone()::: dasher path done:::if->out->moveTo->emitFirstSegments->out->pathDone->dispose
+DDasher#getNativeConsumer()::: dasher get native consumer:::throw->new->InternalError
+DHelpers#within(double, double, double)::: helpers within:::d->return
+DHelpers#evalCubic(double, double, double, double, double)::: helpers eval cubic:::return
+DHelpers#evalQuad(double, double, double, double)::: helpers eval quad:::return
+DHelpers#quadraticRoots(double, double, double, double[], int)::: helpers quadratic roots:::ret->if->dis->if->sqrtDis->Math->sqrt->if->else->else->if->else->if->return
+DHelpers#cubicRootsInAB(double, double, double, double, double[], int, double, double)::: helpers cubic roots in b:::if->num->quadraticRoots->return->filterOutNotInAB->sub->sq_A->p->q->cb_p->D->num->if->phi->Math->Math->sqrt->acos->t->Math->sqrt->Math->cos->Math->cos->Math->cos->else->sqrt_D->Math->sqrt->u->Math->cbrt->v->Math->cbrt->if->within->return->filterOutNotInAB
+DHelpers#filterOutNotInAB(double[], int, int, double, double)::: helpers filter out not in b:::ret->for->i->end->return
+DHelpers#fastLineLen(double, double, double, double)::: helpers fast line len:::dx->dy->return->Math->abs->Math->abs
+DHelpers#linelen(double, double, double, double)::: helpers linelen:::dx->dy->return->Math->sqrt
+DHelpers#fastQuadLen(double, double, double, double, double, double)::: helpers fast quad len:::dx1->dx2->dy1->dy2->return->Math->abs->Math->abs->Math->abs->Math->abs
+DHelpers#quadlen(double, double, double, double, double, double)::: helpers quadlen:::return->linelen->linelen->linelen
+DHelpers#fastCurvelen(double, double, double, double, double, double, double, double)::: helpers fast curvelen:::dx1->dx2->dx3->dy1->dy2->dy3->return->Math->abs->Math->abs->Math->abs->Math->abs->Math->abs->Math->abs
+DHelpers#curvelen(double, double, double, double, double, double, double, double)::: helpers curvelen:::return->linelen->linelen->linelen->linelen
+DHelpers#findSubdivPoints(DCurve, double[], double[], int, double)::: helpers find subdiv points:::x12->y12->if->hypot->Math->sqrt->cos->sin->x1->y1->x2->y2->x3->y3->switch->x4->y4->c->set->break->c->set->break->else->c->set->ret->c->dxRoots->c->dyRoots->if->c->infPoints->c->rootsOfROCMinusW->filterOutNotInAB->isort->return
+DHelpers#findClipPoints(DCurve, double[], double[], int, int, double[])::: helpers find clip points:::curve->set->ret->if->curve->xPoints->if->curve->xPoints->if->curve->yPoints->if->curve->yPoints->isort->return
+DHelpers#subdivide(double[], double[], double[], int)::: helpers subdivide:::switch->subdivideCubic->return->subdivideQuad->return->throw->new->InternalError
+DHelpers#isort(double[], int)::: helpers isort:::for->i->j
 DHelpers#subdivideCubic(double[], double[], double[]):::Subdivides the cubic curve specified by the coordinates stored in the src array at indices srcoff through (srcoff&nbsp;+&nbsp;7) and stores the resulting two subdivided curves into the two result arrays at the corresponding indices:::x1->y1->cx1->cy1->cx2->cy2->x2->y2->cx->cy
+DHelpers#subdivideCubicAt(double, double[], int, double[], int, int)::: helpers subdivide cubic at:::x1->y1->cx1->cy1->cx2->cy2->x2->y2->cx->cy
+DHelpers#subdivideQuad(double[], double[], double[])::: helpers subdivide quad:::x1->y1->cx->cy->x2->y2
+DHelpers#subdivideQuadAt(double, double[], int, double[], int, int)::: helpers subdivide quad at:::x1->y1->cx->cy->x2->y2
+DHelpers#subdivideLineAt(double, double[], int, double[], int, int)::: helpers subdivide line at:::x1->y1->x2->y2
+DHelpers#subdivideAt(double, double[], int, double[], int, int)::: helpers subdivide at:::if->subdivideCubicAt->else->if->subdivideLineAt->else->subdivideQuadAt
+DHelpers#outcode(double, double, double[])::: helpers outcode:::code->if->else->if->else->if->else->if->return
 DHelpers.PolyStack#dispose():::Disposes this PolyStack: clean up before reusing this instance:::if->stat_polystack_types->add->stat_polystack_curves->add->hist_polystack_curves->add->curves_ref->putArray->curveTypes_ref->putArray
+DHelpers.PolyStack#ensureSpace(int)::: poly stack ensure space:::if->if->stat_array_polystack_curves->add->curves_ref->widenArray->if->if->stat_array_polystack_curveTypes->add->curveTypes_ref->widenArray
+DHelpers.PolyStack#pushCubic(double, double, double, double, double, double)::: poly stack push cubic:::ensureSpace->_curves->e
+DHelpers.PolyStack#pushQuad(double, double, double, double)::: poly stack push quad:::ensureSpace->_curves->e
+DHelpers.PolyStack#pushLine(double, double)::: poly stack push line:::ensureSpace
+DHelpers.PolyStack#pullAll(DPathConsumer2D)::: poly stack pull all:::nc->if->return->if->if->if->_curveTypes->_curves->e->for->i
+DHelpers.PolyStack#popAll(DPathConsumer2D)::: poly stack pop all:::nc->if->return->if->if->if->_curveTypes->_curves->e->while->switch->io->lineTo->continue->io->curveTo->continue->io->quadTo->continue
+DHelpers.PolyStack#toString()::: poly stack to string:::ret->nc->last->len->while->switch->break->break->break->Arrays->Arrays->copyOfRange->toString->return
 DHelpers.IndexStack#dispose():::Disposes this PolyStack: clean up before reusing this instance:::if->stat_idxstack_indices->add->hist_idxstack_indices->add->indices_ref->putArray
+DHelpers.IndexStack#isEmpty()::: index stack is empty:::return
+DHelpers.IndexStack#reset()::: index stack reset:::
+DHelpers.IndexStack#push(int)::: index stack push:::_values->nc->if->if->return->if->if->stat_array_idxstack_indices->add->indices_ref->widenArray->if->if
+DHelpers.IndexStack#pullAll(double[], DPathConsumer2D)::: index stack pull all:::nc->if->return->_values->for->i->j
 DMarlinRenderingEngine#createStrokedShape(Shape, float, int, int, float, float[], float):::Create a widened path as specified by the parameters:::rdrCtx->getRendererContext->try->p2d->rdrCtx->getPath2D->wrapPath2D->strokeTo->return->new->Path2D.Double->catch->finally->returnRendererContext
 DMarlinRenderingEngine#strokeTo(Shape, AffineTransform, BasicStroke, boolean, boolean, boolean, PathConsumer2D):::Sends the geometry for a widened path as specified by the parameters to the specified consumer:::norm->rdrCtx->getRendererContext->try->init->strokeTo->catch->finally->returnRendererContext
+DMarlinRenderingEngine#strokeTo(DRendererContext, Shape, AffineTransform, BasicStroke, boolean, NormMode, boolean, DPathConsumer2D)::: marlin rendering engine stroke to:::lw->if->if->userSpaceLineWidth->else->userSpaceLineWidth->else->bs->getLineWidth->bs->getEndCap->bs->getLineJoin->bs->getMiterLimit->bs->getDashArray->bs->getDashPhase->strokeTo
+DMarlinRenderingEngine#userSpaceLineWidth(AffineTransform, double)::: marlin rendering engine user space line width:::widthScale->if->else->if->at->getType->Math->Math->at->getDeterminant->abs->sqrt->else->A->at->getScaleX->C->at->getShearX->B->at->getShearY->D->at->getScaleY->EA->EB->EC->hypot->Math->sqrt->widthsquared->Math->sqrt->return
+DMarlinRenderingEngine#strokeTo(DRendererContext, Shape, AffineTransform, double, NormMode, int, int, float, float[], float, DPathConsumer2D)::: marlin rendering engine stroke to:::strokerat->dashLen->recycleDashes->dashesD->if->copyDashArray->if->at->isIdentity->a->at->getScaleX->b->at->getShearX->c->at->getShearY->d->at->getScaleY->det->if->Math->abs->pc2d->moveTo->pc2d->pathDone->return->if->nearZero->nearZero->scale->Math->sqrt->if->for->i->else->else->transformerPC2D->if->transformerPC2D->traceStroker->if->init->transformerPC2D->deltaTransformConsumer->init->init->if->if->transformerPC2D->traceDasher->init->if->disableClipping->else->if->if->transformerPC2D->traceClosedPathDetector->transformerPC2D->detectClosedPath->transformerPC2D->inverseDeltaTransformConsumer->if->transformerPC2D->traceInput->pi->norm->src->getPathIterator->getNormalizingPathIterator->pathTo
+DMarlinRenderingEngine#nearZero(double)::: marlin rendering engine near zero:::return->Math->abs->Math->ulp
+DMarlinRenderingEngine.NormalizingPathIterator#init(PathIterator)::: normalizing path iterator init:::return
 DMarlinRenderingEngine.NormalizingPathIterator#dispose():::Disposes this path iterator: clean up before reusing this instance:::
+DMarlinRenderingEngine.NormalizingPathIterator#currentSegment(double[])::: normalizing path iterator current segment:::lastCoord->type->src->currentSegment->switch->break->break->break->return->throw->new->InternalError->coord->x_adjust->y_adjust->normCoord->normCoord->switch->break->break->break->break->return
+DMarlinRenderingEngine.NormalizingPathIterator#normCoord(double)::: normalizing path iterator norm coord:::
+DMarlinRenderingEngine.NormalizingPathIterator#currentSegment(float[])::: normalizing path iterator current segment:::_tmp->type->this->currentSegment->for->i->return
+DMarlinRenderingEngine.NormalizingPathIterator#getWindingRule()::: normalizing path iterator get winding rule:::return->src->getWindingRule
+DMarlinRenderingEngine.NormalizingPathIterator#isDone()::: normalizing path iterator is done:::if->src->isDone->dispose->return->return
+DMarlinRenderingEngine.NormalizingPathIterator#next()::: normalizing path iterator next:::src->next
+DMarlinRenderingEngine.NormalizingPathIterator.NearestPixelCenter#normCoord(double)::: nearest pixel center norm coord:::return->Math->floor
+DMarlinRenderingEngine.NormalizingPathIterator.NearestPixelQuarter#normCoord(double)::: nearest pixel quarter norm coord:::return->Math->floor
+DMarlinRenderingEngine#pathTo(DRendererContext, PathIterator, DPathConsumer2D)::: marlin rendering engine path to:::if->init->pathToLoop
+DMarlinRenderingEngine#pathToLoop(double[], PathIterator, DPathConsumer2D)::: marlin rendering engine path to loop:::subpathStarted->for->pi->isDone->pi->next->pc2d->pathDone
 DMarlinRenderingEngine#getAATileGenerator(Shape, AffineTransform, Region, BasicStroke, boolean, boolean, int[]):::Construct an antialiased tile generator for the given shape with the given rendering attributes and store the bounds of the tile iteration in the bbox parameter:::ptg->r->rdrCtx->getRendererContext->try->if->MarlinProperties->isDoClipAtRuntime->clipRect->rdrOffX->rdrOffY->margin->clip->getLoY->clip->getLoY->clip->getHeight->clip->getLoX->clip->getLoX->clip->getWidth->if->MarlinUtils->Arrays->toString->logInfo->_at->at->isIdentity->norm->if->pi->norm->s->getPathIterator->getNormalizingPathIterator->clip->getLoX->clip->getLoY->clip->getWidth->clip->getHeight->pi->getWindingRule->init->pc2d->if->if->traceFiller->pathClipper->if->traceInput->pathTo->else->clip->getLoX->clip->getLoY->clip->getWidth->clip->getHeight->init->strokeTo->if->r->endRendering->init->ptg->getBbox->catch->finally->if->r->dispose->return
+DMarlinRenderingEngine#getAATileGenerator(double, double, double, double, double, double, double, double, Region, int[])::: marlin rendering engine get tile generator:::ldx1->ldy1->ldx2->ldy2->innerpgram->if->if->else->ptg->r->rdrCtx->getRendererContext->try->clip->getLoX->clip->getLoY->clip->getWidth->clip->getHeight->init->r->moveTo->r->lineTo->r->lineTo->r->lineTo->r->closePath->if->r->moveTo->r->lineTo->r->lineTo->r->lineTo->r->closePath->r->pathDone->if->r->endRendering->init->ptg->getBbox->catch->finally->if->r->dispose->return
 DMarlinRenderingEngine#getMinimumAAPenSize():::Returns the minimum pen width that the antialiasing rasterizer can represent without dropouts occuring.:::return
+DMarlinRenderingEngine#logSettings(String)::: marlin rendering engine log settings:::if->return->refType->switch->break->break->break->logInfo->logInfo->Version->getVersion->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->MarlinProperties->isForceRLE->logInfo->MarlinProperties->isForceNoRLE->logInfo->MarlinProperties->isUseTileFlags->logInfo->MarlinProperties->isUseTileFlagsWithHeuristics->logInfo->logInfo->logInfo->logInfo->MarlinProperties->getPathSimplifierPixelTolerance->logInfo->MarlinProperties->isDoClip->logInfo->MarlinProperties->isDoClipRuntimeFlag->logInfo->MarlinProperties->isDoClipSubdivider->logInfo->MarlinProperties->getSubdividerMinLength->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->MarlinProperties->getCurveLengthError->logInfo->MarlinProperties->getCubicDecD2->logInfo->MarlinProperties->getCubicIncD1->logInfo->MarlinProperties->getQuadDecD2->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo
 DMarlinRenderingEngine#getRendererContext():::Get the DRendererContext instance dedicated to the current thread:::rdrCtx->RDR_CTX_PROVIDER->acquire->if->start->return
 DMarlinRenderingEngine#returnRendererContext(DRendererContext):::Reset and return the given DRendererContext instance for reuse:::rdrCtx->dispose->if->stop->RDR_CTX_PROVIDER->release
+DoubleArrayCache#getCacheBucket(int)::: double array cache get cache bucket:::bucket->ArrayCacheConst->getBucket->return->getBuckets
+DoubleArrayCache#getBuckets()::: double array cache get buckets:::buckets->refBuckets->get->if->new->BucketArr->for->i->new->WeakReference<Bucket[]>->return
+DoubleArrayCache#createRef(int)::: double array cache create ref:::return->new->Reference
+DoubleArrayCache.Reference#getArray(int)::: reference get array:::if->return->cache->getCacheBucket->getArray->if->if->getLogPrefix->logInfo->return->createArray
+DoubleArrayCache.Reference#widenArray(double[], int, int)::: reference widen array:::length->if->return->if->res->ArrayCacheConst->getNewSize->getArray->System->arraycopy->putArray->if->getLogPrefix->logInfo->return
+DoubleArrayCache.Reference#putArray(double[])::: reference put array:::return->putArray
+DoubleArrayCache.Reference#putArray(double[], int, int)::: reference put array:::if->if->fill->if->cache->getCacheBucket->putArray->return
+DoubleArrayCache.Bucket#getArray()::: bucket get array:::if->if->array->return->if->return->createArray
+DoubleArrayCache.Bucket#putArray(double[])::: bucket put array:::if->getLogPrefix->logInfo->return->if->if->if->stats->updateMaxSize->else->if->getLogPrefix->logInfo
+DoubleArrayCache#createArray(int)::: double array cache create array:::return->new->doubleArr
+DoubleArrayCache#fill(double[], int, int, double)::: double array cache fill:::Arrays->fill->if->check
+DoubleArrayCache#check(double[], int, int, double)::: double array cache check:::if->for->i
+DoubleArrayCache#getLogPrefix(boolean)::: double array cache get log prefix:::return
+DPathConsumer2D#moveTo(double, double)::: path consumer2 d move to:::
+DPathConsumer2D#lineTo(double, double)::: path consumer2 d line to:::
+DPathConsumer2D#quadTo(double, double, double, double)::: path consumer2 d quad to:::
+DPathConsumer2D#curveTo(double, double, double, double, double, double)::: path consumer2 d curve to:::
+DPathConsumer2D#closePath()::: path consumer2 d close path:::
 DPathConsumer2D#pathDone():::Called after the last segment of the last subpath when the iteration of the path segments is completely done:::
 DPathConsumer2D#getNativeConsumer():::If a given PathConsumer performs all or most of its work natively then it can return a (non-zero) pointer to a native function vector that defines C functions for all of the above methods:::
+DPathSimplifier#init(DPathConsumer2D)::: path simplifier init:::return
+DPathSimplifier#pathDone()::: path simplifier path done:::delegate->pathDone
+DPathSimplifier#closePath()::: path simplifier close path:::delegate->closePath
+DPathSimplifier#getNativeConsumer()::: path simplifier get native consumer:::return
+DPathSimplifier#quadTo(double, double, double, double)::: path simplifier quad to:::dx->dy->if->if->return->delegate->quadTo
+DPathSimplifier#curveTo(double, double, double, double, double, double)::: path simplifier curve to:::dx->dy->if->if->if->return->delegate->curveTo
+DPathSimplifier#moveTo(double, double)::: path simplifier move to:::delegate->moveTo
+DPathSimplifier#lineTo(double, double)::: path simplifier line to:::dx->dy->if->return->delegate->lineTo
+DRenderer#quadBreakIntoLinesAndAdd(double, double, DCurve, double, double)::: renderer quad break into lines and add:::count->maxDD->Math->abs->Math->abs->_DEC_BND->while->if->add->nL->if->icount->icount2->ddx->ddy->dx->dy->for->x1->y1->addLine->if->add
+DRenderer#curveBreakIntoLinesAndAdd(double, double, DCurve, double, double)::: renderer curve break into lines and add:::count->icount->icount2->icount3->dddx->dddy->ddx->ddy->dx->dy->nL->_DEC_BND->_INC_BND->_SCALE_DY->for->x1->y1->addLine->if->add
+DRenderer#addLine(double, double, double, double)::: renderer add line:::if->start->if->add->or->if->tmp->firstCrossing->FloatMath->FloatMath->ceil_int->max->lastCrossing->FloatMath->FloatMath->ceil_int->min->if->if->stop->if->add->return->if->if->slope->if->if->if->else->if->if->_SIZEOF_EDGE_BYTES->_edges->edgePtr->if->edgeNewSize->ArrayCacheConst->getNewLargeSize->if->add->_edges->resize->_unsafe->SIZE_INT->addr->x1_intercept->x1_fixed_biased->_unsafe->putInt->_unsafe->putInt->slope_fixed->_unsafe->putInt->_unsafe->putInt->_edgeBuckets->_edgeBucketCounts->_boundsMinY->bucketIdx->_unsafe->putInt->_unsafe->putInt->if->stop
+DRenderer#init(int, int, int, int, int)::: renderer init:::if->MarlinUtils->logInfo->edgeBucketsLength->if->if->add->add->edgeBuckets_ref->getArray->edgeBucketCounts_ref->getArray->return
 DRenderer#dispose():::Disposes this renderer and recycle it clean up before reusing this instance:::if->add->add->add->add->crossings_ref->putArray->aux_crossings_ref->putArray->edgePtrs_ref->putArray->aux_edgePtrs_ref->putArray->alphaLine_ref->putArray->blkFlags_ref->putArray->if->if->edgeBuckets_ref->putArray->edgeBucketCounts_ref->putArray->else->edgeBuckets_ref->putArray->edgeBucketCounts_ref->putArray->if->edges->resize->if->edges->fill->if->stop->DMarlinRenderingEngine->returnRendererContext
+DRenderer#tosubpixx(double)::: renderer tosubpixx:::return
+DRenderer#tosubpixy(double)::: renderer tosubpixy:::return
+DRenderer#moveTo(double, double)::: renderer move to:::closePath->sx->tosubpixx->sy->tosubpixy
+DRenderer#lineTo(double, double)::: renderer line to:::x1->tosubpixx->y1->tosubpixy->addLine
+DRenderer#curveTo(double, double, double, double, double, double)::: renderer curve to:::xe->tosubpixx->ye->tosubpixy->curve->tosubpixx->tosubpixy->tosubpixx->tosubpixy->set->curveBreakIntoLinesAndAdd
+DRenderer#quadTo(double, double, double, double)::: renderer quad to:::xe->tosubpixx->ye->tosubpixy->curve->tosubpixx->tosubpixy->set->quadBreakIntoLinesAndAdd
+DRenderer#closePath()::: renderer close path:::if->addLine
+DRenderer#pathDone()::: renderer path done:::closePath
+DRenderer#getNativeConsumer()::: renderer get native consumer:::throw->new->InternalError
+DRenderer#_endRendering(int, int)::: renderer _end rendering:::if->return->bboxx0->bboxx1->windingRuleEvenOdd->_alpha->_cache->_edges->_edgeBuckets->_edgeBucketCounts->_crossings->_edgePtrs->_aux_crossings->_aux_edgePtrs->_OFF_ERROR->_OFF_BUMP_X->_OFF_BUMP_ERR->_OFF_NEXT->_OFF_YMAX->_ALL_BUT_LSB->_ERR_STEP_MAX->_unsafe->addr0->addr->_SUBPIXEL_LG_POSITIONS_X->_SUBPIXEL_LG_POSITIONS_Y->_SUBPIXEL_MASK_X->_SUBPIXEL_MASK_Y->_SUBPIXEL_POSITIONS_X->_MIN_VALUE->_MAX_VALUE->minX->maxX->y->bucket->numCrossings->edgePtrsLen->crossingsLen->_arrayMaxUsed->ptrLen->newCount->ptrEnd->bucketcount->i->j->ecur->cross->lastCross->x0->x1->tmp->sum->prev->curx->curxo->crorientation->err->pix_x->pix_xmaxm1->pix_xmax->low->high->mid->prevNumCrossings->useBinarySearch->_blkFlags->_BLK_SIZE_LG->_BLK_SIZE->_enableBlkFlagsHeuristics->useBlkFlags->stroking->lastY->for->FloatMath->max->FloatMath->min->if->copyAARow->else->if->_cache->clearAARow->if
+DRenderer#endRendering()::: renderer end rendering:::if->start->if->return->spminX->FloatMath->FloatMath->ceil_int->max->spmaxX->FloatMath->FloatMath->ceil_int->min->spminY->spmaxY->if->MarlinUtils->logInfo->MarlinUtils->logInfo->if->return->pminX->pmaxX->pminY->pmaxY->init->if->if->blkLen->if->blkFlags_ref->getArray->if->MarlinUtils->logInfo->MarlinUtils->logInfo->width->if->if->add->alphaLine_ref->getArray->endRendering->return
+DRenderer#endRendering(int)::: renderer end rendering:::if->start->spminY->fixed_spminY->FloatMath->max->if->spmaxY->FloatMath->min->cache->resetTileLine->_endRendering->if->stop
+DRenderer#copyAARow(int[], int, int, int, boolean)::: renderer copy row:::if->start->if->if->add->cache->copyAARowRLE_WithBlockFlags->else->if->add->cache->copyAARowNoRLE->if->stop
 DRendererContext#createContext():::Create a new renderer context:::return->Integer->CTX_COUNT->getAndIncrement->toString->new->DRendererContext
 DRendererContext#dispose():::Disposes this renderer context: clean up before reusing this context:::if->if->if->dispose->dispose->dispose->dispose
+DRendererContext#getPath2D()::: renderer context get path2 d:::p2d->refPath2D->get->if->new->Path2D.Double->new->WeakReference<Path2D.Double>->p2d->reset->return
+DRendererContext#stats()::: renderer context stats:::return
+DRendererContext#newOffHeapArray(long)::: renderer context new off heap array:::if->return->new->OffHeapArray
+DRendererContext#newCleanIntArrayRef(int)::: renderer context new clean int array ref:::return->cleanIntCache->createRef
+DRendererContext#newDirtyIntArrayRef(int)::: renderer context new dirty int array ref:::return->dirtyIntCache->createRef
+DRendererContext#newDirtyDoubleArrayRef(int)::: renderer context new dirty double array ref:::return->dirtyDoubleCache->createRef
+DRendererContext#newDirtyByteArrayRef(int)::: renderer context new dirty byte array ref:::return->dirtyByteCache->createRef
+DRendererContext.PathConsumer2DAdapter#init(sun.awt.geom.PathConsumer2D)::: path consumer2 adapter init:::return
+DRendererContext.PathConsumer2DAdapter#moveTo(double, double)::: path consumer2 adapter move to:::out->moveTo
+DRendererContext.PathConsumer2DAdapter#lineTo(double, double)::: path consumer2 adapter line to:::out->lineTo
+DRendererContext.PathConsumer2DAdapter#closePath()::: path consumer2 adapter close path:::out->closePath
+DRendererContext.PathConsumer2DAdapter#pathDone()::: path consumer2 adapter path done:::out->pathDone
+DRendererContext.PathConsumer2DAdapter#curveTo(double, double, double, double, double, double)::: path consumer2 adapter curve to:::out->curveTo
+DRendererContext.PathConsumer2DAdapter#quadTo(double, double, double, double)::: path consumer2 adapter quad to:::out->quadTo
+DRendererContext.PathConsumer2DAdapter#getNativeConsumer()::: path consumer2 adapter get native consumer:::throw->new->InternalError
 DStroker#init(DPathConsumer2D, double, int, int, double, boolean):::Inits the DStroker.:::limit->if->margin->if->if->_clipRect->if->MarlinUtils->Arrays->toString->logInfo->if->curveSplitter->init->else->else->return
+DStroker#disableClipping()::: stroker disable clipping:::
 DStroker#dispose():::Disposes this stroker: clean up before reusing this instance:::reverse->dispose->if->Arrays->fill->Arrays->fill->Arrays->fill->Arrays->fill->Arrays->fill->Arrays->fill
+DStroker#computeOffset(double, double, double, double[])::: stroker compute offset:::len->if->else->Math->sqrt
+DStroker#isCW(double, double, double, double)::: stroker is w:::return
+DStroker#mayDrawRoundJoin(double, double, double, double, double, double, boolean)::: stroker may draw round join:::if->return->domx->domy->lenSq->if->return->if->drawRoundJoin
+DStroker#drawRoundJoin(double, double, double, double, double, double, boolean)::: stroker draw round join:::cosext->if->drawBezApproxForArc->else->nx->ny->nlen->Math->sqrt->scale->mmx->mmy->if->drawBezApproxForArc->drawBezApproxForArc
+DStroker#drawBezApproxForArc(double, double, double, double, double, double, boolean)::: stroker draw bez approx for arc:::cosext2->if->return->cv->Math->sqrt->Math->sqrt->if->x1->y1->x2->y2->x4->y4->x3->y3->emitCurveTo
+DStroker#drawRoundCap(double, double, double, double)::: stroker draw round cap:::Cmx->Cmy->emitCurveTo->emitCurveTo
+DStroker#computeMiter(double, double, double, double, double, double, double, double, double[])::: stroker compute miter:::x10->y10->x10p->y10p->den->t
+DStroker#safeComputeMiter(double, double, double, double, double, double, double, double, double[])::: stroker safe compute miter:::x10->y10->x10p->y10p->den->if->else->t
+DStroker#drawMiter(double, double, double, double, double, double, double, double, double, double, boolean)::: stroker draw miter:::if->return->if->computeMiter->miterX->miterY->lenSq->if->emitLineTo
+DStroker#moveTo(double, double)::: stroker move to:::_moveTo->if->outcode->DHelpers->outcode
+DStroker#_moveTo(double, double, int)::: stroker _move to:::if->else->if->finish
+DStroker#lineTo(double, double)::: stroker line to:::lineTo
+DStroker#lineTo(double, double, boolean)::: stroker line to:::outcode0->if->outcode1->DHelpers->outcode->orCode->if->sideCode->if->if->ret->curveSplitter->splitLine->if->return->else->_moveTo->return->dx->dy->if->computeOffset->mx->my->drawJoin->emitLineTo->emitLineTo->emitLineToRev->emitLineToRev
+DStroker#closePath()::: stroker close path:::if->if->return->emitMoveTo->finish->return->if->if->lineTo->drawJoin->emitLineTo->if->emitLineTo->else->emitMoveTo->emitReverse->if->else->emitClose
+DStroker#emitReverse()::: stroker emit reverse:::reverse->popAll
+DStroker#pathDone()::: stroker path done:::if->finish->out->pathDone->dispose
+DStroker#finish(int)::: stroker finish:::if->emitReverse->else->if->if->drawRoundCap->else->if->emitLineTo->emitLineTo->emitReverse->if->if->if->drawRoundCap->else->if->emitLineTo->emitLineTo->emitClose
+DStroker#emitMoveTo(double, double)::: stroker emit move to:::out->moveTo
+DStroker#emitLineTo(double, double)::: stroker emit line to:::out->lineTo
+DStroker#emitLineToRev(double, double)::: stroker emit line to rev:::reverse->pushLine
+DStroker#emitLineTo(double, double, boolean)::: stroker emit line to:::if->emitLineToRev->else->emitLineTo
+DStroker#emitQuadTo(double, double, double, double)::: stroker emit quad to:::out->quadTo
+DStroker#emitQuadToRev(double, double, double, double)::: stroker emit quad to rev:::reverse->pushQuad
+DStroker#emitCurveTo(double, double, double, double, double, double)::: stroker emit curve to:::out->curveTo
+DStroker#emitCurveToRev(double, double, double, double, double, double)::: stroker emit curve to rev:::reverse->pushCubic
+DStroker#emitCurveTo(double, double, double, double, double, double, double, double, boolean)::: stroker emit curve to:::if->reverse->pushCubic->else->out->curveTo
+DStroker#emitClose()::: stroker emit close:::out->closePath
+DStroker#drawJoin(double, double, double, double, double, double, double, double, double, double, int)::: stroker draw join:::if->emitMoveTo->if->else->cw->isCW->if->if->drawMiter->else->if->mayDrawRoundJoin->emitLineTo
+DStroker#within(double, double, double, double, double)::: stroker within:::return->DHelpers->within->DHelpers->within
+DStroker#getLineOffsets(double, double, double, double, double[], double[])::: stroker get line offsets:::computeOffset->mx->my
+DStroker#computeOffsetCubic(double[], int, double[], double[])::: stroker compute offset cubic:::x1->y1->x2->y2->x3->y3->x4->y4->dx4->dy4->dx1->dy1->p1eqp2->Math->ulp->within->p3eqp4->Math->ulp->within->if->getLineOffsets->return->else->if->else->if->dotsq->l1sq->l4sq->if->DHelpers->Math->ulp->within->getLineOffsets->return->x->y->dxm->dym->computeOffset->computeOffset->computeOffset->x1p->y1p->xi->yi->x4p->y4p->invdet43->two_pi_m_p1_m_p4x->two_pi_m_p1_m_p4y->c1->c2->x2p->y2p->x3p->y3p->return
+DStroker#computeOffsetQuad(double[], int, double[], double[])::: stroker compute offset quad:::x1->y1->x2->y2->x3->y3->dx3->dy3->dx1->dy1->p1eqp2->Math->ulp->within->p2eqp3->Math->ulp->within->if->getLineOffsets->return->dotsq->l1sq->l3sq->if->DHelpers->Math->ulp->within->getLineOffsets->return->computeOffset->computeOffset->x1p->y1p->x3p->y3p->safeComputeMiter->safeComputeMiter->return
+DStroker#curveTo(double, double, double, double, double, double)::: stroker curve to:::outcode0->if->outcode1->DHelpers->outcode->outcode2->DHelpers->outcode->outcode3->DHelpers->outcode->orCode->if->sideCode->if->if->ret->curveSplitter->splitCurve->if->return->else->_moveTo->return->_curveTo
+DStroker#_curveTo(double, double, double, double, double, double, int)::: stroker _curve to:::dxs->dys->dxf->dyf->if->if->if->if->if->if->lineTo->return->if->Math->abs->Math->abs->len->Math->sqrt->if->Math->abs->Math->abs->len->Math->sqrt->computeOffset->drawJoin->nSplits->mid->l->if->monotonizer->curve->else->r->kind->for->i->off
+DStroker#quadTo(double, double, double, double)::: stroker quad to:::outcode0->if->outcode1->DHelpers->outcode->outcode2->DHelpers->outcode->orCode->if->sideCode->if->if->ret->curveSplitter->splitQuad->if->return->else->_moveTo->return->_quadTo
+DStroker#_quadTo(double, double, double, double, int)::: stroker _quad to:::dxs->dys->dxf->dyf->if->if->if->lineTo->return->if->Math->abs->Math->abs->len->Math->sqrt->if->Math->abs->Math->abs->len->Math->sqrt->computeOffset->drawJoin->nSplits->mid->l->if->monotonizer->quad->else->r->kind->for->i->off
+DStroker#getNativeConsumer()::: stroker get native consumer:::throw->new->InternalError
+DTransformingPathConsumer2D#wrapPath2D(Path2D.Double)::: transforming path consumer2 d wrap path2 d:::return->wp_Path2DWrapper->init
+DTransformingPathConsumer2D#traceInput(DPathConsumer2D)::: transforming path consumer2 d trace input:::return->tracerInput->init
+DTransformingPathConsumer2D#traceClosedPathDetector(DPathConsumer2D)::: transforming path consumer2 d trace closed path detector:::return->tracerCPDetector->init
+DTransformingPathConsumer2D#traceFiller(DPathConsumer2D)::: transforming path consumer2 d trace filler:::return->tracerFiller->init
+DTransformingPathConsumer2D#traceStroker(DPathConsumer2D)::: transforming path consumer2 d trace stroker:::return->tracerStroker->init
+DTransformingPathConsumer2D#traceDasher(DPathConsumer2D)::: transforming path consumer2 d trace dasher:::return->tracerDasher->init
+DTransformingPathConsumer2D#detectClosedPath(DPathConsumer2D)::: transforming path consumer2 d detect closed path:::return->cpDetector->init
+DTransformingPathConsumer2D#pathClipper(DPathConsumer2D)::: transforming path consumer2 d path clipper:::return->pathClipper->init
+DTransformingPathConsumer2D#deltaTransformConsumer(DPathConsumer2D, AffineTransform)::: transforming path consumer2 d delta transform consumer:::if->return->mxx->at->getScaleX->mxy->at->getShearX->myx->at->getShearY->myy->at->getScaleY->if->if->return->else->if->adjustClipScale->return->dt_DeltaScaleFilter->init->else->if->adjustClipInverseDelta->return->dt_DeltaTransformFilter->init
+DTransformingPathConsumer2D#adjustClipScale(double[], double, double)::: transforming path consumer2 d adjust clip scale:::scaleY->if->tmp->scaleX->if->tmp->if->MarlinUtils->Arrays->toString->logInfo->return->Math->abs->Math->abs
+DTransformingPathConsumer2D#adjustClipInverseDelta(double[], double, double, double, double)::: transforming path consumer2 d adjust clip inverse delta:::det->imxx->imxy->imyx->imyy->xmin->xmax->ymin->ymax->x->y->if->else->if->if->else->if->if->else->if->if->else->if->if->else->if->if->else->if->if->MarlinUtils->Arrays->toString->logInfo->scaleX->Math->sqrt->scaleY->Math->sqrt->return
+DTransformingPathConsumer2D#inverseDeltaTransformConsumer(DPathConsumer2D, AffineTransform)::: transforming path consumer2 d inverse delta transform consumer:::if->return->mxx->at->getScaleX->mxy->at->getShearX->myx->at->getShearY->myy->at->getScaleY->if->if->return->else->return->iv_DeltaScaleFilter->init->else->det->return->iv_DeltaTransformFilter->init
+DTransformingPathConsumer2D.DeltaScaleFilter#init(DPathConsumer2D, double, double)::: delta scale filter init:::return
+DTransformingPathConsumer2D.DeltaScaleFilter#moveTo(double, double)::: delta scale filter move to:::out->moveTo
+DTransformingPathConsumer2D.DeltaScaleFilter#lineTo(double, double)::: delta scale filter line to:::out->lineTo
+DTransformingPathConsumer2D.DeltaScaleFilter#quadTo(double, double, double, double)::: delta scale filter quad to:::out->quadTo
+DTransformingPathConsumer2D.DeltaScaleFilter#curveTo(double, double, double, double, double, double)::: delta scale filter curve to:::out->curveTo
+DTransformingPathConsumer2D.DeltaScaleFilter#closePath()::: delta scale filter close path:::out->closePath
+DTransformingPathConsumer2D.DeltaScaleFilter#pathDone()::: delta scale filter path done:::out->pathDone
+DTransformingPathConsumer2D.DeltaScaleFilter#getNativeConsumer()::: delta scale filter get native consumer:::return
+DTransformingPathConsumer2D.DeltaTransformFilter#init(DPathConsumer2D, double, double, double, double)::: delta transform filter init:::return
+DTransformingPathConsumer2D.DeltaTransformFilter#moveTo(double, double)::: delta transform filter move to:::out->moveTo
+DTransformingPathConsumer2D.DeltaTransformFilter#lineTo(double, double)::: delta transform filter line to:::out->lineTo
+DTransformingPathConsumer2D.DeltaTransformFilter#quadTo(double, double, double, double)::: delta transform filter quad to:::out->quadTo
+DTransformingPathConsumer2D.DeltaTransformFilter#curveTo(double, double, double, double, double, double)::: delta transform filter curve to:::out->curveTo
+DTransformingPathConsumer2D.DeltaTransformFilter#closePath()::: delta transform filter close path:::out->closePath
+DTransformingPathConsumer2D.DeltaTransformFilter#pathDone()::: delta transform filter path done:::out->pathDone
+DTransformingPathConsumer2D.DeltaTransformFilter#getNativeConsumer()::: delta transform filter get native consumer:::return
+DTransformingPathConsumer2D.Path2DWrapper#init(Path2D.Double)::: path2 wrapper init:::return
+DTransformingPathConsumer2D.Path2DWrapper#moveTo(double, double)::: path2 wrapper move to:::p2d->moveTo
+DTransformingPathConsumer2D.Path2DWrapper#lineTo(double, double)::: path2 wrapper line to:::p2d->lineTo
+DTransformingPathConsumer2D.Path2DWrapper#closePath()::: path2 wrapper close path:::p2d->closePath
+DTransformingPathConsumer2D.Path2DWrapper#pathDone()::: path2 wrapper path done:::
+DTransformingPathConsumer2D.Path2DWrapper#curveTo(double, double, double, double, double, double)::: path2 wrapper curve to:::p2d->curveTo
+DTransformingPathConsumer2D.Path2DWrapper#quadTo(double, double, double, double)::: path2 wrapper quad to:::p2d->quadTo
+DTransformingPathConsumer2D.Path2DWrapper#getNativeConsumer()::: path2 wrapper get native consumer:::throw->new->InternalError
+DTransformingPathConsumer2D.ClosedPathDetector#init(DPathConsumer2D)::: closed path detector init:::return
 DTransformingPathConsumer2D.ClosedPathDetector#dispose():::Disposes this instance: clean up before reusing this instance:::stack->dispose
+DTransformingPathConsumer2D.ClosedPathDetector#pathDone()::: closed path detector path done:::finish->out->pathDone->dispose
+DTransformingPathConsumer2D.ClosedPathDetector#closePath()::: closed path detector close path:::finish->out->closePath
+DTransformingPathConsumer2D.ClosedPathDetector#moveTo(double, double)::: closed path detector move to:::finish->out->moveTo
+DTransformingPathConsumer2D.ClosedPathDetector#finish(boolean)::: closed path detector finish:::stack->pullAll
+DTransformingPathConsumer2D.ClosedPathDetector#lineTo(double, double)::: closed path detector line to:::stack->pushLine
+DTransformingPathConsumer2D.ClosedPathDetector#curveTo(double, double, double, double, double, double)::: closed path detector curve to:::stack->pushCubic
+DTransformingPathConsumer2D.ClosedPathDetector#quadTo(double, double, double, double)::: closed path detector quad to:::stack->pushQuad
+DTransformingPathConsumer2D.ClosedPathDetector#getNativeConsumer()::: closed path detector get native consumer:::throw->new->InternalError
+DTransformingPathConsumer2D.PathClipFilter#init(DPathConsumer2D)::: path clip filter init:::if->curveSplitter->init->return
 DTransformingPathConsumer2D.PathClipFilter#dispose():::Disposes this instance: clean up before reusing this instance:::stack->dispose
+DTransformingPathConsumer2D.PathClipFilter#finishPath()::: path clip filter finish path:::if->if->finish->else->stack->reset
+DTransformingPathConsumer2D.PathClipFilter#finish()::: path clip filter finish:::if->stack->isEmpty->if->_corners->_clipRect->stack->pullAll->out->lineTo
+DTransformingPathConsumer2D.PathClipFilter#pathDone()::: path clip filter path done:::finishPath->out->pathDone->dispose
+DTransformingPathConsumer2D.PathClipFilter#closePath()::: path clip filter close path:::finishPath->out->closePath->DHelpers->outcode
+DTransformingPathConsumer2D.PathClipFilter#moveTo(double, double)::: path clip filter move to:::finishPath->out->moveTo->DHelpers->outcode
+DTransformingPathConsumer2D.PathClipFilter#lineTo(double, double)::: path clip filter line to:::outcode0->outcode1->DHelpers->outcode->orCode->if->sideCode->if->if->ret->if->curveSplitter->splitLine->else->curveSplitter->splitLine->if->return->else->clip->return->if->finish->out->lineTo
+DTransformingPathConsumer2D.PathClipFilter#clip(int, int, int)::: path clip filter clip:::if->mergeCode->tbCode->lrCode->off->switch->stack->push->return->stack->push->return->if->stack->push->stack->push->else->stack->push->stack->push
+DTransformingPathConsumer2D.PathClipFilter#curveTo(double, double, double, double, double, double)::: path clip filter curve to:::outcode0->outcode1->DHelpers->outcode->outcode2->DHelpers->outcode->outcode3->DHelpers->outcode->orCode->if->sideCode->if->if->ret->if->curveSplitter->splitCurve->else->curveSplitter->splitCurve->if->return->else->clip->return->if->finish->out->curveTo
+DTransformingPathConsumer2D.PathClipFilter#quadTo(double, double, double, double)::: path clip filter quad to:::outcode0->outcode1->DHelpers->outcode->outcode2->DHelpers->outcode->orCode->if->sideCode->if->if->ret->if->curveSplitter->splitQuad->else->curveSplitter->splitQuad->if->return->else->clip->return->if->finish->out->quadTo
+DTransformingPathConsumer2D.PathClipFilter#getNativeConsumer()::: path clip filter get native consumer:::throw->new->InternalError
+DTransformingPathConsumer2D.CurveClipSplitter#init()::: curve clip splitter init:::if->if->MarlinUtils->logInfo
+DTransformingPathConsumer2D.CurveClipSplitter#initPaddedClip()::: curve clip splitter init padded clip:::_clipRect->_clipRectPad->if->MarlinUtils->logInfo
+DTransformingPathConsumer2D.CurveClipSplitter#splitLine(double, double, double, double, int, DPathConsumer2D)::: curve clip splitter split line:::if->MarlinUtils->logInfo->if->DHelpers->fastLineLen->return->mid->return->subdivideAtIntersections
+DTransformingPathConsumer2D.CurveClipSplitter#splitQuad(double, double, double, double, double, double, int, DPathConsumer2D)::: curve clip splitter split quad:::if->MarlinUtils->logInfo->if->DHelpers->fastQuadLen->return->mid->return->subdivideAtIntersections
+DTransformingPathConsumer2D.CurveClipSplitter#splitCurve(double, double, double, double, double, double, double, double, int, DPathConsumer2D)::: curve clip splitter split curve:::if->MarlinUtils->logInfo->if->DHelpers->fastCurvelen->return->mid->return->subdivideAtIntersections
+DTransformingPathConsumer2D.CurveClipSplitter#subdivideAtIntersections(int, int, DPathConsumer2D)::: curve clip splitter subdivide at intersections:::mid->subTs->if->initPaddedClip->nSplits->DHelpers->findClipPoints->if->MarlinUtils->logInfo->MarlinUtils->Arrays->Arrays->copyOfRange->toString->logInfo->if->return->prevT->for->i->off->for->i->off->return
+DTransformingPathConsumer2D.CurveClipSplitter#emitCurrent(int, double[], int, DPathConsumer2D)::: curve clip splitter emit current:::if->out->curveTo->else->if->out->lineTo->else->out->quadTo
+DTransformingPathConsumer2D.CurveBasicMonotonizer#init(double)::: curve basic monotonizer init:::
+DTransformingPathConsumer2D.CurveBasicMonotonizer#curve(double, double, double, double, double, double, double, double)::: curve basic monotonizer curve:::mid->subTs->nSplits->DHelpers->findSubdivPoints->prevT->for->i->off->return
+DTransformingPathConsumer2D.CurveBasicMonotonizer#quad(double, double, double, double, double, double)::: curve basic monotonizer quad:::mid->subTs->nSplits->DHelpers->findSubdivPoints->prevt->for->i->off->return
+DTransformingPathConsumer2D.PathTracer#init(DPathConsumer2D)::: path tracer init:::return
+DTransformingPathConsumer2D.PathTracer#moveTo(double, double)::: path tracer move to:::log->out->moveTo
+DTransformingPathConsumer2D.PathTracer#lineTo(double, double)::: path tracer line to:::log->out->lineTo
+DTransformingPathConsumer2D.PathTracer#curveTo(double, double, double, double, double, double)::: path tracer curve to:::log->out->curveTo
+DTransformingPathConsumer2D.PathTracer#quadTo(double, double, double, double)::: path tracer quad to:::log->out->quadTo
+DTransformingPathConsumer2D.PathTracer#closePath()::: path tracer close path:::log->out->closePath
+DTransformingPathConsumer2D.PathTracer#pathDone()::: path tracer path done:::log->out->pathDone
+DTransformingPathConsumer2D.PathTracer#log(String)::: path tracer log:::MarlinUtils->logInfo
+DTransformingPathConsumer2D.PathTracer#getNativeConsumer()::: path tracer get native consumer:::throw->new->InternalError
+FloatArrayCache#getCacheBucket(int)::: float array cache get cache bucket:::bucket->ArrayCacheConst->getBucket->return->getBuckets
+FloatArrayCache#getBuckets()::: float array cache get buckets:::buckets->refBuckets->get->if->new->BucketArr->for->i->new->WeakReference<Bucket[]>->return
+FloatArrayCache#createRef(int)::: float array cache create ref:::return->new->Reference
+FloatArrayCache.Reference#getArray(int)::: reference get array:::if->return->cache->getCacheBucket->getArray->if->if->getLogPrefix->logInfo->return->createArray
+FloatArrayCache.Reference#widenArray(float[], int, int)::: reference widen array:::length->if->return->if->res->ArrayCacheConst->getNewSize->getArray->System->arraycopy->putArray->if->getLogPrefix->logInfo->return
+FloatArrayCache.Reference#putArray(float[])::: reference put array:::return->putArray
+FloatArrayCache.Reference#putArray(float[], int, int)::: reference put array:::if->if->fill->if->cache->getCacheBucket->putArray->return
+FloatArrayCache.Bucket#getArray()::: bucket get array:::if->if->array->return->if->return->createArray
+FloatArrayCache.Bucket#putArray(float[])::: bucket put array:::if->getLogPrefix->logInfo->return->if->if->if->stats->updateMaxSize->else->if->getLogPrefix->logInfo
+FloatArrayCache#createArray(int)::: float array cache create array:::return->new->floatArr
+FloatArrayCache#fill(float[], int, int, float)::: float array cache fill:::Arrays->fill->if->check
+FloatArrayCache#check(float[], int, int, float)::: float array cache check:::if->for->i
+FloatArrayCache#getLogPrefix(boolean)::: float array cache get log prefix:::return
+FloatMath#max(int, int)::: float math max:::return
+FloatMath#min(int, int)::: float math min:::return
 FloatMath#ceil_f(float):::Returns the smallest (closest to negative infinity) float value that is greater than or equal to the argument and is equal to a mathematical integer:::doppel->Float->floatToRawIntBits->exponent->if->return->if->return->intpart->if->return->return->Float->intBitsToFloat
 FloatMath#floor_f(float):::Returns the largest (closest to positive infinity) float value that is less than or equal to the argument and is equal to a mathematical integer:::doppel->Float->floatToRawIntBits->exponent->if->return->if->return->intpart->if->return->return->Float->intBitsToFloat
 FloatMath#ceil_int(float):::Faster alternative to ceil(float) optimized for the integer domain and supporting NaN and +/-Infinity.:::intpart->if->Float->isNaN->return->return
 FloatMath#ceil_int(double):::Faster alternative to ceil(double) optimized for the integer domain and supporting NaN and +/-Infinity.:::intpart->if->Double->isNaN->return->return
 FloatMath#floor_int(float):::Faster alternative to floor(float) optimized for the integer domain and supporting NaN and +/-Infinity.:::intpart->if->Float->isNaN->return->return
 FloatMath#floor_int(double):::Faster alternative to floor(double) optimized for the integer domain and supporting NaN and +/-Infinity.:::intpart->if->Double->isNaN->return->return
+Helpers#within(float, float, float)::: helpers within:::d->return
+Helpers#within(double, double, double)::: helpers within:::d->return
+Helpers#evalCubic(float, float, float, float, float)::: helpers eval cubic:::return
+Helpers#evalQuad(float, float, float, float)::: helpers eval quad:::return
+Helpers#quadraticRoots(float, float, float, float[], int)::: helpers quadratic roots:::ret->if->dis->if->sqrtDis->Math->sqrt->if->else->else->if->else->if->return
+Helpers#cubicRootsInAB(float, float, float, float, float[], int, float, float)::: helpers cubic roots in b:::if->num->quadraticRoots->return->filterOutNotInAB->a->b->c->sub->sq_A->p->q->cb_p->D->num->if->phi->Math->Math->sqrt->acos->t->Math->sqrt->Math->cos->Math->cos->Math->cos->else->sqrt_D->Math->sqrt->u->Math->cbrt->v->Math->cbrt->if->within->return->filterOutNotInAB
+Helpers#filterOutNotInAB(float[], int, int, float, float)::: helpers filter out not in b:::ret->for->i->end->return
+Helpers#fastLineLen(float, float, float, float)::: helpers fast line len:::dx->dy->return->Math->abs->Math->abs
+Helpers#linelen(float, float, float, float)::: helpers linelen:::dx->dy->return->Math->sqrt
+Helpers#fastQuadLen(float, float, float, float, float, float)::: helpers fast quad len:::dx1->dx2->dy1->dy2->return->Math->abs->Math->abs->Math->abs->Math->abs
+Helpers#quadlen(float, float, float, float, float, float)::: helpers quadlen:::return->linelen->linelen->linelen
+Helpers#fastCurvelen(float, float, float, float, float, float, float, float)::: helpers fast curvelen:::dx1->dx2->dx3->dy1->dy2->dy3->return->Math->abs->Math->abs->Math->abs->Math->abs->Math->abs->Math->abs
+Helpers#curvelen(float, float, float, float, float, float, float, float)::: helpers curvelen:::return->linelen->linelen->linelen->linelen
+Helpers#findSubdivPoints(Curve, float[], float[], int, float)::: helpers find subdiv points:::x12->y12->if->hypot->Math->sqrt->cos->sin->x1->y1->x2->y2->x3->y3->switch->x4->y4->c->set->break->c->set->break->else->c->set->ret->c->dxRoots->c->dyRoots->if->c->infPoints->c->rootsOfROCMinusW->filterOutNotInAB->isort->return
+Helpers#findClipPoints(Curve, float[], float[], int, int, float[])::: helpers find clip points:::curve->set->ret->if->curve->xPoints->if->curve->xPoints->if->curve->yPoints->if->curve->yPoints->isort->return
+Helpers#subdivide(float[], float[], float[], int)::: helpers subdivide:::switch->subdivideCubic->return->subdivideQuad->return->throw->new->InternalError
+Helpers#isort(float[], int)::: helpers isort:::for->i->j
 Helpers#subdivideCubic(float[], float[], float[]):::Subdivides the cubic curve specified by the coordinates stored in the src array at indices srcoff through (srcoff&nbsp;+&nbsp;7) and stores the resulting two subdivided curves into the two result arrays at the corresponding indices:::x1->y1->cx1->cy1->cx2->cy2->x2->y2->cx->cy
+Helpers#subdivideCubicAt(float, float[], int, float[], int, int)::: helpers subdivide cubic at:::x1->y1->cx1->cy1->cx2->cy2->x2->y2->cx->cy
+Helpers#subdivideQuad(float[], float[], float[])::: helpers subdivide quad:::x1->y1->cx->cy->x2->y2
+Helpers#subdivideQuadAt(float, float[], int, float[], int, int)::: helpers subdivide quad at:::x1->y1->cx->cy->x2->y2
+Helpers#subdivideLineAt(float, float[], int, float[], int, int)::: helpers subdivide line at:::x1->y1->x2->y2
+Helpers#subdivideAt(float, float[], int, float[], int, int)::: helpers subdivide at:::if->subdivideCubicAt->else->if->subdivideLineAt->else->subdivideQuadAt
+Helpers#outcode(float, float, float[])::: helpers outcode:::code->if->else->if->else->if->else->if->return
 Helpers.PolyStack#dispose():::Disposes this PolyStack: clean up before reusing this instance:::if->stat_polystack_types->add->stat_polystack_curves->add->hist_polystack_curves->add->curves_ref->putArray->curveTypes_ref->putArray
+Helpers.PolyStack#ensureSpace(int)::: poly stack ensure space:::if->if->stat_array_polystack_curves->add->curves_ref->widenArray->if->if->stat_array_polystack_curveTypes->add->curveTypes_ref->widenArray
+Helpers.PolyStack#pushCubic(float, float, float, float, float, float)::: poly stack push cubic:::ensureSpace->_curves->e
+Helpers.PolyStack#pushQuad(float, float, float, float)::: poly stack push quad:::ensureSpace->_curves->e
+Helpers.PolyStack#pushLine(float, float)::: poly stack push line:::ensureSpace
+Helpers.PolyStack#pullAll(PathConsumer2D)::: poly stack pull all:::nc->if->return->if->if->if->_curveTypes->_curves->e->for->i
+Helpers.PolyStack#popAll(PathConsumer2D)::: poly stack pop all:::nc->if->return->if->if->if->_curveTypes->_curves->e->while->switch->io->lineTo->continue->io->curveTo->continue->io->quadTo->continue
+Helpers.PolyStack#toString()::: poly stack to string:::ret->nc->last->len->while->switch->break->break->break->Arrays->Arrays->copyOfRange->toString->return
 Helpers.IndexStack#dispose():::Disposes this PolyStack: clean up before reusing this instance:::if->stat_idxstack_indices->add->hist_idxstack_indices->add->indices_ref->putArray
+Helpers.IndexStack#isEmpty()::: index stack is empty:::return
+Helpers.IndexStack#reset()::: index stack reset:::
+Helpers.IndexStack#push(int)::: index stack push:::_values->nc->if->if->return->if->if->stat_array_idxstack_indices->add->indices_ref->widenArray->if->if
+Helpers.IndexStack#pullAll(float[], PathConsumer2D)::: index stack pull all:::nc->if->return->_values->for->i->j
+IntArrayCache#getCacheBucket(int)::: int array cache get cache bucket:::bucket->ArrayCacheConst->getBucket->return->getBuckets
+IntArrayCache#getBuckets()::: int array cache get buckets:::buckets->refBuckets->get->if->new->BucketArr->for->i->new->WeakReference<Bucket[]>->return
+IntArrayCache#createRef(int)::: int array cache create ref:::return->new->Reference
+IntArrayCache.Reference#getArray(int)::: reference get array:::if->return->cache->getCacheBucket->getArray->if->if->getLogPrefix->logInfo->return->createArray
+IntArrayCache.Reference#widenArray(int[], int, int)::: reference widen array:::length->if->return->if->res->ArrayCacheConst->getNewSize->getArray->System->arraycopy->putArray->if->getLogPrefix->logInfo->return
+IntArrayCache.Reference#putArray(int[])::: reference put array:::return->putArray
+IntArrayCache.Reference#putArray(int[], int, int)::: reference put array:::if->if->fill->if->cache->getCacheBucket->putArray->return
+IntArrayCache.Bucket#getArray()::: bucket get array:::if->if->array->return->if->return->createArray
+IntArrayCache.Bucket#putArray(int[])::: bucket put array:::if->getLogPrefix->logInfo->return->if->if->if->stats->updateMaxSize->else->if->getLogPrefix->logInfo
+IntArrayCache#createArray(int)::: int array cache create array:::return->new->intArr
+IntArrayCache#fill(int[], int, int, int)::: int array cache fill:::Arrays->fill->if->check
+IntArrayCache#check(int[], int, int, int)::: int array cache check:::if->for->i
+IntArrayCache#getLogPrefix(boolean)::: int array cache get log prefix:::return
+IRendererContext#stats()::: renderer context stats:::
+IRendererContext#newOffHeapArray(long)::: renderer context new off heap array:::
+IRendererContext#newCleanIntArrayRef(int)::: renderer context new clean int array ref:::
+MarlinCache#init(int, int, int, int)::: marlin cache init:::width->if->else->if->else->nxTiles->if->if->add->touchedTile_ref->getArray
 MarlinCache#dispose():::Disposes this cache: clean up before reusing this instance:::resetTileLine->if->touchedTile_ref->putArray->if->rowAAChunk->resize->if->rowAAChunk->fill
+MarlinCache#resetTileLine(int)::: marlin cache reset tile line:::if->add->if->if->add->if->else->IntArrayCache->fill->if->rowAAChunk->fill
+MarlinCache#clearAARow(int)::: marlin cache clear row:::row
 MarlinCache#copyAARowNoRLE(int[], int, int, int):::Copy the given alpha data into the rowAA cache:::px_bbox1->FloatMath->min->if->MarlinUtils->logInfo->row->pos->needSize->_rowAAChunk->if->expandRowAAChunk->if->add->_touchedTile->_TILE_SIZE_LG->from->to->_unsafe->SIZE_BYTE->addr_alpha->addr_off->for->x->val->tx->if->if->if->MarlinUtils->logInfo->IntArrayCache->fill
+MarlinCache#copyAARowRLE_WithBlockFlags(int[], int[], int, int, int)::: marlin cache copy row e_ with block flags:::_bboxX0->row->from->px_bbox1->FloatMath->min->to->if->MarlinUtils->logInfo->initialPos->startRLERow->needSize->_rowAAChunk->if->expandRowAAChunk->_unsafe->SIZE_INT->addr_alpha->addr_off->_touchedTile->_TILE_SIZE_LG->_BLK_SIZE_LG->blkW->blkE->val->cx0->runLen->_MAX_VALUE->last_t0->skip->for->t->blk_x0->blk_x1->cx->delta->if->if->MarlinUtils->logInfo->if->_unsafe->putInt->else->_unsafe->_unsafe->getByte->putInt->if->else->touchTile->if->add->len->if->add->add->tx->if->if->if->IntArrayCache->check->IntArrayCache->check
+MarlinCache#startRLERow(int, int, int)::: marlin cache start row:::return
+MarlinCache#expandRowAAChunk(long)::: marlin cache expand row chunk:::if->add->newSize->ArrayCacheConst->getNewLargeSize->rowAAChunk->resize
+MarlinCache#touchTile(int, int, int, int, int[])::: marlin cache touch tile:::_TILE_SIZE_LG->tx->if->return->tx1->if->nextTileXCoord->if->tileVal->for->if->txXCoord->nextTileXCoord->lastXCoord
+MarlinCache#alphaSumInTile(int)::: marlin cache alpha sum in tile:::return
+MarlinCache#toString()::: marlin cache to string:::return
+MarlinCache#buildAlphaMap(int)::: marlin cache build alpha map:::alMap->new->byteArr->halfmaxalpha->for->i->return
+MarlinProperties#isUseThreadLocal()::: marlin properties is use thread local:::return->getBoolean
 MarlinProperties#getInitialEdges():::Return the initial edge capacity used to define initial arrays (edges, polystack, crossings):::return->getInteger->align
 MarlinProperties#getInitialPixelWidth():::Return the initial pixel width used to define initial arrays (tile AA chunk, alpha line):::return->getInteger->align
 MarlinProperties#getInitialPixelHeight():::Return the initial pixel height used to define initial arrays (buckets):::return->getInteger->align
@@ -44,25 +471,236 @@ MarlinProperties#getSubPixel_Log2_Y():::Return the log(2) corresponding to subpi
 MarlinProperties#getTileSize_Log2():::Return the log(2) corresponding to the square tile size in pixels:::return->getInteger
 MarlinProperties#getTileWidth_Log2():::Return the log(2) corresponding to the tile width in pixels:::return->getInteger
 MarlinProperties#getBlockSize_Log2():::Return the log(2) corresponding to the block size in pixels:::return->getInteger
+MarlinProperties#isForceRLE()::: marlin properties is force e:::return->getBoolean
+MarlinProperties#isForceNoRLE()::: marlin properties is force no e:::return->getBoolean
+MarlinProperties#isUseTileFlags()::: marlin properties is use tile flags:::return->getBoolean
+MarlinProperties#isUseTileFlagsWithHeuristics()::: marlin properties is use tile flags with heuristics:::return->isUseTileFlags->getBoolean
+MarlinProperties#getRLEMinWidth()::: marlin properties get min width:::return->getInteger
+MarlinProperties#isUseSimplifier()::: marlin properties is use simplifier:::return->getBoolean
+MarlinProperties#isUsePathSimplifier()::: marlin properties is use path simplifier:::return->getBoolean
+MarlinProperties#getPathSimplifierPixelTolerance()::: marlin properties get path simplifier pixel tolerance:::return->getFloat
+MarlinProperties#isDoClip()::: marlin properties is do clip:::return->getBoolean
+MarlinProperties#isDoClipRuntimeFlag()::: marlin properties is do clip runtime flag:::return->getBoolean
+MarlinProperties#isDoClipAtRuntime()::: marlin properties is do clip at runtime:::return->getBoolean
+MarlinProperties#isDoClipSubdivider()::: marlin properties is do clip subdivider:::return->getBoolean
+MarlinProperties#getSubdividerMinLength()::: marlin properties get subdivider min length:::return->getFloat
+MarlinProperties#isDoStats()::: marlin properties is do stats:::return->getBoolean
+MarlinProperties#isDoMonitors()::: marlin properties is do monitors:::return->getBoolean
+MarlinProperties#isDoChecks()::: marlin properties is do checks:::return->getBoolean
+MarlinProperties#isLoggingEnabled()::: marlin properties is logging enabled:::return->getBoolean
+MarlinProperties#isUseLogger()::: marlin properties is use logger:::return->getBoolean
+MarlinProperties#isLogCreateContext()::: marlin properties is log create context:::return->getBoolean
+MarlinProperties#isLogUnsafeMalloc()::: marlin properties is log unsafe malloc:::return->getBoolean
+MarlinProperties#getCurveLengthError()::: marlin properties get curve length error:::return->getFloat
+MarlinProperties#getCubicDecD2()::: marlin properties get cubic dec d2:::return->getFloat
+MarlinProperties#getCubicIncD1()::: marlin properties get cubic inc d1:::return->getFloat
+MarlinProperties#getQuadDecD2()::: marlin properties get quad dec d2:::return->getFloat
+MarlinProperties#getBoolean(String, String)::: marlin properties get boolean:::return->Boolean->AccessController->new->GetPropertyAction->doPrivileged->valueOf
+MarlinProperties#getInteger(String, int, int, int)::: marlin properties get integer:::property->AccessController->new->GetPropertyAction->doPrivileged->value->if->try->Integer->decode->catch->logInfo->finally->if->logInfo->return
+MarlinProperties#align(int, int)::: marlin properties align:::ceil->FloatMath->ceil_int->return
+MarlinProperties#getDouble(String, double, double, double)::: marlin properties get double:::value->property->AccessController->new->GetPropertyAction->doPrivileged->if->try->Double->parseDouble->catch->logInfo->finally->if->logInfo->return
+MarlinProperties#getFloat(String, float, float, float)::: marlin properties get float:::return->getDouble
 MarlinRenderingEngine#createStrokedShape(Shape, float, int, int, float, float[], float):::Create a widened path as specified by the parameters:::rdrCtx->getRendererContext->try->p2d->rdrCtx->getPath2D->wrapPath2D->strokeTo->return->new->Path2D.Float->catch->finally->returnRendererContext
 MarlinRenderingEngine#strokeTo(Shape, AffineTransform, BasicStroke, boolean, boolean, boolean, PathConsumer2D):::Sends the geometry for a widened path as specified by the parameters to the specified consumer:::norm->rdrCtx->getRendererContext->try->strokeTo->catch->finally->returnRendererContext
+MarlinRenderingEngine#strokeTo(RendererContext, Shape, AffineTransform, BasicStroke, boolean, NormMode, boolean, PathConsumer2D)::: marlin rendering engine stroke to:::lw->if->if->userSpaceLineWidth->else->userSpaceLineWidth->else->bs->getLineWidth->bs->getEndCap->bs->getLineJoin->bs->getMiterLimit->bs->getDashArray->bs->getDashPhase->strokeTo
+MarlinRenderingEngine#userSpaceLineWidth(AffineTransform, float)::: marlin rendering engine user space line width:::widthScale->if->else->if->at->getType->Math->Math->at->getDeterminant->abs->sqrt->else->A->at->getScaleX->C->at->getShearX->B->at->getShearY->D->at->getScaleY->EA->EB->EC->hypot->Math->sqrt->widthsquared->Math->sqrt->return
+MarlinRenderingEngine#strokeTo(RendererContext, Shape, AffineTransform, float, NormMode, int, int, float, float[], float, PathConsumer2D)::: marlin rendering engine stroke to:::strokerat->dashLen->recycleDashes->if->at->isIdentity->a->at->getScaleX->b->at->getShearX->c->at->getShearY->d->at->getScaleY->det->if->Math->abs->pc2d->moveTo->pc2d->pathDone->return->if->nearZero->nearZero->scale->Math->sqrt->if->copyDashArray->for->i->else->else->transformerPC2D->if->transformerPC2D->traceStroker->if->init->transformerPC2D->deltaTransformConsumer->init->init->if->if->if->transformerPC2D->traceDasher->init->if->disableClipping->else->if->if->transformerPC2D->traceClosedPathDetector->transformerPC2D->detectClosedPath->transformerPC2D->inverseDeltaTransformConsumer->if->transformerPC2D->traceInput->pi->norm->src->getPathIterator->getNormalizingPathIterator->pathTo
+MarlinRenderingEngine#nearZero(double)::: marlin rendering engine near zero:::return->Math->abs->Math->ulp
+MarlinRenderingEngine.NormalizingPathIterator#init(PathIterator)::: normalizing path iterator init:::return
 MarlinRenderingEngine.NormalizingPathIterator#dispose():::Disposes this path iterator: clean up before reusing this instance:::
+MarlinRenderingEngine.NormalizingPathIterator#currentSegment(float[])::: normalizing path iterator current segment:::lastCoord->type->src->currentSegment->switch->break->break->break->return->throw->new->InternalError->coord->x_adjust->y_adjust->normCoord->normCoord->switch->break->break->break->break->return
+MarlinRenderingEngine.NormalizingPathIterator#normCoord(float)::: normalizing path iterator norm coord:::
+MarlinRenderingEngine.NormalizingPathIterator#currentSegment(double[])::: normalizing path iterator current segment:::_tmp->type->this->currentSegment->for->i->return
+MarlinRenderingEngine.NormalizingPathIterator#getWindingRule()::: normalizing path iterator get winding rule:::return->src->getWindingRule
+MarlinRenderingEngine.NormalizingPathIterator#isDone()::: normalizing path iterator is done:::if->src->isDone->dispose->return->return
+MarlinRenderingEngine.NormalizingPathIterator#next()::: normalizing path iterator next:::src->next
+MarlinRenderingEngine.NormalizingPathIterator.NearestPixelCenter#normCoord(float)::: nearest pixel center norm coord:::return->FloatMath->floor_f
+MarlinRenderingEngine.NormalizingPathIterator.NearestPixelQuarter#normCoord(float)::: nearest pixel quarter norm coord:::return->FloatMath->floor_f
+MarlinRenderingEngine#pathTo(RendererContext, PathIterator, PathConsumer2D)::: marlin rendering engine path to:::if->init->pathToLoop
+MarlinRenderingEngine#pathToLoop(float[], PathIterator, PathConsumer2D)::: marlin rendering engine path to loop:::subpathStarted->for->pi->isDone->pi->next->pc2d->pathDone
 MarlinRenderingEngine#getAATileGenerator(Shape, AffineTransform, Region, BasicStroke, boolean, boolean, int[]):::Construct an antialiased tile generator for the given shape with the given rendering attributes and store the bounds of the tile iteration in the bbox parameter:::ptg->r->rdrCtx->getRendererContext->try->if->MarlinProperties->isDoClipAtRuntime->clipRect->rdrOffX->rdrOffY->margin->clip->getLoY->clip->getLoY->clip->getHeight->clip->getLoX->clip->getLoX->clip->getWidth->if->MarlinUtils->Arrays->toString->logInfo->_at->at->isIdentity->norm->if->pi->norm->s->getPathIterator->getNormalizingPathIterator->clip->getLoX->clip->getLoY->clip->getWidth->clip->getHeight->pi->getWindingRule->init->pc2d->if->if->traceFiller->pathClipper->if->traceInput->pathTo->else->clip->getLoX->clip->getLoY->clip->getWidth->clip->getHeight->init->strokeTo->if->r->endRendering->init->ptg->getBbox->catch->finally->if->r->dispose->return
+MarlinRenderingEngine#getAATileGenerator(double, double, double, double, double, double, double, double, Region, int[])::: marlin rendering engine get tile generator:::ldx1->ldy1->ldx2->ldy2->innerpgram->if->if->else->ptg->r->rdrCtx->getRendererContext->try->clip->getLoX->clip->getLoY->clip->getWidth->clip->getHeight->init->r->moveTo->r->lineTo->r->lineTo->r->lineTo->r->closePath->if->r->moveTo->r->lineTo->r->lineTo->r->lineTo->r->closePath->r->pathDone->if->r->endRendering->init->ptg->getBbox->catch->finally->if->r->dispose->return
 MarlinRenderingEngine#getMinimumAAPenSize():::Returns the minimum pen width that the antialiasing rasterizer can represent without dropouts occuring.:::return
+MarlinRenderingEngine#logSettings(String)::: marlin rendering engine log settings:::if->return->refType->switch->break->break->break->logInfo->logInfo->Version->getVersion->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->MarlinProperties->isForceRLE->logInfo->MarlinProperties->isForceNoRLE->logInfo->MarlinProperties->isUseTileFlags->logInfo->MarlinProperties->isUseTileFlagsWithHeuristics->logInfo->logInfo->logInfo->logInfo->MarlinProperties->getPathSimplifierPixelTolerance->logInfo->MarlinProperties->isDoClip->logInfo->MarlinProperties->isDoClipRuntimeFlag->logInfo->MarlinProperties->isDoClipSubdivider->logInfo->MarlinProperties->getSubdividerMinLength->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->MarlinProperties->getCurveLengthError->logInfo->MarlinProperties->getCubicDecD2->logInfo->MarlinProperties->getCubicIncD1->logInfo->MarlinProperties->getQuadDecD2->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo->logInfo
 MarlinRenderingEngine#getRendererContext():::Get the RendererContext instance dedicated to the current thread:::rdrCtx->RDR_CTX_PROVIDER->acquire->if->start->return
 MarlinRenderingEngine#returnRendererContext(RendererContext):::Reset and return the given RendererContext instance for reuse:::rdrCtx->dispose->if->stop->RDR_CTX_PROVIDER->release
+MarlinTileGenerator#init()::: marlin tile generator init:::return
 MarlinTileGenerator#dispose():::Disposes this tile generator: clean up before reusing this instance:::if->stop->cache->dispose->if->rdrF->dispose->else->if->rdrD->dispose
+MarlinTileGenerator#getBbox(int[])::: marlin tile generator get bbox:::
 MarlinTileGenerator#getTileWidth():::Gets the width of the tiles that the generator batches output into.:::if->start->return
 MarlinTileGenerator#getTileHeight():::Gets the height of the tiles that the generator batches output into.:::return
 MarlinTileGenerator#getTypicalAlpha():::Gets the typical alpha value that will characterize the current tile:::if->return->al->cache->alphaSumInTile->alpha->if->add->return
 MarlinTileGenerator#nextTile():::Skips the current tile and moves on to the next tile:::if->if->if->rdrF->endRendering->else->if->rdrD->endRendering
 MarlinTileGenerator#getAlpha(byte[], int, int):::Gets the alpha coverage values for the current tile:::if->getAlphaRLE->else->getAlphaNoRLE
+MarlinTileGenerator#getAlphaNoRLE(byte[], int, int):::Gets the alpha coverage values for the current tile:::if->start->_cache->rowAAChunkIndex->rowAAx0->rowAAx1->x0->x1->FloatMath->min->y0->y1->FloatMath->min->if->MarlinUtils->logInfo->_unsafe->SIZE->addr_rowAA->addr->skipRowPixels->aax0->aax1->end->idx->for->cy->cx->nextTile->if->stop
+MarlinTileGenerator#getAlphaRLE(byte[], int, int):::Gets the alpha coverage values for the current tile:::if->start->_cache->rowAAChunkIndex->rowAAx0->rowAAx1->rowAAEnc->rowAALen->rowAAPos->x0->x1->FloatMath->min->w->y0->y1->FloatMath->min->if->MarlinUtils->logInfo->clearTile->refVal->area->if->alphaSum->cache->alphaSumInTile->if->else->if->else->else->_unsafe->SIZE_BYTE->SIZE_INT->addr_rowAA->addr->addr_row->last_addr->addr_end->skipRowPixels->cx->cy->cx1->rx0->rx1->runLen->end->packed->val->idx->switch->Arrays->fill->for->break->for->break->Arrays->fill->for->nextTile->if->stop
+MarlinTileGenerator#hex(int, int)::: marlin tile generator hex:::s->Integer->toHexString->while->s->length->return->s->substring
+MarlinUtils#logInfo(String)::: marlin utils log info:::if->LOG->info->else->if->print->println
+MarlinUtils#logException(String, Throwable)::: marlin utils log exception:::if->LOG->warning->else->if->print->println->th->printStackTrace
 MarlinUtils#getRootThreadGroup():::Returns a root thread group:::currentTG->Thread->currentThread->getThreadGroup->parentTG->currentTG->getParent->while->currentTG->getParent->return
 MergeSort#mergeSortNoCopy(int[], int[], int[], int[], int, int):::Modified merge sort: Input arrays are in both auxX/auxY (sorted: 0 to insertionSortIndex)                     and x/y (unsorted: insertionSortIndex to toIndex) Outputs are stored in x/y arrays:::if->throw->new->ArrayIndexOutOfBoundsException->mergeSort->if->System->arraycopy->System->arraycopy->return->for->i->p->q
+MergeSort#mergeSort(int[], int[], int[], int[], int[], int[], int, int):::Src is the source array that starts at index 0 Dest is the (possibly larger) array destination with a possible offset low is the index in dest to start sorting high is the end index in dest to end sorting:::length->if->for->i->j->x->y->return->mid->mergeSort->mergeSort->if->left->right->off->System->arraycopy->System->arraycopy->System->arraycopy->System->arraycopy->return->if->System->arraycopy->System->arraycopy->return->for->i->p->q
+OffHeapArray#resize(long)::: off heap array resize:::UNSAFE->reallocateMemory->if->MarlinUtils->System->currentTimeMillis->logInfo
+OffHeapArray#free()::: off heap array free:::UNSAFE->freeMemory->if->MarlinUtils->System->currentTimeMillis->logInfo
+OffHeapArray#fill(byte)::: off heap array fill:::UNSAFE->setMemory
+PathSimplifier#init(PathConsumer2D)::: path simplifier init:::return
+PathSimplifier#pathDone()::: path simplifier path done:::delegate->pathDone
+PathSimplifier#closePath()::: path simplifier close path:::delegate->closePath
+PathSimplifier#getNativeConsumer()::: path simplifier get native consumer:::return
+PathSimplifier#quadTo(float, float, float, float)::: path simplifier quad to:::dx->dy->if->if->return->delegate->quadTo
+PathSimplifier#curveTo(float, float, float, float, float, float)::: path simplifier curve to:::dx->dy->if->if->if->return->delegate->curveTo
+PathSimplifier#moveTo(float, float)::: path simplifier move to:::delegate->moveTo
+PathSimplifier#lineTo(float, float)::: path simplifier line to:::dx->dy->if->return->delegate->lineTo
+Renderer#quadBreakIntoLinesAndAdd(float, float, Curve, float, float)::: renderer quad break into lines and add:::count->maxDD->Math->abs->Math->abs->_DEC_BND->while->if->add->nL->if->icount->icount2->ddx->ddy->dx->dy->for->x1->y1->addLine->if->add
+Renderer#curveBreakIntoLinesAndAdd(float, float, Curve, float, float)::: renderer curve break into lines and add:::count->icount->icount2->icount3->dddx->dddy->ddx->ddy->dx->dy->nL->_DEC_BND->_INC_BND->_SCALE_DY->for->x1->y1->addLine->if->add
+Renderer#addLine(float, float, float, float)::: renderer add line:::if->start->if->add->or->if->tmp->firstCrossing->FloatMath->FloatMath->ceil_int->max->lastCrossing->FloatMath->FloatMath->ceil_int->min->if->if->stop->if->add->return->if->if->x1d->y1d->slope->if->if->if->else->if->if->_SIZEOF_EDGE_BYTES->_edges->edgePtr->if->edgeNewSize->ArrayCacheConst->getNewLargeSize->if->add->_edges->resize->_unsafe->SIZE_INT->addr->x1_intercept->x1_fixed_biased->_unsafe->putInt->_unsafe->putInt->slope_fixed->_unsafe->putInt->_unsafe->putInt->_edgeBuckets->_edgeBucketCounts->_boundsMinY->bucketIdx->_unsafe->putInt->_unsafe->putInt->if->stop
+Renderer#init(int, int, int, int, int)::: renderer init:::if->MarlinUtils->logInfo->edgeBucketsLength->if->if->add->add->edgeBuckets_ref->getArray->edgeBucketCounts_ref->getArray->return
 Renderer#dispose():::Disposes this renderer and recycle it clean up before reusing this instance:::if->add->add->add->add->crossings_ref->putArray->aux_crossings_ref->putArray->edgePtrs_ref->putArray->aux_edgePtrs_ref->putArray->alphaLine_ref->putArray->blkFlags_ref->putArray->if->if->edgeBuckets_ref->putArray->edgeBucketCounts_ref->putArray->else->edgeBuckets_ref->putArray->edgeBucketCounts_ref->putArray->if->edges->resize->if->edges->fill->if->stop->MarlinRenderingEngine->returnRendererContext
+Renderer#tosubpixx(float)::: renderer tosubpixx:::return
+Renderer#tosubpixy(float)::: renderer tosubpixy:::return
+Renderer#moveTo(float, float)::: renderer move to:::closePath->sx->tosubpixx->sy->tosubpixy
+Renderer#lineTo(float, float)::: renderer line to:::x1->tosubpixx->y1->tosubpixy->addLine
+Renderer#curveTo(float, float, float, float, float, float)::: renderer curve to:::xe->tosubpixx->ye->tosubpixy->curve->tosubpixx->tosubpixy->tosubpixx->tosubpixy->set->curveBreakIntoLinesAndAdd
+Renderer#quadTo(float, float, float, float)::: renderer quad to:::xe->tosubpixx->ye->tosubpixy->curve->tosubpixx->tosubpixy->set->quadBreakIntoLinesAndAdd
+Renderer#closePath()::: renderer close path:::if->addLine
+Renderer#pathDone()::: renderer path done:::closePath
+Renderer#getNativeConsumer()::: renderer get native consumer:::throw->new->InternalError
+Renderer#_endRendering(int, int)::: renderer _end rendering:::if->return->bboxx0->bboxx1->windingRuleEvenOdd->_alpha->_cache->_edges->_edgeBuckets->_edgeBucketCounts->_crossings->_edgePtrs->_aux_crossings->_aux_edgePtrs->_OFF_ERROR->_OFF_BUMP_X->_OFF_BUMP_ERR->_OFF_NEXT->_OFF_YMAX->_ALL_BUT_LSB->_ERR_STEP_MAX->_unsafe->addr0->addr->_SUBPIXEL_LG_POSITIONS_X->_SUBPIXEL_LG_POSITIONS_Y->_SUBPIXEL_MASK_X->_SUBPIXEL_MASK_Y->_SUBPIXEL_POSITIONS_X->_MIN_VALUE->_MAX_VALUE->minX->maxX->y->bucket->numCrossings->edgePtrsLen->crossingsLen->_arrayMaxUsed->ptrLen->newCount->ptrEnd->bucketcount->i->j->ecur->cross->lastCross->x0->x1->tmp->sum->prev->curx->curxo->crorientation->err->pix_x->pix_xmaxm1->pix_xmax->low->high->mid->prevNumCrossings->useBinarySearch->_blkFlags->_BLK_SIZE_LG->_BLK_SIZE->_enableBlkFlagsHeuristics->useBlkFlags->stroking->lastY->for->FloatMath->max->FloatMath->min->if->copyAARow->else->if->_cache->clearAARow->if
+Renderer#endRendering()::: renderer end rendering:::if->start->if->return->spminX->FloatMath->FloatMath->ceil_int->max->spmaxX->FloatMath->FloatMath->ceil_int->min->spminY->spmaxY->if->MarlinUtils->logInfo->MarlinUtils->logInfo->if->return->pminX->pmaxX->pminY->pmaxY->init->if->if->blkLen->if->blkFlags_ref->getArray->if->MarlinUtils->logInfo->MarlinUtils->logInfo->width->if->if->add->alphaLine_ref->getArray->endRendering->return
+Renderer#endRendering(int)::: renderer end rendering:::if->start->spminY->fixed_spminY->FloatMath->max->if->spmaxY->FloatMath->min->cache->resetTileLine->_endRendering->if->stop
+Renderer#copyAARow(int[], int, int, int, boolean)::: renderer copy row:::if->start->if->if->add->cache->copyAARowRLE_WithBlockFlags->else->if->add->cache->copyAARowNoRLE->if->stop
 RendererContext#createContext():::Create a new renderer context:::return->Integer->CTX_COUNT->getAndIncrement->toString->new->RendererContext
 RendererContext#dispose():::Disposes this renderer context: clean up before reusing this context:::if->if->if->dispose->dispose->dispose->dispose
+RendererContext#getPath2D()::: renderer context get path2 d:::p2d->refPath2D->get->if->new->Path2D.Float->new->WeakReference<Path2D.Float>->p2d->reset->return
+RendererContext#stats()::: renderer context stats:::return
+RendererContext#newOffHeapArray(long)::: renderer context new off heap array:::if->return->new->OffHeapArray
+RendererContext#newCleanIntArrayRef(int)::: renderer context new clean int array ref:::return->cleanIntCache->createRef
+RendererContext#newDirtyIntArrayRef(int)::: renderer context new dirty int array ref:::return->dirtyIntCache->createRef
+RendererContext#newDirtyFloatArrayRef(int)::: renderer context new dirty float array ref:::return->dirtyFloatCache->createRef
+RendererContext#newDirtyByteArrayRef(int)::: renderer context new dirty byte array ref:::return->dirtyByteCache->createRef
+RendererStats#createInstance(Object, String)::: renderer stats create instance:::stats->new->RendererStats->RendererStatsHolder->getInstance->add->return
+RendererStats#dumpStats()::: renderer stats dump stats:::RendererStatsHolder->dumpStats
+RendererStats#dump()::: renderer stats dump:::logInfo->if->foreach->if->monitor->toString->logInfo->total->if->foreach->logInfo->if->foreach->m->reset->if->foreach->if->stat->toString->logInfo->if->stat->reset->logInfo->if->logInfo->totalInitialBytes->totalCacheBytes->if->foreach->stat->dumpStats->stat->getTotalInitialBytes->if->stat->reset->logInfo
+RendererStats.RendererStatsHolder#getInstance()::: renderer stats holder get instance:::if->new->RendererStatsHolder->return
+RendererStats.RendererStatsHolder#dumpStats()::: renderer stats holder dump stats:::if->SINGLETON->dump
+RendererStats.RendererStatsHolder#add(Object, RendererStats)::: renderer stats holder add:::allStats->add->CleanerFactory->cleaner->remove->register
+RendererStats.RendererStatsHolder#remove(RendererStats)::: renderer stats holder remove:::stats->dump->allStats->remove
+RendererStats.RendererStatsHolder#dump()::: renderer stats holder dump:::foreach->stats->dump
 Stroker#init(PathConsumer2D, float, int, int, float, boolean):::Inits the Stroker.:::limit->if->margin->if->if->_clipRect->if->MarlinUtils->Arrays->toString->logInfo->if->curveSplitter->init->else->else->return
+Stroker#disableClipping()::: stroker disable clipping:::
 Stroker#dispose():::Disposes this stroker: clean up before reusing this instance:::reverse->dispose->if->Arrays->fill->Arrays->fill->Arrays->fill->Arrays->fill->Arrays->fill->Arrays->fill
+Stroker#computeOffset(float, float, float, float[])::: stroker compute offset:::len->if->else->Math->sqrt
+Stroker#isCW(float, float, float, float)::: stroker is w:::return
+Stroker#mayDrawRoundJoin(float, float, float, float, float, float, boolean)::: stroker may draw round join:::if->return->domx->domy->lenSq->if->return->if->drawRoundJoin
+Stroker#drawRoundJoin(float, float, float, float, float, float, boolean)::: stroker draw round join:::cosext->if->drawBezApproxForArc->else->nx->ny->nlen->Math->sqrt->scale->mmx->mmy->if->drawBezApproxForArc->drawBezApproxForArc
+Stroker#drawBezApproxForArc(float, float, float, float, float, float, boolean)::: stroker draw bez approx for arc:::cosext2->if->return->cv->Math->sqrt->Math->sqrt->if->x1->y1->x2->y2->x4->y4->x3->y3->emitCurveTo
+Stroker#drawRoundCap(float, float, float, float)::: stroker draw round cap:::Cmx->Cmy->emitCurveTo->emitCurveTo
+Stroker#computeMiter(float, float, float, float, float, float, float, float, float[])::: stroker compute miter:::x10->y10->x10p->y10p->den->t
+Stroker#safeComputeMiter(float, float, float, float, float, float, float, float, float[])::: stroker safe compute miter:::x10->y10->x10p->y10p->den->if->else->t
+Stroker#drawMiter(float, float, float, float, float, float, float, float, float, float, boolean)::: stroker draw miter:::if->return->if->computeMiter->miterX->miterY->lenSq->if->emitLineTo
+Stroker#moveTo(float, float)::: stroker move to:::_moveTo->if->outcode->Helpers->outcode
+Stroker#_moveTo(float, float, int)::: stroker _move to:::if->else->if->finish
+Stroker#lineTo(float, float)::: stroker line to:::lineTo
+Stroker#lineTo(float, float, boolean)::: stroker line to:::outcode0->if->outcode1->Helpers->outcode->orCode->if->sideCode->if->if->ret->curveSplitter->splitLine->if->return->else->_moveTo->return->dx->dy->if->computeOffset->mx->my->drawJoin->emitLineTo->emitLineTo->emitLineToRev->emitLineToRev
+Stroker#closePath()::: stroker close path:::if->if->return->emitMoveTo->finish->return->if->if->lineTo->drawJoin->emitLineTo->if->emitLineTo->else->emitMoveTo->emitReverse->if->else->emitClose
+Stroker#emitReverse()::: stroker emit reverse:::reverse->popAll
+Stroker#pathDone()::: stroker path done:::if->finish->out->pathDone->dispose
+Stroker#finish(int)::: stroker finish:::if->emitReverse->else->if->if->drawRoundCap->else->if->emitLineTo->emitLineTo->emitReverse->if->if->if->drawRoundCap->else->if->emitLineTo->emitLineTo->emitClose
+Stroker#emitMoveTo(float, float)::: stroker emit move to:::out->moveTo
+Stroker#emitLineTo(float, float)::: stroker emit line to:::out->lineTo
+Stroker#emitLineToRev(float, float)::: stroker emit line to rev:::reverse->pushLine
+Stroker#emitLineTo(float, float, boolean)::: stroker emit line to:::if->emitLineToRev->else->emitLineTo
+Stroker#emitQuadTo(float, float, float, float)::: stroker emit quad to:::out->quadTo
+Stroker#emitQuadToRev(float, float, float, float)::: stroker emit quad to rev:::reverse->pushQuad
+Stroker#emitCurveTo(float, float, float, float, float, float)::: stroker emit curve to:::out->curveTo
+Stroker#emitCurveToRev(float, float, float, float, float, float)::: stroker emit curve to rev:::reverse->pushCubic
+Stroker#emitCurveTo(float, float, float, float, float, float, float, float, boolean)::: stroker emit curve to:::if->reverse->pushCubic->else->out->curveTo
+Stroker#emitClose()::: stroker emit close:::out->closePath
+Stroker#drawJoin(float, float, float, float, float, float, float, float, float, float, int)::: stroker draw join:::if->emitMoveTo->if->else->cw->isCW->if->if->drawMiter->else->if->mayDrawRoundJoin->emitLineTo
+Stroker#within(float, float, float, float, float)::: stroker within:::return->Helpers->within->Helpers->within
+Stroker#getLineOffsets(float, float, float, float, float[], float[])::: stroker get line offsets:::computeOffset->mx->my
+Stroker#computeOffsetCubic(float[], int, float[], float[])::: stroker compute offset cubic:::x1->y1->x2->y2->x3->y3->x4->y4->dx4->dy4->dx1->dy1->p1eqp2->Math->ulp->within->p3eqp4->Math->ulp->within->if->getLineOffsets->return->else->if->else->if->dotsq->l1sq->l4sq->if->Helpers->Math->ulp->within->getLineOffsets->return->x->y->dxm->dym->computeOffset->computeOffset->computeOffset->x1p->y1p->xi->yi->x4p->y4p->invdet43->two_pi_m_p1_m_p4x->two_pi_m_p1_m_p4y->c1->c2->x2p->y2p->x3p->y3p->return
+Stroker#computeOffsetQuad(float[], int, float[], float[])::: stroker compute offset quad:::x1->y1->x2->y2->x3->y3->dx3->dy3->dx1->dy1->p1eqp2->Math->ulp->within->p2eqp3->Math->ulp->within->if->getLineOffsets->return->dotsq->l1sq->l3sq->if->Helpers->Math->ulp->within->getLineOffsets->return->computeOffset->computeOffset->x1p->y1p->x3p->y3p->safeComputeMiter->safeComputeMiter->return
+Stroker#curveTo(float, float, float, float, float, float)::: stroker curve to:::outcode0->if->outcode1->Helpers->outcode->outcode2->Helpers->outcode->outcode3->Helpers->outcode->orCode->if->sideCode->if->if->ret->curveSplitter->splitCurve->if->return->else->_moveTo->return->_curveTo
+Stroker#_curveTo(float, float, float, float, float, float, int)::: stroker _curve to:::dxs->dys->dxf->dyf->if->if->if->if->if->if->lineTo->return->if->Math->abs->Math->abs->len->Math->sqrt->if->Math->abs->Math->abs->len->Math->sqrt->computeOffset->drawJoin->nSplits->mid->l->if->monotonizer->curve->else->r->kind->for->i->off
+Stroker#quadTo(float, float, float, float)::: stroker quad to:::outcode0->if->outcode1->Helpers->outcode->outcode2->Helpers->outcode->orCode->if->sideCode->if->if->ret->curveSplitter->splitQuad->if->return->else->_moveTo->return->_quadTo
+Stroker#_quadTo(float, float, float, float, int)::: stroker _quad to:::dxs->dys->dxf->dyf->if->if->if->lineTo->return->if->Math->abs->Math->abs->len->Math->sqrt->if->Math->abs->Math->abs->len->Math->sqrt->computeOffset->drawJoin->nSplits->mid->l->if->monotonizer->quad->else->r->kind->for->i->off
+Stroker#getNativeConsumer()::: stroker get native consumer:::throw->new->InternalError
+TransformingPathConsumer2D#wrapPath2D(Path2D.Float)::: transforming path consumer2 d wrap path2 d:::return->wp_Path2DWrapper->init
+TransformingPathConsumer2D#traceInput(PathConsumer2D)::: transforming path consumer2 d trace input:::return->tracerInput->init
+TransformingPathConsumer2D#traceClosedPathDetector(PathConsumer2D)::: transforming path consumer2 d trace closed path detector:::return->tracerCPDetector->init
+TransformingPathConsumer2D#traceFiller(PathConsumer2D)::: transforming path consumer2 d trace filler:::return->tracerFiller->init
+TransformingPathConsumer2D#traceStroker(PathConsumer2D)::: transforming path consumer2 d trace stroker:::return->tracerStroker->init
+TransformingPathConsumer2D#traceDasher(PathConsumer2D)::: transforming path consumer2 d trace dasher:::return->tracerDasher->init
+TransformingPathConsumer2D#detectClosedPath(PathConsumer2D)::: transforming path consumer2 d detect closed path:::return->cpDetector->init
+TransformingPathConsumer2D#pathClipper(PathConsumer2D)::: transforming path consumer2 d path clipper:::return->pathClipper->init
+TransformingPathConsumer2D#deltaTransformConsumer(PathConsumer2D, AffineTransform)::: transforming path consumer2 d delta transform consumer:::if->return->mxx->at->getScaleX->mxy->at->getShearX->myx->at->getShearY->myy->at->getScaleY->if->if->return->else->if->adjustClipScale->return->dt_DeltaScaleFilter->init->else->if->adjustClipInverseDelta->return->dt_DeltaTransformFilter->init
+TransformingPathConsumer2D#adjustClipScale(float[], float, float)::: transforming path consumer2 d adjust clip scale:::scaleY->if->tmp->scaleX->if->tmp->if->MarlinUtils->Arrays->toString->logInfo->return->Math->abs->Math->abs
+TransformingPathConsumer2D#adjustClipInverseDelta(float[], float, float, float, float)::: transforming path consumer2 d adjust clip inverse delta:::det->imxx->imxy->imyx->imyy->xmin->xmax->ymin->ymax->x->y->if->else->if->if->else->if->if->else->if->if->else->if->if->else->if->if->else->if->if->MarlinUtils->Arrays->toString->logInfo->scaleX->Math->sqrt->scaleY->Math->sqrt->return
+TransformingPathConsumer2D#inverseDeltaTransformConsumer(PathConsumer2D, AffineTransform)::: transforming path consumer2 d inverse delta transform consumer:::if->return->mxx->at->getScaleX->mxy->at->getShearX->myx->at->getShearY->myy->at->getScaleY->if->if->return->else->return->iv_DeltaScaleFilter->init->else->det->return->iv_DeltaTransformFilter->init
+TransformingPathConsumer2D.DeltaScaleFilter#init(PathConsumer2D, float, float)::: delta scale filter init:::return
+TransformingPathConsumer2D.DeltaScaleFilter#moveTo(float, float)::: delta scale filter move to:::out->moveTo
+TransformingPathConsumer2D.DeltaScaleFilter#lineTo(float, float)::: delta scale filter line to:::out->lineTo
+TransformingPathConsumer2D.DeltaScaleFilter#quadTo(float, float, float, float)::: delta scale filter quad to:::out->quadTo
+TransformingPathConsumer2D.DeltaScaleFilter#curveTo(float, float, float, float, float, float)::: delta scale filter curve to:::out->curveTo
+TransformingPathConsumer2D.DeltaScaleFilter#closePath()::: delta scale filter close path:::out->closePath
+TransformingPathConsumer2D.DeltaScaleFilter#pathDone()::: delta scale filter path done:::out->pathDone
+TransformingPathConsumer2D.DeltaScaleFilter#getNativeConsumer()::: delta scale filter get native consumer:::return
+TransformingPathConsumer2D.DeltaTransformFilter#init(PathConsumer2D, float, float, float, float)::: delta transform filter init:::return
+TransformingPathConsumer2D.DeltaTransformFilter#moveTo(float, float)::: delta transform filter move to:::out->moveTo
+TransformingPathConsumer2D.DeltaTransformFilter#lineTo(float, float)::: delta transform filter line to:::out->lineTo
+TransformingPathConsumer2D.DeltaTransformFilter#quadTo(float, float, float, float)::: delta transform filter quad to:::out->quadTo
+TransformingPathConsumer2D.DeltaTransformFilter#curveTo(float, float, float, float, float, float)::: delta transform filter curve to:::out->curveTo
+TransformingPathConsumer2D.DeltaTransformFilter#closePath()::: delta transform filter close path:::out->closePath
+TransformingPathConsumer2D.DeltaTransformFilter#pathDone()::: delta transform filter path done:::out->pathDone
+TransformingPathConsumer2D.DeltaTransformFilter#getNativeConsumer()::: delta transform filter get native consumer:::return
+TransformingPathConsumer2D.Path2DWrapper#init(Path2D.Float)::: path2 wrapper init:::return
+TransformingPathConsumer2D.Path2DWrapper#moveTo(float, float)::: path2 wrapper move to:::p2d->moveTo
+TransformingPathConsumer2D.Path2DWrapper#lineTo(float, float)::: path2 wrapper line to:::p2d->lineTo
+TransformingPathConsumer2D.Path2DWrapper#closePath()::: path2 wrapper close path:::p2d->closePath
+TransformingPathConsumer2D.Path2DWrapper#pathDone()::: path2 wrapper path done:::
+TransformingPathConsumer2D.Path2DWrapper#curveTo(float, float, float, float, float, float)::: path2 wrapper curve to:::p2d->curveTo
+TransformingPathConsumer2D.Path2DWrapper#quadTo(float, float, float, float)::: path2 wrapper quad to:::p2d->quadTo
+TransformingPathConsumer2D.Path2DWrapper#getNativeConsumer()::: path2 wrapper get native consumer:::throw->new->InternalError
+TransformingPathConsumer2D.ClosedPathDetector#init(PathConsumer2D)::: closed path detector init:::return
 TransformingPathConsumer2D.ClosedPathDetector#dispose():::Disposes this instance: clean up before reusing this instance:::stack->dispose
+TransformingPathConsumer2D.ClosedPathDetector#pathDone()::: closed path detector path done:::finish->out->pathDone->dispose
+TransformingPathConsumer2D.ClosedPathDetector#closePath()::: closed path detector close path:::finish->out->closePath
+TransformingPathConsumer2D.ClosedPathDetector#moveTo(float, float)::: closed path detector move to:::finish->out->moveTo
+TransformingPathConsumer2D.ClosedPathDetector#finish(boolean)::: closed path detector finish:::stack->pullAll
+TransformingPathConsumer2D.ClosedPathDetector#lineTo(float, float)::: closed path detector line to:::stack->pushLine
+TransformingPathConsumer2D.ClosedPathDetector#curveTo(float, float, float, float, float, float)::: closed path detector curve to:::stack->pushCubic
+TransformingPathConsumer2D.ClosedPathDetector#quadTo(float, float, float, float)::: closed path detector quad to:::stack->pushQuad
+TransformingPathConsumer2D.ClosedPathDetector#getNativeConsumer()::: closed path detector get native consumer:::throw->new->InternalError
+TransformingPathConsumer2D.PathClipFilter#init(PathConsumer2D)::: path clip filter init:::if->curveSplitter->init->return
 TransformingPathConsumer2D.PathClipFilter#dispose():::Disposes this instance: clean up before reusing this instance:::stack->dispose
+TransformingPathConsumer2D.PathClipFilter#finishPath()::: path clip filter finish path:::if->if->finish->else->stack->reset
+TransformingPathConsumer2D.PathClipFilter#finish()::: path clip filter finish:::if->stack->isEmpty->if->_corners->_clipRect->stack->pullAll->out->lineTo
+TransformingPathConsumer2D.PathClipFilter#pathDone()::: path clip filter path done:::finishPath->out->pathDone->dispose
+TransformingPathConsumer2D.PathClipFilter#closePath()::: path clip filter close path:::finishPath->out->closePath->Helpers->outcode
+TransformingPathConsumer2D.PathClipFilter#moveTo(float, float)::: path clip filter move to:::finishPath->out->moveTo->Helpers->outcode
+TransformingPathConsumer2D.PathClipFilter#lineTo(float, float)::: path clip filter line to:::outcode0->outcode1->Helpers->outcode->orCode->if->sideCode->if->if->ret->if->curveSplitter->splitLine->else->curveSplitter->splitLine->if->return->else->clip->return->if->finish->out->lineTo
+TransformingPathConsumer2D.PathClipFilter#clip(int, int, int)::: path clip filter clip:::if->mergeCode->tbCode->lrCode->off->switch->stack->push->return->stack->push->return->if->stack->push->stack->push->else->stack->push->stack->push
+TransformingPathConsumer2D.PathClipFilter#curveTo(float, float, float, float, float, float)::: path clip filter curve to:::outcode0->outcode1->Helpers->outcode->outcode2->Helpers->outcode->outcode3->Helpers->outcode->orCode->if->sideCode->if->if->ret->if->curveSplitter->splitCurve->else->curveSplitter->splitCurve->if->return->else->clip->return->if->finish->out->curveTo
+TransformingPathConsumer2D.PathClipFilter#quadTo(float, float, float, float)::: path clip filter quad to:::outcode0->outcode1->Helpers->outcode->outcode2->Helpers->outcode->orCode->if->sideCode->if->if->ret->if->curveSplitter->splitQuad->else->curveSplitter->splitQuad->if->return->else->clip->return->if->finish->out->quadTo
+TransformingPathConsumer2D.PathClipFilter#getNativeConsumer()::: path clip filter get native consumer:::throw->new->InternalError
+TransformingPathConsumer2D.CurveClipSplitter#init()::: curve clip splitter init:::if->if->MarlinUtils->logInfo
+TransformingPathConsumer2D.CurveClipSplitter#initPaddedClip()::: curve clip splitter init padded clip:::_clipRect->_clipRectPad->if->MarlinUtils->logInfo
+TransformingPathConsumer2D.CurveClipSplitter#splitLine(float, float, float, float, int, PathConsumer2D)::: curve clip splitter split line:::if->MarlinUtils->logInfo->if->Helpers->fastLineLen->return->mid->return->subdivideAtIntersections
+TransformingPathConsumer2D.CurveClipSplitter#splitQuad(float, float, float, float, float, float, int, PathConsumer2D)::: curve clip splitter split quad:::if->MarlinUtils->logInfo->if->Helpers->fastQuadLen->return->mid->return->subdivideAtIntersections
+TransformingPathConsumer2D.CurveClipSplitter#splitCurve(float, float, float, float, float, float, float, float, int, PathConsumer2D)::: curve clip splitter split curve:::if->MarlinUtils->logInfo->if->Helpers->fastCurvelen->return->mid->return->subdivideAtIntersections
+TransformingPathConsumer2D.CurveClipSplitter#subdivideAtIntersections(int, int, PathConsumer2D)::: curve clip splitter subdivide at intersections:::mid->subTs->if->initPaddedClip->nSplits->Helpers->findClipPoints->if->MarlinUtils->logInfo->MarlinUtils->Arrays->Arrays->copyOfRange->toString->logInfo->if->return->prevT->for->i->off->for->i->off->return
+TransformingPathConsumer2D.CurveClipSplitter#emitCurrent(int, float[], int, PathConsumer2D)::: curve clip splitter emit current:::if->out->curveTo->else->if->out->lineTo->else->out->quadTo
+TransformingPathConsumer2D.CurveBasicMonotonizer#init(float)::: curve basic monotonizer init:::
+TransformingPathConsumer2D.CurveBasicMonotonizer#curve(float, float, float, float, float, float, float, float)::: curve basic monotonizer curve:::mid->subTs->nSplits->Helpers->findSubdivPoints->prevT->for->i->off->return
+TransformingPathConsumer2D.CurveBasicMonotonizer#quad(float, float, float, float, float, float)::: curve basic monotonizer quad:::mid->subTs->nSplits->Helpers->findSubdivPoints->prevt->for->i->off->return
+TransformingPathConsumer2D.PathTracer#init(PathConsumer2D)::: path tracer init:::return
+TransformingPathConsumer2D.PathTracer#moveTo(float, float)::: path tracer move to:::log->out->moveTo
+TransformingPathConsumer2D.PathTracer#lineTo(float, float)::: path tracer line to:::log->out->lineTo
+TransformingPathConsumer2D.PathTracer#curveTo(float, float, float, float, float, float)::: path tracer curve to:::log->out->curveTo
+TransformingPathConsumer2D.PathTracer#quadTo(float, float, float, float)::: path tracer quad to:::log->out->quadTo
+TransformingPathConsumer2D.PathTracer#closePath()::: path tracer close path:::log->out->closePath
+TransformingPathConsumer2D.PathTracer#pathDone()::: path tracer path done:::log->out->pathDone
+TransformingPathConsumer2D.PathTracer#log(String)::: path tracer log:::MarlinUtils->logInfo
+TransformingPathConsumer2D.PathTracer#getNativeConsumer()::: path tracer get native consumer:::throw->new->InternalError
+Version#getVersion()::: version get version:::return

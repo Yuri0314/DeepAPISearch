@@ -4,6 +4,7 @@ AndQueryExp#apply(ObjectName):::Applies the AndQueryExp on a MBean.:::return->ex
 AndQueryExp#toString():::Returns a string representation of this AndQueryExp:::return
 Attribute#getName():::Returns a String containing the  name of the attribute.:::return
 Attribute#getValue():::Returns an Object that is the value of this attribute.:::return
+Attribute#equals(Object)::: attribute equals:::if->return->val->if->if->val->getValue->return->name->val->getName->equals->else->return->return->name->val->getName->equals->value->val->getValue->equals
 Attribute#hashCode():::Returns a hash code value for this attribute.:::return->name->hashCode->value->hashCode
 Attribute#toString():::Returns a String object representing this Attribute's value:::return->getName->getValue
 AttributeChangeNotification#getAttributeName():::Gets the name of the attribute which has changed.:::return
@@ -21,11 +22,20 @@ AttributeList#add(int, Attribute):::Inserts the attribute specified as an elemen
 AttributeList#set(int, Attribute):::Sets the element at the position specified to be the attribute specified:::try->super->set->catch->throw->new->RuntimeOperationsException->finally
 AttributeList#addAll(AttributeList):::Appends all the elements in the <CODE>AttributeList</CODE> specified to the end of the list, in the order in which they are returned by the Iterator of the <CODE>AttributeList</CODE> specified.:::return->super->addAll
 AttributeList#addAll(int, AttributeList):::Inserts all of the elements in the <CODE>AttributeList</CODE> specified into this list, starting at the specified position, in the order in which they are returned by the Iterator of the AttributeList specified:::try->return->super->addAll->catch->throw->new->RuntimeOperationsException->finally
+AttributeList#add(Object)::: attribute list add:::adding->return->super->add
+AttributeList#add(int, Object)::: attribute list add:::adding->super->add
+AttributeList#addAll(Collection)::: attribute list add all:::adding->return->super->addAll
+AttributeList#addAll(int, Collection)::: attribute list add all:::adding->return->super->addAll
+AttributeList#set(int, Object)::: attribute list set:::adding->return->super->set
+AttributeList#adding(Object)::: attribute list adding:::if->return->if->throw->new->IllegalArgumentException->else
+AttributeList#adding(Collection)::: attribute list adding:::foreach->adding
 AttributeValueExp#getAttributeName():::Returns a string representation of the name of the attribute.:::return
 AttributeValueExp#apply(ObjectName):::Applies the <CODE>AttributeValueExp</CODE> on an MBean:::result->getAttribute->if->return->new->NumericValueExp->else->if->return->new->StringValueExp->else->if->return->new->BooleanValueExp->else->throw->new->BadAttributeValueExpException
 AttributeValueExp#toString():::Returns the string representing its value.:::return
+AttributeValueExp#setMBeanServer(MBeanServer)::: attribute value exp set bean server:::
 AttributeValueExp#getAttribute(ObjectName):::Return the value of the given attribute in the named MBean:::try->server->QueryEval->getMBeanServer->return->server->getAttribute->catch->return->finally
 BadAttributeValueExpException#toString():::Returns the string representing the object.:::return
+BadAttributeValueExpException#readObject(ObjectInputStream)::: bad attribute value exp exception read object:::gf->ois->readFields->valObj->gf->get->if->else->if->else->if->System->getSecurityManager->valObj->toString->else->System->identityHashCode->valObj->getClass->getName
 BadBinaryOpValueExpException#getExp():::Returns the <CODE>ValueExp</CODE> that originated the exception.:::return
 BadBinaryOpValueExpException#toString():::Returns the string representing the object.:::return
 BadStringOperationException#toString():::Returns the string representing the object.:::return
@@ -39,16 +49,23 @@ BinaryOpValueExp#getLeftValue():::Returns the left value of the value expression
 BinaryOpValueExp#getRightValue():::Returns the right value of the value expression.:::return
 BinaryOpValueExp#apply(ObjectName):::Applies the BinaryOpValueExp on a MBean.:::val1->exp1->apply->val2->exp2->apply->sval1->sval2->dval1->dval2->lval1->lval2->numeric->if->if->isLong->longValue->longValue->switch->return->Query->value->return->Query->value->return->Query->value->return->Query->value->else->doubleValue->doubleValue->switch->return->Query->value->return->Query->value->return->Query->value->return->Query->value->else->getValue->getValue->switch->return->new->StringValueExp->throw->opString->new->BadStringOperationException->throw->new->BadBinaryOpValueExpException
 BinaryOpValueExp#toString():::Returns the string representing the object:::try->return->parens->opString->parens->catch->return->finally
+BinaryOpValueExp#parens(ValueExp, boolean)::: binary op value exp parens:::omit->if->subop->if->precedence->precedence->else->precedence->precedence->else->if->return->subexp->toString->else->return
+BinaryOpValueExp#precedence(int)::: binary op value exp precedence:::switch->return->return->throw->new->BadBinaryOpValueExpException
+BinaryOpValueExp#opString()::: binary op value exp op string:::switch->return->return->return->return->throw->new->BadBinaryOpValueExpException
+BinaryOpValueExp#setMBeanServer(MBeanServer)::: binary op value exp set bean server:::super->setMBeanServer
 BinaryRelQueryExp#getOperator():::Returns the operator of the query.:::return
 BinaryRelQueryExp#getLeftValue():::Returns the left value of the query.:::return
 BinaryRelQueryExp#getRightValue():::Returns the right value of the query.:::return
 BinaryRelQueryExp#apply(ObjectName):::Applies the BinaryRelQueryExp on an MBean.:::val1->exp1->apply->val2->exp2->apply->numeric->bool->if->if->isLong->lval1->longValue->lval2->longValue->switch->return->return->return->return->return->else->dval1->doubleValue->dval2->doubleValue->switch->return->return->return->return->return->else->if->bval1->getValue->booleanValue->bval2->getValue->booleanValue->switch->return->return->return->return->return->else->sval1->getValue->sval2->getValue->switch->return->sval1->compareTo->return->sval1->compareTo->return->sval1->compareTo->return->sval1->compareTo->return->sval1->compareTo->return
 BinaryRelQueryExp#toString():::Returns the string representing the object.:::return->relOpString
+BinaryRelQueryExp#relOpString()::: binary rel query exp rel op string:::switch->return->return->return->return->return->return
 BooleanValueExp#getValue():::Returns the  Boolean object representing the value of the BooleanValueExp object.:::return->Boolean->valueOf
 BooleanValueExp#toString():::Returns the string representing the object.:::return->String->valueOf
 BooleanValueExp#apply(ObjectName):::Applies the ValueExp on a MBean.:::return
+BooleanValueExp#setMBeanServer(MBeanServer)::: boolean value exp set bean server:::super->setMBeanServer
 ClassAttributeValueExp#apply(ObjectName):::Applies the ClassAttributeValueExp on an MBean:::result->getValue->if->return->new->StringValueExp->else->throw->new->BadAttributeValueExpException
 ClassAttributeValueExp#toString():::Returns the string "Class" representing its value:::return
+ClassAttributeValueExp#getValue(ObjectName)::: class attribute value exp get value:::try->server->QueryEval->getMBeanServer->return->server->getObjectInstance->getClassName->catch->return->finally
 DefaultLoaderRepository#loadClass(String):::Go through the list of class loaders and try to load the requested class:::return->loadClass
 DefaultLoaderRepository#loadClassWithout(ClassLoader, String):::Go through the list of class loaders but exclude the given class loader, then try to load the requested class:::return->loadClassWithout
 Descriptor#getFieldValue(String):::Returns the value for a specific field name, or null if no value is present for that name.:::
@@ -70,16 +87,34 @@ DynamicMBean#getAttributes(String[]):::Get the values of several attributes of t
 DynamicMBean#setAttributes(AttributeList):::Sets the values of several attributes of the Dynamic MBean.:::
 DynamicMBean#invoke(String, Object[], String[]):::Allows an action to be invoked on the Dynamic MBean.:::
 DynamicMBean#getMBeanInfo():::Provides the exposed attributes and actions of the Dynamic MBean using an MBeanInfo object.:::
+ImmutableDescriptor#readResolve():::This method can replace a deserialized instance of this class with another instance:::bad->if->if->if->getClass->return->compare->lastName->for->i->if->throw->new->InvalidObjectException->return
+ImmutableDescriptor#makeMap(String[], Object[])::: immutable descriptor make map:::if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->map->new->TreeMap<String,Object>->for->i->return
+ImmutableDescriptor#makeMap(String[])::: immutable descriptor make map:::if->throw->new->IllegalArgumentException->fieldNames->new->StringArr->fieldValues->new->StringArr->for->i->return->makeMap
 ImmutableDescriptor#union(Descriptor...):::Return an ImmutableDescriptor whose contents are the union of the given descriptors:::index->findNonEmpty->if->return->if->findNonEmpty->return->map->new->TreeMap<String,Object>->biggestImmutable->foreach->if->names->if->id->if->id->getClass->else->d->getFieldNames->foreach->v->d->getFieldValue->old->map->put->if->equal->if->old->getClass->isArray->Arrays->new->ObjectArr->new->ObjectArr->deepEquals->else->old->equals->if->msg->throw->new->IllegalArgumentException->if->map->size->return->return->new->ImmutableDescriptor
+ImmutableDescriptor#isEmpty(Descriptor)::: immutable descriptor is empty:::if->return->else->if->return->else->return->d->getFieldNames
+ImmutableDescriptor#findNonEmpty(Descriptor[], int)::: immutable descriptor find non empty:::for->i->return
+ImmutableDescriptor#fieldIndex(String)::: immutable descriptor field index:::return->Arrays->binarySearch
+ImmutableDescriptor#getFieldValue(String)::: immutable descriptor get field value:::checkIllegalFieldName->i->fieldIndex->if->return->v->if->v->getClass->isArray->return->if->return->clone->len->Array->getLength->a->Array->v->getClass->getComponentType->newInstance->System->arraycopy->return
+ImmutableDescriptor#getFields()::: immutable descriptor get fields:::result->new->StringArr->for->i->return
+ImmutableDescriptor#getFieldValues(String...)::: immutable descriptor get field values:::if->return->values->clone->result->new->ObjectArr->for->i->return
+ImmutableDescriptor#getFieldNames()::: immutable descriptor get field names:::return->names->clone
+ImmutableDescriptor#equals(Object)::: immutable descriptor equals:::if->return->if->return->onames->if->else->getFieldNames->Arrays->sort->if->return->for->i->ovalues->if->else->getFieldValues->return->Arrays->deepEquals
+ImmutableDescriptor#hashCode()::: immutable descriptor hash code:::if->Util->hashCode->return
+ImmutableDescriptor#toString()::: immutable descriptor to string:::sb->new->StringBuilder->for->i->return->sb->append->toString
 ImmutableDescriptor#isValid():::Returns true if all of the fields have legal values given their names:::return
 ImmutableDescriptor#clone():::Returns a descriptor which is equal to this descriptor:::return
 ImmutableDescriptor#setFields(String[], Object[]):::This operation is unsupported since this class is immutable:::if->illegal->if->illegal->for->i->for->i
 ImmutableDescriptor#setField(String, Object):::This operation is unsupported since this class is immutable:::checkIllegalFieldName->i->fieldIndex->if->unsupported->value->if->value->equals->unsupported
 ImmutableDescriptor#removeField(String):::Removes a field from the descriptor.:::if->fieldIndex->unsupported
+ImmutableDescriptor#nonNullDescriptor(Descriptor)::: immutable descriptor non null descriptor:::if->return->else->return
+ImmutableDescriptor#checkIllegalFieldName(String)::: immutable descriptor check illegal field name:::if->name->equals->illegal
+ImmutableDescriptor#unsupported()::: immutable descriptor unsupported:::uoe->new->UnsupportedOperationException->throw->new->RuntimeOperationsException
+ImmutableDescriptor#illegal(String)::: immutable descriptor illegal:::iae->new->IllegalArgumentException->throw->new->RuntimeOperationsException
 InQueryExp#getCheckedValue():::Returns the checked value of the query.:::return
 InQueryExp#getExplicitValues():::Returns the array of values of the query.:::return
 InQueryExp#apply(ObjectName):::Applies the InQueryExp on a MBean.:::if->v->val->apply->numeric->foreach->element->apply->if->if->doubleValue->doubleValue->return->else->if->getValue->getValue->equals->return->return
 InQueryExp#toString():::Returns the string representing the object.:::return->generateValueList
+InQueryExp#generateValueList()::: in query exp generate value list:::if->return->result->toString->new->StringBuilder->for->i->return->result->toString
 InstanceOfQueryExp#getClassNameValue():::Returns the class name.:::return
 InstanceOfQueryExp#apply(ObjectName):::Applies the InstanceOf on a MBean.:::val->try->classNameValue->apply->catch->y->x->toString->new->BadStringOperationException->y->initCause->throw->finally->try->return->getMBeanServer->val->getValue->isInstanceOf->catch->return->finally
 InstanceOfQueryExp#toString():::Returns a string representation of this InstanceOfQueryExp.:::return->classNameValue->toString
@@ -88,50 +123,97 @@ JMX#newMBeanProxy(MBeanServerConnection, ObjectName, Class, boolean):::Make a pr
 JMX#newMXBeanProxy(MBeanServerConnection, ObjectName, Class):::Make a proxy for an MXBean in a local or remote MBean Server:::return->newMXBeanProxy
 JMX#newMXBeanProxy(MBeanServerConnection, ObjectName, Class, boolean):::Make a proxy for an MXBean in a local or remote MBean Server that may also support the methods of NotificationEmitter.  This method behaves the same as #newMXBeanProxy(MBeanServerConnection, ObjectName, Class), but additionally, if notificationEmitter is true, then the MXBean is assumed to be a NotificationBroadcaster or NotificationEmitter and the returned proxy will implement NotificationEmitter as well as interfaceClass:::return->createProxy
 JMX#isMXBeanInterface(Class):::Test whether an interface is an MXBean interface:::if->interfaceClass->isInterface->return->if->Modifier->interfaceClass->getModifiers->isPublic->return->a->interfaceClass->getAnnotation->if->return->a->value->return->interfaceClass->getName->endsWith
+JMX#createProxy(MBeanServerConnection, ObjectName, Class, boolean, boolean):::Centralised M(X)Bean proxy creation code:::try->if->Introspector->testComplianceMXBeanInterface->else->Introspector->testComplianceMBeanInterface->catch->throw->new->IllegalArgumentException->finally->handler->new->MBeanServerInvocationHandler->interfaces->if->new->Class<?>Arr->else->new->Class<?>Arr->proxy->Proxy->interfaceClass->getClassLoader->newProxyInstance->return->interfaceClass->cast
 MatchQueryExp#getAttribute():::Returns the attribute of the query.:::return
 MatchQueryExp#getPattern():::Returns the pattern of the query.:::return
 MatchQueryExp#apply(ObjectName):::Applies the MatchQueryExp on a MBean.:::val->exp->apply->if->return->return->getValue->wildmatch
 MatchQueryExp#toString():::Returns the string representing the object:::return->new->StringValueExp
+MatchQueryExp#wildmatch(String, String)::: match query exp wildmatch:::c->si->pi->slen->s->length->plen->p->length->while->p->charAt->if->if->return->else->if->if->return->wantit->seenit->if->p->charAt->while->p->charAt->if->p->charAt->p->charAt->if->s->charAt->p->charAt->s->charAt->p->charAt->else->if->s->charAt->if->return->else->if->if->return->do->if->s->substring->p->substring->wildmatch->return->while->return->else->if->if->p->charAt->s->charAt->return->else->if->s->charAt->return->return
 MBeanAttributeInfo#clone():::Returns a shallow clone of this instance:::try->return->super->clone->catch->return->finally
 MBeanAttributeInfo#getType():::Returns the class name of the attribute.:::return
 MBeanAttributeInfo#isReadable():::Whether the value of the attribute can be read.:::return
 MBeanAttributeInfo#isWritable():::Whether new values can be written to the attribute.:::return
 MBeanAttributeInfo#isIs():::Indicates if this attribute has an "is" getter.:::return
+MBeanAttributeInfo#toString()::: bean attribute info to string:::access->if->isReadable->if->isWritable->else->else->if->isWritable->else->return->getClass->getName->getDescription->getName->getType->isIs->getDescriptor
 MBeanAttributeInfo#equals(Object):::Compare this MBeanAttributeInfo to another.:::if->return->if->return->p->return->Objects->p->getName->getName->equals->Objects->p->getType->getType->equals->Objects->p->getDescription->getDescription->equals->Objects->p->getDescriptor->getDescriptor->equals->p->isReadable->isReadable->p->isWritable->isWritable->p->isIs->isIs
+MBeanAttributeInfo#hashCode()::: bean attribute info hash code:::return->Objects->getName->getType->hash
+MBeanAttributeInfo#isIs(Method)::: bean attribute info is is:::return->getter->getName->startsWith->getter->getReturnType->equals->getter->getReturnType->equals
+MBeanAttributeInfo#attributeType(Method, Method):::Finds the type of the attribute.:::type->if->if->getter->getParameterTypes->throw->new->IntrospectionException->getter->getReturnType->if->throw->getter->getName->new->IntrospectionException->if->params->setter->getParameterTypes->if->throw->new->IntrospectionException->if->else->if->throw->new->IntrospectionException->if->throw->new->IntrospectionException->return->type->getName
 MBeanConstructorInfo#clone():::Returns a shallow clone of this instance:::try->return->super->clone->catch->return->finally
 MBeanConstructorInfo#getSignature():::Returns the list of parameters for this constructor:::if->return->else->return->signature->clone
+MBeanConstructorInfo#fastGetSignature()::: bean constructor info fast get signature:::if->return->else->return->getSignature
+MBeanConstructorInfo#toString()::: bean constructor info to string:::return->getClass->getName->getDescription->getName->Arrays->fastGetSignature->asList->getDescriptor
 MBeanConstructorInfo#equals(Object):::Compare this MBeanConstructorInfo to another.:::if->return->if->return->p->return->Objects->p->getName->getName->equals->Objects->p->getDescription->getDescription->equals->Arrays->p->fastGetSignature->fastGetSignature->equals->Objects->p->getDescriptor->getDescriptor->equals
+MBeanConstructorInfo#hashCode()::: bean constructor info hash code:::return->Objects->getName->hash->Arrays->fastGetSignature->hashCode
+MBeanConstructorInfo#constructorSignature(Constructor)::: bean constructor info constructor signature:::classes->cn->getParameterTypes->annots->cn->getParameterAnnotations->return->MBeanOperationInfo->parameters
 MBeanException#getTargetException():::Return the actual Exception thrown.:::return
 MBeanException#getCause():::Return the actual Exception thrown.:::return
 MBeanFeatureInfo#getName():::Returns the name of the feature.:::return
 MBeanFeatureInfo#getDescription():::Returns the human-readable description of the feature.:::return
 MBeanFeatureInfo#getDescriptor():::Returns the descriptor for the feature:::return->ImmutableDescriptor->nonNullDescriptor->clone
 MBeanFeatureInfo#equals(Object):::Compare this MBeanFeatureInfo to another.:::if->return->if->return->p->return->Objects->p->getName->getName->equals->Objects->p->getDescription->getDescription->equals->Objects->p->getDescriptor->getDescriptor->equals
+MBeanFeatureInfo#hashCode()::: bean feature info hash code:::return->getName->hashCode->getDescription->hashCode->getDescriptor->hashCode
+MBeanFeatureInfo#writeObject(ObjectOutputStream):::Serializes an MBeanFeatureInfo to an ObjectOutputStream.:::out->defaultWriteObject->if->descriptor->getClass->out->write->names->descriptor->getFieldNames->out->writeObject->out->descriptor->getFieldValues->writeObject->else->out->write->out->writeObject
+MBeanFeatureInfo#readObject(ObjectInputStream):::Deserializes an MBeanFeatureInfo from an ObjectInputStream.:::in->defaultReadObject->switch->in->read->names->in->readObject->values->in->readObject->new->ImmutableDescriptor->break->in->readObject->if->break->break->throw->new->StreamCorruptedException
 MBeanInfo#clone():::Returns a shallow clone of this instance:::try->return->super->clone->catch->return->finally
 MBeanInfo#getClassName():::Returns the name of the Java class of the MBean described by this MBeanInfo.:::return
 MBeanInfo#getDescription():::Returns a human readable description of the MBean.:::return
 MBeanInfo#getAttributes():::Returns the list of attributes exposed for management:::as->nonNullAttributes->if->return->else->return->as->clone
+MBeanInfo#fastGetAttributes()::: bean info fast get attributes:::if->return->nonNullAttributes->else->return->getAttributes
+MBeanInfo#nonNullAttributes():::Return the value of the attributes field, or an empty array if the field is null:::return
 MBeanInfo#getOperations():::Returns the list of operations  of the MBean:::os->nonNullOperations->if->return->else->return->os->clone
+MBeanInfo#fastGetOperations()::: bean info fast get operations:::if->return->nonNullOperations->else->return->getOperations
+MBeanInfo#nonNullOperations()::: bean info non null operations:::return
 MBeanInfo#getConstructors():::Returns the list of the public constructors of the MBean:::cs->nonNullConstructors->if->return->else->return->cs->clone
+MBeanInfo#fastGetConstructors()::: bean info fast get constructors:::if->return->nonNullConstructors->else->return->getConstructors
+MBeanInfo#nonNullConstructors()::: bean info non null constructors:::return
 MBeanInfo#getNotifications():::Returns the list of the notifications emitted by the MBean:::ns->nonNullNotifications->if->return->else->return->ns->clone
+MBeanInfo#fastGetNotifications()::: bean info fast get notifications:::if->return->nonNullNotifications->else->return->getNotifications
+MBeanInfo#nonNullNotifications()::: bean info non null notifications:::return
 MBeanInfo#getDescriptor():::Get the descriptor of this MBeanInfo:::return->nonNullDescriptor->clone
+MBeanInfo#toString()::: bean info to string:::return->getClass->getName->getDescription->Arrays->fastGetAttributes->asList->Arrays->fastGetConstructors->asList->Arrays->fastGetOperations->asList->Arrays->fastGetNotifications->asList->getDescriptor
 MBeanInfo#equals(Object):::Compare this MBeanInfo to another:::if->return->if->return->p->if->getClassName->p->getClassName->isEqual->getDescription->p->getDescription->isEqual->getDescriptor->p->getDescriptor->equals->return->return->Arrays->p->fastGetAttributes->fastGetAttributes->equals->Arrays->p->fastGetOperations->fastGetOperations->equals->Arrays->p->fastGetConstructors->fastGetConstructors->equals->Arrays->p->fastGetNotifications->fastGetNotifications->equals
+MBeanInfo#hashCode()::: bean info hash code:::if->return->Objects->getClassName->getDescriptor->hash->Arrays->fastGetAttributes->hashCode->Arrays->fastGetOperations->hashCode->Arrays->fastGetConstructors->hashCode->Arrays->fastGetNotifications->hashCode->return
 MBeanInfo#arrayGettersSafe(Class, Class):::Return true if subclass is known to preserve the immutability of immutableClass:::if->return->synchronized->safe->arrayGettersSafeMap->get->if->try->action->new->ArrayGettersSafeAction->AccessController->doPrivileged->catch->finally->arrayGettersSafeMap->put->return
+MBeanInfo.ArrayGettersSafeAction#run()::: array getters safe action run:::methods->immutableClass->getMethods->for->i->return
+MBeanInfo#isEqual(String, String)::: bean info is equal:::ret->if->else->s1->equals->return
+MBeanInfo#writeObject(ObjectOutputStream):::Serializes an MBeanInfo to an ObjectOutputStream.:::out->defaultWriteObject->if->descriptor->getClass->out->write->names->descriptor->getFieldNames->out->writeObject->out->descriptor->getFieldValues->writeObject->else->out->write->out->writeObject
+MBeanInfo#readObject(ObjectInputStream)::: bean info read object:::in->defaultReadObject->switch->in->read->names->in->readObject->values->in->readObject->new->ImmutableDescriptor->break->in->readObject->if->break->break->throw->new->StreamCorruptedException
 MBeanNotificationInfo#clone():::Returns a shallow clone of this instance:::try->return->super->clone->catch->return->finally
 MBeanNotificationInfo#getNotifTypes():::Returns the array of strings (in dot notation) containing the notification types that the MBean may emit.:::if->return->else->return->types->clone
+MBeanNotificationInfo#fastGetNotifTypes()::: bean notification info fast get notif types:::if->return->else->return->getNotifTypes
+MBeanNotificationInfo#toString()::: bean notification info to string:::return->getClass->getName->getDescription->getName->Arrays->fastGetNotifTypes->asList->getDescriptor
 MBeanNotificationInfo#equals(Object):::Compare this MBeanNotificationInfo to another.:::if->return->if->return->p->return->Objects->p->getName->getName->equals->Objects->p->getDescription->getDescription->equals->Objects->p->getDescriptor->getDescriptor->equals->Arrays->p->fastGetNotifTypes->fastGetNotifTypes->equals
+MBeanNotificationInfo#hashCode()::: bean notification info hash code:::hash->getName->hashCode->for->i->return
+MBeanNotificationInfo#readObject(ObjectInputStream)::: bean notification info read object:::gf->ois->readFields->t->gf->get->t->clone
 MBeanOperationInfo#clone():::Returns a shallow clone of this instance:::try->return->super->clone->catch->return->finally
 MBeanOperationInfo#getReturnType():::Returns the type of the method's return value.:::return
 MBeanOperationInfo#getSignature():::Returns the list of parameters for this operation:::if->return->else->if->return->else->return->signature->clone
+MBeanOperationInfo#fastGetSignature()::: bean operation info fast get signature:::if->if->return->else->return->else->return->getSignature
 MBeanOperationInfo#getImpact():::Returns the impact of the method, one of INFO, ACTION, ACTION_INFO, UNKNOWN.:::return
+MBeanOperationInfo#toString()::: bean operation info to string:::impactString->switch->getImpact->break->break->break->return->getClass->getName->getDescription->getName->getReturnType->Arrays->fastGetSignature->asList->getDescriptor
 MBeanOperationInfo#equals(Object):::Compare this MBeanOperationInfo to another.:::if->return->if->return->p->return->Objects->p->getName->getName->equals->Objects->p->getReturnType->getReturnType->equals->Objects->p->getDescription->getDescription->equals->p->getImpact->getImpact->Arrays->p->fastGetSignature->fastGetSignature->equals->Objects->p->getDescriptor->getDescriptor->equals
+MBeanOperationInfo#hashCode()::: bean operation info hash code:::return->Objects->getName->getReturnType->hash
+MBeanOperationInfo#methodSignature(Method)::: bean operation info method signature:::classes->method->getParameterTypes->annots->method->getParameterAnnotations->return->parameters
+MBeanOperationInfo#parameters(Class[], Annotation[][])::: bean operation info parameters:::params->new->MBeanParameterInfoArr->for->i->return
 MBeanParameterInfo#clone():::Returns a shallow clone of this instance:::try->return->super->clone->catch->return->finally
 MBeanParameterInfo#getType():::Returns the type or class name of the data.:::return
+MBeanParameterInfo#toString()::: bean parameter info to string:::return->getClass->getName->getDescription->getName->getType->getDescriptor
 MBeanParameterInfo#equals(Object):::Compare this MBeanParameterInfo to another.:::if->return->if->return->p->return->Objects->p->getName->getName->equals->Objects->p->getType->getType->equals->Objects->p->getDescription->getDescription->equals->Objects->p->getDescriptor->getDescriptor->equals
+MBeanParameterInfo#hashCode()::: bean parameter info hash code:::return->Objects->getName->getType->hash
+MBeanPermission#parseActions():::Parse actions parameter.:::mask->if->throw->new->IllegalArgumentException->if->actions->equals->throw->new->IllegalArgumentException->getMask->if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException
+MBeanPermission#parseName():::Parse name parameter.:::name->getName->if->throw->new->IllegalArgumentException->if->name->equals->throw->new->IllegalArgumentException->openingBracket->name->indexOf->if->else->if->name->endsWith->throw->new->IllegalArgumentException->else->try->on->name->name->length->substring->if->on->equals->else->if->on->equals->else->new->ObjectName->catch->throw->new->IllegalArgumentException->finally->name->substring->poundSign->name->indexOf->if->setMember->else->memberName->name->substring->setMember->name->substring->setClassName
+MBeanPermission#initName(String, String, ObjectName):::Assign fields based on className, member, and objectName parameters.:::setClassName->setMember
+MBeanPermission#setClassName(String)::: bean permission set class name:::if->className->equals->else->if->className->equals->className->equals->else->if->className->endsWith->className->className->length->substring->else
+MBeanPermission#setMember(String)::: bean permission set member:::if->member->equals->else->if->member->equals->else
+MBeanPermission#makeName(String, String, ObjectName)::: bean permission make name:::name->new->StringBuilder->if->name->append->if->name->append->append->if->name->append->else->name->append->objectName->getCanonicalName->append->append->if->name->length->return->else->return->name->toString
 MBeanPermission#getActions():::Returns the "canonical string representation" of the actions:::if->getActions->return
+MBeanPermission#getActions(int):::Returns the "canonical string representation" of the actions from the mask.:::sb->new->StringBuilder->comma->if->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->if->if->sb->append->else->sb->append->return->sb->toString
 MBeanPermission#hashCode():::Returns the hash code value for this object.:::return->this->getName->hashCode->this->getActions->hashCode
+MBeanPermission#getMask(String):::Converts an action String to an integer action mask.:::mask->if->return->if->action->equals->return->a->action->toCharArray->i->if->return->while->c->while->matchlen->if->else->if->else->if->else->if->else->if->else->if->else->if->else->if->else->if->else->if->else->if->else->if->else->if->else->if->else->if->else->if->else->if->else->throw->new->IllegalArgumentException->seencomma->while->switch->break->break->throw->new->IllegalArgumentException->return
 MBeanPermission#implies(Permission):::Checks if this MBeanPermission object "implies" the specified permission.  More specifically, this method returns true if:  <ul>  <li> p is an instance of MBeanPermission; and</li>  <li> p has a null className or p's className matches this object's className; and</li>  <li> p has a null member or p's member matches this object's member; and</li>  <li> p has a null object name or p's object name matches this object's object name; and</li>  <li> p's actions are a subset of this object's actions</li>  </ul>  If this object's className is "*", p's className always matches it:::if->return->that->if->if->return->else->if->return->if->else->if->return->else->if->if->return->if->equals->return->else->if->startsWith->return->if->else->if->return->else->if->equals->else->if->equals->return->if->else->if->return->else->if->apply->if->equals->return->return
 MBeanPermission#equals(Object):::Checks two MBeanPermission objects for equality:::if->return->if->return->that->return->this->getName->that->getName->equals
+MBeanPermission#readObject(ObjectInputStream):::Deserialize this object based on its name and actions.:::in->defaultReadObject->parseName->parseActions
 MBeanRegistration#preRegister(MBeanServer, ObjectName):::Allows the MBean to perform any operations it needs before being registered in the MBean Server:::
 MBeanRegistration#postRegister(Boolean):::Allows the MBean to perform any operations needed after having been registered in the MBean server or after the registration has failed:::
 MBeanRegistration#preDeregister():::Allows the MBean to perform any operations it needs before being unregistered by the MBean server.:::
@@ -142,8 +224,26 @@ MBeanServer#createMBean(String, ObjectName, Object[], String[])::: If this metho
 MBeanServer#createMBean(String, ObjectName, ObjectName, Object[], String[])::: If this method successfully creates an MBean, a notification is sent as described above.:::
 MBeanServer#registerMBean(Object, ObjectName):::Registers a pre-existing object as an MBean with the MBean server:::
 MBeanServer#unregisterMBean(ObjectName):::  If this method successfully unregisters an MBean, a notification is sent as described above.:::
+MBeanServer#getObjectInstance(ObjectName)::: bean server get object instance:::
+MBeanServer#queryMBeans(ObjectName, QueryExp)::: bean server query beans:::
+MBeanServer#queryNames(ObjectName, QueryExp)::: bean server query names:::
+MBeanServer#isRegistered(ObjectName)::: bean server is registered:::
 MBeanServer#getMBeanCount():::Returns the number of MBeans registered in the MBean server.:::
+MBeanServer#getAttribute(ObjectName, String)::: bean server get attribute:::
+MBeanServer#getAttributes(ObjectName, String[])::: bean server get attributes:::
+MBeanServer#setAttribute(ObjectName, Attribute)::: bean server set attribute:::
+MBeanServer#setAttributes(ObjectName, AttributeList)::: bean server set attributes:::
+MBeanServer#invoke(ObjectName, String, Object[], String[])::: bean server invoke:::
+MBeanServer#getDefaultDomain()::: bean server get default domain:::
+MBeanServer#getDomains()::: bean server get domains:::
 MBeanServer#addNotificationListener(ObjectName, NotificationListener, NotificationFilter, Object)::: If the source of the notification is a reference to an MBean object, the MBean server will replace it by that MBean's ObjectName:::
+MBeanServer#addNotificationListener(ObjectName, ObjectName, NotificationFilter, Object)::: bean server add notification listener:::
+MBeanServer#removeNotificationListener(ObjectName, ObjectName)::: bean server remove notification listener:::
+MBeanServer#removeNotificationListener(ObjectName, ObjectName, NotificationFilter, Object)::: bean server remove notification listener:::
+MBeanServer#removeNotificationListener(ObjectName, NotificationListener)::: bean server remove notification listener:::
+MBeanServer#removeNotificationListener(ObjectName, NotificationListener, NotificationFilter, Object)::: bean server remove notification listener:::
+MBeanServer#getMBeanInfo(ObjectName)::: bean server get bean info:::
+MBeanServer#isInstanceOf(ObjectName, String)::: bean server is instance of:::
 MBeanServer#instantiate(String):::Instantiates an object using the list of all class loaders registered in the MBean server's javax.management.loading.ClassLoaderRepository Class Loader Repository:::
 MBeanServer#instantiate(String, ObjectName):::Instantiates an object using the class Loader specified by its <CODE>ObjectName</CODE>:::
 MBeanServer#instantiate(String, Object[], String[]):::Instantiates an object using the list of all class loaders registered in the MBean server javax.management.loading.ClassLoaderRepository Class Loader Repository:::
@@ -188,7 +288,12 @@ MBeanServerDelegate#getSpecificationVendor():::Returns the vendor of the JMX spe
 MBeanServerDelegate#getImplementationName():::Returns the JMX implementation name (the name of this product).:::return
 MBeanServerDelegate#getImplementationVersion():::Returns the JMX implementation version (the version of this product).:::try->return->System->getProperty->catch->return->finally
 MBeanServerDelegate#getImplementationVendor():::Returns the JMX implementation vendor (the vendor of this product).:::return
+MBeanServerDelegate#getNotificationInfo()::: bean server delegate get notification info:::len->infos->new->MBeanNotificationInfoArr->System->arraycopy->return
+MBeanServerDelegate#addNotificationListener(NotificationListener, NotificationFilter, Object)::: bean server delegate add notification listener:::broadcaster->addNotificationListener
+MBeanServerDelegate#removeNotificationListener(NotificationListener, NotificationFilter, Object)::: bean server delegate remove notification listener:::broadcaster->removeNotificationListener
+MBeanServerDelegate#removeNotificationListener(NotificationListener)::: bean server delegate remove notification listener:::broadcaster->removeNotificationListener
 MBeanServerDelegate#sendNotification(Notification):::Enables the MBean server to send a notification:::if->notification->getSequenceNumber->synchronized->notification->setSequenceNumber->broadcaster->sendNotification
+MBeanServerDelegate#getStamp()::: bean server delegate get stamp:::s->System->currentTimeMillis->if->return
 MBeanServerDelegateMBean#getMBeanServerId():::Returns the MBean server agent identity.:::
 MBeanServerDelegateMBean#getSpecificationName():::Returns the full name of the JMX specification implemented by this product.:::
 MBeanServerDelegateMBean#getSpecificationVersion():::Returns the version of the JMX specification implemented by this product.:::
@@ -203,13 +308,42 @@ MBeanServerFactory#newMBeanServer():::Return a new object implementing the MBean
 MBeanServerFactory#newMBeanServer(String):::Return a new object implementing the MBeanServer interface with the specified default domain name, without keeping an internal reference to this new object:::checkPermission->mbsBuilder->getNewMBeanServerBuilder->synchronized->delegate->mbsBuilder->newMBeanServerDelegate->if->msg->throw->new->JMRuntimeException->mbeanServer->mbsBuilder->newMBeanServer->if->msg->throw->new->JMRuntimeException->return
 MBeanServerFactory#findMBeanServer(String):::Return a list of registered MBeanServer objects:::checkPermission->if->return->new->ArrayList<MBeanServer>->result->new->ArrayList<MBeanServer>->foreach->name->mBeanServerId->if->agentId->equals->result->add->return
 MBeanServerFactory#getClassLoaderRepository(MBeanServer):::Return the ClassLoaderRepository used by the given MBeanServer:::return->server->getClassLoaderRepository
+MBeanServerFactory#mBeanServerId(MBeanServer)::: bean server factory m bean server id:::try->return->mbs->getAttribute->catch->log->return->finally
+MBeanServerFactory#checkPermission(String)::: bean server factory check permission:::sm->System->getSecurityManager->if->perm->new->MBeanServerPermission->sm->checkPermission
+MBeanServerFactory#addMBeanServer(MBeanServer)::: bean server factory add bean server:::mBeanServerList->add
+MBeanServerFactory#removeMBeanServer(MBeanServer)::: bean server factory remove bean server:::removed->mBeanServerList->remove->if->MBEANSERVER_LOGGER->log->throw->new->IllegalArgumentException
+MBeanServerFactory#loadBuilderClass(String):::Load the builder class through the context class loader.:::loader->Thread->currentThread->getContextClassLoader->if->return->loader->loadClass->return->ReflectUtil->forName
+MBeanServerFactory#newBuilder(Class):::Creates the initial builder according to the javax.management.builder.initial System property - if specified:::try->abuilder->builderClass->newInstance->return->catch->throw->msg->throw->new->JMRuntimeException->finally
+MBeanServerFactory#checkMBeanServerBuilder():::Instantiate a new builder according to the javax.management.builder.initial System property - if needed.:::try->act->new->GetPropertyAction->builderClassName->AccessController->doPrivileged->try->newBuilderClass->if->builderClassName->length->else->loadBuilderClass->if->builderClass->builder->getClass->if->return->newBuilder->catch->msg->throw->new->JMRuntimeException->finally->catch->if->MBEANSERVER_LOGGER->isLoggable->strb->new->StringBuilder->append->append->append->append->append->MBEANSERVER_LOGGER->strb->toString->log->throw->finally
+MBeanServerFactory#getNewMBeanServerBuilder():::Get the current javax.management.MBeanServerBuilder, as specified by the current value of the javax.management.builder.initial property:::checkMBeanServerBuilder->return
 MBeanServerInvocationHandler#getMBeanServerConnection():::The MBean server connection through which the methods of a proxy using this handler are forwarded.:::return
 MBeanServerInvocationHandler#getObjectName():::The name of the MBean within the MBean server to which methods are forwarded.:::return
 MBeanServerInvocationHandler#isMXBean():::If true, the proxy is for an MXBean, and appropriate mappings are applied to method parameters and return values.:::return
 MBeanServerInvocationHandler#newProxyInstance(MBeanServerConnection, ObjectName, Class, boolean):::Return a proxy that implements the given interface by forwarding its methods through the given MBean server to the named MBean:::return->JMX->newMBeanProxy
+MBeanServerInvocationHandler#invoke(Object, Method, Object[])::: bean server invocation handler invoke:::methodClass->method->getDeclaringClass->if->methodClass->equals->methodClass->equals->return->invokeBroadcasterMethod->if->shouldDoLocally->return->doLocally->try->if->isMXBean->p->findMXBeanProxy->return->p->invoke->else->methodName->method->getName->paramTypes->method->getParameterTypes->returnType->method->getReturnType->nargs->if->methodName->startsWith->methodName->length->returnType->equals->return->connection->methodName->substring->getAttribute->if->methodName->startsWith->methodName->length->returnType->equals->returnType->equals->return->connection->methodName->substring->getAttribute->if->methodName->startsWith->methodName->length->returnType->equals->attr->methodName->substring->new->Attribute->connection->setAttribute->return->signature->new->StringArr->for->i->return->connection->invoke->catch->throw->e->getTargetException->throw->re->getTargetException->throw->rre->getTargetError->finally
+MBeanServerInvocationHandler#findMXBeanProxy(Class)::: bean server invocation handler find bean proxy:::synchronized->proxyRef->mxbeanProxies->get->p->proxyRef->get->if->try->new->MXBeanProxy->catch->msg->mxbeanInterface->getName->e->getMessage->iae->e->getCause->new->IllegalArgumentException->iae->e->getStackTrace->setStackTrace->throw->finally->mxbeanProxies->new->WeakReference<MXBeanProxy>->put->return
+MBeanServerInvocationHandler#invokeBroadcasterMethod(Object, Method, Object[])::: bean server invocation handler invoke broadcaster method:::methodName->method->getName->nargs->if->methodName->equals->if->msg->throw->new->IllegalArgumentException->listener->filter->handback->connection->addNotificationListener->return->else->if->methodName->equals->listener->switch->connection->removeNotificationListener->return->filter->handback->connection->removeNotificationListener->return->msg->throw->new->IllegalArgumentException->else->if->methodName->equals->if->throw->new->IllegalArgumentException->info->connection->getMBeanInfo->return->info->getNotifications->else->throw->new->IllegalArgumentException
+MBeanServerInvocationHandler#shouldDoLocally(Object, Method)::: bean server invocation handler should do locally:::methodName->method->getName->if->methodName->equals->methodName->equals->method->getParameterTypes->isLocal->return->if->methodName->equals->Arrays->method->getParameterTypes->new->Class<?>Arr->equals->isLocal->return->if->methodName->equals->method->getParameterTypes->return->return
+MBeanServerInvocationHandler#doLocally(Object, Method, Object[])::: bean server invocation handler do locally:::methodName->method->getName->if->methodName->equals->if->return->if->return->ihandler->Proxy->getInvocationHandler->if->return->handler->return->connection->equals->objectName->equals->proxy->getClass->getClass->equals->else->if->methodName->equals->return->isMXBean->else->if->methodName->equals->return->objectName->hashCode->connection->hashCode->else->if->methodName->equals->return->throw->new->RuntimeException
+MBeanServerInvocationHandler#isLocal(Object, Method)::: bean server invocation handler is local:::interfaces->proxy->getClass->getInterfaces->if->return->methodName->method->getName->params->method->getParameterTypes->foreach->try->intf->getMethod->return->catch->finally->return
 MBeanServerNotification#getMBeanName():::Returns the  object name of the MBean that caused the notification.:::return
+MBeanServerNotification#toString()::: bean server notification to string:::return->super->toString
+MBeanServerPermission#readObject(ObjectInputStream)::: bean server permission read object:::in->defaultReadObject->getName->parseMask
+MBeanServerPermission#simplifyMask(int)::: bean server permission simplify mask:::if->return
+MBeanServerPermission#impliedMask(int)::: bean server permission implied mask:::if->return
+MBeanServerPermission#getCanonicalName(int)::: bean server permission get canonical name:::if->return->simplifyMask->synchronized->if->makeCanonicalName->return
+MBeanServerPermission#makeCanonicalName(int)::: bean server permission make canonical name:::buf->new->StringBuilder->for->i->return->buf->toString->intern
+MBeanServerPermission#parseMask(String)::: bean server permission parse mask:::if->throw->new->NullPointerException->name->trim->if->name->equals->return->if->name->indexOf->return->name->trim->nameIndex->impliedMask->mask->tok->new->StringTokenizer->while->tok->hasMoreTokens->action->tok->nextToken->i->action->trim->nameIndex->return->impliedMask
+MBeanServerPermission#nameIndex(String)::: bean server permission name index:::for->i->msg->throw->new->IllegalArgumentException
+MBeanServerPermission#hashCode()::: bean server permission hash code:::return
 MBeanServerPermission#implies(Permission):::Checks if this MBeanServerPermission object "implies" the specified permission.  More specifically, this method returns true if:  <ul> <li> p is an instance of MBeanServerPermission,</li> <li> p's target names are a subset of this object's target names</li> </ul>  The createMBeanServer permission implies the newMBeanServer permission.:::if->return->that->return
 MBeanServerPermission#equals(Object):::Checks two MBeanServerPermission objects for equality:::if->return->if->return->that->return
+MBeanServerPermission#newPermissionCollection()::: bean server permission new permission collection:::return->new->MBeanServerPermissionCollection
+MBeanServerPermissionCollection#add(Permission)::: bean server permission collection add:::if->msg->throw->new->IllegalArgumentException->if->isReadOnly->throw->new->SecurityException->mbsp->if->else->if->collectionPermission->implies->newmask->new->MBeanServerPermission
+MBeanServerPermissionCollection#implies(Permission)::: bean server permission collection implies:::return->collectionPermission->implies
+MBeanServerPermissionCollection#elements()::: bean server permission collection elements:::set->if->Collections->emptySet->else->Collections->singleton->return->Collections->enumeration
+MBeanTrustPermission#validate(String, String)::: bean trust permission validate:::if->actions->length->throw->new->IllegalArgumentException->if->name->equals->name->equals->throw->new->IllegalArgumentException
+MBeanTrustPermission#readObject(ObjectInputStream)::: bean trust permission read object:::in->defaultReadObject->try->super->getName->super->getActions->validate->catch->throw->e->getMessage->new->InvalidObjectException->finally
 Notification#setSource(Object):::Sets the source.:::
 Notification#getSequenceNumber():::Get the notification sequence number.:::return
 Notification#setSequenceNumber(long):::Set the notification sequence number.:::
@@ -220,12 +354,22 @@ Notification#getMessage():::Get the notification message.:::return
 Notification#getUserData():::Get the user data.:::return
 Notification#setUserData(Object):::Set the user data.:::
 Notification#toString():::Returns a String representation of this notification.:::return->super->toString
+Notification#readObject(ObjectInputStream):::Deserializes a Notification from an ObjectInputStream.:::in->defaultReadObject
+Notification#writeObject(ObjectOutputStream):::Serializes a Notification to an ObjectOutputStream.:::if->fields->out->putFields->fields->put->fields->put->fields->put->fields->put->fields->put->fields->put->out->writeFields->else->out->defaultWriteObject
 NotificationBroadcaster#addNotificationListener(NotificationListener, NotificationFilter, Object):::Adds a listener to this MBean.:::
 NotificationBroadcaster#removeNotificationListener(NotificationListener):::Removes a listener from this MBean:::
 NotificationBroadcaster#getNotificationInfo():::Returns an array indicating, for each notification this MBean may send, the name of the Java class of the notification and the notification type.  It is not illegal for the MBean to send notifications not described in this array:::
 NotificationBroadcasterSupport#addNotificationListener(NotificationListener, NotificationFilter, Object):::Adds a listener.:::if->throw->new->IllegalArgumentException->listenerList->new->ListenerInfo->add
+NotificationBroadcasterSupport#removeNotificationListener(NotificationListener)::: notification broadcaster support remove notification listener:::wildcard->new->WildcardListenerInfo->removed->listenerList->Collections->singleton->removeAll->if->throw->new->ListenerNotFoundException
+NotificationBroadcasterSupport#removeNotificationListener(NotificationListener, NotificationFilter, Object)::: notification broadcaster support remove notification listener:::li->new->ListenerInfo->removed->listenerList->remove->if->throw->new->ListenerNotFoundException
+NotificationBroadcasterSupport#getNotificationInfo()::: notification broadcaster support get notification info:::if->return->else->return->notifInfo->clone
 NotificationBroadcasterSupport#sendNotification(Notification):::Sends a notification:::if->return->enabled->foreach->try->isNotificationEnabled->catch->if->logger->debugOn->logger->debug->continue->finally->if->executor->new->SendNotifJob->execute
 NotificationBroadcasterSupport#handleNotification(NotificationListener, Notification, Object):::This method is called by #sendNotification sendNotification for each listener in order to send the notification to that listener:::listener->handleNotification
+NotificationBroadcasterSupport.ListenerInfo#equals(Object)::: listener info equals:::if->return->li->if->return->else->return
+NotificationBroadcasterSupport.ListenerInfo#hashCode()::: listener info hash code:::return->Objects->hashCode
+NotificationBroadcasterSupport.WildcardListenerInfo#equals(Object)::: wildcard listener info equals:::return->o->equals
+NotificationBroadcasterSupport.WildcardListenerInfo#hashCode()::: wildcard listener info hash code:::return->super->hashCode
+NotificationBroadcasterSupport.SendNotifJob#run()::: send notif job run:::try->handleNotification->catch->if->logger->debugOn->logger->debug->finally
 NotificationEmitter#removeNotificationListener(NotificationListener, NotificationFilter, Object):::Removes a listener from this MBean:::
 NotificationFilter#isNotificationEnabled(Notification):::Invoked before sending the specified notification to the listener.:::
 NotificationFilterSupport#isNotificationEnabled(Notification):::Invoked before sending the specified notification to the listener:::type->notification->getType->if->return->try->foreach->if->type->startsWith->return->catch->return->finally->return
@@ -242,24 +386,51 @@ NumericValueExp#longValue():::Returns a long numeric value:::if->return->val->lo
 NumericValueExp#isLong():::Returns true is if the numeric value is a long, false otherwise.:::return
 NumericValueExp#toString():::Returns the string representing the object:::if->return->if->return->Long->val->longValue->toString->d->val->doubleValue->if->Double->isInfinite->return->if->Double->isNaN->return->return->Double->toString
 NumericValueExp#apply(ObjectName):::Applies the ValueExp on a MBean.:::return
+NumericValueExp#readObject(ObjectInputStream):::Deserializes a NumericValueExp from an ObjectInputStream.:::if->doubleVal->longVal->isLong->fields->in->readFields->fields->get->if->fields->defaulted->throw->new->NullPointerException->fields->get->if->fields->defaulted->throw->new->NullPointerException->fields->get->if->fields->defaulted->throw->new->NullPointerException->if->else->else->in->defaultReadObject
+NumericValueExp#writeObject(ObjectOutputStream):::Serializes a NumericValueExp to an ObjectOutputStream.:::if->fields->out->putFields->fields->doubleValue->put->fields->longValue->put->fields->isLong->put->out->writeFields->else->out->defaultWriteObject
+NumericValueExp#setMBeanServer(MBeanServer)::: numeric value exp set bean server:::super->setMBeanServer
 ObjectInstance#equals(Object):::Compares the current object instance with another object instance.:::if->return->val->if->name->val->getObjectName->equals->return->if->return->val->getClassName->return->className->val->getClassName->equals
+ObjectInstance#hashCode()::: object instance hash code:::classHash->className->hashCode->return->name->hashCode
 ObjectInstance#getObjectName():::Returns the object name part.:::return
 ObjectInstance#getClassName():::Returns the class part.:::return
 ObjectInstance#toString():::Returns a string representing this ObjectInstance object:::return->getClassName->getObjectName
+ObjectName.Property#setKeyIndex(int):::Assigns the key index of property:::
+ObjectName.Property#getKeyString(String):::Returns a key string for receiver key:::return->name->substring
+ObjectName.Property#getValueString(String):::Returns a value string for receiver key:::in_begin->out_end->return->name->substring
+ObjectName#construct(String):::Initializes this ObjectName from the given string representation.:::if->throw->new->NullPointerException->if->name->length->setDomainLength->setDomainPattern->setPropertyListPattern->setPropertyValuePattern->return->name_chars->name->toCharArray->len->canonical_chars->new->charArr->cname_index->index->c->c1->while->switch->setDomainLength->break->i->while->if->throw->new->MalformedObjectNameException->break->throw->new->MalformedObjectNameException->setDomainPattern->break->break->if->throw->new->MalformedObjectNameException->_domain_length->getDomainLength->System->arraycopy->prop->keys_map->new->HashMap<String,Property>->keys->key_name->quoted_value->property_index->in_index->key_index->key_length->value_index->value_length->new->StringArr->new->PropertyArr->setPropertyListPattern->setPropertyValuePattern->while->if->if->isPropertyListPattern->throw->new->MalformedObjectNameException->else->setPropertyListPattern->if->throw->new->MalformedObjectNameException->else->if->if->Collections->emptyMap->break->else->continue->if->throw->new->MalformedObjectNameException->while->switch->ichar->throw->new->MalformedObjectNameException->if->throw->new->MalformedObjectNameException->value_pattern->if->while->if->if->throw->new->MalformedObjectNameException->switch->break->throw->new->MalformedObjectNameException->else->if->throw->new->MalformedObjectNameException->else->switch->break->if->throw->new->MalformedObjectNameException->else->else->while->switch->break->ichar->throw->new->MalformedObjectNameException->break->if->if->throw->new->MalformedObjectNameException->else->throw->new->MalformedObjectNameException->else->if->new->Property->else->setPropertyValuePattern->new->PatternProperty->name->substring->if->tmp_string_array->new->StringArr->System->arraycopy->addProperty->setCanonicalName
+ObjectName#construct(String, Map):::Construct an ObjectName from a domain and a Hashtable.:::if->throw->new->NullPointerException->if->throw->new->NullPointerException->if->props->isEmpty->throw->new->MalformedObjectNameException->if->isDomain->throw->new->MalformedObjectNameException->sb->new->StringBuilder->sb->append->append->domain->length->setDomainLength->nb_props->props->size->new->PropertyArr->keys->new->StringArr->keys_map->new->HashMap<String,Property>->prop->key_index->i->foreach->props->entrySet->if->sb->length->sb->append->key->entry->getKey->value->try->entry->getValue->catch->throw->e->getMessage->new->MalformedObjectNameException->finally->sb->length->checkKey->sb->append->sb->append->value_pattern->checkValue->sb->append->if->key->length->value->length->new->Property->else->setPropertyValuePattern->key->length->value->length->new->PatternProperty->addProperty->len->sb->length->initial_chars->new->charArr->sb->getChars->canonical_chars->new->charArr->copyLen->getDomainLength->System->arraycopy->setCanonicalName
+ObjectName#addProperty(Property, int, Map, String):::Add passed property to the list at the given index for the passed key name:::if->keys_map->containsKey->throw->new->MalformedObjectNameException->if->tmp_prop_array->new->PropertyArr->System->arraycopy->keys_map->put
+ObjectName#setCanonicalName(char[], char[], String[], Map, int, int):::Sets the canonical name of receiver from input 'specified_chars' array, by filling 'canonical_chars' array with found 'nb-props' properties starting at position 'prop_index'.:::if->tmp_keys->new->StringArr->tmp_props->new->PropertyArr->System->arraycopy->Arrays->sort->System->arraycopy->new->PropertyArr->for->i->last_index->prop_len->prop->for->i->if->isPropertyListPattern->if->new->String->intern
+ObjectName#parseKey(char[], int):::Parse a key:::next->endKey->len->while->k->switch->ichar->throw->new->MalformedObjectNameException->break->if->continue->else->break->return
+ObjectName#parseValue(char[], int):::Parse a value:::value_pattern->next->endValue->len->q->if->if->throw->new->MalformedObjectNameException->while->last->if->if->throw->new->MalformedObjectNameException->switch->break->if->throw->new->MalformedObjectNameException->break->throw->new->MalformedObjectNameException->else->if->throw->new->MalformedObjectNameException->else->if->break->else->switch->break->if->throw->new->MalformedObjectNameException->if->if->throw->new->MalformedObjectNameException->else->while->v->switch->if->continue->else->break->ichar->throw->new->MalformedObjectNameException->break->if->continue->else->break->return->new->intArr
+ObjectName#checkValue(String):::Check if the supplied value is a valid value.:::if->throw->new->NullPointerException->len->val->length->if->return->s->val->toCharArray->result->parseValue->endValue->value_pattern->if->throw->new->MalformedObjectNameException->return
+ObjectName#checkKey(String):::Check if the supplied key is a valid key.:::if->throw->new->NullPointerException->len->key->length->if->throw->new->MalformedObjectNameException->k->key->toCharArray->endKey->parseKey->if->throw->new->MalformedObjectNameException
+ObjectName#isDomain(String):::Check if domain is a valid domain:::if->return->len->domain->length->next->while->c->domain->charAt->switch->return->setDomainPattern->break->return
+ObjectName#getDomainLength()::: object name get domain length:::return
+ObjectName#setDomainLength(int):::Validates and sets the domain length:::if->throw->new->MalformedObjectNameException
+ObjectName#readObject(ObjectInputStream):::Deserializes an ObjectName from an ObjectInputStream.:::cn->if->fields->in->readFields->propListString->fields->get->propPattern->fields->get->if->propListString->length->fields->get->else->in->defaultReadObject->in->readObject->try->construct->catch->throw->e->toString->new->InvalidObjectException->throw->e->toString->new->InvalidObjectException->finally
+ObjectName#writeObject(ObjectOutputStream):::Serializes an ObjectName to an ObjectOutputStream.:::if->fields->out->putFields->fields->_canonicalName->getDomainLength->substring->put->fields->getKeyPropertyList->put->fields->getKeyPropertyListString->put->fields->put->fields->put->fields->isPropertyListPattern->put->out->writeFields->else->out->defaultWriteObject->out->getSerializedNameString->writeObject
 ObjectName#getInstance(String):::Return an instance of ObjectName that can be used anywhere an object obtained with #ObjectName(String) new ObjectName(name) can be used:::return->new->ObjectName
 ObjectName#getInstance(String, String, String):::Return an instance of ObjectName that can be used anywhere an object obtained with #ObjectName(String, String, String) new ObjectName(domain, key, value) can be used:::return->new->ObjectName
 ObjectName#getInstance(String, Hashtable):::Return an instance of ObjectName that can be used anywhere an object obtained with #ObjectName(String, Hashtable) new ObjectName(domain, table) can be used:::return->new->ObjectName
 ObjectName#getInstance(ObjectName):::Return an instance of ObjectName that can be used anywhere the given object can be used:::if->name->getClass->equals->return->return->Util->name->getSerializedNameString->newObjectName
 ObjectName#isPattern():::Checks whether the object name is a pattern:::return
 ObjectName#isDomainPattern():::Checks whether the object name is a pattern on the domain part.:::return
+ObjectName#setDomainPattern(boolean):::Marks the object name as representing a pattern on the domain part.:::if->else
 ObjectName#isPropertyPattern():::Checks whether the object name is a pattern on the key properties:::return
 ObjectName#isPropertyListPattern():::Checks whether the object name is a pattern on the key property list:::return
+ObjectName#setPropertyListPattern(boolean):::Marks the object name as representing a pattern on the key property list.:::if->else
 ObjectName#isPropertyValuePattern():::Checks whether the object name is a pattern on the value part of at least one of the key properties:::return
+ObjectName#setPropertyValuePattern(boolean):::Marks the object name as representing a pattern on the value part.:::if->else
 ObjectName#isPropertyValuePattern(String):::Checks whether the value associated with a key in a key property is a pattern.:::if->throw->new->NullPointerException->for->i->throw->new->IllegalArgumentException
 ObjectName#getCanonicalName():::Returns the canonical form of the name; that is, a string representation where the properties are sorted in lexical order.  More precisely, the canonical form of the name is a String consisting of the domain part, a colon (:), the canonical key property list, and a pattern indication.  The canonical key property list is the same string as described for #getCanonicalKeyPropertyListString().  The pattern indication is: <ul> <li>empty for an ObjectName that is not a property list pattern; <li>an asterisk for an ObjectName that is a property list pattern with no keys; or <li>a comma and an asterisk (,*) for an ObjectName that is a property list pattern with at least one key:::return
 ObjectName#getDomain():::Returns the domain part.:::return->_canonicalName->getDomainLength->substring
 ObjectName#getKeyProperty(String):::Obtains the value associated with a key in a key property.:::return->_getKeyPropertyList->get
+ObjectName#_getKeyPropertyList():::Returns the key properties as a Map:::synchronized->if->new->HashMap<String,String>->len->prop->for->i->return
+ObjectName#getKeyPropertyList()::: object name get key property list:::return->_getKeyPropertyList->new->Hashtable<String,String>
 ObjectName#getKeyPropertyListString():::Returns a string representation of the list of key properties specified at creation time:::if->return->total_size->_canonicalName->length->getDomainLength->isPropertyListPattern->dest_chars->new->charArr->value->_canonicalName->toCharArray->writeKeyPropertyListString->return->new->String
+ObjectName#getSerializedNameString():::Returns the serialized string of the ObjectName:::total_size->_canonicalName->length->dest_chars->new->charArr->value->_canonicalName->toCharArray->offset->getDomainLength->System->arraycopy->end->writeKeyPropertyListString->if->isPropertyListPattern->if->else->return->new->String
+ObjectName#writeKeyPropertyListString(char[], char[], int):::Write a string representation of the list of key properties specified at creation time in the given array, starting at the specified offset:::if->return->dest_chars->value->index->len->last->for->i->return
 ObjectName#getCanonicalKeyPropertyListString():::Returns a string representation of the list of key properties, in which the key properties are sorted in lexical order:::if->return->len->_canonicalName->length->if->isPropertyListPattern->return->_canonicalName->getDomainLength->substring
 ObjectName#toString():::Returns a string representation of the object name:::return->getSerializedNameString
 ObjectName#equals(Object):::Compares the current object name with another object name:::if->return->if->return->on->on_string->if->return->return
@@ -267,6 +438,9 @@ ObjectName#hashCode():::Returns a hash code for this object name.:::return->_can
 ObjectName#quote(String):::Returns a quoted form of the given String, suitable for inclusion in an ObjectName:::buf->new->StringBuilder->len->s->length->for->i->buf->append->return->buf->toString
 ObjectName#unquote(String):::Returns an unquoted form of the given String:::buf->new->StringBuilder->len->q->length->if->q->charAt->q->charAt->throw->new->IllegalArgumentException->for->i->return->buf->toString
 ObjectName#apply(ObjectName):::Test whether this ObjectName, which may be a pattern, matches another ObjectName:::if->throw->new->NullPointerException->if->name->isPattern->return->if->isPattern->return->_canonicalName->equals->return->matchDomains->matchKeys
+ObjectName#matchDomains(ObjectName)::: object name match domains:::if->isDomainPattern->return->Util->name->getDomain->getDomain->wildmatch->return->getDomain->name->getDomain->equals
+ObjectName#matchKeys(ObjectName)::: object name match keys:::if->isPropertyValuePattern->isPropertyListPattern->return->if->isPropertyPattern->nameProps->name->_getKeyPropertyList->props->cn->for->i->return->p1->name->getCanonicalKeyPropertyListString->p2->getCanonicalKeyPropertyListString->return->p1->equals
+ObjectName#setMBeanServer(MBeanServer)::: object name set bean server:::
 ObjectName#compareTo(ObjectName):::Compares two ObjectName instances:::if->return->domainValue->this->getDomain->name->getDomain->compareTo->if->return->thisTypeKey->this->getKeyProperty->anotherTypeKey->name->getKeyProperty->if->if->typeKeyValue->thisTypeKey->compareTo->if->return->return->this->getCanonicalName->name->getCanonicalName->compareTo
 OrQueryExp#getLeftExp():::Returns the left query expression.:::return
 OrQueryExp#getRightExp():::Returns the right query expression.:::return
@@ -306,6 +480,7 @@ Query#initialSubString(AttributeValueExp, StringValueExp):::Returns a query expr
 Query#anySubString(AttributeValueExp, StringValueExp):::Returns a query expression that represents a matching constraint on a string argument:::return->s->getValue->escapeString->new->StringValueExp->new->MatchQueryExp
 Query#finalSubString(AttributeValueExp, StringValueExp):::Returns a query expression that represents a matching constraint on a string argument:::return->s->getValue->escapeString->new->StringValueExp->new->MatchQueryExp
 Query#isInstanceOf(StringValueExp):::Returns a query expression that represents an inheritance constraint on an MBean class:::return->new->InstanceOfQueryExp
+Query#escapeString(String):::Utility method to escape strings used with Query.{initial|any|final}SubString() methods.:::if->return->s->replace->s->replace->s->replace->s->replace->return
 QueryEval#setMBeanServer(MBeanServer):::Sets the MBean server on which the query is to be performed:::server->set
 QueryEval#getMBeanServer():::Return the MBean server that was most recently given to the #setMBeanServer setMBeanServer method by this thread:::return->server->get
 QueryExp#apply(ObjectName):::Applies the QueryExp on an MBean.:::
@@ -318,12 +493,22 @@ RuntimeMBeanException#getTargetException():::Returns the actual RuntimeException
 RuntimeMBeanException#getCause():::Returns the actual RuntimeException thrown.:::return
 RuntimeOperationsException#getTargetException():::Returns the actual RuntimeException thrown.:::return
 RuntimeOperationsException#getCause():::Returns the actual RuntimeException thrown.:::return
+StandardEmitterMBean#removeNotificationListener(NotificationListener)::: standard emitter bean remove notification listener:::emitter->removeNotificationListener
+StandardEmitterMBean#removeNotificationListener(NotificationListener, NotificationFilter, Object)::: standard emitter bean remove notification listener:::emitter->removeNotificationListener
+StandardEmitterMBean#addNotificationListener(NotificationListener, NotificationFilter, Object)::: standard emitter bean add notification listener:::emitter->addNotificationListener
+StandardEmitterMBean#getNotificationInfo()::: standard emitter bean get notification info:::if->return->if->return->else->return->notificationInfo->clone
 StandardEmitterMBean#sendNotification(Notification):::Sends a notification.  If the emitter parameter to the constructor was an instance of NotificationBroadcasterSupport then this method will call emitter.NotificationBroadcasterSupport#sendNotification sendNotification.:::if->sendNotification->else->msg->emitter->getClass->getName->throw->new->ClassCastException
 StandardEmitterMBean#getNotifications(MBeanInfo):::Get the MBeanNotificationInfo[] that will be used in the MBeanInfo returned by this MBean.  The default implementation of this method returns #getNotificationInfo().:::return->getNotificationInfo
+StandardMBean#construct(T, Class, boolean, boolean):::Make a DynamicMBean out of <var>implementation</var>, using the specified <var>mbeanInterface</var> class.:::if->if->Util->cast->else->throw->new->IllegalArgumentException->if->if->Util->Introspector->implementation->getClass->getMXBeanInterface->cast->new->MXBeanSupport->else->if->Util->Introspector->implementation->getClass->getStandardMBeanInterface->cast->new->StandardMBeanSupport
 StandardMBean#setImplementation(Object):::Replace the implementation object wrapped in this object.:::if->throw->new->IllegalArgumentException->if->isMXBean->Util->getMBeanInterface->cast->new->MXBeanSupport->else->Util->getMBeanInterface->cast->new->StandardMBeanSupport
 StandardMBean#getImplementation():::Get the implementation of this Standard MBean (or MXBean).:::return->mbean->getResource
 StandardMBean#getMBeanInterface():::Get the Management Interface of this Standard MBean (or MXBean).:::return->mbean->getMBeanInterface
 StandardMBean#getImplementationClass():::Get the class of the implementation of this Standard MBean (or MXBean).:::return->mbean->getResource->getClass
+StandardMBean#getAttribute(String)::: standard bean get attribute:::return->mbean->getAttribute
+StandardMBean#setAttribute(Attribute)::: standard bean set attribute:::mbean->setAttribute
+StandardMBean#getAttributes(String[])::: standard bean get attributes:::return->mbean->getAttributes
+StandardMBean#setAttributes(AttributeList)::: standard bean set attributes:::return->mbean->setAttributes
+StandardMBean#invoke(String, Object[], String[])::: standard bean invoke:::return->mbean->invoke
 StandardMBean#getMBeanInfo():::Get the MBeanInfo for this MBean:::try->cached->getCachedMBeanInfo->if->return->catch->if->MISC_LOGGER->isLoggable->MISC_LOGGER->log->finally->if->MISC_LOGGER->isLoggable->MISC_LOGGER->getImplementationClass->getName->log->msupport->bi->msupport->getMBeanInfo->impl->msupport->getResource->immutableInfo->this->getClass->immutableInfo->cname->getClassName->text->getDescription->ctors->getConstructors->attrs->getAttributes->ops->getOperations->ntfs->getNotifications->desc->getDescriptor->nmbi->new->MBeanInfo->try->cacheMBeanInfo->catch->if->MISC_LOGGER->isLoggable->MISC_LOGGER->log->finally->return
 StandardMBean#getClassName(MBeanInfo):::Customization hook: Get the className that will be used in the MBeanInfo returned by this MBean:::if->return->getImplementationClass->getName->return->info->getClassName
 StandardMBean#getDescription(MBeanInfo):::Customization hook: Get the description that will be used in the MBeanInfo returned by this MBean:::if->return->return->info->getDescription
@@ -341,13 +526,27 @@ StandardMBean#getNotifications(MBeanInfo):::Customization hook: Get the MBeanNot
 StandardMBean#getDescriptor(MBeanInfo, boolean):::Get the Descriptor that will be used in the MBeanInfo returned by this MBean.  Subclasses may redefine this method in order to supply their custom descriptor.  The default implementation of this method returns a Descriptor that contains at least the field interfaceClassName, with value #getMBeanInterface().getName():::desc->if->info->getDescriptor->info->getDescriptor->getFieldNames->interfaceClassNameS->getMBeanInterface->getName->immutableInfoS->new->ImmutableDescriptor->descriptors->get->else->d->info->getDescriptor->fields->new->HashMap<String,Object>->foreach->d->getFieldNames->if->fieldName->equals->fields->Boolean->toString->put->else->fields->d->getFieldValue->put->new->ImmutableDescriptor->return
 StandardMBean#getCachedMBeanInfo():::Customization hook: Return the MBeanInfo cached for this object:::return
 StandardMBean#cacheMBeanInfo(MBeanInfo):::Customization hook: cache the MBeanInfo built for this object:::
+StandardMBean#isMXBean()::: standard bean is bean:::return->mbean->isMXBean
+StandardMBean#identicalArrays(T[], T[])::: standard bean identical arrays:::if->return->if->return->for->i->return
+StandardMBean#equal(T, T)::: standard bean equal:::if->return->if->return->return->a->equals
+StandardMBean#customize(MBeanParameterInfo, String, String)::: standard bean customize:::if->pi->getName->equal->pi->getDescription->equal->return->else->if->opi->return->opi->getOpenType->pi->getDescriptor->new->OpenMBeanParameterInfoSupport->else->return->pi->getType->pi->getDescriptor->new->MBeanParameterInfo
+StandardMBean#customize(MBeanConstructorInfo, String, MBeanParameterInfo[])::: standard bean customize:::if->ci->getDescription->equal->ci->getSignature->identicalArrays->return->if->oparams->paramsToOpenParams->return->ci->getName->ci->getDescriptor->new->OpenMBeanConstructorInfoSupport->else->return->ci->getName->ci->getDescriptor->new->MBeanConstructorInfo
+StandardMBean#customize(MBeanOperationInfo, String, MBeanParameterInfo[], int)::: standard bean customize:::if->oi->getDescription->equal->oi->getSignature->identicalArrays->oi->getImpact->return->if->ooi->oparams->paramsToOpenParams->return->oi->getName->ooi->getReturnOpenType->oi->getDescriptor->new->OpenMBeanOperationInfoSupport->else->return->oi->getName->oi->getReturnType->oi->getDescriptor->new->MBeanOperationInfo
+StandardMBean#customize(MBeanAttributeInfo, String)::: standard bean customize:::if->ai->getDescription->equal->return->if->oai->return->ai->getName->oai->getOpenType->ai->isReadable->ai->isWritable->ai->isIs->ai->getDescriptor->new->OpenMBeanAttributeInfoSupport->else->return->ai->getName->ai->getType->ai->isReadable->ai->isWritable->ai->isIs->ai->getDescriptor->new->MBeanAttributeInfo
+StandardMBean#paramsToOpenParams(MBeanParameterInfo[])::: standard bean params to open params:::if->return->oparams->new->OpenMBeanParameterInfoSupportArr->System->arraycopy->return
+StandardMBean#getConstructors(MBeanInfo, Object)::: standard bean get constructors:::ctors->info->getConstructors->getConstructors->if->return->ctorlen->nctors->new->MBeanConstructorInfoArr->for->i->return
+StandardMBean#getOperations(MBeanInfo)::: standard bean get operations:::ops->info->getOperations->if->return->oplen->nops->new->MBeanOperationInfoArr->for->i->return
+StandardMBean#getAttributes(MBeanInfo)::: standard bean get attributes:::atts->info->getAttributes->if->return->natts->attlen->new->MBeanAttributeInfoArr->for->i->return
 StandardMBean#preRegister(MBeanServer, ObjectName):::Allows the MBean to perform any operations it needs before being registered in the MBean server:::mbean->register->return
 StandardMBean#postRegister(Boolean):::Allows the MBean to perform any operations needed after having been registered in the MBean server or after the registration has failed.  The default implementation of this method does nothing for Standard MBeans:::if->mbean->unregister
 StandardMBean#preDeregister():::Allows the MBean to perform any operations it needs before being unregistered by the MBean server.  The default implementation of this method does nothing.  It is good practice for a subclass that overrides this method to call the overridden method via super.preDeregister(...).:::
 StandardMBean#postDeregister():::Allows the MBean to perform any operations needed after having been unregistered in the MBean server.  The default implementation of this method does nothing for Standard MBeans:::mbean->unregister
 StandardMBean#immutableInfo(Class):::Return true if subclass is known to preserve the immutability of the MBeanInfo:::if->return->synchronized->safe->mbeanInfoSafeMap->get->if->try->action->new->MBeanInfoSafeAction->AccessController->doPrivileged->catch->finally->mbeanInfoSafeMap->put->return
+StandardMBean#overrides(Class, Class, String, Class...)::: standard bean overrides:::for->c->c->getSuperclass->return
+StandardMBean.MBeanInfoSafeAction#run()::: bean info safe action run:::if->overrides->return->if->overrides->return->if->overrides->return->if->isAssignableFrom->if->overrides->return->return
 StringValueExp#getValue():::Returns the string represented by the <CODE>StringValueExp</CODE> instance.:::return
 StringValueExp#toString():::Returns the string representing the object.:::return->val->replace
+StringValueExp#setMBeanServer(MBeanServer)::: string value exp set bean server:::
 StringValueExp#apply(ObjectName):::Applies the ValueExp on a MBean.:::return
 ValueExp#apply(ObjectName):::Applies the ValueExp on a MBean.:::
 ValueExp#setMBeanServer(MBeanServer):::Sets the MBean server on which the query is to be performed.:::

@@ -16,9 +16,15 @@ Attributes#entrySet():::Returns a Collection view of the attribute name-value ma
 Attributes#equals(Object):::Compares the specified Attributes object with this Map for equality:::return->map->equals
 Attributes#hashCode():::Returns the hash code value for this Map.:::return->map->hashCode
 Attributes#clone():::Returns a copy of the Attributes, implemented as follows:      public Object clone() { return new Attributes(this); }  Since the attribute names and values are themselves immutable, the Attributes returned can be safely modified without affecting the original.:::return->new->Attributes
+Attributes#write(DataOutputStream)::: attributes write:::foreach->entrySet->buffer->e->getKey->toString->new->StringBuffer->buffer->append->value->e->getValue->if->vb->value->getBytes->new->String->buffer->append->Manifest->make72Safe->buffer->append->os->buffer->toString->writeBytes->os->writeBytes
+Attributes#writeMain(DataOutputStream)::: attributes write main:::vername->toString->version->getValue->if->toString->getValue->if->out->writeBytes->foreach->entrySet->name->e->getKey->toString->if->name->equalsIgnoreCase->buffer->new->StringBuffer->buffer->append->value->e->getValue->if->vb->value->getBytes->new->String->buffer->append->Manifest->make72Safe->buffer->append->out->buffer->toString->writeBytes->out->writeBytes
+Attributes#read(Manifest.FastInputStream, byte[])::: attributes read:::name->value->lastline->len->while->is->readLine->lineContinued->c->if->throw->new->IOException->if->if->break->i->if->if->throw->new->IOException->buf->new->byteArr->System->arraycopy->System->arraycopy->if->is->peek->continue->new->String->else->while->if->throw->new->IOException->if->throw->new->IOException->new->String->if->is->peek->new->byteArr->System->arraycopy->continue->new->String->try->if->putValue->PlatformLogger->getLogger->warning->catch->throw->new->IOException->finally
+Attributes.Name#of(String)::: name of:::n->KNOWN_NAMES->get->if->return->return->new->Name
+Attributes.Name#hash(String)::: name hash:::Objects->requireNonNull->len->name->length->if->throw->new->IllegalArgumentException->h->for->i->return
 Attributes.Name#equals(Object):::Compares this attribute name to another for equality.:::if->return->if->other->return->equalsIgnoreCase->else->return
 Attributes.Name#hashCode():::Computes the hash value for this attribute name.:::return
 Attributes.Name#toString():::Returns the attribute name as a String.:::return
+Attributes.Name#addName(Map, Name)::: name add name:::names->put
 JarEntry#getAttributes():::Returns the Manifest Attributes for this entry, or null if none.:::return
 JarEntry#getCertificates():::Returns the Certificate objects for this entry, or null if none:::return->certs->clone
 JarEntry#getCodeSigners():::Returns the CodeSigner objects for this entry, or null if none:::return->signers->clone
@@ -28,26 +34,100 @@ JarFile#runtimeVersion():::Returns the version that represents the effective run
 JarFile#getVersion():::Returns the maximum version used when searching for versioned entries:::return->isMultiRelease
 JarFile#isMultiRelease():::Indicates whether or not this jar file is a multi-release jar file.:::if->return->if->try->checkForSpecialAttributes->catch->finally->return
 JarFile#getManifest():::Returns the jar file manifest, or null if none.:::return->getManifestFromReference
+JarFile#getManifestFromReference()::: jar file get manifest from reference:::man->manRef->get->if->manEntry->getManEntry->if->if->b->getBytes->if->new->JarVerifier->new->ByteArrayInputStream->new->Manifest->else->super->getInputStream->new->Manifest->new->SoftReference<>->return
+JarFile#getMetaInfEntryNames()::: jar file get meta inf entry names:::return->JUZFA->getMetaInfEntryNames
 JarFile#getJarEntry(String):::Returns the JarEntry for the given base entry name or null if not found:::return->getEntry
 JarFile#getEntry(String):::Returns the ZipEntry for the given base entry name or null if not found:::je->getEntry0->if->isMultiRelease->return->getVersionedEntry->return
 JarFile#entries():::Returns an enumeration of the jar file entries.:::return->JUZFA->JarFileEntry->new->entries
 JarFile#stream():::Returns an ordered Stream over the jar file entries:::return->JUZFA->JarFileEntry->new->stream
 JarFile#versionedStream():::Returns a Stream of the versioned jar file entries:::if->isMultiRelease->return->JUZFA->entryNameStream->this->getBasename->map->Objects->nonNull->filter->distinct->this->getJarEntry->map->return->stream
+JarFile#getEntry0(String)::: jar file get entry0:::newJarFileEntryFn->new->Function<>->return->JUZFA->getEntry
+JarFile#getBasename(String)::: jar file get basename:::if->name->startsWith->off->META_INF_VERSIONS->length->index->name->indexOf->try->if->name->length->Integer->parseInt->return->catch->return->finally->return->name->substring->return
+JarFile#getVersionedEntry(String, JarEntry)::: jar file get versioned entry:::if->if->name->startsWith->v->while->vje->getEntry0->if->return->vje->withBasename->return
+JarFile#getRealName(JarEntry)::: jar file get real name:::return->entry->getRealName
+JarFile.JarFileEntry#getAttributes()::: jar file entry get attributes:::man->JarFile.this->getManifest->if->return->man->super->getName->getAttributes->else->return
+JarFile.JarFileEntry#getCertificates()::: jar file entry get certificates:::try->maybeInstantiateVerifier->catch->throw->new->RuntimeException->finally->if->jv->realEntry->getCerts->return->certs->clone
+JarFile.JarFileEntry#getCodeSigners()::: jar file entry get code signers:::try->maybeInstantiateVerifier->catch->throw->new->RuntimeException->finally->if->jv->realEntry->getCodeSigners->return->signers->clone
+JarFile.JarFileEntry#getRealName()::: jar file entry get real name:::return->super->getName
+JarFile.JarFileEntry#getName()::: jar file entry get name:::return
+JarFile.JarFileEntry#realEntry()::: jar file entry real entry:::if->isMultiRelease->entryName->super->getName->return->entryName->equals->new->JarFileEntry->return
+JarFile.JarFileEntry#withBasename(String)::: jar file entry with basename:::return
+JarFile#maybeInstantiateVerifier()::: jar file maybe instantiate verifier:::if->return->if->names->getMetaInfEntryNames->if->foreach->name->nameLower->toUpperCase->if->name->endsWith->name->endsWith->name->endsWith->name->endsWith->getManifest->return
+JarFile#initializeVerifier()::: jar file initialize verifier:::mev->try->names->getMetaInfEntryNames->if->foreach->uname->name->toUpperCase->if->MANIFEST_NAME->equals->SignatureFileVerifier->isBlockOrSF->e->getJarEntry->if->throw->new->JarException->if->getManifestFromReference->new->ManifestEntryVerifier->b->getBytes->if->jv->beginEntry->jv->update->jv->update->catch->if->println->ex->printStackTrace->finally->if->jv->doneWithMeta->if->println->if->jv->nothingToVerify->if->println
+JarFile#getBytes(ZipEntry)::: jar file get bytes:::try->is->super->getInputStream->len->ze->getSize->bytesRead->b->if->new->byteArr->is->readNBytes->else->is->readAllBytes->if->throw->new->EOFException->return->catch->finally
 JarFile#getInputStream(ZipEntry):::Returns an input stream for reading the contents of the specified zip file entry.:::maybeInstantiateVerifier->if->return->super->getInputStream->if->initializeVerifier->if->return->super->getInputStream->return->getManifestFromReference->verifiableEntry->super->getInputStream->new->JarVerifier.VerifierStream
+JarFile#verifiableEntry(ZipEntry)::: jar file verifiable entry:::if->return->realEntry->ze->getName->getJarEntry->if->return->realEntry->return
+JarFile#getManEntry()::: jar file get man entry:::if->manEntry->getEntry0->if->names->getMetaInfEntryNames->if->foreach->if->MANIFEST_NAME->name->toUpperCase->equals->getEntry0->break->return
 JarFile#hasClassPathAttribute():::Returns true iff this JAR file has a manifest with the Class-Path attribute:::checkForSpecialAttributes->return
+JarFile#match(byte[], byte[], byte[], byte[]):::Returns true if the pattern src is found in b:::len->last->i->while->for->j->return->return
+JarFile#checkForSpecialAttributes():::On first invocation, check if the JAR file has the Class-Path and the Multi-Release attribute:::if->return->synchronized->if->return->manEntry->getManEntry->if->b->getBytes->match->if->i->match->if->lbuf->new->byteArr->attr->new->Attributes->attr->new->ByteArrayInputStream->new->Manifest.FastInputStream->read->Boolean->attr->getValue->parseBoolean
+JarFile#ensureInitialization()::: jar file ensure initialization:::try->maybeInstantiateVerifier->catch->throw->new->RuntimeException->finally->if->isInitializing->set->try->initializeVerifier->catch->finally->isInitializing->set
+JarFile#isInitializing()::: jar file is initializing:::value->isInitializing->get->return
+JarFile#newEntry(JarEntry)::: jar file new entry:::if->isMultiRelease->return->je->getName->getVersionedEntry->return
+JarFile#newEntry(String)::: jar file new entry:::if->isMultiRelease->vje->getVersionedEntry->if->return->return->new->JarFileEntry
+JarFile#entryNames(CodeSource[])::: jar file entry names:::ensureInitialization->if->return->jv->entryNames->includeUnsigned->foreach->if->c->getCodeSigners->break->if->return->unsignedEntryNames->else->return->Collections->emptyEnumeration
 JarFile#entries2():::Returns an enumeration of the zip file entries excluding internal JAR mechanism entries and including signed entries missing from the ZIP directory.:::ensureInitialization->if->return->jv->JUZFA->JarFileEntry->new->entries->entries2->unfilteredEntries->JUZFA->JarFileEntry->new->entries->return->new->Enumeration<>
+JarFile#getCodeSources(URL)::: jar file get code sources:::ensureInitialization->if->return->jv->getCodeSources->unsigned->unsignedEntryNames->if->unsigned->hasMoreElements->return->new->CodeSourceArr->JarVerifier->getUnsignedCS->else->return
+JarFile#unsignedEntryNames()::: jar file unsigned entry names:::entries->entries->return->new->Enumeration<>
+JarFile#getCodeSource(URL, String)::: jar file get code source:::ensureInitialization->if->if->cs->je->getJarEntry->if->jv->getCodeSource->else->jv->getCodeSource->return->else->return->jv->getCodeSource->return->JarVerifier->getUnsignedCS
+JarFile#setEagerValidation(boolean)::: jar file set eager validation:::try->maybeInstantiateVerifier->catch->throw->new->RuntimeException->finally->if->jv->setEagerValidation
+JarFile#getManifestDigests()::: jar file get manifest digests:::ensureInitialization->if->return->jv->getManifestDigests->return->new->ArrayList<>
+JarInputStream#checkManifest(JarEntry)::: jar input stream check manifest:::if->e->getName->equalsIgnoreCase->new->Manifest->bytes->new->BufferedInputStream->getBytes->man->new->ByteArrayInputStream->read->closeEntry->if->new->JarVerifier->new->ManifestEntryVerifier->return->super->getNextEntry->return
+JarInputStream#getBytes(InputStream)::: jar input stream get bytes:::buffer->new->byteArr->baos->new->ByteArrayOutputStream->n->while->is->read->baos->write->return->baos->toByteArray
 JarInputStream#getManifest():::Returns the Manifest for this JAR file, or null if none.:::return
 JarInputStream#getNextEntry():::Reads the next ZIP file entry and positions the stream at the beginning of the entry data:::e->if->super->getNextEntry->if->checkManifest->else->if->first->getName->equalsIgnoreCase->if->if->jv->nothingToVerify->else->jv->beginEntry->return
 JarInputStream#getNextJarEntry():::Reads the next JAR file entry and positions the stream at the beginning of the entry data:::return->getNextEntry
 JarInputStream#read(byte[], int, int):::Reads from the current JAR file entry into an array of bytes:::n->if->super->read->else->if->jv->update->return
 JarInputStream#createZipEntry(String):::Creates a new JarEntry (ZipEntry) for the specified JAR file entry name:::e->new->JarEntry->if->man->getAttributes->return
 JarOutputStream#putNextEntry(ZipEntry):::Begins writing a new JAR file entry and positions the stream to the start of the entry data:::if->edata->ze->getExtra->if->hasMagic->if->new->byteArr->else->tmp->new->byteArr->System->arraycopy->set16->set16->ze->setExtra->super->putNextEntry
+JarOutputStream#hasMagic(byte[])::: jar output stream has magic:::try->i->while->if->get16->return->get16->catch->finally->return
+JarOutputStream#get16(byte[], int)::: jar output stream get16:::return->Byte->toUnsignedInt->Byte->toUnsignedInt
+JarOutputStream#set16(byte[], int, int)::: jar output stream set16:::
 JarVerifier#beginEntry(JarEntry, ManifestEntryVerifier):::This method scans to see which entry we're parsing and keeps various state information depending on what type of file is being parsed.:::if->return->if->debug->je->getName->println->name->je->getName->if->uname->name->toUpperCase->if->uname->startsWith->uname->startsWith->if->je->isDirectory->mev->setEntry->return->if->uname->equals->uname->equals->return->if->SignatureFileVerifier->isBlockOrSF->baos->reset->mev->setEntry->return->if->doneWithMeta->if->je->isDirectory->mev->setEntry->return->if->name->startsWith->name->substring->if->name->startsWith->name->substring->if->name->equals->if->sigFileSigners->get->verifiedSigners->get->mev->setEntry->return->mev->setEntry->return
+JarVerifier#update(int, ManifestEntryVerifier)::: jar verifier update:::if->if->baos->write->else->mev->update->else->processEntry
+JarVerifier#update(int, byte[], int, int, ManifestEntryVerifier)::: jar verifier update:::if->if->baos->write->else->mev->update->else->processEntry
+JarVerifier#processEntry(ManifestEntryVerifier):::called when we reach the end of entry in one of the read() methods.:::if->je->mev->getEntry->if->mev->verify->mapSignersToCertArray->else->try->if->debug->println->uname->mev->getEntry->getName->toUpperCase->if->uname->endsWith->key->uname->uname->length->substring->bytes->baos->toByteArray->sigFileData->put->foreach->if->sfv->needSignatureFile->if->debug->println->sfv->setSignatureFile->sfv->process->return->key->uname->uname->lastIndexOf->substring->if->new->ArrayList<>->if->synchronized->if->new->ManifestDigester->sfv->baos->toByteArray->new->SignatureFileVerifier->if->sfv->needSignatureFileBytes->bytes->sigFileData->get->if->if->debug->println->pendingBlocks->add->return->else->sfv->setSignatureFile->sfv->process->catch->if->debug->println->finally
 JarVerifier#getCerts(String):::Return an array of java.security.cert.Certificate objects for the given file in the jar.:::return->getCodeSigners->mapSignersToCertArray
+JarVerifier#getCerts(JarFile, JarEntry)::: jar verifier get certs:::return->getCodeSigners->mapSignersToCertArray
 JarVerifier#getCodeSigners(String):::return an array of CodeSigner objects for the given file in the jar:::return->verifiedSigners->get
+JarVerifier#getCodeSigners(JarFile, JarEntry)::: jar verifier get code signers:::name->entry->getName->if->sigFileSigners->get->try->s->jar->getInputStream->buffer->new->byteArr->n->while->s->read->s->close->catch->finally->return->getCodeSigners
+JarVerifier#mapSignersToCertArray(CodeSigner[])::: jar verifier map signers to cert array:::if->certChains->new->ArrayList<>->foreach->certChains->signer->getSignerCertPath->getCertificates->addAll->return->certChains->certChains->size->new->java.security.cert.CertificateArr->toArray->return
 JarVerifier#nothingToVerify():::returns true if there no files to verify:::return
 JarVerifier#doneWithMeta():::called to let us know we have processed all the META-INF entries, and if we re-read one of them, don't re-process it:::sigFileSigners->isEmpty->if->sigFileSigners->containsKey->codeSigners->sigFileSigners->remove->verifiedSigners->put
+JarVerifier.VerifierStream#read()::: verifier stream read:::if->b->is->read->jv->update->if->jv->update->return->else->return
+JarVerifier.VerifierStream#read(byte[], int, int)::: verifier stream read:::if->if->n->is->read->jv->update->if->jv->update->return->else->return
+JarVerifier.VerifierStream#close()::: verifier stream close:::if->is->close
+JarVerifier.VerifierStream#available()::: verifier stream available:::return->is->available
+JarVerifier#mapSignersToCodeSource(URL, CodeSigner[])::: jar verifier map signers to code source:::map->if->else->urlToCodeSourceMap->get->if->new->HashMap<>->urlToCodeSourceMap->put->cs->map->get->if->new->VerifierCodeSource->signerToCodeSource->put->return
+JarVerifier#mapSignersToCodeSources(URL, List, boolean)::: jar verifier map signers to code sources:::sources->new->ArrayList<>->foreach->sources->mapSignersToCodeSource->add->if->sources->mapSignersToCodeSource->add->return->sources->sources->size->new->CodeSourceArr->toArray
+JarVerifier#findMatchingSigners(CodeSource)::: jar verifier find matching signers:::if->vcs->if->vcs->isSameDomain->return->getPrivateSigners->sources->cs->getLocation->getJarCodeSigners->mapSignersToCodeSources->sourceList->new->ArrayList<>->foreach->sourceList->add->j->sourceList->indexOf->if->match->sourceList->get->getPrivateSigners->if->return->return
+JarVerifier.VerifierCodeSource#equals(Object)::: verifier code source equals:::if->return->if->that->if->isSameDomain->if->return->if->return->equals->else->if->return->equals->else->return->return->super->equals
+JarVerifier.VerifierCodeSource#isSameDomain(Object)::: verifier code source is same domain:::return
+JarVerifier.VerifierCodeSource#getPrivateSigners()::: verifier code source get private signers:::return
+JarVerifier.VerifierCodeSource#getPrivateCertificates()::: verifier code source get private certificates:::return
+JarVerifier#signerMap()::: jar verifier signer map:::if->verifiedSigners->size->sigFileSigners->size->new->HashMap<>->signerMap->putAll->signerMap->putAll->return
+JarVerifier#entryNames(JarFile, CodeSource[])::: jar verifier entry names:::map->signerMap->itor->map->entrySet->iterator->matchUnsigned->req->new->ArrayList<>->foreach->match->findMatchingSigners->if->if->req->add->else->else->signersReq->enum2->unsignedEntryNames->Collections->emptyEnumeration->return->new->Enumeration<>
+JarVerifier#entries2(JarFile, Enumeration)::: jar verifier entries2:::map->new->HashMap<>->map->signerMap->putAll->enum_->return->new->Enumeration<>
+JarVerifier#isSigningRelated(String)::: jar verifier is signing related:::return->SignatureFileVerifier->isSigningRelated
+JarVerifier#unsignedEntryNames(JarFile)::: jar verifier unsigned entry names:::map->signerMap->entries->jar->entries->return->new->Enumeration<>
+JarVerifier#getJarCodeSigners()::: jar verifier get jar code signers:::signers->if->set->new->HashSet<>->set->signerMap->values->addAll->new->ArrayList<>->jarCodeSigners->addAll->return
+JarVerifier#getCodeSources(JarFile, URL)::: jar verifier get code sources:::hasUnsigned->unsignedEntryNames->hasMoreElements->return->getJarCodeSigners->mapSignersToCodeSources
+JarVerifier#getCodeSource(URL, String)::: jar verifier get code source:::signers->signerMap->get->return->mapSignersToCodeSource
+JarVerifier#getCodeSource(URL, JarFile, JarEntry)::: jar verifier get code source:::signers->return->getCodeSigners->mapSignersToCodeSource
+JarVerifier#setEagerValidation(boolean)::: jar verifier set eager validation:::
+JarVerifier#getManifestDigests()::: jar verifier get manifest digests:::return->Collections->unmodifiableList
+JarVerifier#getUnsignedCS(URL)::: jar verifier get unsigned s:::return->new->VerifierCodeSource
 JarVerifier#isTrustedManifestEntry(String):::Returns whether the name is trusted:::forMan->verifiedSigners->get->if->return->forName->sigFileSigners->get->if->verifiedSigners->get->return
+JavaUtilJarAccessImpl#jarFileHasClassPathAttribute(JarFile)::: java util jar access impl jar file has class path attribute:::return->jar->hasClassPathAttribute
+JavaUtilJarAccessImpl#getCodeSources(JarFile, URL)::: java util jar access impl get code sources:::return->jar->getCodeSources
+JavaUtilJarAccessImpl#getCodeSource(JarFile, URL, String)::: java util jar access impl get code source:::return->jar->getCodeSource
+JavaUtilJarAccessImpl#entryNames(JarFile, CodeSource[])::: java util jar access impl entry names:::return->jar->entryNames
+JavaUtilJarAccessImpl#entries2(JarFile)::: java util jar access impl entries2:::return->jar->entries2
+JavaUtilJarAccessImpl#setEagerValidation(JarFile, boolean)::: java util jar access impl set eager validation:::jar->setEagerValidation
+JavaUtilJarAccessImpl#getManifestDigests(JarFile)::: java util jar access impl get manifest digests:::return->jar->getManifestDigests
+JavaUtilJarAccessImpl#getTrustedAttributes(Manifest, String)::: java util jar access impl get trusted attributes:::return->man->getTrustedAttributes
+JavaUtilJarAccessImpl#ensureInitialization(JarFile)::: java util jar access impl ensure initialization:::jar->ensureInitialization
+JavaUtilJarAccessImpl#isInitializing()::: java util jar access impl is initializing:::return->JarFile->isInitializing
 Manifest#getMainAttributes():::Returns the main Attributes for the Manifest.:::return
 Manifest#getEntries():::Returns a Map of the entries contained in this Manifest:::return
 Manifest#getAttributes(String):::Returns the Attributes for the specified entry name:::return->getEntries->get
@@ -56,13 +136,26 @@ Manifest#clear():::Clears the main Attributes as well as the entries in this Man
 Manifest#write(OutputStream):::Writes the Manifest to the specified OutputStream:::dos->new->DataOutputStream->attr->writeMain->foreach->entries->entrySet->buffer->new->StringBuffer->value->e->getKey->if->vb->value->getBytes->new->String->buffer->append->make72Safe->buffer->append->dos->buffer->toString->writeBytes->e->getValue->write->dos->flush
 Manifest#make72Safe(StringBuffer):::Adds line breaks to enforce a maximum 72 bytes per line.:::length->line->length->index->while->line->insert->return
 Manifest#read(InputStream):::Reads the Manifest from the specified InputStream:::fis->new->FastInputStream->lbuf->new->byteArr->attr->read->ecount->acount->asize->len->name->skipEmptyLines->lastline->while->fis->readLine->c->if->throw->new->IOException->if->if->continue->if->parseName->if->throw->new->IOException->if->fis->peek->new->byteArr->System->arraycopy->continue->else->buf->new->byteArr->System->arraycopy->System->arraycopy->if->fis->peek->continue->new->String->attr->getAttributes->if->new->Attributes->entries->put->attr->read->attr->size->Math->max
+Manifest#parseName(byte[], int)::: manifest parse name:::if->toLower->toLower->toLower->toLower->try->return->new->String->catch->finally->return
+Manifest#toLower(int)::: manifest to lower:::return
 Manifest#equals(Object):::Returns true if the specified Object is also a Manifest and has the same main Attributes and entries.:::if->m->return->attr->m->getMainAttributes->equals->entries->m->getEntries->equals->else->return
 Manifest#hashCode():::Returns the hash code for this Manifest.:::return->attr->hashCode->entries->hashCode
 Manifest#clone():::Returns a shallow copy of this Manifest:::return->new->Manifest
+Manifest.FastInputStream#read()::: fast input stream read:::if->fill->if->return->return->Byte->toUnsignedInt
+Manifest.FastInputStream#read(byte[], int, int)::: fast input stream read:::avail->if->if->return->in->read->fill->if->return->if->System->arraycopy->return
+Manifest.FastInputStream#readLine(byte[], int, int)::: fast input stream read line:::tbuf->total->while->avail->if->fill->if->return->n->if->tpos->maxpos->c->while->if->System->arraycopy->if->break->if->if->fill->if->if->else->break->return
+Manifest.FastInputStream#peek()::: fast input stream peek:::if->fill->if->return->return
+Manifest.FastInputStream#readLine(byte[])::: fast input stream read line:::return->readLine
+Manifest.FastInputStream#skip(long)::: fast input stream skip:::if->return->avail->if->return->in->skip->if->return
+Manifest.FastInputStream#available()::: fast input stream available:::return->in->available
+Manifest.FastInputStream#close()::: fast input stream close:::if->in->close
+Manifest.FastInputStream#fill()::: fast input stream fill:::n->in->read->if
 Pack200#newPacker():::Obtain new instance of a class that implements Packer:::return->newInstance
+Pack200#newUnpacker()::: pack200 new unpacker:::return->newInstance
 Pack200.Packer#properties():::Get the set of this engine's properties:::
 Pack200.Packer#pack(JarFile, OutputStream):::Takes a JarFile and converts it into a Pack200 archive:::
 Pack200.Packer#pack(JarInputStream, OutputStream):::Takes a JarInputStream and converts it into a Pack200 archive:::
 Pack200.Unpacker#properties():::Get the set of this engine's properties:::
 Pack200.Unpacker#unpack(InputStream, JarOutputStream):::Read a Pack200 archive, and write the encoded JAR to a JarOutputStream:::
 Pack200.Unpacker#unpack(File, JarOutputStream):::Read a Pack200 archive, and write the encoded JAR to a JarOutputStream:::
+Pack200#newInstance(String)::: pack200 new instance:::implName->try->impl->PACK_PROVIDER->equals->if->GetPropertyAction->privilegedGetProperty->if->implName->equals->Class->forName->else->if->PACK_PROVIDER->equals->else->result->impl->newInstance->return->catch->throw->new->Error->throw->new->Error->throw->new->Error->finally

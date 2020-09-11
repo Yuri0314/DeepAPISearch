@@ -1,5 +1,30 @@
+Handler#openConnection(URL)::: handler open connection:::return->new->JarURLConnection
+Handler#indexOfBangSlash(String)::: handler index of bang slash:::indexOfBang->spec->length->while->spec->lastIndexOf->if->spec->length->spec->charAt->return->else->return
 Handler#sameFile(URL, URL):::Compare two jar URLs:::if->u1->getProtocol->equals->u2->getProtocol->equals->return->file1->u1->getFile->file2->u2->getFile->sep1->file1->indexOf->sep2->file2->indexOf->if->return->super->sameFile->entry1->file1->substring->entry2->file2->substring->if->entry1->equals->return->enclosedURL1->enclosedURL2->try->file1->substring->new->URL->file2->substring->new->URL->catch->return->super->sameFile->finally->if->super->sameFile->return->return
+Handler#hashCode(URL)::: handler hash code:::h->protocol->u->getProtocol->if->protocol->hashCode->file->u->getFile->sep->file->indexOf->if->return->file->hashCode->enclosedURL->fileWithoutEntry->file->substring->try->new->URL->enclosedURL->hashCode->catch->fileWithoutEntry->hashCode->finally->entry->file->substring->entry->hashCode->return
+Handler#checkNestedProtocol(String)::: handler check nested protocol:::if->spec->regionMatches->return->else->return
+Handler#parseURL(URL, String, int, int)::: handler parse l:::file->ref->refPos->spec->indexOf->refOnly->if->spec->spec->length->substring->if->url->getFile->absoluteSpec->spec->length->spec->regionMatches->spec->substring->exceptionMessage->checkNestedProtocol->if->throw->new->NullPointerException->if->parseAbsoluteSpec->else->if->parseContextSpec->bangSlash->indexOfBangSlash->toBangSlash->file->substring->afterBangSlash->file->substring->ParseUtil->canonizeString->setURL
+Handler#parseAbsoluteSpec(String)::: handler parse absolute spec:::index->if->indexOfBangSlash->throw->new->NullPointerException->try->innerSpec->spec->substring->new->URL->catch->throw->new->NullPointerException->finally->return
+Handler#parseContextSpec(URL, String)::: handler parse context spec:::ctxFile->url->getFile->if->spec->startsWith->bangSlash->indexOfBangSlash->if->throw->new->NullPointerException->ctxFile->substring->else->lastSlash->ctxFile->lastIndexOf->if->throw->new->NullPointerException->else->if->ctxFile->length->ctxFile->substring->return
+JarFileFactory#getInstance()::: jar file factory get instance:::return
+JarFileFactory#getConnection(JarFile)::: jar file factory get connection:::u->synchronized->urlCache->get->if->return->u->openConnection->return
+JarFileFactory#get(URL)::: jar file factory get:::return->get
+JarFileFactory#get(URL, boolean)::: jar file factory get:::if->url->getProtocol->equalsIgnoreCase->host->url->getHost->if->host->equals->host->equalsIgnoreCase->url->getPath->new->URL->result->local_result->if->synchronized->getCachedJarFile->if->URLJarFile->getJarFile->synchronized->getCachedJarFile->if->fileCache->urlKey->put->urlCache->put->else->if->local_result->close->else->URLJarFile->getJarFile->if->throw->url->toString->new->FileNotFoundException->return
 JarFileFactory#close(JarFile):::Callback method of the URLJarFileCloseController to indicate that the JarFile is close:::synchronized->urlRemoved->urlCache->remove->if->fileCache->urlKey->remove
+JarFileFactory#getCachedJarFile(URL)::: jar file factory get cached jar file:::result->fileCache->urlKey->get->if->perm->getPermission->if->sm->System->getSecurityManager->if->try->sm->checkPermission->catch->if->perm->getActions->indexOf->sm->perm->getName->checkRead->else->if->perm->getActions->indexOf->sm->url->getHost->url->getPort->checkConnect->else->throw->finally->return
+JarFileFactory#urlKey(URL)::: jar file factory url key:::urlstr->URLUtil->urlNoFragString->if->url->getRef->equals->return
+JarFileFactory#getPermission(JarFile)::: jar file factory get permission:::try->uc->getConnection->if->return->uc->getPermission->catch->finally->return
+JarURLConnection#getJarFile()::: jar connection get jar file:::connect->return
+JarURLConnection#getJarEntry()::: jar connection get jar entry:::connect->return
+JarURLConnection#getPermission()::: jar connection get permission:::return->jarFileURLConnection->getPermission
+JarURLConnection.JarURLInputStream#close()::: jar input stream close:::try->super->close->catch->finally->if->getUseCaches->jarFile->close
+JarURLConnection#connect()::: jar connection connect:::if->factory->getJarFileURL->getUseCaches->get->if->getUseCaches->oldUseCaches->jarFileURLConnection->getUseCaches->factory->getConnection->jarFileURLConnection->setUseCaches->if->jarFile->getEntry->if->try->if->getUseCaches->jarFile->close->catch->finally->throw->jarFile->getName->new->FileNotFoundException
+JarURLConnection#getInputStream()::: jar connection get input stream:::connect->result->if->throw->new->IOException->else->if->throw->jarFile->getName->new->FileNotFoundException->jarFile->getInputStream->new->JarURLInputStream->return
+JarURLConnection#getContentLength()::: jar connection get content length:::result->getContentLengthLong->if->return->return
+JarURLConnection#getContentLengthLong()::: jar connection get content length long:::result->try->connect->if->jarFileURLConnection->getContentLengthLong->else->getJarEntry->getSize->catch->finally->return
+JarURLConnection#getContent()::: jar connection get content:::result->connect->if->else->super->getContent->return
+JarURLConnection#getContentType()::: jar connection get content type:::if->if->else->try->connect->in->jarFile->getInputStream->new->BufferedInputStream->guessContentTypeFromStream->in->close->catch->finally->if->guessContentTypeFromName->if->return
+JarURLConnection#getHeaderField(String)::: jar connection get header field:::return->jarFileURLConnection->getHeaderField
 JarURLConnection#setRequestProperty(String, String):::Sets the general request property.:::jarFileURLConnection->setRequestProperty
 JarURLConnection#getRequestProperty(String):::Returns the value of the named general request property for this connection.:::return->jarFileURLConnection->getRequestProperty
 JarURLConnection#addRequestProperty(String, String):::Adds a general request property specified by a key-value pair:::jarFileURLConnection->addRequestProperty
@@ -11,4 +36,17 @@ JarURLConnection#getUseCaches():::Returns the value of this URLConnection's useC
 JarURLConnection#setIfModifiedSince(long):::Sets the value of the ifModifiedSince field of this URLConnection to the specified value.:::jarFileURLConnection->setIfModifiedSince
 JarURLConnection#setDefaultUseCaches(boolean):::Sets the default value of the useCaches field to the specified value.:::jarFileURLConnection->setDefaultUseCaches
 JarURLConnection#getDefaultUseCaches():::Returns the default value of a URLConnection's useCaches flag:::return->jarFileURLConnection->getDefaultUseCaches
+URLJarFile#getJarFile(URL)::: jar file get jar file:::return->getJarFile
+URLJarFile#getJarFile(URL, URLJarFileCloseController)::: jar file get jar file:::if->isFileURL->version->url->getRef->equals->JarFile->runtimeVersion->JarFile->baseVersion->return->new->URLJarFile->else->return->retrieve
+URLJarFile#isFileURL(URL)::: jar file is file l:::if->url->getProtocol->equalsIgnoreCase->host->url->getHost->if->host->equals->host->equals->host->equalsIgnoreCase->return->return
 URLJarFile#getEntry(String):::Returns the ZipEntry for the given entry name or null if not found.:::ze->super->getEntry->if->if->return->new->URLJarFileEntry->else->throw->super->getClass->ze->getClass->new->InternalError->return
+URLJarFile#getManifest()::: jar file get manifest:::if->isSuperMan->return->man->new->Manifest->attr->man->getMainAttributes->attr->superAttr->clone->putAll->if->entries->man->getEntries->foreach->superEntries->keySet->at->superEntries->get->entries->at->clone->put->return
+URLJarFile#close()::: jar file close:::if->closeController->close->super->close
+URLJarFile#isSuperMan()::: jar file is super man:::if->super->getManifest->if->superMan->getMainAttributes->superMan->getEntries->return->else->return
+URLJarFile#retrieve(URL, URLJarFileCloseController):::Given a URL, retrieves a JAR file, caches it to disk, and creates a cached JAR file object.:::if->return->callback->retrieve->else->result->version->url->getRef->equals->JarFile->runtimeVersion->JarFile->baseVersion->try->in->url->openConnection->getInputStream->AccessController->new->PrivilegedExceptionAction<>->doPrivileged->catch->throw->pae->getException->finally->return
+URLJarFile#setCallBack(URLJarFileCallBack)::: jar file set call back:::
+URLJarFile.URLJarFileEntry#getAttributes()::: jar file entry get attributes:::if->URLJarFile.this->isSuperMan->e->if->a->e->getName->get->if->return->a->clone->return
+URLJarFile.URLJarFileEntry#getCertificates()::: jar file entry get certificates:::certs->je->getCertificates->return->certs->clone
+URLJarFile.URLJarFileEntry#getCodeSigners()::: jar file entry get code signers:::csg->je->getCodeSigners->return->csg->clone
+URLJarFile.URLJarFileCloseController#close(JarFile)::: jar file close controller close:::
+URLJarFileCallBack#retrieve(URL)::: jar file call back retrieve:::

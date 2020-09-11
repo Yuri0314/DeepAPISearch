@@ -1,5 +1,22 @@
+BinaryRepresentationWriter#write(HeaderTable, ByteBuffer)::: binary representation writer write:::
+BinaryRepresentationWriter#reset()::: binary representation writer reset:::
+BulkSizeUpdateWriter#maxHeaderTableSizes(Iterable)::: bulk size update writer max header table sizes:::if->throw->new->IllegalStateException->requireNonNull->sizes->iterator->return
+BulkSizeUpdateWriter#write(HeaderTable, ByteBuffer)::: bulk size update writer write:::if->throw->new->IllegalStateException->while->if->if->writer->write->return->else->if->maxSizes->hasNext->writer->reset->writer->maxSizes->next->maxHeaderTableSize->else->return
+BulkSizeUpdateWriter#reset()::: bulk size update writer reset:::return
 Decoder#setMaxCapacity(int):::Sets a maximum capacity of the header table:::if->logger->isLoggable->logger->format->log->setMaxCapacity0
+Decoder#setMaxCapacity0(int)::: decoder set max capacity0:::if->throw->new->IllegalArgumentException
 Decoder#decode(ByteBuffer, boolean, DecodingCallback):::Decodes a header block from the given buffer to the given callback:::requireNonNull->requireNonNull->if->logger->isLoggable->logger->format->log->while->headerBlock->hasRemaining->proceed->if->logger->format->log->throw->new->IOException
+Decoder#proceed(ByteBuffer, DecodingCallback)::: decoder proceed:::switch->resumeReady->break->resumeIndexed->break->resumeLiteral->break->resumeLiteralWithIndexing->break->resumeLiteralNeverIndexed->break->resumeSizeUpdate->break->throw->new->InternalError
+Decoder#resumeReady(ByteBuffer)::: decoder resume ready:::b->input->input->position->get->s->states->get->if->logger->isLoggable->logger->format->log->switch->integerReader->configure->break->if->integerReader->configure->break->if->integerReader->configure->break->if->integerReader->configure->break->integerReader->configure->break->throw->String->valueOf->new->InternalError->if->input->get
+Decoder#resumeIndexed(ByteBuffer, DecodingCallback)::: decoder resume indexed:::if->integerReader->read->return->integerReader->get->integerReader->reset->if->logger->isLoggable->logger->format->log->try->f->getHeaderFieldAt->action->onIndexed->catch->finally
+Decoder#getHeaderFieldAt(int)::: decoder get header field at:::f->try->table->get->catch->throw->new->IOException->finally->return
+Decoder#resumeLiteral(ByteBuffer, DecodingCallback)::: decoder resume literal:::if->completeReading->return->try->if->if->logger->isLoggable->logger->format->log->f->getHeaderFieldAt->action->onLiteral->else->if->logger->isLoggable->logger->format->log->action->onLiteral->catch->finally->cleanUpAfterReading
+Decoder#resumeLiteralWithIndexing(ByteBuffer, DecodingCallback)::: decoder resume literal with indexing:::if->completeReading->return->try->n->v->value->toString->if->if->logger->isLoggable->logger->format->log->f->getHeaderFieldAt->action->onLiteralWithIndexing->else->name->toString->if->logger->isLoggable->logger->format->log->action->onLiteralWithIndexing->table->put->catch->finally->cleanUpAfterReading
+Decoder#resumeLiteralNeverIndexed(ByteBuffer, DecodingCallback)::: decoder resume literal never indexed:::if->completeReading->return->try->if->if->logger->isLoggable->logger->format->log->f->getHeaderFieldAt->action->onLiteralNeverIndexed->else->if->logger->isLoggable->logger->format->log->action->onLiteralNeverIndexed->catch->finally->cleanUpAfterReading
+Decoder#resumeSizeUpdate(ByteBuffer, DecodingCallback)::: decoder resume size update:::if->integerReader->read->return->integerReader->get->if->logger->isLoggable->logger->format->log->if->throw->format->new->IOException->integerReader->reset->try->action->onSizeUpdate->table->setMaxSize->catch->finally
+Decoder#completeReading(ByteBuffer)::: decoder complete reading:::if->if->if->integerReader->read->return->integerReader->get->integerReader->reset->else->if->stringReader->read->return->stringReader->isHuffmanEncoded->stringReader->reset->return->else->if->stringReader->read->return->stringReader->isHuffmanEncoded->stringReader->reset->return
+Decoder#cleanUpAfterReading()::: decoder clean up after reading:::name->setLength->value->setLength
+Decoder#getTable()::: decoder get table:::return
 DecodingCallback#onDecoded(CharSequence, CharSequence):::A method the more specific methods of the callback forward their calls to.:::
 DecodingCallback#onDecoded(CharSequence, CharSequence, boolean):::A more finer-grained version of #onDecoded(CharSequence, CharSequence) that also reports on value sensitivity:::onDecoded
 DecodingCallback#onIndexed(int, CharSequence, CharSequence):::An Indexed Header Field decoded.:::onDecoded
@@ -12,11 +29,169 @@ DecodingCallback#onLiteralWithIndexing(CharSequence, boolean, CharSequence, bool
 DecodingCallback#onSizeUpdate(int):::A Dynamic Table Size Update decoded.:::
 Encoder#header(CharSequence, CharSequence):::Sets up the given header (name, value):::header
 Encoder#header(CharSequence, CharSequence, boolean):::Sets up the given header (name, value) with possibly sensitive value:::if->logger->isLoggable->logger->format->log->requireNonNull->requireNonNull->t->getHeaderTable->index->t->indexOf->if->indexed->else->huffmanValue->isHuffmanBetterFor->if->if->literalNeverIndexed->else->literal->else->huffmanName->isHuffmanBetterFor->if->literalNeverIndexed->else->literal
+Encoder#isHuffmanBetterFor(CharSequence)::: encoder is huffman better for:::return->huffmanWriter->lengthOf->value->length
 Encoder#setMaxCapacity(int):::Sets a maximum capacity of the header table:::if->logger->isLoggable->logger->format->log->setMaxCapacity0
+Encoder#setMaxCapacity0(int)::: encoder set max capacity0:::checkEncoding->if->throw->new->IllegalArgumentException->calculated->calculateCapacity->if->logger->isLoggable->logger->format->log->if->throw->format->new->IllegalArgumentException->Math->min
 Encoder#calculateCapacity(int):::Calculates actual capacity to be used by this encoder in response to a request to update maximum table size:::return
 Encoder#encode(ByteBuffer):::Encodes the #header(CharSequence, CharSequence) set up header into the given buffer:::if->throw->new->IllegalStateException->if->logger->isLoggable->logger->format->log->if->prependWithCapacityUpdate->return->done->writer->write->if->writer->reset->return
+Encoder#prependWithCapacityUpdate(ByteBuffer)::: encoder prepend with capacity update:::if->if->sizes->new->LinkedList<>->if->sizes->add->if->sizes->add->else->if->sizes->add->bulkSizeUpdateWriter->maxHeaderTableSizes->done->bulkSizeUpdateWriter->write->if->bulkSizeUpdateWriter->reset->return->return
+Encoder#indexed(int)::: encoder indexed:::checkEncoding->if->logger->isLoggable->logger->format->log->indexedWriter->index
+Encoder#literal(int, CharSequence, boolean)::: encoder literal:::if->logger->isLoggable->logger->format->log->checkEncoding->literalWriter->index->value
+Encoder#literal(CharSequence, boolean, CharSequence, boolean)::: encoder literal:::if->logger->isLoggable->logger->format->log->checkEncoding->literalWriter->name->value
+Encoder#literalNeverIndexed(int, CharSequence, boolean)::: encoder literal never indexed:::if->logger->isLoggable->logger->format->log->checkEncoding->literalNeverIndexedWriter->index->value
+Encoder#literalNeverIndexed(CharSequence, boolean, CharSequence, boolean)::: encoder literal never indexed:::if->logger->isLoggable->logger->format->log->checkEncoding->literalNeverIndexedWriter->name->value
+Encoder#literalWithIndexing(int, CharSequence, boolean)::: encoder literal with indexing:::if->logger->isLoggable->logger->format->log->checkEncoding->literalWithIndexingWriter->index->value
+Encoder#literalWithIndexing(CharSequence, boolean, CharSequence, boolean)::: encoder literal with indexing:::if->logger->isLoggable->logger->format->log->checkEncoding->literalWithIndexingWriter->name->value
+Encoder#sizeUpdate(int)::: encoder size update:::if->logger->isLoggable->logger->format->log->checkEncoding->if->throw->format->new->IllegalArgumentException->sizeUpdateWriter->maxHeaderTableSize
+Encoder#getMaxCapacity()::: encoder get max capacity:::return
+Encoder#getHeaderTable()::: encoder get header table:::return
+Encoder#checkEncoding()::: encoder check encoding:::if->throw->new->IllegalStateException
+HeaderTable#indexOf(CharSequence, CharSequence)::: header table index of:::n->name->toString->v->value->toString->values->staticIndexes->get->if->idx->values->get->if->return->didx->search->if->return->else->if->if->return->values->values->iterator->next->else->return->else->if->return->values->values->iterator->next->else->return
+HeaderTable#add(HeaderField)::: header table add:::super->add->values->map->new->HashMap<>->computeIfAbsent->indexes->values->new->LinkedList<>->computeIfAbsent->counterSnapshot->indexes->add
+HeaderTable#indexesUniqueAndOrdered(Deque)::: header table indexes unique and ordered:::maxIndexSoFar->foreach->if->return->else->return
+HeaderTable#search(String, String)::: header table search:::values->map->get->if->return->indexes->values->get->if->return->indexes->peekLast->else->any->values->values->iterator->next->peekLast->return
+HeaderTable#remove()::: header table remove:::f->super->remove->values->map->get->indexes->values->get->index->indexes->pollFirst->if->indexes->isEmpty->values->remove->if->values->isEmpty->map->remove->return
+HPACK#getLogger()::: k get logger:::return
+HPACK.Logger#getName()::: logger get name:::return
+HPACK.Logger#isLoggable(System.Logger.Level)::: logger is loggable:::return->logger->isLoggable
+HPACK.Logger#log(System.Logger.Level, ResourceBundle, String, Throwable)::: logger log:::logger->log
+HPACK.Logger#log(System.Logger.Level, ResourceBundle, String, Object...)::: logger log:::logger->log
+HPACK.Logger#isLoggable(Level)::: logger is loggable:::return->implies
+HPACK.Logger#log(Level, Supplier)::: logger log:::if->implies->logger->log
+HPACK.Logger#subLogger(String)::: logger sub logger:::return->new->Logger
+HPACK.BufferUpdateConsumer#accept(long, int)::: buffer update consumer accept:::
+HPACK#read(ByteBuffer, long, int, BufferUpdateConsumer)::: k read:::nBytes->Math->source->remaining->min->switch->break->source->get->source->get->source->get->consumer->accept->break->source->get->source->get->source->get->source->getInt->consumer->accept->break->source->getLong->consumer->accept->break->throw->String->valueOf->new->InternalError->return
+HPACK#write(long, int, BufferUpdateConsumer, ByteBuffer)::: k write:::nBytes->Math->destination->remaining->min->switch->break->destination->put->destination->put->destination->put->consumer->accept->break->destination->put->destination->put->destination->put->destination->putInt->consumer->accept->break->destination->putLong->consumer->accept->break->throw->String->valueOf->new->InternalError->return
+HPACK#bytesForBits(int)::: k bytes for bits:::return
+Huffman.Reader#read(ByteBuffer, Appendable, boolean)::: reader read:::
 Huffman.Reader#reset():::Brings this reader to the state it had upon construction.:::
+Huffman.Writer#from(CharSequence, int, int)::: writer from:::
+Huffman.Writer#write(ByteBuffer)::: writer write:::
 Huffman.Writer#reset():::Brings this writer to the state it had upon construction.:::
 Huffman.Writer#lengthOf(CharSequence, int, int):::Calculates the number of bytes required to represent a subsequence of the given CharSequence using the Huffman coding.:::
+Huffman.Writer#lengthOf(CharSequence)::: writer length of:::return->value->length->lengthOf
+IndexedWriter#index(int)::: indexed writer index:::intWriter->configure->return
+IndexedWriter#write(HeaderTable, ByteBuffer)::: indexed writer write:::return->intWriter->write
+IndexedWriter#reset()::: indexed writer reset:::intWriter->reset->return
+IndexNameValueWriter#index(int)::: index name value writer index:::intWriter->configure->return
+IndexNameValueWriter#name(CharSequence, boolean)::: index name value writer name:::intWriter->configure->nameWriter->configure->return
+IndexNameValueWriter#value(CharSequence, boolean)::: index name value writer value:::valueWriter->configure->return
+IndexNameValueWriter#write(HeaderTable, ByteBuffer)::: index name value writer write:::if->if->if->intWriter->write->return->else->if->intWriter->write->nameWriter->write->return->if->if->valueWriter->write->return->return
+IndexNameValueWriter#reset()::: index name value writer reset:::intWriter->reset->if->nameWriter->reset->valueWriter->reset->return
+IntegerReader#configure(int)::: integer reader configure:::return->configure
+IntegerReader#configure(int, int)::: integer reader configure:::if->throw->new->IllegalStateException->checkPrefix->if->throw->new->IllegalArgumentException->return
+IntegerReader#read(ByteBuffer)::: integer reader read:::if->throw->new->IllegalStateException->if->return->if->input->hasRemaining->return->if->max->n->input->get->if->return->else->if->i->do->if->input->hasRemaining->return->input->get->increment->if->throw->format->new->IOException->while->return->throw->Arrays->new->ObjectArr->toString->new->InternalError
+IntegerReader#get()::: integer reader get:::if->throw->new->IllegalStateException->return
+IntegerReader#checkPrefix(int)::: integer reader check prefix:::if->throw->new->IllegalArgumentException
+IntegerReader#reset()::: integer reader reset:::return
+IntegerWriter#configure(int, int, int)::: integer writer configure:::if->throw->new->IllegalStateException->if->throw->new->IllegalArgumentException->checkPrefix->return
+IntegerWriter#write(ByteBuffer)::: integer writer write:::if->throw->new->IllegalStateException->if->return->if->output->hasRemaining->return->if->max->if->output->put->return->output->put->if->while->output->hasRemaining->output->put->if->output->hasRemaining->return->output->put->return->throw->Arrays->new->ObjectArr->toString->new->InternalError
+IntegerWriter#checkPrefix(int)::: integer writer check prefix:::if->throw->new->IllegalArgumentException
+IntegerWriter#reset()::: integer writer reset:::return
+ISO_8859_1.Reader#read(ByteBuffer, Appendable)::: reader read:::while->nBytes->HPACK->read->if->return->while->c->try->destination->append->catch->throw->new->IOException->finally
+ISO_8859_1.Reader#reset()::: reader reset:::return
+ISO_8859_1.Writer#configure(CharSequence, int, int)::: writer configure:::return
+ISO_8859_1.Writer#write(ByteBuffer)::: writer write:::while->while->if->break->c->source->charAt->if->throw->Integer->toString->new->IllegalArgumentException->if->else->break->if->return->nBytes->HPACK->write->if->return
+ISO_8859_1.Writer#reset()::: writer reset:::return
+LiteralWithIndexingWriter#index(int)::: literal with indexing writer index:::super->index->return
+LiteralWithIndexingWriter#name(CharSequence, boolean)::: literal with indexing writer name:::super->name->return
+LiteralWithIndexingWriter#value(CharSequence, boolean)::: literal with indexing writer value:::super->value->return
+LiteralWithIndexingWriter#write(HeaderTable, ByteBuffer)::: literal with indexing writer write:::if->n->if->table->get->else->table->put->return->super->write
+LiteralWithIndexingWriter#reset()::: literal with indexing writer reset:::return->super->reset
+NaiveHuffman.Reader#read(ByteBuffer, Appendable, boolean)::: reader read:::read
+NaiveHuffman.Reader#read(ByteBuffer, Appendable, boolean, boolean)::: reader read:::c->l->pos->source->position->while->source->hasRemaining->d->source->get->for->resetProbe->if->return->if->c->isLeaf->return->if->return->if->throw->new->IOException->throw->new->IOException
+NaiveHuffman.Reader#reset()::: reader reset:::resetProbe
+NaiveHuffman.Reader#resetProbe()::: reader reset probe:::
+NaiveHuffman.Writer#from(CharSequence, int, int)::: writer from:::if->input->length->throw->String->input->length->format->new->IndexOutOfBoundsException->return
+NaiveHuffman.Writer#write(ByteBuffer)::: writer write:::for->if->if->destination->hasRemaining->destination->put->else->return->return
+NaiveHuffman.Writer#reset()::: writer reset:::return
+NaiveHuffman.Writer#lengthOf(CharSequence, int, int)::: writer length of:::return->INSTANCE->lengthOf
 NaiveHuffman#lengthOf(CharSequence):::Calculates the number of bytes required to represent the given CharSequence with the Huffman coding.:::return->value->length->lengthOf
 NaiveHuffman#lengthOf(CharSequence, int, int):::Calculates the number of bytes required to represent a subsequence of the given CharSequence with the Huffman coding.:::len->for->i->return
+NaiveHuffman#addChar(int, int, int)::: naive huffman add char:::addLeaf->new->Code
+NaiveHuffman#addEOS(int, int, int)::: naive huffman add s:::addLeaf->new->Code
+NaiveHuffman#addLeaf(int, int, int, boolean)::: naive huffman add leaf:::if->throw->new->IllegalArgumentException->curr->for->p->curr->isLeaf->if->curr->isLeaf->throw->new->IllegalStateException->curr->setChar
+NaiveHuffman#codeOf(char)::: naive huffman code of:::if->throw->new->IllegalArgumentException->return
+NaiveHuffman#getRoot()::: naive huffman get root:::return
+NaiveHuffman.Node#getChild(int)::: node get child:::if->isLeaf->throw->new->IllegalStateException->result->if->throw->format->new->IllegalStateException->return
+NaiveHuffman.Node#isLeaf()::: node is leaf:::return
+NaiveHuffman.Node#getChar()::: node get char:::if->isLeaf->throw->new->IllegalStateException->return
+NaiveHuffman.Node#setChar(char)::: node set char:::if->throw->new->IllegalStateException->if->throw->new->IllegalStateException
+NaiveHuffman.Node#addChildIfAbsent(int)::: node add child if absent:::if->throw->new->IllegalStateException->child->if->if->new->Node->else->if->new->Node->return
+NaiveHuffman.Node#toString()::: node to string:::if->isLeaf->if->return->else->return->format->return
+NaiveHuffman.Code#getCode()::: code get code:::return
+NaiveHuffman.Code#getLength()::: code get length:::return
+NaiveHuffman.Code#toString()::: code to string:::p->return->Long->toBinaryString->substring
+QuickHuffman#codeValueOf(char)::: quick huffman code value of:::return
+QuickHuffman#codeLengthOf(char)::: quick huffman code length of:::return
+QuickHuffman#buildTrie()::: quick huffman build trie:::tmpRoot->new->TemporaryNode->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addChar->addEOS->return->ImmutableNode->copyOf
+QuickHuffman#addChar(Node, int, int, int)::: quick huffman add char:::addLeaf->value
+QuickHuffman#addEOS(Node, int, int, int)::: quick huffman add s:::addLeaf
+QuickHuffman#addLeaf(Node, char, int, int, boolean)::: quick huffman add leaf:::curr->nBytes->bytesForBits->align->l->for->i->probe->idx->curr->curr->isEOSPath->setEOSPath->for->i
+QuickHuffman.Node#isEOSPath()::: node is path:::
+QuickHuffman.Node#setEOSPath(boolean)::: node set path:::
+QuickHuffman.Node#isLeaf()::: node is leaf:::
+QuickHuffman.Node#getChild(int)::: node get child:::
+QuickHuffman.Node#getOrCreateChild(int)::: node get or create child:::
+QuickHuffman.Node#getChildren()::: node get children:::
+QuickHuffman.Node#getSymbol()::: node get symbol:::
+QuickHuffman.Node#setSymbol(char)::: node set symbol:::
+QuickHuffman.Node#getLength()::: node get length:::
+QuickHuffman.Node#setLength(int)::: node set length:::
+QuickHuffman.TemporaryNode#getOrCreateChild(int)::: temporary node get or create child:::ensureChildrenExist->if->new->TemporaryNode->return
+QuickHuffman.TemporaryNode#ensureChildrenExist()::: temporary node ensure children exist:::if->new->TemporaryNodeArr
+QuickHuffman.TemporaryNode#isLeaf()::: temporary node is leaf:::return
+QuickHuffman.TemporaryNode#isEOSPath()::: temporary node is path:::return
+QuickHuffman.TemporaryNode#setEOSPath(boolean)::: temporary node set path:::
+QuickHuffman.TemporaryNode#getChild(int)::: temporary node get child:::ensureChildrenExist->return
+QuickHuffman.TemporaryNode#getChildren()::: temporary node get children:::if->return->new->NodeArr->return
+QuickHuffman.TemporaryNode#getSymbol()::: temporary node get symbol:::return
+QuickHuffman.TemporaryNode#getLength()::: temporary node get length:::return
+QuickHuffman.TemporaryNode#setSymbol(char)::: temporary node set symbol:::
+QuickHuffman.TemporaryNode#setLength(int)::: temporary node set length:::
+QuickHuffman.ImmutableNode#copyOf(Node)::: immutable node copy of:::if->node->isLeaf->return->node->getSymbol->node->isEOSPath->node->getLength->new->ImmutableNode->children->node->getChildren->immutableChildren->new->ImmutableNodeArr->for->i->return->node->isEOSPath->node->getLength->new->ImmutableNode
+QuickHuffman.ImmutableNode#isLeaf()::: immutable node is leaf:::return->children->isEmpty
+QuickHuffman.ImmutableNode#isEOSPath()::: immutable node is path:::return
+QuickHuffman.ImmutableNode#setEOSPath(boolean)::: immutable node set path:::throw->new->UnsupportedOperationException
+QuickHuffman.ImmutableNode#getChild(int)::: immutable node get child:::return->children->get
+QuickHuffman.ImmutableNode#getOrCreateChild(int)::: immutable node get or create child:::throw->new->UnsupportedOperationException
+QuickHuffman.ImmutableNode#getChildren()::: immutable node get children:::throw->new->UnsupportedOperationException
+QuickHuffman.ImmutableNode#getSymbol()::: immutable node get symbol:::return
+QuickHuffman.ImmutableNode#setSymbol(char)::: immutable node set symbol:::throw->new->UnsupportedOperationException
+QuickHuffman.ImmutableNode#getLength()::: immutable node get length:::return
+QuickHuffman.ImmutableNode#setLength(int)::: immutable node set length:::throw->new->UnsupportedOperationException
+QuickHuffman.Reader#read(ByteBuffer, Appendable, boolean)::: reader read:::while->remaining->source->remaining->nBytes->HPACK->read->while->if->if->break->else->if->return->else->if->else->break->idx->node->curr->getChild->if->throw->new->IOException->if->node->isLeaf->if->node->getLength->throw->new->IOException->if->node->isEOSPath->throw->new->IOException->destination->node->getSymbol->append->else->Math->node->getLength->min->node->getLength->node->getLength->if->curr->isEOSPath->throw->new->IOException
+QuickHuffman.Reader#reset()::: reader reset:::
+QuickHuffman.Writer#from(CharSequence, int, int)::: writer from:::Objects->input->length->checkFromToIndex->return
+QuickHuffman.Writer#write(ByteBuffer)::: writer write:::while->while->if->break->c->source->charAt->if->throw->new->IllegalArgumentException->len->codeLengthOf->if->codeValueOf->else->break->if->return->if->if->bytesForBits->nBytes->HPACK->write->if->return
+QuickHuffman.Writer#reset()::: writer reset:::return
+QuickHuffman.Writer#lengthOf(CharSequence, int, int)::: writer length of:::len->for->i->return->bytesForBits
+SimpleHeaderTable#size()::: simple header table size:::return
+SimpleHeaderTable#maxSize()::: simple header table max size:::return
+SimpleHeaderTable#length()::: simple header table length:::return
+SimpleHeaderTable#get(int)::: simple header table get:::checkIndex->if->return->staticTable->get->else->return->buffer->get
+SimpleHeaderTable#put(CharSequence, CharSequence)::: simple header table put:::name->toString->value->toString->new->HeaderField->put
+SimpleHeaderTable#put(HeaderField)::: simple header table put:::if->logger->isLoggable->logger->format->log->entrySize->sizeOf->if->logger->isLoggable->logger->format->log->while->if->logger->isLoggable->logger->format->log->evictEntry->if->if->logger->isLoggable->logger->format->log->return->add->if->logger->isLoggable->logger->format->log->logger->this->toString->log
+SimpleHeaderTable#setMaxSize(int)::: simple header table set max size:::if->throw->new->IllegalArgumentException->while->evictEntry->upperBound->buffer->resize
+SimpleHeaderTable#evictEntry()::: simple header table evict entry:::f->remove->s->sizeOf->if->logger->isLoggable->logger->format->log->logger->this->toString->log->return
+SimpleHeaderTable#toString()::: simple header table to string:::used->return->length->format
+SimpleHeaderTable#checkIndex(int)::: simple header table check index:::len->length->if->throw->format->new->IndexOutOfBoundsException->return
+SimpleHeaderTable#sizeOf(HeaderField)::: simple header table size of:::return->length->length
+SimpleHeaderTable#getStateString()::: simple header table get state string:::if->return->b->new->StringBuilder->for->i->size->b->format->append->return->b->toString
+SimpleHeaderTable.HeaderField#toString()::: header field to string:::return->value->isEmpty
+SimpleHeaderTable#add(HeaderField)::: simple header table add:::buffer->add
+SimpleHeaderTable#remove()::: simple header table remove:::return->buffer->remove
+SimpleHeaderTable.CircularBuffer#add(E)::: circular buffer add:::if->throw->format->new->IllegalStateException
+SimpleHeaderTable.CircularBuffer#remove()::: circular buffer remove:::if->throw->new->NoSuchElementException->elem->return
+SimpleHeaderTable.CircularBuffer#get(int)::: circular buffer get:::if->throw->format->new->IndexOutOfBoundsException->idx->return
+SimpleHeaderTable.CircularBuffer#resize(int)::: circular buffer resize:::if->throw->format->new->IllegalStateException->capacity->pow2Size->newElements->new->ObjectArr->if->System->arraycopy->else->System->arraycopy->System->arraycopy
+SizeUpdateWriter#maxHeaderTableSize(int)::: size update writer max header table size:::intWriter->configure->return
+SizeUpdateWriter#write(HeaderTable, ByteBuffer)::: size update writer write:::if->table->setMaxSize->return->intWriter->write
+SizeUpdateWriter#reset()::: size update writer reset:::intWriter->reset->return
+StringReader#read(ByteBuffer, Appendable)::: string reader read:::if->return->if->input->hasRemaining->return->if->p->input->position->input->get->intReader->configure->if->lengthRead->intReader->read->if->return->intReader->get->if->isLast->input->remaining->oldLimit->input->limit->if->input->input->position->limit->Math->input->remaining->min->if->huffmanReader->read->else->plainReader->read->if->input->limit->return->throw->Arrays->new->ObjectArr->toString->new->InternalError
+StringReader#isHuffmanEncoded()::: string reader is huffman encoded:::if->throw->new->IllegalStateException->return
+StringReader#reset()::: string reader reset:::if->huffmanReader->reset->else->plainReader->reset->intReader->reset
+StringWriter#configure(CharSequence, boolean)::: string writer configure:::return->input->length->configure
+StringWriter#configure(CharSequence, int, int, boolean)::: string writer configure:::if->input->length->throw->String->input->length->format->new->IndexOutOfBoundsException->if->plainWriter->configure->intWriter->configure->else->huffmanWriter->from->intWriter->huffmanWriter->lengthOf->configure->return
+StringWriter#write(ByteBuffer)::: string writer write:::if->return->if->throw->new->IllegalStateException->if->output->hasRemaining->return->if->if->intWriter->write->else->return->if->written->huffmanWriter->write->plainWriter->write->if->return->else->return->throw->Arrays->new->ObjectArr->toString->new->InternalError
+StringWriter#reset()::: string writer reset:::intWriter->reset->if->huffmanWriter->reset->else->plainWriter->reset

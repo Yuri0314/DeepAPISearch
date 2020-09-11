@@ -49,6 +49,7 @@ UndoableEditSupport#getUndoableEditListeners():::Returns an array of all the Und
 UndoableEditSupport#_postEdit(UndoableEdit):::Called only from postEdit and endUpdate:::ev->new->UndoableEditEvent->cursor->listeners->clone->elements->while->cursor->hasMoreElements->cursor->nextElement->undoableEditHappened
 UndoableEditSupport#postEdit(UndoableEdit):::DEADLOCK WARNING: Calling this method may call undoableEditHappened in all listeners:::if->_postEdit->else->compoundEdit->addEdit
 UndoableEditSupport#getUpdateLevel():::Returns the update level value.:::return
+UndoableEditSupport#beginUpdate()::: undoable edit support begin update:::if->createCompoundEdit
 UndoableEditSupport#createCompoundEdit():::Called only from beginUpdate:::return->new->CompoundEdit
 UndoableEditSupport#endUpdate():::DEADLOCK WARNING: Calling this method may call undoableEditHappened in all listeners:::if->compoundEdit->end->_postEdit
 UndoableEditSupport#toString():::Returns a string that displays and identifies this object's properties.:::return->super->toString
@@ -66,6 +67,8 @@ UndoManager#canUndoOrRedo():::Returns true if it is possible to invoke undo or r
 UndoManager#undo():::Undoes the appropriate edits:::tryUndoOrRedo
 UndoManager#canUndo():::Returns true if edits may be undone:::if->edit->editToBeUndone->return->edit->canUndo->else->return->super->canUndo
 UndoManager#redo():::Redoes the appropriate edits:::tryUndoOrRedo
+UndoManager#tryUndoOrRedo(Action)::: undo manager try undo or redo:::lockSupport->undo->synchronized->if->edits->size->else->if->edit->editToBeUndone->editToBeRedone->if->throw->new->CannotUndoException->new->CannotRedoException->getEditLockSupport->if->if->undoTo->else->redoTo->return->else->if->super->undo->else->super->redo->return->while->lockSupport->lockEdit->editLockSupport->try->synchronized->if->edits->size->if->edit->editToBeUndone->editToBeRedone->if->throw->new->CannotUndoException->new->CannotRedoException->getEditLockSupport->if->if->undoTo->else->redoTo->return->else->if->super->undo->else->super->redo->return->catch->finally->if->lockSupport->unlockEdit
+UndoManager#getEditLockSupport(UndoableEdit)::: undo manager get edit lock support:::return
 UndoManager#canRedo():::Returns true if edits may be redone:::if->edit->editToBeRedone->return->edit->canRedo->else->return->super->canRedo
 UndoManager#addEdit(UndoableEdit):::Adds an UndoableEdit to this UndoManager, if it's possible:::retVal->edits->size->trimEdits->super->addEdit->if->edits->size->trimForLimit->return
 UndoManager#end():::Turns this UndoManager into a normal CompoundEdit:::super->end->this->edits->size->trimEdits

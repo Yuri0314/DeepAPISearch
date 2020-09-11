@@ -7,6 +7,7 @@ Activatable#exportObject(Remote, String, MarshalledObject, boolean, int, RMIClie
 Activatable#exportObject(Remote, ActivationID, int):::Export the activatable remote object to the RMI runtime to make the object available to receive incoming calls:::return->new->ActivatableServerRef->exportObject
 Activatable#exportObject(Remote, ActivationID, int, RMIClientSocketFactory, RMIServerSocketFactory):::Export the activatable remote object to the RMI runtime to make the object available to receive incoming calls:::return->new->ActivatableServerRef->exportObject
 Activatable#unexportObject(Remote, boolean):::Remove the remote object, obj, from the RMI runtime:::return->unexportObject
+Activatable#exportObject(Remote, ActivatableServerRef):::Exports the specified object using the specified server ref.:::if->return->sref->exportObject
 ActivationDesc#getGroupID():::Returns the group identifier for the object specified by this descriptor:::return
 ActivationDesc#getClassName():::Returns the class name for the object specified by this descriptor.:::return
 ActivationDesc#getLocation():::Returns the code location for the object specified by this descriptor.:::return
@@ -25,6 +26,8 @@ ActivationGroup#setSystem(ActivationSystem):::Set the activation system for the 
 ActivationGroup#getSystem():::Returns the activation system for the VM:::if->try->port->AccessController->Integer->getInteger->doPrivileged->Naming->lookup->catch->throw->new->ActivationException->finally->return
 ActivationGroup#activeObject(ActivationID, MarshalledObject):::This protected method is necessary for subclasses to make the activeObject callback to the group's monitor:::getMonitor->activeObject
 ActivationGroup#inactiveGroup():::This protected method is necessary for subclasses to make the inactiveGroup callback to the group's monitor:::try->getMonitor->inactiveGroup->catch->finally->destroyGroup
+ActivationGroup#getMonitor():::Returns the monitor for the activation group.:::synchronized->if->return->throw->new->RemoteException
+ActivationGroup#destroyGroup():::Destroys the current group.:::
 ActivationGroup#currentGroup():::Returns the current group for the VM.:::if->throw->new->ActivationException->return
 ActivationGroupDesc#getClassName():::Returns the group's class name (possibly null):::return
 ActivationGroupDesc#getLocation():::Returns the group's code location.:::return
@@ -35,6 +38,7 @@ ActivationGroupDesc.CommandEnvironment#getCommandPath():::Fetch the configured p
 ActivationGroupDesc.CommandEnvironment#getCommandOptions():::Fetch the configured java command options.:::return->options->clone
 ActivationGroupDesc.CommandEnvironment#equals(Object):::Compares two command environments for content equality.:::if->env->return->command->equals->Arrays->equals->else->return
 ActivationGroupDesc.CommandEnvironment#hashCode():::Return identical values for similar CommandEnvironments.:::return->command->hashCode
+ActivationGroupDesc.CommandEnvironment#readObject(ObjectInputStream):::readObject for custom serialization:::in->defaultReadObject->if->new->StringArr
 ActivationGroupDesc#equals(Object):::Compares two activation group descriptors for content equality.:::if->desc->return->className->equals->location->equals->data->equals->env->equals->props->equals->else->return
 ActivationGroupDesc#hashCode():::Produce identical numbers for similar ActivationGroupDescs.:::return->location->hashCode->env->hashCode->className->hashCode->data->hashCode
 ActivationGroupID#getSystem():::Returns the group's activation system.:::return
@@ -43,6 +47,8 @@ ActivationGroupID#equals(Object):::Compares two group identifiers for content eq
 ActivationID#activate(boolean):::Activate the object for this id.:::try->mobj->activator->activate->return->AccessController->new->PrivilegedExceptionAction<Remote>->doPrivileged->catch->ex->pae->getException->if->throw->else->throw->new->UnmarshalException->finally
 ActivationID#hashCode():::Returns a hashcode for the activation id:::return->uid->hashCode
 ActivationID#equals(Object):::Compares two activation ids for content equality:::if->id->return->uid->equals->activator->equals->else->return
+ActivationID#writeObject(ObjectOutputStream):::writeObject for custom serialization:::out->writeObject->ref->if->getRef->else->if->Proxy->activator->getClass->isProxyClass->handler->Proxy->getInvocationHandler->if->throw->new->InvalidObjectException->getRef->else->throw->new->InvalidObjectException->out->ref->getRefClass->writeUTF->ref->writeExternal
+ActivationID#readObject(ObjectInputStream):::readObject for custom serialization:::in->readObject->try->refClass->Class->in->readUTF->forName->asSubclass->ref->refClass->newInstance->ref->readExternal->Proxy->getClassLoader->new->Class<?>Arr->new->RemoteObjectInvocationHandler->newProxyInstance->catch->throw->new->InvalidObjectException->initCause->throw->new->InvalidObjectException->initCause->finally
 ActivationInstantiator#newInstance(ActivationID, ActivationDesc):::The activator calls an instantiator's newInstance method in order to recreate in that group an object with the activation identifier, id, and descriptor, desc:::
 ActivationMonitor#inactiveObject(ActivationID):::An activation group calls its monitor's inactiveObject method when an object in its group becomes inactive (deactivates):::
 ActivationMonitor#activeObject(ActivationID, MarshalledObject):::Informs that an object is now active:::

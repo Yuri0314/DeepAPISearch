@@ -1,18 +1,293 @@
+AuthFilter#description()::: auth filter description:::return
+AuthFilter#setAuthenticator(Authenticator)::: auth filter set authenticator:::
+AuthFilter#consumeInput(HttpExchange)::: auth filter consume input:::i->t->getRequestBody->b->new->byteArr->while->i->read->i->close
 AuthFilter#doFilter(HttpExchange, Filter.Chain):::The filter's implementation, which is invoked by the server:::if->r->authenticator->authenticate->if->s->e->ExchangeImpl->get->e->s->getPrincipal->setPrincipal->chain->doFilter->else->if->ry->consumeInput->t->ry->getResponseCode->sendResponseHeaders->else->if->f->consumeInput->t->f->getResponseCode->sendResponseHeaders->else->chain->doFilter
+ChunkedInputStream#numeric(char[], int)::: chunked input stream numeric:::len->for->i->return
+ChunkedInputStream#readChunkHeader()::: chunked input stream read chunk header:::gotCR->c->len_arr->new->charArr->len_size->end_of_len->read->while->in->read->ch->if->throw->new->IOException->if->if->l->numeric->return->else->if->else->if->else->if->else->if->throw->new->IOException
+ChunkedInputStream#readImpl(byte[], int, int)::: chunked input stream read impl:::if->return->if->readChunkHeader->if->consumeCRLF->t->getServerImpl->t->getConnection->requestCompleted->return->if->n->in->read->if->if->consumeCRLF->if->throw->new->IOException->return
+ChunkedInputStream#consumeCRLF()::: chunked input stream consume f:::c->in->read->if->throw->new->IOException->in->read->if->throw->new->IOException
 ChunkedInputStream#available():::returns the number of bytes available to read in the current chunk which may be less than the real amount, but we'll live with that limitation for the moment:::if->return->n->in->available->return
+ChunkedInputStream#isDataBuffered()::: chunked input stream is data buffered:::return->in->available
+ChunkedInputStream#markSupported()::: chunked input stream mark supported:::return
+ChunkedInputStream#mark(int)::: chunked input stream mark:::
+ChunkedInputStream#reset()::: chunked input stream reset:::throw->new->IOException
+ChunkedOutputStream#write(int)::: chunked output stream write:::if->throw->new->StreamClosedException->if->writeChunk
+ChunkedOutputStream#write(byte[], int, int)::: chunked output stream write:::if->throw->new->StreamClosedException->remain->if->System->arraycopy->writeChunk->while->System->arraycopy->writeChunk->if->System->arraycopy->if->writeChunk
+ChunkedOutputStream#writeChunk():::write out a chunk , and reset the pointers chunk does not have to be CHUNK_SIZE bytes count must == number of user bytes (<= CHUNK_SIZE):::c->Integer->toHexString->toCharArray->clen->startByte->i->for->out->write
+ChunkedOutputStream#close()::: chunked output stream close:::if->return->flush->try->writeChunk->out->flush->is->t->getOriginalInputStream->if->is->isClosed->is->close->catch->finally->e->new->WriteFinishedEvent->t->getHttpContext->getServerImpl->addEvent
+ChunkedOutputStream#flush()::: chunked output stream flush:::if->throw->new->StreamClosedException->if->writeChunk->out->flush
+Code#msg(int)::: code msg:::switch->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return->return
+ContextList#add(HttpContextImpl)::: context list add:::list->add
+ContextList#size()::: context list size:::return->list->size
+ContextList#findContext(String, String)::: context list find context:::return->findContext
+ContextList#findContext(String, String, boolean)::: context list find context:::protocol->toLowerCase->longest->lc->foreach->if->ctx->getProtocol->equals->continue->cpath->ctx->getPath->if->cpath->equals->continue->else->if->path->startsWith->continue->if->cpath->length->longest->length->return
+ContextList#remove(String, String)::: context list remove:::ctx->findContext->if->throw->new->IllegalArgumentException->list->remove
+ContextList#remove(HttpContextImpl)::: context list remove:::foreach->if->ctx->equals->list->remove->return->throw->new->IllegalArgumentException
+DefaultHttpServerProvider#createHttpServer(InetSocketAddress, int)::: default http server provider create http server:::return->new->HttpServerImpl
+DefaultHttpServerProvider#createHttpsServer(InetSocketAddress, int)::: default http server provider create https server:::return->new->HttpsServerImpl
+ExchangeImpl#getRequestHeaders()::: exchange impl get request headers:::return->new->UnmodifiableHeaders
+ExchangeImpl#getResponseHeaders()::: exchange impl get response headers:::return
+ExchangeImpl#getRequestURI()::: exchange impl get request i:::return
+ExchangeImpl#getRequestMethod()::: exchange impl get request method:::return
+ExchangeImpl#getHttpContext()::: exchange impl get http context:::return->connection->getHttpContext
+ExchangeImpl#isHeadRequest()::: exchange impl is head request:::return->HEAD->getRequestMethod->equals
+ExchangeImpl#close()::: exchange impl close:::if->return->try->if->connection->close->return->if->uos_orig->isWrapped->connection->close->return->if->uis_orig->isClosed->uis_orig->close->uos->close->catch->connection->close->finally
+ExchangeImpl#getRequestBody()::: exchange impl get request body:::if->return->if->new->ChunkedInputStream->else->new->FixedLengthInputStream->return
+ExchangeImpl#getOriginalInputStream()::: exchange impl get original input stream:::return
+ExchangeImpl#getResponseCode()::: exchange impl get response code:::return
+ExchangeImpl#getResponseBody()::: exchange impl get response body:::if->new->PlaceholderOutputStream->return
+ExchangeImpl#getPlaceholderResponseBody()::: exchange impl get placeholder response body:::getResponseBody->return
+ExchangeImpl#sendResponseHeaders(int, long)::: exchange impl send response headers:::if->throw->new->IOException->statusLine->Code->msg->tmpout->new->BufferedOutputStream->o->getPlaceholderResponseBody->tmpout->bytes->statusLine->length->write->noContentToSend->noContentLengthHeader->rspHdrs->dateFormat->get->new->Date->format->set->if->if->logger->server->getLogger->msg->logger->log->if->isHeadRequest->if->logger->server->getLogger->msg->logger->log->else->if->if->o->new->UndefLengthOutputStream->setWrappedStream->else->rspHdrs->set->o->new->ChunkedOutputStream->setWrappedStream->else->if->if->rspHdrs->Long->toString->set->o->new->FixedLengthOutputStream->setWrappedStream->write->tmpout->flush->if->e->new->WriteFinishedEvent->server->addEvent->server->req->requestLine->logReply
+ExchangeImpl#write(Headers, OutputStream)::: exchange impl write:::entries->map->entrySet->foreach->key->entry->getKey->buf->values->entry->getValue->foreach->i->key->length->bytes->os->write->bytes->val->length->os->write->os->write->os->write
+ExchangeImpl#bytes(String, int):::convert string to byte[], using rspbuf Make sure that at least "extra" bytes are free at end of rspbuf:::slen->s->length->if->diff->new->byteArr->c->s->toCharArray->for->i->return
+ExchangeImpl#getRemoteAddress()::: exchange impl get remote address:::s->connection->getChannel->socket->ia->s->getInetAddress->port->s->getPort->return->new->InetSocketAddress
+ExchangeImpl#getLocalAddress()::: exchange impl get local address:::s->connection->getChannel->socket->ia->s->getLocalAddress->port->s->getLocalPort->return->new->InetSocketAddress
+ExchangeImpl#getProtocol()::: exchange impl get protocol:::reqline->req->requestLine->index->reqline->lastIndexOf->return->reqline->substring
+ExchangeImpl#getSSLSession()::: exchange impl get session:::e->connection->getSSLEngine->if->return->return->e->getSession
+ExchangeImpl#getAttribute(String)::: exchange impl get attribute:::if->throw->new->NullPointerException->if->getHttpContext->getAttributes->return->attributes->get
+ExchangeImpl#setAttribute(String, Object)::: exchange impl set attribute:::if->throw->new->NullPointerException->if->getHttpContext->getAttributes->attributes->put
+ExchangeImpl#setStreams(InputStream, OutputStream)::: exchange impl set streams:::if->if
 ExchangeImpl#getConnection():::PP:::return
+ExchangeImpl#getServerImpl()::: exchange impl get server impl:::return->getHttpContext->getServerImpl
+ExchangeImpl#getPrincipal()::: exchange impl get principal:::return
+ExchangeImpl#setPrincipal(HttpPrincipal)::: exchange impl set principal:::
+ExchangeImpl#get(HttpExchange)::: exchange impl get:::if->return->getExchangeImpl->else->return->getExchangeImpl
+PlaceholderOutputStream#setWrappedStream(OutputStream)::: placeholder output stream set wrapped stream:::
+PlaceholderOutputStream#isWrapped()::: placeholder output stream is wrapped:::return
+PlaceholderOutputStream#checkWrap()::: placeholder output stream check wrap:::if->throw->new->IOException
+PlaceholderOutputStream#write(int)::: placeholder output stream write:::checkWrap->wrapped->write
+PlaceholderOutputStream#write(byte[])::: placeholder output stream write:::checkWrap->wrapped->write
+PlaceholderOutputStream#write(byte[], int, int)::: placeholder output stream write:::checkWrap->wrapped->write
+PlaceholderOutputStream#flush()::: placeholder output stream flush:::checkWrap->wrapped->flush
+PlaceholderOutputStream#close()::: placeholder output stream close:::checkWrap->wrapped->close
+FixedLengthInputStream#readImpl(byte[], int, int)::: fixed length input stream read impl:::if->return->if->n->in->read->if->if->t->getServerImpl->t->getConnection->requestCompleted->if->throw->new->IOException->return
+FixedLengthInputStream#available()::: fixed length input stream available:::if->return->n->in->available->return
+FixedLengthInputStream#markSupported()::: fixed length input stream mark supported:::return
+FixedLengthInputStream#mark(int)::: fixed length input stream mark:::
+FixedLengthInputStream#reset()::: fixed length input stream reset:::throw->new->IOException
+FixedLengthOutputStream#write(int)::: fixed length output stream write:::if->throw->new->IOException->if->throw->new->StreamClosedException->out->write
+FixedLengthOutputStream#write(byte[], int, int)::: fixed length output stream write:::if->throw->new->IOException->if->throw->new->StreamClosedException->if->throw->new->IOException->out->write
+FixedLengthOutputStream#close()::: fixed length output stream close:::if->return->if->t->close->throw->new->IOException->flush->is->t->getOriginalInputStream->if->is->isClosed->try->is->close->catch->finally->e->new->WriteFinishedEvent->t->getHttpContext->getServerImpl->addEvent
+HttpConnection#toString()::: http connection to string:::s->if->chan->toString->return
+HttpConnection#setChannel(SocketChannel)::: http connection set channel:::
+HttpConnection#setContext(HttpContextImpl)::: http connection set context:::
+HttpConnection#getState()::: http connection get state:::return
+HttpConnection#setState(State)::: http connection set state:::
+HttpConnection#setParameters(InputStream, OutputStream, SocketChannel, SSLEngine, SSLStreams, SSLContext, String, HttpContextImpl, InputStream)::: http connection set parameters:::context->getLogger
+HttpConnection#getChannel()::: http connection get channel:::return
+HttpConnection#close()::: http connection close:::if->return->if->logger->chan->toString->log->if->chan->isOpen->ServerImpl->dprint->return->try->if->raw->close->catch->ServerImpl->dprint->finally->try->if->rawout->close->catch->ServerImpl->dprint->finally->try->if->sslStreams->close->catch->ServerImpl->dprint->finally->try->chan->close->catch->ServerImpl->dprint->finally
+HttpConnection#setRemaining(int)::: http connection set remaining:::
+HttpConnection#getRemaining()::: http connection get remaining:::return
+HttpConnection#getSelectionKey()::: http connection get selection key:::return
+HttpConnection#getInputStream()::: http connection get input stream:::return
+HttpConnection#getRawOutputStream()::: http connection get raw output stream:::return
+HttpConnection#getProtocol()::: http connection get protocol:::return
+HttpConnection#getSSLEngine()::: http connection get engine:::return
+HttpConnection#getSSLContext()::: http connection get context:::return
+HttpConnection#getHttpContext()::: http connection get http context:::return
 HttpContextImpl#getHandler():::returns the handler for this context:::return
+HttpContextImpl#setHandler(HttpHandler)::: http context impl set handler:::if->throw->new->NullPointerException->if->throw->new->IllegalArgumentException
 HttpContextImpl#getPath():::returns the path this context was created with:::return
 HttpContextImpl#getServer():::returns the server this context was created with:::return->server->getWrapper
+HttpContextImpl#getServerImpl()::: http context impl get server impl:::return
 HttpContextImpl#getProtocol():::returns the protocol this context was created with:::return
 HttpContextImpl#getAttributes():::returns a mutable Map, which can be used to pass configuration and other data to Filter modules and to the context's exchange handler:::return
+HttpContextImpl#getFilters()::: http context impl get filters:::return
+HttpContextImpl#getSystemFilters()::: http context impl get system filters:::return
+HttpContextImpl#setAuthenticator(Authenticator)::: http context impl set authenticator:::old->authfilter->setAuthenticator->return
+HttpContextImpl#getAuthenticator()::: http context impl get authenticator:::return
+HttpContextImpl#getLogger()::: http context impl get logger:::return->server->getLogger
+HttpExchangeImpl#getRequestHeaders()::: http exchange impl get request headers:::return->impl->getRequestHeaders
+HttpExchangeImpl#getResponseHeaders()::: http exchange impl get response headers:::return->impl->getResponseHeaders
+HttpExchangeImpl#getRequestURI()::: http exchange impl get request i:::return->impl->getRequestURI
+HttpExchangeImpl#getRequestMethod()::: http exchange impl get request method:::return->impl->getRequestMethod
+HttpExchangeImpl#getHttpContext()::: http exchange impl get http context:::return->impl->getHttpContext
+HttpExchangeImpl#close()::: http exchange impl close:::impl->close
+HttpExchangeImpl#getRequestBody()::: http exchange impl get request body:::return->impl->getRequestBody
+HttpExchangeImpl#getResponseCode()::: http exchange impl get response code:::return->impl->getResponseCode
+HttpExchangeImpl#getResponseBody()::: http exchange impl get response body:::return->impl->getResponseBody
+HttpExchangeImpl#sendResponseHeaders(int, long)::: http exchange impl send response headers:::impl->sendResponseHeaders
+HttpExchangeImpl#getRemoteAddress()::: http exchange impl get remote address:::return->impl->getRemoteAddress
+HttpExchangeImpl#getLocalAddress()::: http exchange impl get local address:::return->impl->getLocalAddress
+HttpExchangeImpl#getProtocol()::: http exchange impl get protocol:::return->impl->getProtocol
+HttpExchangeImpl#getAttribute(String)::: http exchange impl get attribute:::return->impl->getAttribute
+HttpExchangeImpl#setAttribute(String, Object)::: http exchange impl set attribute:::impl->setAttribute
+HttpExchangeImpl#setStreams(InputStream, OutputStream)::: http exchange impl set streams:::impl->setStreams
+HttpExchangeImpl#getPrincipal()::: http exchange impl get principal:::return->impl->getPrincipal
+HttpExchangeImpl#getExchangeImpl()::: http exchange impl get exchange impl:::return
+HttpServerImpl#bind(InetSocketAddress, int)::: http server impl bind:::server->bind
+HttpServerImpl#start()::: http server impl start:::server->start
+HttpServerImpl#setExecutor(Executor)::: http server impl set executor:::server->setExecutor
+HttpServerImpl#getExecutor()::: http server impl get executor:::return->server->getExecutor
+HttpServerImpl#stop(int)::: http server impl stop:::server->stop
+HttpServerImpl#createContext(String, HttpHandler)::: http server impl create context:::return->server->createContext
+HttpServerImpl#createContext(String)::: http server impl create context:::return->server->createContext
+HttpServerImpl#removeContext(String)::: http server impl remove context:::server->removeContext
+HttpServerImpl#removeContext(HttpContext)::: http server impl remove context:::server->removeContext
+HttpServerImpl#getAddress()::: http server impl get address:::return->server->getAddress
+HttpsExchangeImpl#getRequestHeaders()::: https exchange impl get request headers:::return->impl->getRequestHeaders
+HttpsExchangeImpl#getResponseHeaders()::: https exchange impl get response headers:::return->impl->getResponseHeaders
+HttpsExchangeImpl#getRequestURI()::: https exchange impl get request i:::return->impl->getRequestURI
+HttpsExchangeImpl#getRequestMethod()::: https exchange impl get request method:::return->impl->getRequestMethod
+HttpsExchangeImpl#getHttpContext()::: https exchange impl get http context:::return->impl->getHttpContext
+HttpsExchangeImpl#close()::: https exchange impl close:::impl->close
+HttpsExchangeImpl#getRequestBody()::: https exchange impl get request body:::return->impl->getRequestBody
+HttpsExchangeImpl#getResponseCode()::: https exchange impl get response code:::return->impl->getResponseCode
+HttpsExchangeImpl#getResponseBody()::: https exchange impl get response body:::return->impl->getResponseBody
+HttpsExchangeImpl#sendResponseHeaders(int, long)::: https exchange impl send response headers:::impl->sendResponseHeaders
+HttpsExchangeImpl#getRemoteAddress()::: https exchange impl get remote address:::return->impl->getRemoteAddress
+HttpsExchangeImpl#getLocalAddress()::: https exchange impl get local address:::return->impl->getLocalAddress
+HttpsExchangeImpl#getProtocol()::: https exchange impl get protocol:::return->impl->getProtocol
+HttpsExchangeImpl#getSSLSession()::: https exchange impl get session:::return->impl->getSSLSession
+HttpsExchangeImpl#getAttribute(String)::: https exchange impl get attribute:::return->impl->getAttribute
+HttpsExchangeImpl#setAttribute(String, Object)::: https exchange impl set attribute:::impl->setAttribute
+HttpsExchangeImpl#setStreams(InputStream, OutputStream)::: https exchange impl set streams:::impl->setStreams
+HttpsExchangeImpl#getPrincipal()::: https exchange impl get principal:::return->impl->getPrincipal
+HttpsExchangeImpl#getExchangeImpl()::: https exchange impl get exchange impl:::return
+HttpsServerImpl#setHttpsConfigurator(HttpsConfigurator)::: https server impl set https configurator:::server->setHttpsConfigurator
+HttpsServerImpl#getHttpsConfigurator()::: https server impl get https configurator:::return->server->getHttpsConfigurator
+HttpsServerImpl#bind(InetSocketAddress, int)::: https server impl bind:::server->bind
+HttpsServerImpl#start()::: https server impl start:::server->start
+HttpsServerImpl#setExecutor(Executor)::: https server impl set executor:::server->setExecutor
+HttpsServerImpl#getExecutor()::: https server impl get executor:::return->server->getExecutor
+HttpsServerImpl#stop(int)::: https server impl stop:::server->stop
+HttpsServerImpl#createContext(String, HttpHandler)::: https server impl create context:::return->server->createContext
+HttpsServerImpl#createContext(String)::: https server impl create context:::return->server->createContext
+HttpsServerImpl#removeContext(String)::: https server impl remove context:::server->removeContext
+HttpsServerImpl#removeContext(HttpContext)::: https server impl remove context:::server->removeContext
+HttpsServerImpl#getAddress()::: https server impl get address:::return->server->getAddress
 LeftOverInputStream#isDataBuffered():::if bytes are left over buffered on *the UNDERLYING* stream:::return->super->available
+LeftOverInputStream#close()::: left over input stream close:::if->return->if->ServerConfig->getDrainAmount->drain
+LeftOverInputStream#isClosed()::: left over input stream is closed:::return
+LeftOverInputStream#isEOF()::: left over input stream is f:::return
+LeftOverInputStream#readImpl(byte[], int, int)::: left over input stream read impl:::
+LeftOverInputStream#read()::: left over input stream read:::if->throw->new->IOException->c->readImpl->if->return->else->return
+LeftOverInputStream#read(byte[], int, int)::: left over input stream read:::if->throw->new->IOException->return->readImpl
 LeftOverInputStream#drain(long):::read and discard up to l bytes or "eof" occurs, (whichever is first):::bufSize->db->new->byteArr->while->if->server->isFinishing->break->len->readImpl->if->return->else->return
+Request#inputStream()::: request input stream:::return
+Request#outputStream()::: request output stream:::return
+Request#readLine()::: request read line:::gotCR->gotLF->new->StringBuffer->while->c->is->read->if->return->if->if->else->consume->consume->else->if->else->consume->lineBuf->append->return->new->String
+Request#consume(int)::: request consume:::if->lineBuf->append
 Request#requestLine():::returns the request line (first line of a request):::return
+Request#headers()::: request headers:::if->return->new->Headers->s->new->charArr->len->firstc->is->read->if->c->is->read->if->return->while->keyend->c->inKey->while->is->read->switch->if->break->break->is->read->if->is->read->if->is->read->if->break->break->if->ns->new->charArr->System->arraycopy->while->k->if->else->String->copyValueOf->if->while->v->if->new->String->else->String->copyValueOf->if->hdrs->size->ServerConfig->getMaxReqHeaders->throw->ServerConfig->getMaxReqHeaders->new->IOException->hdrs->add->return
+Request.ReadStream#read(byte[])::: read stream read:::return->read
+Request.ReadStream#read()::: read stream read:::result->read->if->return->else->return
+Request.ReadStream#read(byte[], int, int)::: read stream read:::canreturn->willreturn->if->throw->new->IOException->if->return->if->throw->new->IndexOutOfBoundsException->if->markBuf->remaining->markBuf->get->if->else->chanbuf->clear->if->chanbuf->limit->do->channel->read->while->if->return->chanbuf->flip->chanbuf->get->if->try->markBuf->put->catch->finally->return
+Request.ReadStream#markSupported()::: read stream mark supported:::return
+Request.ReadStream#available()::: read stream available:::if->throw->new->IOException->if->return->if->return->markBuf->remaining->return->chanbuf->remaining
+Request.ReadStream#close()::: read stream close:::if->return->channel->close
+Request.ReadStream#mark(int)::: read stream mark:::if->return->ByteBuffer->allocate
+Request.ReadStream#reset()::: read stream reset:::if->return->if->throw->new->IOException->markBuf->flip
+Request.WriteStream#write(int)::: write stream write:::write
+Request.WriteStream#write(byte[])::: write stream write:::write
+Request.WriteStream#write(byte[], int, int)::: write stream write:::l->if->throw->new->IOException->cap->buf->capacity->if->diff->ByteBuffer->allocate->buf->clear->buf->put->buf->flip->n->while->channel->write->if->return
+Request.WriteStream#close()::: write stream close:::if->return->channel->close
+ServerConfig#checkLegacyProperties(Logger)::: server config check legacy properties:::new->PrivilegedAction<Void>->doPrivileged
+ServerConfig#debugEnabled()::: server config debug enabled:::return
+ServerConfig#getIdleInterval()::: server config get idle interval:::return
+ServerConfig#getClockTick()::: server config get clock tick:::return
+ServerConfig#getMaxIdleConnections()::: server config get max idle connections:::return
+ServerConfig#getDrainAmount()::: server config get drain amount:::return
+ServerConfig#getMaxReqHeaders()::: server config get max req headers:::return
+ServerConfig#getMaxReqTime()::: server config get max req time:::return
+ServerConfig#getMaxRspTime()::: server config get max rsp time:::return
+ServerConfig#getTimerMillis()::: server config get timer millis:::return
+ServerConfig#noDelay()::: server config no delay:::return
+ServerImpl#bind(InetSocketAddress, int)::: server impl bind:::if->throw->new->BindException->if->throw->new->NullPointerException->socket->schan->socket->socket->bind
+ServerImpl#start()::: server impl start:::if->throw->new->IllegalStateException->if->new->DefaultExecutor->new->Thread->dispatcherThread->start
+ServerImpl#setExecutor(Executor)::: server impl set executor:::if->throw->new->IllegalStateException
+ServerImpl.DefaultExecutor#execute(Runnable)::: default executor execute:::task->run
+ServerImpl#getExecutor()::: server impl get executor:::return
+ServerImpl#setHttpsConfigurator(HttpsConfigurator)::: server impl set https configurator:::if->throw->new->NullPointerException->if->throw->new->IllegalStateException->config->getSSLContext
+ServerImpl#getHttpsConfigurator()::: server impl get https configurator:::return
+ServerImpl#isFinishing()::: server impl is finishing:::return
+ServerImpl#stop(int)::: server impl stop:::if->throw->new->IllegalArgumentException->try->schan->close->catch->finally->selector->wakeup->latest->System->currentTimeMillis->while->System->currentTimeMillis->delay->if->break->selector->wakeup->synchronized->foreach->c->close->allConnections->clear->idleConnections->clear->timer->cancel->if->timer1->cancel->if->try->dispatcherThread->join->catch->Thread->currentThread->interrupt->logger->log->finally
+ServerImpl#createContext(String, HttpHandler)::: server impl create context:::if->throw->new->NullPointerException->context->new->HttpContextImpl->contexts->add->logger->log->return
+ServerImpl#createContext(String)::: server impl create context:::if->throw->new->NullPointerException->context->new->HttpContextImpl->contexts->add->logger->log->return
+ServerImpl#removeContext(String)::: server impl remove context:::if->throw->new->NullPointerException->contexts->remove->logger->log
+ServerImpl#removeContext(HttpContext)::: server impl remove context:::if->throw->new->IllegalArgumentException->contexts->remove->logger->context->getPath->log
+ServerImpl#getAddress()::: server impl get address:::return->AccessController->new->PrivilegedAction<InetSocketAddress>->doPrivileged
+ServerImpl#getSelector()::: server impl get selector:::return
+ServerImpl#addEvent(Event)::: server impl add event:::synchronized->events->add->selector->wakeup
+ServerImpl.Dispatcher#handleEvent(Event)::: dispatcher handle event:::t->c->t->getConnection->try->if->exchanges->endExchange->if->responseCompleted->is->t->getOriginalInputStream->if->is->isEOF->if->idleConnections->size->c->close->allConnections->remove->else->if->is->isDataBuffered->requestStarted->c->getChannel->handle->else->connsToRegister->add->catch->logger->log->c->close->finally
+ServerImpl.Dispatcher#reRegister(HttpConnection)::: dispatcher re register:::try->chan->c->getChannel->chan->configureBlocking->key->chan->register->key->attach->getTime->idleConnections->add->catch->dprint->logger->log->c->close->finally
+ServerImpl.Dispatcher#run()::: dispatcher run:::while->try->list->synchronized->if->events->size->new->LinkedList<Event>->if->foreach->handleEvent->foreach->reRegister->connsToRegister->clear->selector->select->selected->selector->selectedKeys->iter->selected->iterator->while->iter->hasNext->key->iter->next->iter->remove->if->key->equals->if->continue->chan->schan->accept->if->if->ServerConfig->noDelay->chan->socket->setTcpNoDelay->chan->configureBlocking->newkey->chan->register->c->new->HttpConnection->c->setChannel->newkey->attach->requestStarted->allConnections->add->else->try->if->key->isReadable->chan->key->channel->conn->key->attachment->key->cancel->chan->configureBlocking->if->idleConnections->remove->requestStarted->handle->else->catch->handleException->handleException->finally->selector->selectNow->catch->logger->log->logger->log->finally->try->selector->close->catch->finally
+ServerImpl.Dispatcher#handleException(SelectionKey, Exception)::: dispatcher handle exception:::conn->key->attachment->if->logger->log->closeConnection
+ServerImpl.Dispatcher#handle(SocketChannel, HttpConnection)::: dispatcher handle:::try->t->new->Exchange->executor->execute->catch->logger->log->closeConnection->logger->log->closeConnection->logger->log->closeConnection->finally
+ServerImpl#dprint(String)::: server impl dprint:::if->println
+ServerImpl#dprint(Exception)::: server impl dprint:::if->println->e->printStackTrace
+ServerImpl#getLogger()::: server impl get logger:::return
+ServerImpl#closeConnection(HttpConnection)::: server impl close connection:::conn->close->allConnections->remove->switch->conn->getState->reqConnections->remove->break->rspConnections->remove->break->idleConnections->remove->break
+ServerImpl.Exchange#run()::: exchange run:::connection->getHttpContext->newconnection->engine->requestLine->sslStreams->try->if->connection->getInputStream->connection->getRawOutputStream->else->if->if->logger->log->throw->new->HttpError->new->SSLStreams->sslStreams->getInputStream->sslStreams->getOutputStream->sslStreams->getSSLEngine->else->new->Request.ReadStream->new->BufferedInputStream->new->Request.WriteStream->req->new->Request->req->requestLine->if->logger->log->closeConnection->return->logger->log->space->requestLine->indexOf->if->reject->return->method->requestLine->substring->start->requestLine->indexOf->if->reject->return->uriStr->requestLine->substring->uri->new->URI->version->requestLine->substring->headers->req->headers->s->headers->getFirst->clen->if->s->equalsIgnoreCase->else->headers->getFirst->if->Long->parseLong->if->requestCompleted->contexts->uri->getPath->findContext->if->reject->return->connection->setContext->if->ctx->getHandler->reject->return->new->ExchangeImpl->chdr->headers->getFirst->rheaders->tx->getResponseHeaders->if->chdr->equalsIgnoreCase->if->version->equalsIgnoreCase->if->rheaders->set->else->if->chdr->equalsIgnoreCase->rheaders->set->idle->ServerConfig->getIdleInterval->max->ServerConfig->getMaxIdleConnections->val->rheaders->set->if->connection->setParameters->exp->headers->getFirst->if->exp->equalsIgnoreCase->logReply->sendReply->sf->ctx->getSystemFilters->uf->ctx->getFilters->sc->ctx->getHandler->new->Filter.Chain->uc->new->LinkHandler->new->Filter.Chain->tx->getRequestBody->tx->getResponseBody->if->uc->new->HttpsExchangeImpl->doFilter->else->uc->new->HttpExchangeImpl->doFilter->catch->logger->log->closeConnection->reject->reject->logger->log->closeConnection->finally
+ServerImpl.Exchange.LinkHandler#handle(HttpExchange)::: link handler handle:::nextChain->doFilter
+ServerImpl.Exchange#reject(int, String, String)::: exchange reject:::logReply->Code->msg->sendReply->closeConnection
+ServerImpl.Exchange#sendReply(int, boolean, String)::: exchange send reply:::try->builder->new->StringBuilder->builder->append->append->Code->msg->append->append->if->text->length->builder->append->text->length->append->append->append->else->builder->append->if->builder->append->builder->append->append->s->builder->toString->b->s->getBytes->rawout->write->rawout->flush->if->closeConnection->catch->logger->log->closeConnection->finally
+ServerImpl#logReply(int, String, String)::: server impl log reply:::if->logger->isLoggable->return->if->r->if->requestStr->length->requestStr->substring->else->message->Code->msg->logger->log
+ServerImpl#getTicks()::: server impl get ticks:::return
+ServerImpl#getTime()::: server impl get time:::return
+ServerImpl#delay()::: server impl delay:::Thread->yield->try->Thread->sleep->catch->finally
+ServerImpl#startExchange()::: server impl start exchange:::
+ServerImpl#endExchange()::: server impl end exchange:::return
+ServerImpl#getWrapper()::: server impl get wrapper:::return
+ServerImpl#requestStarted(HttpConnection)::: server impl request started:::getTime->c->setState->reqConnections->add
+ServerImpl#requestCompleted(HttpConnection)::: server impl request completed:::s->c->getState->reqConnections->remove->getTime->rspConnections->add->c->setState
+ServerImpl#responseCompleted(HttpConnection)::: server impl response completed:::s->c->getState->rspConnections->remove->c->setState
+ServerImpl.ServerTimerTask#run()::: server timer task run:::toClose->new->LinkedList<HttpConnection>->System->currentTimeMillis->synchronized->foreach->if->toClose->add->foreach->idleConnections->remove->allConnections->remove->c->close
+ServerImpl.ServerTimerTask1#run()::: server timer task1 run:::toClose->new->LinkedList<HttpConnection>->System->currentTimeMillis->synchronized->if->foreach->if->toClose->add->foreach->logger->log->reqConnections->remove->allConnections->remove->c->close->new->LinkedList<HttpConnection>->synchronized->if->foreach->if->toClose->add->foreach->logger->log->rspConnections->remove->allConnections->remove->c->close
+ServerImpl#logStackTrace(String)::: server impl log stack trace:::logger->log->b->new->StringBuilder->e->Thread->currentThread->getStackTrace->for->i->logger->b->toString->log
+ServerImpl#getTimeMillis(long)::: server impl get time millis:::if->return->else->return
+SSLStreams#configureEngine(HttpsConfigurator, InetSocketAddress)::: streams configure engine:::if->params->new->Parameters->cfg->configure->sslParams->params->getSSLParameters->if->engine->setSSLParameters->else->if->params->getCipherSuites->try->engine->params->getCipherSuites->setEnabledCipherSuites->catch->finally->engine->params->getNeedClientAuth->setNeedClientAuth->engine->params->getWantClientAuth->setWantClientAuth->if->params->getProtocols->try->engine->params->getProtocols->setEnabledProtocols->catch->finally
+SSLStreams.Parameters#getClientAddress()::: parameters get client address:::return
+SSLStreams.Parameters#getHttpsConfigurator()::: parameters get https configurator:::return
+SSLStreams.Parameters#setSSLParameters(SSLParameters)::: parameters set parameters:::
+SSLStreams.Parameters#getSSLParameters()::: parameters get parameters:::return
 SSLStreams#close():::cleanup resources allocated inside this object:::wrapper->close
 SSLStreams#getInputStream():::return the SSL InputStream:::if->new->InputStream->return
 SSLStreams#getOutputStream():::return the SSL OutputStream:::if->new->OutputStream->return
+SSLStreams#getSSLEngine()::: streams get engine:::return
 SSLStreams#beginHandshake():::request the engine to repeat the handshake on this session the handshake must be driven by reads/writes on the streams Normally, not necessary to call this.:::engine->beginHandshake
+SSLStreams#allocate(BufType)::: streams allocate:::return->allocate
+SSLStreams#allocate(BufType, int)::: streams allocate:::synchronized->size->if->if->sess->engine->getSession->sess->getPacketBufferSize->if->else->if->sess->engine->getSession->sess->getApplicationBufferSize->if->return->ByteBuffer->allocate
+SSLStreams#realloc(ByteBuffer, boolean, BufType)::: streams realloc:::synchronized->nsize->b->capacity->n->allocate->if->b->flip->n->put->return
+SSLStreams.EngineWrapper#close()::: engine wrapper close:::
+SSLStreams.EngineWrapper#wrapAndSend(ByteBuffer)::: engine wrapper wrap and send:::return->wrapAndSendX
+SSLStreams.EngineWrapper#wrapAndSendX(ByteBuffer, boolean)::: engine wrapper wrap and send x:::if->throw->new->IOException->status->r->new->WrapperResult->synchronized->wrap_dst->clear->do->engine->wrap->getStatus->if->realloc->while->if->return->if->bytesProduced->wrap_dst->flip->l->wrap_dst->remaining->while->chan->write->return
+SSLStreams.EngineWrapper#recvAndUnwrap(ByteBuffer)::: engine wrapper recv and unwrap:::status->r->new->WrapperResult->if->throw->new->IOException->needData->if->unwrap_src->compact->unwrap_src->flip->else->unwrap_src->clear->synchronized->x->do->if->do->chan->read->while->if->throw->new->IOException->unwrap_src->flip->engine->unwrap->getStatus->if->if->unwrap_src->limit->unwrap_src->capacity->realloc->else->unwrap_src->unwrap_src->limit->position->unwrap_src->unwrap_src->capacity->limit->else->if->realloc->else->if->flip->return->while->unwrap_src->remaining->return
 SSLStreams#sendData(ByteBuffer):::send the data in the given ByteBuffer:::r->while->src->remaining->wrapper->wrapAndSend->status->getStatus->if->doClosure->return->hs_status->getHandshakeStatus->if->doHandshake->return
 SSLStreams#recvData(ByteBuffer):::read data thru the engine into the given ByteBuffer:::r->while->dst->position->wrapper->recvAndUnwrap->status->getStatus->if->doClosure->return->hs_status->getHandshakeStatus->if->doHandshake->dst->flip->return
+SSLStreams#doClosure()::: streams do closure:::try->handshaking->lock->tmp->allocate->r->do->tmp->clear->tmp->flip->wrapper->wrapAndSendX->while->getStatus->catch->finally->handshaking->unlock
+SSLStreams#doHandshake(HandshakeStatus)::: streams do handshake:::try->handshaking->lock->tmp->allocate->while->r->switch->task->while->engine->getDelegatedTask->task->run->tmp->clear->tmp->flip->wrapper->wrapAndSend->break->tmp->clear->wrapper->recvAndUnwrap->if->break->getHandshakeStatus->catch->finally->handshaking->unlock
+SSLStreams.InputStream#read(byte[], int, int)::: input stream read:::if->throw->new->IOException->if->return->available->if->bbuf->remaining->if->bbuf->clear->r->recvData->if->bbuf->remaining->return->else->if->bbuf->get->return
+SSLStreams.InputStream#available()::: input stream available:::return->bbuf->remaining
+SSLStreams.InputStream#markSupported()::: input stream mark supported:::return
+SSLStreams.InputStream#reset()::: input stream reset:::throw->new->IOException
+SSLStreams.InputStream#skip(long)::: input stream skip:::n->if->throw->new->IOException->if->return->ret->while->if->bbuf->remaining->bbuf->bbuf->position->position->return->else->bbuf->remaining->bbuf->clear->r->recvData->return
 SSLStreams.InputStream#close():::close the SSL connection:::engine->closeInbound
+SSLStreams.InputStream#read(byte[])::: input stream read:::return->read
+SSLStreams.InputStream#read()::: input stream read:::n->read->if->return->else->return
+SSLStreams.OutputStream#write(int)::: output stream write:::write
+SSLStreams.OutputStream#write(byte[])::: output stream write:::write
+SSLStreams.OutputStream#write(byte[], int, int)::: output stream write:::if->throw->new->IOException->while->l->buf->capacity->buf->capacity->buf->clear->buf->put->buf->flip->r->sendData->if->getStatus->if->throw->new->IOException
+SSLStreams.OutputStream#flush()::: output stream flush:::
+SSLStreams.OutputStream#close()::: output stream close:::r->engine->closeOutbound->stat->buf->clear->while->wrapper->wrapAndSend->getHandshakeStatus
+TimeSource#getTime()::: time source get time:::
+UndefLengthOutputStream#write(int)::: undef length output stream write:::if->throw->new->IOException->out->write
+UndefLengthOutputStream#write(byte[], int, int)::: undef length output stream write:::if->throw->new->IOException->out->write
+UndefLengthOutputStream#close()::: undef length output stream close:::if->return->flush->is->t->getOriginalInputStream->if->is->isClosed->try->is->close->catch->finally->e->new->WriteFinishedEvent->t->getHttpContext->getServerImpl->addEvent
+UnmodifiableHeaders#size()::: unmodifiable headers size:::return->map->size
+UnmodifiableHeaders#isEmpty()::: unmodifiable headers is empty:::return->map->isEmpty
+UnmodifiableHeaders#containsKey(Object)::: unmodifiable headers contains key:::return->map->containsKey
+UnmodifiableHeaders#containsValue(Object)::: unmodifiable headers contains value:::return->map->containsValue
+UnmodifiableHeaders#get(Object)::: unmodifiable headers get:::return->map->get
+UnmodifiableHeaders#getFirst(String)::: unmodifiable headers get first:::return->map->getFirst
+UnmodifiableHeaders#put(String, List)::: unmodifiable headers put:::return->map->put
+UnmodifiableHeaders#add(String, String)::: unmodifiable headers add:::throw->new->UnsupportedOperationException
+UnmodifiableHeaders#set(String, String)::: unmodifiable headers set:::throw->new->UnsupportedOperationException
+UnmodifiableHeaders#remove(Object)::: unmodifiable headers remove:::throw->new->UnsupportedOperationException
+UnmodifiableHeaders#putAll(Map>)::: unmodifiable headers put all:::throw->new->UnsupportedOperationException
+UnmodifiableHeaders#clear()::: unmodifiable headers clear:::throw->new->UnsupportedOperationException
+UnmodifiableHeaders#keySet()::: unmodifiable headers key set:::return->Collections->map->keySet->unmodifiableSet
+UnmodifiableHeaders#values()::: unmodifiable headers values:::return->Collections->map->values->unmodifiableCollection
+UnmodifiableHeaders#entrySet()::: unmodifiable headers entry set:::return->Collections->map->entrySet->unmodifiableSet
+UnmodifiableHeaders#equals(Object)::: unmodifiable headers equals:::return->map->equals
+UnmodifiableHeaders#hashCode()::: unmodifiable headers hash code:::return->map->hashCode

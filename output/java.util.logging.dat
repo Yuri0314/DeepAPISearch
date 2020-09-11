@@ -1,8 +1,21 @@
 ConsoleHandler#publish(LogRecord):::Publish a LogRecord:::super->publish->flush
 ConsoleHandler#close():::Override StreamHandler.close to do a flush but not to close the output stream:::flush
 ErrorManager#error(String, Exception, int):::The error method is called when a Handler failure occurs:::if->return->text->if->println->if->ex->printStackTrace
+FileHandler.MeteredStream#write(int)::: metered stream write:::out->write
+FileHandler.MeteredStream#write(byte[])::: metered stream write:::out->write
+FileHandler.MeteredStream#write(byte[], int, int)::: metered stream write:::out->write
+FileHandler.MeteredStream#flush()::: metered stream flush:::out->flush
+FileHandler.MeteredStream#close()::: metered stream close:::out->close
+FileHandler#open(File, boolean)::: file handler open:::len->if->fname->length->fout->fname->toString->new->FileOutputStream->bout->new->BufferedOutputStream->new->MeteredStream->setOutputStream
+FileHandler#configure():::Configure a FileHandler from LogManager properties and/or default values as specified in the class javadoc.:::manager->LogManager->getLogManager->cname->getClass->getName->manager->getStringProperty->manager->getLongProperty->if->manager->getIntProperty->if->manager->getBooleanProperty->manager->getLevelProperty->setLevel->manager->getFilterProperty->setFilter->manager->new->XMLFormatter->getFormatterProperty->setFormatter->manager->getIntProperty->if->try->manager->getStringProperty->setEncoding->catch->try->setEncoding->catch->finally->finally
+FileHandler#isParentWritable(Path)::: file handler is parent writable:::parent->path->getParent->if->path->toAbsolutePath->getParent->return->Files->isWritable
+FileHandler#openFiles():::Open the set of output files, based on the configured instance variables.:::manager->LogManager->getLogManager->manager->checkPermission->if->throw->new->IllegalArgumentException->if->em->new->InitializationErrorManager->setErrorManager->unique->for->new->FileArr->for->i->if->open->else->rotate->ex->if->if->throw->else->if->throw->else->throw->new->IOException->new->ErrorManager->setErrorManager
+FileHandler#generate(String, int, int):::Generate a file based on a user-supplied pattern, generation number, and an integer uniqueness suffix:::return->generate
+FileHandler#generate(String, int, int, int)::: file handler generate:::path->Paths->get->result->sawg->sawu->word->new->StringBuilder->prev->foreach->if->prev->word->toString->resolveSibling->result->resolve->pattern->elem->toString->ix->word->setLength->while->pattern->length->ch->pattern->charAt->ch2->if->pattern->length->Character->pattern->charAt->toLowerCase->if->if->tmpDir->System->getProperty->if->System->getProperty->Paths->get->word->setLength->continue->else->if->Paths->System->getProperty->get->if->isSetUID->throw->new->IOException->word->setLength->continue->else->if->word->append->continue->else->if->word->append->continue->else->if->word->append->continue->word->append->if->word->append->append->if->word->append->append->if->word->length->n->word->toString->p->Paths->get->prev->resolveSibling->result->resolve->else->if->Paths->get->if->path->getRoot->return->result->toFile->else->return->path->getRoot->resolve->toFile
+FileHandler#rotate():::Rotate the set of output files:::oldLevel->getLevel->setLevel->super->close->for->i->try->open->catch->reportError->finally->setLevel
 FileHandler#publish(LogRecord):::Format and publish a LogRecord.:::if->isLoggable->return->super->publish->flush->if->AccessController->new->PrivilegedAction<Object>->doPrivileged
 FileHandler#close():::Close all the files.:::super->close->if->return->try->lockFileChannel->close->catch->finally->synchronized->locks->remove->new->File->delete
+FileHandler.InitializationErrorManager#error(String, Exception, int)::: initialization error manager error:::
 Filter#isLoggable(LogRecord):::Check if a given log record should be published.:::
 Formatter#format(LogRecord):::Format the given log record and return the formatted string:::
 Formatter#getHead(Handler):::Return the header string for a set of formatted records:::return
@@ -23,21 +36,61 @@ Handler#reportError(String, Exception, int):::Protected convenience method to re
 Handler#setLevel(Level):::Set the log level specifying which message levels will be logged by this Handler:::if->throw->new->NullPointerException->checkPermission
 Handler#getLevel():::Get the log level specifying which messages will be logged by this Handler:::return
 Handler#isLoggable(LogRecord):::Check if this Handler would actually log a given LogRecord:::levelValue->getLevel->intValue->if->record->getLevel->intValue->return->filter->getFilter->if->return->return->filter->isLoggable
+Handler#checkPermission()::: handler check permission:::manager->checkPermission
 Level#getResourceBundleName():::Return the level's localization resource bundle name, or null if no localization bundle is defined.:::return
 Level#getName():::Return the non-localized string name of the Level.:::return
 Level#getLocalizedName():::Return the localized string name of the Level, for the current default locale:::return->getLocalizedLevelName
+Level#getLevelName()::: level get level name:::return
+Level#computeLocalizedLevelName(Locale)::: level compute localized level name:::module->this->getClass->getModule->rb->getBundle->localizedName->rb->getString->isDefaultBundle->defaultBundle->equals->if->return->rbLocale->rb->getLocale->locale->equals->name->localizedName->toUpperCase->equals->return->equals->localizedName->toUpperCase
+Level#getCachedLocalizedLevelName()::: level get cached localized level name:::if->if->if->cachedLocale->Locale->getDefault->equals->return->if->return->return
+Level#getLocalizedLevelName()::: level get localized level name:::cachedLocalizedName->getCachedLocalizedLevelName->if->return->newLocale->Locale->getDefault->try->computeLocalizedLevelName->catch->finally->return
+Level#findLevel(String)::: level find level:::if->throw->new->NullPointerException->level->KnownLevel->KnownLevel->mirrored->findByName->if->level->isPresent->return->level->get->try->x->Integer->parseInt->KnownLevel->KnownLevel->mirrored->findByValue->if->level->isPresent->return->level->get->levelObject->new->Level->return->KnownLevel->KnownLevel->mirrored->findByValue->get->catch->finally->KnownLevel->KnownLevel->mirrored->findByLocalizedLevelName->if->level->isPresent->return->level->get->return
 Level#toString():::Returns a string representation of this Level.:::return
 Level#intValue():::Get the integer value for this level:::return
+Level#readResolve()::: level read resolve:::level->KnownLevel->matches->if->level->isPresent->return->level->get->return->new->Level
 Level#parse(String):::Parse a level name string into a Level:::name->length->level->KnownLevel->KnownLevel->referent->findByName->if->level->isPresent->return->level->get->try->x->Integer->parseInt->KnownLevel->KnownLevel->referent->findByValue->if->level->isPresent->return->level->get->levelObject->new->Level->return->KnownLevel->KnownLevel->referent->findByValue->get->catch->finally->KnownLevel->KnownLevel->referent->findByLocalizedLevelName->if->level->isPresent->return->level->get->throw->new->IllegalArgumentException
 Level#equals(Object):::Compare two objects for value equality.:::try->lx->return->catch->return->finally
 Level#hashCode():::Generate a hashcode.:::return
+Level.KnownLevel#mirrored()::: known level mirrored:::return->Optional->of
+Level.KnownLevel#referent()::: known level referent:::return->Optional->get->ofNullable
+Level.KnownLevel#remove()::: known level remove:::Optional->nameToLevels->get->ofNullable->x->remove->ifPresent->Optional->intToLevels->get->ofNullable->x->remove->ifPresent
+Level.KnownLevel#purge()::: known level purge:::ref->while->QUEUE->poll->if->remove
+Level.KnownLevel#registerWithClassLoader(Level)::: known level register with class loader:::pa->customLevel->getClass->getClassLoader->pn->customLevel->getClass->getName->name->AccessController->doPrivileged->cl->AccessController->doPrivileged->CUSTOM_LEVEL_CLV->new->ArrayList<>->computeIfAbsent->add
+Level.KnownLevel#add(Level)::: known level add:::purge->o->new->KnownLevel->list->nameToLevels->get->if->new->ArrayList<>->nameToLevels->put->list->add->intToLevels->get->if->new->ArrayList<>->intToLevels->put->list->add->if->registerWithClassLoader
+Level.KnownLevel#findByName(String, Function>)::: known level find by name:::purge->return->nameToLevels->Collections->emptyList->getOrDefault->stream->map->Optional->stream->flatMap->findFirst
+Level.KnownLevel#findByValue(int, Function>)::: known level find by value:::purge->return->intToLevels->Collections->emptyList->getOrDefault->stream->map->Optional->stream->flatMap->findFirst
+Level.KnownLevel#findByLocalizedLevelName(String, Function>)::: known level find by localized level name:::purge->return->nameToLevels->values->stream->List->stream->flatMap->map->Optional->stream->flatMap->name->l->getLocalizedLevelName->equals->filter->findFirst
+Level.KnownLevel#matches(Level)::: known level matches:::purge->list->nameToLevels->get->if->foreach->levelObject->ref->get->if->continue->other->type->levelObject->getClass->if->equals->if->l->getClass->return->Optional->of->return->Optional->empty
+Logger.LoggerBundle#isSystemBundle()::: logger bundle is system bundle:::return->SYSTEM_LOGGER_RB_NAME->equals
+Logger.LoggerBundle#get(String, ResourceBundle)::: logger bundle get:::if->return->else->if->SYSTEM_LOGGER_RB_NAME->equals->return->else->return->new->LoggerBundle
+Logger.ConfigurationData#setUseParentHandlers(boolean)::: configuration data set use parent handlers:::if->system->synchronized
+Logger.ConfigurationData#setFilter(Filter)::: configuration data set filter:::if->system->synchronized
+Logger.ConfigurationData#setLevelObject(Level)::: configuration data set level object:::if->system->synchronized
+Logger.ConfigurationData#setLevelValue(int)::: configuration data set level value:::if->system->synchronized
+Logger.ConfigurationData#addHandler(Handler)::: configuration data add handler:::if->handlers->add->if->system->synchronized->addIfAbsent
+Logger.ConfigurationData#removeHandler(Handler)::: configuration data remove handler:::if->handlers->remove->if->system->synchronized->remove
+Logger.ConfigurationData#merge(Logger)::: configuration data merge:::if->throw->new->InternalError->system->if->return->synchronized->if->return->foreach->if->contains->systemPeer->addHandler->retainAll->addAllAbsent->synchronized->systemPeer->updateEffectiveLevel->return
 Logger#getGlobal():::Return global logger object with the name Logger.GLOBAL_LOGGER_NAME.:::LogManager->getLogManager->return
+Logger#mergeWithSystemLogger(Logger)::: logger merge with system logger:::if->name->equals->throw->new->InternalError->checkPermission->cfg->if->cfg->merge
+Logger#setCallerModuleRef(Module)::: logger set caller module ref:::if->new->WeakReference<>
+Logger#getCallerModule()::: logger get caller module:::return->callerModuleRef->get
+Logger#setLogManager(LogManager)::: logger set log manager:::
+Logger#checkPermission()::: logger check permission:::if->if->LogManager->getLogManager->manager->checkPermission
+Logger.SystemLoggerHelper#getBooleanProperty(String)::: system logger helper get boolean property:::s->AccessController->new->PrivilegedAction<String>->doPrivileged->return->Boolean->parseBoolean
+Logger#demandLogger(String, String, Class)::: logger demand logger:::manager->LogManager->getLogManager->if->if->caller->getModule->isSystem->return->manager->demandSystemLogger->return->manager->demandLogger
+Logger#getLogger(String)::: logger get logger:::return->Logger->Reflection->getCallerClass->getLogger
+Logger#getLogger(String, Class):::Find or create a logger for a named subsystem on behalf of the given caller:::return->demandLogger
+Logger#getLogger(String, String)::: logger get logger:::return->Logger->Reflection->getCallerClass->getLogger
+Logger#getLogger(String, String, Class):::Find or create a logger for a named subsystem on behalf of the given caller:::result->demandLogger->result->setupResourceInfo->return
+Logger#getPlatformLogger(String)::: logger get platform logger:::manager->LogManager->getLogManager->result->manager->demandSystemLogger->return
 Logger#getAnonymousLogger():::Create an anonymous Logger:::return->getAnonymousLogger
+Logger#getAnonymousLogger(String)::: logger get anonymous logger:::manager->LogManager->getLogManager->manager->drainLoggerRefQueueBounded->callerClass->Reflection->getCallerClass->module->callerClass->getModule->result->new->Logger->root->manager->getLogger->result->doSetParent->return
 Logger#getResourceBundle():::Retrieve the localization resource bundle for this logger:::return->getResourceBundleName->findResourceBundle
 Logger#getResourceBundleName():::Retrieve the localization resource bundle name for this logger:::return
 Logger#setFilter(Filter):::Set a filter to control output on this Logger:::checkPermission->config->setFilter
 Logger#getFilter():::Get the current filter for this Logger.:::return
 Logger#log(LogRecord):::Log a LogRecord:::if->record->getLevel->isLoggable->return->theFilter->if->theFilter->isLoggable->return->logger->while->loggerHandlers->logger->accessCheckedHandlers->logger->getHandlers->foreach->handler->publish->useParentHdls->logger->getUseParentHandlers->if->break->logger->getParent
+Logger#doLog(LogRecord)::: logger do log:::lr->setLoggerName->lb->getEffectiveLoggerBundle->bundle->ebname->if->lr->setResourceBundleName->lr->setResourceBundle->log
 Logger#log(Level, String):::Log a message, with no arguments:::if->isLoggable->return->lr->new->LogRecord->doLog
 Logger#log(Level, Supplier):::Log a message, which is only to be constructed if the logging level is such that the message will actually be logged:::if->isLoggable->return->lr->msgSupplier->get->new->LogRecord->doLog
 Logger#log(Level, String, Object):::Log a message, with one object parameter:::if->isLoggable->return->lr->new->LogRecord->params->lr->setParameters->doLog
@@ -50,6 +103,8 @@ Logger#logp(Level, String, String, String, Object):::Log a message, specifying s
 Logger#logp(Level, String, String, String, Object[]):::Log a message, specifying source class and method, with an array of object arguments:::if->isLoggable->return->lr->new->LogRecord->lr->setSourceClassName->lr->setSourceMethodName->lr->setParameters->doLog
 Logger#logp(Level, String, String, String, Throwable):::Log a message, specifying source class and method, with associated Throwable information:::if->isLoggable->return->lr->new->LogRecord->lr->setSourceClassName->lr->setSourceMethodName->lr->setThrown->doLog
 Logger#logp(Level, String, String, Throwable, Supplier):::Log a lazily constructed message, specifying source class and method, with associated Throwable information:::if->isLoggable->return->lr->msgSupplier->get->new->LogRecord->lr->setSourceClassName->lr->setSourceMethodName->lr->setThrown->doLog
+Logger#doLog(LogRecord, String)::: logger do log:::lr->setLoggerName->if->lr->setResourceBundleName->lr->findResourceBundle->setResourceBundle->log
+Logger#doLog(LogRecord, ResourceBundle)::: logger do log:::lr->setLoggerName->if->lr->rb->getBaseBundleName->setResourceBundleName->lr->setResourceBundle->log
 Logger#logrb(Level, String, String, String, String):::Log a message, specifying source class, method, and resource bundle name with no arguments:::if->isLoggable->return->lr->new->LogRecord->lr->setSourceClassName->lr->setSourceMethodName->doLog
 Logger#logrb(Level, String, String, String, String, Object):::Log a message, specifying source class, method, and resource bundle name, with a single object parameter to the log message:::if->isLoggable->return->lr->new->LogRecord->lr->setSourceClassName->lr->setSourceMethodName->params->lr->setParameters->doLog
 Logger#logrb(Level, String, String, String, String, Object[]):::Log a message, specifying source class, method, and resource bundle name, with an array of object arguments:::if->isLoggable->return->lr->new->LogRecord->lr->setSourceClassName->lr->setSourceMethodName->lr->setParameters->doLog
@@ -79,34 +134,117 @@ Logger#fine(Supplier):::Log a FINE message, which is only to be constructed if t
 Logger#finer(Supplier):::Log a FINER message, which is only to be constructed if the logging level is such that the message will actually be logged:::log
 Logger#finest(Supplier):::Log a FINEST message, which is only to be constructed if the logging level is such that the message will actually be logged:::log
 Logger#setLevel(Level):::Set the log level specifying which message levels will be logged by this logger:::checkPermission->synchronized->config->setLevelObject->updateEffectiveLevel
+Logger#isLevelInitialized()::: logger is level initialized:::return
 Logger#getLevel():::Get the log Level that has been specified for this Logger:::return
 Logger#isLoggable(Level):::Check if a message of the given level would actually be logged by this logger:::levelValue->if->level->intValue->return->return
 Logger#getName():::Get the name for this logger.:::return
 Logger#addHandler(Handler):::Add a log Handler to receive logging messages:::Objects->requireNonNull->checkPermission->config->addHandler
 Logger#removeHandler(Handler):::Remove a log Handler:::checkPermission->if->return->config->removeHandler
 Logger#getHandlers():::Get the Handlers associated with this logger.:::return->accessCheckedHandlers
+Logger#accessCheckedHandlers()::: logger access checked handlers:::return->toArray
 Logger#setUseParentHandlers(boolean):::Specify whether or not this logger should send its output to its parent Logger:::checkPermission->config->setUseParentHandlers
 Logger#getUseParentHandlers():::Discover whether or not this logger is sending its output to its parent logger.:::return
+Logger#findResourceBundle(String, boolean):::Private utility method to map a resource bundle name to an actual resource bundle, using a simple one-entry cache:::if->return->currentLocale->Locale->getDefault->lb->if->name->equals->return->else->if->currentLocale->equals->name->equals->return->cl->Thread->currentThread->getContextClassLoader->if->ClassLoader->getSystemClassLoader->callerModule->getCallerModule->if->callerModule->isNamed->try->mod->cl->getUnnamedModule->getBundle->return->catch->if->try->getModuleClassLoader->callerModule->getClassLoader->moduleCL->AccessController->doPrivileged->if->return->ResourceBundle->getBundle->return->catch->return->finally->else->return->finally->else->try->getBundle->return->catch->return->finally
+Logger#setupResourceInfo(String, Class)::: logger setup resource info:::module->caller->getModule->setupResourceInfo
+Logger#setupResourceInfo(String, Module)::: logger setup resource info:::lb->if->if->equals->return->throw->new->IllegalArgumentException->if->return->setCallerModuleRef->if->isSystem->checkPermission->if->name->equals->else->bundle->findResourceBundle->if->throw->new->MissingResourceException->LoggerBundle->get
 Logger#setResourceBundle(ResourceBundle):::Sets a resource bundle on this logger:::checkPermission->baseName->bundle->getBaseBundleName->if->baseName->isEmpty->throw->new->IllegalArgumentException->synchronized->lb->canReplaceResourceBundle->equals->if->throw->new->IllegalArgumentException->LoggerBundle->get
 Logger#getParent():::Return the parent for this Logger:::return
 Logger#setParent(Logger):::Set the parent for this Logger:::if->throw->new->NullPointerException->if->LogManager->getLogManager->manager->checkPermission->doSetParent
+Logger#doSetParent(Logger)::: logger do set parent:::synchronized->ref->if->for->iter->iterator->iter->hasNext->if->new->ArrayList<>->if->manager->new->LoggerWeakRef->ref->new->WeakReference<>->setParentRef->add->updateEffectiveLevel
+Logger#removeChildLogger(LogManager.LoggerWeakRef)::: logger remove child logger:::synchronized->for->iter->kids->iterator->iter->hasNext
+Logger#updateEffectiveLevel()::: logger update effective level:::newLevelValue->cfg->levelObject->if->levelObject->intValue->else->if->else->intValue->if->return->cfg->setLevelValue->if->foreach->kid->ref->get->if->kid->updateEffectiveLevel
+Logger#getEffectiveLoggerBundle()::: logger get effective logger bundle:::lb->if->lb->isSystemBundle->return->b->getResourceBundle->if->return->else->if->rbName->getResourceBundleName->return->LoggerBundle->get->target->while->trb->if->trb->isSystemBundle->return->if->return->rbName->target->getResourceBundleName->if->return->LoggerBundle->findResourceBundle->get->target->getParent->return
+Logging#getLoggerNames()::: logging get logger names:::loggers->logManager->getLoggerNames->array->new->ArrayList<>->for->loggers->hasMoreElements->return
+Logging#getLoggerLevel(String)::: logging get logger level:::l->logManager->getLogger->if->return->level->l->getLevel->if->return->else->return->level->getLevelName
+Logging#setLoggerLevel(String, String)::: logging set logger level:::if->throw->new->NullPointerException->logger->logManager->getLogger->if->throw->new->IllegalArgumentException->level->if->Level->findLevel->if->throw->new->IllegalArgumentException->logger->setLevel
+Logging#getParentLoggerName(String)::: logging get parent logger name:::l->logManager->getLogger->if->return->p->l->getParent->if->return->else->return->p->getName
+Logging#getInstance()::: logging get instance:::return
 LoggingMXBean#getLoggerNames():::Returns the list of currently registered logger names:::
 LoggingMXBean#getLoggerLevel(String):::Gets the name of the log level associated with the specified logger:::
 LoggingMXBean#setLoggerLevel(String, String):::Sets the specified logger to the specified new level:::
 LoggingMXBean#getParentLoggerName(String):::Returns the name of the parent for the specified logger:::
+LogManager.CloseOnReset#equals(Object)::: close on reset equals:::return
+LogManager.CloseOnReset#hashCode()::: close on reset hash code:::return->System->identityHashCode
+LogManager.CloseOnReset#get()::: close on reset get:::return
+LogManager.CloseOnReset#create(Logger)::: close on reset create:::return->new->CloseOnReset
+LogManager.Cleaner#run()::: cleaner run:::mgr->configurationLock->lock->configurationLock->unlock->reset
+LogManager#checkSubclassPermissions()::: log manager check subclass permissions:::sm->System->getSecurityManager->if->sm->new->RuntimePermission->checkPermission->sm->new->RuntimePermission->checkPermission->return
+LogManager#ensureLogManagerInitialized()::: log manager ensure log manager initialized:::owner->if->return->configurationLock->lock->try->isRecursiveInitialization->if->return->try->AccessController->new->PrivilegedAction<Object>->doPrivileged->catch->finally->catch->finally->configurationLock->unlock
 LogManager#getLogManager():::Returns the global LogManager object.:::if->manager->ensureLogManagerInitialized->return
+LogManager#readPrimordialConfiguration()::: log manager read primordial configuration:::if->if->return->try->readConfiguration->redirectTemporaryLoggers->catch->finally
+LogManager#getUserContext()::: log manager get user context:::context->sm->System->getSecurityManager->javaAwtAccess->SharedSecrets->getJavaAWTAccess->if->ecx->javaAwtAccess->getAppletContext->if->synchronized->if->new->WeakHashMap<>->contextsMap->get->if->new->LoggerContext->contextsMap->put->return
+LogManager#getSystemContext()::: log manager get system context:::return
+LogManager#contexts()::: log manager contexts:::cxs->new->ArrayList<>->cxs->getSystemContext->add->cxs->getUserContext->add->return
+LogManager#demandLogger(String, String, Class)::: log manager demand logger:::module->caller->getModule->return->demandLogger
+LogManager#demandLogger(String, String, Module)::: log manager demand logger:::result->getLogger->if->newLogger->new->Logger->do->if->addLogger->return->getLogger->while->return
+LogManager#demandSystemLogger(String, String, Class)::: log manager demand system logger:::module->caller->getModule->return->demandSystemLogger
+LogManager#demandSystemLogger(String, String, Module)::: log manager demand system logger:::sysLogger->getSystemContext->demandLogger->logger->do->if->addLogger->else->getLogger->while->if->l->AccessController->new->PrivilegedAction<Void>->doPrivileged->return
+LogManager.LoggerContext#requiresDefaultLoggers()::: logger context requires default loggers:::requiresDefaultLoggers->getOwner->if->getOwner->ensureLogManagerInitialized->return
+LogManager.LoggerContext#getOwner()::: logger context get owner:::return
+LogManager.LoggerContext#getRootLogger()::: logger context get root logger:::return->getOwner
+LogManager.LoggerContext#getGlobalLogger()::: logger context get global logger:::global->return
+LogManager.LoggerContext#demandLogger(String, String, Module)::: logger context demand logger:::owner->getOwner->return->owner->demandLogger
+LogManager.LoggerContext#ensureInitialized()::: logger context ensure initialized:::if->requiresDefaultLoggers->getRootLogger->ensureDefaultLogger->getGlobalLogger->ensureDefaultLogger
+LogManager.LoggerContext#findLogger(String)::: logger context find logger:::ref->namedLoggers->get->logger->ref->get->if->name->isEmpty->name->equals->return->synchronized->ensureInitialized->namedLoggers->get->if->return->ref->get->if->ref->dispose->return
+LogManager.LoggerContext#ensureAllDefaultLoggers(Logger)::: logger context ensure all default loggers:::if->requiresDefaultLoggers->name->logger->getName->if->name->isEmpty->getRootLogger->ensureDefaultLogger->if->equals->getGlobalLogger->ensureDefaultLogger
+LogManager.LoggerContext#ensureDefaultLogger(Logger)::: logger context ensure default logger:::if->requiresDefaultLoggers->getGlobalLogger->return->if->namedLoggers->logger->getName->containsKey->addLocalLogger
+LogManager.LoggerContext#addLocalLogger(Logger)::: logger context add local logger:::return->requiresDefaultLoggers->addLocalLogger
+LogManager.LoggerContext#addLocalLogger(Logger, boolean)::: logger context add local logger:::if->ensureAllDefaultLoggers->name->logger->getName->if->throw->new->NullPointerException->ref->namedLoggers->get->if->if->ref->get->ref->dispose->else->return->owner->getOwner->logger->setLogManager->owner->new->LoggerWeakRef->level->owner->getLevelProperty->if->logger->isLevelInitialized->doSetLevel->processParentHandlers->node->getNode->parent->nodep->while->nodeRef->if->nodeRef->get->if->break->if->doSetParent->node->walkAndSetParent->ref->setNode->namedLoggers->put->return
+LogManager.LoggerContext#removeLoggerRef(String, LoggerWeakRef)::: logger context remove logger ref:::namedLoggers->remove
+LogManager.LoggerContext#getLoggerNames()::: logger context get logger names:::ensureInitialized->return->Collections->namedLoggers->keySet->enumeration
+LogManager.LoggerContext#processParentHandlers(Logger, String, Predicate)::: logger context process parent handlers:::owner->getOwner->AccessController->new->PrivilegedAction<Void>->doPrivileged->ix->for
+LogManager.LoggerContext#getNode(String)::: logger context get node:::if->name->equals->return->node->while->name->length->ix->name->indexOf->head->if->name->substring->name->substring->else->if->new->HashMap<>->child->get->if->new->LogNode->put->return
+LogManager.SystemLoggerContext#demandLogger(String, String, Module)::: system logger context demand logger:::result->findLogger->if->newLogger->getOwner->new->Logger->do->if->addLocalLogger->else->findLogger->while->return
+LogManager#loadLoggerHandlers(Logger, String, String)::: log manager load logger handlers:::AccessController->new->PrivilegedAction<Void>->doPrivileged
+LogManager#setLoggerHandlers(Logger, String, String, List)::: log manager set logger handlers:::ensureCloseOnReset->handlers->isEmpty->getBooleanProperty->count->foreach->logger->addHandler->if->closeOnResetLoggers->CloseOnReset->create->addIfAbsent
+LogManager#createLoggerHandlers(String, String)::: log manager create logger handlers:::names->parseClassNames->handlers->new->ArrayList<>->foreach->try->o->ClassLoader->getSystemClassLoader->loadClass->newInstance->hdl->levs->getProperty->if->l->Level->findLevel->if->hdl->setLevel->else->println->handlers->add->catch->println->println->ex->printStackTrace->finally->return
+LogManager.LoggerWeakRef#dispose()::: logger weak ref dispose:::synchronized->if->return->n->if->synchronized->removeLoggerRef->if->if->parent->parentRef->get->if->parent->removeChildLogger
+LogManager.LoggerWeakRef#setNode(LogNode)::: logger weak ref set node:::
+LogManager.LoggerWeakRef#setParentRef(WeakReference)::: logger weak ref set parent ref:::
+LogManager#drainLoggerRefQueueBounded()::: log manager drain logger ref queue bounded:::for->i
 LogManager#addLogger(Logger):::Add a named logger:::name->logger->getName->if->throw->new->NullPointerException->drainLoggerRefQueueBounded->cx->getUserContext->if->cx->addLocalLogger->forceLoadHandlers->loadLoggerHandlers->return->else->return
+LogManager#forceLoadHandlers(Logger)::: log manager force load handlers:::return->configurationLock->isHeldByCurrentThread
+LogManager#doSetLevel(Logger, Level)::: log manager do set level:::sm->System->getSecurityManager->if->logger->setLevel->return->AccessController->new->PrivilegedAction<Object>->doPrivileged
+LogManager#doSetParent(Logger, Logger)::: log manager do set parent:::sm->System->getSecurityManager->if->logger->setParent->return->AccessController->new->PrivilegedAction<Object>->doPrivileged
 LogManager#getLogger(String):::Method to find a named logger:::return->getUserContext->findLogger
 LogManager#getLoggerNames():::Get an enumeration of known logger names:::return->getUserContext->getLoggerNames
 LogManager#readConfiguration():::Reads and initializes the logging configuration:::checkPermission->cname->System->getProperty->if->try->try->clz->ClassLoader->getSystemClassLoader->loadClass->witness->clz->newInstance->return->catch->clz->Thread->currentThread->getContextClassLoader->loadClass->witness->clz->newInstance->return->finally->catch->println->println->finally->fname->getConfigurationFileName->try->in->new->FileInputStream->bin->new->BufferedInputStream->readConfiguration->catch->finally
+LogManager#getConfigurationFileName()::: log manager get configuration file name:::fname->System->getProperty->if->System->getProperty->if->throw->new->Error->Paths->get->toAbsolutePath->normalize->toString->return
+LogManager#reset()::: log manager reset:::checkPermission->persistent->configurationLock->lock->try->new->Properties->new->ArrayList<>->closeOnResetLoggers->clear->if->foreach->contexts->resetLoggerContext->persistent->clear->catch->finally->configurationLock->unlock
+LogManager#resetLoggerContext(LoggerContext)::: log manager reset logger context:::enum_->cx->getLoggerNames->while->enum_->hasMoreElements->name->enum_->nextElement->logger->cx->findLogger->if->resetLogger
+LogManager#closeHandlers(Logger)::: log manager close handlers:::targets->logger->getHandlers->foreach->logger->removeHandler->try->h->close->catch->if->throw->finally
+LogManager#resetLogger(Logger)::: log manager reset logger:::closeHandlers->name->logger->getName->if->name->equals->logger->setLevel->else->logger->setLevel
+LogManager#parseClassNames(String)::: log manager parse class names:::hands->getProperty->if->return->new->StringArr->hands->trim->ix->result->new->ArrayList<>->while->hands->length->end->while->hands->length->if->Character->hands->charAt->isWhitespace->break->if->hands->charAt->break->word->hands->substring->word->trim->if->word->length->continue->result->add->return->result->result->size->new->StringArr->toArray
 LogManager#readConfiguration(InputStream):::Reads and initializes the logging configuration from the given input stream:::checkPermission->configurationLock->lock->try->if->return->try->reset->try->props->load->catch->throw->x->getMessage->new->IOException->finally->names->parseClassNames->foreach->try->clz->ClassLoader->getSystemClassLoader->loadClass->witness->clz->newInstance->catch->println->println->finally->setLevelsOnExistingLoggers->catch->throw->finally->catch->finally->configurationLock->unlock->invokeConfigurationListeners
+LogManager#trim(String)::: log manager trim:::return->value->trim
+LogManager.VisitedLoggers#test(Logger)::: visited loggers test:::return->visited->put
+LogManager.VisitedLoggers#clear()::: visited loggers clear:::if->visited->clear
 LogManager#updateConfiguration(Function>):::Updates the logging configuration:::checkPermission->ensureLogManagerInitialized->drainLoggerRefQueueBounded->fname->getConfigurationFileName->try->in->new->FileInputStream->bin->new->BufferedInputStream->updateConfiguration->catch->finally
 LogManager#updateConfiguration(InputStream, Function>):::Updates the logging configuration:::checkPermission->ensureLogManagerInitialized->drainLoggerRefQueueBounded->previous->updatePropertyNames->cxs->Collections->emptyList->visited->new->VisitedLoggers->next->new->Properties->try->next->load->catch->throw->x->getMessage->new->IOException->finally->if->return->configurationLock->lock->try->if->return->Stream->previous->stringPropertyNames->stream->next->stringPropertyNames->stream->concat->Collectors->TreeSet->new->toCollection->collect->if->updatePropertyNames->stream->ConfigProperty->Objects->mapper->apply->requireNonNull->merge->forEachOrdered->allKeys->updatePropertyNames->stream->ConfigProperty->matches->filter->ConfigProperty->needsUpdating->filter->loggerConfigs->allKeys->Collectors->ConfigProperty->getLoggerName->TreeMap->new->Collectors->TreeSet->new->toCollection->groupingBy->collect->if->loggerConfigs->isEmpty->contexts->loggers->cxs->isEmpty->Collections->emptyList->cxs->size->new->ArrayList<>->foreach->loggerConfigs->entrySet->name->e->getKey->properties->e->getValue->loggers->clear->foreach->l->cx->findLogger->if->visited->test->loggers->add->if->loggers->isEmpty->continue->foreach->cp->ConfigProperty->find->get->p->previous->getProperty->n->next->getProperty->mod->ModType->of->if->continue->switch->if->continue->level->Level->trim->findLevel->if->if->name->isEmpty->rootLogger->setLevel->foreach->if->name->isEmpty->l->setLevel->break->if->name->isEmpty->useParent->getBooleanProperty->if->foreach->l->setUseParentHandlers->break->hdls->if->name->isEmpty->try->closeHandlers->catch->throw->finally->foreach->if->continue->closeHandlers->if->closeOnResetLoggers->removeIf->continue->if->name->isEmpty->Arrays->rootLogger->getHandlers->asList->createLoggerHandlers->setLoggerHandlers->break->break->catch->finally->configurationLock->unlock->visited->clear->drainLoggerRefQueueBounded->foreach->for->names->cx->getLoggerNames->names->hasMoreElements->invokeConfigurationListeners
 LogManager#getProperty(String):::Get the value of a logging property:::return->props->getProperty
+LogManager#getStringProperty(String, String)::: log manager get string property:::val->getProperty->if->return->return->val->trim
+LogManager#getIntProperty(String, int)::: log manager get int property:::val->getProperty->if->return->try->return->Integer->val->trim->parseInt->catch->return->finally
+LogManager#getLongProperty(String, long)::: log manager get long property:::val->getProperty->if->return->try->return->Long->val->trim->parseLong->catch->return->finally
+LogManager#getBooleanProperty(String, boolean)::: log manager get boolean property:::val->getProperty->if->return->val->toLowerCase->if->val->equals->val->equals->return->else->if->val->equals->val->equals->return->return
+LogManager#getLevelProperty(String, Level)::: log manager get level property:::val->getProperty->if->return->l->Level->val->trim->findLevel->return
+LogManager#getFilterProperty(String, Filter)::: log manager get filter property:::val->getProperty->try->if->o->ClassLoader->getSystemClassLoader->loadClass->newInstance->return->catch->finally->return
+LogManager#getFormatterProperty(String, Formatter)::: log manager get formatter property:::val->getProperty->try->if->o->ClassLoader->getSystemClassLoader->loadClass->newInstance->return->catch->finally->return
+LogManager#initializeGlobalHandlers()::: log manager initialize global handlers:::state->if->return->configurationLock->lock->try->if->return->try->loadLoggerHandlers->catch->finally->catch->finally->configurationLock->unlock
+LogManager#checkPermission()::: log manager check permission:::sm->System->getSecurityManager->if->sm->checkPermission
 LogManager#checkAccess():::Check that the current context is trusted to modify the logging configuration:::checkPermission
+LogManager.LogNode#walkAndSetParent(Logger)::: log node walk and set parent:::if->return->foreach->children->values->ref->logger->ref->get->if->node->walkAndSetParent->else->doSetParent
+LogManager.RootLogger#log(LogRecord)::: root logger log:::initializeGlobalHandlers->super->log
+LogManager.RootLogger#addHandler(Handler)::: root logger add handler:::initializeGlobalHandlers->super->addHandler
+LogManager.RootLogger#removeHandler(Handler)::: root logger remove handler:::initializeGlobalHandlers->super->removeHandler
+LogManager.RootLogger#accessCheckedHandlers()::: root logger access checked handlers:::initializeGlobalHandlers->return->super->accessCheckedHandlers
+LogManager#setLevelsOnExistingLoggers()::: log manager set levels on existing loggers:::enum_->props->propertyNames->while->enum_->hasMoreElements->key->enum_->nextElement->if->key->endsWith->continue->ix->key->length->name->key->substring->level->getLevelProperty->if->println->continue->foreach->contexts->l->cx->findLogger->if->continue->l->setLevel
 LogManager#getLoggingMXBean():::Returns LoggingMXBean for managing loggers.:::return->Logging->getInstance
 LogManager#addConfigurationListener(Runnable):::Adds a configuration listener to be invoked each time the logging configuration is read:::r->Objects->requireNonNull->checkPermission->sm->System->getSecurityManager->acc->AccessController->getContext->pa->r->run->return->pr->AccessController->doPrivileged->listeners->putIfAbsent->return
 LogManager#removeConfigurationListener(Runnable):::Removes a previously registered configuration listener:::key->Objects->requireNonNull->checkPermission->listeners->remove
+LogManager#invokeConfigurationListeners()::: log manager invoke configuration listeners:::t->foreach->listeners->values->new->RunnableArr->toArray->try->c->run->catch->throw->if->else->t->addSuppressed->finally->if->throw->if->throw
+LogManager.LoggingProviderAccess#demandLoggerFor(LogManager, String, Module):::Demands a logger on behalf of the given module:::if->getLogManager->throw->new->IllegalArgumentException->Objects->requireNonNull->Objects->requireNonNull->sm->System->getSecurityManager->if->sm->checkPermission->if->isSystem->return->manager->demandSystemLogger->else->return->manager->demandLogger
+LogManager.LoggingProviderAccess#run()::: logging provider access run:::LoggingProviderImpl->setLogManagerAccess->return
+LogRecord#defaultThreadID():::Returns the default value for a new LogRecord's threadID.:::tid->Thread->currentThread->getId->if->return->else->id->threadIds->get->if->nextThreadId->getAndIncrement->threadIds->set->return
 LogRecord#getLoggerName():::Get the source Logger's name.:::return
 LogRecord#setLoggerName(String):::Set the source Logger's name.:::
 LogRecord#getResourceBundle():::Get the localization resource bundle  This is the ResourceBundle that should be used to localize the message string before formatting it:::return
@@ -133,8 +271,13 @@ LogRecord#getInstant():::Gets the instant that the event occurred.:::return
 LogRecord#setInstant(Instant):::Sets the instant that the event occurred:::instant->toEpochMilli
 LogRecord#getThrown():::Get any throwable associated with the log record:::return
 LogRecord#setThrown(Throwable):::Set a throwable associated with the log event.:::
+LogRecord#writeObject(ObjectOutputStream)::: log record write object:::pf->out->putFields->pf->put->pf->put->pf->put->pf->put->pf->put->pf->put->pf->instant->toEpochMilli->put->pf->instant->getNano->put->pf->put->pf->put->pf->put->out->writeFields->out->writeByte->out->writeByte->if->out->writeInt->return->out->writeInt->foreach->out->Objects->toString->writeObject
+LogRecord#readObject(ObjectInputStream)::: log record read object:::gf->in->readFields->gf->get->gf->get->gf->get->gf->get->gf->get->gf->get->millis->gf->get->nanoOfMilli->gf->get->Instant->ofEpochSecond->gf->get->gf->get->gf->get->major->in->readByte->minor->in->readByte->if->throw->new->IOException->len->in->readInt->if->throw->new->NegativeArraySizeException->else->if->else->if->new->ObjectArr->for->i->else->params->Math->min->new->ArrayList<>->for->i->params->params->size->new->ObjectArr->toArray->if->try->bundle->ResourceBundle->Locale->getDefault->ClassLoader->getSystemClassLoader->getBundle->catch->finally
+LogRecord#inferCaller()::: log record infer caller:::frame->new->CallerFinder->get->frame->f->getClassName->setSourceClassName->f->getMethodName->setSourceMethodName->ifPresent
 LogRecord.CallerFinder#get():::Returns StackFrame of the caller's frame.:::return->WALKER->s->filter->findFirst->walk
 LogRecord.CallerFinder#test(StackWalker.StackFrame):::Returns true if we have found the caller's frame, false if the frame must be skipped.:::cname->t->getClassName->if->isLoggerImplFrame->return->return->isFilteredFrame
+LogRecord.CallerFinder#isLoggerImplFrame(String)::: caller finder is logger impl frame:::return->cname->equals->cname->startsWith
+MemoryHandler#init()::: memory handler init:::new->LogRecordArr
 MemoryHandler#publish(LogRecord):::Store a LogRecord in an internal buffer:::if->isLoggable->return->ix->if->else->if->record->getLevel->intValue->pushLevel->intValue->push
 MemoryHandler#push():::Push any buffered output to the target Handler:::for->i
 MemoryHandler#flush():::Causes a flush on the target Handler:::target->flush
@@ -142,7 +285,9 @@ MemoryHandler#close():::Close the Handler and free all associated resources:::ta
 MemoryHandler#setPushLevel(Level):::Set the pushLevel:::if->throw->new->NullPointerException->checkPermission
 MemoryHandler#getPushLevel():::Get the pushLevel.:::return
 MemoryHandler#isLoggable(LogRecord):::Check if this Handler would actually log a given LogRecord into its internal buffer:::return->super->isLoggable
+SimpleFormatter#getLoggingProperty(String)::: simple formatter get logging property:::return->LogManager->getLogManager->getProperty
 SimpleFormatter#format(LogRecord):::Format the given LogRecord:::zdt->ZonedDateTime->record->getInstant->ZoneId->systemDefault->ofInstant->source->if->record->getSourceClassName->record->getSourceClassName->if->record->getSourceMethodName->record->getSourceMethodName->else->record->getLoggerName->message->formatMessage->throwable->if->record->getThrown->sw->new->StringWriter->pw->new->PrintWriter->pw->println->record->getThrown->printStackTrace->pw->close->sw->toString->return->String->record->getLoggerName->record->getLevel->getLocalizedLevelName->format
+SocketHandler#connect()::: socket handler connect:::if->throw->new->IllegalArgumentException->if->throw->new->IllegalArgumentException->new->Socket->out->sock->getOutputStream->bout->new->BufferedOutputStream->setOutputStreamPrivileged
 SocketHandler#close():::Close this output stream.:::super->close->if->try->sock->close->catch->finally
 SocketHandler#publish(LogRecord):::Format and publish a LogRecord.:::if->isLoggable->return->super->publish->flush
 StreamHandler#setOutputStream(OutputStream):::Change the output stream:::if->throw->new->NullPointerException->flushAndClose->encoding->getEncoding->if->new->OutputStreamWriter->else->try->new->OutputStreamWriter->catch->throw->new->Error->finally
@@ -150,7 +295,12 @@ StreamHandler#setEncoding(String):::Set (or change) the character encoding used 
 StreamHandler#publish(LogRecord):::Format and publish a LogRecord:::if->isLoggable->return->msg->try->getFormatter->format->catch->reportError->return->finally->try->if->writer->getFormatter->getHead->write->writer->write->catch->reportError->finally
 StreamHandler#isLoggable(LogRecord):::Check if this Handler would actually log a given LogRecord:::if->return->return->super->isLoggable
 StreamHandler#flush():::Flush any buffered messages.:::if->try->writer->flush->catch->reportError->finally
+StreamHandler#flushAndClose()::: stream handler flush and close:::checkPermission->if->try->if->writer->getFormatter->getHead->write->writer->getFormatter->getTail->write->writer->flush->writer->close->catch->reportError->finally
 StreamHandler#close():::Close the current output stream:::flushAndClose
+StreamHandler#setOutputStreamPrivileged(OutputStream)::: stream handler set output stream privileged:::AccessController->new->PrivilegedAction<Void>->doPrivileged
+XMLFormatter#a2(StringBuilder, int)::: formatter a2:::if->sb->append->sb->append
+XMLFormatter#appendISO8601(StringBuilder, long)::: formatter append o8601:::cal->new->GregorianCalendar->cal->setTimeInMillis->sb->cal->get->append->sb->append->cal->get->a2->sb->append->cal->get->a2->sb->append->cal->get->a2->sb->append->cal->get->a2->sb->append->cal->get->a2
+XMLFormatter#escape(StringBuilder, String)::: formatter escape:::if->for->i->text->length
 XMLFormatter#format(LogRecord):::Format the given message to XML:::sb->new->StringBuilder->sb->append->instant->record->getInstant->sb->append->if->formatTo->else->instant->toEpochMilli->appendISO8601->sb->append->sb->append->sb->instant->toEpochMilli->append->sb->append->nanoAdjustment->instant->getNano->if->sb->append->sb->append->sb->append->sb->append->sb->record->getSequenceNumber->append->sb->append->name->record->getLoggerName->if->sb->append->escape->sb->append->sb->append->record->getLevel->toString->escape->sb->append->if->record->getSourceClassName->sb->append->record->getSourceClassName->escape->sb->append->if->record->getSourceMethodName->sb->append->record->getSourceMethodName->escape->sb->append->sb->append->sb->record->getThreadID->append->sb->append->if->record->getMessage->message->formatMessage->sb->append->escape->sb->append->sb->append->bundle->record->getResourceBundle->try->if->bundle->record->getMessage->getString->sb->append->record->getMessage->escape->sb->append->sb->append->record->getResourceBundleName->escape->sb->append->catch->finally->parameters->record->getParameters->if->record->getMessage->indexOf->foreach->sb->append->try->parameter->toString->escape->catch->sb->append->finally->sb->append->if->record->getThrown->th->record->getThrown->sb->append->sb->append->th->toString->escape->sb->append->trace->th->getStackTrace->foreach->sb->append->sb->append->frame->getClassName->escape->sb->append->sb->append->frame->getMethodName->escape->sb->append->if->frame->getLineNumber->sb->append->sb->frame->getLineNumber->append->sb->append->sb->append->sb->append->sb->append->return->sb->toString
 XMLFormatter#getHead(Handler):::Return the header string for a set of XML formatted records.:::sb->new->StringBuilder->encoding->sb->append->if->h->getEncoding->else->if->defaultCharset->name->try->cs->Charset->forName->cs->name->catch->finally->sb->append->sb->append->sb->append->sb->append->sb->append->sb->append->return->sb->toString
 XMLFormatter#getTail(Handler):::Return the tail string for a set of XML formatted records.:::return

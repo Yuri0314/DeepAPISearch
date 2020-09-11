@@ -1,156 +1,816 @@
+AccessFlags#getAccessFlags()::: access flags get access flags:::return
+AccessFlags#getModifiers()::: access flags get modifiers:::return
 AccessFlags#setAccessFlags(int):::Set access flags aka "modifiers".:::
 AccessFlags#setModifiers(int):::Set access flags aka "modifiers".:::setAccessFlags
+AccessFlags#setFlag(int, boolean)::: access flags set flag:::if->if->else->if
+AccessFlags#isPublic(boolean)::: access flags is public:::setFlag
+AccessFlags#isPublic()::: access flags is public:::return
+AccessFlags#isPrivate(boolean)::: access flags is private:::setFlag
+AccessFlags#isPrivate()::: access flags is private:::return
+AccessFlags#isProtected(boolean)::: access flags is protected:::setFlag
+AccessFlags#isProtected()::: access flags is protected:::return
+AccessFlags#isStatic(boolean)::: access flags is static:::setFlag
+AccessFlags#isStatic()::: access flags is static:::return
+AccessFlags#isFinal(boolean)::: access flags is final:::setFlag
+AccessFlags#isFinal()::: access flags is final:::return
+AccessFlags#isSynchronized(boolean)::: access flags is synchronized:::setFlag
+AccessFlags#isSynchronized()::: access flags is synchronized:::return
+AccessFlags#isVolatile(boolean)::: access flags is volatile:::setFlag
+AccessFlags#isVolatile()::: access flags is volatile:::return
+AccessFlags#isTransient(boolean)::: access flags is transient:::setFlag
+AccessFlags#isTransient()::: access flags is transient:::return
+AccessFlags#isNative(boolean)::: access flags is native:::setFlag
+AccessFlags#isNative()::: access flags is native:::return
+AccessFlags#isInterface(boolean)::: access flags is interface:::setFlag
+AccessFlags#isInterface()::: access flags is interface:::return
+AccessFlags#isAbstract(boolean)::: access flags is abstract:::setFlag
+AccessFlags#isAbstract()::: access flags is abstract:::return
+AccessFlags#isStrictfp(boolean)::: access flags is strictfp:::setFlag
+AccessFlags#isStrictfp()::: access flags is strictfp:::return
+AccessFlags#isSynthetic(boolean)::: access flags is synthetic:::setFlag
+AccessFlags#isSynthetic()::: access flags is synthetic:::return
+AccessFlags#isAnnotation(boolean)::: access flags is annotation:::setFlag
+AccessFlags#isAnnotation()::: access flags is annotation:::return
+AccessFlags#isEnum(boolean)::: access flags is enum:::setFlag
+AccessFlags#isEnum()::: access flags is enum:::return
+AccessFlags#isVarArgs(boolean)::: access flags is var args:::setFlag
+AccessFlags#isVarArgs()::: access flags is var args:::return
 AnnotationDefault#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitAnnotationDefault
+AnnotationDefault#setDefaultValue(ElementValue)::: annotation default set default value:::
+AnnotationDefault#getDefaultValue()::: annotation default get default value:::return
+AnnotationDefault#copy(ConstantPool)::: annotation default copy:::return->clone
+AnnotationDefault#dump(DataOutputStream)::: annotation default dump:::super->dump->default_value->dump
+AnnotationElementValue#dump(DataOutputStream)::: annotation element value dump:::dos->super->getType->writeByte->annotationEntry->dump
+AnnotationElementValue#stringifyValue()::: annotation element value stringify value:::return->annotationEntry->toString
+AnnotationElementValue#toString()::: annotation element value to string:::return->stringifyValue
+AnnotationElementValue#getAnnotationEntry()::: annotation element value get annotation entry:::return
+AnnotationEntry#read(DataInput, ConstantPool, boolean)::: annotation entry read:::annotationEntry->input->readUnsignedShort->new->AnnotationEntry->num_element_value_pairs->input->readUnsignedShort->new->ArrayList<>->for->i->return
+AnnotationEntry#getTypeIndex()::: annotation entry get type index:::return
+AnnotationEntry#getConstantPool()::: annotation entry get constant pool:::return
+AnnotationEntry#isRuntimeVisible()::: annotation entry is runtime visible:::return
 AnnotationEntry#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitAnnotationEntry
+AnnotationEntry#getAnnotationType()::: annotation entry get annotation type:::c->constant_pool->getConstant->return->c->getBytes
+AnnotationEntry#getAnnotationTypeIndex()::: annotation entry get annotation type index:::return
+AnnotationEntry#getNumElementValuePairs()::: annotation entry get num element value pairs:::return->element_value_pairs->size
+AnnotationEntry#getElementValuePairs()::: annotation entry get element value pairs:::return->element_value_pairs->element_value_pairs->size->new->ElementValuePairArr->toArray
+AnnotationEntry#dump(DataOutputStream)::: annotation entry dump:::dos->writeShort->dos->element_value_pairs->size->writeShort->foreach->envp->dump
+AnnotationEntry#addElementNameValuePair(ElementValuePair)::: annotation entry add element name value pair:::element_value_pairs->add
+AnnotationEntry#toShortString()::: annotation entry to short string:::result->new->StringBuilder->result->append->result->getAnnotationType->append->evPairs->getElementValuePairs->if->result->append->foreach->result->element->toShortString->append->result->append->return->result->toString
+AnnotationEntry#toString()::: annotation entry to string:::return->toShortString
+AnnotationEntry#createAnnotationEntries(Attribute[])::: annotation entry create annotation entries:::accumulatedAnnotations->new->ArrayList<>->foreach->if->runtimeAnnotations->Collections->runtimeAnnotations->getAnnotationEntries->addAll->return->accumulatedAnnotations->accumulatedAnnotations->size->new->AnnotationEntryArr->toArray
 Annotations#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitAnnotation
+Annotations#setAnnotationTable(AnnotationEntry[])::: annotations set annotation table:::
 Annotations#getAnnotationEntries():::returns the array of annotation entries in this annotation:::return
+Annotations#getNumAnnotations()::: annotations get num annotations:::if->return->return
+Annotations#isRuntimeVisible()::: annotations is runtime visible:::return
+Annotations#writeAnnotations(DataOutputStream)::: annotations write annotations:::if->return->dos->writeShort->foreach->element->dump
+ArrayElementValue#toString()::: array element value to string:::sb->new->StringBuilder->sb->append->for->i->sb->append->return->sb->toString
+ArrayElementValue#dump(DataOutputStream)::: array element value dump:::dos->super->getType->writeByte->dos->writeShort->foreach->evalue->dump
+ArrayElementValue#stringifyValue()::: array element value stringify value:::sb->new->StringBuilder->sb->append->for->i->sb->append->return->sb->toString
+ArrayElementValue#getElementValuesArray()::: array element value get element values array:::return
+ArrayElementValue#getElementValuesArraySize()::: array element value get element values array size:::return
 Attribute#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::
 Attribute#dump(DataOutputStream):::Dump attribute to file stream in binary format.:::file->writeShort->file->writeInt
 Attribute#addAttributeReader(String, UnknownAttributeReader):::Add an Attribute reader capable of parsing (user-defined) attributes named "name":::readers->put
 Attribute#removeAttributeReader(String):::Remove attribute reader:::readers->remove
 Attribute#readAttribute(DataInputStream, ConstantPool):::Class method reads one attribute from the input data stream:::return->readAttribute
 Attribute#readAttribute(DataInput, ConstantPool):::Class method reads one attribute from the input data stream:::tag->name_index->file->readUnsignedShort->c->constant_pool->getConstant->name->c->getBytes->length->file->readInt->for->i->switch->r->readers->get->if->return->createAttribute->return->new->Unknown->return->new->ConstantValue->return->new->SourceFile->return->new->Code->return->new->ExceptionTable->return->new->LineNumberTable->return->new->LocalVariableTable->return->new->InnerClasses->return->new->Synthetic->return->new->Deprecated->return->new->PMGClass->return->new->Signature->println->return->new->Unknown->return->new->RuntimeVisibleAnnotations->return->new->RuntimeInvisibleAnnotations->return->new->RuntimeVisibleParameterAnnotations->return->new->RuntimeInvisibleParameterAnnotations->return->new->AnnotationDefault->return->new->LocalVariableTypeTable->return->new->EnclosingMethod->return->new->StackMap->return->new->BootstrapMethods->return->new->MethodParameters->throw->new->IllegalStateException
+Attribute#getName()::: attribute get name:::c->constant_pool->getConstant->return->c->getBytes
+Attribute#getLength()::: attribute get length:::return
+Attribute#setLength(int)::: attribute set length:::
+Attribute#setNameIndex(int)::: attribute set name index:::
+Attribute#getNameIndex()::: attribute get name index:::return
+Attribute#getTag()::: attribute get tag:::return
+Attribute#getConstantPool()::: attribute get constant pool:::return
+Attribute#setConstantPool(ConstantPool)::: attribute set constant pool:::
 Attribute#clone():::Use copy() if you want to have a deep copy(), i.e., with all references copied correctly.:::attr->try->super->clone->catch->throw->new->Error->finally->return
+Attribute#copy(ConstantPool)::: attribute copy:::
+Attribute#toString()::: attribute to string:::return->Const->getAttributeName
 AttributeReader#createAttribute(int, int, java.io.DataInputStream, ConstantPool):::     When this attribute reader is added via the static method      Attribute.addAttributeReader, an attribute name is associated with it:::
+BootstrapMethod#getBootstrapMethodRef()::: bootstrap method get bootstrap method ref:::return
+BootstrapMethod#setBootstrapMethodRef(int)::: bootstrap method set bootstrap method ref:::
+BootstrapMethod#getBootstrapArguments()::: bootstrap method get bootstrap arguments:::return
+BootstrapMethod#getNumBootstrapArguments()::: bootstrap method get num bootstrap arguments:::return
+BootstrapMethod#setBootstrapArguments(int[])::: bootstrap method set bootstrap arguments:::
+BootstrapMethod#toString()::: bootstrap method to string:::return->Arrays->toString
+BootstrapMethod#toString(ConstantPool)::: bootstrap method to string:::buf->new->StringBuilder->bootstrap_method_name->constant_pool->constantToString->buf->Utility->compactClassName->append->num_bootstrap_arguments->if->buf->append->for->i->return->buf->toString
 BootstrapMethod#dump(DataOutputStream):::Dump object to file stream in binary format.:::file->writeShort->file->writeShort->foreach->file->writeShort
+BootstrapMethod#copy()::: bootstrap method copy:::try->return->clone->catch->finally->return
+BootstrapMethods#getBootstrapMethods()::: bootstrap methods get bootstrap methods:::return
+BootstrapMethods#setBootstrapMethods(BootstrapMethod[])::: bootstrap methods set bootstrap methods:::
+BootstrapMethods#accept(Visitor)::: bootstrap methods accept:::v->visitBootstrapMethods
+BootstrapMethods#copy(ConstantPool)::: bootstrap methods copy:::c->clone->new->BootstrapMethodArr->for->i->c->setConstantPool->return
 BootstrapMethods#dump(DataOutputStream):::Dump bootstrap methods attribute to file stream in binary format.:::super->dump->file->writeShort->foreach->bootstrap_method->dump
+BootstrapMethods#toString()::: bootstrap methods to string:::buf->new->StringBuilder->buf->append->buf->append->buf->append->for->i->return->buf->toString
+ClassElementValue#getIndex()::: class element value get index:::return
+ClassElementValue#getClassString()::: class element value get class string:::c->super->getConstantPool->getConstant->return->c->getBytes
+ClassElementValue#stringifyValue()::: class element value stringify value:::cu8->super->getConstantPool->getConstant->return->cu8->getBytes
+ClassElementValue#dump(DataOutputStream)::: class element value dump:::dos->super->getType->writeByte->dos->writeShort
 ClassParser#parse():::Parse the given Java class file and return an object that represents the contained data, i.e., constants, methods, fields and commands:::zip->try->if->if->new->ZipFile->entry->zip->getEntry->if->throw->new->IOException->zip->getInputStream->new->BufferedInputStream->new->DataInputStream->else->new->FileInputStream->new->BufferedInputStream->new->DataInputStream->readID->readVersion->readConstantPool->readClassInfo->readInterfaces->readFields->readMethods->readAttributes->catch->finally->if->try->if->dataInputStream->close->catch->finally->try->if->zip->close->catch->finally->return->new->JavaClass
+ClassParser#readAttributes():::Read information about the attributes of the class.:::attributes_count->dataInputStream->readUnsignedShort->new->AttributeArr->for->i
+ClassParser#readClassInfo():::Read information about the class and its super class.:::dataInputStream->readUnsignedShort->if->if->throw->new->ClassFormatException->dataInputStream->readUnsignedShort->dataInputStream->readUnsignedShort
+ClassParser#readConstantPool():::Read constant pool entries.:::new->ConstantPool
+ClassParser#readFields():::Read information about the fields of the class, i.e., its variables.:::fields_count->dataInputStream->readUnsignedShort->new->FieldArr->for->i
+ClassParser#readID():::Check whether the header of the file is ok:::if->dataInputStream->readInt->throw->new->ClassFormatException
+ClassParser#readInterfaces():::Read information about the interfaces implemented by this class.:::interfaces_count->dataInputStream->readUnsignedShort->new->intArr->for->i
+ClassParser#readMethods():::Read information about the methods of the class.:::methods_count->dataInputStream->readUnsignedShort->new->MethodArr->for->i
+ClassParser#readVersion():::Read major and minor version of compiler which created the file.:::dataInputStream->readUnsignedShort->dataInputStream->readUnsignedShort
 Code#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitCode
 Code#dump(DataOutputStream):::Dump code attribute to file stream in binary format.:::super->dump->file->writeShort->file->writeShort->file->writeInt->file->write->file->writeShort->foreach->exception->dump->file->writeShort->foreach->attribute->dump
+Code#getAttributes()::: code get attributes:::return
+Code#getLineNumberTable()::: code get line number table:::foreach->if->return->return
+Code#getLocalVariableTable()::: code get local variable table:::foreach->if->return->return
+Code#getCode()::: code get code:::return
+Code#getExceptionTable()::: code get exception table:::return
+Code#getMaxLocals()::: code get max locals:::return
+Code#getMaxStack()::: code get max stack:::return
+Code#getInternalLength()::: code get internal length:::return
+Code#calculateLength()::: code calculate length:::len->if->foreach->attribute->getLength->return->getInternalLength
+Code#setAttributes(Attribute[])::: code set attributes:::new->AttributeArr->super->calculateLength->setLength
+Code#setCode(byte[])::: code set code:::new->byteArr->super->calculateLength->setLength
+Code#setExceptionTable(CodeException[])::: code set exception table:::new->CodeExceptionArr->super->calculateLength->setLength
+Code#setMaxLocals(int)::: code set max locals:::
+Code#setMaxStack(int)::: code set max stack:::
+Code#toString(boolean)::: code to string:::buf->new->StringBuilder->buf->append->append->append->append->append->append->append->Utility->super->getConstantPool->codeToString->append->if->buf->append->append->foreach->buf->exception->super->getConstantPool->toString->append->append->if->buf->append->foreach->buf->append->append->return->buf->toString
+Code#toString()::: code to string:::return->toString
+Code#copy(ConstantPool)::: code copy:::c->clone->if->new->byteArr->System->arraycopy->c->setConstantPool->new->CodeExceptionArr->for->i->new->AttributeArr->for->i->return
 CodeException#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitCodeException
 CodeException#dump(DataOutputStream):::Dump code exception to file stream in binary format.:::file->writeShort->file->writeShort->file->writeShort->file->writeShort
+CodeException#getCatchType()::: code exception get catch type:::return
+CodeException#getEndPC()::: code exception get end c:::return
+CodeException#getHandlerPC()::: code exception get handler c:::return
+CodeException#getStartPC()::: code exception get start c:::return
+CodeException#setCatchType(int)::: code exception set catch type:::
+CodeException#setEndPC(int)::: code exception set end c:::
+CodeException#setHandlerPC(int)::: code exception set handler c:::
+CodeException#setStartPC(int)::: code exception set start c:::
+CodeException#toString()::: code exception to string:::return
+CodeException#toString(ConstantPool, boolean)::: code exception to string:::str->if->else->Utility->cp->getConstantString->compactClassName->return
+CodeException#toString(ConstantPool)::: code exception to string:::return->toString
+CodeException#copy()::: code exception copy:::try->return->clone->catch->finally->return
 Constant#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::
+Constant#dump(DataOutputStream)::: constant dump:::
+Constant#getTag()::: constant get tag:::return
+Constant#toString()::: constant to string:::return->Const->getConstantName
+Constant#copy()::: constant copy:::try->return->super->clone->catch->finally->return
+Constant#clone()::: constant clone:::try->return->super->clone->catch->throw->new->Error->finally
 Constant#readConstant(DataInput):::Read one constant from the given input, the type depends on a tag byte.:::b->dataInput->readByte->switch->return->new->ConstantClass->return->new->ConstantFieldref->return->new->ConstantMethodref->return->new->ConstantInterfaceMethodref->return->new->ConstantString->return->new->ConstantInteger->return->new->ConstantFloat->return->new->ConstantLong->return->new->ConstantDouble->return->new->ConstantNameAndType->return->ConstantUtf8->getInstance->return->new->ConstantMethodHandle->return->new->ConstantMethodType->return->new->ConstantDynamic->return->new->ConstantInvokeDynamic->return->new->ConstantModule->return->new->ConstantPackage->throw->new->ClassFormatException
+Constant#getComparator()::: constant get comparator:::return
+Constant#setComparator(BCELComparator)::: constant set comparator:::
 Constant#equals(Object):::Return value as defined by given BCELComparator strategy:::return->bcelComparator->equals
 Constant#hashCode():::Return value as defined by given BCELComparator strategy:::return->bcelComparator->hashCode
 ConstantClass#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantClass
 ConstantClass#dump(DataOutputStream):::Dumps constant class to file stream in binary format.:::file->super->getTag->writeByte->file->writeShort
+ConstantClass#getNameIndex()::: constant class get name index:::return
+ConstantClass#setNameIndex(int)::: constant class set name index:::
+ConstantClass#getConstantValue(ConstantPool)::: constant class get constant value:::c->cp->getConstant->return->getBytes
+ConstantClass#getBytes(ConstantPool)::: constant class get bytes:::return->getConstantValue
+ConstantClass#toString()::: constant class to string:::return->super->toString
 ConstantCP#dump(DataOutputStream):::Dump constant field reference to file stream in binary format.:::file->super->getTag->writeByte->file->writeShort->file->writeShort
+ConstantCP#getClassIndex()::: constant p get class index:::return
+ConstantCP#setClassIndex(int)::: constant p set class index:::
+ConstantCP#getNameAndTypeIndex()::: constant p get name and type index:::return
+ConstantCP#setNameAndTypeIndex(int)::: constant p set name and type index:::
+ConstantCP#getClass(ConstantPool)::: constant p get class:::return->cp->constantToString
+ConstantCP#toString()::: constant p to string:::return->super->toString
 ConstantDouble#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantDouble
 ConstantDouble#dump(DataOutputStream):::Dump constant double to file stream in binary format.:::file->super->getTag->writeByte->file->writeDouble
+ConstantDouble#getBytes()::: constant double get bytes:::return
+ConstantDouble#setBytes(double)::: constant double set bytes:::
+ConstantDouble#toString()::: constant double to string:::return->super->toString
+ConstantDouble#getConstantValue(ConstantPool)::: constant double get constant value:::return
 ConstantDynamic#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitly defined by the contents of a Java class:::v->visitConstantDynamic
+ConstantDynamic#getBootstrapMethodAttrIndex()::: constant dynamic get bootstrap method attr index:::return->super->getClassIndex
+ConstantDynamic#toString()::: constant dynamic to string:::return->super->toString->replace
 ConstantFieldref#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantFieldref
 ConstantFloat#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantFloat
 ConstantFloat#dump(DataOutputStream):::Dump constant float to file stream in binary format.:::file->super->getTag->writeByte->file->writeFloat
+ConstantFloat#getBytes()::: constant float get bytes:::return
+ConstantFloat#setBytes(float)::: constant float set bytes:::
+ConstantFloat#toString()::: constant float to string:::return->super->toString
+ConstantFloat#getConstantValue(ConstantPool)::: constant float get constant value:::return
 ConstantInteger#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantInteger
 ConstantInteger#dump(DataOutputStream):::Dump constant integer to file stream in binary format.:::file->super->getTag->writeByte->file->writeInt
+ConstantInteger#getBytes()::: constant integer get bytes:::return
+ConstantInteger#setBytes(int)::: constant integer set bytes:::
+ConstantInteger#toString()::: constant integer to string:::return->super->toString
+ConstantInteger#getConstantValue(ConstantPool)::: constant integer get constant value:::return->Integer->valueOf
 ConstantInterfaceMethodref#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantInterfaceMethodref
 ConstantInvokeDynamic#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitly defined by the contents of a Java class:::v->visitConstantInvokeDynamic
+ConstantInvokeDynamic#getBootstrapMethodAttrIndex()::: constant invoke dynamic get bootstrap method attr index:::return->super->getClassIndex
+ConstantInvokeDynamic#toString()::: constant invoke dynamic to string:::return->super->toString->replace
 ConstantLong#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantLong
 ConstantLong#dump(DataOutputStream):::Dump constant long to file stream in binary format.:::file->super->getTag->writeByte->file->writeLong
+ConstantLong#getBytes()::: constant long get bytes:::return
+ConstantLong#setBytes(long)::: constant long set bytes:::
+ConstantLong#toString()::: constant long to string:::return->super->toString
+ConstantLong#getConstantValue(ConstantPool)::: constant long get constant value:::return->Long->valueOf
 ConstantMethodHandle#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitly defined by the contents of a Java class:::v->visitConstantMethodHandle
 ConstantMethodHandle#dump(DataOutputStream):::Dump method kind and index to file stream in binary format.:::file->super->getTag->writeByte->file->writeByte->file->writeShort
+ConstantMethodHandle#getReferenceKind()::: constant method handle get reference kind:::return
+ConstantMethodHandle#setReferenceKind(int)::: constant method handle set reference kind:::
+ConstantMethodHandle#getReferenceIndex()::: constant method handle get reference index:::return
+ConstantMethodHandle#setReferenceIndex(int)::: constant method handle set reference index:::
+ConstantMethodHandle#toString()::: constant method handle to string:::return->super->toString
 ConstantMethodref#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantMethodref
 ConstantMethodType#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitly defined by the contents of a Java class:::v->visitConstantMethodType
 ConstantMethodType#dump(DataOutputStream):::Dump name and signature index to file stream in binary format.:::file->super->getTag->writeByte->file->writeShort
+ConstantMethodType#getDescriptorIndex()::: constant method type get descriptor index:::return
+ConstantMethodType#setDescriptorIndex(int)::: constant method type set descriptor index:::
+ConstantMethodType#toString()::: constant method type to string:::return->super->toString
 ConstantModule#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitly defined by the contents of a Java class:::v->visitConstantModule
 ConstantModule#dump(DataOutputStream):::Dump constant module to file stream in binary format.:::file->super->getTag->writeByte->file->writeShort
+ConstantModule#getNameIndex()::: constant module get name index:::return
+ConstantModule#setNameIndex(int)::: constant module set name index:::
+ConstantModule#getConstantValue(ConstantPool)::: constant module get constant value:::c->cp->getConstant->return->getBytes
+ConstantModule#getBytes(ConstantPool)::: constant module get bytes:::return->getConstantValue
+ConstantModule#toString()::: constant module to string:::return->super->toString
 ConstantNameAndType#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantNameAndType
 ConstantNameAndType#dump(DataOutputStream):::Dump name and signature index to file stream in binary format.:::file->super->getTag->writeByte->file->writeShort->file->writeShort
+ConstantNameAndType#getNameIndex()::: constant name and type get name index:::return
+ConstantNameAndType#getName(ConstantPool)::: constant name and type get name:::return->cp->getNameIndex->constantToString
+ConstantNameAndType#getSignatureIndex()::: constant name and type get signature index:::return
+ConstantNameAndType#getSignature(ConstantPool)::: constant name and type get signature:::return->cp->getSignatureIndex->constantToString
+ConstantNameAndType#setNameIndex(int)::: constant name and type set name index:::
+ConstantNameAndType#setSignatureIndex(int)::: constant name and type set signature index:::
+ConstantNameAndType#toString()::: constant name and type to string:::return->super->toString
+ConstantObject#getConstantValue(ConstantPool)::: constant object get constant value:::
 ConstantPackage#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantPackage
 ConstantPackage#dump(DataOutputStream):::Dump constant package to file stream in binary format.:::file->super->getTag->writeByte->file->writeShort
+ConstantPackage#getNameIndex()::: constant package get name index:::return
+ConstantPackage#setNameIndex(int)::: constant package set name index:::
+ConstantPackage#getConstantValue(ConstantPool)::: constant package get constant value:::c->cp->getConstant->return->getBytes
+ConstantPackage#getBytes(ConstantPool)::: constant package get bytes:::return->getConstantValue
+ConstantPackage#toString()::: constant package to string:::return->super->toString
 ConstantPool#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantPool
 ConstantPool#constantToString(Constant):::Resolve constant to a string representation.:::str->i->tag->c->getTag->switch->getNameIndex->getConstant->Utility->getBytes->compactClassName->break->getStringIndex->getConstant->getBytes->escape->break->getBytes->break->String->getBytes->valueOf->break->String->getBytes->valueOf->break->String->getBytes->valueOf->break->String->getBytes->valueOf->break->getNameIndex->constantToString->getSignatureIndex->constantToString->break->getClassIndex->constantToString->getNameAndTypeIndex->constantToString->break->cmh->Const->cmh->getReferenceKind->getMethodHandleName->cmh->getReferenceIndex->cmh->getReferenceIndex->getConstant->getTag->constantToString->break->cmt->cmt->getDescriptorIndex->constantToString->break->cid->cid->getBootstrapMethodAttrIndex->cid->getNameAndTypeIndex->constantToString->break->throw->new->RuntimeException->return
+ConstantPool#escape(String)::: constant pool escape:::len->str->length->buf->new->StringBuilder->ch->str->toCharArray->for->i->return->buf->toString
 ConstantPool#constantToString(int, byte):::Retrieve constant at `index' from constant pool and resolve it to a string representation.:::c->getConstant->return->constantToString
 ConstantPool#dump(DataOutputStream):::Dump constant pool to file stream in binary format.:::file->writeShort->for->i
 ConstantPool#getConstant(int):::Get constant from constant pool.:::if->throw->new->ClassFormatException->return
 ConstantPool#getConstant(int, byte):::Get constant from constant pool and check whether it has the expected type.:::c->getConstant->if->throw->new->ClassFormatException->if->c->getTag->throw->Const->getConstantName->new->ClassFormatException->return
+ConstantPool#getConstantPool()::: constant pool get constant pool:::return
 ConstantPool#getConstantString(int, byte):::Get string from constant pool and bypass the indirection of `ConstantClass' and `ConstantString' objects:::c->i->getConstant->switch->getNameIndex->break->getStringIndex->break->throw->new->RuntimeException->getConstant->return->getBytes
+ConstantPool#getLength()::: constant pool get length:::return
+ConstantPool#setConstant(int, Constant)::: constant pool set constant:::
+ConstantPool#setConstantPool(Constant[])::: constant pool set constant pool:::
+ConstantPool#toString()::: constant pool to string:::buf->new->StringBuilder->for->i->return->buf->toString
+ConstantPool#copy()::: constant pool copy:::c->try->clone->new->ConstantArr->for->i->catch->finally->return
 ConstantString#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantString
 ConstantString#dump(DataOutputStream):::Dump constant field reference to file stream in binary format.:::file->super->getTag->writeByte->file->writeShort
+ConstantString#getStringIndex()::: constant string get string index:::return
+ConstantString#setStringIndex(int)::: constant string set string index:::
+ConstantString#toString()::: constant string to string:::return->super->toString
+ConstantString#getConstantValue(ConstantPool)::: constant string get constant value:::c->cp->getConstant->return->getBytes
+ConstantString#getBytes(ConstantPool)::: constant string get bytes:::return->getConstantValue
+ConstantUtf8#printStats()::: constant utf8 print stats:::println->println
+ConstantUtf8#clearStats()::: constant utf8 clear stats:::
+ConstantUtf8#getCachedInstance(String)::: constant utf8 get cached instance:::if->s->length->return->new->ConstantUtf8->synchronized->result->get->if->return->new->ConstantUtf8->put->return
+ConstantUtf8#getInstance(String)::: constant utf8 get instance:::return->new->ConstantUtf8
+ConstantUtf8#getInstance(DataInput)::: constant utf8 get instance:::return->input->readUTF->getInstance
 ConstantUtf8#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantUtf8
 ConstantUtf8#dump(DataOutputStream):::Dump String in Utf8 format to file stream.:::file->super->getTag->writeByte->file->writeUTF
+ConstantUtf8#getBytes()::: constant utf8 get bytes:::return
+ConstantUtf8#setBytes(String)::: constant utf8 set bytes:::throw->new->UnsupportedOperationException
+ConstantUtf8#toString()::: constant utf8 to string:::return->super->toString->Utility->replace
 ConstantValue#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitConstantValue
 ConstantValue#dump(DataOutputStream):::Dump constant value attribute to file stream on binary format.:::super->dump->file->writeShort
+ConstantValue#getConstantValueIndex()::: constant value get constant value index:::return
+ConstantValue#setConstantValueIndex(int)::: constant value set constant value index:::
+ConstantValue#toString()::: constant value to string:::c->super->getConstantPool->getConstant->buf->i->switch->c->getTag->String->getBytes->valueOf->break->String->getBytes->valueOf->break->String->getBytes->valueOf->break->String->getBytes->valueOf->break->getStringIndex->super->getConstantPool->getConstant->Utility->getBytes->convertString->break->throw->new->IllegalStateException->return
+ConstantValue#copy(ConstantPool)::: constant value copy:::c->clone->c->setConstantPool->return
 Deprecated#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitDeprecated
 Deprecated#dump(DataOutputStream):::Dump source file attribute to file stream in binary format.:::super->dump->if->super->getLength->file->super->getLength->write
+Deprecated#getBytes()::: deprecated get bytes:::return
+Deprecated#setBytes(byte[])::: deprecated set bytes:::
+Deprecated#toString()::: deprecated to string:::return->Const->getAttributeName
+Deprecated#copy(ConstantPool)::: deprecated copy:::c->clone->if->new->byteArr->System->arraycopy->c->setConstantPool->return
+DescendingVisitor#predecessor()::: descending visitor predecessor:::return->predecessor
+DescendingVisitor#predecessor(int)::: descending visitor predecessor:::size->stack->size->if->return->return->stack->elementAt
+DescendingVisitor#current()::: descending visitor current:::return->stack->peek
 DescendingVisitor#visit():::Start traversal.:::clazz->accept
+DescendingVisitor#visitJavaClass(JavaClass)::: descending visitor visit java class:::stack->push->_clazz->accept->fields->_clazz->getFields->foreach->field->accept->methods->_clazz->getMethods->foreach->method->accept->attributes->_clazz->getAttributes->foreach->attribute->accept->_clazz->getConstantPool->accept->stack->pop
+DescendingVisitor#visitAnnotation(Annotations)::: descending visitor visit annotation:::stack->push->annotation->accept->entries->annotation->getAnnotationEntries->foreach->entrie->accept->stack->pop
+DescendingVisitor#visitAnnotationEntry(AnnotationEntry)::: descending visitor visit annotation entry:::stack->push->annotationEntry->accept->stack->pop
+DescendingVisitor#visitField(Field)::: descending visitor visit field:::stack->push->field->accept->attributes->field->getAttributes->foreach->attribute->accept->stack->pop
+DescendingVisitor#visitConstantValue(ConstantValue)::: descending visitor visit constant value:::stack->push->cv->accept->stack->pop
+DescendingVisitor#visitMethod(Method)::: descending visitor visit method:::stack->push->method->accept->attributes->method->getAttributes->foreach->attribute->accept->stack->pop
+DescendingVisitor#visitExceptionTable(ExceptionTable)::: descending visitor visit exception table:::stack->push->table->accept->stack->pop
+DescendingVisitor#visitCode(Code)::: descending visitor visit code:::stack->push->code->accept->table->code->getExceptionTable->foreach->element->accept->attributes->code->getAttributes->foreach->attribute->accept->stack->pop
+DescendingVisitor#visitCodeException(CodeException)::: descending visitor visit code exception:::stack->push->ce->accept->stack->pop
+DescendingVisitor#visitLineNumberTable(LineNumberTable)::: descending visitor visit line number table:::stack->push->table->accept->numbers->table->getLineNumberTable->foreach->number->accept->stack->pop
+DescendingVisitor#visitLineNumber(LineNumber)::: descending visitor visit line number:::stack->push->number->accept->stack->pop
+DescendingVisitor#visitLocalVariableTable(LocalVariableTable)::: descending visitor visit local variable table:::stack->push->table->accept->vars->table->getLocalVariableTable->foreach->var->accept->stack->pop
+DescendingVisitor#visitStackMap(StackMap)::: descending visitor visit stack map:::stack->push->table->accept->vars->table->getStackMap->foreach->var->accept->stack->pop
+DescendingVisitor#visitStackMapEntry(StackMapEntry)::: descending visitor visit stack map entry:::stack->push->var->accept->stack->pop
+DescendingVisitor#visitLocalVariable(LocalVariable)::: descending visitor visit local variable:::stack->push->var->accept->stack->pop
+DescendingVisitor#visitConstantPool(ConstantPool)::: descending visitor visit constant pool:::stack->push->cp->accept->constants->cp->getConstantPool->for->i->stack->pop
+DescendingVisitor#visitConstantClass(ConstantClass)::: descending visitor visit constant class:::stack->push->constant->accept->stack->pop
+DescendingVisitor#visitConstantDouble(ConstantDouble)::: descending visitor visit constant double:::stack->push->constant->accept->stack->pop
+DescendingVisitor#visitConstantFieldref(ConstantFieldref)::: descending visitor visit constant fieldref:::stack->push->constant->accept->stack->pop
+DescendingVisitor#visitConstantFloat(ConstantFloat)::: descending visitor visit constant float:::stack->push->constant->accept->stack->pop
+DescendingVisitor#visitConstantInteger(ConstantInteger)::: descending visitor visit constant integer:::stack->push->constant->accept->stack->pop
+DescendingVisitor#visitConstantInterfaceMethodref(ConstantInterfaceMethodref)::: descending visitor visit constant interface methodref:::stack->push->constant->accept->stack->pop
+DescendingVisitor#visitConstantInvokeDynamic(ConstantInvokeDynamic)::: descending visitor visit constant invoke dynamic:::stack->push->constant->accept->stack->pop
+DescendingVisitor#visitConstantLong(ConstantLong)::: descending visitor visit constant long:::stack->push->constant->accept->stack->pop
+DescendingVisitor#visitConstantMethodref(ConstantMethodref)::: descending visitor visit constant methodref:::stack->push->constant->accept->stack->pop
+DescendingVisitor#visitConstantNameAndType(ConstantNameAndType)::: descending visitor visit constant name and type:::stack->push->constant->accept->stack->pop
+DescendingVisitor#visitConstantString(ConstantString)::: descending visitor visit constant string:::stack->push->constant->accept->stack->pop
+DescendingVisitor#visitConstantUtf8(ConstantUtf8)::: descending visitor visit constant utf8:::stack->push->constant->accept->stack->pop
+DescendingVisitor#visitInnerClasses(InnerClasses)::: descending visitor visit inner classes:::stack->push->ic->accept->ics->ic->getInnerClasses->foreach->ic2->accept->stack->pop
+DescendingVisitor#visitInnerClass(InnerClass)::: descending visitor visit inner class:::stack->push->inner->accept->stack->pop
+DescendingVisitor#visitBootstrapMethods(BootstrapMethods)::: descending visitor visit bootstrap methods:::stack->push->bm->accept->stack->pop
+DescendingVisitor#visitDeprecated(Deprecated)::: descending visitor visit deprecated:::stack->push->attribute->accept->stack->pop
+DescendingVisitor#visitSignature(Signature)::: descending visitor visit signature:::stack->push->attribute->accept->stack->pop
+DescendingVisitor#visitSourceFile(SourceFile)::: descending visitor visit source file:::stack->push->attribute->accept->stack->pop
+DescendingVisitor#visitSynthetic(Synthetic)::: descending visitor visit synthetic:::stack->push->attribute->accept->stack->pop
+DescendingVisitor#visitUnknown(Unknown)::: descending visitor visit unknown:::stack->push->attribute->accept->stack->pop
+DescendingVisitor#visitAnnotationDefault(AnnotationDefault)::: descending visitor visit annotation default:::stack->push->obj->accept->stack->pop
+DescendingVisitor#visitEnclosingMethod(EnclosingMethod)::: descending visitor visit enclosing method:::stack->push->obj->accept->stack->pop
+DescendingVisitor#visitLocalVariableTypeTable(LocalVariableTypeTable)::: descending visitor visit local variable type table:::stack->push->obj->accept->stack->pop
+DescendingVisitor#visitParameterAnnotation(ParameterAnnotations)::: descending visitor visit parameter annotation:::stack->push->obj->accept->stack->pop
+DescendingVisitor#visitMethodParameters(MethodParameters)::: descending visitor visit method parameters:::stack->push->obj->accept->stack->pop
+DescendingVisitor#visitConstantMethodType(ConstantMethodType)::: descending visitor visit constant method type:::stack->push->obj->accept->stack->pop
+DescendingVisitor#visitConstantMethodHandle(ConstantMethodHandle)::: descending visitor visit constant method handle:::stack->push->obj->accept->stack->pop
+DescendingVisitor#visitParameterAnnotationEntry(ParameterAnnotationEntry)::: descending visitor visit parameter annotation entry:::stack->push->obj->accept->stack->pop
+DescendingVisitor#visitConstantPackage(ConstantPackage)::: descending visitor visit constant package:::stack->push->obj->accept->stack->pop
+DescendingVisitor#visitConstantModule(ConstantModule)::: descending visitor visit constant module:::stack->push->obj->accept->stack->pop
+DescendingVisitor#visitConstantDynamic(ConstantDynamic)::: descending visitor visit constant dynamic:::stack->push->obj->accept->stack->pop
+ElementValue#toString()::: element value to string:::return->stringifyValue
+ElementValue#getElementValueType()::: element value get element value type:::return
+ElementValue#stringifyValue()::: element value stringify value:::
+ElementValue#dump(DataOutputStream)::: element value dump:::
+ElementValue#readElementValue(DataInput, ConstantPool)::: element value read element value:::type->input->readByte->switch->return->input->readUnsignedShort->new->SimpleElementValue->return->input->readUnsignedShort->input->readUnsignedShort->new->EnumElementValue->return->input->readUnsignedShort->new->ClassElementValue->return->AnnotationEntry->read->new->AnnotationElementValue->numArrayVals->input->readUnsignedShort->evalues->new->ElementValueArr->for->j->return->new->ArrayElementValue->throw->new->RuntimeException
+ElementValue#getConstantPool()::: element value get constant pool:::return
+ElementValue#getType()::: element value get type:::return
+ElementValue#toShortString()::: element value to short string:::return->stringifyValue
+ElementValuePair#getNameString()::: element value pair get name string:::c->constantPool->getConstant->return->c->getBytes
+ElementValuePair#getValue()::: element value pair get value:::return
+ElementValuePair#getNameIndex()::: element value pair get name index:::return
+ElementValuePair#toShortString()::: element value pair to short string:::result->new->StringBuilder->result->getNameString->append->append->getValue->toShortString->append->return->result->toString
+ElementValuePair#dump(DataOutputStream)::: element value pair dump:::dos->writeShort->elementValue->dump
+EmptyVisitor#visitAnnotation(Annotations)::: empty visitor visit annotation:::
+EmptyVisitor#visitParameterAnnotation(ParameterAnnotations)::: empty visitor visit parameter annotation:::
+EmptyVisitor#visitAnnotationEntry(AnnotationEntry)::: empty visitor visit annotation entry:::
+EmptyVisitor#visitAnnotationDefault(AnnotationDefault)::: empty visitor visit annotation default:::
+EmptyVisitor#visitCode(Code)::: empty visitor visit code:::
+EmptyVisitor#visitCodeException(CodeException)::: empty visitor visit code exception:::
+EmptyVisitor#visitConstantClass(ConstantClass)::: empty visitor visit constant class:::
+EmptyVisitor#visitConstantDouble(ConstantDouble)::: empty visitor visit constant double:::
+EmptyVisitor#visitConstantFieldref(ConstantFieldref)::: empty visitor visit constant fieldref:::
+EmptyVisitor#visitConstantFloat(ConstantFloat)::: empty visitor visit constant float:::
+EmptyVisitor#visitConstantInteger(ConstantInteger)::: empty visitor visit constant integer:::
+EmptyVisitor#visitConstantInterfaceMethodref(ConstantInterfaceMethodref)::: empty visitor visit constant interface methodref:::
+EmptyVisitor#visitConstantInvokeDynamic(ConstantInvokeDynamic)::: empty visitor visit constant invoke dynamic:::
+EmptyVisitor#visitConstantLong(ConstantLong)::: empty visitor visit constant long:::
+EmptyVisitor#visitConstantMethodref(ConstantMethodref)::: empty visitor visit constant methodref:::
+EmptyVisitor#visitConstantNameAndType(ConstantNameAndType)::: empty visitor visit constant name and type:::
+EmptyVisitor#visitConstantPool(ConstantPool)::: empty visitor visit constant pool:::
+EmptyVisitor#visitConstantString(ConstantString)::: empty visitor visit constant string:::
+EmptyVisitor#visitConstantUtf8(ConstantUtf8)::: empty visitor visit constant utf8:::
+EmptyVisitor#visitConstantValue(ConstantValue)::: empty visitor visit constant value:::
+EmptyVisitor#visitDeprecated(Deprecated)::: empty visitor visit deprecated:::
+EmptyVisitor#visitExceptionTable(ExceptionTable)::: empty visitor visit exception table:::
+EmptyVisitor#visitField(Field)::: empty visitor visit field:::
+EmptyVisitor#visitInnerClass(InnerClass)::: empty visitor visit inner class:::
+EmptyVisitor#visitInnerClasses(InnerClasses)::: empty visitor visit inner classes:::
+EmptyVisitor#visitBootstrapMethods(BootstrapMethods)::: empty visitor visit bootstrap methods:::
+EmptyVisitor#visitJavaClass(JavaClass)::: empty visitor visit java class:::
+EmptyVisitor#visitLineNumber(LineNumber)::: empty visitor visit line number:::
+EmptyVisitor#visitLineNumberTable(LineNumberTable)::: empty visitor visit line number table:::
+EmptyVisitor#visitLocalVariable(LocalVariable)::: empty visitor visit local variable:::
+EmptyVisitor#visitLocalVariableTable(LocalVariableTable)::: empty visitor visit local variable table:::
+EmptyVisitor#visitMethod(Method)::: empty visitor visit method:::
+EmptyVisitor#visitSignature(Signature)::: empty visitor visit signature:::
+EmptyVisitor#visitSourceFile(SourceFile)::: empty visitor visit source file:::
+EmptyVisitor#visitSynthetic(Synthetic)::: empty visitor visit synthetic:::
+EmptyVisitor#visitUnknown(Unknown)::: empty visitor visit unknown:::
+EmptyVisitor#visitStackMap(StackMap)::: empty visitor visit stack map:::
+EmptyVisitor#visitStackMapEntry(StackMapEntry)::: empty visitor visit stack map entry:::
+EmptyVisitor#visitEnclosingMethod(EnclosingMethod)::: empty visitor visit enclosing method:::
+EmptyVisitor#visitLocalVariableTypeTable(LocalVariableTypeTable)::: empty visitor visit local variable type table:::
+EmptyVisitor#visitMethodParameters(MethodParameters)::: empty visitor visit method parameters:::
+EmptyVisitor#visitConstantMethodType(ConstantMethodType)::: empty visitor visit constant method type:::
+EmptyVisitor#visitConstantMethodHandle(ConstantMethodHandle)::: empty visitor visit constant method handle:::
+EmptyVisitor#visitParameterAnnotationEntry(ParameterAnnotationEntry)::: empty visitor visit parameter annotation entry:::
+EmptyVisitor#visitConstantPackage(ConstantPackage)::: empty visitor visit constant package:::
+EmptyVisitor#visitConstantModule(ConstantModule)::: empty visitor visit constant module:::
+EmptyVisitor#visitConstantDynamic(ConstantDynamic)::: empty visitor visit constant dynamic:::
+EnclosingMethod#accept(Visitor)::: enclosing method accept:::v->visitEnclosingMethod
+EnclosingMethod#copy(ConstantPool)::: enclosing method copy:::return->clone
+EnclosingMethod#getEnclosingClassIndex()::: enclosing method get enclosing class index:::return
+EnclosingMethod#getEnclosingMethodIndex()::: enclosing method get enclosing method index:::return
+EnclosingMethod#setEnclosingClassIndex(int)::: enclosing method set enclosing class index:::
+EnclosingMethod#setEnclosingMethodIndex(int)::: enclosing method set enclosing method index:::
+EnclosingMethod#getEnclosingClass()::: enclosing method get enclosing class:::c->super->getConstantPool->getConstant->return
+EnclosingMethod#getEnclosingMethod()::: enclosing method get enclosing method:::if->return->nat->super->getConstantPool->getConstant->return
+EnclosingMethod#dump(DataOutputStream)::: enclosing method dump:::super->dump->file->writeShort->file->writeShort
+EnumElementValue#dump(DataOutputStream)::: enum element value dump:::dos->super->getType->writeByte->dos->writeShort->dos->writeShort
+EnumElementValue#stringifyValue()::: enum element value stringify value:::cu8->super->getConstantPool->getConstant->return->cu8->getBytes
+EnumElementValue#getEnumTypeString()::: enum element value get enum type string:::cu8->super->getConstantPool->getConstant->return->cu8->getBytes
+EnumElementValue#getEnumValueString()::: enum element value get enum value string:::cu8->super->getConstantPool->getConstant->return->cu8->getBytes
+EnumElementValue#getValueIndex()::: enum element value get value index:::return
+EnumElementValue#getTypeIndex()::: enum element value get type index:::return
 ExceptionTable#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitExceptionTable
 ExceptionTable#dump(DataOutputStream):::Dump exceptions attribute to file stream in binary format.:::super->dump->file->writeShort->foreach->file->writeShort
+ExceptionTable#getExceptionIndexTable()::: exception table get exception index table:::return
+ExceptionTable#getNumberOfExceptions()::: exception table get number of exceptions:::return
+ExceptionTable#getExceptionNames()::: exception table get exception names:::names->new->StringArr->for->i->return
+ExceptionTable#setExceptionIndexTable(int[])::: exception table set exception index table:::new->intArr
+ExceptionTable#toString()::: exception table to string:::buf->new->StringBuilder->str->buf->append->for->i->return->buf->toString
+ExceptionTable#copy(ConstantPool)::: exception table copy:::c->clone->if->new->intArr->System->arraycopy->c->setConstantPool->return
 Field#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitField
+Field#getConstantValue()::: field get constant value:::foreach->super->getAttributes->if->attribute->getTag->return->return
 Field#toString():::Return string representation close to declaration format, `public static final short MAX = 100', e.g..:::name->signature->access->Utility->super->getAccessFlags->accessToString->access->isEmpty->Utility->getSignature->signatureToString->getName->buf->new->StringBuilder->buf->append->append->append->append->cv->getConstantValue->if->buf->append->append->foreach->super->getAttributes->if->buf->append->append->append->return->buf->toString
+Field#copy(ConstantPool)::: field copy:::return->copy_
+Field#getType()::: field get type:::return->Type->getSignature->getReturnType
+Field#getComparator()::: field get comparator:::return
+Field#setComparator(BCELComparator)::: field set comparator:::
 Field#equals(Object):::Return value as defined by given BCELComparator strategy:::return->bcelComparator->equals
 Field#hashCode():::Return value as defined by given BCELComparator strategy:::return->bcelComparator->hashCode
 FieldOrMethod#dump(DataOutputStream):::Dump object to file stream on binary format.:::file->super->getAccessFlags->writeShort->file->writeShort->file->writeShort->file->writeShort->if->foreach->attribute->dump
+FieldOrMethod#getAttributes()::: field or method get attributes:::return
+FieldOrMethod#setAttributes(Attribute[])::: field or method set attributes:::
+FieldOrMethod#getConstantPool()::: field or method get constant pool:::return
+FieldOrMethod#setConstantPool(ConstantPool)::: field or method set constant pool:::
+FieldOrMethod#getNameIndex()::: field or method get name index:::return
+FieldOrMethod#setNameIndex(int)::: field or method set name index:::
+FieldOrMethod#getSignatureIndex()::: field or method get signature index:::return
+FieldOrMethod#setSignatureIndex(int)::: field or method set signature index:::
+FieldOrMethod#getName()::: field or method get name:::c->constant_pool->getConstant->return->c->getBytes
+FieldOrMethod#getSignature()::: field or method get signature:::c->constant_pool->getConstant->return->c->getBytes
+FieldOrMethod#copy_(ConstantPool)::: field or method copy_:::c->try->clone->catch->finally->new->AttributeArr->for->i->return
+FieldOrMethod#getAnnotationEntries()::: field or method get annotation entries:::if->AnnotationEntry->getAttributes->createAnnotationEntries->return
 FieldOrMethod#getGenericSignature():::Hunts for a signature attribute on the member and returns its contents:::if->found->for->i->return
 InnerClass#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitInnerClass
 InnerClass#dump(DataOutputStream):::Dump inner class attribute to file stream in binary format.:::file->writeShort->file->writeShort->file->writeShort->file->writeShort
+InnerClass#getInnerAccessFlags()::: inner class get inner access flags:::return
+InnerClass#getInnerClassIndex()::: inner class get inner class index:::return
+InnerClass#getInnerNameIndex()::: inner class get inner name index:::return
+InnerClass#getOuterClassIndex()::: inner class get outer class index:::return
+InnerClass#setInnerAccessFlags(int)::: inner class set inner access flags:::
+InnerClass#setInnerClassIndex(int)::: inner class set inner class index:::
+InnerClass#setInnerNameIndex(int)::: inner class set inner name index:::
+InnerClass#setOuterClassIndex(int)::: inner class set outer class index:::
+InnerClass#toString()::: inner class to string:::return
+InnerClass#toString(ConstantPool)::: inner class to string:::outer_class_name->inner_name->inner_class_name->constant_pool->getConstantString->Utility->compactClassName->if->constant_pool->getConstantString->Utility->compactClassName->else->if->constant_pool->getConstant->getBytes->else->access->Utility->accessToString->access->isEmpty->return
+InnerClass#copy()::: inner class copy:::try->return->clone->catch->finally->return
 InnerClasses#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitInnerClasses
 InnerClasses#dump(DataOutputStream):::Dump source file attribute to file stream in binary format.:::super->dump->file->writeShort->foreach->inner_class->dump
+InnerClasses#getInnerClasses()::: inner classes get inner classes:::return
+InnerClasses#setInnerClasses(InnerClass[])::: inner classes set inner classes:::new->InnerClassArr
+InnerClasses#toString()::: inner classes to string:::buf->new->StringBuilder->buf->append->buf->append->buf->append->foreach->buf->inner_class->super->getConstantPool->toString->append->append->return->buf->toString
+InnerClasses#copy(ConstantPool)::: inner classes copy:::c->clone->new->InnerClassArr->for->i->c->setConstantPool->return
 JavaClass#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitJavaClass
 JavaClass#dump(File):::Dump class to a file.:::parent->file->getParent->if->dir->new->File->if->dir->mkdirs->if->dir->isDirectory->throw->new->IOException->try->dos->new->FileOutputStream->new->DataOutputStream->dump->catch->finally
 JavaClass#dump(String):::Dump class to a file named file_name.:::new->File->dump
+JavaClass#getBytes()::: java class get bytes:::s->new->ByteArrayOutputStream->ds->new->DataOutputStream->try->dump->catch->e->getMessage->println->finally->try->ds->close->catch->e2->getMessage->println->finally->return->s->toByteArray
 JavaClass#dump(OutputStream):::Dump Java class to output stream in binary format.:::new->DataOutputStream->dump
 JavaClass#dump(DataOutputStream):::Dump Java class to output stream in binary format.:::file->writeInt->file->writeShort->file->writeShort->constant_pool->dump->file->super->getAccessFlags->writeShort->file->writeShort->file->writeShort->file->writeShort->foreach->file->writeShort->file->writeShort->foreach->field->dump->file->writeShort->foreach->method->dump->if->file->writeShort->foreach->attribute->dump->else->file->writeShort->file->flush
+JavaClass#getAttributes()::: java class get attributes:::return
+JavaClass#getAnnotationEntries()::: java class get annotation entries:::if->AnnotationEntry->getAttributes->createAnnotationEntries->return
+JavaClass#getClassName()::: java class get class name:::return
+JavaClass#getPackageName()::: java class get package name:::return
+JavaClass#getClassNameIndex()::: java class get class name index:::return
+JavaClass#getConstantPool()::: java class get constant pool:::return
+JavaClass#getFields()::: java class get fields:::return
+JavaClass#getFileName()::: java class get file name:::return
+JavaClass#getInterfaceNames()::: java class get interface names:::return
+JavaClass#getInterfaceIndices()::: java class get interface indices:::return
+JavaClass#getMajor()::: java class get major:::return
+JavaClass#getMethods()::: java class get methods:::return
+JavaClass#getMethod(java.lang.reflect.Method)::: java class get method:::foreach->if->m->getName->method->getName->equals->m->getModifiers->method->getModifiers->Type->getSignature->method->getSignature->equals->return->return
+JavaClass#getMinor()::: java class get minor:::return
+JavaClass#getSourceFileName()::: java class get source file name:::return
 JavaClass#getSuperclassName():::returns the super class name of this class:::return
+JavaClass#getSuperclassNameIndex()::: java class get superclass name index:::return
+JavaClass#setAttributes(Attribute[])::: java class set attributes:::
+JavaClass#setClassName(String)::: java class set class name:::
+JavaClass#setClassNameIndex(int)::: java class set class name index:::
+JavaClass#setConstantPool(ConstantPool)::: java class set constant pool:::
+JavaClass#setFields(Field[])::: java class set fields:::
 JavaClass#setFileName(String):::Set File name of class, aka SourceFile attribute value:::
+JavaClass#setInterfaceNames(String[])::: java class set interface names:::
+JavaClass#setInterfaces(int[])::: java class set interfaces:::
+JavaClass#setMajor(int)::: java class set major:::
+JavaClass#setMethods(Method[])::: java class set methods:::
+JavaClass#setMinor(int)::: java class set minor:::
 JavaClass#setSourceFileName(String):::Set absolute path to file this class was read from.:::
+JavaClass#setSuperclassName(String)::: java class set superclass name:::
+JavaClass#setSuperclassNameIndex(int)::: java class set superclass name index:::
+JavaClass#toString()::: java class to string:::access->Utility->super->getAccessFlags->accessToString->access->isEmpty->buf->new->StringBuilder->buf->append->Utility->super->getAccessFlags->classOrInterface->append->append->append->append->Utility->compactClassName->append->append->size->if->buf->append->for->i->buf->append->buf->append->append->append->buf->append->append->append->buf->append->append->append->append->append->buf->append->super->getAccessFlags->append->append->buf->append->constant_pool->getLength->append->append->buf->append->isSuper->append->append->if->buf->append->foreach->buf->indent->append->annotations->getAnnotationEntries->if->buf->append->foreach->buf->indent->append->if->buf->append->append->append->foreach->buf->append->append->append->if->buf->append->append->append->foreach->buf->append->append->append->return->buf->toString
+JavaClass#indent(Object)::: java class indent:::tok->obj->toString->new->StringTokenizer->buf->new->StringBuilder->while->tok->hasMoreTokens->buf->append->tok->nextToken->append->append->return->buf->toString
+JavaClass#copy()::: java class copy:::c->try->clone->constant_pool->copy->interfaces->clone->interface_names->clone->new->FieldArr->for->i->new->MethodArr->for->i->new->AttributeArr->for->i->catch->finally->return
+JavaClass#isSuper()::: java class is super:::return->super->getAccessFlags
+JavaClass#isClass()::: java class is class:::return->super->getAccessFlags
+JavaClass#isAnonymous()::: java class is anonymous:::computeNestedTypeStatus->return
+JavaClass#isNested()::: java class is nested:::computeNestedTypeStatus->return
+JavaClass#computeNestedTypeStatus()::: java class compute nested type status:::if->return->foreach->if->innerClasses->getInnerClasses->foreach->innerClassAttributeRefersToMe->inner_class_name->constant_pool->innerClasse->getInnerClassIndex->getConstantString->Utility->compactClassName->if->inner_class_name->getClassName->equals->if->if->innerClasse->getInnerNameIndex
+JavaClass#getSource()::: java class get source:::return
 JavaClass#getRepository():::Gets the ClassRepository which holds its definition:::return
 JavaClass#setRepository(com.sun.org.apache.bcel.internal.util.Repository):::Sets the ClassRepository which loaded the JavaClass:::
 JavaClass#instanceOf(JavaClass):::Equivalent to runtime "instanceof" operator.:::if->this->equals->return->super_classes->getSuperClasses->foreach->if->super_classe->equals->return->if->super_class->isInterface->return->implementationOf->return
+JavaClass#implementationOf(JavaClass)::: java class implementation of:::if->inter->isInterface->throw->inter->getClassName->new->IllegalArgumentException->if->this->equals->return->super_interfaces->getAllInterfaces->foreach->if->super_interface->equals->return->return
+JavaClass#getSuperClass()::: java class get super class:::if->getClassName->equals->return->return->repository->getSuperclassName->loadClass
+JavaClass#getSuperClasses()::: java class get super classes:::clazz->allSuperClasses->new->ArrayList<>->for->clazz->getSuperClass->clazz->getSuperClass->return->allSuperClasses->allSuperClasses->size->new->JavaClassArr->toArray
 JavaClass#getInterfaces():::Get interfaces directly implemented by this JavaClass.:::_interfaces->getInterfaceNames->classes->new->JavaClassArr->for->i->return
 JavaClass#getAllInterfaces():::Get all interfaces implemented by this JavaClass (transitively).:::queue->new->ClassQueue->allInterfaces->new->TreeSet<>->queue->enqueue->while->queue->empty->clazz->queue->dequeue->souper->clazz->getSuperClass->_interfaces->clazz->getInterfaces->if->clazz->isInterface->allInterfaces->add->else->if->queue->enqueue->foreach->queue->enqueue->return->allInterfaces->allInterfaces->size->new->JavaClassArr->toArray
+JavaClass#getComparator()::: java class get comparator:::return
+JavaClass#setComparator(BCELComparator)::: java class set comparator:::
 JavaClass#equals(Object):::Return value as defined by given BCELComparator strategy:::return->bcelComparator->equals
 JavaClass#compareTo(JavaClass):::Return the natural ordering of two JavaClasses:::return->getClassName->obj->getClassName->compareTo
 JavaClass#hashCode():::Return value as defined by given BCELComparator strategy:::return->bcelComparator->hashCode
 LineNumber#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitLineNumber
 LineNumber#dump(DataOutputStream):::Dump line number/pc pair to file stream in binary format.:::file->writeShort->file->writeShort
+LineNumber#getLineNumber()::: line number get line number:::return
+LineNumber#getStartPC()::: line number get start c:::return
+LineNumber#setLineNumber(int)::: line number set line number:::
+LineNumber#setStartPC(int)::: line number set start c:::
+LineNumber#toString()::: line number to string:::return
+LineNumber#copy()::: line number copy:::try->return->clone->catch->finally->return
 LineNumberTable#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitLineNumberTable
 LineNumberTable#dump(DataOutputStream):::Dump line number table attribute to file stream in binary format.:::super->dump->file->writeShort->foreach->lineNumber->dump
+LineNumberTable#getLineNumberTable()::: line number table get line number table:::return
+LineNumberTable#setLineNumberTable(LineNumber[])::: line number table set line number table:::
+LineNumberTable#toString()::: line number table to string:::buf->new->StringBuilder->line->new->StringBuilder->for->i->buf->append->return->buf->toString
 LineNumberTable#getSourceLine(int):::Map byte code positions to source code lines.:::l->r->if->return->min_index->min->do->i->j->getStartPC->if->return->getLineNumber->else->if->else->if->while->if->return->return->getLineNumber
+LineNumberTable#copy(ConstantPool)::: line number table copy:::c->clone->new->LineNumberArr->for->i->c->setConstantPool->return
+LineNumberTable#getTableLength()::: line number table get table length:::return
 LocalVariable#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitLocalVariable
 LocalVariable#dump(DataOutputStream):::Dump local variable to file stream in binary format.:::file->writeShort->file->writeShort->file->writeShort->file->writeShort->file->writeShort
+LocalVariable#getConstantPool()::: local variable get constant pool:::return
+LocalVariable#getLength()::: local variable get length:::return
+LocalVariable#getName()::: local variable get name:::c->constant_pool->getConstant->return->c->getBytes
+LocalVariable#getNameIndex()::: local variable get name index:::return
+LocalVariable#getSignature()::: local variable get signature:::c->constant_pool->getConstant->return->c->getBytes
+LocalVariable#getSignatureIndex()::: local variable get signature index:::return
+LocalVariable#getIndex()::: local variable get index:::return
+LocalVariable#getOrigIndex()::: local variable get orig index:::return
+LocalVariable#getStartPC()::: local variable get start c:::return
+LocalVariable#toStringShared(boolean)::: local variable to string shared:::name->getName->signature->Utility->getSignature->signatureToString->label->return
+LocalVariable#setConstantPool(ConstantPool)::: local variable set constant pool:::
+LocalVariable#setLength(int)::: local variable set length:::
+LocalVariable#setNameIndex(int)::: local variable set name index:::
+LocalVariable#setSignatureIndex(int)::: local variable set signature index:::
+LocalVariable#setIndex(int)::: local variable set index:::
+LocalVariable#setStartPC(int)::: local variable set start c:::
+LocalVariable#toString()::: local variable to string:::return->toStringShared
+LocalVariable#copy()::: local variable copy:::try->return->clone->catch->finally->return
 LocalVariableTable#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitLocalVariableTable
 LocalVariableTable#dump(DataOutputStream):::Dump local variable table attribute to file stream in binary format.:::super->dump->file->writeShort->foreach->variable->dump
+LocalVariableTable#getLocalVariableTable()::: local variable table get local variable table:::return
+LocalVariableTable#getLocalVariable(int)::: local variable table get local variable:::foreach->if->variable->getIndex->return->return
+LocalVariableTable#getLocalVariable(int, int)::: local variable table get local variable:::foreach->if->variable->getIndex->start_pc->variable->getStartPC->end_pc->variable->getLength->if->return->return
+LocalVariableTable#setLocalVariableTable(LocalVariable[])::: local variable table set local variable table:::
+LocalVariableTable#toString()::: local variable table to string:::buf->new->StringBuilder->for->i->return->buf->toString
+LocalVariableTable#copy(ConstantPool)::: local variable table copy:::c->clone->new->LocalVariableArr->for->i->c->setConstantPool->return
+LocalVariableTable#getTableLength()::: local variable table get table length:::return
+LocalVariableTypeTable#accept(Visitor)::: local variable type table accept:::v->visitLocalVariableTypeTable
+LocalVariableTypeTable#dump(DataOutputStream)::: local variable type table dump:::super->dump->file->writeShort->foreach->variable->dump
+LocalVariableTypeTable#getLocalVariableTypeTable()::: local variable type table get local variable type table:::return
+LocalVariableTypeTable#getLocalVariable(int)::: local variable type table get local variable:::foreach->if->variable->getIndex->return->return
+LocalVariableTypeTable#setLocalVariableTable(LocalVariable[])::: local variable type table set local variable table:::
+LocalVariableTypeTable#toString()::: local variable type table to string:::buf->new->StringBuilder->for->i->return->buf->toString
+LocalVariableTypeTable#copy(ConstantPool)::: local variable type table copy:::c->clone->new->LocalVariableArr->for->i->c->setConstantPool->return
+LocalVariableTypeTable#getTableLength()::: local variable type table get table length:::return
 Method#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitMethod
+Method#getCode()::: method get code:::foreach->super->getAttributes->if->return->return
+Method#getExceptionTable()::: method get exception table:::foreach->super->getAttributes->if->return->return
+Method#getLocalVariableTable()::: method get local variable table:::code->getCode->if->return->return->code->getLocalVariableTable
+Method#getLineNumberTable()::: method get line number table:::code->getCode->if->return->return->code->getLineNumberTable
 Method#toString():::Return string representation close to declaration format, `public static void main(String[] args) throws IOException', e.g.:::access->Utility->super->getAccessFlags->accessToString->c->super->getConstantPool->super->getSignatureIndex->getConstant->signature->c->getBytes->super->getConstantPool->super->getNameIndex->getConstant->name->c->getBytes->Utility->getLocalVariableTable->methodSignatureToString->buf->new->StringBuilder->foreach->super->getAttributes->if->buf->append->append->append->e->getExceptionTable->if->str->e->toString->if->str->isEmpty->buf->append->append->return->buf->toString
+Method#copy(ConstantPool)::: method copy:::return->copy_
+Method#getReturnType()::: method get return type:::return->Type->getSignature->getReturnType
+Method#getArgumentTypes()::: method get argument types:::return->Type->getSignature->getArgumentTypes
+Method#getComparator()::: method get comparator:::return
+Method#setComparator(BCELComparator)::: method set comparator:::
 Method#equals(Object):::Return value as defined by given BCELComparator strategy:::return->bcelComparator->equals
 Method#hashCode():::Return value as defined by given BCELComparator strategy:::return->bcelComparator->hashCode
+Method#getParameterAnnotationEntries()::: method get parameter annotation entries:::if->ParameterAnnotationEntry->getAttributes->createParameterAnnotationEntries->return
+MethodParameter#getNameIndex()::: method parameter get name index:::return
+MethodParameter#setNameIndex(int)::: method parameter set name index:::
 MethodParameter#getParameterName(ConstantPool):::Returns the name of the parameter.:::if->return->return->constant_pool->getConstant->getBytes
+MethodParameter#getAccessFlags()::: method parameter get access flags:::return
+MethodParameter#setAccessFlags(int)::: method parameter set access flags:::
+MethodParameter#isFinal()::: method parameter is final:::return
+MethodParameter#isSynthetic()::: method parameter is synthetic:::return
+MethodParameter#isMandated()::: method parameter is mandated:::return
 MethodParameter#dump(DataOutputStream):::Dump object to file stream on binary format.:::file->writeShort->file->writeShort
+MethodParameter#copy()::: method parameter copy:::try->return->clone->catch->finally->return
+MethodParameters#getParameters()::: method parameters get parameters:::return
+MethodParameters#setParameters(MethodParameter[])::: method parameters set parameters:::
+MethodParameters#accept(Visitor)::: method parameters accept:::v->visitMethodParameters
+MethodParameters#copy(ConstantPool)::: method parameters copy:::c->clone->new->MethodParameterArr->for->i->c->setConstantPool->return
 MethodParameters#dump(DataOutputStream):::Dump method parameters attribute to file stream in binary format.:::super->dump->file->writeByte->foreach->parameter->dump
+Node#accept(Visitor)::: node accept:::
 ParameterAnnotationEntry#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitParameterAnnotationEntry
 ParameterAnnotationEntry#getAnnotationEntries():::returns the array of annotation entries in this annotation:::return
+ParameterAnnotationEntry#dump(DataOutputStream)::: parameter annotation entry dump:::dos->writeShort->foreach->entry->dump
+ParameterAnnotationEntry#createParameterAnnotationEntries(Attribute[])::: parameter annotation entry create parameter annotation entries:::accumulatedAnnotations->new->ArrayList<>->foreach->if->runtimeAnnotations->Collections->runtimeAnnotations->getParameterAnnotationEntries->addAll->return->accumulatedAnnotations->accumulatedAnnotations->size->new->ParameterAnnotationEntryArr->toArray
 ParameterAnnotations#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitParameterAnnotation
+ParameterAnnotations#setParameterAnnotationTable(ParameterAnnotationEntry[])::: parameter annotations set parameter annotation table:::
+ParameterAnnotations#getParameterAnnotationTable()::: parameter annotations get parameter annotation table:::return
 ParameterAnnotations#getParameterAnnotationEntries():::returns the array of parameter annotation entries in this parameter annotation:::return
+ParameterAnnotations#dump(DataOutputStream)::: parameter annotations dump:::super->dump->dos->writeByte->foreach->element->dump
+ParameterAnnotations#copy(ConstantPool)::: parameter annotations copy:::return->clone
 PMGClass#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::println
 PMGClass#dump(DataOutputStream):::Dump source file attribute to file stream in binary format.:::super->dump->file->writeShort->file->writeShort
+PMGClass#getPMGClassIndex()::: class get class index:::return
+PMGClass#setPMGClassIndex(int)::: class set class index:::
+PMGClass#getPMGIndex()::: class get index:::return
+PMGClass#setPMGIndex(int)::: class set index:::
+PMGClass#getPMGName()::: class get name:::c->super->getConstantPool->getConstant->return->c->getBytes
+PMGClass#getPMGClassName()::: class get class name:::c->super->getConstantPool->getConstant->return->c->getBytes
+PMGClass#toString()::: class to string:::return->getPMGName->getPMGClassName
+PMGClass#copy(ConstantPool)::: class copy:::return->clone
+RuntimeInvisibleAnnotations#copy(ConstantPool)::: runtime invisible annotations copy:::return->clone
+RuntimeInvisibleAnnotations#dump(DataOutputStream)::: runtime invisible annotations dump:::super->dump->writeAnnotations
+RuntimeVisibleAnnotations#copy(ConstantPool)::: runtime visible annotations copy:::return->clone
+RuntimeVisibleAnnotations#dump(DataOutputStream)::: runtime visible annotations dump:::super->dump->writeAnnotations
 Signature#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitSignature
 Signature#dump(DataOutputStream):::Dump source file attribute to file stream in binary format.:::super->dump->file->writeShort
+Signature#getSignatureIndex()::: signature get signature index:::return
+Signature#setSignatureIndex(int)::: signature set signature index:::
+Signature#getSignature()::: signature get signature:::c->super->getConstantPool->getConstant->return->c->getBytes
+Signature.MyByteArrayInputStream#getData()::: my byte array input stream get data:::return->new->String
+Signature.MyByteArrayInputStream#unread()::: my byte array input stream unread:::if
+Signature#identStart(int)::: signature ident start:::return
+Signature#matchIdent(MyByteArrayInputStream, StringBuilder)::: signature match ident:::ch->if->in->read->throw->in->getData->new->RuntimeException->if->identStart->buf2->new->StringBuilder->count->while->Character->isJavaIdentifierPart->buf2->append->in->read->if->in->length->skip->buf->append->in->read->in->unread->else->for->i->return->buf2->new->StringBuilder->in->read->do->buf2->append->in->read->while->Character->isJavaIdentifierPart->buf->buf2->toString->replace->append->if->in->unread
+Signature#matchGJIdent(MyByteArrayInputStream, StringBuilder)::: signature match ident:::ch->matchIdent->in->read->if->buf->append->matchGJIdent->while->in->read->if->throw->in->getData->new->RuntimeException->buf->append->in->unread->matchGJIdent->buf->append->else->in->unread->in->read->if->identStart->in->unread->matchGJIdent->else->if->in->unread->return->else->if->throw->in->getData->new->RuntimeException
+Signature#translate(String)::: signature translate:::buf->new->StringBuilder->new->MyByteArrayInputStream->matchGJIdent->return->buf->toString
+Signature#isFormalParameterList(String)::: signature is formal parameter list:::return->s->startsWith->s->indexOf
+Signature#isActualParameterList(String)::: signature is actual parameter list:::return->s->startsWith->s->endsWith
+Signature#toString()::: signature to string:::s->getSignature->return
+Signature#copy(ConstantPool)::: signature copy:::return->clone
+SimpleElementValue#getIndex()::: simple element value get index:::return
+SimpleElementValue#setIndex(int)::: simple element value set index:::
+SimpleElementValue#getValueString()::: simple element value get value string:::if->super->getType->throw->new->RuntimeException->c->super->getConstantPool->getIndex->getConstant->return->c->getBytes
+SimpleElementValue#getValueInt()::: simple element value get value int:::if->super->getType->throw->new->RuntimeException->c->super->getConstantPool->getIndex->getConstant->return->c->getBytes
+SimpleElementValue#getValueByte()::: simple element value get value byte:::if->super->getType->throw->new->RuntimeException->c->super->getConstantPool->getIndex->getConstant->return->c->getBytes
+SimpleElementValue#getValueChar()::: simple element value get value char:::if->super->getType->throw->new->RuntimeException->c->super->getConstantPool->getIndex->getConstant->return->c->getBytes
+SimpleElementValue#getValueLong()::: simple element value get value long:::if->super->getType->throw->new->RuntimeException->j->super->getConstantPool->getIndex->getConstant->return->j->getBytes
+SimpleElementValue#getValueFloat()::: simple element value get value float:::if->super->getType->throw->new->RuntimeException->f->super->getConstantPool->getIndex->getConstant->return->f->getBytes
+SimpleElementValue#getValueDouble()::: simple element value get value double:::if->super->getType->throw->new->RuntimeException->d->super->getConstantPool->getIndex->getConstant->return->d->getBytes
+SimpleElementValue#getValueBoolean()::: simple element value get value boolean:::if->super->getType->throw->new->RuntimeException->bo->super->getConstantPool->getIndex->getConstant->return->bo->getBytes
+SimpleElementValue#getValueShort()::: simple element value get value short:::if->super->getType->throw->new->RuntimeException->s->super->getConstantPool->getIndex->getConstant->return->s->getBytes
+SimpleElementValue#toString()::: simple element value to string:::return->stringifyValue
+SimpleElementValue#stringifyValue()::: simple element value stringify value:::cpool->super->getConstantPool->_type->super->getType->switch->c->cpool->getIndex->getConstant->return->Integer->c->getBytes->toString->j->cpool->getIndex->getConstant->return->Long->j->getBytes->toString->d->cpool->getIndex->getConstant->return->Double->d->getBytes->toString->f->cpool->getIndex->getConstant->return->Float->f->getBytes->toString->s->cpool->getIndex->getConstant->return->Integer->s->getBytes->toString->b->cpool->getIndex->getConstant->return->Integer->b->getBytes->toString->ch->cpool->getIndex->getConstant->return->String->ch->getBytes->valueOf->bo->cpool->getIndex->getConstant->if->bo->getBytes->return->return->cu8->cpool->getIndex->getConstant->return->cu8->getBytes->throw->new->RuntimeException
+SimpleElementValue#dump(DataOutputStream)::: simple element value dump:::_type->super->getType->dos->writeByte->switch->dos->getIndex->writeShort->break->throw->new->RuntimeException
 SourceFile#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitSourceFile
 SourceFile#dump(DataOutputStream):::Dump source file attribute to file stream in binary format.:::super->dump->file->writeShort
+SourceFile#getSourceFileIndex()::: source file get source file index:::return
+SourceFile#setSourceFileIndex(int)::: source file set source file index:::
+SourceFile#getSourceFileName()::: source file get source file name:::c->super->getConstantPool->getConstant->return->c->getBytes
+SourceFile#toString()::: source file to string:::return->getSourceFileName
+SourceFile#copy(ConstantPool)::: source file copy:::return->clone
 StackMap#dump(DataOutputStream):::Dump stack map table attribute to file stream in binary format.:::super->dump->file->writeShort->foreach->entry->dump
+StackMap#getStackMap()::: stack map get stack map:::return
+StackMap#setStackMap(StackMapEntry[])::: stack map set stack map:::len->foreach->element->getMapEntrySize->setLength
+StackMap#toString()::: stack map to string:::buf->new->StringBuilder->for->i->buf->append->return->buf->toString
+StackMap#copy(ConstantPool)::: stack map copy:::c->clone->new->StackMapEntryArr->for->i->c->setConstantPool->return
 StackMap#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitStackMap
+StackMap#getMapLength()::: stack map get map length:::return
 StackMapEntry#dump(DataOutputStream):::Dump stack map entry:::file->write->if->else->if->dump->else->if->file->writeShort->dump->else->if->file->writeShort->else->if->file->writeShort->else->if->file->writeShort->foreach->type->dump->else->if->file->writeShort->file->writeShort->foreach->type->dump->file->writeShort->foreach->type->dump->else->throw->new->ClassFormatException
+StackMapEntry#toString()::: stack map entry to string:::buf->new->StringBuilder->buf->append->if->buf->append->else->if->buf->append->else->if->buf->append->else->if->buf->append->String->valueOf->append->else->if->buf->append->else->if->buf->append->String->valueOf->append->else->if->buf->append->else->buf->append->append->append->buf->append->append->if->buf->append->for->i->buf->append->if->buf->append->for->i->buf->append->buf->append->return->buf->toString
 StackMapEntry#getMapEntrySize():::Calculate stack map entry size:::if->return->else->if->return->hasIndex->else->if->return->hasIndex->else->if->return->else->if->return->else->if->len->foreach->types_of_local->hasIndex->return->else->if->len->foreach->types_of_local->hasIndex->foreach->types_of_stack_item->hasIndex->return->else->throw->new->RuntimeException
+StackMapEntry#setFrameType(int)::: stack map entry set frame type:::if->else->if->else->if->else->if->else->if->else->if->else->if->else->throw->new->RuntimeException
+StackMapEntry#getFrameType()::: stack map entry get frame type:::return
+StackMapEntry#setByteCodeOffset(int)::: stack map entry set byte code offset:::if->throw->new->RuntimeException->if->if->else->else->if->if->else->else->if->else->if->else->if->else->if->else->if->else->throw->new->RuntimeException
 StackMapEntry#updateByteCodeOffset(int):::Update the distance (as an offset delta) from this StackMap entry to the next:::setByteCodeOffset
+StackMapEntry#getByteCodeOffset()::: stack map entry get byte code offset:::return
+StackMapEntry#setNumberOfLocals(int)::: stack map entry set number of locals:::
+StackMapEntry#getNumberOfLocals()::: stack map entry get number of locals:::return
+StackMapEntry#setTypesOfLocals(StackMapType[])::: stack map entry set types of locals:::new->StackMapTypeArr
+StackMapEntry#getTypesOfLocals()::: stack map entry get types of locals:::return
+StackMapEntry#setNumberOfStackItems(int)::: stack map entry set number of stack items:::
+StackMapEntry#getNumberOfStackItems()::: stack map entry get number of stack items:::return
+StackMapEntry#setTypesOfStackItems(StackMapType[])::: stack map entry set types of stack items:::new->StackMapTypeArr
+StackMapEntry#getTypesOfStackItems()::: stack map entry get types of stack items:::return
+StackMapEntry#copy()::: stack map entry copy:::e->try->clone->catch->throw->new->Error->finally->new->StackMapTypeArr->for->i->new->StackMapTypeArr->for->i->return
 StackMapEntry#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitStackMapEntry
+StackMapEntry#getConstantPool()::: stack map entry get constant pool:::return
+StackMapEntry#setConstantPool(ConstantPool)::: stack map entry set constant pool:::
+StackMapType#setType(byte)::: stack map type set type:::if->throw->new->RuntimeException
+StackMapType#getType()::: stack map type get type:::return
+StackMapType#setIndex(int)::: stack map type set index:::
+StackMapType#getIndex()::: stack map type get index:::return
 StackMapType#dump(DataOutputStream):::Dump type entries to file.:::file->writeByte->if->hasIndex->file->getIndex->writeShort
+StackMapType#hasIndex()::: stack map type has index:::return
+StackMapType#printIndex()::: stack map type print index:::if->if->return->return->constant_pool->constantToString->else->if->return->else->return
+StackMapType#toString()::: stack map type to string:::return->Const->getItemName->printIndex
+StackMapType#copy()::: stack map type copy:::try->return->clone->catch->finally->return
+StackMapType#getConstantPool()::: stack map type get constant pool:::return
+StackMapType#setConstantPool(ConstantPool)::: stack map type set constant pool:::
 Synthetic#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitSynthetic
 Synthetic#dump(DataOutputStream):::Dump source file attribute to file stream in binary format.:::super->dump->if->super->getLength->file->super->getLength->write
+Synthetic#getBytes()::: synthetic get bytes:::return
+Synthetic#setBytes(byte[])::: synthetic set bytes:::
+Synthetic#toString()::: synthetic to string:::buf->new->StringBuilder->if->super->getLength->buf->append->Utility->toHexString->append->return->buf->toString
+Synthetic#copy(ConstantPool)::: synthetic copy:::c->clone->if->new->byteArr->System->arraycopy->c->setConstantPool->return
+Unknown#getUnknownAttributes()::: unknown get unknown attributes:::unknowns->unknown_attributes->size->new->UnknownArr->unknown_attributes->values->toArray->unknown_attributes->clear->return
 Unknown#accept(Visitor):::Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class:::v->visitUnknown
 Unknown#dump(DataOutputStream):::Dump unknown bytes to file stream.:::super->dump->if->super->getLength->file->super->getLength->write
+Unknown#getBytes()::: unknown get bytes:::return
+Unknown#getName()::: unknown get name:::return
+Unknown#setBytes(byte[])::: unknown set bytes:::
+Unknown#toString()::: unknown to string:::if->super->getLength->return->hex->if->super->getLength->tmp->new->byteArr->System->arraycopy->Utility->toHexString->else->Utility->toHexString->return
+Unknown#copy(ConstantPool)::: unknown copy:::c->clone->if->new->byteArr->System->arraycopy->c->setConstantPool->return
 UnknownAttributeReader#createAttribute(int, int, java.io.DataInput, ConstantPool):::When this attribute reader is added via the static method Attribute.addAttributeReader, an attribute name is associated with it:::
+Utility#unwrap(ThreadLocal)::: utility unwrap:::return->tl->get
+Utility#wrap(ThreadLocal, int)::: utility wrap:::tl->set
 Utility#accessToString(int):::Convert bit field of flags into string such as `static final'.:::return->accessToString
 Utility#accessToString(int, boolean):::Convert bit field of flags into string such as `static final':::buf->new->StringBuilder->p->for->i->return->buf->toString->trim
+Utility#classOrInterface(int)::: utility class or interface:::return
 Utility#codeToString(byte[], ConstantPool, int, int, boolean):::Disassemble a byte array of JVM byte codes starting from code line `index' and return the disassembled string representation:::buf->new->StringBuilder->try->stream->new->ByteSequence->for->i->for->i->stream->available->catch->throw->buf->toString->new->ClassFormatException->finally->return->buf->toString
+Utility#codeToString(byte[], ConstantPool, int, int)::: utility code to string:::return->codeToString
 Utility#codeToString(ByteSequence, ConstantPool, boolean):::Disassemble a stream of byte codes and return the string representation.:::opcode->bytes->readUnsignedByte->default_offset->low->high->npairs->index->vindex->constant->match->jump_table->no_pad_bytes->offset->buf->Const->getOpcodeName->new->StringBuilder->if->remainder->bytes->getIndex->for->i->bytes->readInt->switch->bytes->readInt->bytes->readInt->bytes->getIndex->buf->append->append->append->append->append->append->append->new->intArr->for->i->buf->append->break->bytes->readInt->bytes->getIndex->new->intArr->new->intArr->buf->append->append->append->append->append->for->i->buf->append->break->buf->append->bytes->getIndex->bytes->readShort->append->break->buf->append->bytes->getIndex->bytes->readInt->append->break->if->bytes->readUnsignedShort->else->bytes->readUnsignedByte->buf->append->append->break->buf->append->break->buf->append->Const->bytes->readByte->getTypeName->append->append->break->bytes->readUnsignedShort->buf->append->constant_pool->constantToString->append->append->break->buf->append->bytes->readUnsignedShort->buf->append->constant_pool->constantToString->append->append->append->break->bytes->readUnsignedShort->c->constant_pool->getConstant->buf->append->constant_pool->c->getTag->constantToString->append->append->break->bytes->readUnsignedShort->buf->append->constant_pool->constantToString->append->append->break->bytes->readUnsignedShort->nargs->bytes->readUnsignedByte->buf->append->constant_pool->constantToString->append->append->append->append->bytes->readUnsignedByte->append->break->bytes->readUnsignedShort->buf->append->constant_pool->constantToString->append->append->bytes->readUnsignedByte->append->bytes->readUnsignedByte->append->break->bytes->readUnsignedShort->buf->append->constant_pool->constant_pool->getConstant->getTag->constantToString->append->append->break->bytes->readUnsignedByte->buf->append->constant_pool->constant_pool->getConstant->getTag->constantToString->append->append->break->bytes->readUnsignedShort->buf->append->constant_pool->getConstantString->compactClassName->append->append->append->break->bytes->readUnsignedShort->dimensions->bytes->readUnsignedByte->buf->append->constant_pool->getConstantString->compactClassName->append->append->append->append->break->if->bytes->readUnsignedShort->bytes->readShort->else->bytes->readUnsignedByte->bytes->readByte->buf->append->append->append->append->break->if->Const->getNoOfOperands->for->i->Const->getOperandTypeCount->return->buf->toString
+Utility#codeToString(ByteSequence, ConstantPool)::: utility code to string:::return->codeToString
 Utility#compactClassName(String):::Shorten long class names, java/lang/String becomes String.:::return->compactClassName
 Utility#compactClassName(String, String, boolean):::Shorten long class name str, i.e., chop off the prefix, if the class name starts with this string and the flag chopit is true:::len->prefix->length->str->replace->if->if->str->startsWith->str->substring->indexOf->str->substring->return
 Utility#compactClassName(String, boolean):::Shorten long class names, java/lang/String becomes java.lang.String, e.g.:::return->compactClassName
+Utility#setBit(int, int)::: utility set bit:::return->pow2
+Utility#clearBit(int, int)::: utility clear bit:::bit->pow2->return
+Utility#isSet(int, int)::: utility is set:::return->pow2
 Utility#methodTypeToSignature(String, String[]):::Converts string containing the method return and argument types to a byte code method signature.:::buf->new->StringBuilder->str->if->foreach->getSignature->if->str->endsWith->throw->new->ClassFormatException->buf->append->getSignature->buf->append->append->return->buf->toString
+Utility#methodSignatureArgumentTypes(String)::: utility method signature argument types:::return->methodSignatureArgumentTypes
+Utility#methodSignatureArgumentTypes(String, boolean)::: utility method signature argument types:::vec->new->ArrayList<>->index->try->if->signature->charAt->throw->new->ClassFormatException->while->signature->charAt->vec->signature->substring->signatureToString->add->unwrap->catch->throw->new->ClassFormatException->finally->return->vec->vec->size->new->StringArr->toArray
+Utility#methodSignatureReturnType(String)::: utility method signature return type:::return->methodSignatureReturnType
+Utility#methodSignatureReturnType(String, boolean)::: utility method signature return type:::index->type->try->signature->lastIndexOf->signature->substring->signatureToString->catch->throw->new->ClassFormatException->finally->return
 Utility#methodSignatureToString(String, String, String):::Converts method signature to string with all class names compacted.:::return->methodSignatureToString
+Utility#methodSignatureToString(String, String, String, boolean)::: utility method signature to string:::return->methodSignatureToString
 Utility#methodSignatureToString(String, String, String, boolean, LocalVariableTable):::A returntype signature represents the return value from a method:::buf->new->StringBuilder->type->index->var_index->access->contains->try->if->signature->charAt->throw->new->ClassFormatException->while->signature->charAt->param_type->signature->substring->signatureToString->buf->append->if->l->vars->getLocalVariable->if->buf->append->l->getName->append->else->buf->append->append->if->equals->equals->else->buf->append->unwrap->signature->substring->signatureToString->catch->throw->new->ClassFormatException->finally->if->buf->length->buf->buf->length->setLength->buf->append->return->access->length->buf->toString
+Utility#pow2(int)::: utility pow2:::return
 Utility#replace(String, String, String):::Replace all occurrences of old in str with new.:::index->old_index->try->if->str->contains->buf->new->StringBuilder->while->str->indexOf->buf->str->substring->append->buf->append->old->length->buf->str->substring->append->buf->toString->catch->println->finally->return
 Utility#signatureToString(String):::Converts signature to string with all class names compacted.:::return->signatureToString
 Utility#signatureToString(String, boolean):::The field signature represents the value of an argument to a function or the value of a variable:::wrap->try->switch->signature->charAt->return->return->return->return->return->return->index->signature->indexOf->if->throw->new->ClassFormatException->wrap->return->signature->substring->compactClassName->fromIndex->signature->indexOf->if->else->signature->indexOf->if->throw->new->ClassFormatException->index->signature->indexOf->if->throw->new->ClassFormatException->bracketIndex->signature->substring->indexOf->if->wrap->return->signature->substring->compactClassName->signature->indexOf->if->throw->new->ClassFormatException->if->wrap->return->signature->substring->compactClassName->type->signature->substring->compactClassName->new->StringBuilder->append->consumed_chars->if->signature->charAt->type->append->else->if->signature->charAt->type->append->if->signature->charAt->type->append->else->type->signature->substring->signatureToString->append->unwrap->wrap->while->signature->charAt->type->append->if->signature->charAt->type->append->else->if->signature->charAt->type->append->if->signature->charAt->type->append->else->type->signature->substring->signatureToString->append->unwrap->wrap->type->append->if->signature->charAt->type->append->type->signature->substring->signatureToString->append->unwrap->wrap->return->type->toString->if->signature->charAt->throw->new->ClassFormatException->wrap->return->type->toString->return->return->n->brackets->type->consumed_chars->new->StringBuilder->for->signature->charAt->signature->substring->signatureToString->_temp->unwrap->wrap->return->brackets->toString->return->throw->new->ClassFormatException->catch->throw->new->ClassFormatException->finally
 Utility#getSignature(String):::Parse Java type such as "char", or "java.lang.String[]" and return the signature in byte code format, e.g:::buf->new->StringBuilder->chars->type->toCharArray->char_found->delim->index->for->i->brackets->if->type->substring->countBrackets->buf->toString->buf->setLength->for->i->found->for->i->if->buf->append->type->replace->append->append->return->buf->toString
+Utility#countBrackets(String)::: utility count brackets:::chars->brackets->toCharArray->count->open->foreach->switch->if->throw->new->RuntimeException->break->if->throw->new->RuntimeException->break->break->if->throw->new->RuntimeException->return
 Utility#typeOfMethodSignature(String):::Return type of method signature as a byte value as defined in Constants:::index->try->if->signature->charAt->throw->new->ClassFormatException->signature->lastIndexOf->return->signature->substring->typeOfSignature->catch->throw->new->ClassFormatException->finally
 Utility#typeOfSignature(String):::Return type of signature as a byte value as defined in Constants:::try->switch->signature->charAt->return->return->return->return->return->return->return->return->return->return->return->return->signature->substring->typeOfSignature->throw->new->ClassFormatException->catch->throw->new->ClassFormatException->finally
 Utility#searchOpcode(String):::Map opcode names to opcode numbers:::name->toLowerCase->for->i->return
+Utility#byteToShort(byte):::Convert (signed) byte to (unsigned) short value, i.e., all negative values become positive.:::return
 Utility#toHexString(byte[]):::Convert bytes into hexadecimal string:::buf->new->StringBuilder->for->i->return->buf->toString
 Utility#format(int, int, boolean, char):::Return a string for an integer justified left or right and filled up with `fill' characters if necessary.:::return->Integer->toString->fillup
 Utility#fillup(String, int, boolean, char):::Fillup char with up to length characters with char `fill' and justify it left or right.:::len->str->length->buf->new->charArr->for->j->if->return->new->String->return->new->String
+Utility#equals(byte[], byte[])::: utility equals:::size->if->return->for->i->return
+Utility#printArray(PrintStream, Object[])::: utility print array:::out->printArray->println
+Utility#printArray(PrintWriter, Object[])::: utility print array:::out->printArray->println
+Utility#printArray(Object[])::: utility print array:::return->printArray
+Utility#printArray(Object[], boolean)::: utility print array:::return->printArray
+Utility#printArray(Object[], boolean, boolean)::: utility print array:::if->return->buf->new->StringBuilder->if->buf->append->for->i->if->buf->append->return->buf->toString
+Utility#isJavaIdentifierPart(char)::: utility is java identifier part:::return
 Utility#encode(byte[], boolean):::Encode byte array it into Java identifier string, i.e., a string that only contains the following characters: (a, ..:::if->try->baos->new->ByteArrayOutputStream->gos->new->GZIPOutputStream->gos->write->baos->toByteArray->catch->finally->caw->new->CharArrayWriter->try->jw->new->JavaWriter->foreach->in->jw->write->catch->finally->return->caw->toString
 Utility#decode(String, boolean):::Decode a string back to a byte array.:::bytes->try->jr->s->toCharArray->new->CharArrayReader->new->JavaReader->bos->new->ByteArrayOutputStream->ch->while->jr->read->bos->write->bos->toByteArray->catch->finally->if->gis->new->ByteArrayInputStream->new->GZIPInputStream->tmp->new->byteArr->count->b->while->gis->read->new->byteArr->System->arraycopy->return
+Utility.JavaReader#read()::: java reader read:::b->in->read->if->return->i->in->read->if->return->if->j->in->read->if->return->tmp->s->Integer->new->String->parseInt->return->return
+Utility.JavaReader#read(char[], int, int)::: java reader read:::for->i->return
+Utility.JavaWriter#write(int)::: java writer write:::if->isJavaIdentifierPart->out->write->else->out->write->if->out->write->else->tmp->Integer->toHexString->toCharArray->if->out->write->out->write->else->out->write->out->write
+Utility.JavaWriter#write(char[], int, int)::: java writer write:::for->i
+Utility.JavaWriter#write(String, int, int)::: java writer write:::str->toCharArray->write
 Utility#convertString(String):::Escape all occurences of newline chars '\n', quotes \", etc.:::ch->label->toCharArray->buf->new->StringBuilder->foreach->switch->buf->append->break->buf->append->break->buf->append->break->buf->append->break->buf->append->break->buf->append->break->return->buf->toString
+Visitor#visitCode(Code)::: visitor visit code:::
+Visitor#visitCodeException(CodeException)::: visitor visit code exception:::
+Visitor#visitConstantClass(ConstantClass)::: visitor visit constant class:::
+Visitor#visitConstantDouble(ConstantDouble)::: visitor visit constant double:::
+Visitor#visitConstantFieldref(ConstantFieldref)::: visitor visit constant fieldref:::
+Visitor#visitConstantFloat(ConstantFloat)::: visitor visit constant float:::
+Visitor#visitConstantInteger(ConstantInteger)::: visitor visit constant integer:::
+Visitor#visitConstantInterfaceMethodref(ConstantInterfaceMethodref)::: visitor visit constant interface methodref:::
+Visitor#visitConstantInvokeDynamic(ConstantInvokeDynamic)::: visitor visit constant invoke dynamic:::
+Visitor#visitConstantLong(ConstantLong)::: visitor visit constant long:::
+Visitor#visitConstantMethodref(ConstantMethodref)::: visitor visit constant methodref:::
+Visitor#visitConstantNameAndType(ConstantNameAndType)::: visitor visit constant name and type:::
+Visitor#visitConstantPool(ConstantPool)::: visitor visit constant pool:::
+Visitor#visitConstantString(ConstantString)::: visitor visit constant string:::
+Visitor#visitConstantUtf8(ConstantUtf8)::: visitor visit constant utf8:::
+Visitor#visitConstantValue(ConstantValue)::: visitor visit constant value:::
+Visitor#visitDeprecated(Deprecated)::: visitor visit deprecated:::
+Visitor#visitExceptionTable(ExceptionTable)::: visitor visit exception table:::
+Visitor#visitField(Field)::: visitor visit field:::
+Visitor#visitInnerClass(InnerClass)::: visitor visit inner class:::
+Visitor#visitInnerClasses(InnerClasses)::: visitor visit inner classes:::
+Visitor#visitJavaClass(JavaClass)::: visitor visit java class:::
+Visitor#visitLineNumber(LineNumber)::: visitor visit line number:::
+Visitor#visitLineNumberTable(LineNumberTable)::: visitor visit line number table:::
+Visitor#visitLocalVariable(LocalVariable)::: visitor visit local variable:::
+Visitor#visitLocalVariableTable(LocalVariableTable)::: visitor visit local variable table:::
+Visitor#visitMethod(Method)::: visitor visit method:::
+Visitor#visitSignature(Signature)::: visitor visit signature:::
+Visitor#visitSourceFile(SourceFile)::: visitor visit source file:::
+Visitor#visitSynthetic(Synthetic)::: visitor visit synthetic:::
+Visitor#visitUnknown(Unknown)::: visitor visit unknown:::
+Visitor#visitStackMap(StackMap)::: visitor visit stack map:::
+Visitor#visitStackMapEntry(StackMapEntry)::: visitor visit stack map entry:::
+Visitor#visitAnnotation(Annotations)::: visitor visit annotation:::
+Visitor#visitParameterAnnotation(ParameterAnnotations)::: visitor visit parameter annotation:::
+Visitor#visitAnnotationEntry(AnnotationEntry)::: visitor visit annotation entry:::
+Visitor#visitAnnotationDefault(AnnotationDefault)::: visitor visit annotation default:::
+Visitor#visitLocalVariableTypeTable(LocalVariableTypeTable)::: visitor visit local variable type table:::
+Visitor#visitEnclosingMethod(EnclosingMethod)::: visitor visit enclosing method:::
+Visitor#visitBootstrapMethods(BootstrapMethods)::: visitor visit bootstrap methods:::
+Visitor#visitMethodParameters(MethodParameters)::: visitor visit method parameters:::
+Visitor#visitConstantMethodType(ConstantMethodType)::: visitor visit constant method type:::
+Visitor#visitConstantMethodHandle(ConstantMethodHandle)::: visitor visit constant method handle:::
+Visitor#visitParameterAnnotationEntry(ParameterAnnotationEntry)::: visitor visit parameter annotation entry:::
+Visitor#visitConstantPackage(ConstantPackage)::: visitor visit constant package:::
+Visitor#visitConstantModule(ConstantModule)::: visitor visit constant module:::
+Visitor#visitConstantDynamic(ConstantDynamic)::: visitor visit constant dynamic:::

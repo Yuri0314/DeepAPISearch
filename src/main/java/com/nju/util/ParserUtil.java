@@ -46,6 +46,20 @@ public class ParserUtil {
     }
 
     /**
+     * 根据类名和方法名为没有文档描述的方法生成方法描述
+     * @param className
+     * @param methodName
+     * @return
+     */
+    public static String generateDescriptionFromMethod(String className, String methodName) {
+        StringBuffer sBuf = new StringBuffer();
+        String regex = "([A-Z])+";
+        sBuf.append(className.replaceAll(regex, " $1").toLowerCase() + " ");
+        sBuf.append(methodName.replaceAll(regex, " $1").toLowerCase());
+        return sBuf.toString();
+    }
+
+    /**
      * 去除带有<>的标签
      * @param description
      * @return

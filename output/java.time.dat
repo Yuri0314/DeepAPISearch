@@ -13,6 +13,35 @@ Clock#millis():::Gets the current millisecond instant of the clock:::return->ins
 Clock#instant():::Gets the current instant of the clock:::
 Clock#equals(Object):::Checks if this clock is equal to another clock:::return->super->equals
 Clock#hashCode():::A hash code for this clock:::return->super->hashCode
+Clock.SystemClock#getZone()::: system clock get zone:::return
+Clock.SystemClock#withZone(ZoneId)::: system clock with zone:::if->zone->equals->return->return->new->SystemClock
+Clock.SystemClock#millis()::: system clock millis:::return->System->currentTimeMillis
+Clock.SystemClock#instant()::: system clock instant:::localOffset->adjustment->VM->getNanoTimeAdjustment->if->System->currentTimeMillis->VM->getNanoTimeAdjustment->if->throw->new->InternalError->else->return->Instant->ofEpochSecond
+Clock.SystemClock#equals(Object)::: system clock equals:::if->return->zone->equals->return
+Clock.SystemClock#hashCode()::: system clock hash code:::return->zone->hashCode
+Clock.SystemClock#toString()::: system clock to string:::return
+Clock.SystemClock#readObject(ObjectInputStream)::: system clock read object:::is->defaultReadObject
+Clock.FixedClock#getZone()::: fixed clock get zone:::return
+Clock.FixedClock#withZone(ZoneId)::: fixed clock with zone:::if->zone->equals->return->return->new->FixedClock
+Clock.FixedClock#millis()::: fixed clock millis:::return->instant->toEpochMilli
+Clock.FixedClock#instant()::: fixed clock instant:::return
+Clock.FixedClock#equals(Object)::: fixed clock equals:::if->other->return->instant->equals->zone->equals->return
+Clock.FixedClock#hashCode()::: fixed clock hash code:::return->instant->hashCode->zone->hashCode
+Clock.FixedClock#toString()::: fixed clock to string:::return
+Clock.OffsetClock#getZone()::: offset clock get zone:::return->baseClock->getZone
+Clock.OffsetClock#withZone(ZoneId)::: offset clock with zone:::if->zone->baseClock->getZone->equals->return->return->baseClock->withZone->new->OffsetClock
+Clock.OffsetClock#millis()::: offset clock millis:::return->Math->baseClock->millis->offset->toMillis->addExact
+Clock.OffsetClock#instant()::: offset clock instant:::return->baseClock->instant->plus
+Clock.OffsetClock#equals(Object)::: offset clock equals:::if->other->return->baseClock->equals->offset->equals->return
+Clock.OffsetClock#hashCode()::: offset clock hash code:::return->baseClock->hashCode->offset->hashCode
+Clock.OffsetClock#toString()::: offset clock to string:::return
+Clock.TickClock#getZone()::: tick clock get zone:::return->baseClock->getZone
+Clock.TickClock#withZone(ZoneId)::: tick clock with zone:::if->zone->baseClock->getZone->equals->return->return->baseClock->withZone->new->TickClock
+Clock.TickClock#millis()::: tick clock millis:::millis->baseClock->millis->return->Math->floorMod
+Clock.TickClock#instant()::: tick clock instant:::if->millis->baseClock->millis->return->Instant->Math->floorMod->ofEpochMilli->instant->baseClock->instant->nanos->instant->getNano->adjust->Math->floorMod->return->instant->minusNanos
+Clock.TickClock#equals(Object)::: tick clock equals:::if->other->return->baseClock->equals->return
+Clock.TickClock#hashCode()::: tick clock hash code:::return->baseClock->hashCode
+Clock.TickClock#toString()::: tick clock to string:::return->Duration->ofNanos
 Duration#ofDays(long):::Obtains a Duration representing a number of standard 24 hour days:::return->Math->multiplyExact->create
 Duration#ofHours(long):::Obtains a Duration representing a number of standard hours:::return->Math->multiplyExact->create
 Duration#ofMinutes(long):::Obtains a Duration representing a number of standard minutes:::return->Math->multiplyExact->create
@@ -23,7 +52,12 @@ Duration#ofNanos(long):::Obtains a Duration representing a number of nanoseconds
 Duration#of(long, TemporalUnit):::Obtains a Duration representing an amount in the specified unit:::return->ZERO->plus
 Duration#from(TemporalAmount):::Obtains an instance of Duration from a temporal amount:::Objects->requireNonNull->duration->foreach->amount->getUnits->duration->amount->get->plus->return
 Duration#parse(CharSequence):::Obtains a Duration from a text string such as PnDTnHnMn.nS:::Objects->requireNonNull->matcher->matcher->if->matcher->matches->if->matcher->start->matcher->end->charMatch->negate->matcher->start->matcher->end->charMatch->dayStart->matcher->start->dayEnd->matcher->end->hourStart->matcher->start->hourEnd->matcher->end->minuteStart->matcher->start->minuteEnd->matcher->end->secondStart->matcher->start->secondEnd->matcher->end->fractionStart->matcher->start->fractionEnd->matcher->end->if->daysAsSecs->parseNumber->hoursAsSecs->parseNumber->minsAsSecs->parseNumber->seconds->parseNumber->negativeSecs->text->charAt->nanos->parseFraction->try->return->create->catch->throw->new->DateTimeParseException->initCause->finally->throw->new->DateTimeParseException
+Duration#charMatch(CharSequence, int, int, char)::: duration char match:::return->text->charAt
+Duration#parseNumber(CharSequence, int, int, int, String)::: duration parse number:::if->return->try->val->Long->parseLong->return->Math->multiplyExact->catch->throw->new->DateTimeParseException->initCause->finally
+Duration#parseFraction(CharSequence, int, int, int)::: duration parse fraction:::if->return->try->fraction->Integer->parseInt->for->i->return->catch->throw->new->DateTimeParseException->initCause->finally
+Duration#create(boolean, long, long, long, long, int)::: duration create:::seconds->Math->Math->Math->addExact->addExact->addExact->if->return->ofSeconds->negated->return->ofSeconds
 Duration#between(Temporal, Temporal):::Obtains a Duration representing the duration between two temporal objects:::try->return->startInclusive->until->ofNanos->catch->secs->startInclusive->until->nanos->try->endExclusive->getLong->startInclusive->getLong->if->else->if->catch->finally->return->ofSeconds->finally
+Duration#create(long, int):::Obtains an instance of Duration using seconds and nanoseconds.:::if->return->return->new->Duration
 Duration#get(TemporalUnit):::Gets the value of the requested unit:::if->return->else->if->return->else->throw->new->UnsupportedTemporalTypeException
 Duration#getUnits():::Gets the set of units supported by this duration:::return
 Duration#isZero():::Checks if this duration is zero length:::return
@@ -40,6 +74,7 @@ Duration#plusMinutes(long):::Returns a copy of this duration with the specified 
 Duration#plusSeconds(long):::Returns a copy of this duration with the specified duration in seconds added:::return->plus
 Duration#plusMillis(long):::Returns a copy of this duration with the specified duration in milliseconds added:::return->plus
 Duration#plusNanos(long):::Returns a copy of this duration with the specified duration in nanoseconds added:::return->plus
+Duration#plus(long, long):::Returns a copy of this duration with the specified duration added:::if->return->epochSec->Math->addExact->Math->addExact->nanoAdjustment->return->ofSeconds
 Duration#minus(Duration):::Returns a copy of this duration with the specified duration subtracted:::secsToSubtract->duration->getSeconds->nanosToSubtract->duration->getNano->if->return->plus->plus->return->plus
 Duration#minus(long, TemporalUnit):::Returns a copy of this duration with the specified duration subtracted:::return->plus->plus->plus
 Duration#minusDays(long):::Returns a copy of this duration with the specified duration in standard 24 hour days subtracted:::return->plusDays->plusDays->plusDays
@@ -51,6 +86,8 @@ Duration#minusNanos(long):::Returns a copy of this duration with the specified d
 Duration#multipliedBy(long):::Returns a copy of this duration multiplied by the scalar:::if->return->if->return->return->toBigDecimalSeconds->BigDecimal->valueOf->multiply->create
 Duration#dividedBy(long):::Returns a copy of this duration divided by the specified value:::if->throw->new->ArithmeticException->if->return->return->toBigDecimalSeconds->BigDecimal->valueOf->divide->create
 Duration#dividedBy(Duration):::Returns number of whole times a specified Duration occurs within this Duration:::Objects->requireNonNull->dividendBigD->toBigDecimalSeconds->divisorBigD->divisor->toBigDecimalSeconds->return->dividendBigD->divideToIntegralValue->longValueExact
+Duration#toBigDecimalSeconds():::Converts this duration to the total length in seconds and fractional nanoseconds expressed as a BigDecimal.:::return->BigDecimal->valueOf->BigDecimal->valueOf->add
+Duration#create(BigDecimal):::Creates an instance of Duration from a number of seconds.:::nanos->seconds->movePointRight->toBigIntegerExact->divRem->nanos->divideAndRemainder->if->bitLength->throw->new->ArithmeticException->return->longValue->intValue->ofSeconds
 Duration#negated():::Returns a copy of this duration with the length negated:::return->multipliedBy
 Duration#abs():::Returns a copy of this duration with a positive length:::return->isNegative->negated
 Duration#addTo(Temporal):::Adds this duration to the specified temporal object:::if->temporal->plus->if->temporal->plus->return
@@ -72,6 +109,10 @@ Duration#compareTo(Duration):::Compares this duration to the specified Duration:
 Duration#equals(Object):::Checks if this duration is equal to the specified Duration:::if->return->if->other->return->return
 Duration#hashCode():::A hash code for this duration.:::return
 Duration#toString():::A string representation of this duration using ISO-8601 seconds based representation, such as PT8H6M12.345S:::if->return->effectiveTotalSecs->if->hours->minutes->secs->buf->new->StringBuilder->buf->append->if->buf->append->append->if->buf->append->append->if->buf->length->return->buf->toString->if->if->buf->append->else->buf->append->else->buf->append->if->pos->buf->length->if->buf->append->else->buf->append->while->buf->buf->length->charAt->buf->buf->length->setLength->buf->setCharAt->buf->append->return->buf->toString
+Duration#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+Duration#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+Duration#writeExternal(DataOutput)::: duration write external:::out->writeLong->out->writeInt
+Duration#readExternal(DataInput)::: duration read external:::seconds->in->readLong->nanos->in->readInt->return->Duration->ofSeconds
 Instant#now():::Obtains the current instant from the system clock:::return->Clock->systemUTC->instant
 Instant#now(Clock):::Obtains the current instant from the specified clock:::Objects->requireNonNull->return->clock->instant
 Instant#ofEpochSecond(long):::Obtains an instance of Instant using seconds from the epoch of 1970-01-01T00:00:00Z:::return->create
@@ -79,6 +120,7 @@ Instant#ofEpochSecond(long, long):::Obtains an instance of Instant using seconds
 Instant#ofEpochMilli(long):::Obtains an instance of Instant using milliseconds from the epoch of 1970-01-01T00:00:00Z:::secs->Math->floorDiv->mos->Math->floorMod->return->create
 Instant#from(TemporalAccessor):::Obtains an instance of Instant from a temporal object:::if->return->Objects->requireNonNull->try->instantSecs->temporal->getLong->nanoOfSecond->temporal->get->return->Instant->ofEpochSecond->catch->throw->temporal->getClass->getName->new->DateTimeException->finally
 Instant#parse(CharSequence):::Obtains an instance of Instant from a text string such as 2007-12-03T10:15:30.00Z:::return->Instant->from->parse
+Instant#create(long, int):::Obtains an instance of Instant using seconds and nanoseconds.:::if->return->if->throw->new->DateTimeException->return->new->Instant
 Instant#isSupported(TemporalField):::Checks if the specified field is supported:::if->return->return->field->isSupportedBy
 Instant#isSupported(TemporalUnit):::Checks if the specified unit is supported:::if->return->unit->isTimeBased->return->unit->isSupportedBy
 Instant#range(TemporalField):::Gets the range of valid values for the specified field:::return->Temporal.super->range
@@ -94,6 +136,7 @@ Instant#plus(long, TemporalUnit):::Returns a copy of this instant with the speci
 Instant#plusSeconds(long):::Returns a copy of this instant with the specified duration in seconds added:::return->plus
 Instant#plusMillis(long):::Returns a copy of this instant with the specified duration in milliseconds added:::return->plus
 Instant#plusNanos(long):::Returns a copy of this instant with the specified duration in nanoseconds added:::return->plus
+Instant#plus(long, long):::Returns a copy of this instant with the specified duration added:::if->return->epochSec->Math->addExact->Math->addExact->nanoAdjustment->return->ofEpochSecond
 Instant#minus(TemporalAmount):::Returns a copy of this instant with the specified amount subtracted:::return->amountToSubtract->subtractFrom
 Instant#minus(long, TemporalUnit):::Returns a copy of this instant with the specified amount subtracted:::return->plus->plus->plus
 Instant#minusSeconds(long):::Returns a copy of this instant with the specified duration in seconds subtracted:::if->return->plusSeconds->plusSeconds->return->plusSeconds
@@ -102,6 +145,8 @@ Instant#minusNanos(long):::Returns a copy of this instant with the specified dur
 Instant#query(TemporalQuery):::Queries this instant using the specified query:::if->TemporalQueries->precision->return->if->TemporalQueries->chronology->TemporalQueries->zoneId->TemporalQueries->zone->TemporalQueries->offset->TemporalQueries->localDate->TemporalQueries->localTime->return->return->query->queryFrom
 Instant#adjustInto(Temporal):::Adjusts the specified temporal object to have this instant:::return->temporal->with->with
 Instant#until(Temporal, TemporalUnit):::Calculates the amount of time until another instant in terms of the specified unit:::end->Instant->from->if->f->switch->return->nanosUntil->return->nanosUntil->return->Math->end->toEpochMilli->toEpochMilli->subtractExact->return->secondsUntil->return->secondsUntil->return->secondsUntil->return->secondsUntil->return->secondsUntil->throw->new->UnsupportedTemporalTypeException->return->unit->between
+Instant#nanosUntil(Instant)::: instant nanos until:::secsDiff->Math->subtractExact->totalNanos->Math->multiplyExact->return->Math->addExact
+Instant#secondsUntil(Instant)::: instant seconds until:::secsDiff->Math->subtractExact->nanosDiff->if->else->if->return
 Instant#atOffset(ZoneOffset):::Combines this instant with an offset to create an OffsetDateTime:::return->OffsetDateTime->ofInstant
 Instant#atZone(ZoneId):::Combines this instant with a time-zone to create a ZonedDateTime:::return->ZonedDateTime->ofInstant
 Instant#toEpochMilli():::Converts this instant to the number of milliseconds from the epoch of 1970-01-01T00:00:00Z:::if->millis->Math->multiplyExact->adjustment->return->Math->addExact->else->millis->Math->multiplyExact->return->Math->addExact
@@ -111,6 +156,10 @@ Instant#isBefore(Instant):::Checks if this instant is before the specified insta
 Instant#equals(Object):::Checks if this instant is equal to the specified instant:::if->return->if->other->return->return
 Instant#hashCode():::Returns a hash code for this instant.:::return
 Instant#toString():::A string representation of this instant using ISO-8601 representation:::return->format
+Instant#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+Instant#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+Instant#writeExternal(DataOutput)::: instant write external:::out->writeLong->out->writeInt
+Instant#readExternal(DataInput)::: instant read external:::seconds->in->readLong->nanos->in->readInt->return->Instant->ofEpochSecond
 LocalDate#now():::Obtains the current date from the system clock in the default time-zone:::return->Clock->systemDefaultZone->now
 LocalDate#now(ZoneId):::Obtains the current date from the system clock in the specified time-zone:::return->Clock->system->now
 LocalDate#now(Clock):::Obtains the current date from the specified clock:::Objects->requireNonNull->now->clock->instant->return->clock->getZone->ofInstant
@@ -122,11 +171,15 @@ LocalDate#ofEpochDay(long):::Obtains an instance of LocalDate from the epoch day
 LocalDate#from(TemporalAccessor):::Obtains an instance of LocalDate from a temporal object:::Objects->requireNonNull->date->temporal->TemporalQueries->localDate->query->if->throw->temporal->getClass->getName->new->DateTimeException->return
 LocalDate#parse(CharSequence):::Obtains an instance of LocalDate from a text string such as 2007-12-03:::return->parse
 LocalDate#parse(CharSequence, DateTimeFormatter):::Obtains an instance of LocalDate from a text string using a specific formatter:::Objects->requireNonNull->return->formatter->LocalDate->from->parse
+LocalDate#create(int, int, int):::Creates a local date from the year, month and day fields.:::if->dom->switch->isLeapYear->break->break->if->if->throw->new->DateTimeException->else->throw->Month->of->name->new->DateTimeException->return->new->LocalDate
+LocalDate#resolvePreviousValid(int, int, int):::Resolves the date, resolving days past the end of month.:::switch->Math->isLeapYear->min->break->Math->min->break->return->new->LocalDate
 LocalDate#isSupported(TemporalField):::Checks if the specified field is supported:::return->ChronoLocalDate.super->isSupported
 LocalDate#isSupported(TemporalUnit):::Checks if the specified unit is supported:::return->ChronoLocalDate.super->isSupported
 LocalDate#range(TemporalField):::Gets the range of valid values for the specified field:::if->f->if->f->isDateBased->switch->return->ValueRange->lengthOfMonth->of->return->ValueRange->lengthOfYear->of->return->ValueRange->getMonth->isLeapYear->of->return->getYear->ValueRange->of->ValueRange->of->return->field->range->throw->new->UnsupportedTemporalTypeException->return->field->rangeRefinedBy
 LocalDate#get(TemporalField):::Gets the value of the specified field from this date as an int:::if->return->get0->return->ChronoLocalDate.super->get
 LocalDate#getLong(TemporalField):::Gets the value of the specified field from this date as a long:::if->if->return->toEpochDay->if->return->getProlepticMonth->return->get0->return->field->getFrom
+LocalDate#get0(TemporalField)::: local date get0:::switch->return->getDayOfWeek->getValue->return->return->getDayOfYear->return->return->getDayOfYear->throw->new->UnsupportedTemporalTypeException->return->return->getDayOfYear->return->throw->new->UnsupportedTemporalTypeException->return->return->return->throw->new->UnsupportedTemporalTypeException
+LocalDate#getProlepticMonth()::: local date get proleptic month:::return
 LocalDate#getChronology():::Gets the chronology of this date, which is the ISO calendar system:::return
 LocalDate#getEra():::Gets the era applicable at this date:::return->getYear
 LocalDate#getYear():::Gets the year field:::return
@@ -159,6 +212,8 @@ LocalDate#minusDays(long):::Returns a copy of this LocalDate with the specified 
 LocalDate#query(TemporalQuery):::Queries this date using the specified query:::if->TemporalQueries->localDate->return->return->ChronoLocalDate.super->query
 LocalDate#adjustInto(Temporal):::Adjusts the specified temporal object to have the same date as this object:::return->ChronoLocalDate.super->adjustInto
 LocalDate#until(Temporal, TemporalUnit):::Calculates the amount of time until another date in terms of the specified unit:::end->LocalDate->from->if->switch->return->daysUntil->return->daysUntil->return->monthsUntil->return->monthsUntil->return->monthsUntil->return->monthsUntil->return->monthsUntil->return->end->getLong->getLong->throw->new->UnsupportedTemporalTypeException->return->unit->between
+LocalDate#daysUntil(LocalDate)::: local date days until:::return->end->toEpochDay->toEpochDay
+LocalDate#monthsUntil(LocalDate)::: local date months until:::packed1->getProlepticMonth->getDayOfMonth->packed2->end->getProlepticMonth->end->getDayOfMonth->return
 LocalDate#until(ChronoLocalDate):::Calculates the period between this date and another date as a Period:::end->LocalDate->from->totalMonths->end->getProlepticMonth->this->getProlepticMonth->days->if->calcDate->this->plusMonths->end->toEpochDay->calcDate->toEpochDay->else->if->end->lengthOfMonth->years->months->return->Period->Math->toIntExact->of
 LocalDate#datesUntil(LocalDate):::Returns a sequential ordered stream of dates:::end->endExclusive->toEpochDay->start->toEpochDay->if->throw->new->IllegalArgumentException->return->LongStream->range->LocalDate->ofEpochDay->mapToObj
 LocalDate#datesUntil(LocalDate, Period):::Returns a sequential ordered stream of dates by given incremental step:::if->step->isZero->throw->new->IllegalArgumentException->end->endExclusive->toEpochDay->start->toEpochDay->until->months->step->toTotalMonths->days->step->getDays->if->throw->new->IllegalArgumentException->if->return->Stream->empty->sign->if->throw->new->IllegalArgumentException->if->steps->return->LongStream->rangeClosed->LocalDate->ofEpochDay->mapToObj->steps->addMonths->addDays->maxAddMonths->MAX->getProlepticMonth->getProlepticMonth->getProlepticMonth->MIN->getProlepticMonth->if->plusMonths->toEpochDay->if->plusMonths->toEpochDay->return->LongStream->rangeClosed->this->plusMonths->plusDays->mapToObj
@@ -170,14 +225,20 @@ LocalDate#atTime(int, int, int, int):::Combines this date with a time to create 
 LocalDate#atTime(OffsetTime):::Combines this date with an offset time to create an OffsetDateTime:::return->OffsetDateTime->LocalDateTime->time->toLocalTime->of->time->getOffset->of
 LocalDate#atStartOfDay():::Combines this date with the time of midnight to create a LocalDateTime at the start of this date:::return->LocalDateTime->of
 LocalDate#atStartOfDay(ZoneId):::Returns a zoned date-time from this date at the earliest valid time according to the rules in the time-zone:::Objects->requireNonNull->ldt->atTime->if->rules->zone->getRules->trans->rules->getTransition->if->trans->isGap->trans->getDateTimeAfter->return->ZonedDateTime->of
+LocalDate#toEpochDay()::: local date to epoch day:::y->m->total->if->else->if->if->isLeapYear->return
 LocalDate#toEpochSecond(LocalTime, ZoneOffset):::Converts this LocalDate to the number of seconds since the epoch of 1970-01-01T00:00:00Z:::Objects->requireNonNull->Objects->requireNonNull->secs->toEpochDay->time->toSecondOfDay->offset->getTotalSeconds->return
 LocalDate#compareTo(ChronoLocalDate):::Compares this date to another date:::if->return->compareTo0->return->ChronoLocalDate.super->compareTo
+LocalDate#compareTo0(LocalDate)::: local date compare to0:::cmp->if->if->return
 LocalDate#isAfter(ChronoLocalDate):::Checks if this date is after the specified date:::if->return->compareTo0->return->ChronoLocalDate.super->isAfter
 LocalDate#isBefore(ChronoLocalDate):::Checks if this date is before the specified date:::if->return->compareTo0->return->ChronoLocalDate.super->isBefore
 LocalDate#isEqual(ChronoLocalDate):::Checks if this date is equal to the specified date:::if->return->compareTo0->return->ChronoLocalDate.super->isEqual
 LocalDate#equals(Object):::Checks if this date is equal to another date:::if->return->if->return->compareTo0->return
 LocalDate#hashCode():::A hash code for this date.:::yearValue->monthValue->dayValue->return
 LocalDate#toString():::Outputs this date as a String, such as 2007-12-03:::yearValue->monthValue->dayValue->absYear->Math->abs->buf->new->StringBuilder->if->if->buf->append->deleteCharAt->else->buf->append->deleteCharAt->else->if->buf->append->buf->append->return->buf->append->append->append->append->toString
+LocalDate#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+LocalDate#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+LocalDate#writeExternal(DataOutput)::: local date write external:::out->writeInt->out->writeByte->out->writeByte
+LocalDate#readExternal(DataInput)::: local date read external:::year->in->readInt->month->in->readByte->dayOfMonth->in->readByte->return->LocalDate->of
 LocalDateTime#now():::Obtains the current date-time from the system clock in the default time-zone:::return->Clock->systemDefaultZone->now
 LocalDateTime#now(ZoneId):::Obtains the current date-time from the system clock in the specified time-zone:::return->Clock->system->now
 LocalDateTime#now(Clock):::Obtains the current date-time from the specified clock:::Objects->requireNonNull->now->clock->instant->offset->clock->getZone->getRules->getOffset->return->now->getEpochSecond->now->getNano->ofEpochSecond
@@ -193,6 +254,7 @@ LocalDateTime#ofEpochSecond(long, int, ZoneOffset):::Obtains an instance of Loca
 LocalDateTime#from(TemporalAccessor):::Obtains an instance of LocalDateTime from a temporal object:::if->return->else->if->return->toLocalDateTime->else->if->return->toLocalDateTime->try->date->LocalDate->from->time->LocalTime->from->return->new->LocalDateTime->catch->throw->temporal->getClass->getName->new->DateTimeException->finally
 LocalDateTime#parse(CharSequence):::Obtains an instance of LocalDateTime from a text string such as 2007-12-03T10:15:30:::return->parse
 LocalDateTime#parse(CharSequence, DateTimeFormatter):::Obtains an instance of LocalDateTime from a text string using a specific formatter:::Objects->requireNonNull->return->formatter->LocalDateTime->from->parse
+LocalDateTime#with(LocalDate, LocalTime):::Returns a copy of this date-time with the new date and time, checking to see if a new object is in fact required.:::if->return->return->new->LocalDateTime
 LocalDateTime#isSupported(TemporalField):::Checks if the specified field is supported:::if->f->return->f->isDateBased->f->isTimeBased->return->field->isSupportedBy
 LocalDateTime#isSupported(TemporalUnit):::Checks if the specified unit is supported:::return->ChronoLocalDateTime.super->isSupported
 LocalDateTime#range(TemporalField):::Gets the range of valid values for the specified field:::if->f->return->f->isTimeBased->time->range->date->range->return->field->rangeRefinedBy
@@ -241,6 +303,7 @@ LocalDateTime#minusHours(long):::Returns a copy of this LocalDateTime with the s
 LocalDateTime#minusMinutes(long):::Returns a copy of this LocalDateTime with the specified number of minutes subtracted:::return->plusWithOverflow
 LocalDateTime#minusSeconds(long):::Returns a copy of this LocalDateTime with the specified number of seconds subtracted:::return->plusWithOverflow
 LocalDateTime#minusNanos(long):::Returns a copy of this LocalDateTime with the specified number of nanoseconds subtracted:::return->plusWithOverflow
+LocalDateTime#plusWithOverflow(LocalDate, long, long, long, long, int):::Returns a copy of this LocalDateTime with the specified period added:::if->return->with->totDays->totNanos->curNoD->time->toNanoOfDay->Math->floorDiv->newNoD->Math->floorMod->newTime->LocalTime->ofNanoOfDay->return->newDate->plusDays->with
 LocalDateTime#query(TemporalQuery):::Queries this date-time using the specified query:::if->TemporalQueries->localDate->return->return->ChronoLocalDateTime.super->query
 LocalDateTime#adjustInto(Temporal):::Adjusts the specified temporal object to have the same date and time as this object:::return->ChronoLocalDateTime.super->adjustInto
 LocalDateTime#until(Temporal, TemporalUnit):::Calculates the amount of time until another date-time in terms of the specified unit:::end->LocalDateTime->from->if->if->unit->isTimeBased->amount->date->daysUntil->if->return->time->until->timePart->toNanoOfDay->time->toNanoOfDay->if->else->switch->Math->multiplyExact->break->Math->multiplyExact->break->Math->multiplyExact->break->Math->multiplyExact->break->Math->multiplyExact->break->Math->multiplyExact->break->Math->multiplyExact->break->return->Math->addExact->endDate->if->endDate->isAfter->isBefore->endDate->minusDays->else->if->endDate->isBefore->isAfter->endDate->plusDays->return->date->until->return->unit->between
@@ -248,12 +311,17 @@ LocalDateTime#format(DateTimeFormatter):::Formats this date-time using the speci
 LocalDateTime#atOffset(ZoneOffset):::Combines this date-time with an offset to create an OffsetDateTime:::return->OffsetDateTime->of
 LocalDateTime#atZone(ZoneId):::Combines this date-time with a time-zone to create a ZonedDateTime:::return->ZonedDateTime->of
 LocalDateTime#compareTo(ChronoLocalDateTime):::Compares this date-time to another date-time:::if->return->compareTo0->return->ChronoLocalDateTime.super->compareTo
+LocalDateTime#compareTo0(LocalDateTime)::: local date time compare to0:::cmp->date->other->toLocalDate->compareTo0->if->time->other->toLocalTime->compareTo->return
 LocalDateTime#isAfter(ChronoLocalDateTime):::Checks if this date-time is after the specified date-time:::if->return->compareTo0->return->ChronoLocalDateTime.super->isAfter
 LocalDateTime#isBefore(ChronoLocalDateTime):::Checks if this date-time is before the specified date-time:::if->return->compareTo0->return->ChronoLocalDateTime.super->isBefore
 LocalDateTime#isEqual(ChronoLocalDateTime):::Checks if this date-time is equal to the specified date-time:::if->return->compareTo0->return->ChronoLocalDateTime.super->isEqual
 LocalDateTime#equals(Object):::Checks if this date-time is equal to another date-time:::if->return->if->other->return->date->equals->time->equals->return
 LocalDateTime#hashCode():::A hash code for this date-time.:::return->date->hashCode->time->hashCode
 LocalDateTime#toString():::Outputs this date-time as a String, such as 2007-12-03T10:15:30:::return->date->toString->time->toString
+LocalDateTime#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+LocalDateTime#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+LocalDateTime#writeExternal(DataOutput)::: local date time write external:::date->writeExternal->time->writeExternal
+LocalDateTime#readExternal(DataInput)::: local date time read external:::date->LocalDate->readExternal->time->LocalTime->readExternal->return->LocalDateTime->of
 LocalTime#now():::Obtains the current time from the system clock in the default time-zone:::return->Clock->systemDefaultZone->now
 LocalTime#now(ZoneId):::Obtains the current time from the system clock in the specified time-zone:::return->Clock->system->now
 LocalTime#now(Clock):::Obtains the current time from the specified clock:::Objects->requireNonNull->now->clock->instant->return->clock->getZone->ofInstant
@@ -266,11 +334,13 @@ LocalTime#ofNanoOfDay(long):::Obtains an instance of LocalTime from a nanos-of-d
 LocalTime#from(TemporalAccessor):::Obtains an instance of LocalTime from a temporal object:::Objects->requireNonNull->time->temporal->TemporalQueries->localTime->query->if->throw->temporal->getClass->getName->new->DateTimeException->return
 LocalTime#parse(CharSequence):::Obtains an instance of LocalTime from a text string such as 10:15:::return->parse
 LocalTime#parse(CharSequence, DateTimeFormatter):::Obtains an instance of LocalTime from a text string using a specific formatter:::Objects->requireNonNull->return->formatter->LocalTime->from->parse
+LocalTime#create(int, int, int, int):::Creates a local time from the hour, minute, second and nanosecond fields:::if->return->return->new->LocalTime
 LocalTime#isSupported(TemporalField):::Checks if the specified field is supported:::if->return->field->isTimeBased->return->field->isSupportedBy
 LocalTime#isSupported(TemporalUnit):::Checks if the specified unit is supported:::if->return->unit->isTimeBased->return->unit->isSupportedBy
 LocalTime#range(TemporalField):::Gets the range of valid values for the specified field:::return->Temporal.super->range
 LocalTime#get(TemporalField):::Gets the value of the specified field from this time as an int:::if->return->get0->return->Temporal.super->get
 LocalTime#getLong(TemporalField):::Gets the value of the specified field from this time as a long:::if->if->return->toNanoOfDay->if->return->toNanoOfDay->return->get0->return->field->getFrom
+LocalTime#get0(TemporalField)::: local time get0:::switch->return->throw->new->UnsupportedTemporalTypeException->return->throw->new->UnsupportedTemporalTypeException->return->return->toNanoOfDay->return->return->toSecondOfDay->return->return->return->ham->return->return->return->return->throw->new->UnsupportedTemporalTypeException
 LocalTime#getHour():::Gets the hour-of-day field.:::return
 LocalTime#getMinute():::Gets the minute-of-hour field.:::return
 LocalTime#getSecond():::Gets the second-of-minute field.:::return
@@ -309,6 +379,10 @@ LocalTime#isBefore(LocalTime):::Checks if this time is before the specified time
 LocalTime#equals(Object):::Checks if this time is equal to another time:::if->return->if->other->return->return
 LocalTime#hashCode():::A hash code for this time.:::nod->toNanoOfDay->return
 LocalTime#toString():::Outputs this time as a String, such as 10:15:::buf->new->StringBuilder->hourValue->minuteValue->secondValue->nanoValue->buf->append->append->append->append->if->buf->append->append->if->buf->append->if->buf->Integer->toString->substring->append->else->if->buf->Integer->toString->substring->append->else->buf->Integer->toString->substring->append->return->buf->toString
+LocalTime#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+LocalTime#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+LocalTime#writeExternal(DataOutput)::: local time write external:::if->if->if->out->writeByte->else->out->writeByte->out->writeByte->else->out->writeByte->out->writeByte->out->writeByte->else->out->writeByte->out->writeByte->out->writeByte->out->writeInt
+LocalTime#readExternal(DataInput)::: local time read external:::hour->in->readByte->minute->second->nano->if->else->in->readByte->if->else->in->readByte->if->else->in->readInt->return->LocalTime->of
 MonthDay#now():::Obtains the current month-day from the system clock in the default time-zone:::return->Clock->systemDefaultZone->now
 MonthDay#now(ZoneId):::Obtains the current month-day from the system clock in the specified time-zone:::return->Clock->system->now
 MonthDay#now(Clock):::Obtains the current month-day from the specified clock:::now->LocalDate->now->return->MonthDay->now->getMonth->now->getDayOfMonth->of
@@ -338,7 +412,12 @@ MonthDay#isBefore(MonthDay):::Checks if this month-day is before the specified m
 MonthDay#equals(Object):::Checks if this month-day is equal to another month-day:::if->return->if->other->return->return
 MonthDay#hashCode():::A hash code for this month-day.:::return
 MonthDay#toString():::Outputs this month-day as a String, such as --12-03:::return->new->StringBuilder->append->append->append->append->append->toString
+MonthDay#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+MonthDay#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+MonthDay#writeExternal(DataOutput)::: month day write external:::out->writeByte->out->writeByte
+MonthDay#readExternal(DataInput)::: month day read external:::month->in->readByte->day->in->readByte->return->MonthDay->of
 OffsetDateTime#timeLineOrder():::Gets a comparator that compares two OffsetDateTime instances based solely on the instant:::return->OffsetDateTime->compareInstant
+OffsetDateTime#compareInstant(OffsetDateTime, OffsetDateTime):::Compares this OffsetDateTime to another date-time:::if->datetime1->getOffset->datetime2->getOffset->equals->return->datetime1->toLocalDateTime->datetime2->toLocalDateTime->compareTo->cmp->Long->datetime1->toEpochSecond->datetime2->toEpochSecond->compare->if->datetime1->toLocalTime->getNano->datetime2->toLocalTime->getNano->return
 OffsetDateTime#now():::Obtains the current date-time from the system clock in the default time-zone:::return->Clock->systemDefaultZone->now
 OffsetDateTime#now(ZoneId):::Obtains the current date-time from the system clock in the specified time-zone:::return->Clock->system->now
 OffsetDateTime#now(Clock):::Obtains the current date-time from the specified clock:::Objects->requireNonNull->now->clock->instant->return->clock->getZone->getRules->getOffset->ofInstant
@@ -349,6 +428,7 @@ OffsetDateTime#ofInstant(Instant, ZoneId):::Obtains an instance of OffsetDateTim
 OffsetDateTime#from(TemporalAccessor):::Obtains an instance of OffsetDateTime from a temporal object:::if->return->try->offset->ZoneOffset->from->date->temporal->TemporalQueries->localDate->query->time->temporal->TemporalQueries->localTime->query->if->return->OffsetDateTime->of->else->instant->Instant->from->return->OffsetDateTime->ofInstant->catch->throw->temporal->getClass->getName->new->DateTimeException->finally
 OffsetDateTime#parse(CharSequence):::Obtains an instance of OffsetDateTime from a text string such as 2007-12-03T10:15:30+01:00:::return->parse
 OffsetDateTime#parse(CharSequence, DateTimeFormatter):::Obtains an instance of OffsetDateTime from a text string using a specific formatter:::Objects->requireNonNull->return->formatter->OffsetDateTime->from->parse
+OffsetDateTime#with(LocalDateTime, ZoneOffset):::Returns a new date-time based on this one, returning this where possible.:::if->equals->return->return->new->OffsetDateTime
 OffsetDateTime#isSupported(TemporalField):::Checks if the specified field is supported:::return->field->isSupportedBy
 OffsetDateTime#isSupported(TemporalUnit):::Checks if the specified unit is supported:::if->return->return->unit->isSupportedBy
 OffsetDateTime#range(TemporalField):::Gets the range of valid values for the specified field:::if->if->return->field->range->return->dateTime->range->return->field->rangeRefinedBy
@@ -418,6 +498,10 @@ OffsetDateTime#isEqual(OffsetDateTime):::Checks if the instant of this date-time
 OffsetDateTime#equals(Object):::Checks if this date-time is equal to another date-time:::if->return->if->other->return->dateTime->equals->offset->equals->return
 OffsetDateTime#hashCode():::A hash code for this date-time.:::return->dateTime->hashCode->offset->hashCode
 OffsetDateTime#toString():::Outputs this date-time as a String, such as 2007-12-03T10:15:30+01:00:::return->dateTime->toString->offset->toString
+OffsetDateTime#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+OffsetDateTime#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+OffsetDateTime#writeExternal(ObjectOutput)::: offset date time write external:::dateTime->writeExternal->offset->writeExternal
+OffsetDateTime#readExternal(ObjectInput)::: offset date time read external:::dateTime->LocalDateTime->readExternal->offset->ZoneOffset->readExternal->return->OffsetDateTime->of
 OffsetTime#now():::Obtains the current time from the system clock in the default time-zone:::return->Clock->systemDefaultZone->now
 OffsetTime#now(ZoneId):::Obtains the current time from the system clock in the specified time-zone:::return->Clock->system->now
 OffsetTime#now(Clock):::Obtains the current time from the specified clock:::Objects->requireNonNull->now->clock->instant->return->clock->getZone->getRules->getOffset->ofInstant
@@ -427,6 +511,7 @@ OffsetTime#ofInstant(Instant, ZoneId):::Obtains an instance of OffsetTime from a
 OffsetTime#from(TemporalAccessor):::Obtains an instance of OffsetTime from a temporal object:::if->return->try->time->LocalTime->from->offset->ZoneOffset->from->return->new->OffsetTime->catch->throw->temporal->getClass->getName->new->DateTimeException->finally
 OffsetTime#parse(CharSequence):::Obtains an instance of OffsetTime from a text string such as 10:15:30+01:00:::return->parse
 OffsetTime#parse(CharSequence, DateTimeFormatter):::Obtains an instance of OffsetTime from a text string using a specific formatter:::Objects->requireNonNull->return->formatter->OffsetTime->from->parse
+OffsetTime#with(LocalTime, ZoneOffset):::Returns a new time based on this one, returning this where possible.:::if->equals->return->return->new->OffsetTime
 OffsetTime#isSupported(TemporalField):::Checks if the specified field is supported:::if->return->field->isTimeBased->return->field->isSupportedBy
 OffsetTime#isSupported(TemporalUnit):::Checks if the specified unit is supported:::if->return->unit->isTimeBased->return->unit->isSupportedBy
 OffsetTime#range(TemporalField):::Gets the range of valid values for the specified field:::if->if->return->field->range->return->time->range->return->field->rangeRefinedBy
@@ -464,6 +549,7 @@ OffsetTime#adjustInto(Temporal):::Adjusts the specified temporal object to have 
 OffsetTime#until(Temporal, TemporalUnit):::Calculates the amount of time until another time in terms of the specified unit:::end->OffsetTime->from->if->nanosUntil->end->toEpochNano->toEpochNano->switch->return->return->return->return->return->return->return->throw->new->UnsupportedTemporalTypeException->return->unit->between
 OffsetTime#format(DateTimeFormatter):::Formats this time using the specified formatter:::Objects->requireNonNull->return->formatter->format
 OffsetTime#atDate(LocalDate):::Combines this time with a date to create an OffsetDateTime:::return->OffsetDateTime->of
+OffsetTime#toEpochNano():::Converts this time to epoch nanos based on 1970-01-01Z.:::nod->time->toNanoOfDay->offsetNanos->offset->getTotalSeconds->return
 OffsetTime#toEpochSecond(LocalDate):::Converts this OffsetTime to the number of seconds since the epoch of 1970-01-01T00:00:00Z:::Objects->requireNonNull->epochDay->date->toEpochDay->secs->time->toSecondOfDay->offset->getTotalSeconds->return
 OffsetTime#compareTo(OffsetTime):::Compares this OffsetTime to another time:::if->offset->equals->return->time->compareTo->compare->Long->toEpochNano->other->toEpochNano->compare->if->time->compareTo->return
 OffsetTime#isAfter(OffsetTime):::Checks if the instant of this OffsetTime is after that of the specified time applying both times to a common date:::return->toEpochNano->other->toEpochNano
@@ -472,6 +558,10 @@ OffsetTime#isEqual(OffsetTime):::Checks if the instant of this OffsetTime is equ
 OffsetTime#equals(Object):::Checks if this time is equal to another time:::if->return->if->other->return->time->equals->offset->equals->return
 OffsetTime#hashCode():::A hash code for this time.:::return->time->hashCode->offset->hashCode
 OffsetTime#toString():::Outputs this time as a String, such as 10:15:30+01:00:::return->time->toString->offset->toString
+OffsetTime#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+OffsetTime#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+OffsetTime#writeExternal(ObjectOutput)::: offset time write external:::time->writeExternal->offset->writeExternal
+OffsetTime#readExternal(ObjectInput)::: offset time read external:::time->LocalTime->readExternal->offset->ZoneOffset->readExternal->return->OffsetTime->of
 Period#ofYears(int):::Obtains a Period representing a number of years:::return->create
 Period#ofMonths(int):::Obtains a Period representing a number of months:::return->create
 Period#ofWeeks(int):::Obtains a Period representing a number of weeks:::return->Math->multiplyExact->create
@@ -479,7 +569,10 @@ Period#ofDays(int):::Obtains a Period representing a number of days:::return->cr
 Period#of(int, int, int):::Obtains a Period representing a number of years, months and days:::return->create
 Period#from(TemporalAmount):::Obtains an instance of Period from a temporal amount:::if->return->if->if->getChronology->equals->throw->new->DateTimeException->Objects->requireNonNull->years->months->days->foreach->amount->getUnits->unitAmount->amount->get->if->Math->toIntExact->else->if->Math->toIntExact->else->if->Math->toIntExact->else->throw->new->DateTimeException->return->create
 Period#parse(CharSequence):::Obtains a Period from a text string such as PnYnMnD:::Objects->requireNonNull->matcher->PATTERN->matcher->if->matcher->matches->negate->matcher->start->matcher->end->charMatch->yearStart->matcher->start->yearEnd->matcher->end->monthStart->matcher->start->monthEnd->matcher->end->weekStart->matcher->start->weekEnd->matcher->end->dayStart->matcher->start->dayEnd->matcher->end->if->try->years->parseNumber->months->parseNumber->weeks->parseNumber->days->parseNumber->Math->Math->multiplyExact->addExact->return->create->catch->throw->new->DateTimeParseException->finally->throw->new->DateTimeParseException
+Period#charMatch(CharSequence, int, int, char)::: period char match:::return->text->charAt
+Period#parseNumber(CharSequence, int, int, int)::: period parse number:::if->return->val->Integer->parseInt->try->return->Math->multiplyExact->catch->throw->new->DateTimeParseException->finally
 Period#between(LocalDate, LocalDate):::Obtains a Period consisting of the number of years, months, and days between two dates:::return->startDateInclusive->until
+Period#create(int, int, int):::Creates an instance.:::if->return->return->new->Period
 Period#get(TemporalUnit):::Gets the value of the requested unit:::if->return->getYears->else->if->return->getMonths->else->if->return->getDays->else->throw->new->UnsupportedTemporalTypeException
 Period#getUnits():::Gets the set of units supported by this period:::return
 Period#getChronology():::Gets the chronology of this period, which is the ISO calendar system:::return
@@ -505,11 +598,20 @@ Period#normalized():::Returns a copy of this period with the years and months no
 Period#toTotalMonths():::Gets the total number of months in this period:::return
 Period#addTo(Temporal):::Adds this period to the specified temporal object:::validateChrono->if->if->temporal->plus->else->totalMonths->toTotalMonths->if->temporal->plus->if->temporal->plus->return
 Period#subtractFrom(Temporal):::Subtracts this period from the specified temporal object:::validateChrono->if->if->temporal->minus->else->totalMonths->toTotalMonths->if->temporal->minus->if->temporal->minus->return
+Period#validateChrono(TemporalAccessor):::Validates that the temporal has the correct chronology.:::Objects->requireNonNull->temporalChrono->temporal->TemporalQueries->chronology->query->if->equals->throw->temporalChrono->getId->new->DateTimeException
 Period#equals(Object):::Checks if this period is equal to another period:::if->return->if->other->return->return
 Period#hashCode():::A hash code for this period.:::return->Integer->rotateLeft->Integer->rotateLeft
 Period#toString():::Outputs this period as a String, such as P6Y3M1D:::if->return->else->buf->new->StringBuilder->buf->append->if->buf->append->append->if->buf->append->append->if->buf->append->append->return->buf->toString
+Period#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+Period#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+Period#writeExternal(DataOutput)::: period write external:::out->writeInt->out->writeInt->out->writeInt
+Period#readExternal(DataInput)::: period read external:::years->in->readInt->months->in->readInt->days->in->readInt->return->Period->of
 Ser#writeExternal(ObjectOutput):::Implements the Externalizable interface to write the object.:::writeInternal
+Ser#writeInternal(byte, Object, ObjectOutput)::: ser write internal:::out->writeByte->switch->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->writeExternal->break->throw->new->InvalidClassException
 Ser#readExternal(ObjectInput):::Implements the Externalizable interface to read the object.:::in->readByte->readInternal
+Ser#read(ObjectInput)::: ser read:::type->in->readByte->return->readInternal
+Ser#readInternal(byte, ObjectInput)::: ser read internal:::switch->return->Duration->readExternal->return->Instant->readExternal->return->LocalDate->readExternal->return->LocalDateTime->readExternal->return->LocalTime->readExternal->return->ZonedDateTime->readExternal->return->ZoneOffset->readExternal->return->ZoneRegion->readExternal->return->OffsetTime->readExternal->return->OffsetDateTime->readExternal->return->Year->readExternal->return->YearMonth->readExternal->return->MonthDay->readExternal->return->Period->readExternal->throw->new->StreamCorruptedException
+Ser#readResolve():::Returns the object that will replace this one.:::return
 Year#now():::Obtains the current year from the system clock in the default time-zone:::return->Clock->systemDefaultZone->now
 Year#now(ZoneId):::Obtains the current year from the system clock in the specified time-zone:::return->Clock->system->now
 Year#now(Clock):::Obtains the current year from the specified clock:::now->LocalDate->now->return->Year->now->getYear->of
@@ -549,6 +651,10 @@ Year#isBefore(Year):::Checks if this year is before the specified year.:::return
 Year#equals(Object):::Checks if this year is equal to another year:::if->return->if->return->return
 Year#hashCode():::A hash code for this year.:::return
 Year#toString():::Outputs this year as a String.:::return->Integer->toString
+Year#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+Year#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+Year#writeExternal(DataOutput)::: year write external:::out->writeInt
+Year#readExternal(DataInput)::: year read external:::return->Year->in->readInt->of
 YearMonth#now():::Obtains the current year-month from the system clock in the default time-zone:::return->Clock->systemDefaultZone->now
 YearMonth#now(ZoneId):::Obtains the current year-month from the system clock in the specified time-zone:::return->Clock->system->now
 YearMonth#now(Clock):::Obtains the current year-month from the specified clock:::now->LocalDate->now->return->YearMonth->now->getYear->now->getMonth->of
@@ -557,11 +663,13 @@ YearMonth#of(int, int):::Obtains an instance of YearMonth from a year and month.
 YearMonth#from(TemporalAccessor):::Obtains an instance of YearMonth from a temporal object:::if->return->Objects->requireNonNull->try->if->Chronology->from->equals->LocalDate->from->return->temporal->get->temporal->get->of->catch->throw->temporal->getClass->getName->new->DateTimeException->finally
 YearMonth#parse(CharSequence):::Obtains an instance of YearMonth from a text string such as 2007-12:::return->parse
 YearMonth#parse(CharSequence, DateTimeFormatter):::Obtains an instance of YearMonth from a text string using a specific formatter:::Objects->requireNonNull->return->formatter->YearMonth->from->parse
+YearMonth#with(int, int):::Returns a copy of this year-month with the new year and month, checking to see if a new object is in fact required.:::if->return->return->new->YearMonth
 YearMonth#isSupported(TemporalField):::Checks if the specified field is supported:::if->return->return->field->isSupportedBy
 YearMonth#isSupported(TemporalUnit):::Checks if the specified unit is supported:::if->return->return->unit->isSupportedBy
 YearMonth#range(TemporalField):::Gets the range of valid values for the specified field:::if->return->getYear->ValueRange->of->ValueRange->of->return->Temporal.super->range
 YearMonth#get(TemporalField):::Gets the value of the specified field from this year-month as an int:::return->range->getLong->checkValidIntValue
 YearMonth#getLong(TemporalField):::Gets the value of the specified field from this year-month as a long:::if->switch->return->return->getProlepticMonth->return->return->return->throw->new->UnsupportedTemporalTypeException->return->field->getFrom
+YearMonth#getProlepticMonth()::: year month get proleptic month:::return
 YearMonth#getYear():::Gets the year field:::return
 YearMonth#getMonthValue():::Gets the month-of-year field from 1 to 12:::return
 YearMonth#getMonth():::Gets the month-of-year field using the Month enum:::return->Month->of
@@ -593,6 +701,10 @@ YearMonth#isBefore(YearMonth):::Checks if this year-month is before the specifie
 YearMonth#equals(Object):::Checks if this year-month is equal to another year-month:::if->return->if->other->return->return
 YearMonth#hashCode():::A hash code for this year-month.:::return
 YearMonth#toString():::Outputs this year-month as a String, such as 2007-12:::absYear->Math->abs->buf->new->StringBuilder->if->if->buf->append->deleteCharAt->else->buf->append->deleteCharAt->else->buf->append->return->buf->append->append->toString
+YearMonth#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+YearMonth#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+YearMonth#writeExternal(DataOutput)::: year month write external:::out->writeInt->out->writeByte
+YearMonth#readExternal(DataInput)::: year month read external:::year->in->readInt->month->in->readByte->return->YearMonth->of
 ZonedDateTime#now():::Obtains the current date-time from the system clock in the default time-zone:::return->Clock->systemDefaultZone->now
 ZonedDateTime#now(ZoneId):::Obtains the current date-time from the system clock in the specified time-zone:::return->Clock->system->now
 ZonedDateTime#now(Clock):::Obtains the current date-time from the specified clock:::Objects->requireNonNull->now->clock->instant->return->clock->getZone->ofInstant
@@ -602,10 +714,15 @@ ZonedDateTime#of(int, int, int, int, int, int, int, ZoneId):::Obtains an instanc
 ZonedDateTime#ofLocal(LocalDateTime, ZoneId, ZoneOffset):::Obtains an instance of ZonedDateTime from a local date-time using the preferred offset if possible:::Objects->requireNonNull->Objects->requireNonNull->if->return->new->ZonedDateTime->rules->zone->getRules->validOffsets->rules->getValidOffsets->offset->if->validOffsets->size->validOffsets->get->else->if->validOffsets->size->trans->rules->getTransition->localDateTime->trans->getDuration->getSeconds->plusSeconds->trans->getOffsetAfter->else->if->validOffsets->contains->else->Objects->validOffsets->get->requireNonNull->return->new->ZonedDateTime
 ZonedDateTime#ofInstant(Instant, ZoneId):::Obtains an instance of ZonedDateTime from an Instant:::Objects->requireNonNull->Objects->requireNonNull->return->instant->getEpochSecond->instant->getNano->create
 ZonedDateTime#ofInstant(LocalDateTime, ZoneOffset, ZoneId):::Obtains an instance of ZonedDateTime from the instant formed by combining the local date-time and offset:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->if->zone->getRules->isValidOffset->return->new->ZonedDateTime->return->localDateTime->toEpochSecond->localDateTime->getNano->create
+ZonedDateTime#create(long, int, ZoneId):::Obtains an instance of ZonedDateTime using seconds from the epoch of 1970-01-01T00:00:00Z.:::rules->zone->getRules->instant->Instant->ofEpochSecond->offset->rules->getOffset->ldt->LocalDateTime->ofEpochSecond->return->new->ZonedDateTime
 ZonedDateTime#ofStrict(LocalDateTime, ZoneOffset, ZoneId):::Obtains an instance of ZonedDateTime strictly validating the combination of local date-time, offset and zone ID:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->rules->zone->getRules->if->rules->isValidOffset->trans->rules->getTransition->if->trans->isGap->throw->new->DateTimeException->throw->new->DateTimeException->return->new->ZonedDateTime
+ZonedDateTime#ofLenient(LocalDateTime, ZoneOffset, ZoneId):::Obtains an instance of ZonedDateTime leniently, for advanced use cases, allowing any combination of local date-time, offset and zone ID:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->if->offset->equals->throw->new->IllegalArgumentException->return->new->ZonedDateTime
 ZonedDateTime#from(TemporalAccessor):::Obtains an instance of ZonedDateTime from a temporal object:::if->return->try->zone->ZoneId->from->if->temporal->isSupported->epochSecond->temporal->getLong->nanoOfSecond->temporal->get->return->create->else->date->LocalDate->from->time->LocalTime->from->return->of->catch->throw->temporal->getClass->getName->new->DateTimeException->finally
 ZonedDateTime#parse(CharSequence):::Obtains an instance of ZonedDateTime from a text string such as 2007-12-03T10:15:30+01:00[Europe/Paris]:::return->parse
 ZonedDateTime#parse(CharSequence, DateTimeFormatter):::Obtains an instance of ZonedDateTime from a text string using a specific formatter:::Objects->requireNonNull->return->formatter->ZonedDateTime->from->parse
+ZonedDateTime#resolveLocal(LocalDateTime):::Resolves the new local date-time using this zone ID, retaining the offset if possible.:::return->ofLocal
+ZonedDateTime#resolveInstant(LocalDateTime):::Resolves the new local date-time using the offset to identify the instant.:::return->ofInstant
+ZonedDateTime#resolveOffset(ZoneOffset):::Resolves the offset into this zoned date-time for the with methods:::if->offset->equals->zone->getRules->isValidOffset->return->new->ZonedDateTime->return
 ZonedDateTime#isSupported(TemporalField):::Checks if the specified field is supported:::return->field->isSupportedBy
 ZonedDateTime#isSupported(TemporalUnit):::Checks if the specified unit is supported:::return->ChronoZonedDateTime.super->isSupported
 ZonedDateTime#range(TemporalField):::Gets the range of valid values for the specified field:::if->if->return->field->range->return->dateTime->range->return->field->rangeRefinedBy
@@ -669,26 +786,39 @@ ZonedDateTime#toOffsetDateTime():::Converts this date-time to an OffsetDateTime:
 ZonedDateTime#equals(Object):::Checks if this date-time is equal to another date-time:::if->return->if->other->return->dateTime->equals->offset->equals->zone->equals->return
 ZonedDateTime#hashCode():::A hash code for this date-time.:::return->dateTime->hashCode->offset->hashCode->Integer->zone->hashCode->rotateLeft
 ZonedDateTime#toString():::Outputs this date-time as a String, such as 2007-12-03T10:15:30+01:00[Europe/Paris]:::str->dateTime->toString->offset->toString->if->zone->toString->return
+ZonedDateTime#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+ZonedDateTime#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+ZonedDateTime#writeExternal(DataOutput)::: zoned date time write external:::dateTime->writeExternal->offset->writeExternal->zone->write
+ZonedDateTime#readExternal(ObjectInput)::: zoned date time read external:::dateTime->LocalDateTime->readExternal->offset->ZoneOffset->readExternal->zone->Ser->read->return->ZonedDateTime->ofLenient
 ZoneId#systemDefault():::Gets the system default time-zone:::return->TimeZone->getDefault->toZoneId
 ZoneId#getAvailableZoneIds():::Gets the set of available zone IDs:::return->ZoneRulesProvider->getAvailableZoneIds->new->HashSet<String>
 ZoneId#of(String, Map):::Obtains an instance of ZoneId using its ID using a map of aliases to supplement the standard zone IDs:::Objects->requireNonNull->Objects->requireNonNull->id->Objects->aliasMap->get->requireNonNullElse->return->of
 ZoneId#of(String):::Obtains an instance of ZoneId from an ID ensuring that the ID is valid and available for use:::return->of
 ZoneId#ofOffset(String, ZoneOffset):::Obtains an instance of ZoneId wrapping an offset:::Objects->requireNonNull->Objects->requireNonNull->if->prefix->length->return->if->prefix->equals->prefix->equals->prefix->equals->throw->new->IllegalArgumentException->if->offset->getTotalSeconds->prefix->offset->getId->concat->return->offset->getRules->new->ZoneRegion
 ZoneId#of(String, boolean):::Parses the ID, taking a flag to indicate whether ZoneRulesException should be thrown or not, used in deserialization.:::Objects->requireNonNull->if->zoneId->length->zoneId->startsWith->zoneId->startsWith->return->ZoneOffset->of->else->if->zoneId->startsWith->zoneId->startsWith->return->ofWithPrefix->else->if->zoneId->startsWith->return->ofWithPrefix->return->ZoneRegion->ofId
+ZoneId#ofWithPrefix(String, int, boolean):::Parse once a prefix is established.:::prefix->zoneId->substring->if->zoneId->length->return->ofOffset->if->zoneId->charAt->zoneId->charAt->return->ZoneRegion->ofId->try->offset->ZoneOffset->zoneId->substring->of->if->return->ofOffset->return->ofOffset->catch->throw->new->DateTimeException->finally
 ZoneId#from(TemporalAccessor):::Obtains an instance of ZoneId from a temporal object:::obj->temporal->TemporalQueries->zone->query->if->throw->temporal->getClass->getName->new->DateTimeException->return
 ZoneId#getId():::Gets the unique time-zone ID:::
 ZoneId#getDisplayName(TextStyle, Locale):::Gets the textual representation of the zone, such as 'British Time' or '+02:00':::return->new->DateTimeFormatterBuilder->appendZoneText->toFormatter->toTemporal->format
+ZoneId#toTemporal():::Converts this zone to a TemporalAccessor:::return->new->TemporalAccessor
 ZoneId#getRules():::Gets the time-zone rules for this ID allowing calculations to be performed:::
 ZoneId#normalized():::Normalizes the time-zone ID, returning a ZoneOffset where possible:::try->rules->getRules->if->rules->isFixedOffset->return->rules->getOffset->catch->finally->return
 ZoneId#equals(Object):::Checks if this time-zone ID is equal to another time-zone ID:::if->return->if->other->return->getId->other->getId->equals->return
 ZoneId#hashCode():::A hash code for this time-zone ID.:::return->getId->hashCode
+ZoneId#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
 ZoneId#toString():::Outputs this zone as a String, using the ID.:::return->getId
+ZoneId#writeReplace()::: zone id write replace:::return->new->Ser
+ZoneId#write(DataOutput)::: zone id write:::
 ZoneOffset#of(String):::Obtains an instance of ZoneOffset using the ID:::Objects->requireNonNull->offset->ID_CACHE->get->if->return->hours->minutes->seconds->switch->offsetId->length->offsetId->charAt->offsetId->charAt->parseNumber->break->parseNumber->parseNumber->break->parseNumber->parseNumber->break->parseNumber->parseNumber->parseNumber->break->parseNumber->parseNumber->parseNumber->break->throw->new->DateTimeException->first->offsetId->charAt->if->throw->new->DateTimeException->if->return->ofHoursMinutesSeconds->else->return->ofHoursMinutesSeconds
+ZoneOffset#parseNumber(CharSequence, int, boolean):::Parse a two digit zero-prefixed number.:::if->offsetId->charAt->throw->new->DateTimeException->ch1->offsetId->charAt->ch2->offsetId->charAt->if->throw->new->DateTimeException->return
 ZoneOffset#ofHours(int):::Obtains an instance of ZoneOffset using an offset in hours.:::return->ofHoursMinutesSeconds
 ZoneOffset#ofHoursMinutes(int, int):::Obtains an instance of ZoneOffset using an offset in hours and minutes:::return->ofHoursMinutesSeconds
 ZoneOffset#ofHoursMinutesSeconds(int, int, int):::Obtains an instance of ZoneOffset using an offset in hours, minutes and seconds:::validate->totalSeconds->totalSeconds->return->ofTotalSeconds
 ZoneOffset#from(TemporalAccessor):::Obtains an instance of ZoneOffset from a temporal object:::Objects->requireNonNull->offset->temporal->TemporalQueries->offset->query->if->throw->temporal->getClass->getName->new->DateTimeException->return
+ZoneOffset#validate(int, int, int):::Validates the offset fields.:::if->throw->new->DateTimeException->if->if->throw->new->DateTimeException->else->if->if->throw->new->DateTimeException->else->if->throw->new->DateTimeException->if->throw->new->DateTimeException->if->throw->new->DateTimeException->if->Math->abs->throw->new->DateTimeException
+ZoneOffset#totalSeconds(int, int, int):::Calculates the total offset in seconds.:::return
 ZoneOffset#ofTotalSeconds(int):::Obtains an instance of ZoneOffset specifying the total offset in seconds  The offset must be in the range -18:00 to +18:00, which corresponds to -64800 to +64800.:::if->throw->new->DateTimeException->if->totalSecs->result->SECONDS_CACHE->get->if->new->ZoneOffset->SECONDS_CACHE->putIfAbsent->SECONDS_CACHE->get->ID_CACHE->result->getId->putIfAbsent->return->else->return->new->ZoneOffset
+ZoneOffset#buildId(int)::: zone offset build id:::if->return->else->absTotalSeconds->Math->abs->buf->new->StringBuilder->absHours->absMinutes->buf->append->append->append->append->append->absSeconds->if->buf->append->append->return->buf->toString
 ZoneOffset#getTotalSeconds():::Gets the total zone offset in seconds:::return
 ZoneOffset#getId():::Gets the normalized zone offset ID:::return
 ZoneOffset#getRules():::Gets the associated time-zone rules:::return->ZoneRules->of
@@ -702,4 +832,17 @@ ZoneOffset#compareTo(ZoneOffset):::Compares this offset to another offset in des
 ZoneOffset#equals(Object):::Checks if this offset is equal to another offset:::if->return->if->return->return
 ZoneOffset#hashCode():::A hash code for this offset.:::return
 ZoneOffset#toString():::Outputs this offset as a String, using the normalized ID.:::return
+ZoneOffset#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+ZoneOffset#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+ZoneOffset#write(DataOutput)::: zone offset write:::out->writeByte->writeExternal
+ZoneOffset#writeExternal(DataOutput)::: zone offset write external:::offsetSecs->offsetByte->out->writeByte->if->out->writeInt
+ZoneOffset#readExternal(DataInput)::: zone offset read external:::offsetByte->in->readByte->return->ZoneOffset->in->readInt->ofTotalSeconds->ZoneOffset->ofTotalSeconds
 ZoneRegion#ofId(String, boolean):::Obtains an instance of ZoneId from an identifier.:::Objects->requireNonNull->checkName->rules->try->ZoneRulesProvider->getRules->catch->if->throw->finally->return->new->ZoneRegion
+ZoneRegion#checkName(String):::Checks that the given string is a legal ZondId name.:::n->zoneId->length->if->throw->new->DateTimeException->for->i
+ZoneRegion#getId()::: zone region get id:::return
+ZoneRegion#getRules()::: zone region get rules:::return->ZoneRulesProvider->getRules
+ZoneRegion#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
+ZoneRegion#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+ZoneRegion#write(DataOutput)::: zone region write:::out->writeByte->writeExternal
+ZoneRegion#writeExternal(DataOutput)::: zone region write external:::out->writeUTF
+ZoneRegion#readExternal(DataInput)::: zone region read external:::id->in->readUTF->return->ZoneId->of

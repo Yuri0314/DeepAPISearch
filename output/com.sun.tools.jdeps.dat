@@ -1,3 +1,4 @@
+Analyzer.Filter#accepts(Location, Archive, Location, Archive)::: filter accepts:::
 Analyzer#run(Iterable, Map):::Performs the dependency analysis on the given archives.:::putAll->foreach->deps->new->Dependences->archive->visitDependences->results->put->return
 Analyzer#archives():::Returns the analyzed archives:::return->results->keySet
 Analyzer#hasDependences(Archive):::Returns true if the given archive has dependences.:::if->results->containsKey->return->results->get->dependencies->size->return
@@ -5,24 +6,114 @@ Analyzer#dependences(Archive):::Returns the dependences, either class name or pa
 Analyzer#requires(Archive):::Returns the direct dependences of the given source:::if->results->containsKey->return->Stream->empty->return->results->get->requires->stream
 Analyzer.Visitor#visitDependence(String, Archive, String, Archive):::Visits a recorded dependency from origin to target which can be a fully-qualified classname, a package name, a module or archive name depending on the Analyzer's type.:::
 Analyzer#visitDependences(Archive, Visitor, Type):::Visit the dependencies of the given source:::if->result->results->get->reqs->result->requires->stream->reqs->stream->if->reqs->isEmpty->if->hasDependences->Stream->of->stream->Comparator->Archive->getName->comparing->sorted->profile->result->getTargetProfile->v->source->getName->profile->profileName->archive->getName->visitDependence->forEach->else->result->results->get->if->new->Dependences->source->visitDependences->result->dependencies->stream->Comparator->Dep->origin->comparing->Dep->target->thenComparing->sorted->v->d->origin->d->originArchive->d->target->d->targetArchive->visitDependence->forEach
+Analyzer#visitDependences(Archive, Visitor)::: analyzer visit dependences:::visitDependences
+Analyzer.Dependences#dependencies()::: dependences dependencies:::return
+Analyzer.Dependences#requires()::: dependences requires:::return
+Analyzer.Dependences#getTargetProfile(Archive)::: dependences get target profile:::if->target->getModule->isJDK->return->Profile->getProfile->else->return
+Analyzer.Dependences#findArchive(Location)::: dependences find archive:::if->archive->getClasses->contains->return->target->if->locationToArchive->containsKey->locationToArchive->get->else->configuration->findClass->REMOVED_JDK_INTERNALS->contains->orElseGet->return->locationToArchive->computeIfAbsent
+Analyzer.Dependences#getLocationName(Location)::: dependences get location name:::if->return->VersionHelper->o->getClassName->get->else->pkg->o->getPackageName->return->pkg->isEmpty
+Analyzer.Dependences#visit(Location, Location)::: dependences visit:::targetArchive->findArchive->if->filter->accepts->addDep->if->requires->contains->requires->add->if->targetArchive->getModule->isNamed->p->Profile->t->getPackageName->getProfile->if->p->compareTo
+Analyzer.Dependences#addDep(Location, Location)::: dependences add dep:::origin->getLocationName->target->getLocationName->targetArchive->findArchive->if->curDep->origin->equals->curDep->originArchive->curDep->target->equals->curDep->targetArchive->return->e->new->Dep->if->deps->contains->foreach->if->e->equals->else->deps->add->return
+Analyzer.Dep#origin()::: dep origin:::return
+Analyzer.Dep#originArchive()::: dep origin archive:::return
+Analyzer.Dep#target()::: dep target:::return
+Analyzer.Dep#targetArchive()::: dep target archive:::return
+Analyzer.Dep#equals(Object)::: dep equals:::if->d->return->equals->equals->return
+Analyzer.Dep#hashCode()::: dep hash code:::return->Objects->hash
+Analyzer.Dep#toString()::: dep to string:::return->String->originArchive->getName->targetArchive->getName->format
+Analyzer.Jdk8Internals#contains(Location)::: jdk8 internals contains:::cn->location->getClassName->i->cn->lastIndexOf->pn->cn->substring->return->jdk8Internals->contains
+Analyzer.Jdk8Internals#name()::: jdk8 internals name:::return->getName
+Analyzer.Jdk8Internals#isJDK()::: jdk8 internals is k:::return
+Analyzer.Jdk8Internals#isExported(String)::: jdk8 internals is exported:::return
+Archive#getInstance(Path, Runtime.Version)::: archive get instance:::try->return->ClassFileReader->newInstance->new->Archive->catch->throw->new->UncheckedIOException->finally
+Archive#reader()::: archive reader:::return
+Archive#getName()::: archive get name:::return
+Archive#getModule()::: archive get module:::return
+Archive#contains(String)::: archive contains:::return->reader->entries->contains
+Archive#addClass(Location)::: archive add class:::deps->new->HashSet<>->computeIfAbsent
+Archive#addClass(Location, Location)::: archive add class:::deps->new->HashSet<>->computeIfAbsent->add
+Archive#getClasses()::: archive get classes:::return->deps->keySet
+Archive#getDependencies()::: archive get dependencies:::return->deps->values->stream->Set->stream->flatMap
+Archive#hasDependences()::: archive has dependences:::return->getDependencies->count
+Archive#visitDependences(Visitor)::: archive visit dependences:::foreach->deps->entrySet->foreach->e->getValue->v->e->getKey->visit
 Archive#isEmpty():::Tests if any class has been parsed.:::return->getClasses->isEmpty
+Archive#getPathName()::: archive get path name:::return->path->toString
+Archive#hashCode()::: archive hash code:::return->Objects->hash
+Archive#equals(Object)::: archive equals:::if->other->if->isSameLocation->return->return
+Archive#toString()::: archive to string:::return
+Archive#path()::: archive path:::return
+Archive#isSameLocation(Archive, Archive)::: archive is same location:::if->return->if->equals->return->if->archive->isJrt->other->isJrt->return->try->return->Files->isSameFile->catch->throw->new->UncheckedIOException->finally
+Archive#isJrt()::: archive is jrt:::return->location->getScheme->equals
+Archive#close()::: archive close:::if->reader->close
+Archive.Visitor#visit(Location, Location)::: visitor visit:::
 ClassFileReader#newInstance(Path):::Returns a ClassFileReader instance of a given path.:::return->newInstance
 ClassFileReader#newInstance(Path, Runtime.Version):::Returns a ClassFileReader instance of a given path.:::if->Files->notExists->throw->path->toString->new->FileNotFoundException->if->Files->isDirectory->return->new->DirectoryReader->else->if->path->getFileName->toString->endsWith->return->new->JarFileReader->else->return->new->ClassFileReader
 ClassFileReader#newInstance(FileSystem, Path):::Returns a ClassFileReader instance of a given FileSystem and path:::return->new->DirectoryReader
+ClassFileReader#getFileName()::: class file reader get file name:::return
+ClassFileReader#skippedEntries()::: class file reader skipped entries:::return
 ClassFileReader#entries():::Returns all entries in this archive.:::es->if->scan->return
 ClassFileReader#getClassFile(String):::Returns the ClassFile matching the given binary name or a fully-qualified class name.:::if->name->indexOf->i->name->lastIndexOf->pathname->name->replace->if->baseFileName->equals->baseFileName->pathname->substring->pathname->pathname->length->substring->equals->return->readClassFile->else->if->baseFileName->name->replace->equals->return->readClassFile->return
+ClassFileReader#getClassFiles()::: class file reader get class files:::return->FileIterator->new
+ClassFileReader#readClassFile(Path)::: class file reader read class file:::is->try->Files->newInputStream->return->ClassFile->read->catch->throw->new->ClassFileError->finally->if->is->close
+ClassFileReader#scan()::: class file reader scan:::try->cf->ClassFile->read->name->is->cf->getName->return->Collections->singleton->catch->throw->new->ClassFileError->finally
+ClassFileReader#isClass(Path)::: class file reader is class:::fn->file->getFileName->toString->return->fn->endsWith
+ClassFileReader#close()::: class file reader close:::
+ClassFileReader.FileIterator#hasNext()::: file iterator has next:::return->baseFileName->endsWith
+ClassFileReader.FileIterator#next()::: file iterator next:::if->hasNext->throw->new->NoSuchElementException->try->cf->readClassFile->return->catch->throw->new->ClassFileError->finally
+ClassFileReader.FileIterator#remove()::: file iterator remove:::throw->new->UnsupportedOperationException
+ClassFileReader#toString()::: class file reader to string:::return->path->toString
+ClassFileReader.DirectoryReader#scan()::: directory reader scan:::try->stream->Files->walk->return->stream->ClassFileReader->isClass->filter->path->relativize->map->Path->toString->map->p->replace->map->Collectors->toSet->collect->catch->throw->new->UncheckedIOException->finally
+ClassFileReader.DirectoryReader#getClassFile(String)::: directory reader get class file:::if->name->indexOf->i->name->lastIndexOf->pathname->name->replace->p->path->resolve->if->Files->notExists->path->pathname->substring->pathname->pathname->length->substring->resolve->if->Files->exists->return->readClassFile->else->p->path->resolve->if->Files->exists->return->readClassFile->return
+ClassFileReader.DirectoryReader#getClassFiles()::: directory reader get class files:::iter->new->DirectoryIterator->return
+ClassFileReader.DirectoryReader.DirectoryIterator#hasNext()::: directory iterator has next:::return->entries->size
+ClassFileReader.DirectoryReader.DirectoryIterator#next()::: directory iterator next:::if->hasNext->throw->new->NoSuchElementException->path->entries->get->try->return->readClassFile->catch->throw->new->ClassFileError->finally
+ClassFileReader.DirectoryReader.DirectoryIterator#remove()::: directory iterator remove:::throw->new->UnsupportedOperationException
+ClassFileReader.JarFileReader#close()::: jar file reader close:::jarfile->close
+ClassFileReader.JarFileReader#openJarFile(File, Runtime.Version)::: jar file reader open jar file:::jf->if->new->JarFile->if->jf->isMultiRelease->throw->f->getName->new->MultiReleaseException->else->new->JarFile->return
+ClassFileReader.JarFileReader#scan()::: jar file reader scan:::try->jf->path->toFile->openJarFile->return->jf->versionedStream->JarEntry->getName->map->n->endsWith->filter->Collectors->toSet->collect->catch->throw->new->UncheckedIOException->finally
+ClassFileReader.JarFileReader#getClassFile(String)::: jar file reader get class file:::if->name->indexOf->i->name->lastIndexOf->entryName->name->replace->e->jarfile->getJarEntry->if->jarfile->entryName->substring->entryName->entryName->length->substring->getJarEntry->if->return->readClassFile->else->e->jarfile->getJarEntry->if->return->readClassFile->return
+ClassFileReader.JarFileReader#readClassFile(JarFile, JarEntry)::: jar file reader read class file:::try->is->jarfile->getInputStream->cf->ClassFile->read->if->jarfile->isMultiRelease->VersionHelper->add->return->catch->throw->new->ClassFileError->finally
+ClassFileReader.JarFileReader#getClassFiles()::: jar file reader get class files:::iter->new->JarFileIterator->return
+ClassFileReader.JarFileIterator#setJarFile(JarFile)::: jar file iterator set jar file:::if->return->jarfile->versionedStream->iterator->nextEntry
+ClassFileReader.JarFileIterator#hasNext()::: jar file iterator has next:::if->return->while->try->reader->readClassFile->return->catch->skippedEntries->String->ex->getMessage->nextEntry->getName->jf->getName->format->add->finally->nextEntry->return
+ClassFileReader.JarFileIterator#next()::: jar file iterator next:::if->hasNext->throw->new->NoSuchElementException->classFile->nextEntry->return
+ClassFileReader.JarFileIterator#nextEntry()::: jar file iterator next entry:::while->entries->hasNext->e->entries->next->name->e->getName->if->name->endsWith->return->return
+ClassFileReader.JarFileIterator#remove()::: jar file iterator remove:::throw->new->UnsupportedOperationException
+DependencyFinder#locationToArchive()::: dependency finder location to archive:::return
 DependencyFinder#getDependences(Archive):::Returns the modules of all dependencies found:::return->source->getDependencies->this->locationToArchive->map->filter
 DependencyFinder#locationToArchive(Location):::Returns the location to archive map; or NOT_FOUND:::return->parsedClasses->containsKey->parsedClasses->get->configuration->findClass->orElse
 DependencyFinder#dependences():::Returns a map from an archive to its required archives:::map->new->HashMap<>->parsedArchives->values->stream->Deque->stream->flatMap->a->isEmpty->filter->deps->getDependences->toSet->collect->if->deps->isEmpty->map->put->forEach->return
+DependencyFinder#isParsed(Location)::: dependency finder is parsed:::return->parsedClasses->containsKey
 DependencyFinder#parse(Stream):::Parses all class files from the given archive stream and returns all target locations.:::archiveStream->parse->forEach->return->waitForTasksCompleted
 DependencyFinder#parseExportedAPIs(Stream):::Parses the exported API class files from the given archive stream and returns all target locations.:::archiveStream->parse->forEach->return->waitForTasksCompleted
 DependencyFinder#parse(Archive, String):::Parses the named class from the given archive and returns all target locations the named class references.:::try->return->parse->catch->throw->new->UncheckedIOException->finally
 DependencyFinder#parseExportedAPIs(Archive, String):::Parses the exported API of the named class from the given archive and returns all target locations the named class references.:::try->return->parse->catch->throw->new->UncheckedIOException->finally
+DependencyFinder#parse(Archive, Finder)::: dependency finder parse:::if->parsedArchives->get->contains->return->Optional->empty->parsedArchives->get->add->archive->getName->archive->path->trace->task->targets->new->HashSet<>->foreach->archive->reader->getClassFiles->if->is->continue->classFileName->try->cf->getName->catch->throw->new->ClassFileError->finally->cn->classFileName->replace->if->finder->accept->continue->if->filter->matches->continue->foreach->finder->findDependencies->if->filter->accepts->archive->d->getOrigin->d->getTarget->addClass->targets->d->getTarget->add->else->archive->d->getOrigin->addClass->parsedClasses->d->getOrigin->putIfAbsent->return->new->FutureTask<>->tasks->add->pool->submit->return->Optional->of
+DependencyFinder#parse(Archive, Finder, String)::: dependency finder parse:::cf->archive->reader->getClassFile->if->throw->archive->getName->new->IllegalArgumentException->if->is->return->Collections->emptySet->targets->new->HashSet<>->cn->try->cf->getName->replace->catch->throw->new->Dependencies.ClassFileError->finally->if->finder->accept->return->if->filter->matches->return->foreach->finder->findDependencies->if->filter->accepts->targets->d->getTarget->add->archive->d->getOrigin->d->getTarget->addClass->else->archive->d->getOrigin->addClass->parsedClasses->d->getOrigin->putIfAbsent->return
+DependencyFinder#waitForTasksCompleted()::: dependency finder wait for tasks completed:::try->targets->new->HashSet<>->task->while->tasks->poll->if->task->isDone->targets->task->get->addAll->return->catch->throw->new->Error->finally
+DependencyFinder#shutdown()::: dependency finder shutdown:::pool->shutdown
+DependencyFinder.SourceFilter#accept(Archive, String, AccessFlags)::: source filter accept:::
+DependencyFinder.Finder#accept(Archive, String, AccessFlags)::: finder accept:::i->cn->lastIndexOf->pn->cn->substring->return->archive->getModule->isExported->accessFlags->is
+DependencyFinder.Finder#findDependencies(ClassFile)::: finder find dependencies:::return->finder->findDependencies
+DepsAnalyzer#run()::: deps analyzer run:::return->run
 DepsAnalyzer#run(boolean, int):::Perform compile-time view or run-time view dependency analysis.:::try->if->finder->rootArchives->stream->parseExportedAPIs->else->finder->rootArchives->stream->parse->archives->addAll->depth->if->if->transitiveArchiveDeps->else->transitiveDeps->archives->archives->analyzer->finder->locationToArchive->run->if->writer->generateOutput->catch->finally->finder->shutdown->return
 DepsAnalyzer#archives():::Returns the archives for reporting that has matching dependences:::if->filter->requiresFilter->isEmpty->return->archives->stream->this->include->filter->Archive->hasDependences->filter->Collectors->toSet->collect->else->return->archives->stream->this->include->filter->filter->requiresFilter->source->getName->contains->filter->source->getDependencies->finder->locationToArchive->map->anyMatch->filter->Collectors->toSet->collect
 DepsAnalyzer#dependences():::Returns the dependences, either class name or package name as specified in the given verbose level.:::return->analyzer->archives->stream->analyzer->dependences->map->Set->stream->flatMap->Collectors->toSet->collect
+DepsAnalyzer#unresolvedArchives(Stream):::Returns the archives that contains the given locations and not parsed and analyzed.:::return->locations->finder->isParsed->filter->distinct->configuration->findClass->map->Optional->stream->flatMap->toSet->collect
+DepsAnalyzer#transitiveArchiveDeps(int)::: deps analyzer transitive archive deps:::deps->archives->stream->Archive->getDependencies->flatMap->unresolved->unresolvedArchives->do->targets->finder->unresolved->stream->parseExportedAPIs->finder->unresolved->stream->parse->archives->addAll->targets->stream->unresolvedArchives->while->unresolved->isEmpty
+DepsAnalyzer#transitiveDeps(int)::: deps analyzer transitive deps:::deps->archives->stream->Archive->getDependencies->flatMap->unresolved->deps->Collectors->LinkedList->new->toCollection->collect->deque->new->ConcurrentLinkedDeque<>->do->target->while->unresolved->poll->if->finder->isParsed->continue->archive->configuration->findClass->orElse->if->archives->add->name->target->getName->targets->finder->parseExportedAPIs->finder->parse->targets->stream->finder->isParsed->filter->deque->add->forEach->new->ConcurrentLinkedDeque<>->while->unresolved->isEmpty
+DepsAnalyzer#include(Archive)::: deps analyzer include:::module->source->getModule->return->module->isSystem->configuration->rootModules->contains
+DepsAnalyzer.Node#toString()::: node to string:::sb->new->StringBuilder->if->sb->append->append->sb->append->if->sb->append->else->if->sb->append->else->if->sb->append->return->sb->toString
+DepsAnalyzer.Node#equals(Object)::: node equals:::if->return->other->return->equals->equals->equals
+DepsAnalyzer.Node#hashCode()::: node hash code:::result->name->hashCode->source->hashCode->info->hashCode->return
 DepsAnalyzer#moduleGraph():::Returns a graph of module dependences:::builder->new->Graph.Builder<>->archives->stream->u->m->getName->new->Node->builder->addNode->analyzer->requires->req->getName->new->Node->map->builder->addEdge->forEach->forEach->return->builder->build
 DepsAnalyzer#dependenceGraph():::Returns a graph of dependences:::builder->new->Graph.Builder<>->archives->stream->analyzer.results->get->map->deps->dependencies->isEmpty->filter->deps->dependencies->stream->flatMap->addEdge->forEach->return->builder->build
+DepsAnalyzer#addEdge(Graph.Builder, Analyzer.Dep)::: deps analyzer add edge:::source->dep->originArchive->target->dep->targetArchive->pn->dep->target->if->i->dep->target->lastIndexOf->dep->target->substring->info->targetModule->target->getModule->if->else->if->targetModule->isNamed->else->if->targetModule->isExported->targetModule->isJDKUnsupported->else->module->target->getModule->if->else->if->source->getModule->isJDK->module->isJDK->else->if->module->source->getModule->name->isExported->else->u->dep->origin->source->getName->new->Node->v->dep->target->target->getName->new->Node->builder->addEdge
+Graph#nodes()::: graph nodes:::return
+Graph#edges()::: graph edges:::return
+Graph#adjacentNodes(T)::: graph adjacent nodes:::return->edges->get
+Graph#contains(T)::: graph contains:::return->nodes->contains
+Graph#edgesFrom(T)::: graph edges from:::return->edges->get->stream->new->Edge<T>->map->Collectors->toSet->collect
 Graph#reduce():::Returns a new Graph after transitive reduction:::builder->new->Builder<>->nodes->stream->builder->addNode->edges->get->stream->pathExists->filter->builder->addEdge->forEach->forEach->return->builder->build
 Graph#reduce(Graph):::Returns a new Graph after transitive reduction:::subgraph->nodes->containsAll->keySet->stream->adjacentNodes->g->adjacentNodes->containsAll->allMatch->if->throw->new->IllegalArgumentException->builder->new->Builder<>->nodes->stream->builder->addNode->edges->get->stream->g->pathExists->pathExists->filter->builder->addEdge->forEach->forEach->g->edges->keySet->stream->g->adjacentNodes->stream->isAdjacent->filter->builder->addEdge->forEach->forEach->return->builder->build->reduce
 Graph#orderedNodes():::Returns nodes sorted in topological order.:::sorter->new->TopoSorter<>->return->stream
@@ -30,34 +121,253 @@ Graph#ordered(Consumer):::Traverse this graph and performs the given action in t
 Graph#reverse(Consumer):::Traverses this graph and performs the given action in reverse topological order:::sorter->new->TopoSorter<>->sorter->reverse
 Graph#transpose():::Returns a transposed graph from this graph:::builder->new->Builder<>->builder->addNodes->edges->keySet->edges->get->stream->builder->addEdge->forEach->forEach->return->builder->build
 Graph#dfs(Set):::Returns all nodes reachable from the given set of roots.:::deque->new->ArrayDeque<>->visited->new->HashSet<>->while->deque->isEmpty->u->deque->pop->if->visited->contains->visited->add->if->contains->adjacentNodes->stream->visited->contains->filter->deque->push->forEach->return
+Graph#isAdjacent(T, T)::: graph is adjacent:::return->edges->containsKey->edges->get->contains
+Graph#pathExists(T, T)::: graph path exists:::return->pathExists
+Graph#pathExists(T, T, boolean):::Returns true if there exists a path from u to v in this graph:::if->nodes->contains->nodes->contains->return->if->isAdjacent->return->stack->new->ArrayDeque<>->visited->new->HashSet<>->stack->push->while->stack->isEmpty->node->stack->pop->if->node->equals->return->if->visited->contains->visited->add->edges->get->stream->node->equals->e->equals->filter->stack->push->forEach->return
+Graph#printGraph(PrintWriter)::: graph print graph:::out->println->nodes->stream->adjacentNodes->stream->out->format->forEach->forEach
+Graph#toString()::: graph to string:::return->nodes->toString
+Graph.Edge#toString()::: edge to string:::return->String->format
+Graph.Edge#equals(Object)::: edge equals:::if->return->if->return->edge->return->u->equals->v->equals
+Graph.Edge#hashCode()::: edge hash code:::result->u->hashCode->v->hashCode->return
+Graph.Builder#addNode(T)::: builder add node:::if->nodes->contains->return->nodes->add->edges->new->HashSet<>->computeIfAbsent
+Graph.Builder#addNodes(Set)::: builder add nodes:::addAll
+Graph.Builder#addEdge(T, T)::: builder add edge:::addNode->addNode->edges->get->add
+Graph.Builder#build()::: builder build:::return->new->Graph<T>
+Graph.TopoSorter#ordered(Consumer)::: topo sorter ordered:::result->iterator->forEachRemaining
+Graph.TopoSorter#reverse(Consumer)::: topo sorter reverse:::result->descendingIterator->forEachRemaining
+Graph.TopoSorter#sort()::: topo sorter sort:::visited->new->HashSet<>->done->new->HashSet<>->foreach->graph->nodes->if->visited->contains->visit
+Graph.TopoSorter#visit(T, Set, Set)::: topo sorter visit:::if->visited->contains->if->done->contains->throw->graph->edges->get->new->IllegalArgumentException->return->visited->add->graph->edges->get->stream->visit->forEach->done->add->result->addLast
+InverseDepsAnalyzer#run()::: inverse deps analyzer run:::try->if->finder->rootArchives->stream->parseExportedAPIs->else->finder->rootArchives->stream->parse->archives->addAll->archives->archives->if->filter->requiresFilter->isEmpty->targets->addAll->else->filter->requiresFilter->stream->configuration->findModule->map->Optional->stream->flatMap->targets->add->forEach->if->filter->requiresFilter->isEmpty->dependences->finder->dependences->targets->endPoints->dependences->get->put->forEach->else->targets->endPoints->Collections->emptySet->put->forEach->analyzer->finder->locationToArchive->run->if->writer->generateOutput->catch->finally->finder->shutdown->return
 InverseDepsAnalyzer#targets():::Returns the target archives determined from the dependency analysis:::return->Collections->unmodifiableSet
 InverseDepsAnalyzer#inverseDependences():::Finds all inverse transitive dependencies using the given requires set as the targets, if non-empty:::dependencyFinder->new->DependencyFinder->try->archives->Stream->configuration->initialArchives->stream->configuration->classPathArchives->stream->concat->if->dependencyFinder->parseExportedAPIs->else->dependencyFinder->parse->builder->new->Graph.Builder<>->targets->builder->addNode->forEach->configuration->getModules->values->stream->builder->addNode->m->descriptor->requires->stream->Requires->name->map->configuration->findModule->map->builder->v->get->addEdge->forEach->forEach->dependences->dependencyFinder->dependences->dependences->entrySet->stream->u->e->getKey->builder->addNode->e->getValue->builder->addEdge->forEach->forEach->graph->builder->build->targets->trace->return->targets->stream->findPaths->map->Set->stream->flatMap->Collectors->toSet->collect->catch->finally->dependencyFinder->shutdown
+InverseDepsAnalyzer#findPaths(Graph, Archive):::Returns all paths reachable from the given targets.:::path->new->LinkedList<>->path->push->visited->new->HashSet<>->deque->new->LinkedList<>->deque->graph->edgesFrom->addAll->if->deque->isEmpty->return->makePaths->Collectors->toSet->collect->allPaths->new->HashSet<>->while->deque->isEmpty->edge->deque->pop->if->visited->contains->continue->node->path->addLast->visited->add->unvisitedDeps->graph->edgesFrom->stream->visited->contains->filter->Collectors->toSet->collect->trace->if->unvisitedDeps->isEmpty->makePaths->allPaths->add->forEach->path->removeLast->unvisitedDeps->stream->deque->push->forEach->while->path->isEmpty->if->visited->graph->path->peekLast->edgesFrom->containsAll->path->removeLast->else->break->return
+InverseDepsAnalyzer#makePaths(Deque):::Prepend end point to the path:::nodes->endPoints->path->peekFirst->get->if->nodes->isEmpty->return->Stream->new->LinkedList<>->of->else->return->nodes->stream->newPath->new->LinkedList<>->newPath->addFirst->newPath->addAll->return->map
+JdepsConfiguration#initProfiles()::: jdeps configuration init profiles:::systemModules->system->moduleNames->Function->identity->m->nameToModule->get->if->mref->finder->find->get->toModule->return->toMap->collect->Profile->init
+JdepsConfiguration#addModuleReference(ModuleReference)::: jdeps configuration add module reference:::module->toModule->nameToModule->mref->descriptor->name->put->mref->descriptor->packages->packageToModule->putIfAbsent->forEach
+JdepsConfiguration#addPackagesInUnnamedModule(Archive)::: jdeps configuration add packages in unnamed module:::archive->reader->entries->stream->e->endsWith->e->equals->filter->this->toPackageName->map->distinct->packageToUnnamedModule->new->ArrayList<>->computeIfAbsent->add->forEach
+JdepsConfiguration#toPackageName(String)::: jdeps configuration to package name:::i->name->lastIndexOf->return->name->replace->substring
+JdepsConfiguration#findModule(String)::: jdeps configuration find module:::Objects->requireNonNull->m->nameToModule->get->return->Optional->of->Optional->empty
+JdepsConfiguration#findModuleDescriptor(String)::: jdeps configuration find module descriptor:::Objects->requireNonNull->m->nameToModule->get->return->Optional->m->descriptor->of->Optional->empty
+JdepsConfiguration#isToken(String)::: jdeps configuration is token:::return->ALL_MODULE_PATH->equals->ALL_DEFAULT->equals->ALL_SYSTEM->equals
 JdepsConfiguration#splitPackages():::Returns the list of packages that split between resolved module and unnamed module:::splitPkgs->packageToModule->keySet->stream->packageToUnnamedModule->containsKey->filter->toSet->collect->if->splitPkgs->isEmpty->return->Collections->emptyMap->return->splitPkgs->stream->Function->identity->sources->new->LinkedHashSet<>->sources->packageToModule->get->getModule->location->toString->add->packageToUnnamedModule->get->stream->Archive->getPathName->map->sources->add->forEach->return->toMap->collect
 JdepsConfiguration#findClass(Dependency.Location):::Returns an optional archive containing the given Location:::name->location->getName->i->name->lastIndexOf->pn->name->substring->replace->archive->packageToModule->get->if->return->archive->contains->Optional->of->Optional->empty->if->packageToUnnamedModule->containsKey->return->packageToUnnamedModule->get->stream->a->contains->filter->findFirst->return->Optional->empty
 JdepsConfiguration#getModules():::Returns the list of Modules that can be found in the specified module paths.:::return
 JdepsConfiguration#resolve(Set):::Returns Configuration with the given roots:::if->roots->isEmpty->throw->new->IllegalArgumentException->return->Configuration->empty->ModuleFinder->of->resolve
+JdepsConfiguration#classPathArchives()::: jdeps configuration class path archives:::return
+JdepsConfiguration#initialArchives()::: jdeps configuration initial archives:::return
+JdepsConfiguration#rootModules()::: jdeps configuration root modules:::return
+JdepsConfiguration#toModule(ModuleReference)::: jdeps configuration to module:::try->mn->mref->descriptor->name->location->mref->location->FileNotFoundException->new->orElseThrow->md->mref->descriptor->loc->system->find->ModuleReference->location->flatMap->orElse->isSystem->location->equals->reader->if->location->getScheme->equals->system->getClassReader->else->ClassFileReader->Paths->get->newInstance->builder->new->Module.Builder->builder->classes->builder->location->return->builder->build->catch->throw->new->UncheckedIOException->finally
+JdepsConfiguration#getVersion()::: jdeps configuration get version:::return
+JdepsConfiguration#close()::: jdeps configuration close:::foreach->archive->close->foreach->archive->close->foreach->nameToModule->values->module->close
+JdepsConfiguration.SystemModuleFinder#walk(Path)::: system module finder walk:::try->stream->Files->walk->return->stream->path->equals->filter->this->toModuleReference->map->mref->descriptor->name->Function->identity->toMap->collect->catch->throw->new->UncheckedIOException->finally
+JdepsConfiguration.SystemModuleFinder#toModuleReference(Path)::: system module finder to module reference:::minfo->path->resolve->try->in->Files->newInputStream->bin->new->BufferedInputStream->descriptor->ModuleDescriptor->read->dropHashes->mn->descriptor->name->uri->URI->path->getFileName->toString->create->readerSupplier->new->ModuleReader->return->new->ModuleReference->catch->throw->new->UncheckedIOException->finally
+JdepsConfiguration.SystemModuleFinder#dropHashes(ModuleDescriptor)::: system module finder drop hashes:::builder->ModuleDescriptor->md->name->newModule->md->requires->builder->requires->forEach->md->exports->builder->exports->forEach->md->opens->builder->opens->forEach->md->provides->stream->builder->provides->forEach->md->uses->stream->builder->uses->forEach->builder->md->packages->packages->return->builder->build
+JdepsConfiguration.SystemModuleFinder#findAll()::: system module finder find all:::return->systemModules->values->stream->toSet->collect
+JdepsConfiguration.SystemModuleFinder#find(String)::: system module finder find:::return->systemModules->containsKey->Optional->systemModules->get->of->Optional->empty
+JdepsConfiguration.SystemModuleFinder#moduleNames()::: system module finder module names:::return->systemModules->values->stream->mref->descriptor->name->map
+JdepsConfiguration.SystemModuleFinder#getClassReader(String)::: system module finder get class reader:::mp->root->resolve->if->Files->exists->Files->isDirectory->return->ClassFileReader->newInstance->else->throw->mp->toString->new->FileNotFoundException
+JdepsConfiguration.SystemModuleFinder#defaultSystemRoots()::: system module finder default system roots:::return->systemModules->values->stream->ModuleReference->descriptor->map->descriptor->exports->stream->e->isQualified->filter->findAny->isPresent->filter->ModuleDescriptor->name->map->Collectors->toSet->collect
+JdepsConfiguration.Builder#upgradeModulePath(String)::: builder upgrade module path:::createModulePathFinder->return
+JdepsConfiguration.Builder#appModulePath(String)::: builder app module path:::createModulePathFinder->return
+JdepsConfiguration.Builder#addmods(Set)::: builder addmods:::foreach->if->isToken->tokens->add->else->rootModules->add->return
+JdepsConfiguration.Builder#multiRelease(Runtime.Version)::: builder multi release:::return
+JdepsConfiguration.Builder#addRoot(Path)::: builder add root:::archive->Archive->getInstance->if->archive->contains->paths->add->else->initialArchives->add->return
+JdepsConfiguration.Builder#addClassPath(String)::: builder add class path:::getClassPaths->addAll->return
+JdepsConfiguration.Builder#build()::: builder build:::finder->if->ModuleFinder->compose->if->ModuleFinder->compose->if->paths->isEmpty->otherModulePath->ModuleFinder->paths->new->PathArr->toArray->of->ModuleFinder->compose->otherModulePath->findAll->stream->mref->descriptor->name->map->rootModules->add->forEach->unnamed->initialArchives->isEmpty->classPaths->isEmpty->if->tokens->contains->appModulePath->findAll->stream->mref->descriptor->name->map->rootModules->add->forEach->if->tokens->contains->rootModules->isEmpty->initialArchives->isEmpty->classPaths->isEmpty->systemModulePath->findAll->stream->mref->descriptor->name->map->rootModules->add->forEach->if->tokens->contains->tokens->add->return->new->JdepsConfiguration
+JdepsConfiguration.Builder#createModulePathFinder(String)::: builder create module path finder:::if->return->else->dirs->mpaths->split->paths->new->PathArr->i->foreach->Paths->get->return->ModuleFinder->of
+JdepsConfiguration.Builder#getClassPaths(String)::: builder get class paths:::if->cpaths->isEmpty->return->Collections->emptyList->paths->new->ArrayList<>->foreach->cpaths->split->if->p->length->i->p->lastIndexOf->if->dir->Paths->p->substring->get->try->stream->Files->newDirectoryStream->foreach->paths->add->catch->throw->new->UncheckedIOException->finally->else->paths->Paths->get->add->return
 JdepsFilter#matches(String):::Tests if the given class matches the pattern given in the -include option:::if->return->if->return->includePattern->matcher->matches->return
 JdepsFilter#matches(Archive):::Tests if the given source includes classes specified in -include option  This method can be used to determine if the given source should eagerly be processed.:::if->return->source->reader->entries->stream->name->replace->map->name->equals->filter->this->matches->anyMatch->return->hasTargetFilter
+JdepsFilter#hasIncludePattern()::: jdeps filter has include pattern:::return
+JdepsFilter#hasTargetFilter()::: jdeps filter has target filter:::return
+JdepsFilter#requiresFilter()::: jdeps filter requires filter:::return
+JdepsFilter#accepts(Dependency)::: jdeps filter accepts:::if->d->getOrigin->d->getTarget->equals->return->pn->d->getTarget->getPackageName->if->d->getOrigin->getPackageName->equals->return->if->filterPattern->matcher->matches->return->return->filter->accepts
 JdepsFilter#accepts(Location, Archive, Location, Archive):::Filter depending on the containing archive or module:::if->module->targetArchive->getModule->return->target->getPackageName->isJDKInternalPackage->else->if->return->return
 JdepsFilter#isJDKInternalPackage(Module, String):::Tests if the package is an internal package of the given module.:::if->module->isJDKUnsupported->return->return->module->isJDK->module->isExported
+JdepsFilter#toString()::: jdeps filter to string:::sb->new->StringBuilder->sb->append->append->append->sb->append->append->append->sb->append->append->append->sb->append->append->append->return->sb->toString
+JdepsFilter.Builder#packages(Set)::: builder packages:::addAll->return
+JdepsFilter.Builder#regex(Pattern)::: builder regex:::return
+JdepsFilter.Builder#filter(Pattern)::: builder filter:::return
+JdepsFilter.Builder#filter(boolean, boolean)::: builder filter:::return
+JdepsFilter.Builder#requires(String, Set)::: builder requires:::add->addAll->return
+JdepsFilter.Builder#findJDKInternals(boolean)::: builder find internals:::return
+JdepsFilter.Builder#includePattern(Pattern)::: builder include pattern:::return
+JdepsFilter.Builder#build()::: builder build:::filter->if->Dependencies->getRegexFilter->else->if->targetPackages->isEmpty->Dependencies->getPackageFilter->return->new->JdepsFilter
+JdepsTask.BadArguments#getKey()::: bad arguments get key:::
+JdepsTask.BadArguments#getArgs()::: bad arguments get args:::
+JdepsTask.BadArguments#showUsage()::: bad arguments show usage:::
+JdepsTask.BadArgs#showUsage(boolean)::: bad args show usage:::return
+JdepsTask.BadArgs#getKey()::: bad args get key:::return
+JdepsTask.BadArgs#getArgs()::: bad args get args:::return
+JdepsTask.BadArgs#showUsage()::: bad args show usage:::return
+JdepsTask.UncheckedBadArgs#getKey()::: unchecked bad args get key:::return
+JdepsTask.UncheckedBadArgs#getArgs()::: unchecked bad args get args:::return
+JdepsTask.UncheckedBadArgs#showUsage()::: unchecked bad args show usage:::return
+JdepsTask.Option#isHidden()::: option is hidden:::return
+JdepsTask.Option#matches(String)::: option matches:::foreach->if->a->equals->return->if->opt->startsWith->return->return
+JdepsTask.Option#ignoreRest()::: option ignore rest:::return
+JdepsTask.Option#process(JdepsTask, String, String)::: option process:::
+JdepsTask.HiddenOption#isHidden()::: hidden option is hidden:::return
+JdepsTask#setLog(PrintWriter)::: jdeps task set log:::
+JdepsTask#run(String...)::: jdeps task run:::if->new->PrintWriter->try->handleOptions->if->showHelp->if->showVersion->if->return->if->options->numFilters->reportError->return->if->analyzeDeps->if->command->checkOptions->return->ok->run->return->catch->e->getKey->e->getArgs->reportError->if->e->showUsage->log->getMessage->println->return->e->getMessage->reportError->return->e->printStackTrace->return->e->getKey->e->getParams->reportError->return->finally->log->flush
+JdepsTask#run()::: jdeps task run:::try->config->buildConfig->if->config->splitPackages->entrySet->stream->comparingByKey->sorted->e->getKey->e->getValue->stream->joining->collect->warning->forEach->stream->JdepsConfiguration->isToken->filter->config->findModule->new->BadArgs->new->UncheckedBadArgs->orElseThrow->forEach->return->command->run->catch->finally
+JdepsTask#buildConfig()::: jdeps task build config:::builder->new->JdepsConfiguration.Builder->builder->upgradeModulePath->appModulePath->addmods->command->addModules->addmods->if->builder->addClassPath->if->builder->multiRelease->foreach->p->Paths->get->if->Files->exists->builder->addRoot->else->warning->return->builder->build
+JdepsTask#analyzeDeps()::: jdeps task analyze deps:::return->new->InverseAnalyzeDeps->new->AnalyzeDeps
+JdepsTask#genDotFile(Path)::: jdeps task gen dot file:::if->Files->exists->Files->isDirectory->Files->isWritable->throw->dir->toString->new->BadArgs->return->new->GenDotFile
+JdepsTask#genModuleInfo(Path, boolean)::: jdeps task gen module info:::if->Files->exists->Files->isDirectory->Files->isWritable->throw->dir->toString->new->BadArgs->return->new->GenModuleInfo
+JdepsTask#listModuleDeps(CommandOption)::: jdeps task list module deps:::switch->return->new->ListModuleDeps->return->new->ListModuleDeps->return->new->ListModuleDeps->throw->option->toString->new->IllegalArgumentException
+JdepsTask#checkModuleDeps(Set)::: jdeps task check module deps:::return->new->CheckModuleDeps
 JdepsTask.Command#checkOptions():::Returns true if the command-line options are all valid; otherwise, returns false.:::
 JdepsTask.Command#run(JdepsConfiguration):::Do analysis:::
 JdepsTask.Command#addModules():::Includes all modules on system module path and application module path  When a named module is analyzed, it will analyze the dependences only:::return->Set->of
+JdepsTask.Command#toString()::: command to string:::return->option->toString
+JdepsTask.AnalyzeDeps#checkOptions()::: analyze deps check options:::if->if->reportError->return->if->options->hasFilter->reportError->return->if->if->reportError->return->if->inputArgs->isEmpty->isEmpty->reportError->if->inputArgs->isEmpty->options->hasSourcePath->showHelp->return->return
+JdepsTask.AnalyzeDeps#getAnalyzerType()::: analyze deps get analyzer type:::if->return->if->return->return
+JdepsTask.AnalyzeDeps#run(JdepsConfiguration)::: analyze deps run:::type->getAnalyzerType->writer->new->SimpleWriter->return->run
+JdepsTask.AnalyzeDeps#run(JdepsConfiguration, JdepsWriter, Type)::: analyze deps run:::analyzer->dependencyFilter->new->DepsAnalyzer->ok->analyzer->run->if->analyzer->archives->archive->reader->skippedEntries->stream->warning->forEach->forEach->if->jdkInternals->new->TreeMap<>->deps->analyzer->dependences->deps->replacementFor->jdkInternals->put->ifPresent->forEach->if->deps->isEmpty->log->println->getMessage->warning->if->jdkInternals->isEmpty->log->println->internalApiTitle->getMessage->replacementApiTitle->getMessage->log->format->log->internalApiTitle->replaceAll->replacementApiTitle->replaceAll->format->jdkInternals->entrySet->stream->key->e->getKey->lines->e->getValue->split->foreach->log->format->forEach->return
+JdepsTask.InverseAnalyzeDeps#checkOptions()::: inverse analyze deps check options:::if->reportError->return->if->options->numFilters->reportError->return->if->super->checkOptions->return->return
+JdepsTask.InverseAnalyzeDeps#run(JdepsConfiguration)::: inverse analyze deps run:::type->getAnalyzerType->analyzer->dependencyFilter->new->InverseDepsAnalyzer->ok->analyzer->run->log->println->if->isEmpty->log->getMessage->println->else->log->toString->getMessage->println->analyzer->inverseDependences->stream->comparator->sorted->this->toInversePath->map->log->println->forEach->return
+JdepsTask.InverseAnalyzeDeps#toInversePath(Deque)::: inverse analyze deps to inverse path:::return->path->stream->Archive->getName->map->joining->collect
+JdepsTask.InverseAnalyzeDeps#comparator()::: inverse analyze deps comparator:::return->Comparator->deque->peekFirst->getName->comparing->Deque->size->thenComparingInt->this->toInversePath->thenComparing
+JdepsTask.InverseAnalyzeDeps#addModules()::: inverse analyze deps add modules:::return->size->Set->of->Set->of
+JdepsTask.GenModuleInfo#checkOptions()::: gen module info check options:::if->reportError->return->if->options->hasFilter->reportError->return->return
+JdepsTask.GenModuleInfo#run(JdepsConfiguration)::: gen module info run:::foreach->try->reader->ClassFileReader->Paths->get->newInstance->classInUnnamedPackage->reader->entries->stream->n->endsWith->filter->toPackageName->isEmpty->filter->findFirst->if->classInUnnamedPackage->isPresent->if->classInUnnamedPackage->get->equals->reportError->else->reportError->return->catch->finally->builder->new->ModuleInfoBuilder->ok->builder->run->if->reportError->builder->if->builder->notFound->log->targetArchive->getName->format->visitMissingDeps->return
+JdepsTask.GenModuleInfo#toPackageName(String)::: gen module info to package name:::i->name->lastIndexOf->return->name->replace->substring
+JdepsTask.CheckModuleDeps#checkOptions()::: check module deps check options:::if->inputArgs->isEmpty->reportError->return->return
+JdepsTask.CheckModuleDeps#run(JdepsConfiguration)::: check module deps run:::if->config->initialArchives->isEmpty->list->config->initialArchives->stream->Archive->getPathName->map->joining->collect->throw->new->BadArgs->new->UncheckedBadArgs->return->new->ModuleAnalyzer->run
+JdepsTask.CheckModuleDeps#addModules()::: check module deps add modules:::return->Set->of
+JdepsTask.ListModuleDeps#checkOptions()::: list module deps check options:::if->reportError->return->if->reportError->return->if->inputArgs->isEmpty->isEmpty->reportError->if->inputArgs->isEmpty->options->hasSourcePath->showHelp->return->return
+JdepsTask.ListModuleDeps#run(JdepsConfiguration)::: list module deps run:::return->dependencyFilter->new->ModuleExportsAnalyzer->run
+JdepsTask.GenDotFile#run(JdepsConfiguration)::: gen dot file run:::if->isEmpty->inputArgs->isEmpty->return->new->ModuleDotGraph->genDotFiles->type->getAnalyzerType->writer->new->DotFileWriter->return->run
+JdepsTask#dependencyFilter(JdepsConfiguration):::Returns a filter used during dependency analysis:::builder->new->JdepsFilter.Builder->builder->includePattern->builder->filter->builder->findJDKInternals->if->isEmpty->stream->m->config->findModule->get->builder->m->packages->requires->forEach->if->builder->regex->if->isEmpty->builder->packages->if->builder->filter->return->builder->build
+JdepsTask#handleOptions(String[])::: jdeps task handle options:::for->i
+JdepsTask#getOption(String)::: jdeps task get option:::foreach->if->o->matches->return->throw->new->BadArgs->showUsage
+JdepsTask#reportError(String, Object...)::: jdeps task report error:::log->getMessage->getMessage->println
+JdepsTask#warning(String, Object...)::: jdeps task warning:::log->getMessage->getMessage->println
+JdepsTask#showHelp()::: jdeps task show help:::log->getMessage->println->foreach->name->substring->name->charAt->name->substring->if->o->isHidden->name->startsWith->continue->log->getMessage->println
+JdepsTask#showVersion(boolean)::: jdeps task show version:::log->version->println
+JdepsTask#version(String)::: jdeps task version:::if->return->System->getProperty->try->return->getString->catch->return->System->getProperty->getMessage->finally
+JdepsTask#getMessage(String, Object...)::: jdeps task get message:::try->return->MessageFormat->getString->format->catch->throw->new->InternalError->finally
+JdepsTask.Options#hasSourcePath()::: options has source path:::return->addmods->isEmpty
+JdepsTask.Options#hasFilter()::: options has filter:::return->numFilters
+JdepsTask.Options#numFilters()::: options num filters:::count->if->requires->size->if->if->packageNames->size->return
+JdepsTask#replacementFor(String):::Returns the recommended replacement API for the given classname; or return null if replacement API is not known.:::name->value->while->try->getString->catch->i->name->lastIndexOf->name->substring->finally->return->Optional->ofNullable
+JdepsWriter#newDotWriter(Path, Analyzer.Type)::: jdeps writer new dot writer:::return->new->DotFileWriter
+JdepsWriter#newSimpleWriter(PrintWriter, Analyzer.Type)::: jdeps writer new simple writer:::return->new->SimpleWriter
+JdepsWriter#generateOutput(Collection, Analyzer)::: jdeps writer generate output:::
+JdepsWriter.DotFileWriter#generateOutput(Collection, Analyzer)::: dot file writer generate output:::Files->createDirectories->if->archives->stream->analyzer->hasDependences->filter->dotfile->outputDir->archive->getName->resolve->try->pw->Files->newOutputStream->new->PrintWriter->formatter->new->DotFileFormatter->analyzer->visitDependences->catch->throw->new->UncheckedIOException->finally->forEach->generateSummaryDotFile
+JdepsWriter.DotFileWriter#generateSummaryDotFile(Collection, Analyzer)::: dot file writer generate summary dot file:::isSummary->summaryType->summary->outputDir->resolve->try->sw->Files->newOutputStream->new->PrintWriter->dotfile->new->SummaryDotFile->foreach->if->if->analyzer->dotfile->labelBuilder->visitDependences->analyzer->visitDependences->catch->finally
+JdepsWriter.DotFileWriter.DotFileFormatter#close()::: dot file formatter close:::writer->println
+JdepsWriter.DotFileWriter.DotFileFormatter#visitDependence(String, Archive, String, Archive)::: dot file formatter visit dependence:::tag->toTag->writer->String->format->tag->isEmpty->String->format->format
+JdepsWriter.DotFileWriter.SummaryDotFile#close()::: summary dot file close:::writer->println
+JdepsWriter.DotFileWriter.SummaryDotFile#visitDependence(String, Archive, String, Archive)::: summary dot file visit dependence:::targetName->targetArchive->getName->if->targetArchive->getModule->isJDK->m->n->showProfileOrModule->if->n->isEmpty->else->if->targetArchive->getName->label->getLabel->writer->String->format->format
+JdepsWriter.DotFileWriter.SummaryDotFile#getLabel(Archive, Archive)::: summary dot file get label:::if->edges->isEmpty->return->label->edges->get->get->return->String->label->toString->format
+JdepsWriter.DotFileWriter.SummaryDotFile#labelBuilder()::: summary dot file label builder:::return->new->Analyzer.Visitor
+JdepsWriter.SimpleWriter#generateOutput(Collection, Analyzer)::: simple writer generate output:::depFormatter->new->RawOutputFormatter->summaryFormatter->new->RawSummaryFormatter->archives->stream->analyzer->hasDependences->filter->Comparator->Archive->getName->comparing->sorted->if->archive->getModule->isNamed->summaryFormatter->archive->getModule->printModuleDescriptor->analyzer->visitDependences->if->analyzer->hasDependences->analyzer->visitDependences->forEach
+JdepsWriter.SimpleWriter.RawOutputFormatter#visitDependence(String, Archive, String, Archive)::: raw output formatter visit dependence:::tag->toTag->if->writer->format->else->if->origin->equals->writer->originArchive->getName->format->writer->format
+JdepsWriter.SimpleWriter.RawSummaryFormatter#visitDependence(String, Archive, String, Archive)::: raw summary formatter visit dependence:::targetName->targetArchive->getPathName->if->targetArchive->getModule->isNamed->targetArchive->getModule->name->writer->originArchive->getName->format->if->targetArchive->getModule->isJDK->writer->format->writer->format
+JdepsWriter.SimpleWriter.RawSummaryFormatter#printModuleDescriptor(Module)::: raw summary formatter print module descriptor:::if->module->isNamed->return->writer->module->name->module->isAutomatic->format->writer->module->location->format->module->descriptor->requires->stream->Comparator->Requires->name->comparing->sorted->writer->format->forEach
 JdepsWriter#toTag(Archive, String, Archive):::If the given archive is JDK archive, this method returns the profile name only if -profile option is specified; it accesses a private JDK API and the returned value will have "JDK internal API" prefix  For non-JDK archives, this method returns the file name of the archive.:::if->target->getModule->isNamed->return->target->getName->module->target->getModule->pn->if->i->name->lastIndexOf->name->substring->if->module->isExported->module->isJDKUnsupported->return->showProfileOrModule->if->source->getModule->isJDK->module->isJDK->return->module->name->isExported->module->source->getModule->name->isExported->return->module->name
+JdepsWriter#showProfileOrModule(Module)::: jdeps writer show profile or module:::tag->if->p->Profile->getProfile->if->p->profileName->else->if->m->name->return
+JdepsWriter#getProfile(String)::: jdeps writer get profile:::pn->if->i->name->lastIndexOf->name->substring->return->Profile->getProfile
+Main#main(String...)::: main main:::t->new->JdepsTask->rc->t->run->System->exit
 Main#run(String[], PrintWriter):::Entry point that does not call System.exit.:::t->new->JdepsTask->t->setLog->return->t->run
+Main.JDepsToolProvider#name()::: deps tool provider name:::return
+Main.JDepsToolProvider#run(PrintWriter, PrintWriter, String...)::: deps tool provider run:::return->Main->run
+Module#trace(String, Object...)::: module trace:::trace
+Module#trace(boolean, String, Object...)::: module trace:::if->format
 Module#name():::Returns module name:::return->descriptor->name->getName
+Module#isNamed()::: module is named:::return
+Module#isAutomatic()::: module is automatic:::return->descriptor->isAutomatic
+Module#getModule()::: module get module:::return
+Module#descriptor()::: module descriptor:::return
+Module#location()::: module location:::return
+Module#isJDK()::: module is k:::mn->name->return->mn->startsWith->mn->startsWith->mn->startsWith
+Module#isSystem()::: module is system:::return
+Module#exports()::: module exports:::return
+Module#packages()::: module packages:::return->descriptor->packages
+Module#isJDKUnsupported()::: module is unsupported:::return->JDK_UNSUPPORTED->this->name->equals
 Module#toNormalModule(Map):::Converts this module to a normal module with the given dependences:::if->isAutomatic->throw->name->new->IllegalArgumentException->return->new->NormalModule
 Module#isExported(String):::Tests if the package of the given name is exported.:::return->exports->containsKey->exports->get->isEmpty
 Module#isExported(String, String):::Tests if the package of the given name is exported to the target in a qualified fashion.:::return->isExported->exports->containsKey->exports->get->contains
 Module#isOpen(String):::Tests if the package of the given name is open.:::return->opens->containsKey->opens->get->isEmpty
 Module#isOpen(String, String):::Tests if the package of the given name is open to the target in a qualified fashion.:::return->isOpen->opens->containsKey->opens->get->contains
+Module#toString()::: module to string:::return->name
+Module.Builder#location(URI)::: builder location:::return
+Module.Builder#classes(ClassFileReader)::: builder classes:::return
+Module.Builder#build()::: builder build:::if->descriptor->isAutomatic->throw->new->InternalError->exports->new->HashMap<>->opens->new->HashMap<>->if->descriptor->isAutomatic->descriptor->packages->exports->Collections->emptySet->put->forEach->descriptor->packages->opens->Collections->emptySet->put->forEach->else->descriptor->exports->stream->exports->exp->source->new->HashSet<>->computeIfAbsent->exp->targets->addAll->forEach->descriptor->opens->stream->opens->exp->source->new->HashSet<>->computeIfAbsent->exp->targets->addAll->forEach->return->new->Module
+Module.UnnamedModule#name()::: unnamed module name:::return
+Module.UnnamedModule#isNamed()::: unnamed module is named:::return
+Module.UnnamedModule#isAutomatic()::: unnamed module is automatic:::return
+Module.UnnamedModule#isExported(String)::: unnamed module is exported:::return
+Module.NormalModule#descriptor()::: normal module descriptor:::return
+ModuleAnalyzer#run()::: module analyzer run:::try->modules->values->ModuleDeps->computeRequiresTransitive->forEach->modules->values->md->computeRequires->md->analyzeDeps->forEach->catch->finally->dependencyFinder->shutdown->return
+ModuleAnalyzer.ModuleDeps#computeRequiresTransitive():::Compute 'requires transitive' dependences by analyzing API dependencies:::computeRequires->m->name->equals->filter->toSet->collect->trace
+ModuleAnalyzer.ModuleDeps#computeRequires()::: module deps compute requires:::computeRequires->toSet->collect->trace
+ModuleAnalyzer.ModuleDeps#computeRequires(boolean)::: module deps compute requires:::if->dependencyFinder->Stream->of->parseExportedAPIs->else->dependencyFinder->Stream->of->parse->return->dependencyFinder->getDependences->Archive->getModule->map
+ModuleAnalyzer.ModuleDeps#descriptor()::: module deps descriptor:::return->descriptor
+ModuleAnalyzer.ModuleDeps#descriptor(Set, Set)::: module deps descriptor:::builder->ModuleDescriptor->root->name->newModule->if->root->name->equals->builder->Set->of->requires->requiresTransitive->stream->m->name->equals->filter->Module->name->map->builder->Set->of->requires->forEach->requires->stream->requiresTransitive->contains->filter->m->name->equals->filter->Module->name->map->builder->requires->forEach->return->builder->build
+ModuleAnalyzer.ModuleDeps#buildReducedGraph()::: module deps build reduced graph:::rpBuilder->new->ModuleGraphBuilder->rpBuilder->addModule->requiresTransitive->stream->rpBuilder->addEdge->forEach->rbg->rpBuilder->build->reduce->gb->new->ModuleGraphBuilder->gb->addModule->requires->stream->gb->addEdge->forEach->newGraph->gb->buildGraph->reduce->if->println->newGraph->printGraph->return
 ModuleAnalyzer.ModuleDeps#reduced():::Apply the transitive reduction on the module graph and returns the corresponding ModuleDescriptor:::g->buildReducedGraph->return->g->adjacentNodes->descriptor
+ModuleAnalyzer.ModuleDeps#analyzeDeps():::Apply transitive reduction on the resulting graph and reports recommended requires.:::printModuleDescriptor->analyzedDescriptor->descriptor->if->root->descriptor->matches->log->root->name->format->analyzedDescriptor->requires->stream->Comparator->ModuleDescriptor.Requires->name->comparing->sorted->log->format->forEach->reduced->reduced->if->root->descriptor->matches->log->root->name->format->reduced->requires->stream->Comparator->ModuleDescriptor.Requires->name->comparing->sorted->log->format->forEach->checkQualifiedExports->log->println
+ModuleAnalyzer.ModuleDeps#checkQualifiedExports()::: module deps check qualified exports:::unusedQualifiedExports->if->unusedQualifiedExports->isEmpty->log->root->name->format->unusedQualifiedExports->keySet->stream->sorted->log->unusedQualifiedExports->get->stream->sorted->joining->collect->format->forEach
+ModuleAnalyzer.ModuleDeps#printModuleDescriptor(PrintWriter, Module)::: module deps print module descriptor:::descriptor->module->descriptor->out->descriptor->name->module->location->format->if->descriptor->name->equals->return->out->println->descriptor->requires->stream->Comparator->ModuleDescriptor.Requires->name->comparing->sorted->out->format->forEach
+ModuleAnalyzer.ModuleDeps#unusedQualifiedExports():::Detects any qualified exports not used by the target module.:::unused->new->HashMap<>->qualifiedExports->root->exports->entrySet->stream->e->getValue->isEmpty->filter->Map.Entry->getKey->map->Function->identity->new->HashSet<>->toMap->collect->mods->new->HashSet<>->root->exports->values->stream->Set->stream->flatMap->configuration->findModule->mods->add->log->format->ifPresentOrElse->forEach->dependencyFinder->mods->stream->parse->mods->stream->m->getDependencies->Dependency.Location->getPackageName->map->qualifiedExports->containsKey->filter->qualifiedExports->get->m->name->add->forEach->forEach->staleQualifiedExports->qualifiedExports->keySet->stream->qualifiedExports->get->root->exports->get->equals->filter->toSet->collect->if->staleQualifiedExports->isEmpty->foreach->targets->root->exports->get->new->HashSet<>->targets->qualifiedExports->get->removeAll->unused->put->return
+ModuleAnalyzer#matches(ModuleDescriptor, ModuleDescriptor)::: module analyzer matches:::reqTransitive->md->requires->stream->req->modifiers->contains->filter->toSet->collect->otherReqTransitive->other->requires->stream->req->modifiers->contains->filter->toSet->collect->if->reqTransitive->equals->trace->return->unused->md->requires->stream->other->requires->contains->filter->Collectors->toSet->collect->if->unused->isEmpty->trace->return->return
+ModuleAnalyzer#descriptors(String)::: module analyzer descriptors:::moduleDeps->modules->keySet->stream->m->name->equals->filter->modules->get->map->findFirst->get->descriptors->new->ModuleDescriptorArr->descriptor->moduleDeps->descriptor->moduleDeps->reduced->return
+ModuleAnalyzer#unusedQualifiedExports(String)::: module analyzer unused qualified exports:::moduleDeps->modules->keySet->stream->m->name->equals->filter->modules->get->map->findFirst->get->return
 ModuleDotGraph#genDotFiles(Path):::Generate dotfile for all modules:::return->genDotFiles
+ModuleDotGraph#genDotFiles(Path, Attributes)::: module dot graph gen dot files:::Files->createDirectories->foreach->configurations->keySet->path->dir->resolve->configurations->get->genDotFile->return
 ModuleDotGraph#genDotFile(Path, String, Configuration, Attributes):::Generate dotfile of the given path:::graph->Set->of->requiresTransitiveGraph->gengraph->builder->new->DotGraphBuilder->builder->attributes->javaSubgraphColor->subgraph->attributes->jdkSubgraphColor->subgraph->graph->nodes->stream->configuration->findModule->get->reference->descriptor->map->modules->builder->build
+ModuleDotGraph#gengraph(Configuration):::Returns a Graph of the given Configuration after transitive reduction:::builder->new->Graph.Builder<>->cf->modules->stream->mn->rm->name->builder->addNode->rm->reads->stream->ResolvedModule->name->map->builder->addEdge->forEach->forEach->rpg->requiresTransitiveGraph->return->builder->build->reduce
 ModuleDotGraph#requiresTransitiveGraph(Configuration, Set):::Returns a Graph containing only requires transitive edges with transitive reduction.:::deque->new->ArrayDeque<>->visited->new->HashSet<>->builder->new->Graph.Builder<>->while->deque->peek->mn->deque->pop->if->visited->contains->continue->visited->add->builder->addNode->cf->findModule->get->reference->descriptor->requires->stream->d->modifiers->contains->d->name->equals->filter->Requires->name->map->deque->add->builder->addEdge->forEach->return->builder->build->reduce
+ModuleDotGraph.Attributes#fontSize()::: attributes font size:::
+ModuleDotGraph.Attributes#fontName()::: attributes font name:::
+ModuleDotGraph.Attributes#fontColor()::: attributes font color:::
+ModuleDotGraph.Attributes#arrowSize()::: attributes arrow size:::
+ModuleDotGraph.Attributes#arrowWidth()::: attributes arrow width:::
+ModuleDotGraph.Attributes#arrowColor()::: attributes arrow color:::
+ModuleDotGraph.Attributes#rankSep()::: attributes rank sep:::return
+ModuleDotGraph.Attributes#ranks()::: attributes ranks:::return->Collections->emptyList
+ModuleDotGraph.Attributes#weightOf(String, String)::: attributes weight of:::return
+ModuleDotGraph.Attributes#requiresMandatedColor()::: attributes requires mandated color:::return
+ModuleDotGraph.Attributes#javaSubgraphColor()::: attributes java subgraph color:::return
+ModuleDotGraph.Attributes#jdkSubgraphColor()::: attributes jdk subgraph color:::return
+ModuleDotGraph.DotGraphAttributes#fontSize()::: dot graph attributes font size:::return
+ModuleDotGraph.DotGraphAttributes#fontName()::: dot graph attributes font name:::return
+ModuleDotGraph.DotGraphAttributes#fontColor()::: dot graph attributes font color:::return
+ModuleDotGraph.DotGraphAttributes#arrowSize()::: dot graph attributes arrow size:::return
+ModuleDotGraph.DotGraphAttributes#arrowWidth()::: dot graph attributes arrow width:::return
+ModuleDotGraph.DotGraphAttributes#arrowColor()::: dot graph attributes arrow color:::return
+ModuleDotGraph.DotGraphBuilder#javaSE()::: dot graph builder java e:::root->system->ModuleFinder->ofSystem->if->system->find->isPresent->return->Stream->Stream->of->Configuration->empty->ModuleFinder->of->Set->of->resolve->findModule->get->reads->stream->ResolvedModule->name->map->concat->toSet->collect->else->return->system->findAll->stream->ModuleReference->descriptor->map->ModuleDescriptor->name->map->name->startsWith->name->equals->filter->Collectors->toSet->collect
+ModuleDotGraph.DotGraphBuilder#jdk()::: dot graph builder jdk:::return->ModuleFinder->ofSystem->findAll->stream->ModuleReference->descriptor->map->ModuleDescriptor->name->map->JAVA_SE_SUBGRAPH->contains->name->startsWith->name->startsWith->name->startsWith->filter->Collectors->toSet->collect
+ModuleDotGraph.DotGraphBuilder#modules(Stream)::: dot graph builder modules:::descriptors->add->forEach->return
+ModuleDotGraph.DotGraphBuilder#build(Path)::: dot graph builder build:::try->writer->Files->newBufferedWriter->out->new->PrintWriter->out->format->out->format->out->attributes->rankSep->format->out->format->out->attributes->fontColor->attributes->fontName->attributes->fontSize->format->out->attributes->arrowWidth->attributes->arrowColor->attributes->arrowSize->format->attributes->ranks->stream->descriptors->stream->ModuleDescriptor->name->map->nodes->contains->filter->map->joining->collect->map->group->length->filter->out->format->forEach->subgraphs->out->format->descriptors->stream->ModuleDescriptor->name->map->subgraph.nodes->contains->filter->printNode->forEach->out->format->forEach->descriptors->stream->graph->md->name->contains->graph->md->name->adjacentNodes->isEmpty->filter->graph->md->name->adjacentNodes->printNode->forEach->out->println->catch->finally
+ModuleDotGraph.DotGraphBuilder#subgraph(String, String, String, Set)::: dot graph builder subgraph:::subgraphs->new->SubGraph->add->return
+ModuleDotGraph.DotGraphBuilder#printNode(PrintWriter, String, String, String)::: dot graph builder print node:::out->format
+ModuleDotGraph.DotGraphBuilder#printNode(PrintWriter, ModuleDescriptor, Set)::: dot graph builder print node:::requiresTransitive->md->requires->stream->d->modifiers->contains->filter->d->name->map->toSet->collect->mn->md->name->edges->stream->attr->if->dn->equals->attributes->requiresMandatedColor->else->requiresTransitive->contains->w->attributes->weightOf->if->if->attr->isEmpty->out->format->forEach
+ModuleExportsAnalyzer#run()::: module exports analyzer run:::rc->super->run->visitor->jdkInternals->deps->new->HashMap<>->computeIfAbsent->new->HashSet<>->computeIfAbsent->module->targetArchive->getModule->if->originArchive->getModule->module->isJDK->module->isExported->jdkInternals->add->archives->stream->analyzer->hasDependences->filter->Comparator->Archive->getName->comparing->sorted->analyzer->visitDependences->forEach->modules->modules->if->printDependences->else->writer->modules->stream->Module->name->map->sorted->Collectors->joining->collect->println->return
+ModuleExportsAnalyzer#modules()::: module exports analyzer modules:::builder->new->ModuleGraphBuilder->root->new->RootModule->builder->addModule->dependenceStream->map->keySet->stream->flatMap->m->getModule->isNamed->configuration->rootModules->contains->filter->Archive->getModule->map->builder->addEdge->forEach->g->builder->reduced->builder->build->return->g->adjacentNodes
+ModuleExportsAnalyzer#printDependences(Set)::: module exports analyzer print dependences:::jdkinternals->new->HashMap<>->dependenceStream->map->entrySet->stream->flatMap->e->getValue->size->filter->jdkinternals->e->getKey->getModule->new->TreeSet<>->computeIfAbsent->e->getValue->addAll->forEach->Stream->modules->stream->jdkinternals->keySet->stream->concat->Comparator->Module->name->comparing->sorted->distinct->if->jdkinternals->containsKey->jdkinternals->get->stream->writer->format->forEach->else->writer->format->forEach
+ModuleExportsAnalyzer#dependenceStream()::: module exports analyzer dependence stream:::return->deps->keySet->stream->source->getModule->isNamed->configuration->rootModules->contains->filter->deps->get->map
+ModuleExportsAnalyzer.RootModule#descriptor()::: root module descriptor:::return
 ModuleGraphBuilder#addModule(Module):::Adds a module to the graph.:::addNode->return
 ModuleGraphBuilder#reduced():::Apply transitive reduction on the resulting graph:::graph->build->newGraph->graph->edges->buildGraph->reduce->if->log->new->PrintWriter->println->graph->printGraph->println->newGraph->printGraph->return
+ModuleGraphBuilder#buildGraph()::: module graph builder build graph:::graph->build->return->graph->edges->buildGraph
+ModuleGraphBuilder#buildGraph(Map>):::Build a graph of module from the given dependences:::builder->new->Graph.Builder<>->visited->new->HashSet<>->deque->new->LinkedList<>->edges->entrySet->stream->m->e->getKey->deque->add->e->getValue->stream->deque->add->builder->addEdge->forEach->forEach->source->while->deque->poll->if->visited->contains->continue->visited->add->builder->addNode->from->requiresTransitive->deque->add->builder->addEdge->forEach->return->builder->build
+ModuleGraphBuilder#requiresTransitive(Module)::: module graph builder requires transitive:::return->m->descriptor->requires->stream->req->modifiers->contains->filter->ModuleDescriptor.Requires->name->map->config->findModule->map->Optional->stream->flatMap
+ModuleInfoBuilder#run()::: module info builder run:::try->requiresTransitive->computeRequiresTransitive->dependencyFinder->automaticModules->stream->parse->analyzer->automaticModules->dependencyFinder->locationToArchive->run->missingDeps->foreach->automaticModules->apiDeps->requiresTransitive->containsKey->requiresTransitive->get->Collections->emptySet->file->outputdir->m->name->resolve->resolve->normalModule->toNormalModule->if->automaticToNormalModule->put->format->normalModule->descriptor->writeModuleInfo->else->format->return->catch->finally->dependencyFinder->shutdown
+ModuleInfoBuilder#notFound(Archive)::: module info builder not found:::return
+ModuleInfoBuilder#toNormalModule(Module, Set)::: module info builder to normal module:::module->close->if->analyzer->requires->this->notFound->anyMatch->return->requires->new->HashMap<>->requiresTransitive->stream->Archive->getModule->map->requires->m->name->put->forEach->analyzer->requires->Archive->getModule->map->requires->d->name->putIfAbsent->forEach->return->module->toNormalModule
 ModuleInfoBuilder#modules():::Returns the stream of resulting modules:::return->automaticToNormalModule->values->stream
 ModuleInfoBuilder#descriptors():::Returns the stream of resulting ModuleDescriptors:::return->automaticToNormalModule->entrySet->stream->Map.Entry->getValue->map->Module->descriptor->map
+ModuleInfoBuilder#visitMissingDeps(Analyzer.Visitor)::: module info builder visit missing deps:::automaticModules->stream->analyzer->requires->this->notFound->anyMatch->filter->analyzer->visitDependences->forEach
+ModuleInfoBuilder#writeModuleInfo(Path, ModuleDescriptor)::: module info builder write module info:::try->Files->file->getParent->createDirectories->try->pw->Files->newOutputStream->new->PrintWriter->printModuleInfo->catch->finally->catch->throw->new->UncheckedIOException->finally
+ModuleInfoBuilder#printModuleInfo(PrintWriter, ModuleDescriptor)::: module info builder print module info:::writer->md->name->format->modules->configuration->getModules->reqs->md->requires->stream->req->name->equals->req->modifiers->isEmpty->filter->Collectors->toSet->collect->reqs->stream->Comparator->Requires->name->comparing->sorted->writer->req->modifiers->req->name->toString->format->forEach->if->reqs->isEmpty->writer->println->md->requires->stream->req->name->equals->req->modifiers->isEmpty->filter->Collectors->toSet->collect->reqs->stream->Comparator->Requires->name->comparing->sorted->writer->req->modifiers->req->name->toString->format->forEach->if->reqs->isEmpty->writer->println->if->md->exports->stream->if->exp->isQualified->throw->md->name->new->InternalError->peek->Comparator->Exports->source->comparing->sorted->writer->exp->source->format->forEach->if->md->exports->isEmpty->writer->println->md->provides->stream->Comparator->Provides->service->comparing->sorted->p->providers->stream->impl->replace->map->String->p->service->replace->format->joining->collect->map->writer->println->forEach->if->md->provides->isEmpty->writer->println->writer->println
+ModuleInfoBuilder#automaticModules()::: module info builder automatic modules:::return->automaticToNormalModule->keySet
+ModuleInfoBuilder#toString(Set, String):::Returns a string containing the given set of modifiers and label.:::return->Stream->mods->stream->e->toString->toLowerCase->map->Stream->of->concat->Collectors->joining->collect
+ModuleInfoBuilder#computeRequiresTransitive():::Compute 'requires transitive' dependences by analyzing API dependencies:::dependencyFinder->automaticModules->stream->parseExportedAPIs->return->dependencyFinder->dependences
 MultiReleaseException#getKey():::Returns the resource message key:::return
 MultiReleaseException#getParams():::Returns the detailed error message array.:::return
+VersionHelper#get(String)::: version helper get:::if->nameToVersion->containsKey->return->nameToVersion->get->return
+VersionHelper#add(JarFile, JarEntry, ClassFile)::: version helper add:::realName->e->getRealName->if->realName->startsWith->len->META_INF_VERSIONS->length->n->realName->indexOf->if->version->realName->substring->name->cf->getName->replace->if->nameToVersion->containsKey->if->version->nameToVersion->get->equals->throw->nameToVersion->get->new->MultiReleaseException->else->nameToVersion->put->else->throw->jarfile->getName->new->MultiReleaseException

@@ -1,10 +1,37 @@
+ConstructorUtil#getConstructor(Class, Class[])::: constructor util get constructor:::ReflectUtil->checkPackageAccess->return->cls->getConstructor
+ConstructorUtil#getConstructors(Class)::: constructor util get constructors:::ReflectUtil->checkPackageAccess->return->cls->getConstructors
+FieldUtil#getField(Class, String)::: field util get field:::ReflectUtil->checkPackageAccess->return->cls->getField
+FieldUtil#getFields(Class)::: field util get fields:::ReflectUtil->checkPackageAccess->return->cls->getFields
+Trampoline#ensureInvocableMethod(Method)::: trampoline ensure invocable method:::clazz->m->getDeclaringClass->if->clazz->equals->clazz->equals->clazz->getName->startsWith->throw->new->UnsupportedOperationException->new->InvocationTargetException
+Trampoline#invoke(Method, Object, Object[])::: trampoline invoke:::ensureInvocableMethod->return->m->invoke
+MethodUtil#getMethod(Class, String, Class[])::: method util get method:::ReflectUtil->checkPackageAccess->return->cls->getMethod
+MethodUtil#getMethods(Class)::: method util get methods:::ReflectUtil->checkPackageAccess->return->cls->getMethods
+MethodUtil#getPublicMethods(Class)::: method util get public methods:::if->System->getSecurityManager->return->cls->getMethods->sigs->new->HashMap<Signature,Method>->while->done->getInternalPublicMethods->if->break->getInterfaceMethods->cls->getSuperclass->return->sigs->values->sigs->size->new->MethodArr->toArray
+MethodUtil#getInterfaceMethods(Class, Map)::: method util get interface methods:::intfs->cls->getInterfaces->for->i
+MethodUtil#getInternalPublicMethods(Class, Map)::: method util get internal public methods:::methods->try->if->Modifier->cls->getModifiers->isPublic->return->if->ReflectUtil->isPackageAccessible->return->cls->getMethods->catch->return->finally->done->for->i->if->for->i->else->for->i->return
+MethodUtil#addMethod(Map, Method)::: method util add method:::signature->new->Signature->if->sigs->containsKey->sigs->put->else->if->method->getDeclaringClass->isInterface->old->sigs->get->if->old->getDeclaringClass->isInterface->sigs->put
+MethodUtil.Signature#hashCode()::: signature hash code:::return
+MethodUtil.Signature#equals(Object)::: signature equals:::if->return->that->if->methodName->equals->return->if->return->for->i->return
+MethodUtil#invoke(Method, Object, Object[])::: method util invoke:::try->return->bounce->new->ObjectArr->invoke->catch->t->ie->getCause->if->throw->else->if->throw->else->if->throw->else->if->throw->else->throw->new->Error->throw->new->Error->finally
+MethodUtil#getTrampoline()::: method util get trampoline:::try->return->AccessController->new->PrivilegedExceptionAction<Method>->doPrivileged->catch->throw->new->InternalError->finally
+MethodUtil#loadClass(String, boolean)::: method util load class:::ReflectUtil->checkPackageAccess->c->findLoadedClass->if->try->findClass->catch->finally->if->getParent->loadClass->if->resolveClass->return
+MethodUtil#findClass(String)::: method util find class:::if->name->startsWith->throw->new->ClassNotFoundException->path->name->replace->concat->try->in->getModule->getResourceAsStream->if->try->b->in->readAllBytes->return->defineClass->catch->finally->catch->throw->new->ClassNotFoundException->finally->throw->new->ClassNotFoundException
+MethodUtil#defineClass(String, byte[])::: method util define class:::cs->new->CodeSource->if->name->equals->throw->new->IOException->return->defineClass
+MethodUtil#getPermissions(CodeSource)::: method util get permissions:::perms->super->getPermissions->perms->new->AllPermission->add->return
+MethodUtil#getTrampolineClass()::: method util get trampoline class:::try->return->Class->new->MethodUtil->forName->catch->finally->return
+ReflectUtil#forName(String)::: reflect util for name:::checkPackageAccess->return->Class->forName
 ReflectUtil#ensureMemberAccess(Class, Class, Object, int):::Ensures that access to a method or field is granted and throws IllegalAccessException if not:::Reflection->target->getClass->ensureMemberAccess
 ReflectUtil#conservativeCheckMemberAccess(Member):::Does a conservative approximation of member access check:::sm->System->getSecurityManager->if->return->declaringClass->m->getDeclaringClass->privateCheckPackageAccess->if->Modifier->m->getModifiers->isPublic->Modifier->declaringClass->getModifiers->isPublic->return->sm->checkPermission
 ReflectUtil#checkPackageAccess(Class):::Checks package access on the given class:::s->System->getSecurityManager->if->privateCheckPackageAccess
+ReflectUtil#privateCheckPackageAccess(SecurityManager, Class):::NOTE: should only be called if a SecurityManager is installed:::while->clazz->isArray->clazz->getComponentType->pkg->clazz->getPackageName->if->pkg->isEmpty->s->checkPackageAccess->if->isNonPublicProxyClass->privateCheckProxyPackageAccess
 ReflectUtil#checkPackageAccess(String):::Checks package access on the given classname:::s->System->getSecurityManager->if->cname->name->replace->if->cname->startsWith->b->cname->lastIndexOf->if->cname->length->cname->substring->i->cname->lastIndexOf->if->s->cname->substring->checkPackageAccess
+ReflectUtil#isPackageAccessible(Class)::: reflect util is package accessible:::try->checkPackageAccess->catch->return->finally->return
+ReflectUtil#isAncestor(ClassLoader, ClassLoader)::: reflect util is ancestor:::acl->do->acl->getParent->if->return->while->return
 ReflectUtil#needsPackageAccessCheck(ClassLoader, ClassLoader):::Returns true if package access check is needed for reflective access from a class loader 'from' to classes or members in a class defined by class loader 'to':::if->return->if->return->return->isAncestor
 ReflectUtil#checkProxyPackageAccess(Class):::Check package access on the proxy interfaces that the given proxy class implements.:::s->System->getSecurityManager->if->privateCheckProxyPackageAccess
+ReflectUtil#privateCheckProxyPackageAccess(SecurityManager, Class):::NOTE: should only be called if a SecurityManager is installed:::if->Proxy->isProxyClass->foreach->clazz->getInterfaces->privateCheckPackageAccess
 ReflectUtil#checkProxyPackageAccess(ClassLoader, Class...):::Access check on the interfaces that a proxy class implements and throw SecurityException if it accesses a restricted package from the caller's class loader.:::sm->System->getSecurityManager->if->foreach->cl->intf->getClassLoader->if->needsPackageAccessCheck->privateCheckPackageAccess
 ReflectUtil#isNonPublicProxyClass(Class):::Test if the given class is a proxy class that implements non-public interface:::if->Proxy->isProxyClass->return->pkg->cls->getPackageName->return->pkg->startsWith
 ReflectUtil#checkProxyMethod(Object, Method):::Check if the given method is a method declared in the proxy interface implemented by the given proxy instance.:::if->Proxy->proxy->getClass->isProxyClass->throw->new->IllegalArgumentException->if->Modifier->method->getModifiers->isStatic->throw->new->IllegalArgumentException->c->method->getDeclaringClass->if->name->method->getName->if->name->equals->name->equals->name->equals->return->if->proxy->getClass->isSuperInterface->return->throw->new->IllegalArgumentException
+ReflectUtil#isSuperInterface(Class, Class)::: reflect util is super interface:::foreach->c->getInterfaces->if->return->if->isSuperInterface->return->return
 ReflectUtil#isVMAnonymousClass(Class):::Checks if Class cls is a VM-anonymous class as defined by jdk.internal.misc.Unsafe#defineAnonymousClass (not to be confused with a Java Language anonymous inner class).:::return->cls->getName->indexOf

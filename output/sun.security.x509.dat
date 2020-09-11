@@ -1,13 +1,24 @@
+AccessDescription#getAccessMethod()::: access description get access method:::return
+AccessDescription#getAccessLocation()::: access description get access location:::return
+AccessDescription#encode(DerOutputStream)::: access description encode:::tmp->new->DerOutputStream->tmp->putOID->accessLocation->encode->out->write
+AccessDescription#hashCode()::: access description hash code:::if->accessMethod->hashCode->accessLocation->hashCode->return
+AccessDescription#equals(Object)::: access description equals:::if->return->that->if->return->return->accessMethod->that->getAccessMethod->equals->accessLocation->that->getAccessLocation->equals
+AccessDescription#toString()::: access description to string:::method->if->accessMethod->equals->else->if->accessMethod->equals->else->if->accessMethod->equals->else->if->accessMethod->equals->else->accessMethod->toString->return->accessLocation->toString
 AlgIdDSA#getP():::Returns the DSS/DSA parameter "P":::return
 AlgIdDSA#getQ():::Returns the DSS/DSA parameter "Q":::return
 AlgIdDSA#getG():::Returns the DSS/DSA parameter "G":::return
 AlgIdDSA#getName():::Returns "DSA", indicating the Digital Signature Algorithm (DSA) as defined by the Digital Signature Standard (DSS), FIPS 186.:::return
+AlgIdDSA#initializeParams()::: alg id a initialize params:::out->new->DerOutputStream->out->putInteger->out->putInteger->out->putInteger->out->toByteArray->new->DerValue
 AlgIdDSA#decodeParams():::Parses algorithm parameters P, Q, and G:::if->throw->new->IOException->if->throw->new->IOException->reset->getBigInteger->getBigInteger->getBigInteger->if->available->throw->available->new->IOException
+AlgIdDSA#toString()::: alg id a to string:::return->paramsToString
+AlgIdDSA#paramsToString()::: alg id a params to string:::if->return->else->return->Debug->toHexString->Debug->toHexString->Debug->toHexString
+AlgorithmId#decodeParams()::: algorithm id decode params:::algidString->algid->toString->try->AlgorithmParameters->getInstance->catch->return->finally->algParams->params->toByteArray->init
 AlgorithmId#encode(DerOutputStream):::Marshal a DER-encoded "AlgorithmID" sequence on the DER stream.:::derEncode
 AlgorithmId#derEncode(OutputStream):::DER encode this object onto an output stream:::bytes->new->DerOutputStream->tmp->new->DerOutputStream->bytes->putOID->if->if->algParams->getEncoded->new->DerValue->else->if->bytes->putNull->else->bytes->putDerValue->tmp->write->out->tmp->toByteArray->write
 AlgorithmId#encode():::Returns the DER-encoded X.509 AlgorithmId as a byte array.:::out->new->DerOutputStream->derEncode->return->out->toByteArray
 AlgorithmId#getOID():::Returns the ISO OID for this algorithm:::return
 AlgorithmId#getName():::Returns a name for the algorithm which may be more intelligible to humans than the algorithm's OID, but which won't necessarily be comprehensible on other systems:::algName->nameTable->get->if->return->if->algid->equals->try->paramsId->AlgorithmId->getEncodedParams->new->DerValue->parse->paramsName->paramsId->getName->makeSigAlg->catch->finally->return->algid->toString
+AlgorithmId#getParameters()::: algorithm id get parameters:::return
 AlgorithmId#getEncodedParams():::Returns the DER encoded parameter, which can then be used to initialize java.security.AlgorithmParamters.:::return->params->toByteArray
 AlgorithmId#equals(AlgorithmId):::Returns true iff the argument indicates the same algorithm with the same parameters.:::paramsEqual->params->equals->return->algid->equals
 AlgorithmId#equals(Object):::Compares this AlgorithmID to another:::if->return->if->return->equals->else->if->return->equals->else->return
@@ -19,11 +30,17 @@ AlgorithmId#parse(DerValue):::Parse (unmarshal) an ID from a DER sequence input 
 AlgorithmId#getAlgorithmId(String):::Returns one of the algorithm IDs most commonly associated with this algorithm name.:::return->get
 AlgorithmId#get(String):::Returns one of the algorithm IDs most commonly associated with this algorithm name.:::oid->try->algOID->catch->throw->new->NoSuchAlgorithmException->finally->if->throw->new->NoSuchAlgorithmException->return->new->AlgorithmId
 AlgorithmId#get(AlgorithmParameters):::Returns one of the algorithm IDs most commonly associated with this algorithm parameters.:::oid->algname->algparams->getAlgorithm->try->algOID->catch->throw->new->NoSuchAlgorithmException->finally->if->throw->new->NoSuchAlgorithmException->return->new->AlgorithmId
+AlgorithmId#algOID(String)::: algorithm id alg d:::if->name->indexOf->if->name->startsWith->return->name->length->substring->new->ObjectIdentifier->else->return->new->ObjectIdentifier->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->name->equalsIgnoreCase->name->equalsIgnoreCase->name->equalsIgnoreCase->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->if->name->equalsIgnoreCase->return->return->oidTable->name->toUpperCase->get
+AlgorithmId#oid(int...)::: algorithm id oid:::return->ObjectIdentifier->newInternal
+AlgorithmId#oidTable():::Returns the oidTable, lazily initializing it on first access.:::tab->if->synchronized->if->computeOidTable->return
+AlgorithmId#computeOidTable():::Collects the algorithm names from the installed providers.:::tab->new->HashMap<>->foreach->Security->getProviders->foreach->provider->keySet->alias->upperCaseAlias->alias->toUpperCase->index->if->upperCaseAlias->startsWith->upperCaseAlias->indexOf->length->if->alias->length->break->oidString->alias->substring->stdAlgName->provider->getProperty->if->stdAlgName->toUpperCase->if->tab->get->tab->new->ObjectIdentifier->put->return
 AlgorithmId#makeSigAlg(String, String):::Creates a signature algorithm name from a digest algorithm name and a encryption algorithm name.:::digAlg->replace->if->encAlg->equalsIgnoreCase->return
 AlgorithmId#getEncAlgFromSigAlg(String):::Extracts the encryption algorithm name from a signature algorithm name.:::signatureAlgorithm->toUpperCase->with->signatureAlgorithm->indexOf->keyAlgorithm->if->and->signatureAlgorithm->indexOf->if->signatureAlgorithm->substring->else->signatureAlgorithm->substring->if->keyAlgorithm->equalsIgnoreCase->return
 AlgorithmId#getDigAlgFromSigAlg(String):::Extracts the digest algorithm name from a signature algorithm name.:::signatureAlgorithm->toUpperCase->with->signatureAlgorithm->indexOf->if->return->signatureAlgorithm->substring->return
 AlgorithmId#checkKeyAndSigAlgMatch(String, String):::Checks if a signature algorithm matches a key algorithm, i.e:::sAlgUp->sAlg->toUpperCase->if->sAlgUp->endsWith->kAlg->equalsIgnoreCase->sAlgUp->endsWith->kAlg->equalsIgnoreCase->sAlgUp->endsWith->kAlg->equalsIgnoreCase->throw->new->IllegalArgumentException
 AlgorithmId#getDefaultSigAlgForKey(PrivateKey):::Returns the default signature algorithm for a private key:::switch->k->getAlgorithm->toUpperCase->return->KeyUtil->getKeySize->ecStrength->return->KeyUtil->getKeySize->ifcFfcStrength->return->KeyUtil->getKeySize->ifcFfcStrength->return
+AlgorithmId#ecStrength(int)::: algorithm id ec strength:::if->return->else->if->return->else->return
+AlgorithmId#ifcFfcStrength(int)::: algorithm id ifc ffc strength:::if->return->else->if->return->else->return
 AuthorityInfoAccessExtension#getAccessDescriptions():::Return the list of AccessDescription objects.:::return
 AuthorityInfoAccessExtension#getName():::Return the name of this attribute.:::return
 AuthorityInfoAccessExtension#encode(OutputStream):::Write the extension to the DerOutputStream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
@@ -31,7 +48,9 @@ AuthorityInfoAccessExtension#set(String, Object):::Set the attribute value.:::if
 AuthorityInfoAccessExtension#get(String):::Get the attribute value.:::if->name->equalsIgnoreCase->return->else->throw->new->IOException
 AuthorityInfoAccessExtension#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->new->ArrayList<AccessDescription>->else->throw->new->IOException->encodeThis
 AuthorityInfoAccessExtension#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->return->elements->elements
+AuthorityInfoAccessExtension#encodeThis()::: authority info access extension encode this:::if->accessDescriptions->isEmpty->else->ads->new->DerOutputStream->foreach->accessDescription->encode->seq->new->DerOutputStream->seq->write->seq->toByteArray
 AuthorityInfoAccessExtension#toString():::Return the extension as user readable string.:::return->super->toString
+AuthorityKeyIdentifierExtension#encodeThis()::: authority key identifier extension encode this:::if->return->seq->new->DerOutputStream->tmp->new->DerOutputStream->if->tmp1->new->DerOutputStream->id->encode->tmp->DerValue->createTag->writeImplicit->try->if->tmp1->new->DerOutputStream->names->encode->tmp->DerValue->createTag->writeImplicit->catch->throw->e->toString->new->IOException->finally->if->tmp1->new->DerOutputStream->serialNum->encode->tmp->DerValue->createTag->writeImplicit->seq->write->seq->toByteArray
 AuthorityKeyIdentifierExtension#toString():::Return the object as a string.:::sb->new->StringBuilder->sb->super->toString->append->append->if->sb->append->if->sb->append->append->if->sb->append->append->sb->append->return->sb->toString
 AuthorityKeyIdentifierExtension#encode(OutputStream):::Write the extension to the OutputStream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 AuthorityKeyIdentifierExtension#set(String, Object):::Set the attribute value.:::if->name->equalsIgnoreCase->if->throw->new->IOException->else->if->name->equalsIgnoreCase->if->throw->new->IOException->else->if->name->equalsIgnoreCase->if->throw->new->IOException->else->throw->new->IOException->encodeThis
@@ -43,17 +62,34 @@ AuthorityKeyIdentifierExtension#getEncodedKeyIdentifier():::Return the encoded k
 AVA#getObjectIdentifier():::Get the ObjectIdentifier of this AVA.:::return
 AVA#getDerValue():::Get the value of this AVA as a DerValue.:::return
 AVA#getValueString():::Get the value of this AVA as a String.:::try->s->value->getAsString->if->throw->new->RuntimeException->return->catch->throw->new->RuntimeException->finally
+AVA#parseHexString(Reader, int)::: a parse hex string:::c->baos->new->ByteArrayOutputStream->b->cNdx->while->in->read->if->isTerminator->break->cVal->hexDigits->Character->toUpperCase->indexOf->if->throw->new->IOException->if->baos->write->else->if->throw->new->IOException->if->throw->new->IOException->return->baos->toByteArray->new->DerValue
+AVA#parseQuotedString(Reader, StringBuilder)::: a parse quoted string:::c->readChar->embeddedHex->new->ArrayList<>->isPrintableString->while->if->readChar->hexByte->if->getEmbeddedHexPair->embeddedHex->add->in->read->continue->if->specialChars1779->indexOf->throw->new->IOException->if->embeddedHex->size->hexString->getEmbeddedHexString->temp->append->embeddedHex->clear->DerValue->isPrintableStringChar->temp->append->readChar->if->embeddedHex->size->hexString->getEmbeddedHexString->temp->append->embeddedHex->clear->do->in->read->while->if->throw->new->IOException->if->equals->equals->return->temp->toString->trim->new->DerValue->else->if->return->temp->toString->trim->new->DerValue->else->return->temp->toString->trim->new->DerValue
+AVA#parseString(Reader, int, int, StringBuilder)::: a parse string:::embeddedHex->new->ArrayList<>->isPrintableString->escape->leadingChar->spaceCount->do->if->readChar->hexByte->if->getEmbeddedHexPair->embeddedHex->add->in->read->continue->if->specialCharsDefault->indexOf->throw->new->IOException->else->if->if->if->trailingSpace->throw->new->IOException->else->if->if->throw->new->IOException->else->if->specialChars2253->indexOf->throw->new->IOException->else->if->if->specialChars2253->indexOf->throw->new->IOException->else->if->escapedDefault->indexOf->throw->new->IOException->if->embeddedHex->size->for->i->hexString->getEmbeddedHexString->temp->append->embeddedHex->clear->DerValue->isPrintableStringChar->if->else->for->i->temp->append->in->read->while->isTerminator->if->throw->new->IOException->if->embeddedHex->size->hexString->getEmbeddedHexString->temp->append->embeddedHex->clear->if->equals->equals->return->temp->toString->new->DerValue->else->if->return->temp->toString->new->DerValue->else->return->temp->toString->new->DerValue
+AVA#getEmbeddedHexPair(int, Reader)::: a get embedded hex pair:::if->hexDigits->Character->toUpperCase->indexOf->c2->readChar->if->hexDigits->Character->toUpperCase->indexOf->hi->Character->digit->lo->Character->digit->return->else->throw->new->IOException->return
+AVA#getEmbeddedHexString(List)::: a get embedded hex string:::n->hexList->size->hexBytes->new->byteArr->for->i->return->new->String
+AVA#isTerminator(int, int)::: a is terminator:::switch->return->return->return
+AVA#readChar(Reader, String)::: a read char:::c->in->read->if->throw->new->IOException->return
+AVA#trailingSpace(Reader)::: a trailing space:::trailing->if->in->markSupported->return->else->in->mark->while->nextChar->in->read->if->break->else->if->continue->else->if->followingChar->in->read->if->break->else->break->in->reset->return
+AVA#equals(Object)::: a equals:::if->return->if->return->other->return->this->toRFC2253CanonicalString->other->toRFC2253CanonicalString->equals
 AVA#hashCode():::Returns a hashcode for this AVA.:::return->toRFC2253CanonicalString->hashCode
+AVA#encode(DerOutputStream)::: a encode:::derEncode
 AVA#derEncode(OutputStream):::DER encode this object onto an output stream:::tmp->new->DerOutputStream->tmp2->new->DerOutputStream->tmp->putOID->value->encode->tmp2->write->out->tmp2->toByteArray->write
+AVA#toKeyword(int, Map)::: a to keyword:::return->AVAKeyword->getKeyword
 AVA#toString():::Returns a printable form of this attribute, using RFC 1779 syntax for individual attribute/value assertions.:::return->Collections->emptyMap->toKeyword->toKeywordValueString
 AVA#toRFC1779String():::Returns a printable form of this attribute, using RFC 1779 syntax for individual attribute/value assertions:::return->Collections->emptyMap->toRFC1779String
 AVA#toRFC1779String(Map):::Returns a printable form of this attribute, using RFC 1779 syntax for individual attribute/value assertions:::return->toKeyword->toKeywordValueString
 AVA#toRFC2253String():::Returns a printable form of this attribute, using RFC 2253 syntax for individual attribute/value assertions:::return->Collections->emptyMap->toRFC2253String
 AVA#toRFC2253String(Map):::Returns a printable form of this attribute, using RFC 2253 syntax for individual attribute/value assertions:::typeAndValue->new->StringBuilder->typeAndValue->toKeyword->append->typeAndValue->append->if->typeAndValue->charAt->typeAndValue->charAt->isDerString->data->try->value->toByteArray->catch->throw->new->IllegalArgumentException->finally->typeAndValue->append->for->j->else->valStr->try->value->getDataBytes->new->String->catch->throw->new->IllegalArgumentException->finally->escapees->sbuffer->new->StringBuilder->for->i->valStr->length->chars->sbuffer->toString->toCharArray->new->StringBuilder->lead->for->trail->for->for->i->typeAndValue->append->return->typeAndValue->toString
+AVA#toRFC2253CanonicalString()::: a to c2253 canonical string:::typeAndValue->new->StringBuilder->typeAndValue->Collections->emptyMap->toKeyword->append->typeAndValue->append->if->typeAndValue->charAt->typeAndValue->charAt->isDerString->data->try->value->toByteArray->catch->throw->new->IllegalArgumentException->finally->typeAndValue->append->for->j->else->valStr->try->value->getDataBytes->new->String->catch->throw->new->IllegalArgumentException->finally->escapees->sbuffer->new->StringBuilder->previousWhite->for->i->valStr->length->typeAndValue->sbuffer->toString->trim->append->canon->typeAndValue->toString->canon->toUpperCase->toLowerCase->return->Normalizer->normalize
+AVA#isDerString(DerValue, boolean)::: a is der string:::if->switch->return->return->else->switch->return->return
+AVA#hasRFC2253Keyword()::: a has c2253 keyword:::return->AVAKeyword->hasKeyword
+AVA#toKeywordValueString(String)::: a to keyword value string:::retval->new->StringBuilder->retval->append->retval->append->try->valStr->value->getAsString->if->data->value->toByteArray->retval->append->for->i->else->quoteNeeded->sbuffer->new->StringBuilder->previousWhite->escapees->length->valStr->length->alreadyQuoted->valStr->charAt->valStr->charAt->for->i->if->sbuffer->length->trailChar->sbuffer->sbuffer->length->charAt->if->if->retval->append->append->append->else->retval->append->catch->throw->new->IllegalArgumentException->finally->return->retval->toString
+AVAKeyword#isCompliant(int)::: keyword is compliant:::switch->return->return->return->throw->new->IllegalArgumentException
 AVAKeyword#getOID(String, int, Map):::Get an object identifier representing the specified keyword (or string encoded object identifier) in the given standard.:::keyword->toUpperCase->if->if->keyword->startsWith->keyword->endsWith->throw->new->IOException->else->keyword->trim->oidString->extraKeywordMap->get->if->ak->keywordMap->get->if->ak->isCompliant->return->else->return->new->ObjectIdentifier->if->keyword->startsWith->keyword->substring->number->if->keyword->length->ch->keyword->charAt->if->if->throw->new->IOException->return->new->ObjectIdentifier
 AVAKeyword#getKeyword(ObjectIdentifier, int):::Get a keyword for the given ObjectIdentifier according to standard:::return->Collections->emptyMap->getKeyword
 AVAKeyword#getKeyword(ObjectIdentifier, int, Map):::Get a keyword for the given ObjectIdentifier according to standard:::oidString->oid->toString->keywordString->extraOidMap->get->if->ak->oidMap->get->if->ak->isCompliant->return->else->if->keywordString->length->throw->new->IllegalArgumentException->keywordString->trim->c->keywordString->charAt->if->throw->new->IllegalArgumentException->for->i->keywordString->length->return->if->return->else->return
 AVAKeyword#hasKeyword(ObjectIdentifier, int):::Test if oid has an associated keyword in standard.:::ak->oidMap->get->if->return->return->ak->isCompliant
+BasicConstraintsExtension#encodeThis()::: basic constraints extension encode this:::out->new->DerOutputStream->tmp->new->DerOutputStream->if->tmp->putBoolean->if->tmp->putInteger->out->write->out->toByteArray
 BasicConstraintsExtension#toString():::Return user readable form of extension.:::return->super->toString->String->valueOf
 BasicConstraintsExtension#encode(OutputStream):::Encode this extension value to the output stream.:::tmp->new->DerOutputStream->if->if->else->encodeThis->super->encode->out->tmp->toByteArray->write
 BasicConstraintsExtension#set(String, Object):::Set the attribute value.:::if->name->equalsIgnoreCase->if->throw->new->IOException->booleanValue->else->if->name->equalsIgnoreCase->if->throw->new->IOException->intValue->else->throw->new->IOException->encodeThis
@@ -80,18 +116,25 @@ CertificateAlgorithmId#get(String):::Get the attribute value.:::if->name->equals
 CertificateAlgorithmId#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->else->throw->new->IOException
 CertificateAlgorithmId#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->return->elements->elements
 CertificateAlgorithmId#getName():::Return the name of this attribute.:::return
+CertificateExtensions#init(DerInputStream)::: certificate extensions init:::exts->in->getSequence->for->i
+CertificateExtensions#parseExtension(Extension)::: certificate extensions parse extension:::try->extClass->OIDMap->ext->getExtensionId->getClass->if->if->ext->isCritical->if->map->ext->getExtensionId->toString->put->return->else->throw->new->IOException->cons->extClass->getConstructor->passed->new->ObjectArr->Boolean->ext->isCritical->valueOf->ext->getExtensionValue->certExt->cons->newInstance->if->map->certExt->getName->put->throw->new->IOException->catch->e->invk->getTargetException->if->ext->isCritical->if->new->TreeMap<String,Extension>->unparseableExtensions->ext->getExtensionId->toString->new->UnparseableExtension->put->if->debug->println->e->printStackTrace->h->new->HexDumpEncoder->h->ext->getExtensionValue->encodeBuffer->println->return->if->throw->else->throw->new->IOException->throw->throw->new->IOException->finally
 CertificateExtensions#encode(OutputStream):::Encode the extensions in DER form to the stream, setting the context specific tag as needed in the X.509 v3 certificate.:::encode
 CertificateExtensions#encode(OutputStream, boolean):::Encode the extensions in DER form to the stream.:::extOut->new->DerOutputStream->allExts->map->values->objs->allExts->toArray->for->i->seq->new->DerOutputStream->seq->write->tmp->if->new->DerOutputStream->tmp->DerValue->createTag->write->else->out->tmp->toByteArray->write
 CertificateExtensions#set(String, Object):::Set the attribute value.:::if->map->put->else->throw->new->IOException
 CertificateExtensions#get(String):::Get the attribute value.:::obj->map->get->if->throw->new->IOException->return
+CertificateExtensions#getExtension(String)::: certificate extensions get extension:::return->map->get
 CertificateExtensions#delete(String):::Delete the attribute value.:::obj->map->get->if->throw->new->IOException->map->remove
+CertificateExtensions#getNameByOid(ObjectIdentifier)::: certificate extensions get name by oid:::foreach->map->keySet->if->map->get->getExtensionId->equals->return->return
 CertificateExtensions#getElements():::Return an enumeration of names of attributes existing within this attribute.:::return->Collections->map->values->enumeration
 CertificateExtensions#getAllExtensions():::Return a collection view of the extensions.:::return->map->values
+CertificateExtensions#getUnparseableExtensions()::: certificate extensions get unparseable extensions:::if->return->Collections->emptyMap->else->return
 CertificateExtensions#getName():::Return the name of this attribute.:::return
 CertificateExtensions#hasUnsupportedCriticalExtension():::Return true if a critical extension is found that is not supported, otherwise return false.:::return
 CertificateExtensions#equals(Object):::Compares this CertificateExtensions for equality with the specified object:::if->return->if->return->otherC->getAllExtensions->objs->otherC->toArray->len->if->map->size->return->otherExt->thisExt->key->for->i->return->this->getUnparseableExtensions->getUnparseableExtensions->equals
 CertificateExtensions#hashCode():::Returns a hashcode value for this CertificateExtensions.:::return->map->hashCode->getUnparseableExtensions->hashCode
 CertificateExtensions#toString():::Returns a string representation of this CertificateExtensions object in the form of a set of entries, enclosed in braces and separated by the ASCII characters ",&nbsp;" (comma and space):::return->map->toString
+UnparseableExtension#toString()::: unparseable extension to string:::return->super->toString->new->HexDumpEncoder->getExtensionValue->encodeBuffer
+CertificateIssuerExtension#encodeThis():::Encode this extension:::if->names->isEmpty->return->os->new->DerOutputStream->names->encode->os->toByteArray
 CertificateIssuerExtension#set(String, Object):::Set the attribute value.:::if->name->equalsIgnoreCase->if->throw->new->IOException->else->throw->new->IOException->encodeThis
 CertificateIssuerExtension#get(String):::Gets the attribute value.:::if->name->equalsIgnoreCase->return->else->throw->new->IOException
 CertificateIssuerExtension#delete(String):::Deletes the attribute value.:::if->name->equalsIgnoreCase->else->throw->new->IOException->encodeThis
@@ -106,6 +149,7 @@ CertificateIssuerName#get(String):::Get the attribute value.:::if->name->equalsI
 CertificateIssuerName#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->else->throw->new->IOException
 CertificateIssuerName#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->return->elements->elements
 CertificateIssuerName#getName():::Return the name of this attribute.:::return
+CertificatePoliciesExtension#encodeThis()::: certificate policies extension encode this:::if->certPolicies->isEmpty->else->os->new->DerOutputStream->tmp->new->DerOutputStream->foreach->info->encode->os->write->os->toByteArray
 CertificatePoliciesExtension#toString():::Return the extension as user readable string.:::if->return->sb->new->StringBuilder->sb->super->toString->append->append->foreach->sb->append->sb->append->return->sb->toString
 CertificatePoliciesExtension#encode(OutputStream):::Write the extension to the DerOutputStream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 CertificatePoliciesExtension#set(String, Object):::Set the attribute value.:::if->name->equalsIgnoreCase->if->throw->new->IOException->else->throw->new->IOException->encodeThis
@@ -139,6 +183,9 @@ CertificateSubjectName#get(String):::Get the attribute value.:::if->name->equals
 CertificateSubjectName#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->else->throw->new->IOException
 CertificateSubjectName#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->return->elements->elements
 CertificateSubjectName#getName():::Return the name of this attribute.:::return
+CertificateValidity#getNotBefore()::: certificate validity get not before:::return->notBefore->getTime->new->Date
+CertificateValidity#getNotAfter()::: certificate validity get not after:::return->notAfter->getTime->new->Date
+CertificateValidity#construct(DerValue)::: certificate validity construct:::if->throw->new->IOException->if->available->throw->new->IOException->derIn->derVal->toByteArray->new->DerInputStream->seq->derIn->getSequence->if->throw->new->IOException->if->getUTCTime->else->if->getGeneralizedTime->else->throw->new->IOException->if->getUTCTime->else->if->getGeneralizedTime->else->throw->new->IOException
 CertificateValidity#toString():::Return the validity period as user readable string.:::if->return->return
 CertificateValidity#encode(OutputStream):::Encode the CertificateValidity period in DER form to the stream.:::if->throw->new->IOException->pair->new->DerOutputStream->if->notBefore->getTime->pair->putUTCTime->else->pair->putGeneralizedTime->if->notAfter->getTime->pair->putUTCTime->else->pair->putGeneralizedTime->seq->new->DerOutputStream->seq->write->out->seq->toByteArray->write
 CertificateValidity#set(String, Object):::Set the attribute value.:::if->throw->new->IOException->if->name->equalsIgnoreCase->else->if->name->equalsIgnoreCase->else->throw->new->IOException
@@ -148,6 +195,8 @@ CertificateValidity#getElements():::Return an enumeration of names of attributes
 CertificateValidity#getName():::Return the name of this attribute.:::return
 CertificateValidity#valid():::Verify that the current time is within the validity period.:::now->new->Date->valid
 CertificateValidity#valid(Date):::Verify that the passed time is within the validity period.:::if->notBefore->after->throw->notBefore->toString->new->CertificateNotYetValidException->if->notAfter->before->throw->notAfter->toString->new->CertificateExpiredException
+CertificateVersion#getVersion()::: certificate version get version:::return
+CertificateVersion#construct(DerValue)::: certificate version construct:::if->derVal->isConstructed->derVal->isContextSpecific->getDerValue->derVal->getInteger->if->available->throw->new->IOException
 CertificateVersion#toString():::Return the version number of the certificate.:::return
 CertificateVersion#encode(OutputStream):::Encode the CertificateVersion period in DER form to the stream.:::if->return->tmp->new->DerOutputStream->tmp->putInteger->seq->new->DerOutputStream->seq->DerValue->createTag->write->out->seq->toByteArray->write
 CertificateVersion#set(String, Object):::Set the attribute value.:::if->throw->new->IOException->if->name->equalsIgnoreCase->intValue->else->throw->new->IOException
@@ -170,7 +219,10 @@ CRLDistributionPointsExtension#set(String, Object):::Set the attribute value.:::
 CRLDistributionPointsExtension#get(String):::Get the attribute value.:::if->name->equalsIgnoreCase->return->else->throw->new->IOException
 CRLDistributionPointsExtension#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->Collections->emptyList->else->throw->new->IOException->encodeThis
 CRLDistributionPointsExtension#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->return->elements->elements
+CRLDistributionPointsExtension#encodeThis()::: distribution points extension encode this:::if->distributionPoints->isEmpty->else->pnts->new->DerOutputStream->foreach->point->encode->seq->new->DerOutputStream->seq->write->seq->toByteArray
 CRLDistributionPointsExtension#toString():::Return the extension as user readable string.:::return->super->toString
+CRLExtensions#init(DerInputStream)::: extensions init:::try->str->nextByte->derStrm->peekByte->if->val->str->getDerValue->exts->str->getSequence->for->i->catch->throw->e->toString->new->CRLException->finally
+CRLExtensions#parseExtension(Extension)::: extensions parse extension:::try->extClass->OIDMap->ext->getExtensionId->getClass->if->if->ext->isCritical->if->map->ext->getExtensionId->toString->put->throw->new->CRLException->return->cons->extClass->getConstructor->passed->new->ObjectArr->Boolean->ext->isCritical->valueOf->ext->getExtensionValue->crlExt->cons->newInstance->if->map->crlExt->getName->put->throw->new->CRLException->catch->throw->invk->getTargetException->getMessage->new->CRLException->throw->e->toString->new->CRLException->finally
 CRLExtensions#encode(OutputStream, boolean):::Encode the extensions in DER form to the stream.:::try->extOut->new->DerOutputStream->allExts->map->values->objs->allExts->toArray->for->i->seq->new->DerOutputStream->seq->write->tmp->new->DerOutputStream->if->tmp->DerValue->createTag->write->else->out->tmp->toByteArray->write->catch->throw->e->toString->new->CRLException->throw->e->toString->new->CRLException->finally
 CRLExtensions#get(String):::Get the extension with this alias.:::attr->new->X509AttributeName->name->id->attr->getPrefix->if->id->equalsIgnoreCase->index->alias->lastIndexOf->alias->substring->else->return->map->get
 CRLExtensions#set(String, Object):::Set the extension value with this alias.:::map->put
@@ -181,6 +233,7 @@ CRLExtensions#hasUnsupportedCriticalExtension():::Return true if a critical exte
 CRLExtensions#equals(Object):::Compares this CRLExtensions for equality with the specified object:::if->return->if->return->otherC->getAllExtensions->objs->otherC->toArray->len->if->map->size->return->otherExt->thisExt->key->for->i->return
 CRLExtensions#hashCode():::Returns a hashcode value for this CRLExtensions.:::return->map->hashCode
 CRLExtensions#toString():::Returns a string representation of this CRLExtensions object in the form of a set of entries, enclosed in braces and separated by the ASCII characters ",&nbsp;" (comma and space):::return->map->toString
+CRLNumberExtension#encodeThis()::: number extension encode this:::if->return->os->new->DerOutputStream->os->putInteger->os->toByteArray
 CRLNumberExtension#set(String, Object):::Set the attribute value.:::if->name->equalsIgnoreCase->if->throw->new->IOException->else->throw->new->IOException->encodeThis
 CRLNumberExtension#get(String):::Get the attribute value.:::if->name->equalsIgnoreCase->return->else->throw->new->IOException
 CRLNumberExtension#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->else->throw->new->IOException->encodeThis
@@ -189,6 +242,7 @@ CRLNumberExtension#encode(OutputStream):::Write the extension to the DerOutputSt
 CRLNumberExtension#encode(OutputStream, ObjectIdentifier, boolean):::Write the extension to the DerOutputStream:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 CRLNumberExtension#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->return->elements->elements
 CRLNumberExtension#getName():::Return the name of this attribute.:::return
+CRLReasonCodeExtension#encodeThis()::: reason code extension encode this:::if->return->dos->new->DerOutputStream->dos->putEnumerated->dos->toByteArray
 CRLReasonCodeExtension#set(String, Object):::Set the attribute value.:::if->throw->new->IOException->if->name->equalsIgnoreCase->intValue->else->throw->new->IOException->encodeThis
 CRLReasonCodeExtension#get(String):::Get the attribute value.:::if->name->equalsIgnoreCase->return->else->throw->new->IOException
 CRLReasonCodeExtension#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->else->throw->new->IOException->encodeThis
@@ -204,6 +258,8 @@ DistributionPoint#getReasonFlags():::Return the reason flags or null if not set.
 DistributionPoint#getCRLIssuer():::Return the CRL issuer name or null if not set.:::return
 DistributionPoint#encode(DerOutputStream):::Write the DistributionPoint value to the DerOutputStream.:::tagged->new->DerOutputStream->if->distributionPoint->new->DerOutputStream->if->derOut->new->DerOutputStream->fullName->encode->distributionPoint->DerValue->createTag->writeImplicit->else->if->derOut->new->DerOutputStream->relativeName->encode->distributionPoint->DerValue->createTag->writeImplicit->tagged->DerValue->createTag->write->if->reasons->new->DerOutputStream->rf->new->BitArray->reasons->putTruncatedUnalignedBitString->tagged->DerValue->createTag->writeImplicit->if->issuer->new->DerOutputStream->crlIssuer->encode->tagged->DerValue->createTag->writeImplicit->out->write
 DistributionPoint#equals(Object):::Compare an object to this DistributionPoint for equality.:::if->return->if->return->other->equal->Objects->equals->Objects->equals->Objects->equals->Arrays->equals->return
+DistributionPoint#hashCode()::: distribution point hash code:::hash->if->if->fullName->hashCode->if->relativeName->hashCode->if->crlIssuer->hashCode->if->for->i->return
+DistributionPoint#reasonToString(int):::Return a string representation for reasonFlag bit 'reason'.:::if->return->return
 DistributionPoint#toString():::Return a printable string of the Distribution Point.:::sb->new->StringBuilder->sb->append->if->sb->append->if->sb->append->sb->append->if->sb->append->for->i->if->sb->append->append->append->return->sb->toString
 DistributionPointName#getFullName():::Returns the full name for the distribution point or null if not set.:::return
 DistributionPointName#getRelativeName():::Returns the relative name for the distribution point or null if not set.:::return
@@ -228,6 +284,7 @@ EDIPartyName#hashCode():::Returns the hash code value for this EDIPartyName.:::i
 EDIPartyName#toString():::Return the printable string.:::sb->new->StringBuilder->if->sb->append->append->append->sb->append->append->return->sb->toString
 EDIPartyName#constrains(GeneralNameInterface):::Return constraint type:<ul>   <li>NAME_DIFF_TYPE = -1: input name is different type from name (i.e:::constraintType->if->else->if->inputName->getType->else->throw->new->UnsupportedOperationException->return
 EDIPartyName#subtreeDepth():::Return subtree depth of this name for purposes of determining NameConstraints minimum and maximum bounds and for calculating path lengths in name subtrees.:::throw->new->UnsupportedOperationException
+ExtendedKeyUsageExtension#encodeThis()::: extended key usage extension encode this:::if->keyUsages->isEmpty->return->os->new->DerOutputStream->tmp->new->DerOutputStream->for->i->keyUsages->size->os->write->os->toByteArray
 ExtendedKeyUsageExtension#toString():::Return the extension as user readable string.:::if->return->usage->first->foreach->if->result->map->get->if->else->oid->toString->return->super->toString
 ExtendedKeyUsageExtension#encode(OutputStream):::Write the extension to the DerOutputStream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 ExtendedKeyUsageExtension#set(String, Object):::Set the attribute value.:::if->name->equalsIgnoreCase->if->throw->new->IOException->else->throw->new->IOException->encodeThis
@@ -235,11 +292,15 @@ ExtendedKeyUsageExtension#get(String):::Get the attribute value.:::if->name->equ
 ExtendedKeyUsageExtension#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->else->throw->new->IOException->encodeThis
 ExtendedKeyUsageExtension#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->return->elements->elements
 ExtendedKeyUsageExtension#getName():::Return the name of this attribute.:::return
+ExtendedKeyUsageExtension#getExtendedKeyUsage()::: extended key usage extension get extended key usage:::al->keyUsages->size->new->ArrayList<String>->foreach->al->oid->toString->add->return
 Extension#newExtension(ObjectIdentifier, boolean, byte[]):::Constructs an Extension from individual components of ObjectIdentifier, criticality and the raw encoded extension value.:::ext->new->Extension->return
+Extension#encode(OutputStream)::: extension encode:::if->throw->new->NullPointerException->dos1->new->DerOutputStream->dos2->new->DerOutputStream->dos1->putOID->if->dos1->putBoolean->dos1->putOctetString->dos2->write->out->dos2->toByteArray->write
 Extension#encode(DerOutputStream):::Write the extension to the DerOutputStream.:::if->throw->new->IOException->if->throw->new->IOException->dos->new->DerOutputStream->dos->putOID->if->dos->putBoolean->dos->putOctetString->out->write
 Extension#isCritical():::Returns true if extension is critical.:::return
 Extension#getExtensionId():::Returns the ObjectIdentifier of the extension.:::return
+Extension#getValue()::: extension get value:::return->extensionValue->clone
 Extension#getExtensionValue():::Returns the extension value as an byte array for further processing:::return
+Extension#getId()::: extension get id:::return->extensionId->toString
 Extension#toString():::Returns the Extension in user readable form.:::return
 Extension#hashCode():::Returns a hashcode value for this Extension.:::h->if->val->len->while->extensionId->hashCode->return
 Extension#equals(Object):::Compares this Extension for equality with the specified object:::if->return->if->return->otherExt->if->return->if->extensionId->equals->return->return->Arrays->equals
@@ -254,8 +315,16 @@ GeneralNameInterface#getType():::Return the type of the general name, as defined
 GeneralNameInterface#encode(DerOutputStream):::Encode the name to the specified DerOutputStream.:::
 GeneralNameInterface#constrains(GeneralNameInterface):::Return type of constraint inputName places on this name:<ul>   <li>NAME_DIFF_TYPE = -1: input name is different type from name (i.e:::
 GeneralNameInterface#subtreeDepth():::Return subtree depth of this name for purposes of determining NameConstraints minimum and maximum bounds and for calculating path lengths in name subtrees.:::
+GeneralNames#add(GeneralName)::: general names add:::if->throw->new->NullPointerException->names->add->return
+GeneralNames#get(int)::: general names get:::return->names->get
+GeneralNames#isEmpty()::: general names is empty:::return->names->isEmpty
+GeneralNames#size()::: general names size:::return->names->size
+GeneralNames#iterator()::: general names iterator:::return->names->iterator
+GeneralNames#names()::: general names names:::return
 GeneralNames#encode(DerOutputStream):::Write the extension to the DerOutputStream.:::if->isEmpty->return->temp->new->DerOutputStream->foreach->gn->encode->out->write
 GeneralNames#equals(Object):::compare this GeneralNames to other object for equality:::if->return->if->return->other->return->equals
+GeneralNames#hashCode()::: general names hash code:::return->names->hashCode
+GeneralNames#toString()::: general names to string:::return->names->toString
 GeneralSubtree#getName():::Return the GeneralName.:::return
 GeneralSubtree#getMinimum():::Return the minimum BaseDistance.:::return
 GeneralSubtree#getMaximum():::Return the maximum BaseDistance.:::return
@@ -263,12 +332,26 @@ GeneralSubtree#toString():::Return a printable string of the GeneralSubtree.:::s
 GeneralSubtree#equals(Object):::Compare this GeneralSubtree with another:::if->return->otherGS->if->if->return->else->if->equals->return->if->return->if->return->return
 GeneralSubtree#hashCode():::Returns the hash code for this GeneralSubtree.:::if->if->name->hashCode->if->if->return
 GeneralSubtree#encode(DerOutputStream):::Encode the GeneralSubtree.:::seq->new->DerOutputStream->name->encode->if->tmp->new->DerOutputStream->tmp->putInteger->seq->DerValue->createTag->writeImplicit->if->tmp->new->DerOutputStream->tmp->putInteger->seq->DerValue->createTag->writeImplicit->out->write
+GeneralSubtrees#get(int)::: general subtrees get:::return->trees->get
+GeneralSubtrees#remove(int)::: general subtrees remove:::trees->remove
+GeneralSubtrees#add(GeneralSubtree)::: general subtrees add:::if->throw->new->NullPointerException->trees->add
+GeneralSubtrees#contains(GeneralSubtree)::: general subtrees contains:::if->throw->new->NullPointerException->return->trees->contains
+GeneralSubtrees#size()::: general subtrees size:::return->trees->size
+GeneralSubtrees#iterator()::: general subtrees iterator:::return->trees->iterator
+GeneralSubtrees#trees()::: general subtrees trees:::return
+GeneralSubtrees#clone()::: general subtrees clone:::return->new->GeneralSubtrees
 GeneralSubtrees#toString():::Return a printable string of the GeneralSubtree.:::return
 GeneralSubtrees#encode(DerOutputStream):::Encode the GeneralSubtrees.:::seq->new->DerOutputStream->for->i->n->size->out->write
 GeneralSubtrees#equals(Object):::Compare two general subtrees by comparing the subtrees of each.:::if->return->if->return->other->return->equals
+GeneralSubtrees#hashCode()::: general subtrees hash code:::return->trees->hashCode
+GeneralSubtrees#getGeneralNameInterface(int):::Return the GeneralNameInterface form of the GeneralName in one of the GeneralSubtrees.:::return->get->getGeneralNameInterface
+GeneralSubtrees#getGeneralNameInterface(GeneralSubtree)::: general subtrees get general name interface:::gn->gs->getName->gni->gn->getName->return
+GeneralSubtrees#minimize():::minimize this GeneralSubtrees by removing all redundant entries:::for->i->size
+GeneralSubtrees#createWidestSubtree(GeneralNameInterface):::create a subtree containing an instance of the input name type that widens all other names of that type.:::try->newName->switch->name->getType->otherOID->getOID->new->OtherName->new->GeneralName->break->new->RFC822Name->new->GeneralName->break->new->DNSName->new->GeneralName->break->new->X400Address->new->GeneralName->break->new->X500Name->new->GeneralName->break->new->EDIPartyName->new->GeneralName->break->new->URIName->new->GeneralName->break->new->IPAddressName->new->GeneralName->break->new->ObjectIdentifier->new->OIDName->new->GeneralName->break->throw->name->getType->new->IOException->return->new->GeneralSubtree->catch->throw->new->RuntimeException->finally
 GeneralSubtrees#intersect(GeneralSubtrees):::intersect this GeneralSubtrees with other:::if->throw->new->NullPointerException->newThis->new->GeneralSubtrees->newExcluded->if->size->union->return->this->minimize->other->minimize->for->i->size->if->newThis->size->union->for->i->other->size->return
 GeneralSubtrees#union(GeneralSubtrees):::construct union of this GeneralSubtrees with other.:::if->for->i->n->other->size->minimize
 GeneralSubtrees#reduce(GeneralSubtrees):::reduce this GeneralSubtrees by contents of another:::if->return->for->i->n->excluded->size
+InhibitAnyPolicyExtension#encodeThis()::: inhibit any policy extension encode this:::out->new->DerOutputStream->out->putInteger->out->toByteArray
 InhibitAnyPolicyExtension#toString():::Return user readable form of extension.:::s->super->toString->return
 InhibitAnyPolicyExtension#encode(OutputStream):::Encode this extension value to the output stream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 InhibitAnyPolicyExtension#set(String, Object):::Set the attribute value.:::if->name->equalsIgnoreCase->if->throw->new->IOException->skipCertsValue->intValue->if->throw->new->IOException->if->else->else->throw->new->IOException->encodeThis
@@ -276,6 +359,7 @@ InhibitAnyPolicyExtension#get(String):::Get the attribute value.:::if->name->equ
 InhibitAnyPolicyExtension#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->throw->new->IOException->else->throw->new->IOException
 InhibitAnyPolicyExtension#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->return->elements->elements
 InhibitAnyPolicyExtension#getName():::Return the name of this attribute.:::return
+InvalidityDateExtension#encodeThis()::: invalidity date extension encode this:::if->return->dos->new->DerOutputStream->dos->putGeneralizedTime->dos->toByteArray
 InvalidityDateExtension#set(String, Object):::Set the attribute value.:::if->throw->new->IOException->if->name->equalsIgnoreCase->else->throw->new->IOException->encodeThis
 InvalidityDateExtension#get(String):::Get the attribute value.:::if->name->equalsIgnoreCase->if->return->else->return->date->getTime->new->Date->else->throw->new->IOException
 InvalidityDateExtension#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->else->throw->new->IOException->encodeThis
@@ -283,6 +367,9 @@ InvalidityDateExtension#toString():::Returns a printable representation of the I
 InvalidityDateExtension#encode(OutputStream):::Write the extension to the DerOutputStream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 InvalidityDateExtension#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->return->elements->elements
 InvalidityDateExtension#getName():::Return the name of this attribute.:::return
+InvalidityDateExtension#toImpl(java.security.cert.Extension)::: invalidity date extension to impl:::if->return->else->return->Boolean->ext->isCritical->valueOf->ext->getValue->new->InvalidityDateExtension
+IPAddressName#parseIPv4(String):::Parse an IPv4 address.:::slashNdx->name->indexOf->if->InetAddress->getByName->getAddress->else->new->byteArr->mask->InetAddress->name->substring->getByName->getAddress->host->InetAddress->name->substring->getByName->getAddress->System->arraycopy->System->arraycopy
+IPAddressName#parseIPv6(String)::: address name parse pv6:::slashNdx->name->indexOf->if->InetAddress->getByName->getAddress->else->new->byteArr->base->InetAddress->name->substring->getByName->getAddress->System->arraycopy->prefixLen->Integer->name->substring->parseInt->if->throw->new->IOException->bitArray->new->BitArray->for->i->maskArray->bitArray->toByteArray->for->i
 IPAddressName#getType():::Return the type of the GeneralName.:::return
 IPAddressName#encode(DerOutputStream):::Encode the IPAddress name into the DerOutputStream.:::out->putOctetString
 IPAddressName#toString():::Return a printable string of IPaddress:::try->return->getName->catch->enc->new->HexDumpEncoder->return->enc->encodeBuffer->finally
@@ -292,6 +379,7 @@ IPAddressName#equals(Object):::Compares this name with another, for equality.:::
 IPAddressName#hashCode():::Returns the hash code value for this object.:::retval->for->i->return
 IPAddressName#constrains(GeneralNameInterface):::Return type of constraint inputName places on this name:<ul>   <li>NAME_DIFF_TYPE = -1: input name is different type from name       (i.e:::constraintType->if->else->if->inputName->getType->else->if->equals->else->otherName->otherAddress->if->else->if->otherSubsetOfThis->thisSubsetOfOther->thisEmpty->otherEmpty->maskOffset->for->i->if->if->else->if->else->else->if->else->if->else->else->if->i->maskOffset->for->if->else->else->if->i->maskOffset->for->if->else->else->return
 IPAddressName#subtreeDepth():::Return subtree depth of this name for purposes of determining NameConstraints minimum and maximum bounds and for calculating path lengths in name subtrees.:::throw->new->UnsupportedOperationException
+IssuerAlternativeNameExtension#encodeThis()::: issuer alternative name extension encode this:::if->names->isEmpty->return->os->new->DerOutputStream->names->encode->os->toByteArray
 IssuerAlternativeNameExtension#toString():::Returns a printable representation of the IssuerAlternativeName.:::sb->new->StringBuilder->sb->super->toString->append->append->if->sb->append->else->foreach->names->names->sb->append->append->append->sb->append->return->sb->toString
 IssuerAlternativeNameExtension#encode(OutputStream):::Write the extension to the OutputStream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 IssuerAlternativeNameExtension#set(String, Object):::Set the attribute value.:::if->name->equalsIgnoreCase->if->throw->new->IOException->else->throw->new->IOException->encodeThis
@@ -305,19 +393,26 @@ IssuingDistributionPointExtension#set(String, Object):::Sets the attribute value
 IssuingDistributionPointExtension#get(String):::Gets the attribute value.:::if->name->equalsIgnoreCase->return->else->if->name->equalsIgnoreCase->return->Boolean->valueOf->else->if->name->equalsIgnoreCase->return->else->if->name->equalsIgnoreCase->return->Boolean->valueOf->else->if->name->equalsIgnoreCase->return->Boolean->valueOf->else->if->name->equalsIgnoreCase->return->Boolean->valueOf->else->throw->new->IOException
 IssuingDistributionPointExtension#delete(String):::Deletes the attribute value.:::if->name->equalsIgnoreCase->else->if->name->equalsIgnoreCase->else->if->name->equalsIgnoreCase->else->if->name->equalsIgnoreCase->else->if->name->equalsIgnoreCase->else->if->name->equalsIgnoreCase->else->throw->new->IOException->encodeThis
 IssuingDistributionPointExtension#getElements():::Returns an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->return->elements->elements
+IssuingDistributionPointExtension#encodeThis()::: issuing distribution point extension encode this:::if->return->tagged->new->DerOutputStream->if->tmp->new->DerOutputStream->distributionPoint->encode->tagged->DerValue->createTag->writeImplicit->if->tmp->new->DerOutputStream->tmp->putBoolean->tagged->DerValue->createTag->writeImplicit->if->tmp->new->DerOutputStream->tmp->putBoolean->tagged->DerValue->createTag->writeImplicit->if->tmp->new->DerOutputStream->revocationReasons->encode->tagged->DerValue->createTag->writeImplicit->if->tmp->new->DerOutputStream->tmp->putBoolean->tagged->DerValue->createTag->writeImplicit->if->tmp->new->DerOutputStream->tmp->putBoolean->tagged->DerValue->createTag->writeImplicit->seq->new->DerOutputStream->seq->write->seq->toByteArray
 IssuingDistributionPointExtension#toString():::Returns the extension as user readable string.:::sb->new->StringBuilder->sb->super->toString->append->append->if->sb->append->if->sb->append->sb->append->append->append->append->append->append->append->append->append->append->append->append->return->sb->toString
 KeyIdentifier#getIdentifier():::Return the value of the KeyIdentifier as byte array.:::return->octetString->clone
 KeyIdentifier#toString():::Returns a printable representation of the KeyUsage.:::s->encoder->new->HexDumpEncoder->encoder->encodeBuffer->return
 KeyIdentifier#encode(DerOutputStream):::Write the KeyIdentifier to the DerOutputStream.:::out->putOctetString
 KeyIdentifier#hashCode():::Returns a hash code value for this object:::retval->for->i->return
 KeyIdentifier#equals(Object):::Indicates whether some other object is "equal to" this one.:::if->return->if->return->otherString->return->equals
+KeyUsageExtension#encodeThis()::: key usage extension encode this:::os->new->DerOutputStream->os->new->BitArray->putTruncatedUnalignedBitString->os->toByteArray
+KeyUsageExtension#isSet(int):::Check if bit is set.:::return
+KeyUsageExtension#set(int, boolean):::Set the bit at the specified position.:::if->tmp->new->booleanArr->System->arraycopy
 KeyUsageExtension#set(String, Object):::Set the attribute value.:::if->throw->new->IOException->val->booleanValue->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->throw->new->IOException->encodeThis
 KeyUsageExtension#get(String):::Get the attribute value.:::if->name->equalsIgnoreCase->return->Boolean->isSet->valueOf->else->if->name->equalsIgnoreCase->return->Boolean->isSet->valueOf->else->if->name->equalsIgnoreCase->return->Boolean->isSet->valueOf->else->if->name->equalsIgnoreCase->return->Boolean->isSet->valueOf->else->if->name->equalsIgnoreCase->return->Boolean->isSet->valueOf->else->if->name->equalsIgnoreCase->return->Boolean->isSet->valueOf->else->if->name->equalsIgnoreCase->return->Boolean->isSet->valueOf->else->if->name->equalsIgnoreCase->return->Boolean->isSet->valueOf->else->if->name->equalsIgnoreCase->return->Boolean->isSet->valueOf->else->throw->new->IOException
 KeyUsageExtension#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->if->name->equalsIgnoreCase->set->else->throw->new->IOException->encodeThis
 KeyUsageExtension#toString():::Returns a printable representation of the KeyUsage.:::sb->new->StringBuilder->sb->super->toString->append->sb->append->if->isSet->sb->append->if->isSet->sb->append->if->isSet->sb->append->if->isSet->sb->append->if->isSet->sb->append->if->isSet->sb->append->if->isSet->sb->append->if->isSet->sb->append->if->isSet->sb->append->sb->append->return->sb->toString
 KeyUsageExtension#encode(OutputStream):::Write the extension to the DerOutputStream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 KeyUsageExtension#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->return->elements->elements
+KeyUsageExtension#getBits()::: key usage extension get bits:::return->bitString->clone
 KeyUsageExtension#getName():::Return the name of this attribute.:::return
+NameConstraintsExtension#calcMinMax()::: name constraints extension calc min max:::if->for->i->excluded->size->if->for->i->permitted->size
+NameConstraintsExtension#encodeThis()::: name constraints extension encode this:::if->return->seq->new->DerOutputStream->tagged->new->DerOutputStream->if->tmp->new->DerOutputStream->permitted->encode->tagged->DerValue->createTag->writeImplicit->if->tmp->new->DerOutputStream->excluded->encode->tagged->DerValue->createTag->writeImplicit->seq->write->seq->toByteArray
 NameConstraintsExtension#toString():::Return the printable string.:::sb->new->StringBuilder->sb->super->toString->append->append->if->sb->append->append->if->sb->append->append->sb->append->return->sb->toString
 NameConstraintsExtension#encode(OutputStream):::Write the extension to the OutputStream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 NameConstraintsExtension#set(String, Object):::Set the attribute value.:::if->name->equalsIgnoreCase->if->throw->new->IOException->else->if->name->equalsIgnoreCase->if->throw->new->IOException->else->throw->new->IOException->encodeThis
@@ -327,8 +422,13 @@ NameConstraintsExtension#getElements():::Return an enumeration of names of attri
 NameConstraintsExtension#getName():::Return the name of this attribute.:::return
 NameConstraintsExtension#merge(NameConstraintsExtension):::Merge additional name constraints with existing ones:::if->return->newExcluded->newConstraints->get->if->newExcluded->clone->else->if->excluded->union->newPermitted->newConstraints->get->if->newPermitted->clone->else->if->permitted->intersect->if->if->excluded->union->else->newExcluded->clone->if->permitted->reduce->encodeThis
 NameConstraintsExtension#verify(X509Certificate):::check whether a certificate conforms to these NameConstraints:::if->throw->new->IOException->if->calcMinMax->if->throw->new->IOException->if->throw->new->IOException->subjectPrincipal->cert->getSubjectX500Principal->subject->X500Name->asX500Name->if->subject->isEmpty->if->verify->return->altNames->try->certImpl->X509CertImpl->toImpl->altNameExt->certImpl->getSubjectAlternativeNameExtension->if->altNameExt->get->catch->throw->ce->getMessage->new->IOException->finally->if->new->GeneralNames->foreach->subject->allAvas->attrOID->ava->getObjectIdentifier->if->attrOID->equals->attrValue->ava->getValueString->if->try->altNames->new->RFC822Name->new->GeneralName->add->catch->continue->finally->derValue->subject->findMostSpecificAttribute->cn->derValue->getAsString->if->try->if->IPAddressUtil->isIPv4LiteralAddress->IPAddressUtil->isIPv6LiteralAddress->if->hasNameType->altNames->new->IPAddressName->new->GeneralName->add->else->if->hasNameType->altNames->new->DNSName->new->GeneralName->add->catch->finally->for->i->altNames->size->return
+NameConstraintsExtension#hasNameType(GeneralNames, int)::: name constraints extension has name type:::foreach->names->names->if->name->getType->return->return
 NameConstraintsExtension#verify(GeneralNameInterface):::check whether a name conforms to these NameConstraints:::if->throw->new->IOException->if->excluded->size->for->i->excluded->size->if->permitted->size->sameType->for->i->permitted->size->if->return->return
 NameConstraintsExtension#clone():::Clone all objects that may be modified during certificate validation.:::try->newNCE->super->clone->if->permitted->clone->if->excluded->clone->return->catch->throw->new->RuntimeException->finally
+NetscapeCertTypeExtension#getPosition(String)::: netscape cert type extension get position:::for->i->throw->new->IOException
+NetscapeCertTypeExtension#encodeThis()::: netscape cert type extension encode this:::os->new->DerOutputStream->os->new->BitArray->putTruncatedUnalignedBitString->os->toByteArray
+NetscapeCertTypeExtension#isSet(int):::Check if bit is set.:::return
+NetscapeCertTypeExtension#set(int, boolean):::Set the bit at the specified position.:::if->tmp->new->booleanArr->System->arraycopy
 NetscapeCertTypeExtension#set(String, Object):::Set the attribute value.:::if->throw->new->IOException->val->booleanValue->getPosition->set->encodeThis
 NetscapeCertTypeExtension#get(String):::Get the attribute value.:::return->Boolean->getPosition->isSet->valueOf
 NetscapeCertTypeExtension#delete(String):::Delete the attribute value.:::getPosition->set->encodeThis
@@ -342,6 +442,8 @@ OCSPNoCheckExtension#get(String):::Get the attribute value.:::throw->new->IOExce
 OCSPNoCheckExtension#delete(String):::Delete the attribute value.:::throw->new->IOException
 OCSPNoCheckExtension#getElements():::Return an enumeration of names of attributes existing within this attribute.:::return->new->AttributeNameEnumeration->elements
 OCSPNoCheckExtension#getName():::Return the name of this attribute.:::return
+OIDMap#addInternal(String, ObjectIdentifier, String):::Add attributes to the table:::info->new->OIDInfo->oidMap->put->nameMap->put
+OIDMap.OIDInfo#getClazz():::Return the Class object associated with this attribute.:::try->c->if->Class->forName->return->catch->throw->new->CertificateException->finally
 OIDMap#addAttribute(String, String, Class):::Add a name to lookup table.:::objId->try->new->ObjectIdentifier->catch->throw->new->CertificateException->finally->info->new->OIDInfo->if->oidMap->put->throw->new->CertificateException->if->nameMap->put->throw->new->CertificateException
 OIDMap#getName(ObjectIdentifier):::Return user friendly name associated with the OID.:::info->oidMap->get->return
 OIDMap#getOID(String):::Return Object identifier for user friendly name.:::info->nameMap->get->return
@@ -357,6 +459,7 @@ OIDName#constrains(GeneralNameInterface):::Return type of constraint inputName p
 OIDName#subtreeDepth():::Return subtree depth of this name for purposes of determining NameConstraints minimum and maximum bounds and for calculating path lengths in name subtrees.:::throw->new->UnsupportedOperationException
 OtherName#getOID():::Get ObjectIdentifier:::return
 OtherName#getNameValue():::Get name value:::return->nameValue->clone
+OtherName#getGNI(ObjectIdentifier, byte[]):::Get GeneralNameInterface:::try->extClass->OIDMap->getClass->if->return->params->cons->extClass->getConstructor->passed->new->ObjectArr->gni->cons->newInstance->return->catch->throw->new->IOException->finally
 OtherName#getType():::Return the type of the GeneralName.:::return
 OtherName#encode(DerOutputStream):::Encode the Other name into the DerOutputStream.:::if->gni->encode->return->else->tmp->new->DerOutputStream->tmp->putOID->tmp->DerValue->createTag->write->out->write
 OtherName#equals(Object):::Compares this name with another, for equality.:::if->return->if->return->otherOther->if->equals->return->otherGNI->try->getGNI->catch->return->finally->result->if->try->otherGNI->constrains->catch->finally->else->Arrays->equals->return
@@ -364,6 +467,7 @@ OtherName#hashCode():::Returns the hash code for this OtherName.:::if->oid->hash
 OtherName#toString():::Convert the name into user readable string.:::return
 OtherName#constrains(GeneralNameInterface):::Return type of constraint inputName places on this name:<ul>   <li>NAME_DIFF_TYPE = -1: input name is different type from name       (i.e:::constraintType->if->else->if->inputName->getType->else->throw->new->UnsupportedOperationException->return
 OtherName#subtreeDepth():::Return subtree depth of this name for purposes of determining NameConstraints minimum and maximum bounds.:::throw->new->UnsupportedOperationException
+PolicyConstraintsExtension#encodeThis()::: policy constraints extension encode this:::if->return->tagged->new->DerOutputStream->seq->new->DerOutputStream->if->tmp->new->DerOutputStream->tmp->putInteger->tagged->DerValue->createTag->writeImplicit->if->tmp->new->DerOutputStream->tmp->putInteger->tagged->DerValue->createTag->writeImplicit->seq->write->seq->toByteArray
 PolicyConstraintsExtension#toString():::Return the extension as user readable string.:::sb->new->StringBuilder->sb->super->toString->append->append->append->if->sb->append->else->sb->append->append->sb->append->if->sb->append->else->sb->append->sb->append->return->sb->toString
 PolicyConstraintsExtension#encode(OutputStream):::Write the extension to the DerOutputStream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 PolicyConstraintsExtension#set(String, Object):::Set the attribute value.:::if->throw->new->IOException->if->name->equalsIgnoreCase->intValue->else->if->name->equalsIgnoreCase->intValue->else->throw->new->IOException->encodeThis
@@ -382,6 +486,7 @@ PolicyInformation#getElements():::Return an enumeration of names of attributes e
 PolicyInformation#getName():::Return the name of this attribute.:::return
 PolicyInformation#toString():::Return a printable representation of the PolicyInformation.:::return
 PolicyInformation#encode(DerOutputStream):::Write the PolicyInformation to the DerOutputStream.:::tmp->new->DerOutputStream->policyIdentifier->encode->if->policyQualifiers->isEmpty->tmp2->new->DerOutputStream->foreach->tmp2->pq->getEncoded->write->tmp->write->out->write
+PolicyMappingsExtension#encodeThis()::: policy mappings extension encode this:::if->maps->isEmpty->return->os->new->DerOutputStream->tmp->new->DerOutputStream->foreach->map->encode->os->write->os->toByteArray
 PolicyMappingsExtension#toString():::Returns a printable representation of the policy map.:::if->return->s->super->toString->maps->toString->return
 PolicyMappingsExtension#encode(OutputStream):::Write the extension to the OutputStream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 PolicyMappingsExtension#set(String, Object):::Set the attribute value.:::if->name->equalsIgnoreCase->if->throw->new->IOException->else->throw->new->IOException->encodeThis
@@ -389,6 +494,7 @@ PolicyMappingsExtension#get(String):::Get the attribute value.:::if->name->equal
 PolicyMappingsExtension#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->else->throw->new->IOException->encodeThis
 PolicyMappingsExtension#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->return->elements->elements
 PolicyMappingsExtension#getName():::Return the name of this attribute.:::return
+PrivateKeyUsageExtension#encodeThis()::: private key usage extension encode this:::if->return->seq->new->DerOutputStream->tagged->new->DerOutputStream->if->tmp->new->DerOutputStream->tmp->putGeneralizedTime->tagged->DerValue->createTag->writeImplicit->if->tmp->new->DerOutputStream->tmp->putGeneralizedTime->tagged->DerValue->createTag->writeImplicit->seq->write->seq->toByteArray
 PrivateKeyUsageExtension#toString():::Return the printable string.:::sb->new->StringBuilder->sb->super->toString->append->append->if->sb->append->append->if->sb->append->if->sb->append->append->sb->append->return->sb->toString
 PrivateKeyUsageExtension#valid():::Verify that the current time is within the validity period.:::now->new->Date->valid
 PrivateKeyUsageExtension#valid(Date):::Verify that the passed time is within the validity period.:::Objects->requireNonNull->if->notBefore->after->throw->notBefore->toString->new->CertificateNotYetValidException->if->notAfter->before->throw->notAfter->toString->new->CertificateExpiredException
@@ -400,7 +506,22 @@ PrivateKeyUsageExtension#getElements():::Return an enumeration of names of attri
 PrivateKeyUsageExtension#getName():::Return the name of this attribute.:::return
 RDN#avas():::Return an immutable List of the AVAs in this RDN.:::list->if->Collections->Arrays->asList->unmodifiableList->return
 RDN#size():::Return the number of AVAs in this RDN.:::return
+RDN#equals(Object)::: n equals:::if->return->if->return->other->if->return->thisCanon->this->toRFC2253String->otherCanon->other->toRFC2253String->return->thisCanon->equals
+RDN#hashCode()::: n hash code:::return->toRFC2253String->hashCode
+RDN#findAttribute(ObjectIdentifier)::: n find attribute:::for->i->return
+RDN#encode(DerOutputStream)::: n encode:::out->putOrderedSetOf
+RDN#toString()::: n to string:::if->return->toString->sj->new->StringJoiner->for->i->return->sj->toString
+RDN#toRFC1779String()::: n to c1779 string:::return->Collections->emptyMap->toRFC1779String
+RDN#toRFC1779String(Map)::: n to c1779 string:::if->return->toRFC1779String->sj->new->StringJoiner->for->i->return->sj->toString
+RDN#toRFC2253String()::: n to c2253 string:::return->Collections->emptyMap->toRFC2253StringInternal
+RDN#toRFC2253String(Map)::: n to c2253 string:::return->toRFC2253StringInternal
+RDN#toRFC2253String(boolean)::: n to c2253 string:::if->return->Collections->emptyMap->toRFC2253StringInternal->c->if->Collections->emptyMap->toRFC2253StringInternal->return
+RDN#toRFC2253StringInternal(boolean, Map)::: n to c2253 string internal:::if->return->toRFC2253CanonicalString->toRFC2253String->toOutput->if->assertion->clone->Arrays->AVAComparator->getInstance->sort->sj->new->StringJoiner->foreach->sj->ava->toRFC2253CanonicalString->ava->toRFC2253String->add->return->sj->toString
+AVAComparator#getInstance()::: comparator get instance:::return
 AVAComparator#compare(AVA, AVA):::AVA's containing a standard keyword are ordered alphabetically, followed by AVA's containing an OID keyword, ordered numerically:::a1Has2253->a1->hasRFC2253Keyword->a2Has2253->a2->hasRFC2253Keyword->if->return->a1->toRFC2253CanonicalString->a2->toRFC2253CanonicalString->compareTo->else->if->return->else->return
+ReasonFlags#name2Index(String)::: reason flags name2 index:::for->i->throw->new->IOException
+ReasonFlags#isSet(int):::Check if bit is set.:::return
+ReasonFlags#set(int, boolean):::Set the bit at the specified position.:::if->tmp->new->booleanArr->System->arraycopy
 ReasonFlags#getFlags():::Returns the reason flags as a boolean array.:::return
 ReasonFlags#set(String, Object):::Set the attribute value.:::if->throw->new->IOException->val->booleanValue->name2Index->set
 ReasonFlags#get(String):::Get the attribute value.:::return->Boolean->name2Index->isSet->valueOf
@@ -417,9 +538,11 @@ RFC822Name#equals(Object):::Compares this name with another, for equality.:::if-
 RFC822Name#hashCode():::Returns the hash code value for this object.:::return->name->toUpperCase->hashCode
 RFC822Name#constrains(GeneralNameInterface):::Return constraint type:<ul>   <li>NAME_DIFF_TYPE = -1: input name is different type from name (i.e:::constraintType->if->else->if->inputName->getType->else->inName->getName->toLowerCase->thisName->name->toLowerCase->if->inName->equals->else->if->thisName->endsWith->if->inName->indexOf->else->if->inName->startsWith->else->inNdx->thisName->lastIndexOf->if->thisName->charAt->else->else->if->inName->endsWith->if->thisName->indexOf->else->if->thisName->startsWith->else->ndx->inName->lastIndexOf->if->inName->charAt->else->else->return
 RFC822Name#subtreeDepth():::Return subtree depth of this name for purposes of determining NameConstraints minimum and maximum bounds.:::subtree->i->atNdx->subtree->lastIndexOf->if->subtree->substring->for->subtree->lastIndexOf->return
+SerialNumber#construct(DerValue)::: serial number construct:::derVal->getBigInteger->if->available->throw->new->IOException
 SerialNumber#toString():::Return the SerialNumber as user readable string.:::return->Debug->toHexString
 SerialNumber#encode(DerOutputStream):::Encode the SerialNumber in DER form to the stream.:::out->putInteger
 SerialNumber#getNumber():::Return the serial number.:::return
+SubjectAlternativeNameExtension#encodeThis()::: subject alternative name extension encode this:::if->names->isEmpty->return->os->new->DerOutputStream->names->encode->os->toByteArray
 SubjectAlternativeNameExtension#toString():::Returns a printable representation of the SubjectAlternativeName.:::result->super->toString->if->else->foreach->names->names->return
 SubjectAlternativeNameExtension#encode(OutputStream):::Write the extension to the OutputStream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 SubjectAlternativeNameExtension#set(String, Object):::Set the attribute value.:::if->name->equalsIgnoreCase->if->throw->new->IOException->else->throw->new->IOException->encodeThis
@@ -434,7 +557,9 @@ SubjectInfoAccessExtension#set(String, Object):::Set the attribute value.:::if->
 SubjectInfoAccessExtension#get(String):::Get the attribute value.:::if->name->equalsIgnoreCase->return->else->throw->new->IOException
 SubjectInfoAccessExtension#delete(String):::Delete the attribute value.:::if->name->equalsIgnoreCase->Collections->emptyList->else->throw->new->IOException->encodeThis
 SubjectInfoAccessExtension#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->return->elements->elements
+SubjectInfoAccessExtension#encodeThis()::: subject info access extension encode this:::if->accessDescriptions->isEmpty->else->ads->new->DerOutputStream->foreach->accessDescription->encode->seq->new->DerOutputStream->seq->write->seq->toByteArray
 SubjectInfoAccessExtension#toString():::Return the extension as user readable string.:::return->super->toString
+SubjectKeyIdentifierExtension#encodeThis()::: subject key identifier extension encode this:::if->return->os->new->DerOutputStream->id->encode->os->toByteArray
 SubjectKeyIdentifierExtension#toString():::Returns a printable representation.:::return->super->toString
 SubjectKeyIdentifierExtension#encode(OutputStream):::Write the extension to the OutputStream.:::tmp->new->DerOutputStream->if->encodeThis->super->encode->out->tmp->toByteArray->write
 SubjectKeyIdentifierExtension#set(String, Object):::Set the attribute value.:::if->name->equalsIgnoreCase->if->throw->new->IOException->else->throw->new->IOException->encodeThis
@@ -470,6 +595,7 @@ X500Name#avaSize():::Return the total number of AVAs contained in all the RDNs o
 X500Name#isEmpty():::Return whether this X500Name is empty:::n->for->i->return
 X500Name#hashCode():::Calculates a hash code value for the object:::return->getRFC2253CanonicalName->hashCode
 X500Name#equals(Object):::Compares this name with another, for equality.:::if->return->if->return->other->if->return->equals->n->if->return->for->i->thisCanonical->this->getRFC2253CanonicalName->otherCanonical->other->getRFC2253CanonicalName->return->thisCanonical->equals
+X500Name#getString(DerValue)::: x500 name get string:::if->return->value->attribute->getAsString->if->throw->new->IOException->else->return
 X500Name#getType():::Return type of GeneralName.:::return
 X500Name#getCountry():::Returns a "Country" name component:::attr->findAttribute->return->getString
 X500Name#getOrganization():::Returns an "Organization" name component:::attr->findAttribute->return->getString
@@ -489,19 +615,31 @@ X500Name#getRFC1779Name():::Returns a string form of the X.500 distinguished nam
 X500Name#getRFC1779Name(Map):::Returns a string form of the X.500 distinguished name using the algorithm defined in RFC 1779:::if->oidMap->isEmpty->if->return->else->generateRFC1779DN->return->return->generateRFC1779DN
 X500Name#getRFC2253Name():::Returns a string form of the X.500 distinguished name using the algorithm defined in RFC 2253:::return->Collections->emptyMap->getRFC2253Name
 X500Name#getRFC2253Name(Map):::Returns a string form of the X.500 distinguished name using the algorithm defined in RFC 2253:::if->oidMap->isEmpty->if->return->else->generateRFC2253DN->return->return->generateRFC2253DN
+X500Name#generateRFC2253DN(Map)::: x500 name generate c2253 n:::if->return->sj->new->StringJoiner->for->i->return->sj->toString
+X500Name#getRFC2253CanonicalName()::: x500 name get c2253 canonical name:::if->return->if->return->sj->new->StringJoiner->for->i->sj->toString->return
 X500Name#getName():::Returns the value of toString():::return->toString
+X500Name#findAttribute(ObjectIdentifier):::Find the first instance of this attribute in a "top down" search of all the attributes in the name.:::if->for->i->return
 X500Name#findMostSpecificAttribute(ObjectIdentifier):::Find the most specific ("last") attribute of the given type.:::if->for->i->return
+X500Name#parseDER(DerInputStream)::: x500 name parse r:::nameseq->derBytes->in->toByteArray->try->in->getSequence->catch->if->else->derVal->new->DerValue->derVal->toByteArray->new->DerInputStream->getSequence->finally->if->new->RDNArr->else->new->RDNArr->for->i
 X500Name#emit(DerOutputStream):::Encodes the name in DER-encoded form.:::encode
 X500Name#encode(DerOutputStream):::Encodes the name in DER-encoded form.:::tmp->new->DerOutputStream->for->i->out->write
 X500Name#getEncodedInternal():::Returned the encoding as an uncloned byte array:::if->out->new->DerOutputStream->tmp->new->DerOutputStream->for->i->out->write->out->toByteArray->return
 X500Name#getEncoded():::Gets the name in DER-encoded form.:::return->getEncodedInternal->clone
+X500Name#parseDN(String, Map)::: x500 name parse n:::if->input->length->new->RDNArr->return->dnVector->new->ArrayList<>->dnOffset->rdnEnd->rdnString->quoteCount->dnString->searchOffset->nextComma->dnString->indexOf->nextSemiColon->dnString->indexOf->while->if->else->if->else->Math->min->countQuotes->if->escaped->dnString->substring->rdn->new->RDN->dnVector->add->dnString->indexOf->dnString->indexOf->dnString->substring->rdn->new->RDN->dnVector->add->Collections->reverse->dnVector->dnVector->size->new->RDNArr->toArray
+X500Name#parseRFC2253DN(String)::: x500 name parse c2253 n:::if->dnString->length->new->RDNArr->return->dnVector->new->ArrayList<>->dnOffset->rdnString->searchOffset->rdnEnd->dnString->indexOf->while->if->escaped->dnString->substring->rdn->new->RDN->dnVector->add->dnString->indexOf->dnString->substring->rdn->new->RDN->dnVector->add->Collections->reverse->dnVector->dnVector->size->new->RDNArr->toArray
+X500Name#countQuotes(String, int, int)::: x500 name count quotes:::count->for->i->return
+X500Name#escaped(int, int, String)::: x500 name escaped:::if->dnString->charAt->return->else->if->dnString->charAt->dnString->charAt->return->else->if->dnString->charAt->dnString->charAt->count->while->if->dnString->charAt->return->else->return
+X500Name#generateDN()::: x500 name generate n:::if->toString->return->if->return->sj->new->StringJoiner->for->i->sj->toString
+X500Name#generateRFC1779DN(Map)::: x500 name generate c1779 n:::if->return->toRFC1779String->if->return->sj->new->StringJoiner->for->i->return->sj->toString
 X500Name#constrains(GeneralNameInterface):::Return constraint type:<ul>   <li>NAME_DIFF_TYPE = -1: input name is different type from this name       (i.e:::constraintType->if->else->if->inputName->getType->else->inputX500->if->inputX500->equals->else->if->else->if->else->if->inputX500->isWithinSubtree->else->if->isWithinSubtree->else->return
+X500Name#isWithinSubtree(X500Name):::Compares this name with another and determines if it is within the subtree of the other:::if->return->if->return->if->return->if->return->if->return->for->i->return
 X500Name#subtreeDepth():::Return subtree depth of this name for purposes of determining NameConstraints minimum and maximum bounds and for calculating path lengths in name subtrees.:::return
 X500Name#commonAncestor(X500Name):::Return lowest common ancestor of this name and other name:::if->return->otherLen->thisLen->if->return->minLen->i->for->ancestor->new->RDNArr->for->j->commonAncestor->try->new->X500Name->catch->return->finally->return
 X500Name#asX500Principal():::Get an X500Principal backed by this X500Name:::if->try->args->new->ObjectArr->principalConstructor->newInstance->catch->throw->new->RuntimeException->finally->return
 X500Name#asX500Name(X500Principal):::Get the X500Name contained in the given X500Principal:::try->name->principalField->get->return->catch->throw->new->RuntimeException->finally
 X509AttributeName#getPrefix():::Return the prefix of the name.:::return
 X509AttributeName#getSuffix():::Return the suffix of the name.:::return
+X509CertImpl#readRFC1421Cert(InputStream):::read input stream as HEX-encoded DER-encoded bytes:::der->line->certBufferedReader->new->InputStreamReader->new->BufferedReader->try->certBufferedReader->readLine->catch->throw->ioe1->getMessage->new->IOException->finally->if->line->equals->decstream->new->ByteArrayOutputStream->try->while->certBufferedReader->readLine->if->line->equals->decstream->toByteArray->new->DerValue->break->else->decstream->Pem->decode->write->catch->throw->ioe2->getMessage->new->IOException->finally->else->throw->new->IOException->return
 X509CertImpl#encode(OutputStream):::Appends the certificate to an output stream.:::if->throw->new->CertificateEncodingException->try->out->signedCert->clone->write->catch->throw->e->toString->new->CertificateEncodingException->finally
 X509CertImpl#derEncode(OutputStream):::DER encode this object onto an output stream:::if->throw->new->IOException->out->signedCert->clone->write
 X509CertImpl#getEncoded():::Returns the encoded form of this certificate:::return->getEncodedInternal->clone
@@ -537,6 +675,7 @@ X509CertImpl#getSigAlgOID():::Gets the signature algorithm OID string from the c
 X509CertImpl#getSigAlgParams():::Gets the DER encoded signature algorithm parameters from this certificate's signature algorithm.:::if->return->try->return->algId->getEncodedParams->catch->return->finally
 X509CertImpl#getIssuerUniqueID():::Gets the Issuer Unique Identity from the certificate.:::if->return->try->id->info->get->if->return->else->return->id->getId->catch->return->finally
 X509CertImpl#getSubjectUniqueID():::Gets the Subject Unique Identity from the certificate.:::if->return->try->id->info->get->if->return->else->return->id->getId->catch->return->finally
+X509CertImpl#getAuthKeyId()::: x509 cert impl get auth key id:::aki->getAuthorityKeyIdentifierExtension->if->try->return->aki->get->catch->finally->return
 X509CertImpl#getSubjectKeyId():::Returns the subject's key identifier, or null:::ski->getSubjectKeyIdentifierExtension->if->try->return->ski->get->catch->finally->return
 X509CertImpl#getAuthorityKeyIdentifierExtension():::Get AuthorityKeyIdentifier extension:::return->getExtension
 X509CertImpl#getBasicConstraintsExtension():::Get BasicConstraints extension:::return->getExtension
@@ -554,22 +693,30 @@ X509CertImpl#hasUnsupportedCriticalExtension():::Return true if a critical exten
 X509CertImpl#getCriticalExtensionOIDs():::Gets a Set of the extension(s) marked CRITICAL in the certificate:::if->return->try->exts->info->get->if->return->extSet->new->TreeSet<>->foreach->exts->getAllExtensions->if->ex->isCritical->extSet->ex->getExtensionId->toString->add->return->catch->return->finally
 X509CertImpl#getNonCriticalExtensionOIDs():::Gets a Set of the extension(s) marked NON-CRITICAL in the certificate:::if->return->try->exts->info->get->if->return->extSet->new->TreeSet<>->foreach->exts->getAllExtensions->if->ex->isCritical->extSet->ex->getExtensionId->toString->add->extSet->exts->getUnparseableExtensions->keySet->addAll->return->catch->return->finally
 X509CertImpl#getExtension(ObjectIdentifier):::Gets the extension identified by the given ObjectIdentifier:::if->return->try->extensions->try->info->get->catch->return->finally->if->return->else->ex->extensions->oid->toString->getExtension->if->return->foreach->extensions->getAllExtensions->if->ex2->getExtensionId->equals->return->return->catch->return->finally
+X509CertImpl#getUnparseableExtension(ObjectIdentifier)::: x509 cert impl get unparseable extension:::if->return->try->extensions->try->info->get->catch->return->finally->if->return->else->return->extensions->getUnparseableExtensions->oid->toString->get->catch->return->finally
 X509CertImpl#getExtensionValue(String):::Gets the DER encoded extension identified by the given oid String.:::try->findOID->new->ObjectIdentifier->extAlias->OIDMap->getName->certExt->exts->info->get->if->if->return->foreach->exts->getAllExtensions->inCertOID->ex->getExtensionId->if->inCertOID->equals->break->else->try->this->get->catch->finally->if->if->exts->getUnparseableExtensions->get->if->return->extData->certExt->getExtensionValue->if->return->out->new->DerOutputStream->out->putOctetString->return->out->toByteArray->catch->return->finally
 X509CertImpl#getKeyUsage():::Get a boolean array representing the bits of the KeyUsage extension, (oid = 2.5.29.15).:::try->extAlias->OIDMap->getName->if->return->certExt->this->get->if->return->ret->certExt->getBits->if->usageBits->new->booleanArr->System->arraycopy->return->catch->return->finally
 X509CertImpl#getExtendedKeyUsage():::This method are the overridden implementation of getExtendedKeyUsage method in X509Certificate in the Sun provider:::if->return->else->ext->getExtendedKeyUsageExtension->if->return->Collections->ext->getExtendedKeyUsage->unmodifiableList->return
 X509CertImpl#getExtendedKeyUsage(X509Certificate):::This static method is the default implementation of the getExtendedKeyUsage method in X509Certificate:::try->ext->cert->getExtensionValue->if->return->val->new->DerValue->data->val->getOctetString->ekuExt->new->ExtendedKeyUsageExtension->return->Collections->ekuExt->getExtendedKeyUsage->unmodifiableList->catch->throw->new->CertificateParsingException->finally
 X509CertImpl#getBasicConstraints():::Get the certificate constraints path length from the critical BasicConstraints extension, (oid = 2.5.29.19).:::try->extAlias->OIDMap->getName->if->return->certExt->this->get->if->return->if->certExt->get->booleanValue->return->certExt->get->intValue->else->return->catch->return->finally
+X509CertImpl#makeAltNames(GeneralNames):::Converts a GeneralNames structure into an immutable Collection of alternative names (subject or issuer) in the form required by #getSubjectAlternativeNames or #getIssuerAlternativeNames.:::if->names->isEmpty->return->Collections->emptySet->newNames->new->ArrayList<>->foreach->names->names->name->gname->getName->nameEntry->new->ArrayList<>->nameEntry->Integer->name->getType->valueOf->add->switch->name->getType->nameEntry->getName->add->break->nameEntry->getName->add->break->nameEntry->getRFC2253Name->add->break->nameEntry->getName->add->break->try->nameEntry->getName->add->catch->throw->new->RuntimeException->finally->break->nameEntry->getOID->toString->add->break->derOut->new->DerOutputStream->try->name->encode->catch->throw->new->RuntimeException->finally->nameEntry->derOut->toByteArray->add->break->newNames->Collections->unmodifiableList->add->return->Collections->unmodifiableCollection
+X509CertImpl#cloneAltNames(Collection>)::: x509 cert impl clone alt names:::mustClone->foreach->if->nameEntry->get->if->namesCopy->new->ArrayList<>->foreach->nameObject->nameEntry->get->if->nameEntryCopy->new->ArrayList<>->nameEntryCopy->clone->set->namesCopy->Collections->unmodifiableList->add->else->namesCopy->add->return->Collections->unmodifiableCollection->else->return
 X509CertImpl#getSubjectAlternativeNames():::This method are the overridden implementation of getSubjectAlternativeNames method in X509Certificate in the Sun provider:::if->return->cloneAltNames->subjectAltNameExt->getSubjectAlternativeNameExtension->if->return->names->try->subjectAltNameExt->get->catch->return->Collections->emptySet->finally->makeAltNames->return
 X509CertImpl#getSubjectAlternativeNames(X509Certificate):::This static method is the default implementation of the getSubjectAlternaitveNames method in X509Certificate:::try->ext->cert->getExtensionValue->if->return->val->new->DerValue->data->val->getOctetString->subjectAltNameExt->new->SubjectAlternativeNameExtension->names->try->subjectAltNameExt->get->catch->return->Collections->emptySet->finally->return->makeAltNames->catch->throw->new->CertificateParsingException->finally
 X509CertImpl#getIssuerAlternativeNames():::This method are the overridden implementation of getIssuerAlternativeNames method in X509Certificate in the Sun provider:::if->return->cloneAltNames->issuerAltNameExt->getIssuerAlternativeNameExtension->if->return->names->try->issuerAltNameExt->get->catch->return->Collections->emptySet->finally->makeAltNames->return
 X509CertImpl#getIssuerAlternativeNames(X509Certificate):::This static method is the default implementation of the getIssuerAlternaitveNames method in X509Certificate:::try->ext->cert->getExtensionValue->if->return->val->new->DerValue->data->val->getOctetString->issuerAltNameExt->new->IssuerAlternativeNameExtension->names->try->issuerAltNameExt->get->catch->return->Collections->emptySet->finally->return->makeAltNames->catch->throw->new->CertificateParsingException->finally
+X509CertImpl#getAuthorityInfoAccessExtension()::: x509 cert impl get authority info access extension:::return->getExtension
+X509CertImpl#parse(DerValue)::: x509 cert impl parse:::if->throw->new->CertificateParsingException->if->throw->new->CertificateParsingException->val->toByteArray->seq->new->DerValueArr->getDerValue->getDerValue->getDerValue->if->available->throw->available->new->CertificateParsingException->if->throw->new->CertificateParsingException->AlgorithmId->parse->getBitString->if->available->throw->new->CertificateParsingException->if->available->throw->new->CertificateParsingException->new->X509CertInfo->infoSigAlg->info->get->if->algId->equals->throw->new->CertificateException
+X509CertImpl#getX500Principal(X509Certificate, boolean):::Extract the subject or issuer X500Principal from an X509Certificate:::encoded->cert->getEncoded->derIn->new->DerInputStream->tbsCert->derIn->getSequence->tbsIn->tmp->tbsIn->getDerValue->if->tmp->isContextSpecific->tbsIn->getDerValue->tbsIn->getDerValue->tbsIn->getDerValue->if->tbsIn->getDerValue->tbsIn->getDerValue->principalBytes->tmp->toByteArray->return->new->X500Principal
 X509CertImpl#getSubjectX500Principal(X509Certificate):::Extract the subject X500Principal from an X509Certificate:::try->return->getX500Principal->catch->throw->new->RuntimeException->finally
 X509CertImpl#getIssuerX500Principal(X509Certificate):::Extract the issuer X500Principal from an X509Certificate:::try->return->getX500Principal->catch->throw->new->RuntimeException->finally
 X509CertImpl#getEncodedInternal(Certificate):::Returned the encoding of the given certificate for internal use:::if->return->getEncodedInternal->else->return->cert->getEncoded
 X509CertImpl#toImpl(X509Certificate):::Utility method to convert an arbitrary instance of X509Certificate to a X509CertImpl:::if->return->else->return->X509Factory->intern
 X509CertImpl#isSelfIssued(X509Certificate):::Utility method to test if a certificate is self-issued:::subject->cert->getSubjectX500Principal->issuer->cert->getIssuerX500Principal->return->subject->equals
 X509CertImpl#isSelfSigned(X509Certificate, String):::Utility method to test if a certificate is self-signed:::if->isSelfIssued->try->if->cert->cert->getPublicKey->verify->else->cert->cert->getPublicKey->verify->return->catch->finally->return
+X509CertImpl#getFingerprint(String)::: x509 cert impl get fingerprint:::return->fingerprints->getFingerprint->computeIfAbsent
 X509CertImpl#getFingerprint(String, X509Certificate):::Gets the requested finger print of the certificate:::try->encCertInfo->cert->getEncoded->md->MessageDigest->getInstance->digest->md->digest->sb->new->StringBuilder->for->i->return->sb->toString->catch->finally->return
+X509CertImpl#byte2hex(byte, StringBuilder):::Converts a byte to hex digit and writes to the supplied builder:::hexChars->high->low->buf->append->append
 X509CertInfo#encode(OutputStream):::Appends the certificate to an output stream.:::if->tmp->new->DerOutputStream->emit->tmp->toByteArray->out->rawCertInfo->clone->write
 X509CertInfo#getElements():::Return an enumeration of names of attributes existing within this attribute.:::elements->new->AttributeNameEnumeration->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->elements->addElement->return->elements->elements
 X509CertInfo#getName():::Return the name of this attribute.:::return
@@ -581,9 +728,27 @@ X509CertInfo#toString():::Returns a printable representation of the certificate.
 X509CertInfo#set(String, Object):::Set the certificate attribute.:::attrName->new->X509AttributeName->attr->attrName->getPrefix->attributeMap->if->throw->new->CertificateException->suffix->attrName->getSuffix->switch->if->setVersion->else->version->set->break->if->setSerialNumber->else->serialNum->set->break->if->setAlgorithmId->else->algId->set->break->setIssuer->break->if->setValidity->else->interval->set->break->setSubject->break->if->setKey->else->pubKey->set->break->setIssuerUniqueId->break->setSubjectUniqueId->break->if->setExtensions->else->if->new->CertificateExtensions->extensions->set->break
 X509CertInfo#delete(String):::Delete the certificate attribute.:::attrName->new->X509AttributeName->attr->attrName->getPrefix->attributeMap->if->throw->new->CertificateException->suffix->attrName->getSuffix->switch->if->else->version->delete->break->if->else->serialNum->delete->break->if->else->algId->delete->break->break->if->else->interval->delete->break->break->if->else->pubKey->delete->break->break->break->if->else->if->extensions->delete->break
 X509CertInfo#get(String):::Get the certificate attribute.:::attrName->new->X509AttributeName->attr->attrName->getPrefix->attributeMap->if->throw->new->CertificateParsingException->suffix->attrName->getSuffix->switch->if->return->else->if->return->else->return->extensions->get->if->return->else->return->getX500Name->if->return->else->return->getX500Name->if->return->else->return->pubKey->get->if->return->else->return->algId->get->if->return->else->return->interval->get->if->return->else->return->version->get->if->return->else->return->serialNum->get->return->return->return
+X509CertInfo#getX500Name(String, boolean)::: x509 cert info get x500 name:::if->name->equalsIgnoreCase->return->else->if->name->equalsIgnoreCase->return->issuer->asX500Principal->subject->asX500Principal->else->throw->new->IOException
+X509CertInfo#parse(DerValue)::: x509 cert info parse:::in->tmp->if->throw->new->CertificateParsingException->val->toByteArray->in->getDerValue->if->tmp->isContextSpecific->new->CertificateVersion->in->getDerValue->new->CertificateSerialNumber->new->CertificateAlgorithmId->new->X500Name->if->issuer->isEmpty->throw->new->CertificateParsingException->new->CertificateValidity->new->X500Name->if->version->compare->subject->isEmpty->throw->new->CertificateParsingException->new->CertificateX509Key->if->in->available->if->version->compare->throw->new->CertificateParsingException->else->return->in->getDerValue->if->tmp->isContextSpecific->new->UniqueIdentity->if->in->available->return->in->getDerValue->if->tmp->isContextSpecific->new->UniqueIdentity->if->in->available->return->in->getDerValue->if->version->compare->throw->new->CertificateParsingException->if->tmp->isConstructed->tmp->isContextSpecific->new->CertificateExtensions->verifyCert
+X509CertInfo#verifyCert(X500Name, CertificateExtensions)::: x509 cert info verify cert:::if->subject->isEmpty->if->throw->new->CertificateParsingException->subjectAltNameExt->extValue->names->try->extensions->get->subjectAltNameExt->get->catch->throw->new->CertificateParsingException->finally->if->names->isEmpty->throw->new->CertificateParsingException->else->if->subjectAltNameExt->isCritical->throw->new->CertificateParsingException
+X509CertInfo#emit(DerOutputStream)::: x509 cert info emit:::tmp->new->DerOutputStream->version->encode->serialNum->encode->algId->encode->if->version->compare->issuer->toString->throw->new->CertificateParsingException->issuer->encode->interval->encode->if->version->compare->subject->toString->throw->new->CertificateParsingException->subject->encode->pubKey->encode->if->issuerUniqueId->DerValue->createTag->encode->if->subjectUniqueId->DerValue->createTag->encode->if->extensions->encode->out->write
+X509CertInfo#attributeMap(String):::Returns the integer attribute number for the passed attribute name.:::num->map->get->if->return->return->num->intValue
+X509CertInfo#setVersion(Object):::Set the version number of the certificate.:::if->throw->new->CertificateException
+X509CertInfo#setSerialNumber(Object):::Set the serial number of the certificate.:::if->throw->new->CertificateException
+X509CertInfo#setAlgorithmId(Object):::Set the algorithm id of the certificate.:::if->throw->new->CertificateException
+X509CertInfo#setIssuer(Object):::Set the issuer name of the certificate.:::if->throw->new->CertificateException
+X509CertInfo#setValidity(Object):::Set the validity interval of the certificate.:::if->throw->new->CertificateException
+X509CertInfo#setSubject(Object):::Set the subject name of the certificate.:::if->throw->new->CertificateException
+X509CertInfo#setKey(Object):::Set the public key in the certificate.:::if->throw->new->CertificateException
+X509CertInfo#setIssuerUniqueId(Object):::Set the Issuer Unique Identity in the certificate.:::if->version->compare->throw->new->CertificateException->if->throw->new->CertificateException
+X509CertInfo#setSubjectUniqueId(Object):::Set the Subject Unique Identity in the certificate.:::if->version->compare->throw->new->CertificateException->if->throw->new->CertificateException
+X509CertInfo#setExtensions(Object):::Set the extensions in the certificate.:::if->version->compare->throw->new->CertificateException->if->throw->new->CertificateException
 X509CRLEntryImpl#hasExtensions():::Returns true if this revoked certificate entry has extensions, otherwise false.:::return
 X509CRLEntryImpl#encode(DerOutputStream):::Encodes the revoked certificate to an output stream.:::try->if->tmp->new->DerOutputStream->serialNumber->encode->if->revocationDate->getTime->tmp->putUTCTime->else->tmp->putGeneralizedTime->if->extensions->encode->seq->new->DerOutputStream->seq->write->seq->toByteArray->outStrm->write->catch->throw->e->toString->new->CRLException->finally
 X509CRLEntryImpl#getEncoded():::Returns the ASN.1 DER-encoded form of this CRL Entry, which corresponds to the inner SEQUENCE.:::return->getEncoded0->clone
+X509CRLEntryImpl#getEncoded0()::: x509 entry impl get encoded0:::if->this->new->DerOutputStream->encode->return
+X509CRLEntryImpl#getCertificateIssuer()::: x509 entry impl get certificate issuer:::return
+X509CRLEntryImpl#setCertificateIssuer(X500Principal, X500Principal)::: x509 entry impl set certificate issuer:::if->crlIssuer->equals->else
 X509CRLEntryImpl#getSerialNumber():::Gets the serial number from this X509CRLEntry, i.e:::return->serialNumber->getNumber
 X509CRLEntryImpl#getRevocationDate():::Gets the revocation date from this X509CRLEntry, the revocationDate.:::return->revocationDate->getTime->new->Date
 X509CRLEntryImpl#getRevocationReason():::This method is the overridden implementation of the getRevocationReason method in X509CRLEntry:::ext->getExtension->if->return->rcExt->return->rcExt->getReasonCode
@@ -595,9 +760,11 @@ X509CRLEntryImpl#getCriticalExtensionOIDs():::Gets a Set of the extension(s) mar
 X509CRLEntryImpl#getNonCriticalExtensionOIDs():::Gets a Set of the extension(s) marked NON-CRITICAL in this X509CRLEntry:::if->return->extSet->new->TreeSet<>->foreach->extensions->getAllExtensions->if->ex->isCritical->extSet->ex->getExtensionId->toString->add->return
 X509CRLEntryImpl#getExtensionValue(String):::Gets the DER encoded OCTET string for the extension value (extnValue) identified by the passed in oid String:::if->return->try->extAlias->OIDMap->new->ObjectIdentifier->getName->crlExt->if->findOID->new->ObjectIdentifier->ex->inCertOID->for->e->extensions->getElements->e->hasMoreElements->else->extensions->get->if->return->extData->crlExt->getExtensionValue->if->return->out->new->DerOutputStream->out->putOctetString->return->out->toByteArray->catch->return->finally
 X509CRLEntryImpl#getExtension(ObjectIdentifier):::get an extension:::if->return->return->extensions->OIDMap->getName->get
+X509CRLEntryImpl#parse(DerValue)::: x509 entry impl parse:::if->throw->new->CRLException->if->available->throw->new->CRLException->derVal->toByteArray->in->derVal->toDerInputStream->val->in->getDerValue->new->SerialNumber->nextByte->peekByte->if->getUTCTime->else->if->getGeneralizedTime->else->throw->new->CRLException->if->available->return->derVal->toDerInputStream->new->CRLExtensions
 X509CRLEntryImpl#toImpl(X509CRLEntry):::Utility method to convert an arbitrary instance of X509CRLEntry to a X509CRLEntryImpl:::if->return->else->return->entry->getEncoded->new->X509CRLEntryImpl
 X509CRLEntryImpl#getCertificateIssuerExtension():::Returns the CertificateIssuerExtension:::return->getExtension
 X509CRLEntryImpl#getExtensions():::Returns all extensions for this entry in a map:::if->return->Collections->emptyMap->exts->extensions->getAllExtensions->map->new->TreeMap<>->foreach->map->ext->getId->put->return
+X509CRLEntryImpl#compareTo(X509CRLEntryImpl)::: x509 entry impl compare to:::compSerial->getSerialNumber->that->getSerialNumber->compareTo->if->return->try->thisEncoded->this->getEncoded0->thatEncoded->that->getEncoded0->for->i->return->catch->return->finally
 X509CRLImpl#getEncodedInternal():::Returned the encoding as an uncloned byte array:::if->throw->new->CRLException->return
 X509CRLImpl#getEncoded():::Returns the ASN.1 DER encoded form of this CRL.:::return->getEncodedInternal->clone
 X509CRLImpl#encodeInfo(OutputStream):::Encodes the "to-be-signed" CRL to the OutputStream.:::try->tmp->new->DerOutputStream->rCerts->new->DerOutputStream->seq->new->DerOutputStream->if->tmp->putInteger->infoSigAlgId->encode->if->issuer->toString->throw->new->CRLException->issuer->encode->if->thisUpdate->getTime->tmp->putUTCTime->else->tmp->putGeneralizedTime->if->if->nextUpdate->getTime->tmp->putUTCTime->else->tmp->putGeneralizedTime->if->revokedList->isEmpty->foreach->encode->tmp->write->if->extensions->encode->seq->write->seq->toByteArray->out->write->catch->throw->e->getMessage->new->CRLException->finally
@@ -607,6 +774,7 @@ X509CRLImpl#verify(PublicKey, Provider):::Verifies that this CRL was signed usin
 X509CRLImpl#sign(PrivateKey, String):::Encodes an X.509 CRL, and signs it using the given key.:::sign
 X509CRLImpl#sign(PrivateKey, String, String):::Encodes an X.509 CRL, and signs it using the given key.:::try->if->throw->new->CRLException->sigEngine->if->provider->length->Signature->getInstance->else->Signature->getInstance->sigEngine->initSign->AlgorithmId->sigEngine->getAlgorithm->get->out->new->DerOutputStream->tmp->new->DerOutputStream->encodeInfo->sigAlgId->encode->sigEngine->update->sigEngine->sign->tmp->putBitString->out->write->out->toByteArray->catch->throw->e->getMessage->new->CRLException->finally
 X509CRLImpl#toString():::Returns a printable string of this CRL.:::return->toStringWithAlgName
+X509CRLImpl#toStringWithAlgName(String)::: x509 impl to string with alg name:::sb->new->StringBuilder->sb->append->append->append->if->sb->append->append->append->sigAlgId->getOID->append->append->if->sb->append->append->append->if->sb->append->append->append->if->sb->append->append->append->if->revokedList->isEmpty->sb->append->else->sb->append->revokedList->size->append->i->foreach->sb->append->append->append->append->if->allExts->extensions->getAllExtensions->objs->allExts->toArray->sb->append->append->for->i->if->encoder->new->HexDumpEncoder->sb->append->encoder->encodeBuffer->append->append->else->sb->append->return->sb->toString
 X509CRLImpl#isRevoked(Certificate):::Checks whether the given certificate is on this CRL.:::if->revokedMap->isEmpty->return->xcert->issuerSerial->new->X509IssuerSerial->return->revokedMap->containsKey
 X509CRLImpl#getVersion():::Gets the version number from this CRL:::return
 X509CRLImpl#getIssuerDN():::Gets the issuer distinguished name from this CRL:::return
@@ -635,18 +803,34 @@ X509CRLImpl#getCriticalExtensionOIDs():::Gets a Set of the extension(s) marked C
 X509CRLImpl#getNonCriticalExtensionOIDs():::Gets a Set of the extension(s) marked NON-CRITICAL in the CRL:::if->return->extSet->new->TreeSet<>->foreach->extensions->getAllExtensions->if->ex->isCritical->extSet->ex->getExtensionId->toString->add->return
 X509CRLImpl#getExtensionValue(String):::Gets the DER encoded OCTET string for the extension value (extnValue) identified by the passed in oid String:::if->return->try->extAlias->OIDMap->new->ObjectIdentifier->getName->crlExt->if->findOID->new->ObjectIdentifier->ex->inCertOID->for->e->extensions->getElements->e->hasMoreElements->else->extensions->get->if->return->extData->crlExt->getExtensionValue->if->return->out->new->DerOutputStream->out->putOctetString->return->out->toByteArray->catch->return->finally
 X509CRLImpl#getExtension(ObjectIdentifier):::get an extension:::if->return->return->extensions->OIDMap->getName->get
+X509CRLImpl#parse(DerValue)::: x509 impl parse:::if->throw->new->CRLException->if->val->getData->throw->new->CRLException->val->toByteArray->seq->new->DerValueArr->getDerValue->getDerValue->getDerValue->if->available->throw->available->new->CRLException->if->throw->new->CRLException->AlgorithmId->parse->getBitString->if->available->throw->new->CRLException->if->available->throw->new->CRLException->toByteArray->derStrm->tmp->nextByte->derStrm->peekByte->if->derStrm->getInteger->if->throw->new->CRLException->derStrm->getDerValue->tmpId->AlgorithmId->parse->if->tmpId->equals->throw->new->CRLException->new->X500Name->if->issuer->isEmpty->throw->new->CRLException->derStrm->peekByte->if->derStrm->getUTCTime->else->if->derStrm->getGeneralizedTime->else->throw->new->CRLException->if->derStrm->available->return->derStrm->peekByte->if->derStrm->getUTCTime->else->if->derStrm->getGeneralizedTime->if->derStrm->available->return->derStrm->peekByte->if->badCerts->derStrm->getSequence->crlIssuer->getIssuerX500Principal->badCertIssuer->for->i->if->derStrm->available->return->derStrm->getDerValue->if->tmp->isConstructed->tmp->isContextSpecific->new->CRLExtensions
 X509CRLImpl#getIssuerX500Principal(X509CRL):::Extract the issuer X500Principal from an X509CRL:::try->encoded->crl->getEncoded->derIn->new->DerInputStream->tbsCert->derIn->getSequence->tbsIn->tmp->nextByte->tbsIn->peekByte->if->tbsIn->getDerValue->tbsIn->getDerValue->tbsIn->getDerValue->principalBytes->tmp->toByteArray->return->new->X500Principal->catch->throw->new->RuntimeException->finally
 X509CRLImpl#getEncodedInternal(X509CRL):::Returned the encoding of the given certificate for internal use:::if->return->getEncodedInternal->else->return->crl->getEncoded
 X509CRLImpl#toImpl(X509CRL):::Utility method to convert an arbitrary instance of X509CRL to a X509CRLImpl:::if->return->else->return->X509Factory->intern
+X509CRLImpl#getCertIssuer(X509CRLEntryImpl, X500Principal):::Returns the X500 certificate issuer DN of a CRL entry.:::ciExt->entry->getCertificateIssuerExtension->if->names->ciExt->get->issuerDN->names->get->getName->return->issuerDN->asX500Principal->else->return
+X509CRLImpl#derEncode(OutputStream)::: x509 impl der encode:::if->throw->new->IOException->out->signedCRL->clone->write
+X509CRLImpl.X509IssuerSerial#getIssuer():::Returns the issuer.:::return
+X509CRLImpl.X509IssuerSerial#getSerial():::Returns the serial number.:::return
+X509CRLImpl.X509IssuerSerial#equals(Object):::Compares this X509Serial with another and returns true if they are equivalent.:::if->return->if->return->other->if->serial->other->getSerial->equals->issuer->other->getIssuer->equals->return->return
+X509CRLImpl.X509IssuerSerial#hashCode():::Returns a hash code value for this X509IssuerSerial.:::h->if->issuer->hashCode->serial->hashCode->if->return
+X509CRLImpl.X509IssuerSerial#compareTo(X509IssuerSerial)::: x509 issuer serial compare to:::cissuer->issuer->toString->toString->compareTo->if->return->return->compareTo
 X509Key#setKey(BitArray):::Sets the key in the BitArray form.:::key->clone->key->toByteArray->remaining->key->length
 X509Key#getKey():::Gets the key:::new->BitArray->return->bitStringKey->clone
 X509Key#parse(DerValue):::Construct X.509 subject public key from a DER value:::algorithm->subjectKey->if->throw->new->IOException->AlgorithmId->getDerValue->parse->try->getUnalignedBitString->buildX509Key->catch->throw->e->getMessage->new->IOException->finally->if->available->throw->new->IOException->return
 X509Key#parseKeyBits():::Parse the key bits:::encode
+X509Key#buildX509Key(AlgorithmId, BitArray)::: x509 key build x509 key:::x509EncodedKeyStream->new->DerOutputStream->encode->x509KeySpec->x509EncodedKeyStream->toByteArray->new->X509EncodedKeySpec->try->keyFac->KeyFactory->algid->getName->getInstance->return->keyFac->generatePublic->catch->throw->e->getMessage->new->InvalidKeyException->finally->classname->try->props->keytype->sunProvider->Security->getProvider->if->throw->new->InstantiationException->sunProvider->algid->getName->getProperty->if->throw->new->InstantiationException->keyClass->try->Class->forName->catch->cl->ClassLoader->getSystemClassLoader->if->cl->loadClass->finally->inst->keyClass->newInstance->result->if->result->setKey->result->parseKeyBits->return->catch->throw->new->IOException->finally->result->new->X509Key->return
 X509Key#getAlgorithm():::Returns the algorithm to be used with this key.:::return->algid->getName
 X509Key#getAlgorithmId():::Returns the algorithm ID to be used with this key.:::return
 X509Key#encode(DerOutputStream):::Encode SubjectPublicKeyInfo sequence on the DER output stream.:::getKey->encode
 X509Key#getEncoded():::Returns the DER-encoded form of the key as a byte array.:::try->return->getEncodedInternal->clone->catch->finally->return
+X509Key#getEncodedInternal()::: x509 key get encoded internal:::encoded->if->try->out->new->DerOutputStream->encode->out->toByteArray->catch->throw->e->getMessage->new->InvalidKeyException->finally->return
 X509Key#getFormat():::Returns the format for this key: "X.509":::return
 X509Key#encode():::Returns the DER-encoded form of the key as a byte array.:::return->getEncodedInternal->clone
+X509Key#toString()::: x509 key to string:::encoder->new->HexDumpEncoder->return->algid->toString->encoder->encodeBuffer
 X509Key#decode(InputStream):::Initialize an X509Key object from an input stream:::val->try->new->DerValue->if->throw->new->InvalidKeyException->AlgorithmId->getDerValue->parse->getUnalignedBitString->setKey->parseKeyBits->if->available->throw->new->InvalidKeyException->catch->throw->e->getMessage->new->InvalidKeyException->finally
+X509Key#decode(byte[])::: x509 key decode:::new->ByteArrayInputStream->decode
+X509Key#writeObject(ObjectOutputStream):::Serialization write ..:::stream->getEncoded->write
+X509Key#readObject(ObjectInputStream):::Serialization read ..:::try->decode->catch->e->printStackTrace->throw->e->getMessage->new->IOException->finally
+X509Key#equals(Object)::: x509 key equals:::if->return->if->return->try->thisEncoded->this->getEncodedInternal->otherEncoded->if->getEncodedInternal->else->getEncoded->return->Arrays->equals->catch->return->finally
 X509Key#hashCode():::Calculates a hash code value for the object:::try->b1->getEncodedInternal->r->for->i->return->catch->return->finally
+X509Key#encode(DerOutputStream, AlgorithmId, BitArray)::: x509 key encode:::tmp->new->DerOutputStream->algid->encode->tmp->putUnalignedBitString->out->write

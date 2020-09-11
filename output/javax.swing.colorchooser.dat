@@ -9,15 +9,78 @@ AbstractColorChooserPanel#installChooserPanel(JColorChooser):::Invoked when the 
 AbstractColorChooserPanel#uninstallChooserPanel(JColorChooser):::Invoked when the panel is removed from the chooser:::chooser->removePropertyChangeListener
 AbstractColorChooserPanel#getColorSelectionModel():::Returns the model that the chooser panel is editing.:::return->getSelectionModel
 AbstractColorChooserPanel#getColorFromModel():::Returns the color that is currently selected.:::model->getColorSelectionModel->return->model->getSelectedColor
+AbstractColorChooserPanel#setSelectedColor(Color)::: abstract color chooser panel set selected color:::model->getColorSelectionModel->if->model->setSelectedColor
 AbstractColorChooserPanel#setColorTransparencySelectionEnabled(boolean):::Sets whether color chooser panel allows to select the transparency (alpha value) of a color:::
 AbstractColorChooserPanel#isColorTransparencySelectionEnabled():::Gets whether color chooser panel allows to select the transparency (alpha value) of a color.:::return
 AbstractColorChooserPanel#paint(Graphics):::Draws the panel.:::super->paint
 AbstractColorChooserPanel#getInt(Object, int):::Returns an integer from the defaults table:::value->UIManager->getLocale->get->if->return->intValue->if->try->return->Integer->parseInt->catch->finally->return
+CenterLayout#addLayoutComponent(String, Component)::: center layout add layout component:::
+CenterLayout#removeLayoutComponent(Component)::: center layout remove layout component:::
+CenterLayout#preferredLayoutSize(Container)::: center layout preferred layout size:::c->container->getComponent->if->size->c->getPreferredSize->insets->container->getInsets->return->else->return->new->Dimension
+CenterLayout#minimumLayoutSize(Container)::: center layout minimum layout size:::return->preferredLayoutSize
+CenterLayout#layoutContainer(Container)::: center layout layout container:::try->c->container->getComponent->c->c->getPreferredSize->setSize->size->c->getSize->containerSize->container->getSize->containerInsets->container->getInsets->componentLeft->componentTop->c->setBounds->catch->finally
 ColorChooserComponentFactory#getDefaultChooserPanels():::Returns the default chooser panels.:::return->new->AbstractColorChooserPanelArr->new->DefaultSwatchChooserPanel->new->ColorModelHSV->new->ColorChooserPanel->new->ColorModelHSL->new->ColorChooserPanel->new->ColorModel->new->ColorChooserPanel->new->ColorModelCMYK->new->ColorChooserPanel
 ColorChooserComponentFactory#getPreviewPanel():::Returns the preview panel.:::return->new->DefaultPreviewPanel
+ColorChooserPanel#setEnabled(boolean)::: color chooser panel set enabled:::super->setEnabled->setEnabled
+ColorChooserPanel#setEnabled(Container, boolean)::: color chooser panel set enabled:::foreach->container->getComponents->component->setEnabled->if->setEnabled
+ColorChooserPanel#updateChooser()::: color chooser panel update chooser:::color->getColorFromModel->if->setColor->Integer->color->getRGB->valueOf->setValue->repaint->repaint
+ColorChooserPanel#buildChooser()::: color chooser panel build chooser:::if->getComponentCount->new->GridBagLayout->setLayout->gbc->new->GridBagConstraints->add->add->add->getPreferredSize->getPreferredSize->add->add->setLabelFor->addPropertyChangeListener->getBorder->setBorder->getBorder->setBorder->setInheritsPopupMenu->label->getText->visible->setVisible->getAccessibleContext->setAccessibleDescription->setVisible->if->setText->mnemonic->getInteger->if->setDisplayedMnemonic->getInteger->if->setDisplayedMnemonicIndex->buildPanel
+ColorChooserPanel#getDisplayName()::: color chooser panel get display name:::return->getText
+ColorChooserPanel#getMnemonic()::: color chooser panel get mnemonic:::return->getInteger
+ColorChooserPanel#getDisplayedMnemonicIndex()::: color chooser panel get displayed mnemonic index:::return->getInteger
+ColorChooserPanel#getSmallDisplayIcon()::: color chooser panel get small display icon:::return
+ColorChooserPanel#getLargeDisplayIcon()::: color chooser panel get large display icon:::return
+ColorChooserPanel#setColorTransparencySelectionEnabled(boolean)::: color chooser panel set color transparency selection enabled:::oldValue->isColorTransparencySelectionEnabled->if->panel->setColorTransparencySelectionEnabled->firePropertyChange
+ColorChooserPanel#isColorTransparencySelectionEnabled()::: color chooser panel is color transparency selection enabled:::return->panel->isColorTransparencySelectionEnabled
+ColorChooserPanel#propertyChange(PropertyChangeEvent)::: color chooser panel property change:::model->getColorSelectionModel->if->object->event->getNewValue->if->value->model->getSelectedColor->getRGB->model->new->Color->setSelectedColor->selectAll
+ColorChooserPanel#setInheritsPopupMenu(JComponent, boolean):::Allows to show context popup for all components recursively.:::component->setInheritsPopupMenu->foreach->component->getComponents->if->setInheritsPopupMenu
+ColorModel#setColor(int, float[])::: color model set color:::normalize->normalize->normalize->normalize
+ColorModel#getColor(float[])::: color model get color:::return->to8bit->to8bit->to8bit->to8bit
+ColorModel#getCount()::: color model get count:::return
+ColorModel#getMinimum(int)::: color model get minimum:::return
+ColorModel#getMaximum(int)::: color model get maximum:::return
+ColorModel#getDefault(int)::: color model get default:::return
+ColorModel#getLabel(Component, int)::: color model get label:::return->getText
+ColorModel#normalize(int)::: color model normalize:::return
+ColorModel#to8bit(float)::: color model to8bit:::return
+ColorModel#getText(Component, String)::: color model get text:::return->UIManager->component->getLocale->getString
+ColorModel#getInteger(Component, String)::: color model get integer:::value->UIManager->component->getLocale->get->if->return->if->try->return->Integer->parseInt->catch->finally->return
+ColorModelCMYK#setColor(int, float[])::: color model k set color:::super->setColor->RGBtoCMYK
+ColorModelCMYK#getColor(float[])::: color model k get color:::CMYKtoRGB->return->super->getColor
+ColorModelCMYK#CMYKtoRGB(float[], float[]):::Converts CMYK components of a color to a set of RGB components.:::if->new->floatArr->return
+ColorModelCMYK#RGBtoCMYK(float[], float[]):::Converts RGB components of a color to a set of CMYK components.:::if->new->floatArr->max->ColorModelHSL->max->if->else->return
+ColorModelHSL#setColor(int, float[])::: color model l set color:::super->setColor->RGBtoHSL
+ColorModelHSL#getColor(float[])::: color model l get color:::HSLtoRGB->return->super->getColor
+ColorModelHSL#getMaximum(int)::: color model l get maximum:::return
+ColorModelHSL#getDefault(int)::: color model l get default:::return
+ColorModelHSL#HSLtoRGB(float[], float[]):::Converts HSL components of a color to a set of RGB components.:::if->new->floatArr->hue->saturation->lightness->if->q->p->normalize->normalize->normalize->else->return
+ColorModelHSL#RGBtoHSL(float[], float[]):::Converts RGB components of a color to a set of HSL components.:::if->new->floatArr->max->max->min->min->summa->saturation->if->getHue->return
 ColorModelHSL#min(float, float, float):::Returns the smaller of three color components.:::min->return
 ColorModelHSL#max(float, float, float):::Returns the larger of three color components.:::max->return
 ColorModelHSL#getHue(float, float, float, float, float):::Calculates the hue component for HSL and HSV color spaces.:::hue->if->if->if->else->if->else->return
+ColorModelHSL#normalize(float, float, float)::: color model l normalize:::if->return->if->return->if->return->return
+ColorModelHSV#setColor(int, float[])::: color model v set color:::super->setColor->RGBtoHSV
+ColorModelHSV#getColor(float[])::: color model v get color:::HSVtoRGB->return->super->getColor
+ColorModelHSV#getMaximum(int)::: color model v get maximum:::return
+ColorModelHSV#getDefault(int)::: color model v get default:::return
+ColorModelHSV#HSVtoRGB(float[], float[]):::Converts HSV components of a color to a set of RGB components.:::if->new->floatArr->hue->saturation->value->if->integer->f->switch->break->break->break->break->break->break->return
+ColorModelHSV#RGBtoHSV(float[], float[]):::Converts RGB components of a color to a set of HSV components.:::if->new->floatArr->max->ColorModelHSL->max->min->ColorModelHSL->min->saturation->if->ColorModelHSL->getHue->return
+ColorPanel#actionPerformed(ActionEvent)::: color panel action performed:::try->Integer->event->getActionCommand->parseInt->getParent->repaint->catch->finally
+ColorPanel#buildPanel()::: color panel build panel:::count->getCount->setVisible->for->i
+ColorPanel#colorChanged()::: color panel color changed:::getColor->isColorTransparencySelectionEnabled->new->Color->parent->getParent->if->chooser->chooser->setSelectedColor->chooser->repaint
+ColorPanel#getValueX()::: color panel get value x:::return->getValue
+ColorPanel#getValueY()::: color panel get value y:::return->getValue
+ColorPanel#getValueZ()::: color panel get value z:::return->getValue
+ColorPanel#setValue(float)::: color panel set value:::setValue->colorChanged
+ColorPanel#setValue(float, float)::: color panel set value:::setValue->setValue->colorChanged
+ColorPanel#getColor(float)::: color panel get color:::setDefaultValue->setDefaultValue->return->getColor
+ColorPanel#getColor(float, float)::: color panel get color:::setValue->return->getColor
+ColorPanel#setColor(Color)::: color panel set color:::if->color->equals->color->getRGB->setColor->for->i->getCount
+ColorPanel#getColor(int)::: color panel get color:::while->getCount->setValue->return->getColor
+ColorPanel#setColorTransparencySelectionEnabled(boolean)::: color panel set color transparency selection enabled:::if->model->getCount->isVisible->model->getCount->setVisible->colorChanged
+ColorPanel#isColorTransparencySelectionEnabled()::: color panel is color transparency selection enabled:::return->model->getCount->isVisible
+ColorPanel#setValue(int)::: color panel set value:::getValue
+ColorPanel#setDefaultValue(int)::: color panel set default value:::value->getDefault->getValue
 ColorSelectionModel#getSelectedColor():::Returns the selected Color which should be non-null.:::
 ColorSelectionModel#setSelectedColor(Color):::Sets the selected color to color:::
 ColorSelectionModel#addChangeListener(ChangeListener):::Adds listener as a listener to changes in the model.:::
@@ -28,6 +91,74 @@ DefaultColorSelectionModel#addChangeListener(ChangeListener):::Adds a ChangeList
 DefaultColorSelectionModel#removeChangeListener(ChangeListener):::Removes a ChangeListener from the model.:::listenerList->remove
 DefaultColorSelectionModel#getChangeListeners():::Returns an array of all the ChangeListeners added to this DefaultColorSelectionModel with addChangeListener.:::return->listenerList->getListeners
 DefaultColorSelectionModel#fireStateChanged():::Runs each ChangeListener's stateChanged method:::listeners->listenerList->getListenerList->for->i
+DefaultPreviewPanel#getColorChooser()::: default preview panel get color chooser:::return->SwingUtilities->getAncestorOfClass
+DefaultPreviewPanel#getPreferredSize()::: default preview panel get preferred size:::host->getColorChooser->if->fm->host->getFont->getFontMetrics->ascent->fm->getAscent->height->fm->getHeight->width->SwingUtilities2->getSampleText->stringWidth->y->x->return->new->Dimension
+DefaultPreviewPanel#paintComponent(Graphics)::: default preview panel paint component:::if->getForeground->g->getBackground->setColor->g->getWidth->getHeight->fillRect->if->this->getComponentOrientation->isLeftToRight->squareWidth->paintSquares->textWidth->paintText->paintSwatch->else->swatchWidth->paintSwatch->textWidth->paintText->paintSquares
+DefaultPreviewPanel#paintSwatch(Graphics, int)::: default preview panel paint swatch:::swatchX->g->setColor->g->fillRect->g->getForeground->setColor->g->fillRect->return
+DefaultPreviewPanel#paintText(Graphics, int)::: default preview panel paint text:::g->getFont->setFont->host->getColorChooser->if->fm->SwingUtilities2->getFontMetrics->ascent->fm->getAscent->height->fm->getHeight->width->SwingUtilities2->getSampleText->stringWidth->textXOffset->color->getForeground->g->setColor->SwingUtilities2->getSampleText->drawString->g->fillRect->g->setColor->SwingUtilities2->getSampleText->drawString->g->setColor->g->fillRect->g->setColor->SwingUtilities2->getSampleText->drawString->return
+DefaultPreviewPanel#paintSquares(Graphics, int)::: default preview panel paint squares:::squareXOffset->color->getForeground->g->setColor->g->fillRect->g->setColor->g->fillRect->g->setColor->g->fillRect->g->setColor->g->fillRect->g->translate->g->setColor->g->fillRect->g->setColor->g->fillRect->g->setColor->g->fillRect->g->translate->g->translate->g->setColor->g->fillRect->g->setColor->g->fillRect->g->translate->g->translate->g->setColor->g->fillRect->g->setColor->g->fillRect->g->setColor->g->fillRect->g->translate->g->translate->g->setColor->g->fillRect->g->setColor->g->fillRect->g->translate->return
+DefaultPreviewPanel#getSampleText()::: default preview panel get sample text:::if->UIManager->getLocale->getString->return
+DefaultSwatchChooserPanel#getDisplayName()::: default swatch chooser panel get display name:::return->UIManager->getLocale->getString
 DefaultSwatchChooserPanel#getMnemonic():::Provides a hint to the look and feel as to the KeyEvent.VK constant that can be used as a mnemonic to access the panel:::return->getInt
 DefaultSwatchChooserPanel#getDisplayedMnemonicIndex():::Provides a hint to the look and feel as to the index of the character in getDisplayName that should be visually identified as the mnemonic:::return->getInt
+DefaultSwatchChooserPanel#getSmallDisplayIcon()::: default swatch chooser panel get small display icon:::return
+DefaultSwatchChooserPanel#getLargeDisplayIcon()::: default swatch chooser panel get large display icon:::return
 DefaultSwatchChooserPanel#installChooserPanel(JColorChooser):::The background color, foreground color, and font are already set to the defaults from the defaults table before this method is called.:::super->installChooserPanel
+DefaultSwatchChooserPanel#buildChooser()::: default swatch chooser panel build chooser:::recentStr->UIManager->getLocale->getString->gb->new->GridBagLayout->gbc->new->GridBagConstraints->superHolder->new->JPanel->new->MainSwatchPanel->swatchPanel->getDisplayName->putClientProperty->swatchPanel->setInheritsPopupMenu->new->RecentSwatchPanel->recentSwatchPanel->putClientProperty->new->MainSwatchKeyListener->new->MainSwatchListener->swatchPanel->addMouseListener->swatchPanel->addKeyListener->new->RecentSwatchListener->new->RecentSwatchKeyListener->recentSwatchPanel->addMouseListener->recentSwatchPanel->addKeyListener->mainHolder->new->BorderLayout->new->JPanel->border->new->LineBorder->new->LineBorder->new->CompoundBorder->mainHolder->setBorder->mainHolder->add->oldInsets->new->Insets->superHolder->add->recentSwatchPanel->setInheritsPopupMenu->recentHolder->new->BorderLayout->new->JPanel->recentHolder->setBorder->recentHolder->setInheritsPopupMenu->recentHolder->add->l->new->JLabel->l->setLabelFor->superHolder->add->new->Insets->superHolder->add->superHolder->setInheritsPopupMenu->add
+DefaultSwatchChooserPanel#uninstallChooserPanel(JColorChooser)::: default swatch chooser panel uninstall chooser panel:::super->uninstallChooserPanel->swatchPanel->removeMouseListener->swatchPanel->removeKeyListener->recentSwatchPanel->removeMouseListener->recentSwatchPanel->removeKeyListener->removeAll
+DefaultSwatchChooserPanel#updateChooser()::: default swatch chooser panel update chooser:::
+DefaultSwatchChooserPanel.RecentSwatchKeyListener#keyPressed(KeyEvent)::: recent swatch key listener key pressed:::if->e->getKeyCode->color->recentSwatchPanel->getSelectedColor->setSelectedColor
+DefaultSwatchChooserPanel.MainSwatchKeyListener#keyPressed(KeyEvent)::: main swatch key listener key pressed:::if->e->getKeyCode->color->swatchPanel->getSelectedColor->setSelectedColor->recentSwatchPanel->setMostRecentColor
+DefaultSwatchChooserPanel.RecentSwatchListener#mousePressed(MouseEvent)::: recent swatch listener mouse pressed:::if->isEnabled->color->recentSwatchPanel->e->getX->e->getY->getColorForLocation->recentSwatchPanel->e->getX->e->getY->setSelectedColorFromLocation->setSelectedColor->recentSwatchPanel->requestFocusInWindow
+DefaultSwatchChooserPanel.MainSwatchListener#mousePressed(MouseEvent)::: main swatch listener mouse pressed:::if->isEnabled->color->swatchPanel->e->getX->e->getY->getColorForLocation->setSelectedColor->swatchPanel->e->getX->e->getY->setSelectedColorFromLocation->recentSwatchPanel->setMostRecentColor->swatchPanel->requestFocusInWindow
+SwatchPanel#getSelectedColor()::: swatch panel get selected color:::return->getColorForCell
+SwatchPanel#initValues()::: swatch panel init values:::
+SwatchPanel#paintComponent(Graphics)::: swatch panel paint component:::g->getBackground->setColor->g->getWidth->getHeight->fillRect->for->row
+SwatchPanel#getPreferredSize()::: swatch panel get preferred size:::x->y->return->new->Dimension
+SwatchPanel#initColors()::: swatch panel init colors:::
+SwatchPanel#getToolTipText(MouseEvent)::: swatch panel get tool tip text:::color->e->getX->e->getY->getColorForLocation->return->color->getRed->color->getGreen->color->getBlue
+SwatchPanel#setSelectedColorFromLocation(int, int)::: swatch panel set selected color from location:::if->this->getComponentOrientation->isLeftToRight->else->repaint
+SwatchPanel#getColorForLocation(int, int)::: swatch panel get color for location:::column->if->this->getComponentOrientation->isLeftToRight->else->row->return->getColorForCell
+SwatchPanel#getColorForCell(int, int)::: swatch panel get color for cell:::return
+RecentSwatchPanel#initValues()::: recent swatch panel init values:::UIManager->getLocale->getDimension->new->Dimension->new->Dimension
+RecentSwatchPanel#initColors()::: recent swatch panel init colors:::defaultRecentColor->UIManager->getLocale->getColor->numColors->new->ColorArr->for->i
+RecentSwatchPanel#setMostRecentColor(Color)::: recent swatch panel set most recent color:::System->arraycopy->repaint
+MainSwatchPanel#initValues()::: main swatch panel init values:::UIManager->getLocale->getDimension->new->Dimension->new->Dimension
+MainSwatchPanel#initColors()::: main swatch panel init colors:::rawValues->initRawValues->numColors->new->ColorArr->for->i
+MainSwatchPanel#initRawValues()::: main swatch panel init raw values:::rawValues->return
+DiagramComponent#paintComponent(Graphics)::: diagram component paint component:::getInsets->getWidth->getHeight->if->return->update->getWidth->getHeight->if->size->if->new->intArr->new->BufferedImage->dx->dy->offset->y->for->h->setRGB->g->drawImage->if->isEnabled->g->setXORMode->g->setColor->if->x->getValueX->getValue->y->getValueY->getValue->g->drawLine->g->drawLine->else->z->getValueZ->getValue->g->drawLine->g->setPaintMode
+DiagramComponent#mousePressed(MouseEvent)::: diagram component mouse pressed:::mouseDragged
+DiagramComponent#mouseReleased(MouseEvent)::: diagram component mouse released:::
+DiagramComponent#mouseClicked(MouseEvent)::: diagram component mouse clicked:::
+DiagramComponent#mouseEntered(MouseEvent)::: diagram component mouse entered:::
+DiagramComponent#mouseExited(MouseEvent)::: diagram component mouse exited:::
+DiagramComponent#mouseMoved(MouseEvent)::: diagram component mouse moved:::
+DiagramComponent#mouseDragged(MouseEvent)::: diagram component mouse dragged:::if->isEnabled->y->event->getY->getValue->if->x->event->getX->getValue->setValue->else->setValue
+DiagramComponent#getValue(float, int, int)::: diagram component get value:::return
+DiagramComponent#getValue(int, int, int)::: diagram component get value:::if->return->return
+SlidingSpinner#getLabel()::: sliding spinner get label:::return
+SlidingSpinner#getSlider()::: sliding spinner get slider:::return
+SlidingSpinner#getSpinner()::: sliding spinner get spinner:::return
+SlidingSpinner#getValue()::: sliding spinner get value:::return
+SlidingSpinner#setValue(float)::: sliding spinner set value:::min->getMinimum->max->getMaximum->setValue->Integer->getValue->valueOf->setValue
+SlidingSpinner#setRange(int, int)::: sliding spinner set range:::setMinimum->setMaximum->Integer->valueOf->setMinimum->Integer->valueOf->setMaximum
+SlidingSpinner#setVisible(boolean)::: sliding spinner set visible:::setVisible->setVisible->setVisible
+SlidingSpinner#isVisible()::: sliding spinner is visible:::return->isVisible
+SlidingSpinner#stateChanged(ChangeEvent)::: sliding spinner state changed:::if->if->event->getSource->value->getValue->if->setValue->value->getValue->Integer->valueOf->setValue->min->getMinimum->max->getMaximum->colorChanged
+SmartGridLayout#layoutContainer(Container)::: smart grid layout layout container:::buildLayoutGrid->rowHeights->new->intArr->columnWidths->new->intArr->for->row->for->column->insets->c->getInsets->if->c->getComponentOrientation->isLeftToRight->horizLoc->for->column->else->horizLoc->c->getWidth->for->column
+SmartGridLayout#minimumLayoutSize(Container)::: smart grid layout minimum layout size:::buildLayoutGrid->insets->c->getInsets->height->width->for->row->for->column->return->new->Dimension
+SmartGridLayout#preferredLayoutSize(Container)::: smart grid layout preferred layout size:::return->minimumLayoutSize
+SmartGridLayout#addLayoutComponent(String, Component)::: smart grid layout add layout component:::
+SmartGridLayout#removeLayoutComponent(Component)::: smart grid layout remove layout component:::
+SmartGridLayout#buildLayoutGrid(Container)::: smart grid layout build layout grid:::children->c->getComponents->for->componentCount
+SmartGridLayout#computeColumnWidth(int)::: smart grid layout compute column width:::maxWidth->for->row->return
+SmartGridLayout#computeRowHeight(int)::: smart grid layout compute row height:::maxHeight->for->column->return
+ValueFormatter#init(int, boolean, JFormattedTextField)::: value formatter init:::formatter->new->ValueFormatter->text->setColumns->text->new->DefaultFormatterFactory->setFormatterFactory->text->setHorizontalAlignment->text->text->getPreferredSize->setMinimumSize->text->addFocusListener
+ValueFormatter#stringToValue(String)::: value formatter string to value:::try->return->Integer->valueOf->catch->pe->new->ParseException->pe->initCause->throw->finally
+ValueFormatter#valueToString(Object)::: value formatter value to string:::if->if->return->object->toString->value->index->array->new->charArr->while->Character->forDigit->return->new->String->toUpperCase->throw->new->ParseException
+ValueFormatter#getDocumentFilter()::: value formatter get document filter:::return
+ValueFormatter#focusGained(FocusEvent)::: value formatter focus gained:::source->event->getSource->if->SwingUtilities->invokeLater
+ValueFormatter#focusLost(FocusEvent)::: value formatter focus lost:::
+ValueFormatter#run()::: value formatter run:::if->selectAll
+ValueFormatter#isValid(int)::: value formatter is valid:::return
+ValueFormatter#isValid(String)::: value formatter is valid:::length->text->length->for->i->return

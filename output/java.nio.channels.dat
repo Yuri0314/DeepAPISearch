@@ -32,30 +32,43 @@ AsynchronousServerSocketChannel#open(AsynchronousChannelGroup):::Opens an asynch
 AsynchronousServerSocketChannel#open():::Opens an asynchronous server-socket channel:::return->open
 AsynchronousServerSocketChannel#bind(SocketAddress):::Binds the channel's socket to a local address and configures the socket to listen for connections:::return->bind
 AsynchronousServerSocketChannel#bind(SocketAddress, int):::Binds the channel's socket to a local address and configures the socket to listen for connections:::
+AsynchronousServerSocketChannel#setOption(SocketOption, T)::: asynchronous server socket channel set option:::
 AsynchronousServerSocketChannel#accept(A, CompletionHandler):::Accepts a connection:::
 AsynchronousServerSocketChannel#accept():::Accepts a connection:::
 AsynchronousServerSocketChannel#getLocalAddress():::If there is a security manager set, its {@code checkConnect method is called with the local address and -1 as its arguments to see if the operation is allowed:::
 AsynchronousSocketChannel#provider():::Returns the provider that created this channel.:::return
 AsynchronousSocketChannel#open(AsynchronousChannelGroup):::Opens an asynchronous socket channel:::provider->AsynchronousChannelProvider->provider->group->provider->return->provider->openAsynchronousSocketChannel
 AsynchronousSocketChannel#open():::Opens an asynchronous socket channel:::return->open
+AsynchronousSocketChannel#bind(SocketAddress)::: asynchronous socket channel bind:::
+AsynchronousSocketChannel#setOption(SocketOption, T)::: asynchronous socket channel set option:::
 AsynchronousSocketChannel#shutdownInput():::Shutdown the connection for reading without closing the channel:::
 AsynchronousSocketChannel#shutdownOutput():::Shutdown the connection for writing without closing the channel:::
 AsynchronousSocketChannel#getRemoteAddress():::Returns the remote address to which this channel's socket is connected:::
 AsynchronousSocketChannel#connect(SocketAddress, A, CompletionHandler):::Connects this channel:::
 AsynchronousSocketChannel#connect(SocketAddress):::Connects this channel:::
 AsynchronousSocketChannel#read(ByteBuffer, long, TimeUnit, A, CompletionHandler):::Reads a sequence of bytes from this channel into the given buffer:::
+AsynchronousSocketChannel#read(ByteBuffer, A, CompletionHandler)::: asynchronous socket channel read:::read
+AsynchronousSocketChannel#read(ByteBuffer)::: asynchronous socket channel read:::
 AsynchronousSocketChannel#read(ByteBuffer[], int, int, long, TimeUnit, A, CompletionHandler):::Reads a sequence of bytes from this channel into a subsequence of the given buffers:::
 AsynchronousSocketChannel#write(ByteBuffer, long, TimeUnit, A, CompletionHandler):::Writes a sequence of bytes to this channel from the given buffer:::
+AsynchronousSocketChannel#write(ByteBuffer, A, CompletionHandler)::: asynchronous socket channel write:::write
+AsynchronousSocketChannel#write(ByteBuffer)::: asynchronous socket channel write:::
 AsynchronousSocketChannel#write(ByteBuffer[], int, int, long, TimeUnit, A, CompletionHandler):::Writes a sequence of bytes to this channel from a subsequence of the given buffers:::
 AsynchronousSocketChannel#getLocalAddress():::If there is a security manager set, its {@code checkConnect method is called with the local address and -1 as its arguments to see if the operation is allowed:::
 Channel#isOpen():::Tells whether or not this channel is open.:::
 Channel#close():::Closes this channel:::
+Channels#writeFullyImpl(WritableByteChannel, ByteBuffer):::Write all remaining bytes in buffer to the given channel:::while->bb->remaining->n->ch->write->if->throw->new->RuntimeException
+Channels#writeFully(WritableByteChannel, ByteBuffer):::Write all remaining bytes in buffer to the given channel.:::if->sc->synchronized->sc->blockingLock->if->sc->isBlocking->throw->new->IllegalBlockingModeException->writeFullyImpl->else->writeFullyImpl
 Channels#newInputStream(ReadableByteChannel):::Constructs a stream that reads bytes from the given channel:::Objects->requireNonNull->return->new->ChannelInputStream
 Channels#newOutputStream(WritableByteChannel):::Constructs a stream that writes bytes to the given channel:::Objects->requireNonNull->return->new->OutputStream
 Channels#newInputStream(AsynchronousByteChannel):::Constructs a stream that reads bytes from the given channel:::Objects->requireNonNull->return->new->InputStream
 Channels#newOutputStream(AsynchronousByteChannel):::Constructs a stream that writes bytes to the given channel:::Objects->requireNonNull->return->new->OutputStream
 Channels#newChannel(InputStream):::Constructs a channel that reads bytes from the given stream:::Objects->requireNonNull->if->in->getClass->return->getChannel->return->new->ReadableByteChannelImpl
+Channels.ReadableByteChannelImpl#read(ByteBuffer)::: readable byte channel impl read:::if->isOpen->throw->new->ClosedChannelException->len->dst->remaining->totalRead->bytesRead->synchronized->while->bytesToRead->Math->min->if->new->byteArr->if->in->available->break->try->begin->in->read->catch->finally->end->if->break->else->dst->put->if->return->return
+Channels.ReadableByteChannelImpl#implCloseChannel()::: readable byte channel impl impl close channel:::in->close
 Channels#newChannel(OutputStream):::Constructs a channel that writes bytes to the given stream:::Objects->requireNonNull->if->out->getClass->return->getChannel->return->new->WritableByteChannelImpl
+Channels.WritableByteChannelImpl#write(ByteBuffer)::: writable byte channel impl write:::if->isOpen->throw->new->ClosedChannelException->len->src->remaining->totalWritten->synchronized->while->bytesToWrite->Math->min->if->new->byteArr->src->get->try->begin->out->write->catch->finally->end->return
+Channels.WritableByteChannelImpl#implCloseChannel()::: writable byte channel impl impl close channel:::out->close
 Channels#newReader(ReadableByteChannel, CharsetDecoder, int):::Constructs a reader that decodes bytes from the given channel using the given decoder:::Objects->requireNonNull->return->StreamDecoder->dec->reset->forDecoder
 Channels#newReader(ReadableByteChannel, String):::Constructs a reader that decodes bytes from the given channel according to the named charset:::Objects->requireNonNull->return->Charset->forName->newDecoder->newReader
 Channels#newReader(ReadableByteChannel, Charset):::Constructs a reader that decodes bytes from the given channel according to the given charset:::Objects->requireNonNull->return->charset->newDecoder->newReader
@@ -67,6 +80,8 @@ CompletionHandler#failed(Throwable, A):::Invoked when an operation fails.:::
 DatagramChannel#open():::Opens a datagram channel:::return->SelectorProvider->provider->openDatagramChannel
 DatagramChannel#open(ProtocolFamily):::Opens a datagram channel:::return->SelectorProvider->provider->openDatagramChannel
 DatagramChannel#validOps():::Returns an operation set identifying this channel's supported operations:::return
+DatagramChannel#bind(SocketAddress)::: datagram channel bind:::
+DatagramChannel#setOption(SocketOption, T)::: datagram channel set option:::
 DatagramChannel#socket():::Retrieves a datagram socket associated with this channel:::
 DatagramChannel#isConnected():::Tells whether or not this channel's socket is connected.:::
 DatagramChannel#connect(SocketAddress):::Connects this channel's socket:::
@@ -182,18 +197,22 @@ Selector#select():::Selects a set of keys whose corresponding channels are ready
 Selector#select(Consumer, long):::Selects and performs an action on the keys whose corresponding channels are ready for I/O operations:::if->throw->new->IllegalArgumentException->return->Objects->requireNonNull->doSelect
 Selector#select(Consumer):::Selects and performs an action on the keys whose corresponding channels are ready for I/O operations:::return->select
 Selector#selectNow(Consumer):::Selects and performs an action on the keys whose corresponding channels are ready for I/O operations:::return->Objects->requireNonNull->doSelect
+Selector#doSelect(Consumer, long):::Default implementation of select(Consumer) and selectNow(Consumer).:::synchronized->selectedKeys->selectedKeys->synchronized->selectedKeys->clear->numKeySelected->if->selectNow->else->select->keysToConsume->Set->copyOf->selectedKeys->clear->keysToConsume->action->accept->if->isOpen->throw->new->ClosedSelectorException->forEach->return
 Selector#wakeup():::Causes the first selection operation that has not yet returned to return immediately:::
 Selector#close():::Closes this selector:::
 ServerSocketChannel#open():::Opens a server-socket channel:::return->SelectorProvider->provider->openServerSocketChannel
 ServerSocketChannel#validOps():::Returns an operation set identifying this channel's supported operations:::return
 ServerSocketChannel#bind(SocketAddress):::Binds the channel's socket to a local address and configures the socket to listen for connections:::return->bind
 ServerSocketChannel#bind(SocketAddress, int):::Binds the channel's socket to a local address and configures the socket to listen for connections:::
+ServerSocketChannel#setOption(SocketOption, T)::: server socket channel set option:::
 ServerSocketChannel#socket():::Retrieves a server socket associated with this channel:::
 ServerSocketChannel#accept():::Accepts a connection made to this channel's socket:::
 ServerSocketChannel#getLocalAddress():::If there is a security manager set, its {@code checkConnect method is called with the local address and -1 as its arguments to see if the operation is allowed:::
 SocketChannel#open():::Opens a socket channel:::return->SelectorProvider->provider->openSocketChannel
 SocketChannel#open(SocketAddress):::Opens a socket channel and connects it to a remote address:::sc->open->try->sc->connect->catch->try->sc->close->catch->x->addSuppressed->finally->throw->finally->return
 SocketChannel#validOps():::Returns an operation set identifying this channel's supported operations:::return
+SocketChannel#bind(SocketAddress)::: socket channel bind:::
+SocketChannel#setOption(SocketOption, T)::: socket channel set option:::
 SocketChannel#shutdownInput():::Shutdown the connection for reading without closing the channel:::
 SocketChannel#shutdownOutput():::Shutdown the connection for writing without closing the channel:::
 SocketChannel#socket():::Retrieves a socket associated with this channel:::
@@ -202,5 +221,11 @@ SocketChannel#isConnectionPending():::Tells whether or not a connection operatio
 SocketChannel#connect(SocketAddress):::Connects this channel's socket:::
 SocketChannel#finishConnect():::Finishes the process of connecting a socket channel:::
 SocketChannel#getRemoteAddress():::Returns the remote address to which this channel's socket is connected:::
+SocketChannel#read(ByteBuffer)::: socket channel read:::
+SocketChannel#read(ByteBuffer[], int, int)::: socket channel read:::
+SocketChannel#read(ByteBuffer[])::: socket channel read:::return->read
+SocketChannel#write(ByteBuffer)::: socket channel write:::
+SocketChannel#write(ByteBuffer[], int, int)::: socket channel write:::
+SocketChannel#write(ByteBuffer[])::: socket channel write:::return->write
 SocketChannel#getLocalAddress():::If there is a security manager set, its {@code checkConnect method is called with the local address and -1 as its arguments to see if the operation is allowed:::
 WritableByteChannel#write(ByteBuffer):::Writes a sequence of bytes to this channel from the given buffer:::

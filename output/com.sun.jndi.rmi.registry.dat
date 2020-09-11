@@ -1,4 +1,57 @@
+ReferenceWrapper#getReference()::: reference wrapper get reference:::return
+RegistryContext#finalize()::: registry context finalize:::close
+RegistryContext#lookup(Name)::: registry context lookup:::if->name->isEmpty->return->new->RegistryContext->obj->try->registry->name->get->lookup->catch->throw->name->get->new->NameNotFoundException->throw->wrapRemoteException->fillInStackTrace->finally->return->name->getPrefix->decodeObject
+RegistryContext#lookup(String)::: registry context lookup:::return->new->CompositeName->lookup
 RegistryContext#bind(Name, Object):::If the object to be bound is both Remote and Referenceable, binds the object itself, not its Reference.:::if->name->isEmpty->throw->new->InvalidNameException->try->registry->name->get->name->getPrefix->encodeObject->bind->catch->ne->name->get->new->NameAlreadyBoundException->ne->setRootCause->throw->throw->wrapRemoteException->fillInStackTrace->finally
+RegistryContext#bind(String, Object)::: registry context bind:::new->CompositeName->bind
+RegistryContext#rebind(Name, Object)::: registry context rebind:::if->name->isEmpty->throw->new->InvalidNameException->try->registry->name->get->name->getPrefix->encodeObject->rebind->catch->throw->wrapRemoteException->fillInStackTrace->finally
+RegistryContext#rebind(String, Object)::: registry context rebind:::new->CompositeName->rebind
+RegistryContext#unbind(Name)::: registry context unbind:::if->name->isEmpty->throw->new->InvalidNameException->try->registry->name->get->unbind->catch->throw->wrapRemoteException->fillInStackTrace->finally
+RegistryContext#unbind(String)::: registry context unbind:::new->CompositeName->unbind
 RegistryContext#rename(Name, Name):::Rename is implemented by this sequence of operations: lookup, bind, unbind:::lookup->bind->unbind
+RegistryContext#rename(String, String)::: registry context rename:::new->CompositeName->new->CompositeName->rename
+RegistryContext#list(Name)::: registry context list:::if->name->isEmpty->throw->new->InvalidNameException->try->names->registry->list->return->new->NameClassPairEnumeration->catch->throw->wrapRemoteException->fillInStackTrace->finally
+RegistryContext#list(String)::: registry context list:::return->new->CompositeName->list
+RegistryContext#listBindings(Name)::: registry context list bindings:::if->name->isEmpty->throw->new->InvalidNameException->try->names->registry->list->return->new->BindingEnumeration->catch->throw->wrapRemoteException->fillInStackTrace->finally
+RegistryContext#listBindings(String)::: registry context list bindings:::return->new->CompositeName->listBindings
+RegistryContext#destroySubcontext(Name)::: registry context destroy subcontext:::throw->new->OperationNotSupportedException
+RegistryContext#destroySubcontext(String)::: registry context destroy subcontext:::throw->new->OperationNotSupportedException
+RegistryContext#createSubcontext(Name)::: registry context create subcontext:::throw->new->OperationNotSupportedException
+RegistryContext#createSubcontext(String)::: registry context create subcontext:::throw->new->OperationNotSupportedException
+RegistryContext#lookupLink(Name)::: registry context lookup link:::return->lookup
+RegistryContext#lookupLink(String)::: registry context lookup link:::return->lookup
+RegistryContext#getNameParser(Name)::: registry context get name parser:::return
+RegistryContext#getNameParser(String)::: registry context get name parser:::return
+RegistryContext#composeName(Name, Name)::: registry context compose name:::result->prefix->clone->return->result->addAll
+RegistryContext#composeName(String, String)::: registry context compose name:::return->new->CompositeName->new->CompositeName->composeName->toString
+RegistryContext#removeFromEnvironment(String)::: registry context remove from environment:::return->environment->remove
+RegistryContext#addToEnvironment(String, Object)::: registry context add to environment:::if->propName->equals->installSecurityMgr->return->environment->put
+RegistryContext#getEnvironment()::: registry context get environment:::return->environment->clone
+RegistryContext#close()::: registry context close:::
+RegistryContext#getNameInNamespace()::: registry context get name in namespace:::return
 RegistryContext#getReference():::Returns an RMI registry reference for this context:::if->return->reference->clone->if->host->equals->throw->new->ConfigurationException->url->host->indexOf->if->Integer->toString->addr->new->StringRefAddr->return->getName->getName->new->Reference
 RegistryContext#wrapRemoteException(RemoteException):::Wrap a RemoteException inside a NamingException.:::ne->if->new->ServiceUnavailableException->else->if->new->NoPermissionException->else->if->new->ConfigurationException->else->if->new->CommunicationException->else->if->wrapRemoteException->else->new->NamingException->ne->setRootCause->return
+RegistryContext#getRegistry(String, int, RMIClientSocketFactory):::Returns the registry at a given host, port and socket factory:::try->if->return->LocateRegistry->getRegistry->else->return->LocateRegistry->getRegistry->catch->throw->wrapRemoteException->fillInStackTrace->finally
+RegistryContext#installSecurityMgr():::Attempts to install a security manager if none is currently in place.:::try->System->new->SecurityManager->setSecurityManager->catch->finally
+RegistryContext#encodeObject(Object, Name):::Encodes an object prior to binding it in the registry:::NamingManager->getStateToBind->if->return->if->return->new->ReferenceWrapper->if->return->getReference->new->ReferenceWrapper->throw->new->IllegalArgumentException
+RegistryContext#decodeObject(Remote, Name):::Decodes an object that has been retrieved from the registry:::try->obj->getReference->ref->if->else->if->getReference->if->ref->getFactoryClassLocation->throw->new->ConfigurationException->return->NamingManager->getObjectInstance->catch->throw->throw->wrapRemoteException->fillInStackTrace->ne->new->NamingException->ne->setRootCause->throw->finally
+AtomicNameParser#parse(String)::: atomic name parser parse:::return->new->CompoundName
+NameClassPairEnumeration#hasMore()::: name class pair enumeration has more:::return
+NameClassPairEnumeration#next()::: name class pair enumeration next:::if->hasMore->throw->new->java.util.NoSuchElementException->name->cname->new->CompositeName->add->ncp->cname->toString->new->NameClassPair->ncp->setNameInNamespace->return
+NameClassPairEnumeration#hasMoreElements()::: name class pair enumeration has more elements:::return->hasMore
+NameClassPairEnumeration#nextElement()::: name class pair enumeration next element:::try->return->next->catch->throw->new->java.util.NoSuchElementException->finally
+NameClassPairEnumeration#close()::: name class pair enumeration close:::
+BindingEnumeration#finalize()::: binding enumeration finalize:::ctx->close
+BindingEnumeration#hasMore()::: binding enumeration has more:::if->ctx->close->return
+BindingEnumeration#next()::: binding enumeration next:::if->hasMore->throw->new->java.util.NoSuchElementException->name->cname->new->CompositeName->add->obj->ctx->lookup->cnameStr->cname->toString->binding->new->Binding->binding->setNameInNamespace->return
+BindingEnumeration#hasMoreElements()::: binding enumeration has more elements:::return->hasMore
+BindingEnumeration#nextElement()::: binding enumeration next element:::try->return->next->catch->throw->new->java.util.NoSuchElementException->finally
+BindingEnumeration#close()::: binding enumeration close:::finalize
+RegistryContextFactory#getInitialContext(Hashtable)::: registry context factory get initial context:::if->env->clone->return->getInitCtxURL->URLToContext
+RegistryContextFactory#getObjectInstance(Object, Name, Context, Hashtable)::: registry context factory get object instance:::if->isRegistryRef->return->obj->getURLs->URLsToObject->if->ctx->return
+RegistryContextFactory#URLToContext(String, Hashtable)::: registry context factory  to context:::factory->new->rmiURLContextFactory->obj->factory->getObjectInstance->if->return->else->throw->new->NotContextException
+RegistryContextFactory#URLsToObject(String[], Hashtable)::: registry context factory  ls to object:::factory->new->rmiURLContextFactory->return->factory->getObjectInstance
+RegistryContextFactory#getInitCtxURL(Hashtable):::Reads environment to find URL of initial context:::defaultURL->url->if->env->get->return
+RegistryContextFactory#isRegistryRef(Object):::Returns true if argument is an RMI registry reference.:::if->return->thisClassName->getName->ref->return->thisClassName->ref->getFactoryClassName->equals
+RegistryContextFactory#getURLs(Reference):::Returns the URLs contained within an RMI registry reference.:::size->urls->ref->size->new->StringArr->addrs->ref->getAll->while->addrs->hasMoreElements->addr->addrs->nextElement->if->addr->getType->equals->addr->getContent->if->throw->new->ConfigurationException->if->ref->size->return->urls2->new->StringArr->System->arraycopy->return
+RemoteReference#getReference()::: remote reference get reference:::

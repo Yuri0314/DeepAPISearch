@@ -1,38 +1,189 @@
+DocEnvImpl#getSpecifiedElements()::: doc env impl get specified elements:::return->etable->getSpecifiedElements
+DocEnvImpl#getIncludedElements()::: doc env impl get included elements:::return->etable->getIncludedElements
+DocEnvImpl#isIncluded(Element)::: doc env impl is included:::return->etable->isIncluded
+DocEnvImpl#getDocTrees()::: doc env impl get doc trees:::return
+DocEnvImpl#getElementUtils()::: doc env impl get element utils:::return
+DocEnvImpl#getTypeUtils()::: doc env impl get type utils:::return
+DocEnvImpl#getJavaFileManager()::: doc env impl get java file manager:::return
+DocEnvImpl#getSourceVersion()::: doc env impl get source version:::return->Source->toSourceVersion
+DocEnvImpl#getModuleMode()::: doc env impl get module mode:::return->etable->getModuleMode
+DocEnvImpl#getFileKind(TypeElement)::: doc env impl get file kind:::return->toolEnv->getFileKind
+DocEnvImpl#isSelected(Element)::: doc env impl is selected:::return->etable->isSelected
 ElementsTable#getModuleMode():::Returns the module documentation level mode.:::switch->accessFilter->getAccessValue->return->return
 ElementsTable#getSpecifiedElements():::Returns a set of elements specified on the command line, including any inner classes.:::if->result->new->LinkedHashSet<>->result->addAll->result->addAll->result->addAll->Collections->unmodifiableSet->return
 ElementsTable#getIncludedElements():::Returns a set of elements included elements:::if->result->new->LinkedHashSet<>->result->addAll->result->addAll->result->addAll->Collections->unmodifiableSet->return
 ElementsTable#isIncluded(Element):::Returns true if the given element is included for consideration:::if->return->if->new->IncludedVisitor->return->includedVisitor->visit
 ElementsTable#analyze():::Performs the final computation and freezes the collections:::computeSpecifiedModules->computeSpecifiedPackages->computeSpecifiedTypes->expandedModulePackages->computeModulePackages->initializeIncludedSets
+ElementsTable#classTrees(com.sun.tools.javac.util.List)::: elements table class trees:::return
+ElementsTable#sanityCheckSourcePathModules(List)::: elements table sanity check source path modules:::if->return->if->moduleNames->size->text->messager->String->join->getText->throw->new->ToolException->foundModule->getModuleName->if->text->messager->moduleNames->get->getText->throw->new->ToolException->if->moduleNames->get->equals->text->messager->moduleNames->get->getText->throw->new->ToolException
+ElementsTable#getModuleName(Location)::: elements table get module name:::try->jfo->fm->getJavaFileForInput->if->jcu->compiler->parse->module->TreeInfo->getModule->if->return->module->getName->toString->catch->text->messager->getText->throw->new->ToolException->finally->return
+ElementsTable#scanSpecifiedItems()::: elements table scan specified items:::moduleNames->opts->computeIfAbsent->mlist->new->ArrayList<>->foreach->moduleLocations->getModuleLocation->if->moduleLocations->isEmpty->text->messager->getText->throw->new->ToolException->if->moduleLocations->contains->sanityCheckSourcePathModules->mlist->add->msym->syms->names->fromString->enterModule->specifiedModuleElements->add->cmdLinePackages->stream->mpkg->hasModule->filter->mlist->add->forEachOrdered->opts->computeIfAbsent->stream->ModulePackage->new->map->subPackages->add->if->mpkg->hasModule->mlist->add->forEachOrdered->modules->mlist->mlist->size->new->StringArr->toArray->addExtraAddModules->modules->initModules->return
 ElementsTable#setClassArgList(List):::Returns the includes table after setting a class names specified on the command line.:::return
 ElementsTable#setClassDeclList(List):::Returns the includes table after setting the parsed class names.:::return
 ElementsTable#packages(Collection):::Returns an includes table after setting the specified package names.:::packageNames->stream->ModulePackage->new->map->cmdLinePackages->add->forEachOrdered->return
 ElementsTable#getPackagesToParse():::Returns the aggregate set of included packages and specified sub packages.:::result->new->ArrayList<>->result->addAll->result->addAll->return
+ElementsTable#computeSubpackages()::: elements table compute subpackages:::opts->computeIfAbsent->stream->ModulePackage->new->map->excludePackages->add->forEachOrdered->excludePackages->getEntry->forEach->foreach->locs->getLocation->foreach->addPackagesFromLocations
+ElementsTable#fmList(Location, String, Set, boolean)::: elements table fm list:::try->return->fm->list->catch->text->messager->getText->throw->new->ToolException->finally
+ElementsTable#addPackagesFromLocations(Location, ModulePackage)::: elements table add packages from locations:::foreach->fmList->binaryName->fm->inferBinaryName->pn->getPackageName->simpleName->getSimpleName->e->getEntry->if->e->isExcluded->isValidClassName->msym->modpkg->hasModule->syms->names->fromString->getModule->findModuleOfPackageName->if->msym->isUnnamed->syms->names->fromString->enterPackage->npkg->msym->toString->new->ModulePackage->cmdLinePackages->add->else->cmdLinePackages->add->of->prepend
+ElementsTable#getModuleRequires(ModuleElement, boolean):::Returns the "requires" modules for the target module.:::result->new->HashSet<>->foreach->ElementFilter->mdle->getDirectives->requiresIn->dep->rd->getDependency->if->result->contains->continue->if->isMandated->rd->isTransitive->if->haveModuleSources->messager->dep->getSimpleName->printWarning->result->add->else->if->isMandated->haveModuleSources->result->add->return
+ElementsTable#isMandated(ModuleElement, RequiresDirective)::: elements table is mandated:::return->getOrigin
+ElementsTable#haveModuleSources(ModuleElement)::: elements table have module sources:::msym->if->return->if->value->haveModuleSourcesCache->get->if->fmList->iterator->hasNext->haveModuleSourcesCache->put->return->return
+ElementsTable#computeSpecifiedModules()::: elements table compute specified modules:::if->Collections->unmodifiableSet->return->expandAll->expandRequires->equals->expandRequires->equals->result->new->LinkedHashSet<>->queue->new->ListBuffer<>->foreach->result->add->queue->append->publicRequires->getModuleRequires->result->addAll->queue->addAll->if->result->getModuleRequires->addAll->for->m->queue->poll->queue->poll->Collections->unmodifiableSet
+ElementsTable#getAllModulePackages(ModuleElement)::: elements table get all module packages:::result->new->HashSet<>->msym->msymlocs->toString->getModuleLocation->foreach->foreach->fmList->if->fo->getName->endsWith->continue->binaryName->fm->inferBinaryName->pn->getPackageName->psym->syms->names->fromString->enterPackage->result->add->return
+ElementsTable#computeModulePackages()::: elements table compute module packages:::accessValue->accessFilter->getAccessValue->documentAllModulePackages->accessFilter->getAccessValue->moduleDetailedMode->expandedModulePackages->new->LinkedHashSet<>->foreach->if->packages->ElementFilter->mdle->getEnclosedElements->packagesIn->expandedModulePackages->addAll->expandedModulePackages->getAllModulePackages->addAll->else->exports->ElementFilter->mdle->getDirectives->exportsIn->foreach->if->export->getTargetModules->expandedModulePackages->export->getPackage->add->if->cmdLinePackages->isEmpty->foreach->pkg->getPackageElement->if->expandedModulePackages->add->return
+ElementsTable#initializeIncludedSets(Set)::: elements table initialize included sets:::imodules->new->LinkedHashSet<>->imodules->addAll->ipackages->new->LinkedHashSet<>->ipackages->addAll->specifiedPackageElements->mdle->getModuleOf->if->imodules->add->ipackages->add->forEach->iclasses->new->LinkedHashSet<>->ipackages->addAllClasses->forEach->specifiedTypeElements->mdle->getModuleOf->if->mdle->isUnnamed->imodules->add->pkg->getPackageOf->ipackages->add->addAllClasses->forEach->Collections->unmodifiableSet->Collections->unmodifiableSet->Collections->unmodifiableSet
+ElementsTable#computeSpecifiedPackages()::: elements table compute specified packages:::computeSubpackages->packlist->new->LinkedHashSet<>->cmdLinePackages->pkg->if->modpkg->hasModule->mdle->getModuleElement->getPackageElement->else->modpkg->toString->getPackageElement->if->packlist->add->else->messager->modpkg->toString->printWarningUsingKey->forEach->Collections->unmodifiableSet
+ElementsTable#computeSpecifiedTypes():::Adds all classes as well as inner classes, to the specified list.:::classes->new->LinkedHashSet<>->classDecList->te->if->addAllClasses->forEach->foreach->te->toolEnv->loadClass->if->text->messager->getText->throw->new->ToolException->else->addAllClasses->Collections->unmodifiableSet
+ElementsTable#addFilesForParser(Collection, Collection, boolean)::: elements table add files for parser:::foreach->toolEnv->modpkg->toString->notice->files->getFiles->if->files->isEmpty->text->messager->modpkg->toString->getText->throw->new->ToolException->else->result->addAll
 ElementsTable#getFilesToParse():::Returns an aggregated list of java file objects from the items specified on the command line:::result->new->ArrayList<>->addFilesForParser->addFilesForParser->return
+ElementsTable#getFiles(ModulePackage, boolean):::Returns the set of source files for a package.:::e->getEntry->if->return->lb->new->ListBuffer<>->locs->getLocation->if->locs->isEmpty->return->Collections->emptyList->pname->foreach->foreach->fmList->binaryName->fm->inferBinaryName->simpleName->getSimpleName->if->isValidClassName->lb->append->return->lb->toList
+ElementsTable#findModuleOfPackageName(String)::: elements table find module of package name:::pack->names->fromString->foreach->modules->allModules->p->syms->getPackage->if->p->members->isEmpty->return->return
+ElementsTable#getLocation(ModulePackage)::: elements table get location:::if->locations->size->locations->contains->return->Collections->locations->get->singletonList->if->modpkg->hasModule->return->getModuleLocation->msym->findModuleOfPackageName->if->return->Collections->emptyList->return->toString->getModuleLocation
+ElementsTable#getModuleLocation(List, String)::: elements table get module location:::out->new->ArrayList<>->if->locations->contains->loc->getModuleLocation->if->out->add->foreach->if->continue->else->if->loc->getModuleLocation->if->out->add->else->if->out->add->return
+ElementsTable#getModuleLocation(Location, String)::: elements table get module location:::try->return->fm->getLocationForModule->catch->text->messager->getText->throw->new->ToolException->finally
+ElementsTable#getEntry(String)::: elements table get entry:::return->new->ModulePackage->getEntry
+ElementsTable#getEntry(ModulePackage)::: elements table get entry:::e->entries->get->if->entries->new->Entry->put->return
+ElementsTable#getPackageName(String)::: elements table get package name:::lastDot->name->lastIndexOf->return->name->substring
+ElementsTable#getSimpleName(String)::: elements table get simple name:::lastDot->name->lastIndexOf->return->name->substring
+ElementsTable#addAllClasses(Collection, TypeElement, boolean):::Adds all inner classes of this class, and their inner classes recursively, to the list:::klass->try->if->list->contains->return->if->JavadocTool->toString->isValidClassName->return->if->isTypeElementSelected->return->list->add->foreach->klass->members->getSymbols->if->s->addAllClasses->catch->if->e->getMessage->messager->e->getMessage->printWarning->else->messager->printWarningUsingKey->finally
+ElementsTable#addAllClasses(Collection, PackageElement):::Returns a list of all classes contained in this package, including member classes of those classes, and their member classes, etc.:::filtered->foreach->pkg->getEnclosedElements->addAllClasses
+ElementsTable#isTypeElementSelected(TypeElement)::: elements table is type element selected:::return->toolEnv->getFileKind->isSelected
 ElementsTable#isSelected(Element):::Returns true if the element is selected, by applying the access filter checks:::if->toolEnv->isSynthetic->return->if->new->SimpleElementVisitor9<Boolean,Void>->return->visibleElementVisitor->visit
+ElementsTable.IncludedVisitor#visitModule(ModuleElement, Void)::: included visitor visit module:::return->includedModuleElements->contains
+ElementsTable.IncludedVisitor#visitPackage(PackageElement, Void)::: included visitor visit package:::return->includedPackageElements->contains
+ElementsTable.IncludedVisitor#visitType(TypeElement, Void)::: included visitor visit type:::if->includedTypeElements->contains->return->if->isTypeElementSelected->pkg->getPackageOf->if->specifiedPackageElements->contains->return->enclosing->e->getEnclosingElement->if->switch->enclosing->getKind->return->specifiedPackageElements->contains->return->visit->throw->new->AssertionError->return
+ElementsTable.IncludedVisitor#defaultAction(Element, Void)::: included visitor default action:::if->includedCache->contains->return->if->e->getEnclosingElement->visit->isSelected->switch->e->getKind->throw->new->AssertionError->includedCache->add->return->return
+ElementsTable.IncludedVisitor#visitUnknown(Element, Void)::: included visitor visit unknown:::throw->new->AssertionError
+ElementsTable.Entry#isExcluded()::: entry is excluded:::return
+ElementsTable.Entry#toString()::: entry to string:::return
+ElementsTable.ModulePackage#hasModule()::: module package has module:::return
+ElementsTable.ModulePackage#equals(Object)::: module package equals:::if->that->return->this->toString->that->toString->equals->return
+ElementsTable.ModulePackage#hashCode()::: module package hash code:::return->toString->hashCode
+ElementsTable.ModulePackage#toString()::: module package to string:::return
+ElementsTable.ModifierFilter#getFilterSet(AccessKind)::: modifier filter get filter set:::switch->return->EnumSet->of->return->EnumSet->of->return->EnumSet->of->return->EnumSet->allOf
+ElementsTable.ModifierFilter#getAccessValue(ElementKind)::: modifier filter get access value:::if->ALLOWED_KINDS->contains->throw->new->IllegalArgumentException->return->accessMap->getOrDefault
 ElementsTable.ModifierFilter#checkModifier(Element):::Returns true if access is allowed.:::modifiers->e->getModifiers->fflag->if->modifiers->contains->else->if->modifiers->contains->else->if->modifiers->contains->filterSet->filterMap->e->getKind->getAllowedKind->get->return->filterSet->contains
+ElementsTable.ModifierFilter#getAllowedKind(ElementKind)::: modifier filter get allowed kind:::switch->return->return->return->throw->new->AssertionError
+JavadocClassFinder#instance(Context)::: javadoc class finder instance:::instance->context->get->if->new->JavadocClassFinder->return
+JavadocClassFinder#preRegister(Context)::: javadoc class finder pre register:::context->JavadocClassFinder->new->put
 JavadocClassFinder#getPackageFileKinds():::Override getPackageFileKinds to include search for package.html:::return
 JavadocClassFinder#extraFileActions(PackageSymbol, JavaFileObject):::Override extraFileActions to check for package documentation:::if->fo->isNameCompatible
+JavadocEnter#instance(Context)::: javadoc enter instance:::instance->context->get->if->new->JavadocEnter->return
+JavadocEnter#preRegister(Context)::: javadoc enter pre register:::context->JavadocEnter->new->put
+JavadocEnter#main(List)::: javadoc enter main:::nerrors->super->main->compiler->enterDone->if
+JavadocEnter#visitTopLevel(JCCompilationUnit)::: javadoc enter visit top level:::super->visitTopLevel->if->isNameCompatible->pd->tree->getPackage->tp->toolEnv->getTreePath->toolEnv->getTreePath->toolEnv->setElementToTreePath
+JavadocEnter#visitClassDef(JCClassDecl)::: javadoc enter visit class def:::super->visitClassDef->if->return->if->c->toolEnv->toolEnv->getTreePath->setElementToTreePath
 JavadocEnter#duplicateClass(DiagnosticPosition, ClassSymbol):::Don't complain about a duplicate class.:::
+JavadocMemberEnter#instance0(Context)::: javadoc member enter instance0:::instance->context->get->if->new->JavadocMemberEnter->return
+JavadocMemberEnter#preRegister(Context)::: javadoc member enter pre register:::context->JavadocMemberEnter->new->put
+JavadocMemberEnter#visitMethodDef(JCMethodDecl)::: javadoc member enter visit method def:::super->visitMethodDef->meth->if->return->treePath->toolEnv->getTreePath->if->contains->toolEnv->setElementToTreePath
+JavadocMemberEnter#visitVarDef(JCVariableDecl)::: javadoc member enter visit var def:::if->isFinal->if->containsNonConstantExpression->super->visitVarDef->if->isParameter->toolEnv->toolEnv->getTreePath->setElementToTreePath
+JavadocMemberEnter#isParameter(VarSymbol)::: javadoc member enter is parameter:::return->var->flags
+JavadocMemberEnter#containsNonConstantExpression(JCExpression):::Simple analysis of an expression tree to see if it contains tree nodes for any non-constant expression:::return->new->MaybeConstantExpressionScanner->containsNonConstantExpression
+JavadocMemberEnter.MaybeConstantExpressionScanner#containsNonConstantExpression(JCExpression)::: maybe constant expression scanner contains non constant expression:::scan->return
+JavadocMemberEnter.MaybeConstantExpressionScanner#scan(JCTree)::: maybe constant expression scanner scan:::if->tree->accept
+JavadocMemberEnter.MaybeConstantExpressionScanner#visitTree(JCTree)::: maybe constant expression scanner visit tree:::
+JavadocMemberEnter.MaybeConstantExpressionScanner#visitBinary(JCBinary)::: maybe constant expression scanner visit binary:::switch->tree->getTag->break
+JavadocMemberEnter.MaybeConstantExpressionScanner#visitConditional(JCConditional)::: maybe constant expression scanner visit conditional:::scan->scan->scan
+JavadocMemberEnter.MaybeConstantExpressionScanner#visitIdent(JCIdent)::: maybe constant expression scanner visit ident:::
+JavadocMemberEnter.MaybeConstantExpressionScanner#visitLiteral(JCLiteral)::: maybe constant expression scanner visit literal:::
+JavadocMemberEnter.MaybeConstantExpressionScanner#visitParens(JCParens)::: maybe constant expression scanner visit parens:::scan
+JavadocMemberEnter.MaybeConstantExpressionScanner#visitSelect(JCTree.JCFieldAccess)::: maybe constant expression scanner visit select:::scan
+JavadocMemberEnter.MaybeConstantExpressionScanner#visitTypeCast(JCTypeCast)::: maybe constant expression scanner visit type cast:::scan->scan
+JavadocMemberEnter.MaybeConstantExpressionScanner#visitTypeIdent(JCPrimitiveTypeTree)::: maybe constant expression scanner visit type ident:::
+JavadocMemberEnter.MaybeConstantExpressionScanner#visitUnary(JCUnary)::: maybe constant expression scanner visit unary:::switch->tree->getTag->break
+JavadocTodo#preRegister(Context)::: javadoc todo pre register:::context->JavadocTodo->new->put
+JavadocTodo#append(Env)::: javadoc todo append:::
+JavadocTodo#offer(Env)::: javadoc todo offer:::return
 JavadocTool#keepComments():::For javadoc, the parser needs to keep comments:::return
 JavadocTool#make0(Context)::: Construct a new javadoc tool.:::messager->try->JavadocClassFinder->preRegister->JavadocEnter->preRegister->JavadocMemberEnter->preRegister->JavadocTodo->preRegister->Messager->instance0->return->new->JavadocTool->catch->messager->ex->getMessage->error->return->finally
+JavadocTool#getEnvironment(Map, List, Iterable)::: javadoc tool get environment:::ToolEnvironment->instance->toolEnv->initialize->etable->new->ElementsTable->if->foreach->if->isValidPackageName->text->messager->getText->throw->new->ToolException->if->messager->hasErrors->return->etable->setClassArgList->etable->analyze->return->new->DocEnvImpl->classTrees->new->ListBuffer<>->try->fm->packageNames->new->LinkedHashSet<>->foreach->if->arg->endsWith->new->File->exists->fm->getJavaFileObjects->parse->else->if->isValidPackageName->packageNames->add->else->if->arg->endsWith->if->text->messager->getText->throw->new->ToolException->else->text->messager->getText->throw->new->ToolException->else->text->messager->getText->throw->new->ToolException->parse->etable->packages->classTrees->toList->classTrees->scanSpecifiedItems->if->messager->hasErrors->return->packageTrees->new->ListBuffer<>->etable->getFilesToParse->parse->modules->packageTrees->toList->enter->if->messager->hasErrors->return->toolEnv->notice->javadocEnter->classTrees->toList->appendList->main->if->messager->hasErrors->return->etable->classTrees->toList->listClasses->setClassDeclList->dcfh->setHandler->etable->analyze->catch->throw->cf->getMessage->new->ToolException->if->messager->hasErrors->throw->new->ToolException->else->text->messager->getText->t->abort->getCause->abort->getCause->throw->new->ToolException->finally->if->messager->hasErrors->return->new->DocEnvImpl->return
 JavadocTool#isValidPackageName(String):::Is the given string a valid package name?:::if->s->contains->a->s->split->if->return->isValidPackageName0->isValidPackageName0->return->return->isValidPackageName0
+JavadocTool#isValidPackageName0(String)::: javadoc tool is valid package name0:::for->index->s->indexOf->s->indexOf->return->isValidClassName
+JavadocTool#parse(Iterable, ListBuffer, boolean)::: javadoc tool parse:::foreach->if->uniquefiles->add->if->toolEnv->fo->getName->notice->trees->parse->append
+JavadocTool#surrogatesSupported()::: javadoc tool surrogates supported:::try->b->Character->isHighSurrogate->return->catch->return->finally
 JavadocTool#isValidClassName(String):::Return true if given file name is a valid class name (including "package-info").:::if->s->length->return->if->s->equals->return->if->cp->s->codePointAt->if->Character->isJavaIdentifierStart->return->for->j->Character->charCount->s->length->Character->charCount->else->if->Character->s->charAt->isJavaIdentifierStart->return->for->j->s->length->return
 JavadocTool#listClasses(List):::From a list of top level trees, return the list of contained class definitions:::result->new->ArrayList<>->foreach->foreach->if->def->hasTag->result->add->return
+JavadocToolProvider#name()::: javadoc tool provider name:::return
+JavadocToolProvider#run(PrintWriter, PrintWriter, String...)::: javadoc tool provider run:::return->Main->execute
 Main#main(String...):::The main entry point called by the launcher:::System->execute->exit
 Main#execute(String...):::Programmatic interface.:::jdoc->new->Start->return->jdoc->begin
 Main#execute(String[], PrintWriter):::Programmatic interface.:::jdoc->new->Start->return->jdoc->begin
 Main#execute(String[], PrintWriter, PrintWriter):::Programmatic interface.:::jdoc->new->Start->return->jdoc->begin
 Messager#instance0(Context):::Get the current messager, which is also the compiler log.:::instance->context->get->if->throw->new->InternalError->return
+Messager#preRegister(Context, String)::: messager pre register:::context->new->Messager->put
+Messager#preRegister(Context, String, PrintWriter, PrintWriter)::: messager pre register:::context->new->Messager->put
+Messager#print(Kind, String)::: messager print:::switch->printError->return->printWarning->return->printNotice->return
+Messager#print(Kind, DocTreePath, String)::: messager print:::switch->printError->return->printWarning->return->printWarning->return
+Messager#print(Kind, Element, String)::: messager print:::switch->printError->return->printWarning->return->printWarning->return
+Messager#setLocale(Locale)::: messager set locale:::
 Messager#getText(String, Object...):::get and format message string from resource:::return->messages->getLocalizedString
+Messager#getDiagSource(DocTreePath)::: messager get diag source:::if->path->getTreePath->return->trees->JavacTrees->instance->sourcePositions->trees->getSourcePositions->cu->path->getTreePath->getCompilationUnit->spos->sourcePositions->path->getDocComment->path->getLeaf->getStartPosition->lineNumber->cu->getLineMap->getLineNumber->fname->cu->getSourceFile->getName->posString->return
+Messager#getDiagSource(Element)::: messager get diag source:::if->return->trees->JavacTrees->instance->path->trees->getPath->sourcePositions->trees->getSourcePositions->tree->trees->getTree->cu->path->getCompilationUnit->spos->sourcePositions->getStartPosition->lineNumber->cu->getLineMap->getLineNumber->fname->cu->getSourceFile->getName->posString->return
 Messager#printError(String):::Print error message, increment error count:::printError
+Messager#printError(DocTreePath, String)::: messager print error:::prefix->getDiagSource->if->report->return->printError
+Messager#printError(Element, String)::: messager print error:::prefix->getDiagSource->if->report->return->printError
+Messager#printErrorUsingKey(String, Object...)::: messager print error using key:::getText->printError
+Messager#printError(String, String)::: messager print error:::if->errWriter->getWriter->getText->printRawLines->errWriter->flush->prompt
 Messager#printWarning(String):::Print warning message, increment warning count:::printWarning
+Messager#printWarningUsingKey(String, Object...)::: messager print warning using key:::getText->printWarning
+Messager#printWarning(Element, String, Object...)::: messager print warning:::getText->printWarning
+Messager#printWarning(DocTreePath, String)::: messager print warning:::prefix->getDiagSource->if->report->return->printWarning
+Messager#printWarning(Element, String)::: messager print warning:::prefix->getDiagSource->if->report->return->printWarning
+Messager#printWarning(String, String)::: messager print warning:::if->warnWriter->getWriter->getText->printRawLines->warnWriter->flush
 Messager#printNotice(String):::Print a message:::printNotice
+Messager#printNotice(DocTreePath, String)::: messager print notice:::prefix->getDiagSource->if->report->return->noticeWriter->getWriter->if->printRawLines->else->printRawLines->noticeWriter->flush
+Messager#printNotice(Element, String)::: messager print notice:::pos->getDiagSource->if->report->return->noticeWriter->getWriter->if->printRawLines->else->printRawLines->noticeWriter->flush
 Messager#notice(String, Object...):::Print a message.:::getText->printNotice
 Messager#hasErrors():::Returns true if errors have been recorded.:::return
 Messager#hasWarnings():::Returns true if warnings have been recorded.:::return
 Messager#printErrorWarningCounts():::Print exit message.:::if->notice->if->notice
+Messager#report(DiagnosticType, String, String)::: messager report:::switch->prefix->javadocDiags->create->report->break->key->javadocDiags->create->report->break->throw->type->toString->new->IllegalArgumentException
+Start#initMessager()::: start init messager:::if->return->if->log->context->get->if->else->out->context->get->new->Messager->new->Messager
 Start#usage():::Usage:::usage
+Start#Xusage()::: start  xusage:::usage
+Start#version()::: start version:::messager->version->notice
+Start#fullVersion()::: start full version:::messager->version->notice
+Start#usage(String, OptionKind, String)::: start usage:::messager->notice->showToolOptions->if->name->doclet->getName->messager->notice->showDocletOptions->if->messager->notice
+Start#version(String)::: start version:::if->try->ResourceBundle->getBundle->catch->return->Log->getLocalizedString->finally->try->return->versionRB->getString->catch->return->Log->getLocalizedString->finally
+Start#showToolOptions(OptionKind)::: start show tool options:::comp->new->Comparator<ToolOption>->Stream->ToolOption->values->of->filter->sorted->this->showToolOption->forEach
+Start#showToolOption(ToolOption)::: start show tool option:::names->option->getNames->parameters->if->endsWith->sep->endsWith->option->getParameters->else->description->option->getDescription->showUsage
+Start#showDocletOptions(Option.Kind)::: start show doclet options:::comp->new->Comparator<Doclet.Option>->doclet->getSupportedOptions->stream->opt->getKind->filter->sorted->this->showDocletOption->forEach
+Start#showDocletOption(Doclet.Option)::: start show doclet option:::names->option->getNames->parameters->optname->names->get->if->option->getArgumentCount->optname->endsWith->sep->optname->endsWith->option->getParameters->else->description->option->getDescription->showUsage
+Start#showUsage(List, String, String)::: start show usage:::synopses->names->stream->map->Collectors->joining->collect->if->synopses->length->description->contains->SMALL_INDENT->length->description->length->messager->String->format->printNotice->return->if->synopses->length->messager->printNotice->else->foreach->messager->printNotice->messager->description->replace->printNotice
 Start#begin(String...):::Main program - external wrapper:::try->CommandLine->parse->return->Arrays->asList->Collections->emptySet->begin->catch->e->getMessage->error->return->finally
+Start#begin(Class, Iterable, Iterable)::: start begin:::opts->new->ArrayList<>->foreach->opts->add->return->begin->isOK
+Start#begin(List, Iterable)::: start begin:::context->get->if->JavacFileManager->preRegister->context->get->if->try->preprocess->catch->if->isOK->if->messager->printError->t->te->getCause->dumpStack->return->if->messager->printError->run->t->oe->getCause->dumpStack->return->finally->if->isAssignableFrom->initMessager->messager->setLocale->try->o->docletClass->getConstructor->newInstance->catch->if->throw->new->ClientCodeException->error->return->finally->else->if->ostart->new->com.sun.tools.javadoc.main.Start->return->ostart->begin->warn->array->options->options->size->new->StringArr->toArray->rc->messager->getWriter->messager->getWriter->messager->getWriter->docletClass->getName->execute->return->result->try->parseAndExecute->catch->messager->e->getMessage->printError->t->e->getCause->dumpStack->return->if->messager->printError->run->t->toe->getCause->dumpStack->return->if->messager->printError->t->exc->getCause->if->reportInternalError->else->dumpStack->return->error->dumpStack->throw->error->reportInternalError->finally->if->try->fileManager->close->catch->finally->haveErrorWarnings->messager->hasErrors->messager->hasWarnings->if->result->isOK->error->if->result->isOK->messager->printErrorWarningCounts->messager->flush->return
+Start#reportInternalError(Throwable)::: start report internal error:::messager->printErrorUsingKey->dumpStack
+Start#dumpStack(Throwable)::: start dump stack:::dumpStack
+Start#dumpStack(boolean, Throwable)::: start dump stack:::if->t->printStackTrace
+Start#parseAndExecute(List, Iterable):::Main program - internal:::tm->System->currentTimeMillis->javaNames->new->ArrayList<>->Options->instance->try->getOptionHelper->process->catch->finally->arguments->Arguments->instance->arguments->init->arguments->allowEmpty->doclet->init->parseArgs->if->arguments->handleReleaseOptions->if->messager->hasErrors->messager->hasWarnings->return->if->arguments->validate->if->messager->hasErrors->messager->hasWarnings->return->if->handleOptions->if->fileManager->isSupportedOption->target->Target->instance->list->List->target->multiReleaseValue->of->fileManager->list->iterator->handleOption->compOpts->notifyListeners->modules->jdtoolOpts->computeIfAbsent->if->modules->isEmpty->subpkgs->jdtoolOpts->computeIfAbsent->if->subpkgs->isEmpty->if->javaNames->isEmpty->isEmpty->text->messager->getText->throw->new->ToolException->comp->JavadocTool->make0->if->return->docEnv->comp->getEnvironment->if->locale->getLanguage->getLanguage->equals->trees->JavacTrees->instance->trees->BreakIterator->getSentenceInstance->setBreakIterator->returnStatus->doclet->run->if->compOpts->get->System->currentTimeMillis->messager->Long->toString->notice->return
+Start#matches(List, String)::: start matches:::foreach->if->StringUtils->toLowerCase->StringUtils->toLowerCase->equals->return->return
+Start#matches(Doclet.Option, String)::: start matches:::if->option->getNames->matches->return->sep->arg->indexOf->targ->arg->substring->return->option->getNames->matches
+Start#handleDocletOptions(int, List, boolean)::: start handle doclet options:::if->doclet->getSupportedOptions->arg->args->get->argBase->argVal->if->arg->startsWith->arg->contains->sep->arg->indexOf->arg->substring->arg->substring->else->text->foreach->if->matches->if->switch->opt->getArgumentCount->messager->getText->throw->this->usage->new->OptionException->opt->Arrays->asList->process->break->messager->getText->throw->this->usage->new->OptionException->else->if->args->size->opt->getArgumentCount->messager->getText->throw->this->usage->new->OptionException->opt->args->args->size->subList->process->opt->getArgumentCount->return->if->messager->getText->throw->this->usage->new->OptionException->return
+Start#preprocess(JavaFileManager, List)::: start preprocess:::userDocletPath->userDocletName->userTagletPath->new->ArrayList<>->userTagletNames->new->ArrayList<>->for->i->argv->size->if->return->if->cl->if->if->fileManager->hasLocation->paths->new->ArrayList<>->if->foreach->userDocletPath->split->paths->new->File->add->try->setLocation->catch->if->throw->new->IllegalArgumentException->text->messager->getText->throw->new->ToolException->finally->fileManager->getClassLoader->if->if->throw->new->IllegalArgumentException->text->messager->getText->throw->new->ToolException->try->return->cl->loadClass->catch->if->throw->new->IllegalArgumentException->text->messager->getText->throw->new->ToolException->finally->if->return->loadDocletClass->return
+Start#loadDocletClass(String)::: start load doclet class:::try->return->Class->getClass->getClassLoader->forName->catch->if->throw->new->IllegalArgumentException->text->messager->getText->throw->new->ToolException->finally
+Start#parseArgs(List, List)::: start parse args:::for->i->args->size
+Start#isEmpty(Iterable)::: start is empty:::return->iter->iterator->hasNext
+Start#checkOneArg(List, int):::Check the one arg option:::if->args->size->args->get->startsWith->text->messager->args->get->getText->throw->this->usage->new->OptionException
+Start#error(String, Object...)::: start error:::messager->printErrorUsingKey
+Start#warn(String, Object...)::: start warn:::messager->printWarningUsingKey
+Start#getLocale(String):::Get the locale if specified on the command line else return null and if locale option is not used then return default locale.:::try->localeName->replace->l->new->Locale.Builder->setLanguageTag->build->return->l->getLanguage->isEmpty->catch->text->messager->getText->throw->new->ToolException->finally
+Start#searchLocale(String, String, String):::Search the locale for specified language, specified country and specified variant.:::foreach->Locale->getAvailableLocales->if->loc->getLanguage->equals->loc->getCountry->equals->loc->getVariant->equals->return->return
+Start#getOptionHelper()::: start get option helper:::return->new->GrumpyHelper
+Start#getLocalizedMessage(String, Object...)::: start get localized message:::return->messager->getText
+ToolEnvironment#instance(Context)::: tool environment instance:::instance->context->get->if->new->ToolEnvironment->return
+ToolEnvironment#initialize(Map)::: tool environment initialize:::toolOpts->getOrDefault->toolOpts->getOrDefault
 ToolEnvironment#loadClass(String):::Load a class by qualified name.:::try->nameImpl->names->fromString->mod->syms->Convert->packagePart->inferModule->c->finder->loadClass->return->catch->chk->completionError->return->finally
+ToolEnvironment#isSynthetic(Symbol)::: tool environment is synthetic:::return->sym->flags
+ToolEnvironment#setElementToTreePath(Element, TreePath)::: tool environment set element to tree path:::if->return->elementToTreePath->put
+ToolEnvironment#getFileKind(TypeElement)::: tool environment get file kind:::jfo->outermostClass->return->jfo->getKind
 ToolEnvironment#notice(String):::Print a notice, iff quiet is not specified.:::if->return->messager->notice
 ToolEnvironment#notice(String, String):::Print a notice, iff quiet is not specified.:::if->return->messager->notice
+ToolEnvironment#getTreePath(JCCompilationUnit)::: tool environment get tree path:::p->treePaths->get->if->treePaths->new->TreePath->put->return
+ToolEnvironment#getTreePath(JCCompilationUnit, JCPackageDecl)::: tool environment get tree path:::p->treePaths->get->if->treePaths->getTreePath->new->TreePath->put->return
+ToolEnvironment#getTreePath(JCCompilationUnit, JCClassDecl)::: tool environment get tree path:::p->treePaths->get->if->treePaths->getTreePath->new->TreePath->put->return
+ToolEnvironment#getTreePath(JCCompilationUnit, JCClassDecl, JCTree)::: tool environment get tree path:::return->getTreePath->new->TreePath
+ToolEnvironment#getTypes()::: tool environment get types:::return
+ToolEnvironment#getEnv(ClassSymbol)::: tool environment get env:::return->enter->getEnv
+ToolEnvironment#isQuiet()::: tool environment is quiet:::return

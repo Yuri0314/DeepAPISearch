@@ -1,3 +1,10 @@
+CompilationSubResult#setResult(Result)::: compilation sub result set result:::
+IdleResetSjavac#compile(String[])::: idle reset sjavac compile:::startCall->try->return->delegate->compile->catch->finally->endCall
+IdleResetSjavac#startCall()::: idle reset sjavac start call:::if->if->throw->new->IllegalStateException->idlenessTimerTask->cancel
+IdleResetSjavac#endCall()::: idle reset sjavac end call:::if->scheduleTimeout
+IdleResetSjavac#scheduleTimeout()::: idle reset sjavac schedule timeout:::if->throw->new->IllegalStateException->new->TimerTask->idlenessTimer->schedule
+IdleResetSjavac#shutdown()::: idle reset sjavac shutdown:::idlenessTimer->cancel->delegate->shutdown
+PortFile#initializeChannel()::: port file initialize channel:::try->new->RandomAccessFile->catch->throw->new->PortFileInaccessibleException->finally->rwfile->getChannel
 PortFile#lock():::Lock the port file.:::if->initializeChannel->lockSem->acquire->channel->lock
 PortFile#getValues():::Read the values from the port file in the file system:::if->return->try->if->rwfile->length->rwfile->seek->nr->rwfile->readInt->rwfile->readInt->rwfile->readLong->if->else->catch->finally
 PortFile#containsPortInfo():::Did the locking and getValues succeed?:::return
@@ -11,8 +18,19 @@ PortFile#unlock():::Unlock the port file.:::if->return->lock->release->lockSem->
 PortFile#waitForValidValues():::Wait for the port file to contain values that look valid.:::MS_BETWEEN_ATTEMPTS->startTime->System->currentTimeMillis->timeout->getServerStartupTimeoutSeconds->while->Log->debug->if->exists->lock->getValues->unlock->if->Log->System->currentTimeMillis->debug->return->if->System->currentTimeMillis->break->Thread->sleep->throw->System->currentTimeMillis->new->IOException
 PortFile#stillMyValues():::Check if the portfile still contains my values, assuming that I am the server.:::for
 PortFile#getFilename():::Return the name of the port file.:::return
+PortFile#getServerStartupTimeoutSeconds()::: port file get server startup timeout seconds:::str->System->getProperty->if->try->return->Integer->parseInt->catch->finally->return
+PortFileMonitor#start()::: port file monitor start:::log->Log->get->shutdownCheck->new->TimerTask->timer->schedule
+PortFileMonitor#shutdown()::: port file monitor shutdown:::timer->cancel
+RequestHandler#run()::: request handler run:::try->in->socket->getInputStream->new->InputStreamReader->new->BufferedReader->out->socket->getOutputStream->new->PrintWriter->Log->new->Log->setLogForCurrentThread->n->Integer->in->readLine->parseInt->args->new->StringArr->for->i->checkInternalErrorLog->rc->sjavac->compile->out->rc->name->println->checkInternalErrorLog->catch->Log->error->finally->Log->setLogForCurrentThread
+RequestHandler#checkInternalErrorLog()::: request handler check internal error log:::errorLog->ServerMain->getErrorLog->getLogDestination->if->Log->errorLog->toAbsolutePath->error
+ServerMain#run(String[])::: server main run:::Log->new->LazyInitFileLog->setLogForCurrentThread->Log->setLogLevel->Thread->Log->setLogForCurrentThread->Log->error->setDefaultUncaughtExceptionHandler->System->new->LoggingOutputStream->new->PrintStream->setOut->System->new->LoggingOutputStream->new->PrintStream->setErr->if->Log->error->return->exitCode->try->server->new->SjavacServer->server->startServer->catch->ex->printStackTrace->finally->return
+ServerMain#getErrorLog()::: server main get error log:::return
+Sjavac#compile(String[])::: sjavac compile:::
+Sjavac#shutdown()::: sjavac shutdown:::
 SjavacServer#getPortFile(String):::Acquire the port file:::if->new->HashMap<>->pf->allPortFiles->get->if->try->if->pf->exists->catch->ioex->printStackTrace->finally->if->new->PortFile->allPortFiles->put->return
 SjavacServer#getCookie():::Get the cookie used for this server.:::return
 SjavacServer#getPort():::Get the port used for this server.:::return->serverSocket->getLocalPort
 SjavacServer#addBuildTime(long):::Sum up the total build time for this javac server.:::
 SjavacServer#startServer():::Start a server using a settings string:::serverStart->System->currentTimeMillis->getPortFile->synchronized->portFile->lock->portFile->getValues->if->portFile->containsPortInfo->Log->debug->portFile->unlock->return->new->SjavacImpl->new->PooledSjavac->new->IdleResetSjavac->new->ServerSocket->localhost->InetAddress->getByName->serverSocket->new->InetSocketAddress->bind->portFile->getPort->getCookie->setValues->portFile->unlock->new->PortFileMonitor->portFileMonitor->start->Log->debug->Log->getPort->debug->Log->new->java.util.Date->debug->Log->debug->keepAcceptingRequests->set->do->try->socket->serverSocket->accept->new->RequestHandler->start->catch->finally->while->keepAcceptingRequests->get->Log->debug->realTime->System->currentTimeMillis->Log->debug->sjavac->shutdown->return
+SjavacServer#shutdown(String)::: sjavac server shutdown:::if->keepAcceptingRequests->compareAndSet->return->Log->debug->portFileMonitor->shutdown->try->portFile->delete->catch->Log->error->finally->try->serverSocket->close->catch->Log->error->finally
+Terminable#shutdown(String)::: terminable shutdown:::

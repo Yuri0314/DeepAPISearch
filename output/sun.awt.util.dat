@@ -13,10 +13,14 @@ IdentityArrayList#add(E):::Appends the specified element to the end of this list
 IdentityArrayList#add(int, E):::Inserts the specified element at the specified position in this list:::rangeCheckForAdd->ensureCapacity->System->arraycopy
 IdentityArrayList#remove(int):::Removes the element at the specified position in this list:::rangeCheck->oldValue->numMoved->if->System->arraycopy->return
 IdentityArrayList#remove(Object):::Removes the first occurrence of the specified element from this list, if it is present:::for->index->return
+IdentityArrayList#fastRemove(int)::: identity array list fast remove:::numMoved->if->System->arraycopy
 IdentityArrayList#clear():::Removes all of the elements from this list:::for->i
 IdentityArrayList#addAll(Collection):::Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's Iterator:::a->c->toArray->numNew->ensureCapacity->System->arraycopy->return
 IdentityArrayList#addAll(int, Collection):::Inserts all of the elements in the specified collection into this list, starting at the specified position:::rangeCheckForAdd->a->c->toArray->numNew->ensureCapacity->numMoved->if->System->arraycopy->System->arraycopy->return
 IdentityArrayList#removeRange(int, int):::Removes from this list all of the elements whose index is between fromIndex, inclusive, and toIndex, exclusive:::numMoved->System->arraycopy->newSize->while
+IdentityArrayList#rangeCheck(int):::Checks if the given index is in range:::if->throw->outOfBoundsMsg->new->IndexOutOfBoundsException
+IdentityArrayList#rangeCheckForAdd(int):::A version of rangeCheck used by add and addAll.:::if->throw->outOfBoundsMsg->new->IndexOutOfBoundsException
+IdentityArrayList#outOfBoundsMsg(int):::Constructs an IndexOutOfBoundsException detail message:::return
 IdentityLinkedList#getFirst():::Returns the first element in this list.:::if->throw->new->NoSuchElementException->return
 IdentityLinkedList#getLast():::Returns the last element in this list.:::if->throw->new->NoSuchElementException->return
 IdentityLinkedList#removeFirst():::Removes and returns the first element from this list.:::return->remove
@@ -34,6 +38,7 @@ IdentityLinkedList#get(int):::Returns the element at the specified position in t
 IdentityLinkedList#set(int, E):::Replaces the element at the specified position in this list with the specified element.:::e->entry->oldVal->return
 IdentityLinkedList#add(int, E):::Inserts the specified element at the specified position in this list:::entry->addBefore
 IdentityLinkedList#remove(int):::Removes the element at the specified position in this list:::return->entry->remove
+IdentityLinkedList#entry(int):::Returns the indexed entry.:::if->throw->new->IndexOutOfBoundsException->e->if->for->i->else->for->i->return
 IdentityLinkedList#indexOf(Object):::Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element:::index->for->e->return
 IdentityLinkedList#lastIndexOf(Object):::Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element:::index->for->e->return
 IdentityLinkedList#peek():::Retrieves, but does not remove, the head (first element) of this list.:::if->return->return->getFirst
@@ -52,9 +57,28 @@ IdentityLinkedList#pop():::Pops an element from the stack represented by this li
 IdentityLinkedList#removeFirstOccurrence(Object):::Removes the first occurrence of the specified element in this list (when traversing the list from head to tail):::return->remove
 IdentityLinkedList#removeLastOccurrence(Object):::Removes the last occurrence of the specified element in this list (when traversing the list from head to tail):::for->e->return
 IdentityLinkedList#listIterator(int):::Returns a list-iterator of the elements in this list (in proper sequence), starting at the specified position in the list:::return->new->ListItr
+IdentityLinkedList.ListItr#hasNext()::: list itr has next:::return
+IdentityLinkedList.ListItr#next()::: list itr next:::checkForComodification->if->throw->new->NoSuchElementException->return
+IdentityLinkedList.ListItr#hasPrevious()::: list itr has previous:::return
+IdentityLinkedList.ListItr#previous()::: list itr previous:::if->throw->new->NoSuchElementException->checkForComodification->return
+IdentityLinkedList.ListItr#nextIndex()::: list itr next index:::return
+IdentityLinkedList.ListItr#previousIndex()::: list itr previous index:::return
+IdentityLinkedList.ListItr#remove()::: list itr remove:::checkForComodification->lastNext->try->IdentityLinkedList.this->remove->catch->throw->new->IllegalStateException->finally->if->else
+IdentityLinkedList.ListItr#set(E)::: list itr set:::if->throw->new->IllegalStateException->checkForComodification
+IdentityLinkedList.ListItr#add(E)::: list itr add:::checkForComodification->addBefore
+IdentityLinkedList.ListItr#checkForComodification()::: list itr check for comodification:::if->throw->new->ConcurrentModificationException
+IdentityLinkedList#addBefore(E, Entry)::: identity linked list add before:::newEntry->new->Entry<E>->return
+IdentityLinkedList#remove(Entry)::: identity linked list remove:::if->throw->new->NoSuchElementException->result->return
+IdentityLinkedList#descendingIterator()::: identity linked list descending iterator:::return->new->DescendingIterator
+IdentityLinkedList.DescendingIterator#hasNext()::: descending iterator has next:::return->itr->hasPrevious
+IdentityLinkedList.DescendingIterator#next()::: descending iterator next:::return->itr->previous
+IdentityLinkedList.DescendingIterator#remove()::: descending iterator remove:::itr->remove
 IdentityLinkedList#toArray():::Returns an array containing all of the elements in this list in proper sequence (from first to last element):::result->new->ObjectArr->i->for->e->return
 IdentityLinkedList#toArray(T[]):::Returns an array containing all of the elements in this list in proper sequence (from first to last element); the runtime type of the returned array is that of the specified array:::if->a->getClass->getComponentType->newInstance->i->result->for->e->if->return
 PerformanceLogger#loggingEnabled():::Returns status of whether logging is enabled or not:::return
+PerformanceLogger.TimeData#getMessage()::: time data get message:::return
+PerformanceLogger.TimeData#getTime()::: time data get time:::return
+PerformanceLogger#getCurrentTime():::Return the current time, in millis or nanos as appropriate:::if->return->System->nanoTime->else->return->System->currentTimeMillis
 PerformanceLogger#setStartTime(String):::Sets the start time:::if->loggingEnabled->nowTime->getCurrentTime->setStartTime
 PerformanceLogger#setBaseTime(long):::Sets the base time, output can then be displayed as offsets from the base time;.:::if->loggingEnabled
 PerformanceLogger#setStartTime(String, long):::Sets the start time:::if->loggingEnabled->times->new->TimeData->set

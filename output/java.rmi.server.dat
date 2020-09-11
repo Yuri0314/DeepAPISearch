@@ -14,6 +14,8 @@ ObjID#write(ObjectOutput):::Marshals a binary representation of this ObjID to an
 ObjID#read(ObjectInput):::Constructs and returns a new ObjID instance by unmarshalling a binary representation from an ObjectInput instance:::num->in->readLong->space->UID->read->return->new->ObjID
 ObjID#hashCode():::Returns the hash code value for this object identifier, the object number.:::return
 ObjID#equals(Object):::Compares the specified object with this ObjID for equality:::if->id->return->space->equals->else->return
+ObjID#toString()::: obj d to string:::return->space->equals
+ObjID#useRandomIDs()::: obj d use random ds:::value->AccessController->System->getProperty->doPrivileged->return->Boolean->parseBoolean
 Operation#getOperation():::Returns the name of the method.:::return
 Operation#toString():::Returns the string representation of the operation.:::return
 RemoteCall#getOutputStream():::Return the output stream the stub/skeleton should put arguments/results into.:::
@@ -28,7 +30,15 @@ RemoteObject#toStub(Remote):::Returns the stub for the remote object obj passed 
 RemoteObject#hashCode():::Returns a hashcode for a remote object:::return->super->hashCode->ref->remoteHashCode
 RemoteObject#equals(Object):::Compares two remote objects for equality:::if->if->return->else->return->ref->remoteEquals->else->if->return->obj->equals->else->return
 RemoteObject#toString():::Returns a String that represents the value of this remote object.:::classname->Util->getClass->getUnqualifiedName->return->ref->remoteToString
+RemoteObject#writeObject(java.io.ObjectOutputStream):::writeObject for custom serialization:::if->throw->new->java.rmi.MarshalException->else->refClassName->ref->getRefClass->if->refClassName->length->out->writeUTF->out->writeObject->else->out->writeUTF->ref->writeExternal
+RemoteObject#readObject(java.io.ObjectInputStream):::readObject for custom serialization:::refClassName->in->readUTF->if->refClassName->length->in->readObject->else->internalRefClassName->refClass->Class->forName->try->tmp->refClass->newInstance->catch->throw->new->ClassNotFoundException->finally->ref->readExternal
 RemoteObjectInvocationHandler#invoke(Object, Method, Object[]):::Processes a method invocation made on the encapsulating proxy instance, proxy, and returns the result:::if->Proxy->proxy->getClass->isProxyClass->throw->new->IllegalArgumentException->if->Proxy->getInvocationHandler->throw->new->IllegalArgumentException->if->method->getDeclaringClass->return->invokeObjectMethod->else->if->method->getName->equals->method->getParameterCount->return->else->return->invokeRemoteMethod
+RemoteObjectInvocationHandler#invokeObjectMethod(Object, Method, Object[]):::Handles java.lang.Object methods.:::name->method->getName->if->name->equals->return->hashCode->else->if->name->equals->obj->hdlr->return->Proxy->obj->getClass->isProxyClass->Proxy->getInvocationHandler->this->equals->else->if->name->equals->return->proxyToString->else->throw->new->IllegalArgumentException
+RemoteObjectInvocationHandler#invokeRemoteMethod(Object, Method, Object[]):::Handles remote methods.:::try->if->throw->new->IllegalArgumentException->decl->method->getDeclaringClass->if->isAssignableFrom->throw->new->RemoteException->return->ref->getMethodHash->invoke->catch->if->cl->proxy->getClass->try->cl->method->getName->method->getParameterTypes->getMethod->catch->throw->new->IllegalArgumentException->initCause->finally->thrownType->e->getClass->foreach->method->getExceptionTypes->if->declaredType->isAssignableFrom->throw->new->UnexpectedException->throw->finally
+RemoteObjectInvocationHandler#proxyToString(Object):::Returns a string representation for a proxy that uses this invocation handler.:::interfaces->proxy->getClass->getInterfaces->if->return->iface->getName->if->iface->equals->getName->dot->iface->lastIndexOf->if->iface->substring->return
+RemoteObjectInvocationHandler#readObjectNoData()::: remote object invocation handler read object no data:::throw->this->getClass->getName->new->InvalidObjectException
+RemoteObjectInvocationHandler#getMethodHash(Method):::Returns the method hash for the specified method:::return->methodToHash_Maps->method->getDeclaringClass->get->get
+RemoteObjectInvocationHandler.MethodToHash_Maps#computeValue(Class)::: method to hash_ maps compute value:::return->new->WeakHashMap<Method,Long>
 RemoteRef#invoke(Remote, java.lang.reflect.Method, Object[], long):::Invoke a method:::
 RemoteRef#newCall(RemoteObject, Operation[], int, long):::Creates an appropriate call object for a new remote method invocation on this object:::
 RemoteRef#invoke(RemoteCall):::Executes the remote call:::
@@ -47,8 +57,11 @@ RMIClassLoader#loadClass(String, String):::Loads a class from a codebase URL pat
 RMIClassLoader#loadClass(String, String, ClassLoader):::Loads a class from a codebase URL path, optionally using the supplied loader:::return->provider->loadClass
 RMIClassLoader#loadProxyClass(String, String[], ClassLoader):::Loads a dynamic proxy class (see java.lang.reflect.Proxy) that implements a set of interfaces with the given names from a codebase URL path:::return->provider->loadProxyClass
 RMIClassLoader#getClassLoader(String):::Returns a class loader that loads classes from the given codebase URL path:::return->provider->getClassLoader
+RMIClassLoader#getClassAnnotation(Class)::: class loader get class annotation:::return->provider->getClassAnnotation
 RMIClassLoader#getDefaultProviderInstance():::Returns the canonical instance of the default provider for the service provider interface RMIClassLoaderSpi:::sm->System->getSecurityManager->if->sm->new->RuntimePermission->checkPermission->return
 RMIClassLoader#getSecurityContext(ClassLoader):::Returns the security context of the given class loader.:::return->getSecurityContext
+RMIClassLoader#newDefaultProviderInstance():::Creates an instance of the default provider class.:::return->new->RMIClassLoaderSpi
+RMIClassLoader#initializeProvider():::Chooses provider instance, following above documentation:::providerClassName->System->getProperty->if->if->providerClassName->equals->return->try->providerClass->Class->ClassLoader->getSystemClassLoader->forName->asSubclass->result->providerClass->newInstance->return->catch->throw->e->getMessage->new->NoClassDefFoundError->throw->e->getMessage->new->IllegalAccessError->throw->e->getMessage->new->InstantiationError->error->new->LinkageError->error->initCause->throw->finally->iter->ServiceLoader->ClassLoader->getSystemClassLoader->load->iterator->if->iter->hasNext->try->return->iter->next->catch->error->new->LinkageError->error->initCause->throw->finally->return
 RMIClassLoaderSpi#loadClass(String, String, ClassLoader):::Provides the implementation for RMIClassLoader#loadClass(URL,String), RMIClassLoader#loadClass(String,String), and RMIClassLoader#loadClass(String,String,ClassLoader):::
 RMIClassLoaderSpi#loadProxyClass(String, String[], ClassLoader):::Provides the implementation for RMIClassLoader#loadProxyClass(String,String[],ClassLoader):::
 RMIClassLoaderSpi#getClassLoader(String):::Provides the implementation for RMIClassLoader#getClassLoader(String):::
@@ -74,11 +87,14 @@ UID#equals(Object):::Compares the specified object with this UID for equality:::
 UID#toString():::Returns a string representation of this UID.:::return->Integer->toString->Long->toString->Integer->toString
 UID#write(DataOutput):::Marshals a binary representation of this UID to a DataOutput instance:::out->writeInt->out->writeLong->out->writeShort
 UID#read(DataInput):::Constructs and returns a new UID instance by unmarshalling a binary representation from an DataInput instance:::unique->in->readInt->time->in->readLong->count->in->readShort->return->new->UID
+UnicastRemoteObject#readObject(java.io.ObjectInputStream):::Re-export the remote object when it is deserialized.:::in->defaultReadObject->reexport
 UnicastRemoteObject#clone():::Returns a clone of the remote object that is distinct from the original.:::try->cloned->super->clone->cloned->reexport->return->catch->throw->new->ServerCloneException->finally
+UnicastRemoteObject#reexport()::: unicast remote object reexport:::if->exportObject->else->exportObject
 UnicastRemoteObject#exportObject(Remote):::Exports the remote object to make it available to receive incoming calls using an anonymous port:::return->new->UnicastServerRef->exportObject
 UnicastRemoteObject#exportObject(Remote, int):::Exports the remote object to make it available to receive incoming calls, using the particular supplied port:::return->new->UnicastServerRef->exportObject
 UnicastRemoteObject#exportObject(Remote, int, RMIClientSocketFactory, RMIServerSocketFactory):::Exports the remote object to make it available to receive incoming calls, using a transport specified by the given socket factory:::return->new->UnicastServerRef2->exportObject
 UnicastRemoteObject#exportObject(Remote, int, ObjectInputFilter):::Exports the remote object to make it available to receive incoming calls, using the particular supplied port and ObjectInputFilter filter:::return->new->LiveRef->new->UnicastServerRef->exportObject
 UnicastRemoteObject#exportObject(Remote, int, RMIClientSocketFactory, RMIServerSocketFactory, ObjectInputFilter):::Exports the remote object to make it available to receive incoming calls, using a transport specified by the given socket factory and ObjectInputFilter filter:::return->new->UnicastServerRef2->exportObject
 UnicastRemoteObject#unexportObject(Remote, boolean):::Removes the remote object, obj, from the RMI runtime:::return->unexportObject
+UnicastRemoteObject#exportObject(Remote, UnicastServerRef):::Exports the specified object using the specified server ref.:::if->return->sref->exportObject
 Unreferenced#unreferenced():::Called by the RMI runtime sometime after the runtime determines that the reference list, the list of clients referencing the remote object, becomes empty.:::

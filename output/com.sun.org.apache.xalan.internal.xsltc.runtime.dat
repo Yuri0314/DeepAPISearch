@@ -11,25 +11,48 @@ AbstractTranslet#displayMessage(String):::Pass a message to the message handler 
 AbstractTranslet#addDecimalFormat(String, DecimalFormatSymbols):::Adds a DecimalFormat object to the _formatSymbols map:::if->new->HashMap<>->if->df->new->DecimalFormat->if->df->setDecimalFormatSymbols->_formatSymbols->put
 AbstractTranslet#getDecimalFormat(String):::Retrieves a named DecimalFormat object from the _formatSymbols map.:::if->if->df->_formatSymbols->get->if->_formatSymbols->get->return->return
 AbstractTranslet#prepassDocument(DOM):::Give the translet an opportunity to perform a prepass on the document to extract any information that it can store in an optimized form:::document->getSize->setIndexSize->buildIDIndex
+AbstractTranslet#buildIDIndex(DOM):::Leverages the Key Class to implement the XSLT id() function:::document->getDocument->setRootForKeys->if->enhancedDOM->if->enhancedDOM->hasDOMSource->buildKeyIndex->return->else->elementsByID->enhancedDOM->getElementsWithIDs->if->return->hasIDValues->foreach->elementsByID->entrySet->element->document->entry->getValue->getNodeHandle->entry->getKey->buildKeyIndex->if->setKeyIndexDom
 AbstractTranslet#postInitialization():::After constructing the translet object, this method must be called to perform any version-specific post-initialization that's required.:::if->arraySize->newURIsArray->new->StringArr->newNamesArray->new->StringArr->newTypesArray->new->intArr->for->i->if->BasisLibrary->this->getClass->getName->runTimeError
 AbstractTranslet#setIndexSize(int):::This method is used to pass the largest DOM size to the translet:::if
 AbstractTranslet#createKeyIndex():::Creates a KeyIndex object of the desired size - don't want to resize!!!:::return->new->KeyIndex
 AbstractTranslet#buildKeyIndex(String, int, String):::Adds a value to a key/id index:::index->buildKeyIndexHelper->index->add
 AbstractTranslet#buildKeyIndex(String, DOM):::Create an empty KeyIndex in the DOM case:::index->buildKeyIndexHelper->index->dom->getDocument->setDom
+AbstractTranslet#buildKeyIndexHelper(String):::Return KeyIndex for the buildKeyIndex methods:::if->new->HashMap<>->index->_keyIndexes->get->if->_keyIndexes->new->KeyIndex->put->return
 AbstractTranslet#getKeyIndex(String):::Returns the index for a given key (or id):::if->return->new->KeyIndex->index->_keyIndexes->get->if->return->new->KeyIndex->return
+AbstractTranslet#setRootForKeys(int)::: abstract translet set root for keys:::
 AbstractTranslet#buildKeys(DOM, DTMAxisIterator, SerializationHandler, int):::This method builds key indexes - it is overridden in the compiled translet in cases where the <xsl:key> element is used:::
 AbstractTranslet#setKeyIndexDom(String, DOM):::This method builds key indexes - it is overridden in the compiled translet in cases where the <xsl:key> element is used:::getKeyIndex->document->getDocument->setDom
 AbstractTranslet#setDOMCache(DOMCache):::Sets the DOM cache used for additional documents loaded using the document() function.:::
 AbstractTranslet#getDOMCache():::Returns the DOM cache used for this translet:::return
+AbstractTranslet#openOutputHandler(String, boolean)::: abstract translet open output handler:::try->factory->TransletOutputHandlerFactory->newInstance->dirStr->new->File->getParent->if->dirStr->length->dir->new->File->dir->mkdirs->new->FileOutputStream->factory->setEncoding->factory->setOutputMethod->factory->new->BufferedOutputStream->setOutputStream->factory->setOutputType->handler->factory->getSerializationHandler->transferOutputSettings->handler->startDocument->return->catch->throw->new->TransletException->finally
+AbstractTranslet#openOutputHandler(String)::: abstract translet open output handler:::return->openOutputHandler
+AbstractTranslet#closeOutputHandler(SerializationHandler)::: abstract translet close output handler:::try->handler->endDocument->handler->close->if->output->close->catch->finally
 AbstractTranslet#transform(DOM, DTMAxisIterator, SerializationHandler):::Main transform() method - this is overridden by the compiled translet:::
 AbstractTranslet#transform(DOM, SerializationHandler):::Calls transform() with a given output handler:::try->document->getIterator->transform->catch->finally
 AbstractTranslet#characters(String, SerializationHandler):::Used by some compiled code as a shortcut for passing strings to the output handler:::if->try->handler->characters->catch->throw->new->TransletException->finally
 AbstractTranslet#addCdataElement(String):::Add's a name of an element whose text contents should be output as CDATA:::if->new->ArrayList<>->lastColon->name->lastIndexOf->if->uri->name->substring->localName->name->substring->_cdata->add->_cdata->add->else->_cdata->add->_cdata->add
 AbstractTranslet#transferOutputSettings(SerializationHandler):::Transfer the output settings to the output post-processor:::if->if->_method->equals->if->handler->setStandalone->if->handler->setOmitXMLDeclaration->handler->setCdataSectionElements->if->handler->setVersion->handler->setIndent->if->handler->setIndentAmount->if->handler->setDoctype->handler->setIsStandalone->else->if->_method->equals->handler->setIndent->handler->setDoctype->if->handler->setMediaType->else->handler->setCdataSectionElements->if->handler->setVersion->if->handler->setStandalone->if->handler->setOmitXMLDeclaration->handler->setIndent->handler->setDoctype->handler->setIsStandalone
+AbstractTranslet#addAuxiliaryClass(Class)::: abstract translet add auxiliary class:::if->new->HashMap<>->_auxClasses->auxClass->getName->put
+AbstractTranslet#setAuxiliaryClasses(Map>)::: abstract translet set auxiliary classes:::
+AbstractTranslet#getAuxiliaryClass(String)::: abstract translet get auxiliary class:::if->return->return->_auxClasses->get
+AbstractTranslet#getNamesArray()::: abstract translet get names array:::return
+AbstractTranslet#getUrisArray()::: abstract translet get uris array:::return
+AbstractTranslet#getTypesArray()::: abstract translet get types array:::return
+AbstractTranslet#getNamespaceArray()::: abstract translet get namespace array:::return
+AbstractTranslet#hasIdCall()::: abstract translet has id call:::return
+AbstractTranslet#getTemplates()::: abstract translet get templates:::return
+AbstractTranslet#setTemplates(Templates)::: abstract translet set templates:::
 AbstractTranslet#overrideDefaultParser():::Return the state of the services mechanism feature.:::return
 AbstractTranslet#setOverrideDefaultParser(boolean):::Set the state of the services mechanism feature.:::
 AbstractTranslet#getAllowedProtocols():::Return allowed protocols for accessing external stylesheet.:::return
 AbstractTranslet#setAllowedProtocols(String):::Set allowed protocols for accessing external stylesheet.:::
+AbstractTranslet#newDocument(String, String)::: abstract translet new document:::if->dbf->JdkXmlUtils->getDOMFactory->dbf->newDocumentBuilder->getDOMImplementation->return->_domImplementation->createDocument
+Attributes#getLength()::: attributes get length:::return
+Attributes#getName(int)::: attributes get name:::return
+Attributes#getType(int)::: attributes get type:::return
+Attributes#getType(String)::: attributes get type:::return
+Attributes#getValue(int)::: attributes get value:::return
+Attributes#getValue(String)::: attributes get value:::return
 BasisLibrary#countF(DTMAxisIterator):::Standard function count(node-set):::return->iterator->getLast
 BasisLibrary#positionF(DTMAxisIterator):::Standard function position():::return->iterator->isReverse->iterator->getLast->iterator->getPosition->iterator->getPosition
 BasisLibrary#sumF(DTMAxisIterator, DOM):::XSLT Standard function sum(node-set):::try->result->node->while->iterator->next->Double->dom->getStringValueX->parseDouble->return->catch->return->finally
@@ -58,14 +81,20 @@ BasisLibrary#system_propertyF(String):::XSLT Standard function system-property(n
 BasisLibrary#namespace_uriF(int, DOM):::XSLT Standard function namespace-uri().:::value->dom->getNodeName->colon->value->lastIndexOf->if->return->value->substring->else->return
 BasisLibrary#objectTypeF(Object):::Implements the object-type() extension function.:::if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->return
 BasisLibrary#nodesetF(Object):::Implements the nodeset() extension function.:::if->dom->return->dom->getDocument->new->SingletonIterator->else->if->return->else->className->obj->getClass->getName->runTimeError->return
+BasisLibrary#isWhiteSpace(char)::: basis library is white space:::return
+BasisLibrary#compareStrings(String, String, int, DOM)::: basis library compare strings:::switch->return->lstring->equals->return->lstring->equals->return->numberF->numberF->return->numberF->numberF->return->numberF->numberF->return->numberF->numberF->runTimeError->return
 BasisLibrary#compare(DTMAxisIterator, DTMAxisIterator, int, DOM):::Utility function: node-set/node-set compare.:::lnode->left->reset->while->left->next->lvalue->dom->getStringValueX->rnode->right->reset->while->right->next->if->if->return->else->if->continue->if->dom->getStringValueX->compareStrings->return->return
+BasisLibrary#compare(int, DTMAxisIterator, int, DOM)::: basis library compare:::rnode->value->switch->iterator->next->if->dom->getStringValueX->do->if->value->dom->getStringValueX->equals->return->while->iterator->next->break->iterator->next->if->dom->getStringValueX->do->if->value->dom->getStringValueX->equals->return->while->iterator->next->break->while->iterator->next->if->return->break->while->iterator->next->if->return->break->return
 BasisLibrary#compare(DTMAxisIterator, double, int, DOM):::Utility function: node-set/number compare.:::node->switch->while->left->next->if->dom->getStringValueX->numberF->return->break->while->left->next->if->dom->getStringValueX->numberF->return->break->while->left->next->if->dom->getStringValueX->numberF->return->break->while->left->next->if->dom->getStringValueX->numberF->return->break->while->left->next->if->dom->getStringValueX->numberF->return->break->while->left->next->if->dom->getStringValueX->numberF->return->break->runTimeError->return
 BasisLibrary#compare(DTMAxisIterator, String, int, DOM):::Utility function: node-set/string comparison.:::node->while->left->next->if->dom->getStringValueX->compareStrings->return->return
+BasisLibrary#compare(Object, Object, int, DOM)::: basis library compare:::result->hasSimpleArgs->hasSimpleType->hasSimpleType->if->if->if->booleanF->if->booleanF->if->switch->return->numberF->numberF->return->numberF->numberF->return->numberF->numberF->return->numberF->numberF->runTimeError->if->if->booleanF->booleanF->else->if->numberF->numberF->else->stringF->stringF->equals->if->else->if->new->SingletonIterator->if->new->SingletonIterator->if->hasSimpleType->temp->Operators->swapOp->if->if->booleanValue->return->sleft->getStringValue->if->doubleValue->stringToReal->else->if->sleft->equals->else->if->sleft->getStringValue->equals->if->return->iter->reset->if->compare->else->if->compare->else->if->temp->doubleValue->compare->else->if->temp->booleanValue->iter->reset->next->else->if->getStringValue->compare->else->if->return->else->className->right->getClass->getName->runTimeError->return
 BasisLibrary#testLanguage(String, DOM, int):::Utility function: used to test context node's language:::nodeLang->dom->getLanguage->if->return->else->nodeLang->toLowerCase->testLang->toLowerCase->if->testLang->length->return->nodeLang->startsWith->else->return->nodeLang->equals
+BasisLibrary#hasSimpleType(Object)::: basis library has simple type:::return
 BasisLibrary#stringToReal(String):::Utility function: used in StringType to convert a string to a real.:::try->return->Double->valueOf->doubleValue->catch->return->finally
 BasisLibrary#stringToInt(String):::Utility function: used in StringType to convert a string to an int.:::try->return->Integer->parseInt->catch->return->finally
 BasisLibrary#realToString(double):::Utility function: used in RealType to convert a real to a string:::m->Math->abs->if->result->Double->toString->length->result->length->if->result->charAt->result->charAt->return->result->substring->else->return->else->if->Double->isNaN->Double->isInfinite->return->Double->toString->result->threadLocalStringBuffer->get->result->setLength->xpathFormatter->format->return->result->toString
 BasisLibrary#realToInt(double):::Utility function: used in RealType to convert a real to an integer:::return
+BasisLibrary#formatNumber(double, String, DecimalFormat)::: basis library format number:::if->try->result->threadLocalStringBuffer->get->result->setLength->if->formatter->applyLocalizedPattern->formatter->format->return->result->toString->catch->Double->toString->runTimeError->return->finally
 BasisLibrary#referenceToNodeSet(Object):::Utility function: used to convert references to node-sets:::if->return->new->SingletonIterator->else->if->return->cloneIterator->reset->else->className->obj->getClass->getName->runTimeError->return
 BasisLibrary#referenceToNodeList(Object, DOM):::Utility function: used to convert reference to org.w3c.dom.NodeList.:::if->iter->referenceToNodeSet->return->dom->makeNodeList->else->if->return->dom->makeNodeList->else->className->obj->getClass->getName->runTimeError->return
 BasisLibrary#referenceToNode(Object, DOM):::Utility function: used to convert reference to org.w3c.dom.Node.:::if->iter->referenceToNodeSet->return->dom->makeNode->else->if->iter->dom->getChildren->return->dom->makeNode->else->className->obj->getClass->getName->runTimeError->return
@@ -74,20 +103,37 @@ BasisLibrary#referenceToDouble(Object):::Utility function: used to convert refer
 BasisLibrary#referenceToBoolean(Object):::Utility function: used to convert reference to boolean.:::if->return->booleanValue->else->className->obj->getClass->getName->runTimeError->return
 BasisLibrary#referenceToString(Object, DOM):::Utility function: used to convert reference to String.:::if->return->else->if->return->dom->reset->next->getStringValueX->else->if->return->dom->getStringValueX->else->if->return->getStringValue->else->className->obj->getClass->getName->runTimeError->return
 BasisLibrary#node2Iterator(org.w3c.dom.Node, Translet, DOM):::Utility function used to convert a w3c Node into an internal DOM iterator.:::inNode->nodelist->new->org.w3c.dom.NodeList->return->nodeList2Iterator
+BasisLibrary#nodeList2IteratorUsingHandleFromNode(org.w3c.dom.NodeList, Translet, DOM):::In a perfect world, this would be the implementation for nodeList2Iterator:::n->nodeList->getLength->dtmHandles->new->intArr->dtmManager->if->getDTMManager->for->i->return->new->ArrayNodeListIterator
 BasisLibrary#nodeList2Iterator(org.w3c.dom.NodeList, Translet, DOM):::Utility function used to convert a w3c NodeList into a internal DOM iterator.:::n->doc->dtmManager->proxyNodes->nodeList->getLength->new->intArr->if->getDTMManager->for->i->nodeList->getLength->iter->childIter->attrIter->if->multiDOM->idom->dtmManager->new->DOMSource->getDTM->domAdapter->translet->getNamesArray->translet->getUrisArray->translet->getTypesArray->translet->getNamespaceArray->new->DOMAdapter->multiDOM->addDOMAdapter->iter1->idom->getAxisIterator->iter2->idom->getAxisIterator->new->StepIterator->new->AbsoluteIterator->iter->setStartNode->idom->getAxisIterator->idom->getAxisIterator->dtmHandles->new->intArr->for->i->nodeList->getLength->if->throw->new->InternalRuntimeError->return->new->ArrayNodeListIterator
 BasisLibrary#referenceToResultTree(Object):::Utility function used to convert references to DOMs.:::try->return->catch->className->obj->getClass->getName->runTimeError->return->finally
 BasisLibrary#getSingleNode(DTMAxisIterator):::Utility function: used with nth position filters to convert a sequence of nodes to just one single node (the one at position n).:::node->iterator->next->return->new->SingletonIterator
+BasisLibrary#copy(Object, SerializationHandler, int, DOM)::: basis library copy:::try->if->iter->dom->iter->reset->copy->else->if->dom->copy->else->if->newDom->newDom->newDom->getDocument->copy->else->string->obj->toString->length->string->length->if->new->charArr->string->getChars->handler->characters->catch->runTimeError->finally
 BasisLibrary#checkAttribQName(String):::Utility function to check if xsl:attribute has a valid qname This method should only be invoked if the name attribute is an AVT:::firstOccur->name->indexOf->lastOccur->name->lastIndexOf->localName->name->substring->if->newPrefix->name->substring->if->oriPrefix->name->substring->if->XML11Char->isXML11ValidNCName->runTimeError->if->XML11Char->isXML11ValidNCName->runTimeError->if->XML11Char->isXML11ValidNCName->localName->equals->runTimeError
 BasisLibrary#checkNCName(String):::Utility function to check if a name is a valid ncname This method should only be invoked if the attribute value is an AVT:::if->XML11Char->isXML11ValidNCName->runTimeError
 BasisLibrary#checkQName(String):::Utility function to check if a name is a valid qname This method should only be invoked if the attribute value is an AVT:::if->XML11Char->isXML11ValidQName->runTimeError
 BasisLibrary#startXslElement(String, String, SerializationHandler, DOM, int):::Utility function for the implementation of xsl:element.:::try->prefix->index->qname->indexOf->if->qname->substring->if->namespace->length->try->dom->lookupNamespace->catch->handler->flushPending->nm->handler->getNamespaceMappings->nm->lookupNamespace->if->runTimeError->finally->handler->qname->substring->startElement->handler->namespaceAfterStartElement->else->if->namespace->length->generatePrefix->handler->startElement->handler->namespaceAfterStartElement->else->handler->startElement->catch->throw->e->getMessage->new->RuntimeException->finally->return
 BasisLibrary#getPrefix(String):::This function is used in the execution of xsl:element:::index->qname->indexOf->return->qname->substring
 BasisLibrary#generatePrefix():::These functions are used in the execution of xsl:element to generate and reset namespace prefix index local to current transformation process:::return->threadLocalPrefixIndex->get->getAndIncrement
+BasisLibrary#resetPrefixIndex()::: basis library reset prefix index:::threadLocalPrefixIndex->get->set
 BasisLibrary#runTimeError(String):::Print a run-time error message.:::throw->m_bundle->getString->new->RuntimeException
+BasisLibrary#runTimeError(String, Object[])::: basis library run time error:::message->MessageFormat->m_bundle->getString->format->throw->new->RuntimeException
+BasisLibrary#runTimeError(String, Object)::: basis library run time error:::new->ObjectArr->runTimeError
+BasisLibrary#runTimeError(String, Object, Object)::: basis library run time error:::new->ObjectArr->runTimeError
+BasisLibrary#consoleOutput(String)::: basis library console output:::println
 BasisLibrary#replace(String, char, String):::Replace a certain character in a string with a new substring.:::return->base->indexOf->String->valueOf->new->StringArr->replace
+BasisLibrary#replace(String, String, String[])::: basis library replace:::len->base->length->result->threadLocalStringBuilder->get->result->setLength->for->i->return->result->toString
 BasisLibrary#mapQNameToJavaName(String):::Utility method to allow setting parameters of the form {namespaceuri}localName which get mapped to an instance variable in the class Hence  a parameter of the form "{http://foo.bar}xyz" will be replaced with the corresponding values by the BasisLibrary's utility method mapQNametoJavaName and thus get mapped to legal java variable names:::return->new->StringArr->replace
 BasisLibrary#getStringLength(String)::: Utility method to calculate string-length as a number of code points,  to avoid possible errors with string that contains  complementary characters:::return->str->str->length->codePointCount
 ErrorMessages#getContents():::Get the lookup table for error messages.:::return->new->ObjectArrs
 ErrorMessages_ja#getContents():::Get the lookup table for error messages.:::return->new->ObjectArrs
 ErrorMessages_zh_CN#getContents():::Get the lookup table for error messages.:::return->new->ObjectArrs
+MessageHandler#displayMessage(String)::: message handler display message:::println
+Operators#getOpNames(int)::: operators get op names:::return
+Operators#swapOp(int)::: operators swap op:::return
+StringValueHandler#characters(char[], int, int)::: string value handler characters:::if->return->if->_buffer->append->_buffer->append
+StringValueHandler#getValue()::: string value handler get value:::if->_buffer->length->result->_buffer->toString->_buffer->setLength->return->else->result->return
+StringValueHandler#characters(String)::: string value handler characters:::if->return->if->_buffer->length->else->if->_buffer->append->_buffer->append
+StringValueHandler#startElement(String)::: string value handler start element:::
+StringValueHandler#endElement(String)::: string value handler end element:::
+StringValueHandler#setEscaping(boolean)::: string value handler set escaping:::oldEscaping->return
 StringValueHandler#getValueOfPI():::The value of a PI must not contain the substring "?>":::value->getValue->if->value->indexOf->n->value->length->valueOfPI->new->StringBuilder->for->i->return->valueOfPI->toString->return

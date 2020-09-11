@@ -1,2 +1,22 @@
+JFC.KnownConfiguration#isNamed(String)::: known configuration is named:::return->filename->equals->equals
+JFC.KnownConfiguration#getConfigurationFile()::: known configuration get configuration file:::if->JFCParser->createConfiguration->return
+JFC.KnownConfiguration#getName()::: known configuration get name:::return
+JFC.KnownConfiguration#readContent(SafePath)::: known configuration read content:::if->SecuritySupport->getFileSize->throw->new->IOException->try->r->SecuritySupport->newFileInputStream->return->JFC->readContent->catch->finally
 JFC#create(String, Reader):::Reads a configuration from a file.:::return->JFCParser->createConfiguration
+JFC#nullSafeFileName(Path)::: c null safe file name:::filename->file->getFileName->if->throw->new->IOException->return->filename->toString
+JFC#nameFromPath(Path)::: c name from path:::f->nullSafeFileName->if->f->endsWith->return->f->f->length->length->substring->else->return
+JFC#createKnown(String)::: c create known:::foreach->getKnownConfigurations->if->known->isNamed->return->known->getConfigurationFile->path->if->SecuritySupport->exists->foreach->Arrays->asList->file->path->toPath->resolveSibling->new->SafePath->if->SecuritySupport->exists->SecuritySupport->isDirectory->try->r->SecuritySupport->newFileReader->jfcName->file->toPath->nameFromPath->return->JFCParser->createConfiguration->catch->finally->localPath->Paths->get->jfcName->nameFromPath->try->r->Files->newBufferedReader->return->JFCParser->createConfiguration->catch->finally
+JFC#readContent(InputStream)::: c read content:::bytes->read->return->new->String
+JFC#read(InputStream, int)::: c read:::capacity->buf->new->byteArr->nread->n->for->return->Arrays->copyOf
 JFC#getConfigurations():::Returns list of predefined configurations available.:::configs->new->ArrayList<>->foreach->getKnownConfigurations->try->configs->knownConfig->getConfigurationFile->add->catch->Logger->knownConfig->getName->e->getMessage->log->Logger->knownConfig->getName->e->getMessage->log->finally->return
+JFC#getKnownConfigurations()::: c get known configurations:::if->configProxies->new->ArrayList<>->foreach->SecuritySupport->getPredefinedJFCFiles->try->configProxies->new->KnownConfiguration->add->catch->finally->return
+JFC#getPredefined(String)::: c get predefined:::foreach->getKnownConfigurations->if->knownConfig->getName->equals->return->knownConfig->getConfigurationFile->throw->new->NoSuchFileException
+JFCParser#createConfiguration(String, Reader)::: parser create configuration:::return->readContent->createConfiguration
+JFCParser#createConfiguration(String, String)::: parser create configuration:::try->ch->new->JFCParserHandler->parseXML->return->PrivateAccess->getInstance->newConfiguration->catch->throw->iae->getMessage->new->ParseException->pe->e->getMessage->new->ParseException->pe->initCause->throw->finally
+JFCParser#parseXML(String, JFCParserHandler)::: parser parse l:::r->content->toCharArray->new->CharArrayReader->parser->new->SAXParserImpl->parser->new->InputSource->parse
+JFCParser#readContent(Reader)::: parser read content:::writer->new->CharArrayWriter->count->ch->while->r->read->writer->write->if->throw->new->IOException->return->writer->toCharArray->new->String
+JFCParserHandler#startElement(String, String, String, Attributes)::: parser handler start element:::switch->qName->toLowerCase->version->attributes->getValue->if->version->startsWith->throw->new->SAXException->attributes->getValue->getOptional->getOptional->break->attributes->getValue->break->attributes->getValue->break
+JFCParserHandler#getOptional(Attributes, String, String)::: parser handler get optional:::value->attributes->getValue->return
+JFCParserHandler#characters(char[], int, int)::: parser handler characters:::if->new->StringBuilder->currentCharacters->append
+JFCParserHandler#endElement(String, String, String)::: parser handler end element:::switch->qName->toLowerCase->break->break->settingsValue->currentCharacters->toString->settings->put->break
+JFCParserHandler#getSettings()::: parser handler get settings:::return

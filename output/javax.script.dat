@@ -14,7 +14,9 @@ Bindings#putAll(Map):::Adds all the mappings in a given Map to this Bindings.:::
 Bindings#containsKey(Object):::Returns true if this map contains a mapping for the specified key:::
 Bindings#get(Object):::Returns the value to which this map maps the specified key:::
 Bindings#remove(Object):::Removes the mapping for this key from this map if it is present (optional operation):::
+Compilable#compile(String)::: compilable compile:::
 Compilable#compile(Reader):::Compiles the script (source read from Reader) for later execution:::
+CompiledScript#eval(ScriptContext)::: compiled script eval:::
 CompiledScript#eval(Bindings):::Executes the program stored in the CompiledScript object using the supplied Bindings of attributes as the ENGINE_SCOPE of the associated ScriptEngine during script execution:::ctxt->getEngine->getContext->if->tempctxt->ctxt->getReader->ctxt->getWriter->ctxt->getErrorWriter->new->SimpleScriptContext->tempctxt->setBindings->tempctxt->ctxt->getBindings->setBindings->return->eval
 CompiledScript#eval():::Executes the program stored in the CompiledScript object:::return->getEngine->getContext->eval
 CompiledScript#getEngine():::Returns the ScriptEngine whose compile method created this CompiledScript:::
@@ -62,6 +64,9 @@ ScriptEngineFactory#getMethodCallSyntax(String, String, String...):::Returns a S
 ScriptEngineFactory#getOutputStatement(String):::Returns a String that can be used as a statement to display the specified String  using the syntax of the supported scripting language:::
 ScriptEngineFactory#getProgram(String...):::Returns a valid scripting language executable program with given statements:::
 ScriptEngineFactory#getScriptEngine():::Returns an instance of the ScriptEngine associated with this ScriptEngineFactory:::
+ScriptEngineManager#init(ClassLoader)::: script engine manager init:::new->SimpleBindings->Comparator->ScriptEngineFactory->getEngineName->Comparator->Comparator->naturalOrder->nullsLast->comparing->new->TreeSet<ScriptEngineFactory>->new->HashMap<String,ScriptEngineFactory>->new->HashMap<String,ScriptEngineFactory>->new->HashMap<String,ScriptEngineFactory>->initEngines
+ScriptEngineManager#getServiceLoader(ClassLoader)::: script engine manager get service loader:::if->return->ServiceLoader->load->else->return->ServiceLoader->loadInstalled
+ScriptEngineManager#initEngines(ClassLoader)::: script engine manager init engines:::itr->try->sl->AccessController->new->PrivilegedAction<ServiceLoader<ScriptEngineFactory>>->doPrivileged->sl->iterator->catch->err->getMessage->println->if->err->printStackTrace->return->finally->try->while->itr->hasNext->try->fact->itr->next->engineSpis->add->catch->err->getMessage->println->if->err->printStackTrace->continue->finally->catch->err->getMessage->println->if->err->printStackTrace->return->finally
 ScriptEngineManager#setBindings(Bindings):::setBindings stores the specified Bindings in the globalScope field:::if->throw->new->IllegalArgumentException
 ScriptEngineManager#getBindings():::getBindings returns the value of the globalScope field:::return
 ScriptEngineManager#put(String, Object):::Sets the specified key/value pair in the Global Scope.:::globalScope->put
@@ -79,13 +84,29 @@ ScriptException#getColumnNumber():::Get the column number on which an error occu
 ScriptException#getFileName():::Get the source of the script causing the error.:::return
 SimpleBindings#put(String, Object):::Sets the specified key/value in the underlying map field.:::checkKey->return->map->put
 SimpleBindings#putAll(Map):::putAll is implemented using Map.putAll.:::if->throw->new->NullPointerException->foreach->toMerge->entrySet->key->entry->getKey->checkKey->entry->getValue->put
+SimpleBindings#clear()::: simple bindings clear:::map->clear
 SimpleBindings#containsKey(Object):::Returns true if this map contains a mapping for the specified key:::checkKey->return->map->containsKey
+SimpleBindings#containsValue(Object)::: simple bindings contains value:::return->map->containsValue
+SimpleBindings#entrySet()::: simple bindings entry set:::return->map->entrySet
 SimpleBindings#get(Object):::Returns the value to which this map maps the specified key:::checkKey->return->map->get
+SimpleBindings#isEmpty()::: simple bindings is empty:::return->map->isEmpty
+SimpleBindings#keySet()::: simple bindings key set:::return->map->keySet
 SimpleBindings#remove(Object):::Removes the mapping for this key from this map if it is present (optional operation):::checkKey->return->map->remove
+SimpleBindings#size()::: simple bindings size:::return->map->size
+SimpleBindings#values()::: simple bindings values:::return->map->values
+SimpleBindings#checkKey(Object)::: simple bindings check key:::if->throw->new->NullPointerException->if->throw->new->ClassCastException->if->key->equals->throw->new->IllegalArgumentException
 SimpleScriptContext#setBindings(Bindings, int):::Sets a Bindings of attributes for the given scope:::switch->if->throw->new->NullPointerException->break->break->throw->new->IllegalArgumentException
 SimpleScriptContext#getAttribute(String):::Retrieves the value of the attribute with the given name in the scope occurring earliest in the search order:::checkName->if->engineScope->containsKey->return->getAttribute->else->if->globalScope->containsKey->return->getAttribute->return
 SimpleScriptContext#getAttribute(String, int):::Gets the value of an attribute in a given scope.:::checkName->switch->return->engineScope->get->if->return->globalScope->get->return->throw->new->IllegalArgumentException
 SimpleScriptContext#removeAttribute(String, int):::Remove an attribute in a given scope.:::checkName->switch->if->getBindings->return->getBindings->remove->return->if->getBindings->return->getBindings->remove->return->throw->new->IllegalArgumentException
 SimpleScriptContext#setAttribute(String, Object, int):::Sets the value of an attribute in a given scope:::checkName->switch->engineScope->put->return->if->globalScope->put->return->throw->new->IllegalArgumentException
+SimpleScriptContext#getWriter()::: simple script context get writer:::return
+SimpleScriptContext#getReader()::: simple script context get reader:::return
+SimpleScriptContext#setReader(Reader)::: simple script context set reader:::
+SimpleScriptContext#setWriter(Writer)::: simple script context set writer:::
+SimpleScriptContext#getErrorWriter()::: simple script context get error writer:::return
+SimpleScriptContext#setErrorWriter(Writer)::: simple script context set error writer:::
 SimpleScriptContext#getAttributesScope(String):::Get the lowest scope in which an attribute is defined.:::checkName->if->engineScope->containsKey->return->else->if->globalScope->containsKey->return->else->return
 SimpleScriptContext#getBindings(int):::Returns the value of the engineScope field if specified scope is ENGINE_SCOPE:::if->return->else->if->return->else->throw->new->IllegalArgumentException
+SimpleScriptContext#getScopes()::: simple script context get scopes:::return
+SimpleScriptContext#checkName(String)::: simple script context check name:::Objects->requireNonNull->if->name->isEmpty->throw->new->IllegalArgumentException

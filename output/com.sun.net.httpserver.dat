@@ -3,13 +3,30 @@ Authenticator.Success#getPrincipal():::returns the authenticated user Principal:
 Authenticator.Retry#getResponseCode():::returns the response code to send to the client:::return
 Authenticator#authenticate(HttpExchange):::called to authenticate each incoming request:::
 BasicAuthenticator#getRealm():::returns the realm this BasicAuthenticator was created with:::return
+BasicAuthenticator#authenticate(HttpExchange)::: basic authenticator authenticate:::rmap->t->getRequestHeaders->auth->rmap->getFirst->if->map->t->getResponseHeaders->map->set->return->new->Authenticator.Retry->sp->auth->indexOf->if->auth->substring->equals->return->new->Authenticator.Failure->b->Base64->getDecoder->auth->substring->decode->userpass->new->String->colon->userpass->indexOf->uname->userpass->substring->pass->userpass->substring->if->checkCredentials->return->new->HttpPrincipal->new->Authenticator.Success->else->map->t->getResponseHeaders->map->set->return->new->Authenticator.Failure
 BasicAuthenticator#checkCredentials(String, String):::called for each incoming request to verify the given name and password in the context of this Authenticator's realm:::
 Filter.Chain#doFilter(HttpExchange):::calls the next filter in the chain, or else the users exchange handler, if this is the final filter in the chain:::if->iter->hasNext->handler->handle->else->f->iter->next->f->doFilter
 Filter#doFilter(HttpExchange, Chain):::Asks this filter to pre/post-process the given exchange:::
 Filter#description():::returns a short description of this Filter:::
+Headers#normalize(String)::: headers normalize:::if->return->len->key->length->if->return->b->key->toCharArray->if->else->if->throw->new->IllegalArgumentException->for->i->return->new->String
+Headers#size()::: headers size:::return->map->size
+Headers#isEmpty()::: headers is empty:::return->map->isEmpty
+Headers#containsKey(Object)::: headers contains key:::if->return->if->return->return->map->normalize->containsKey
+Headers#containsValue(Object)::: headers contains value:::return->map->containsValue
+Headers#get(Object)::: headers get:::return->map->normalize->get
 Headers#getFirst(String):::returns the first value from the List of String values for the given key (if at least one exists).:::l->map->normalize->get->if->return->return->l->get
+Headers#put(String, List)::: headers put:::foreach->checkValue->return->map->normalize->put
 Headers#add(String, String):::adds the given value to the list of headers for the given key:::checkValue->k->normalize->l->map->get->if->new->LinkedList<String>->map->put->l->add
+Headers#checkValue(String)::: headers check value:::len->value->length->for->i
 Headers#set(String, String):::sets the given value as the sole header value for the given key:::l->new->LinkedList<String>->l->add->put
+Headers#remove(Object)::: headers remove:::return->map->normalize->remove
+Headers#putAll(Map>)::: headers put all:::map->putAll
+Headers#clear()::: headers clear:::map->clear
+Headers#keySet()::: headers key set:::return->map->keySet
+Headers#values()::: headers values:::return->map->values
+Headers#entrySet()::: headers entry set:::return->map->entrySet
+Headers#equals(Object)::: headers equals:::return->map->equals
+Headers#hashCode()::: headers hash code:::return->map->hashCode
 HttpContext#getHandler():::returns the handler for this context:::
 HttpContext#setHandler(HttpHandler):::Sets the handler for this context, if not already set.:::
 HttpContext#getPath():::returns the path this context was created with:::
@@ -45,6 +62,7 @@ HttpPrincipal#toString():::returns the same string as getName():::return->getNam
 HttpsConfigurator#getSSLContext():::Returns the SSLContext for this HttpsConfigurator.:::return
 HttpsConfigurator#configure(HttpsParameters):::Called by the HttpsServer to configure the parameters for a https connection currently being established:::params->getSSLContext->getDefaultSSLParameters->setSSLParameters
 HttpServer#create():::creates a HttpServer instance which is initially not bound to any local address/port:::return->create
+HttpServer#create(InetSocketAddress, int)::: http server create:::provider->HttpServerProvider->provider->return->provider->createHttpServer
 HttpServer#bind(InetSocketAddress, int):::Binds a currently unbound HttpServer to the given address and port number:::
 HttpServer#start():::Starts this server in a new background thread:::
 HttpServer#setExecutor(Executor):::sets this server's java.util.concurrent.Executor object:::
@@ -68,5 +86,6 @@ HttpsParameters#setWantClientAuth(boolean):::Sets whether client authentication 
 HttpsParameters#getNeedClientAuth():::Returns whether client authentication should be required.:::return
 HttpsParameters#setNeedClientAuth(boolean):::Sets whether client authentication should be required:::
 HttpsServer#create():::creates a HttpsServer instance which is initially not bound to any local address/port:::return->create
+HttpsServer#create(InetSocketAddress, int)::: https server create:::provider->HttpServerProvider->provider->return->provider->createHttpsServer
 HttpsServer#setHttpsConfigurator(HttpsConfigurator):::Sets this server's HttpsConfigurator object.:::
 HttpsServer#getHttpsConfigurator():::Gets this server's HttpsConfigurator object, if it has been set.:::

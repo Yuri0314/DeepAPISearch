@@ -1,16 +1,28 @@
+BreakDictionary#setupDictionary(String, byte[])::: break dictionary setup dictionary:::bb->ByteBuffer->wrap->version->bb->getInt->if->throw->new->MissingResourceException->len->bb->getInt->if->bb->position->bb->limit->throw->bb->limit->new->MissingResourceException->bb->getInt->temp->new->shortArr->for->i->bb->getInt->temp2->new->byteArr->bb->get->new->CompactByteArray->bb->getInt->bb->getInt->bb->getInt->new->shortArr->for->i->bb->getInt->new->shortArr->for->i->bb->getInt->new->intArr->for->i->bb->getInt->new->byteArr->bb->get->bb->getInt->new->shortArr->for->i->bb->getInt->temp3->new->intArr->for->i->new->SupplementaryCharacterData
 BreakDictionary#getNextStateFromCharacter(int, int):::Uses the column map to map the character to a column number, then passes the row and column number to getNextState():::col->if->columnMap->elementAt->else->supplementaryCharColumnMap->getValue->return->getNextState
 BreakDictionary#getNextState(int, int):::Returns the value in the cell with the specified (logical) row and column numbers:::if->cellIsPopulated->return->internalAt->else->return
+BreakDictionary#cellIsPopulated(int, int):::Given (logical) row and column numbers, returns true if the cell in that position is populated:::if->return->else->flags->return
+BreakDictionary#internalAt(int, int):::Implementation of getNextState() when we know the specified cell is populated.:::return
+CollatorUtilities#toLegacyMode(NormalizerBase.Mode)::: collator utilities to legacy mode:::legacyMode->while->if->break->return
+CollatorUtilities#toNormalizerMode(int)::: collator utilities to normalizer mode:::normalizerMode->try->catch->finally->return
 CompactByteArray#elementAt(char):::Get the mapped value of a Unicode character.:::return
 CompactByteArray#setElementAt(char, byte):::Set a new value for a Unicode character:::if->expand->touchBlock
 CompactByteArray#setElementAt(char, char, byte):::Set new values for a range of Unicode character.:::i->if->expand->for
 CompactByteArray#compact():::Compact the array.:::if->limitCompacted->iBlockStart->iUntouched->for->i->newSize->result->new->byteArr->System->arraycopy
 CompactByteArray#arrayRegionMatches(byte[], int, byte[], int, int):::Convenience utility to compare two arrays of doubles.:::sourceEnd->delta->for->i->return
+CompactByteArray#touchBlock(int, int):::Remember that a specified block was "touched", i.e:::
+CompactByteArray#blockTouched(int):::Query whether a specified block was "touched", i.e:::return
 CompactByteArray#getIndexArray():::For internal use only:::return
 CompactByteArray#getStringArray():::For internal use only:::return
 CompactByteArray#clone():::Overrides Cloneable:::try->other->super->clone->values->clone->indices->clone->if->hashes->clone->return->catch->throw->new->InternalError->finally
 CompactByteArray#equals(Object):::Compares the equality of two compact array objects.:::if->return->if->return->if->getClass->obj->getClass->return->other->for->i->return
+CompactByteArray#hashCode()::: compact byte array hash code:::result->increment->Math->min->for->i->return
+CompactByteArray#expand():::Expanding takes the array back to a 65536 element array.:::i->if->tempArray->new->intArr->new->byteArr->for->for
+CompactByteArray#getArray()::: compact byte array get array:::return
 ComposedCharIter#next():::Returns the next precomposed Unicode character:::if->return->return
 ComposedCharIter#decomposition():::Returns the Unicode decomposition of the current character:::return
+DictionaryBasedBreakIterator#prepareCategoryFlags(byte[])::: dictionary based break iterator prepare category flags:::new->booleanArr->for->i
+DictionaryBasedBreakIterator#setText(CharacterIterator)::: dictionary based break iterator set text:::super->setText
 DictionaryBasedBreakIterator#first():::Sets the current iteration position to the beginning of the text:::return->super->first
 DictionaryBasedBreakIterator#last():::Sets the current iteration position to the end of the text:::return->super->last
 DictionaryBasedBreakIterator#previous():::Advances the iterator one step backwards.:::text->getText->if->text->setIndex->return->else->result->super->previous->if->return
@@ -18,10 +30,29 @@ DictionaryBasedBreakIterator#preceding(int):::Sets the current iteration positio
 DictionaryBasedBreakIterator#following(int):::Sets the current iteration position to the first boundary position after the specified position.:::text->getText->checkOffset->if->return->super->following->else->while->text->setIndex->return->text->getIndex
 DictionaryBasedBreakIterator#handleNext():::This is the implementation function for next().:::text->getText->if->startPos->text->getIndex->result->super->handleNext->if->divideUpDictionaryRange->else->return->if->text->setIndex->return->return
 DictionaryBasedBreakIterator#lookupCategory(int):::Looks up a character category for a character.:::result->super->lookupCategory->if->return
+DictionaryBasedBreakIterator#divideUpDictionaryRange(int, int):::This is the function that actually implements the dictionary-based algorithm:::text->getText->text->setIndex->c->getCurrent->category->lookupCategory->while->getNext->lookupCategory->currentBreakPositions->new->Stack<>->possibleBreakPositions->new->Stack<>->wrongBreakPositions->new->ArrayList<>->state->farthestEndPoint->text->getIndex->bestBreakPositions->getCurrent->while->if->dictionary->getNextState->possibleBreakPositions->text->getIndex->push->dictionary->getNextStateFromCharacter->if->currentBreakPositions->text->getIndex->push->break->else->if->text->getIndex->if->text->getIndex->text->getIndex->currentBreakPositionsCopy->currentBreakPositions->clone->while->possibleBreakPositions->isEmpty->wrongBreakPositions->possibleBreakPositions->peek->contains->possibleBreakPositions->pop->if->possibleBreakPositions->isEmpty->if->if->text->setIndex->else->break->else->if->currentBreakPositions->size->currentBreakPositions->peek->intValue->text->getIndex->text->getIndex->currentBreakPositions->text->getIndex->push->getNext->currentBreakPositions->text->getIndex->push->else->temp->possibleBreakPositions->pop->temp2->while->currentBreakPositions->isEmpty->temp->intValue->currentBreakPositions->peek->intValue->currentBreakPositions->pop->wrongBreakPositions->add->currentBreakPositions->push->text->currentBreakPositions->peek->intValue->setIndex->getCurrent->if->text->getIndex->break->else->getNext->if->currentBreakPositions->isEmpty->currentBreakPositions->pop->currentBreakPositions->push->currentBreakPositions->size->new->intArr->for->i->currentBreakPositions->size
+IntHashtable#size()::: int hashtable size:::return
+IntHashtable#isEmpty()::: int hashtable is empty:::return
+IntHashtable#put(int, int)::: int hashtable put:::if->rehash->index->find->if
+IntHashtable#get(int)::: int hashtable get:::return->find
+IntHashtable#remove(int)::: int hashtable remove:::index->find->if->if->rehash
+IntHashtable#getDefaultValue()::: int hashtable get default value:::return
+IntHashtable#setDefaultValue(int)::: int hashtable set default value:::rehash
+IntHashtable#equals(Object)::: int hashtable equals:::if->that->getClass->this->getClass->return->other->if->other->size->return->for->i->return
+IntHashtable#hashCode()::: int hashtable hash code:::result->scrambler->for->i->for->i->return
+IntHashtable#clone()::: int hashtable clone:::result->super->clone->values->clone->keyList->clone->return
+IntHashtable#initialize(int)::: int hashtable initialize:::if->else->if->println->initialSize->new->intArr->new->intArr->for->i
+IntHashtable#rehash()::: int hashtable rehash:::oldValues->oldkeyList->newPrimeIndex->if->else->if->initialize->for->i
+IntHashtable#putInternal(int, int)::: int hashtable put internal:::index->find->if
+IntHashtable#find(int)::: int hashtable find:::if->throw->new->IllegalArgumentException->firstDeleted->index->if->jump->while->tableHash->if->return->else->if->else->if->if->return->else->if->if->if->if->return
+IntHashtable#leastGreaterPrimeIndex(int)::: int hashtable least greater prime index:::i->for->return
 Normalizer#normalize(CharSequence, java.text.Normalizer.Form, int):::Normalize a sequence of char values:::return->NormalizerBase->src->toString->normalize
 Normalizer#isNormalized(CharSequence, java.text.Normalizer.Form, int):::Determines if the given sequence of char values is normalized.:::return->NormalizerBase->src->toString->isNormalized
 Normalizer#getCombiningClass(int):::Returns the combining class of the given character:::return->UCharacter->getCombiningClass
+RuleBasedBreakIterator#setupTables(String, ByteBuffer):::Initializes the fields with the given rule data:::stateTableLength->bb->getInt->backwardsStateTableLength->bb->getInt->endStatesLength->bb->getInt->lookaheadStatesLength->bb->getInt->BMPdataLength->bb->getInt->nonBMPdataLength->bb->getInt->additionalDataLength->bb->getInt->bb->getLong->new->shortArr->for->i->new->shortArr->for->i->new->booleanArr->for->i->new->booleanArr->for->i->temp1->new->shortArr->for->i->temp2->new->byteArr->bb->get->new->CompactByteArray->temp3->new->intArr->for->i->new->SupplementaryCharacterData->if->new->byteArr->bb->get
 RuleBasedBreakIterator#validateRuleData(String, ByteBuffer):::Validates the magic number, version, and the length of the given data.:::for->i->version->bb->get->if->throw->new->MissingResourceException->len->bb->getInt->if->bb->position->bb->limit->throw->new->MissingResourceException
+RuleBasedBreakIterator#getAdditionalData()::: rule based break iterator get additional data:::return
+RuleBasedBreakIterator#setAdditionalData(byte[])::: rule based break iterator set additional data:::
 RuleBasedBreakIterator#clone():::Clones this iterator.:::result->super->clone->if->text->clone->return
 RuleBasedBreakIterator#equals(Object):::Returns true if both BreakIterators are of the same class, have the same rules, and iterate over the same text.:::try->if->return->other->if->return->if->return->else->return->text->equals->catch->return->finally
 RuleBasedBreakIterator#toString():::Returns text:::return->Long->toHexString
@@ -31,8 +62,11 @@ RuleBasedBreakIterator#last():::Sets the current iteration position to the end o
 RuleBasedBreakIterator#next(int):::Advances the iterator either forward or backward the specified number of steps:::result->current->while->handleNext->while->previous->return
 RuleBasedBreakIterator#next():::Advances the iterator to the next boundary position.:::return->handleNext
 RuleBasedBreakIterator#previous():::Advances the iterator backwards, to the last boundary preceding this one.:::text->getText->if->current->text->getBeginIndex->return->start->current->lastResult->if->getPrevious->handlePrevious->else->text->setIndex->result->while->handleNext->text->setIndex->return
+RuleBasedBreakIterator#getPrevious():::Returns previous character:::c2->text->previous->if->Character->isLowSurrogate->text->getIndex->text->getBeginIndex->c1->text->previous->if->Character->isHighSurrogate->return->Character->toCodePoint->else->text->next->return
 RuleBasedBreakIterator#getCurrent():::Returns current character:::c1->text->current->if->Character->isHighSurrogate->text->getIndex->text->getEndIndex->c2->text->next->text->previous->if->Character->isLowSurrogate->return->Character->toCodePoint->return
+RuleBasedBreakIterator#getCurrentCodePointCount():::Returns the count of next character.:::c1->text->current->if->Character->isHighSurrogate->text->getIndex->text->getEndIndex->c2->text->next->text->previous->if->Character->isLowSurrogate->return->return
 RuleBasedBreakIterator#getNext():::Returns next character:::index->text->getIndex->endIndex->text->getEndIndex->if->getCurrentCodePointCount->return->text->setIndex->return->getCurrent
+RuleBasedBreakIterator#getNextIndex():::Returns the position of next character.:::index->text->getIndex->getCurrentCodePointCount->endIndex->text->getEndIndex->if->return->else->return
 RuleBasedBreakIterator#checkOffset(int, CharacterIterator):::Throw IllegalArgumentException unless begin <= offset < end.:::if->text->getBeginIndex->text->getEndIndex->throw->new->IllegalArgumentException
 RuleBasedBreakIterator#following(int):::Sets the iterator to refer to the first boundary position following the specified position.:::text->getText->checkOffset->text->setIndex->if->text->getBeginIndex->handleNext->return->result->if->handlePrevious->else->text->setIndex->while->handleNext->return
 RuleBasedBreakIterator#preceding(int):::Sets the iterator to refer to the last boundary position before the specified position.:::text->getText->checkOffset->text->setIndex->return->previous
@@ -45,8 +79,21 @@ RuleBasedBreakIterator#handlePrevious():::This method backs the iterator back up
 RuleBasedBreakIterator#lookupCategory(int):::Looks up a character's category (i.e., its category for breaking purposes, not its Unicode category):::if->return->charCategoryTable->elementAt->else->return->supplementaryCharCategoryTable->getValue
 RuleBasedBreakIterator#lookupState(int, int):::Given a current state and a character category, looks up the next state to transition to in the state table.:::return
 RuleBasedBreakIterator#lookupBackwardState(int, int):::Given a current state and a character category, looks up the next state to transition to in the backwards state table.:::return
+RuleBasedBreakIterator.SafeCharIterator#first()::: safe char iterator first:::return->setIndex
+RuleBasedBreakIterator.SafeCharIterator#last()::: safe char iterator last:::return->setIndex
+RuleBasedBreakIterator.SafeCharIterator#current()::: safe char iterator current:::if->return->else->return->base->setIndex
+RuleBasedBreakIterator.SafeCharIterator#next()::: safe char iterator next:::if->return->else->return->base->setIndex
+RuleBasedBreakIterator.SafeCharIterator#previous()::: safe char iterator previous:::if->return->else->return->base->setIndex
+RuleBasedBreakIterator.SafeCharIterator#setIndex(int)::: safe char iterator set index:::if->throw->new->IllegalArgumentException->return->current
+RuleBasedBreakIterator.SafeCharIterator#getBeginIndex()::: safe char iterator get begin index:::return
+RuleBasedBreakIterator.SafeCharIterator#getEndIndex()::: safe char iterator get end index:::return
+RuleBasedBreakIterator.SafeCharIterator#getIndex()::: safe char iterator get index:::return
+RuleBasedBreakIterator.SafeCharIterator#clone()::: safe char iterator clone:::copy->try->super->clone->catch->throw->new->Error->finally->copyOfBase->base->clone->return
 SupplementaryCharacterData#getValue(int):::Returns a corresponding value for the given supplementary code-point.:::i->j->k->for
 SupplementaryCharacterData#getArray():::Returns the data array.:::return
 UCompactIntArray#elementAt(int):::Get the mapped value of a Unicode character.:::plane->if->return->return
 UCompactIntArray#setElementAt(int, int):::Set a new value for a Unicode character:::if->expand->plane->if->initPlane
 UCompactIntArray#compact():::Compact the array.:::if->return->for->plane
+UCompactIntArray#expand():::Expanded takes the array back to a 0x10ffff element array:::i->if->tempArray->for->plane
+UCompactIntArray#initPlane(int)::: compact int array init plane:::new->intArr->new->shortArr->new->booleanArr->if->System->arraycopy->else->for->i->for->i
+UCompactIntArray#getKSize()::: compact int array get size:::size->for->plane->return

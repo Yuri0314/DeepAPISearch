@@ -19,6 +19,7 @@ Manifest#getReferencedContentBeforeTransformsItem(int):::Method getReferencedCon
 Manifest#getReferencedContentAfterTransformsItem(int):::Method getReferencedContentAfterTransformsItem:::return->this->item->getContentsAfterTransformation
 Manifest#getSignedContentLength():::Method getSignedContentLength:::return->this->getLength
 Manifest#getBaseLocalName():::Method getBaseLocalName  :::return
+Manifest#isSecureValidation()::: manifest is secure validation:::return
 MissingResourceFailureException#setReference(Reference):::used to set the uninitialized com.sun.org.apache.xml.internal.security.signature.Reference:::
 MissingResourceFailureException#getReference():::used to get the uninitialized com.sun.org.apache.xml.internal.security.signature.Reference  This allows to supply the correct com.sun.org.apache.xml.internal.security.signature.XMLSignatureInput to the com.sun.org.apache.xml.internal.security.signature.Reference to try again verification.:::return
 NodeFilter#isNodeInclude(Node):::Tells if a node must be output in c14n.:::
@@ -30,6 +31,7 @@ ObjectContainer#getMimeType():::Returns the MimeType attribute:::return->getLoca
 ObjectContainer#setEncoding(String):::Sets the Encoding attribute:::if->setLocalAttribute
 ObjectContainer#getEncoding():::Returns the Encoding attribute:::return->getLocalAttribute
 ObjectContainer#appendChild(Node):::Adds child Node:::appendSelf->return
+ObjectContainer#getBaseLocalName()::: object container get base local name:::return
 Reference#getMessageDigestAlgorithm():::Returns MessageDigestAlgorithm:::if->return->uri->digestMethodElem->getAttributeNS->if->equals->return->if->equals->exArgs->throw->new->XMLSignatureException->return->MessageDigestAlgorithm->getDocument->getInstance
 Reference#setURI(String):::Sets the URI of this Reference element:::if->setLocalAttribute
 Reference#getURI():::Returns the URI of this Reference element:::return->getLocalAttribute
@@ -39,16 +41,21 @@ Reference#setType(String):::Sets the type atttibute of the Reference indicate wh
 Reference#getType():::Return the type atttibute of the Reference indicate whether an ds:Object, ds:SignatureProperty, or ds:Manifest element:::return->getLocalAttribute
 Reference#typeIsReferenceToObject():::Method isReferenceToObject  This returns true if the Type attribute of the Reference element points to a #Object element:::if->this->getType->equals->return->return
 Reference#typeIsReferenceToManifest():::Method isReferenceToManifest  This returns true if the Type attribute of the Reference element points to a #Manifest element:::if->this->getType->equals->return->return
+Reference#setDigestValueElement(byte[]):::Method setDigestValueElement:::n->digestValueElement->getFirstChild->while->digestValueElement->removeChild->n->getNextSibling->base64codedValue->XMLUtils->encodeToString->t->createText->digestValueElement->appendChild
 Reference#generateDigestValue():::Method generateDigestValue:::this->this->calculateDigest->setDigestValueElement
 Reference#getContentsBeforeTransformation():::Returns the XMLSignatureInput which is created by de-referencing the URI attribute.:::try->uriAttr->getElement->getAttributeNodeNS->resolver->ResourceResolver->getPerManifestResolvers->getInstance->resolver->getResolverProperties->addProperties->return->resolver->resolve->catch->throw->new->ReferenceNotInitializedException->finally
+Reference#getContentsAfterTransformation(XMLSignatureInput, OutputStream)::: reference get contents after transformation:::try->transforms->this->getTransforms->output->if->transforms->performTransforms->else->return->catch->throw->new->XMLSignatureException->throw->new->XMLSignatureException->throw->new->XMLSignatureException->throw->new->XMLSignatureException->throw->new->XMLSignatureException->finally
 Reference#getContentsAfterTransformation():::Returns the XMLSignatureInput which is the result of the Transforms.:::input->this->getContentsBeforeTransformation->cacheDereferencedElement->return->this->getContentsAfterTransformation
 Reference#getNodesetBeforeFirstCanonicalization():::This method returns the XMLSignatureInput which represents the node set before some kind of canonicalization is applied for the first time.:::try->input->this->getContentsBeforeTransformation->cacheDereferencedElement->output->transforms->this->getTransforms->if->for->i->transforms->getLength->output->input->getSourceURI->setSourceURI->return->catch->throw->new->XMLSignatureException->throw->new->XMLSignatureException->throw->new->XMLSignatureException->throw->new->XMLSignatureException->throw->new->XMLSignatureException->throw->new->XMLSignatureException->finally
 Reference#getHTMLRepresentation():::Method getHTMLRepresentation:::try->nodes->this->getNodesetBeforeFirstCanonicalization->transforms->this->getTransforms->c14nTransform->if->for->i->transforms->getLength->inclusiveNamespaces->new->HashSet<>->if->c14nTransform->length->in->XMLUtils->c14nTransform->getElement->getFirstChild->selectNode->this->getBaseURI->new->InclusiveNamespaces->InclusiveNamespaces->in->getInclusiveNamespaces->prefixStr2Set->return->nodes->getHTMLRepresentation->catch->throw->new->XMLSignatureException->throw->new->XMLSignatureException->throw->new->XMLSignatureException->finally
 Reference#getTransformsOutput():::This method only works after a call to verify.:::return
 Reference#getReferenceData():::Get the ReferenceData that corresponds to the cached representation of the dereferenced object before transformation.:::return
 Reference#dereferenceURIandPerformTransforms(OutputStream):::This method returns the XMLSignatureInput which is referenced by the URI Attribute.:::try->input->this->getContentsBeforeTransformation->cacheDereferencedElement->output->this->getContentsAfterTransformation->return->catch->throw->new->ReferenceNotInitializedException->finally
+Reference#cacheDereferencedElement(XMLSignatureInput):::Store the dereferenced Element(s) so that it/they can be retrieved later.:::if->input->isNodeSet->try->s->input->getNodeSet->new->ReferenceNodeSetData->catch->LOG->warn->finally->else->if->input->isElement->input->getSubNode->input->isExcludeComments->new->ReferenceSubTreeData->else->if->input->isOctetStream->input->isByteArray->try->input->getOctetStream->input->getSourceURI->input->getMIMEType->new->ReferenceOctetStreamData->catch->LOG->warn->finally
 Reference#getTransforms():::Method getTransforms:::return
 Reference#getReferencedBytes():::Method getReferencedBytes:::try->output->this->dereferenceURIandPerformTransforms->return->output->getBytes->catch->throw->new->ReferenceNotInitializedException->throw->new->ReferenceNotInitializedException->finally
+Reference#calculateDigest(boolean):::Method calculateDigest:::input->this->getContentsBeforeTransformation->if->input->isPreCalculatedDigest->return->getPreCalculatedDigest->cacheDereferencedElement->mda->this->getMessageDigestAlgorithm->mda->reset->try->diOs->new->DigesterOutputStream->os->new->UnsyncBufferedOutputStream->output->this->getContentsAfterTransformation->if->output->isOutputStreamSet->output->isOctetStream->if->getDocument->new->Transforms->transforms->setSecureValidation->getElement->transforms->getElement->insertBefore->transforms->addTransform->output->updateOutputStream->else->output->updateOutputStream->os->flush->if->output->getOctetStreamReal->output->getOctetStreamReal->close->return->diOs->getDigestValue->catch->throw->new->ReferenceNotInitializedException->throw->new->ReferenceNotInitializedException->finally
+Reference#getPreCalculatedDigest(XMLSignatureInput):::Get the pre-calculated digest value from the XMLSignatureInput.:::LOG->debug->preCalculatedDigest->input->getPreCalculatedDigest->return->XMLUtils->decode
 Reference#getDigestValue():::Returns the digest value.:::if->exArgs->throw->new->XMLSecurityException->content->XMLUtils->getFullTextChildrenFromNode->return->XMLUtils->decode
 Reference#verify():::Tests reference validation is success or false:::elemDig->this->getDigestValue->calcDig->this->calculateDigest->equal->MessageDigestAlgorithm->isEqual->if->LOG->this->getURI->warn->LOG->XMLUtils->encodeToString->warn->LOG->XMLUtils->encodeToString->warn->else->LOG->this->getURI->debug->return
 Reference#getBaseLocalName():::Method getBaseLocalName :::return
@@ -57,11 +64,14 @@ SignatureProperties#item(int):::Return the i^th SignatureProperty:::try->propert
 SignatureProperties#setId(String):::Sets the Id attribute:::if->setLocalIdAttribute
 SignatureProperties#getId():::Returns the Id attribute:::return->getLocalAttribute
 SignatureProperties#addSignatureProperty(SignatureProperty):::Method addSignatureProperty:::appendSelf->addReturnToSelf
+SignatureProperties#getBaseLocalName()::: signature properties get base local name:::return
 SignatureProperty#setId(String):::  Sets the id attribute:::if->setLocalIdAttribute
 SignatureProperty#getId():::Returns the id attribute:::return->getLocalAttribute
 SignatureProperty#setTarget(String):::Sets the target attribute:::if->setLocalAttribute
 SignatureProperty#getTarget():::Returns the target attribute:::return->getLocalAttribute
 SignatureProperty#appendChild(Node):::Method appendChild:::appendSelf->return
+SignatureProperty#getBaseLocalName()::: signature property get base local name:::return
+SignedInfo#reparseSignedInfoElem(Element, boolean)::: signed info reparse signed info elem:::c14nMethod->XMLUtils->element->getFirstChild->getNextElement->c14nMethodURI->c14nMethod->getAttributeNS->if->c14nMethodURI->equals->c14nMethodURI->equals->c14nMethodURI->equals->c14nMethodURI->equals->c14nMethodURI->equals->c14nMethodURI->equals->try->c14nizer->Canonicalizer->getInstance->c14nizer->setSecureValidation->c14nizedBytes->c14nizer->canonicalizeSubtree->db->XMLUtils->createDocumentBuilder->try->is->new->ByteArrayInputStream->newdoc->db->parse->imported->element->getOwnerDocument->newdoc->getDocumentElement->importNode->element->getParentNode->replaceChild->return->catch->finally->catch->throw->new->XMLSecurityException->throw->new->XMLSecurityException->throw->new->XMLSecurityException->finally->return
 SignedInfo#verify():::Tests core validation process:::return->super->verifyReferences
 SignedInfo#verify(boolean):::Tests core validation process:::return->super->verifyReferences
 SignedInfo#getCanonicalizedOctetStream():::Returns getCanonicalizedOctetStream:::if->c14nizer->Canonicalizer->this->getCanonicalizationMethodURI->getInstance->c14nizer->isSecureValidation->setSecureValidation->inclusiveNamespaces->this->getInclusiveNamespaces->if->c14nizer->getElement->canonicalizeSubtree->else->c14nizer->getElement->canonicalizeSubtree->return->clone
@@ -70,11 +80,17 @@ SignedInfo#getCanonicalizationMethodURI():::Returns the Canonicalization method 
 SignedInfo#getSignatureMethodURI():::Returns the Signature method URI:::signatureElement->this->getSignatureMethodElement->if->return->signatureElement->getAttributeNS->return
 SignedInfo#getSignatureMethodElement():::Method getSignatureMethodElement:::return
 SignedInfo#createSecretKey(byte[]):::Creates a SecretKey for the appropriate Mac algorithm based on a byte[] array password.:::return->getJCEAlgorithmString->new->SecretKeySpec
+SignedInfo#getSignatureAlgorithm()::: signed info get signature algorithm:::return
 SignedInfo#getBaseLocalName():::Method getBaseLocalName :::return
+SignedInfo#getInclusiveNamespaces()::: signed info get inclusive namespaces:::c14nMethodURI->getCanonicalizationMethodURI->if->c14nMethodURI->equals->c14nMethodURI->equals->return->inclusiveElement->XMLUtils->c14nMethod->getFirstChild->getNextElement->if->try->inclusiveNamespaces->new->InclusiveNamespaces->getInclusiveNamespaces->return->catch->return->finally->return
+VerifiedReference#isValid()::: verified reference is valid:::return
+VerifiedReference#getUri()::: verified reference get uri:::return
+VerifiedReference#getManifestReferences()::: verified reference get manifest references:::return->Collections->unmodifiableList
 XMLSignature#setId(String):::Sets the Id attribute:::if->setLocalIdAttribute
 XMLSignature#getId():::Returns the Id attribute:::return->getLocalAttribute
 XMLSignature#getSignedInfo():::Returns the completely parsed SignedInfo object.:::return
 XMLSignature#getSignatureValue():::Returns the octet value of the SignatureValue element:::content->XMLUtils->getFullTextChildrenFromNode->return->XMLUtils->decode
+XMLSignature#setSignatureValueElement(byte[]):::Base64 encodes and sets the bytes as the content of the SignatureValue Node.:::while->signatureValueElement->hasChildNodes->signatureValueElement->signatureValueElement->getFirstChild->removeChild->base64codedValue->XMLUtils->encodeToString->if->base64codedValue->length->XMLUtils->ignoreLineBreaks->t->createText->signatureValueElement->appendChild
 XMLSignature#getKeyInfo():::Returns the KeyInfo child:::if->getDocument->new->KeyInfo->keyInfoElement->getElement->firstObject->XMLUtils->getElement->getFirstChild->selectDsNode->if->getElement->insertBefore->XMLUtils->getElement->addReturnBeforeChild->else->appendSelf->addReturnToSelf->return
 XMLSignature#appendObject(ObjectContainer):::Appends an Object (not a java.lang.Object but an Object element) to the Signature:::appendSelf->addReturnToSelf
 XMLSignature#getObjectItem(int):::Returns the ith ds:Object child of the signature or null if no such ds:Object element exists.:::objElem->XMLUtils->getFirstChild->selectDsNode->try->return->new->ObjectContainer->catch->return->finally
@@ -99,6 +115,7 @@ XMLSignatureInput#getNodeSet():::Returns the node set from input which was speci
 XMLSignatureInput#getInputNodeSet():::Get the Input NodeSet.:::return
 XMLSignatureInput#getNodeSet(boolean):::Returns the node set from input which was specified as the parameter of XMLSignatureInput constructor:::if->return->if->if->XMLUtils->XMLUtils->getOwnerDocument->circumventBug2650->new->LinkedHashSet<Node>->XMLUtils->getSet->return->else->if->isOctetStream->convertToNodes->result->new->LinkedHashSet<Node>->XMLUtils->getSet->return->throw->new->RuntimeException
 XMLSignatureInput#getOctetStream():::Returns the Octet stream(byte Stream) from input which was specified as the parameter of XMLSignatureInput constructor:::if->return->if->new->ByteArrayInputStream->return->return
+XMLSignatureInput#getOctetStreamReal()::: signature input get octet stream real:::return
 XMLSignatureInput#getBytes():::Returns the byte array from input which was specified as the parameter of XMLSignatureInput constructor:::inputBytes->getBytesFromInputStream->if->return->c14nizer->new->Canonicalizer20010315OmitComments->c14nizer->engineCanonicalize->return
 XMLSignatureInput#isNodeSet():::Determines if the object has been set up with a Node set:::return
 XMLSignatureInput#isElement():::Determines if the object has been set up with an Element:::return
@@ -117,4 +134,23 @@ XMLSignatureInput#getHTMLRepresentation(Set):::Method getHTMLRepresentation:::db
 XMLSignatureInput#getExcludeNode():::Gets the exclude node of this XMLSignatureInput:::return
 XMLSignatureInput#setExcludeNode(Node):::Sets the exclude node of this XMLSignatureInput:::
 XMLSignatureInput#getSubNode():::Gets the node of this XMLSignatureInput:::return
+XMLSignatureInput#isExcludeComments()::: signature input is exclude comments:::return
+XMLSignatureInput#setExcludeComments(boolean)::: signature input set exclude comments:::
+XMLSignatureInput#updateOutputStream(OutputStream)::: signature input update output stream:::updateOutputStream
+XMLSignatureInput#updateOutputStream(OutputStream, boolean)::: signature input update output stream:::if->return->if->diOs->write->else->if->c14nizer->if->new->Canonicalizer11_OmitComments->else->new->Canonicalizer20010315OmitComments->c14nizer->setWriter->c14nizer->engineCanonicalize->else->buffer->new->byteArr->bytesread->try->while->inputOctetStreamProxy->read->diOs->write->catch->inputOctetStreamProxy->close->throw->finally
+XMLSignatureInput#setOutputStream(OutputStream)::: signature input set output stream:::
+XMLSignatureInput#getBytesFromInputStream()::: signature input get bytes from input stream:::if->return->if->return->try->JavaUtils->getBytesFromStream->catch->finally->inputOctetStreamProxy->close->return
+XMLSignatureInput#addNodeFilter(NodeFilter)::: signature input add node filter:::if->isOctetStream->try->convertToNodes->catch->throw->new->XMLSecurityRuntimeException->finally->nodeFilters->add
+XMLSignatureInput#getNodeFilters()::: signature input get node filters:::return
+XMLSignatureInput#setNodeSet(boolean)::: signature input set node set:::
+XMLSignatureInput#convertToNodes()::: signature input convert to nodes:::db->XMLUtils->createDocumentBuilder->try->db->new->com.sun.org.apache.xml.internal.security.utils.IgnoreAllErrorHandler->setErrorHandler->doc->db->this->getOctetStream->parse->catch->result->try->baos->new->ByteArrayOutputStream->baos->getBytes->write->baos->this->getBytes->write->baos->getBytes->write->baos->toByteArray->catch->finally->try->is->new->ByteArrayInputStream->document->db->parse->document->getDocumentElement->getFirstChild->getFirstChild->catch->finally->finally->if->close
+XMLSignatureInput#isSecureValidation()::: signature input is secure validation:::return
+XMLSignatureInput#setSecureValidation(boolean)::: signature input set secure validation:::
+XMLSignatureInput#getPreCalculatedDigest()::: signature input get pre calculated digest:::return
 XMLSignatureInputDebugger#getHTMLRepresentation():::Method getHTMLRepresentation:::if->isEmpty->return->n->iterator->next->doc->XMLUtils->getOwnerDocument->try->new->StringWriter->this->canonicalizeXPathNodeSet->close->return->toString->catch->throw->new->XMLSignatureException->finally
+XMLSignatureInputDebugger#canonicalizeXPathNodeSet(Node):::Method canonicalizeXPathNodeSet:::currentNodeType->currentNode->getNodeType->switch->throw->new->ObjectArr->new->XMLSignatureException->write->for->currentChild->currentNode->getFirstChild->currentChild->getNextSibling->write->break->if->contains->write->else->write->position->getPositionRelativeToDocumentElement->if->write->this->outputCommentToWriter->if->write->write->break->if->contains->write->else->write->getPositionRelativeToDocumentElement->if->write->this->outputPItoWriter->if->write->write->break->if->contains->write->else->write->currentNode->getNodeValue->outputTextToWriter->for->nextSibling->currentNode->getNextSibling->nextSibling->getNodeType->nextSibling->getNodeType->nextSibling->getNextSibling->write->break->currentElement->if->contains->write->else->write->write->currentElement->getTagName->write->write->attrs->currentElement->getAttributes->attrsLength->attrs->getLength->attrs2->new->AttrArr->for->i->Arrays->sort->attrs3->for->i->if->contains->write->else->write->write->write->for->currentChild->currentNode->getFirstChild->currentChild->getNextSibling->if->contains->write->else->write->write->currentElement->getTagName->write->write->write->break->break
+XMLSignatureInputDebugger#getPositionRelativeToDocumentElement(Node):::Checks whether a Comment or ProcessingInstruction is before or after the document element:::if->return->doc->currentNode->getOwnerDocument->if->currentNode->getParentNode->return->documentElement->doc->getDocumentElement->if->return->if->return->for->x->x->getNextSibling->return
+XMLSignatureInputDebugger#outputAttrToWriter(String, String):::Normalizes an Attribute value  The string value of the node is modified by replacing <UL> <LI>all ampersands (&) with &amp;amp;</LI> <LI>all open angle brackets (<) with &amp;lt;</LI> <LI>all quotation mark characters with &amp;quot;</LI> <LI>and the whitespace characters #x9, #xA, and #xD, with character references:::write->write->write->length->value->length->for->i->write
+XMLSignatureInputDebugger#outputPItoWriter(ProcessingInstruction):::Normalizes a org.w3c.dom.Comment value:::if->return->write->target->currentPI->getTarget->length->target->length->for->i->data->currentPI->getData->data->length->if->write->for->i->write
+XMLSignatureInputDebugger#outputCommentToWriter(Comment):::Method outputCommentToWriter:::if->return->write->data->currentComment->getData->length->data->length->for->i->write
+XMLSignatureInputDebugger#outputTextToWriter(String):::Method outputTextToWriter:::if->return->length->text->length->for->i

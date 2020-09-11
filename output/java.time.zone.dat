@@ -1,10 +1,22 @@
 Ser#writeExternal(ObjectOutput):::Implements the Externalizable interface to write the object.:::writeInternal
+Ser#write(Object, DataOutput)::: ser write:::writeInternal
+Ser#writeInternal(byte, Object, DataOutput)::: ser write internal:::out->writeByte->switch->writeExternal->break->writeExternal->break->writeExternal->break->throw->new->InvalidClassException
 Ser#readExternal(ObjectInput):::Implements the Externalizable interface to read the object.:::in->readByte->readInternal
+Ser#read(DataInput)::: ser read:::type->in->readByte->return->readInternal
+Ser#readInternal(byte, DataInput)::: ser read internal:::switch->return->ZoneRules->readExternal->return->ZoneOffsetTransition->readExternal->return->ZoneOffsetTransitionRule->readExternal->throw->new->StreamCorruptedException
+Ser#readResolve():::Returns the object that will replace this one.:::return
 Ser#writeOffset(ZoneOffset, DataOutput):::Writes the state to the stream.:::offsetSecs->offset->getTotalSeconds->offsetByte->out->writeByte->if->out->writeInt
 Ser#readOffset(DataInput):::Reads the state from the stream.:::offsetByte->in->readByte->return->ZoneOffset->in->readInt->ofTotalSeconds->ZoneOffset->ofTotalSeconds
 Ser#writeEpochSec(long, DataOutput):::Writes the state to the stream.:::if->store->out->writeByte->out->writeByte->out->writeByte->else->out->writeByte->out->writeLong
 Ser#readEpochSec(DataInput):::Reads the state from the stream.:::hiByte->in->readByte->if->return->in->readLong->else->midByte->in->readByte->loByte->in->readByte->tot->return
+TzdbZoneRulesProvider#provideZoneIds()::: tzdb zone rules provider provide zone ids:::return->new->HashSet<>
+TzdbZoneRulesProvider#provideRules(String, boolean)::: tzdb zone rules provider provide rules:::obj->regionToRules->get->if->throw->new->ZoneRulesException->try->if->bytes->dis->new->ByteArrayInputStream->new->DataInputStream->Ser->read->regionToRules->put->return->catch->throw->new->ZoneRulesException->finally
+TzdbZoneRulesProvider#provideVersions(String)::: tzdb zone rules provider provide versions:::map->new->TreeMap<>->rules->getRules->if->map->put->return
+TzdbZoneRulesProvider#load(DataInputStream):::Loads the rules from a DateInputStream, often in a jar file.:::if->dis->readByte->throw->new->StreamCorruptedException->groupId->dis->readUTF->if->equals->throw->new->StreamCorruptedException->versionCount->dis->readShort->for->i->regionCount->dis->readShort->regionArray->new->StringArr->for->i->Arrays->asList->ruleCount->dis->readShort->ruleArray->new->ObjectArr->for->i->for->i
+TzdbZoneRulesProvider#toString()::: tzdb zone rules provider to string:::return
 ZoneOffsetTransition#of(LocalDateTime, ZoneOffset, ZoneOffset):::Obtains an instance defining a transition between two offsets:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->if->offsetBefore->equals->throw->new->IllegalArgumentException->if->transition->getNano->throw->new->IllegalArgumentException->return->new->ZoneOffsetTransition
+ZoneOffsetTransition#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+ZoneOffsetTransition#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
 ZoneOffsetTransition#writeExternal(DataOutput):::Writes the state to the stream.:::Ser->writeEpochSec->Ser->writeOffset->Ser->writeOffset
 ZoneOffsetTransition#readExternal(DataInput):::Reads the state from the stream.:::epochSecond->Ser->readEpochSec->before->Ser->readOffset->after->Ser->readOffset->if->before->equals->throw->new->IllegalArgumentException->return->new->ZoneOffsetTransition
 ZoneOffsetTransition#getInstant():::Gets the transition instant:::return->Instant->ofEpochSecond
@@ -14,6 +26,7 @@ ZoneOffsetTransition#getDateTimeAfter():::Gets the local transition date-time, a
 ZoneOffsetTransition#getOffsetBefore():::Gets the offset before the transition:::return
 ZoneOffsetTransition#getOffsetAfter():::Gets the offset after the transition:::return
 ZoneOffsetTransition#getDuration():::Gets the duration of the transition:::return->Duration->getDurationSeconds->ofSeconds
+ZoneOffsetTransition#getDurationSeconds():::Gets the duration of the transition in seconds.:::return->getOffsetAfter->getTotalSeconds->getOffsetBefore->getTotalSeconds
 ZoneOffsetTransition#isGap():::Does this transition represent a gap in the local time-line:::return->getOffsetAfter->getTotalSeconds->getOffsetBefore->getTotalSeconds
 ZoneOffsetTransition#isOverlap():::Does this transition represent an overlap in the local time-line:::return->getOffsetAfter->getTotalSeconds->getOffsetBefore->getTotalSeconds
 ZoneOffsetTransition#isValidOffset(ZoneOffset):::Checks if the specified offset is valid during this transition:::return->isGap->getOffsetBefore->equals->getOffsetAfter->equals
@@ -23,6 +36,8 @@ ZoneOffsetTransition#equals(Object):::Checks if this object equals another:::if-
 ZoneOffsetTransition#hashCode():::Returns a suitable hash code.:::return->transition->hashCode->offsetBefore->hashCode->Integer->offsetAfter->hashCode->rotateLeft
 ZoneOffsetTransition#toString():::Returns a string describing this object.:::buf->new->StringBuilder->buf->append->isGap->append->append->append->append->append->append->append->return->buf->toString
 ZoneOffsetTransitionRule#of(Month, int, DayOfWeek, LocalTime, boolean, TimeDefinition, ZoneOffset, ZoneOffset, ZoneOffset):::Obtains an instance defining the yearly rule to create transitions between two offsets:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->if->throw->new->IllegalArgumentException->if->time->equals->throw->new->IllegalArgumentException->if->time->getNano->throw->new->IllegalArgumentException->return->new->ZoneOffsetTransitionRule
+ZoneOffsetTransitionRule#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+ZoneOffsetTransitionRule#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
 ZoneOffsetTransitionRule#writeExternal(DataOutput):::Writes the state to the stream.:::timeSecs->time->toSecondOfDay->stdOffset->standardOffset->getTotalSeconds->beforeDiff->offsetBefore->getTotalSeconds->afterDiff->offsetAfter->getTotalSeconds->timeByte->time->getHour->stdOffsetByte->beforeByte->afterByte->dowByte->dow->getValue->b->month->getValue->timeDefinition->ordinal->out->writeInt->if->out->writeInt->if->out->writeInt->if->out->offsetBefore->getTotalSeconds->writeInt->if->out->offsetAfter->getTotalSeconds->writeInt
 ZoneOffsetTransitionRule#readExternal(DataInput):::Reads the state from the stream.:::data->in->readInt->month->Month->of->dom->dowByte->dow->DayOfWeek->of->timeByte->defn->TimeDefinition->values->stdByte->beforeByte->afterByte->time->LocalTime->in->readInt->ofSecondOfDay->LocalTime->of->std->ZoneOffset->in->readInt->ofTotalSeconds->ZoneOffset->ofTotalSeconds->before->ZoneOffset->in->readInt->ofTotalSeconds->ZoneOffset->std->getTotalSeconds->ofTotalSeconds->after->ZoneOffset->in->readInt->ofTotalSeconds->ZoneOffset->std->getTotalSeconds->ofTotalSeconds->return->ZoneOffsetTransitionRule->of
 ZoneOffsetTransitionRule#getMonth():::Gets the month of the transition:::return
@@ -40,6 +55,8 @@ ZoneOffsetTransitionRule#hashCode():::Returns a suitable hash code.:::hash->time
 ZoneOffsetTransitionRule#toString():::Returns a string describing this object.:::buf->new->StringBuilder->buf->append->offsetBefore->compareTo->append->append->append->append->append->if->if->buf->dow->name->append->append->month->name->append->else->if->buf->dow->name->append->append->append->append->month->name->append->else->buf->dow->name->append->append->month->name->append->append->append->else->buf->month->name->append->append->append->buf->append->time->toString->append->append->append->append->append->append->return->buf->toString
 ZoneRules#of(ZoneOffset, ZoneOffset, List, List, List):::Obtains an instance of a ZoneRules.:::Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->Objects->requireNonNull->return->new->ZoneRules
 ZoneRules#of(ZoneOffset):::Obtains an instance of ZoneRules that has fixed zone rules.:::Objects->requireNonNull->return->new->ZoneRules
+ZoneRules#readObject(ObjectInputStream):::Defend against malicious streams.:::throw->new->InvalidObjectException
+ZoneRules#writeReplace():::Writes the object using a dedicated serialized form.:::return->new->Ser
 ZoneRules#writeExternal(DataOutput):::Writes the state to the stream.:::out->writeInt->foreach->Ser->writeEpochSec->foreach->Ser->writeOffset->out->writeInt->foreach->Ser->writeEpochSec->foreach->Ser->writeOffset->out->writeByte->foreach->rule->writeExternal
 ZoneRules#readExternal(DataInput):::Reads the state from the stream.:::stdSize->in->readInt->stdTrans->new->longArr->for->i->stdOffsets->new->ZoneOffsetArr->for->i->savSize->in->readInt->savTrans->new->longArr->for->i->savOffsets->new->ZoneOffsetArr->for->i->ruleSize->in->readByte->rules->new->ZoneOffsetTransitionRuleArr->for->i->return->new->ZoneRules
 ZoneRules#isFixedOffset():::Checks of the zone rules are fixed, such that the offset never varies.:::return
@@ -47,12 +64,16 @@ ZoneRules#getOffset(Instant):::Gets the offset applicable at the specified insta
 ZoneRules#getOffset(LocalDateTime):::Gets a suitable offset for the specified local date-time in these rules:::info->getOffsetInfo->if->return->getOffsetBefore->return
 ZoneRules#getValidOffsets(LocalDateTime):::Gets the offset applicable at the specified local date-time in these rules:::info->getOffsetInfo->if->return->getValidOffsets->return->Collections->singletonList
 ZoneRules#getTransition(LocalDateTime):::Gets the offset transition applicable at the specified local date-time in these rules:::info->getOffsetInfo->return
+ZoneRules#getOffsetInfo(LocalDateTime)::: zone rules get offset info:::if->return->if->dt->isAfter->transArray->dt->getYear->findTransitionArray->info->foreach->findOffsetInfo->if->info->trans->getOffsetBefore->equals->return->return->index->Arrays->binarySearch->if->return->if->else->if->equals->if->dtBefore->dtAfter->offsetBefore->offsetAfter->if->offsetAfter->getTotalSeconds->offsetBefore->getTotalSeconds->return->new->ZoneOffsetTransition->else->return->new->ZoneOffsetTransition->else->return
+ZoneRules#findOffsetInfo(LocalDateTime, ZoneOffsetTransition):::Finds the offset info for a local date-time and transition.:::localTransition->trans->getDateTimeBefore->if->trans->isGap->if->dt->isBefore->return->trans->getOffsetBefore->if->dt->trans->getDateTimeAfter->isBefore->return->else->return->trans->getOffsetAfter->else->if->dt->isBefore->return->trans->getOffsetAfter->if->dt->trans->getDateTimeAfter->isBefore->return->trans->getOffsetBefore->else->return
+ZoneRules#findTransitionArray(int):::Finds the appropriate transition array for the given year.:::yearObj->transArray->lastRulesCache->get->if->return->ruleArray->new->ZoneOffsetTransitionArr->for->i->if->lastRulesCache->putIfAbsent->return
 ZoneRules#getStandardOffset(Instant):::Gets the standard offset for the specified instant in this zone:::if->return->epochSec->instant->getEpochSecond->index->Arrays->binarySearch->if->return
 ZoneRules#getDaylightSavings(Instant):::Gets the amount of daylight savings in use for the specified instant in this zone:::if->return->standardOffset->getStandardOffset->actualOffset->getOffset->return->Duration->actualOffset->getTotalSeconds->standardOffset->getTotalSeconds->ofSeconds
 ZoneRules#isDaylightSavings(Instant):::Checks if the specified instant is in daylight savings:::return->getStandardOffset->getOffset->equals
 ZoneRules#isValidOffset(LocalDateTime, ZoneOffset):::Checks if the offset date-time is valid for these rules:::return->getValidOffsets->contains
 ZoneRules#nextTransition(Instant):::Gets the next transition after the specified instant:::if->return->epochSec->instant->getEpochSecond->if->if->return->year->findYear->transArray->findTransitionArray->foreach->if->trans->toEpochSecond->return->if->findTransitionArray->return->return->index->Arrays->binarySearch->if->else->return->new->ZoneOffsetTransition
 ZoneRules#previousTransition(Instant):::Gets the previous transition before the specified instant:::if->return->epochSec->instant->getEpochSecond->if->instant->getNano->lastHistoric->if->lastHistoricOffset->year->findYear->transArray->findTransitionArray->for->i->lastHistoricYear->findYear->if->findTransitionArray->return->index->Arrays->binarySearch->if->if->return->return->new->ZoneOffsetTransition
+ZoneRules#findYear(long, ZoneOffset)::: zone rules find year:::localSecond->offset->getTotalSeconds->localEpochDay->Math->floorDiv->return->LocalDate->ofEpochDay->getYear
 ZoneRules#getTransitions():::Gets the complete list of fully defined transitions:::list->new->ArrayList<>->for->i->return->Collections->unmodifiableList
 ZoneRules#getTransitionRules():::Gets the list of transition rules for years beyond those defined in the transition list:::return->List->of
 ZoneRules#equals(Object):::Checks if this set of rules equals another:::if->return->if->other->return->Arrays->equals->Arrays->equals->Arrays->equals->Arrays->equals->Arrays->equals->return
@@ -61,7 +82,9 @@ ZoneRules#toString():::Returns a string describing this object.:::return
 ZoneRulesProvider#getAvailableZoneIds():::Gets the set of available zone IDs:::return
 ZoneRulesProvider#getRules(String, boolean):::Gets the rules for the zone ID:::Objects->requireNonNull->return->getProvider->provideRules
 ZoneRulesProvider#getVersions(String):::Gets the history of rules for the zone ID:::Objects->requireNonNull->return->getProvider->provideVersions
+ZoneRulesProvider#getProvider(String):::Gets the provider for the zone ID.:::provider->ZONES->get->if->if->ZONES->isEmpty->throw->new->ZoneRulesException->throw->new->ZoneRulesException->return
 ZoneRulesProvider#registerProvider(ZoneRulesProvider):::Registers a zone rules provider:::Objects->requireNonNull->registerProvider0->PROVIDERS->add
+ZoneRulesProvider#registerProvider0(ZoneRulesProvider):::Registers the provider.:::foreach->provider->provideZoneIds->Objects->requireNonNull->old->ZONES->putIfAbsent->if->throw->new->ZoneRulesException->combinedSet->ZONES->keySet->new->HashSet<String>->Collections->unmodifiableSet
 ZoneRulesProvider#refresh():::Refreshes the rules from the underlying data provider:::changed->foreach->provider->provideRefresh->return
 ZoneRulesProvider#provideZoneIds():::SPI method to get the available zone IDs:::
 ZoneRulesProvider#provideRules(String, boolean):::SPI method to get the rules for the zone ID:::

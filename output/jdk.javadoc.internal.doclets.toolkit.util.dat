@@ -1,13 +1,64 @@
+ClassTree#buildTree(Iterable):::Generate mapping for the sub-classes for every class in this run:::foreach->if->utils->isDeprecated->utils->utils->containingPackage->isDeprecated->continue->if->utils->hasHiddenTag->continue->if->utils->isEnum->processType->else->if->utils->isClass->processType->else->if->utils->isInterface->processInterface->else->if->utils->isAnnotationType->processType
+ClassTree#processType(TypeElement, BaseConfiguration, Collection, Map>):::For the class passed map it to its own sub-class listing:::superclass->utils->getFirstVisibleSuperClassAsTypeElement->if->if->add->return->else->processType->else->if->bases->contains->bases->add->intfacs->utils->getAllInterfaces->foreach->utils->asTypeElement->add
+ClassTree#processInterface(TypeElement):::For the interface passed get the interfaces which it extends, and then put this interface in the sub-interface set of those interfaces:::intfacs->typeElement->getInterfaces->if->intfacs->isEmpty->foreach->if->utils->asTypeElement->add->return->else->utils->asTypeElement->processInterface->else->if->baseInterfaces->contains->baseInterfaces->add
+ClassTree#add(Map>, TypeElement, TypeElement):::Adjust the Class Tree:::sset->map->new->TreeSet<>->computeIfAbsent->if->sset->contains->return->else->sset->add->return
+ClassTree#get(Map>, TypeElement):::From the map return the set of sub-classes or sub-interfaces:::return->map->new->TreeSet<>->computeIfAbsent
 ClassTree#subClasses(TypeElement)::: Return the sub-class set for the class passed.:::return->get
 ClassTree#subInterfaces(TypeElement)::: Return the sub-interface set for the interface passed.:::return->get
 ClassTree#implementingClasses(TypeElement)::: Return the set of classes which implement the interface passed.:::result->get->intfcs->allSubClasses->subInterfacesIter->intfcs->iterator->while->subInterfacesIter->hasNext->implementingClassesIter->subInterfacesIter->next->implementingClasses->iterator->while->implementingClassesIter->hasNext->c->implementingClassesIter->next->if->result->contains->result->add->return
 ClassTree#directSubClasses(TypeElement, boolean)::: Return the sub-class/interface set for the class/interface passed.:::return->directSubClasses0
+ClassTree#directSubClasses0(TypeElement, boolean)::: class tree direct sub classes0:::if->return->get->else->if->utils->isAnnotationType->return->get->else->if->utils->isInterface->return->get->else->if->utils->isClass->return->get->else->return->Collections->emptySortedSet
 ClassTree#allSubClasses(TypeElement, boolean):::Return a set of all direct or indirect, sub-classes and subInterfaces of the TypeElement argument.:::list->directSubClasses->new->ArrayList<>->for->i->list->size->out->new->TreeSet<>->out->addAll->return
 ClassTree#baseClasses()::: Return a set of base classes:::return
 ClassTree#baseInterfaces()::: Return the set of base interfaces:::return
 ClassTree#baseEnums()::: Return the set of base enums:::return
 ClassTree#baseAnnotationTypes():::Return the set of base annotation types:::return
+ClassUseMapper#subclasses(TypeElement):::Return all subClasses of a class AND fill-in classToSubclass map.:::ret->classToSubclass->get->if->utils->makeClassUseComparator->new->TreeSet<>->subs->classtree->subClasses->if->ret->addAll->foreach->ret->subclasses->addAll->addAll->return
+ClassUseMapper#subinterfaces(TypeElement):::Return all subInterfaces of an interface AND fill-in classToSubinterface map.:::ret->classToSubinterface->get->if->utils->makeClassUseComparator->new->TreeSet<>->subs->classtree->subInterfaces->if->ret->addAll->foreach->ret->subinterfaces->addAll->addAll->return
+ClassUseMapper#implementingClasses(TypeElement):::Return all implementing classes of an interface (including all subClasses of implementing classes and all classes implementing subInterfaces) AND fill-in both classToImplementingClass and classToSubinterface maps.:::ret->classToImplementingClass->get->if->utils->makeClassUseComparator->new->TreeSet<>->impl->classtree->implementingClasses->if->ret->addAll->foreach->ret->subclasses->addAll->foreach->subinterfaces->ret->implementingClasses->addAll->addAll->return
+ClassUseMapper#mapExecutable(ExecutableElement):::Determine classes used by a method or constructor, so they can be inverse mapped.:::isConstructor->utils->isConstructor->classArgs->utils->makeTypeMirrorClassUseComparator->new->TreeSet<>->foreach->ee->getParameters->pType->param->asType->if->pType->getKind->isPrimitive->utils->isTypeVariable->if->classArgs->add->new->SimpleTypeVisitor9<Void,ExecutableElement>->visit->mapTypeParameters->mapAnnotations->foreach->ee->getThrownTypes->stv->new->SimpleTypeVisitor9<Void,ExecutableElement>->stv->typeUtils->erasure->visit
+ClassUseMapper#refList(Map>, TypeElement)::: class use mapper ref list:::list->map->get->if->new->ArrayList<>->map->put->return
+ClassUseMapper#packageSet(TypeElement)::: class use mapper package set:::pkgSet->classToPackage->get->if->utils->makeClassUseComparator->new->TreeSet<>->classToPackage->put->return
+ClassUseMapper#classSet(TypeElement)::: class use mapper class set:::clsSet->classToClass->get->if->utils->makeClassUseComparator->new->TreeSet<>->classToClass->put->return
+ClassUseMapper#add(Map>, TypeElement, T)::: class use mapper add:::refList->add->packageSet->elementUtils->getPackageOf->add->entry->utils->isField->utils->isConstructor->utils->isMethod->ref->getEnclosingElement->classSet->add
+ClassUseMapper#addAll(Map>, TypeElement, Collection)::: class use mapper add all:::if->return->refList->addAll->pkgSet->packageSet->clsSet->classSet->foreach->pkgSet->utils->containingPackage->add->clsSet->add
+ClassUseMapper#mapTypeParameters(Map>, Element, T):::Map the TypeElements to the members that use them as type parameters.:::elementVisitor->new->SimpleElementVisitor9<Void,Void>->elementVisitor->visit
+ClassUseMapper#mapTypeParameters(Map>, TypeMirror, T)::: class use mapper map type parameters:::tv->new->SimpleTypeVisitor9<Void,Void>->tv->visit
+ClassUseMapper#mapAnnotations(Map>, Element, T):::Map the AnnotationType to the members that use them as type parameters.:::new->SimpleElementVisitor9<Void,Void>->visit
+ClassUseMapper#addTypeParameterToMap(Map>, TypeMirror, T)::: class use mapper add type parameter to map:::new->SimpleTypeVisitor9<Void,Void>->visit->mapTypeParameters
+CommentHelper#setOverrideElement(Element)::: comment helper set override element:::if->throw->new->AssertionError
+CommentHelper#getTagName(DocTree)::: comment helper get tag name:::switch->dtree->getKind->return->getTagName->return->getTagName->return->return->dtree->getKind
+CommentHelper#isTypeParameter(DocTree)::: comment helper is type parameter:::if->dtree->getKind->return->isTypeParameter->return
+CommentHelper#getParameterName(DocTree)::: comment helper get parameter name:::if->dtree->getKind->return->getName->toString->else->return
+CommentHelper#getElement(BaseConfiguration, ReferenceTree)::: comment helper get element:::if->symbol->rtree->getSignature->getSymbol->if->return->return->getTypeUtils->asElement->if->ovch->getCommentHelper->return->ovch->getElement->if->return->docTreePath->DocTreePath->getPath->if->if->ovch->getCommentHelper->return->ovch->getElement->return->doctrees->getDocTrees->return->doctrees->getElement
+CommentHelper#getException(BaseConfiguration, DocTree)::: comment helper get exception:::if->dtree->getKind->dtree->getKind->tt->exceptionName->tt->getExceptionName->return->getElement->return
+CommentHelper#getDescription(BaseConfiguration, DocTree)::: comment helper get description:::return->getTags
+CommentHelper#getText(List)::: comment helper get text:::sb->new->StringBuilder->foreach->sb->getText0->append->return->sb->toString
+CommentHelper#getText(DocTree)::: comment helper get text:::return->getText0->toString
+CommentHelper#getText0(DocTree)::: comment helper get text0:::sb->new->StringBuilder->new->SimpleDocTreeVisitor<Void,Void>->visit->return
+CommentHelper#getLabel(BaseConfiguration, DocTree)::: comment helper get label:::return->new->SimpleDocTreeVisitor<String,Void>->visit
+CommentHelper#getReferencedClass(BaseConfiguration, DocTree)::: comment helper get referenced class:::e->getReferencedElement->if->return->else->if->isTypeElement->return->else->if->isPackage->return->getEnclosingTypeElement->return
+CommentHelper#getReferencedClassName(BaseConfiguration, DocTree)::: comment helper get referenced class name:::e->getReferencedClass->if->return->isTypeElement->getSimpleName->s->getReferencedSignature->if->return->n->s->indexOf->return->s->substring
+CommentHelper#getReferencedMember(BaseConfiguration, DocTree)::: comment helper get referenced member:::e->getReferencedElement->if->return->return->isExecutableElement->isVariableElement
+CommentHelper#getReferencedMemberName(DocTree)::: comment helper get referenced member name:::s->getReferencedSignature->if->return->n->s->indexOf->return->s->substring
+CommentHelper#getReferencedMemberName(BaseConfiguration, Element)::: comment helper get referenced member name:::if->return->return->isExecutableElement->getSimpleName->makeSignature->getSimpleName
+CommentHelper#getReferencedPackage(BaseConfiguration, DocTree)::: comment helper get referenced package:::e->getReferencedElement->if->return->containingPackage->return
+CommentHelper#getFirstSentenceTrees(BaseConfiguration, List)::: comment helper get first sentence trees:::firstSentence->getDocTrees->getFirstSentence->return
+CommentHelper#getFirstSentenceTrees(BaseConfiguration, DocTree)::: comment helper get first sentence trees:::return->getBody->getFirstSentenceTrees
+CommentHelper#getReferencedElement(BaseConfiguration, DocTree)::: comment helper get referenced element:::return->new->SimpleDocTreeVisitor<Element,Void>->visit
+CommentHelper#getServiceType(BaseConfiguration, DocTree)::: comment helper get service type:::e->getReferencedElement->if->return->isTypeElement->return
+CommentHelper#getReferencedSignature(DocTree)::: comment helper get referenced signature:::return->new->SimpleDocTreeVisitor<String,Void>->visit
+CommentHelper#getReference(DocTree)::: comment helper get reference:::return->dtree->getKind->getReference
+CommentHelper#getExceptionName(DocTree)::: comment helper get exception name:::return->dtree->getKind->dtree->getKind->getExceptionName
+CommentHelper#getName(DocTree)::: comment helper get name:::switch->dtree->getKind->return->getName->return->getName->return
+CommentHelper#getTags(BaseConfiguration, DocTree)::: comment helper get tags:::return->new->SimpleDocTreeVisitor<List<? extends DocTree>,Void>->visit
+CommentHelper#getBody(BaseConfiguration, DocTree)::: comment helper get body:::return->getTags
+CommentHelper#getType(DocTree)::: comment helper get type:::if->dtree->getKind->return->getType->else->return
+CommentHelper#getDocTreePath(DocTree)::: comment helper get doc tree path:::if->return->return->DocTreePath->getPath
+CommentHelper#getOverriddenElement()::: comment helper get overridden element:::return
 CommentHelper#toString():::For debugging purposes only:::sb->new->StringBuilder->sb->append->sb->element->getEnclosingElement->append->sb->append->sb->append->sb->append->if->sb->overriddenElement->getEnclosingElement->append->sb->append->sb->append->else->sb->append->sb->append->return->sb->toString
+DeprecatedAPIListBuilder#buildDeprecatedAPIInfo():::Build the sorted list of all the deprecated APIs in this run:::rset->deprecatedMap->get->modules->mset->deprecatedMap->get->foreach->if->utils->isDeprecatedForRemoval->rset->add->if->utils->isDeprecated->mset->add->packages->pset->deprecatedMap->get->foreach->if->utils->isDeprecatedForRemoval->rset->add->if->utils->isDeprecated->pset->add->foreach->configuration->getIncludedTypeElements->te->eset->if->utils->isDeprecatedForRemoval->rset->add->if->utils->isDeprecated->switch->e->getKind->deprecatedMap->get->eset->add->break->if->utils->isError->deprecatedMap->get->else->if->utils->isException->deprecatedMap->get->else->deprecatedMap->get->eset->add->break->deprecatedMap->get->eset->add->break->deprecatedMap->get->eset->add->break->deprecatedMap->get->utils->getFields->composeDeprecatedList->deprecatedMap->get->utils->getMethods->composeDeprecatedList->deprecatedMap->get->utils->getConstructors->composeDeprecatedList->if->utils->isEnum->deprecatedMap->get->utils->getEnumConstants->composeDeprecatedList->if->utils->isAnnotationType->deprecatedMap->get->utils->getAnnotationMembers->composeDeprecatedList
+DeprecatedAPIListBuilder#composeDeprecatedList(SortedSet, SortedSet, List):::Add the members into a single list of deprecated members.:::foreach->if->utils->isDeprecatedForRemoval->rset->add->if->utils->isDeprecated->sset->add
 DeprecatedAPIListBuilder#getSet(DeprElementKind):::Return the list of deprecated elements of a given type.:::return->deprecatedMap->get
 DeprecatedAPIListBuilder#hasDocumentation(DeprElementKind):::Return true if the list of a given type has size greater than 0.:::return->deprecatedMap->get->isEmpty
 DocFile#createFileForDirectory(BaseConfiguration, String):::Create a DocFile for a directory.:::return->DocFileFactory->getFactory->createFileForDirectory
@@ -34,29 +85,49 @@ DocFile#mkdirs():::Create the file as a directory, including any parent director
 DocFile#resolve(DocPath):::Derive a new file by resolving a relative path against this file:::
 DocFile#resolve(String):::Derive a new file by resolving a relative path against this file:::
 DocFile#resolveAgainst(Location):::Resolve a relative file against the given output location.:::
+DocFile#read(DocFile, InputStream, byte[]):::Reads from an input stream opened from a given file into a given buffer:::try->return->input->read->catch->throw->new->DocFileIOException->finally
+DocFile#write(DocFile, OutputStream, byte[], int):::Writes to an output stream for a given file from a given buffer:::try->out->write->catch->throw->new->DocFileIOException->finally
+DocFile#write(DocFile, Writer, String):::Writes text to an output stream for a given file from a given buffer:::try->out->write->catch->throw->new->DocFileIOException->finally
+DocFile#readResource(DocPath, InputStream, byte[]):::Reads from an input stream opened from a given resource into a given buffer:::try->return->in->read->catch->throw->new->ResourceIOException->finally
+DocFile#readResourceLine(DocPath, BufferedReader):::Reads a line of characters from an input stream opened from a given resource:::try->return->in->readLine->catch->throw->new->ResourceIOException->finally
 DocFileFactory#getFactory(BaseConfiguration):::Get the appropriate factory, based on the file manager given in the configuration.:::f->if->fm->configuration->getFileManager->if->new->StandardDocFileFactory->else->throw->new->IllegalStateException->return
+DocFileFactory#setDestDir(String)::: doc file factory set dest dir:::
 DocFileFactory#createFileForDirectory(String):::Create a DocFile for a directory.:::
 DocFileFactory#createFileForInput(String):::Create a DocFile for a file that will be opened for reading.:::
 DocFileFactory#createFileForOutput(DocPath):::Create a DocFile for a file that will be opened for writing.:::
 DocFileFactory#list(Location, DocPath):::List the directories and files found in subdirectories along the elements of the given location.:::
+DocFinder.DocTreeInfo#toString()::: doc tree info to string:::return
+DocFinder.Input#copy(Utils)::: input copy:::if->throw->new->NullPointerException->clone->new->Input->return
 DocFinder.Input#toString():::For debugging purposes:::encl->element->getEnclosingElement->toString->return
 DocFinder.Output#toString():::Returns a string representation for debugging purposes:::encl->holder->getEnclosingElement->toString->return
 DocFinder#search(BaseConfiguration, Input):::Search for the requested comments in the given element:::output->new->Output->utils->if->else->if->utils->getFirstSentenceTrees->utils->getFullBody->else->inherit->if->isEmpty->return->inheritedSearchInput->input->copy->if->utils->isMethod->overriddenMethod->utils->overriddenMethod->if->search->if->isEmpty->return->encl->utils->getEnclosingTypeElement->vmt->configuration->getVisibleMemberTable->implementedMethods->vmt->getImplementedMethods->foreach->search->if->isEmpty->return->else->if->utils->isTypeElement->t->getSuperclass->superclass->utils->asTypeElement->if->search->if->isEmpty->return->return
 DocLink#fragment(String):::Creates a DocLink representing the URI #fragment.:::return->new->DocLink
 DocLink#relativizeAgainst(DocPath):::Creates a DocLink formed by relativizing the path against a given base.:::if->base->isEmpty->return->if->isAbsoluteURL->return->newPath->base->relativize->if->newPath->isEmpty->isEmpty->isEmpty->path->basename->return->new->DocLink
+DocLink#isAbsoluteURL(DocPath)::: doc link is absolute l:::s->path->getPath->for->i->s->length->return
 DocLink#toString():::Returns the link in the form "path?query#fragment", omitting any empty components.:::if->isEmpty->isEmpty->return->path->getPath->sb->new->StringBuilder->if->sb->path->getPath->append->if->isEmpty->sb->append->append->if->isEmpty->sb->append->append->return->sb->toString
+DocLink#isEmpty(String)::: doc link is empty:::return->s->isEmpty
 DocPath#create(String):::Creates a path from a string.:::return->p->isEmpty->new->DocPath
+DocPath#equals(Object)::: doc path equals:::return->path->equals
+DocPath#hashCode()::: doc path hash code:::return->path->hashCode
+DocPath#basename()::: doc path basename:::sep->path->lastIndexOf->return->path->substring->new->DocPath
+DocPath#parent()::: doc path parent:::sep->path->lastIndexOf->return->path->substring->new->DocPath
 DocPath#resolve(String):::Returns the path formed by appending the specified string to the current path.:::if->p->isEmpty->return->if->path->isEmpty->return->new->DocPath->return->new->DocPath
 DocPath#resolve(DocPath):::Returns the path by appending the specified path to the current path.:::if->p->isEmpty->return->if->path->isEmpty->return->return->p->getPath->new->DocPath
 DocPath#invert():::Return the inverse path for this path:::return->path->replaceAll->new->DocPath
 DocPath#normalize():::Returns the path formed by eliminating empty components, '.' components, and redundant name/.:::return->path->isEmpty->String->normalize->join->new->DocPath
+DocPath#normalize(String)::: doc path normalize:::return->Arrays->path->split->asList->normalize
+DocPath#normalize(List)::: doc path normalize:::if->parts->stream->s->isEmpty->s->equals->s->equals->noneMatch->return->normalized->new->ArrayList<>->foreach->switch->break->n->normalized->size->if->normalized->get->equals->normalized->remove->else->normalized->add->break->normalized->add->return
 DocPath#relativize(DocPath):::Normalize and relativize a path against this path, assuming that this path is for a file (not a directory), in which the other path will appear.:::if->isEmpty->return->if->path->isEmpty->return->originParts->normalize->sep->path->lastIndexOf->destParts->normalize->path->substring->normalize->common->while->originParts->size->destParts->size->originParts->get->destParts->get->equals->newParts->if->originParts->size->destParts->destParts->size->subList->else->new->ArrayList<>->newParts->Collections->originParts->size->nCopies->addAll->newParts->destParts->destParts->size->subList->addAll->return->String->join->new->DocPath
 DocPath#isEmpty():::Return true if this path is empty.:::return->path->isEmpty
 DocPath#fragment(String):::Creates a DocLink formed from this path and a fragment identifier.:::return->new->DocLink
 DocPath#query(String):::Creates a DocLink formed from this path and a query string.:::return->new->DocLink
+DocPath#getPath()::: doc path get path:::return
+DocPaths#AllClasses(boolean)::: doc paths  all classes:::return
 DocPaths#indexN(int):::Generate the name of one of the files in the split index.:::return->DocPath->create
+DocPaths#overviewSummary(boolean)::: doc paths overview summary:::return
 DocPaths#forClass(TypeElement):::Returns the path for a type element:::return->utils->containingPackage->forPackage->forName->resolve
 DocPaths#forName(TypeElement):::Returns the path for the simple name of a type element:::return->utils->getSimpleName->new->DocPath
+DocPaths#forModule(ModuleElement)::: doc paths for module:::return->mdle->isUnnamed->DocPath->mdle->getQualifiedName->toString->create
 DocPaths#forPackage(TypeElement):::Returns the path for the package of a type element:::return->utils->containingPackage->forPackage
 DocPaths#forPackage(PackageElement):::Returns the path for a package:::if->pkgElement->isUnnamed->return->pkgPath->DocPath->pkgElement->getQualifiedName->toString->replace->create->if->mdle->pkgElement->getEnclosingElement->return->forModule->resolve->else->return
 DocPaths#forRoot(PackageElement):::Returns the inverse path for a package:::name->pkgElement->isUnnamed->pkgElement->getQualifiedName->toString->return->name->replace->replaceAll->new->DocPath
@@ -66,14 +137,32 @@ DocPaths#moduleFrame(ModuleElement):::The path for the file for a module's frame
 DocPaths#moduleSummary(ModuleElement):::The path for the file for a module's summary page.:::return->createModulePath
 DocPaths#moduleSummary(String):::The path for the file for a module's summary page.:::return->createModulePath
 DocPaths#moduleTypeFrame(ModuleElement):::The path for the file for a module's type frame page.:::return->createModulePath
+DocPaths#createModulePath(ModuleElement, String)::: doc paths create module path:::return->DocPath->mdle->getQualifiedName->create
+DocPaths#createModulePath(String, String)::: doc paths create module path:::return->DocPath->create
 ElementListWriter#generate(BaseConfiguration):::Generate the element index.:::elemgen->new->ElementListWriter->elemgen->generateElementListFile
+ElementListWriter#generateElementListFile(DocletEnvironment)::: element list writer generate element list file:::try->out->file->openWriter->new->BufferedWriter->if->foreach->keySet->if->utils->isDeprecated->out->mdle->toString->write->out->newLine->foreach->get->out->pkg->toString->write->out->newLine->else->foreach->if->utils->isDeprecated->out->pkg->toString->write->out->newLine->catch->throw->new->DocFileIOException->finally
+Extern.Item#toString():::String representation of "this" with elementname and the path.:::return->path->getPath
 Extern#isExternal(Element):::Determine if a element item is externally documented.:::if->packageItems->isEmpty->return->pe->containingPackage->if->pe->isUnnamed->return->return->findElementItem
 Extern#isModule(String):::Determine if a element item is a module or not.:::elem->moduleItems->get->return
 Extern#getExternalLink(Element, DocPath, String):::Convert a link to be an external link if appropriate.:::return->getExternalLink
+Extern#getExternalLink(Element, DocPath, String, String)::: extern get external link:::fnd->findElementItem->if->return->p->relativepath->resolve->resolve->resolve->return->new->DocLink
 Extern#link(String, Reporter):::Build the extern element list from given URL or the directory path, as specified with the "-link" flag:::return->link
 Extern#link(String, String, Reporter):::Build the extern element list from given URL or the directory path, as specified with the "-linkoffline" flag:::return->link
+Extern#link(String, String, Reporter, boolean)::: extern link:::try->adjustEndFileSeparator->if->isUrl->adjustEndFileSeparator->toURL->readElementListFromURL->else->DocFile->createFileForInput->readElementListFromFile->return->catch->reporter->f->getMessage->print->return->finally
+Extern#toURL(String)::: extern to l:::try->return->new->URL->catch->throw->configuration->getText->new->Fault->finally
+Extern#findElementItem(Element):::Get the Extern Item object associated with this element name.:::item->if->moduleItems->getModuleName->get->else->if->packageElement->moduleElement->containingModule->pkgMap->packageItems->getModuleName->get->pkgMap->getPackageName->get->return
+Extern#adjustEndFileSeparator(String):::If the URL or Directory path is missing end file separator, add that.:::return->url->endsWith
+Extern#readElementListFromURL(String, URL):::Fetch the URL and read the "element-list" file.:::try->link->elemlisturlpath->toURI->getPath->resolve->toURL->link->openStream->readElementList->catch->throw->configuration->elemlisturlpath->toString->getText->new->Fault->readAlternateURL->finally
+Extern#readAlternateURL(String, URL):::Fetch the URL and read the "package-list" file.:::try->link->elemlisturlpath->toURI->getPath->resolve->toURL->link->openStream->readElementList->catch->throw->configuration->elemlisturlpath->toString->getText->new->Fault->throw->configuration->elemlisturlpath->toString->getText->new->Fault->finally
+Extern#readElementListFromFile(String, DocFile):::Read the "element-list" file which is available locally.:::file->elemListPath->resolve->if->file->isAbsolute->file->resolveAgainst->if->file->exists->readElementList->else->file1->elemListPath->resolve->if->file1->isAbsolute->file1->resolveAgainst->if->file1->exists->readElementList->else->throw->configuration->file->getPath->getText->new->Fault
+Extern#readElementList(DocFile, String)::: extern read element list:::try->if->file->canRead->pathIsRelative->isUrl->DocFile->createFileForInput->isAbsolute->file->openInputStream->readElementList->else->throw->configuration->file->getPath->getText->new->Fault->catch->throw->configuration->file->getPath->getText->new->Fault->finally
+Extern#readElementList(InputStream, String, boolean):::Read the file "element-list" and for each element name found, create Extern object and associate it with the element name in the map.:::try->in->new->InputStreamReader->new->BufferedReader->elemname->moduleName->elempath->basePath->DocPath->create->while->in->readLine->if->elemname->length->if->elemname->startsWith->elemname->replace->item->new->Item->moduleItems->put->else->pkgPath->DocPath->elemname->replace->create->if->elempath->DocPath->create->resolve->resolve->else->elempath->resolve->checkLinkCompatibility->item->new->Item->packageItems->new->TreeMap<>->computeIfAbsent->put->catch->finally
+Extern#isUrl(String)::: extern is url:::try->ignore->new->URL->return->catch->return->finally
+Extern#checkLinkCompatibility(String, String, String)::: extern check link compatibility:::pe->getPackageElement->if->me->pe->getEnclosingElement->if->me->isUnnamed->if->throw->configuration->getText->new->Fault->else->if->throw->configuration->getText->new->Fault
+Group.MapKeyComparator#compare(String, String)::: map key comparator compare:::return->key2->length->key1->length
 Group#checkModuleGroups(String, String):::Depending upon the format of the module name provided in the "-group" option, generate two separate maps:::mdlPatterns->moduleNameFormList->split->if->groupList->contains->initMessages->messages->warning->return->groupList->add->foreach->if->mdlPattern->length->initMessages->messages->warning->return->if->mdlPattern->endsWith->mdlPattern->mdlPattern->length->substring->if->foundGroupFormat->return->regExpGroupMap->put->sortedRegExpList->add->else->if->foundGroupFormat->return->elementNameGroupMap->put->Collections->new->MapKeyComparator->sort->return
 Group#checkPackageGroups(String, String):::Depending upon the format of the package name provided in the "-group" option, generate two separate maps:::pkgPatterns->pkgNameFormList->split->if->groupList->contains->initMessages->messages->warning->return->groupList->add->foreach->if->pkgPattern->length->initMessages->messages->warning->return->if->pkgPattern->endsWith->pkgPattern->pkgPattern->length->substring->if->foundGroupFormat->return->regExpGroupMap->put->sortedRegExpList->add->else->if->foundGroupFormat->return->elementNameGroupMap->put->Collections->new->MapKeyComparator->sort->return
+Group#initMessages()::: group init messages:::if->configuration->getMessages
 Group#foundGroupFormat(Map, String):::Search if the given map has the given element format.:::if->map->containsKey->initMessages->messages->error->return->return
 Group#groupModules(Set):::Group the modules according the grouping information provided on the command line:::groupModuleMap->new->HashMap<>->defaultGroupName->elementNameGroupMap->isEmpty->regExpGroupMap->isEmpty->configuration->getResources->getText->configuration->getResources->getText->if->groupList->contains->groupList->add->foreach->moduleName->mdl->isUnnamed->mdl->getQualifiedName->toString->groupName->mdl->isUnnamed->elementNameGroupMap->get->if->regExpGroupName->if->getModuleList->add->return
 Group#groupPackages(Set):::Group the packages according the grouping information provided on the command line:::groupPackageMap->new->HashMap<>->defaultGroupName->elementNameGroupMap->isEmpty->regExpGroupMap->isEmpty->configuration->getResources->getText->configuration->getResources->getText->if->groupList->contains->groupList->add->foreach->pkgName->getPackageName->groupName->pkg->isUnnamed->elementNameGroupMap->get->if->regExpGroupName->if->getPkgList->add->return
@@ -89,12 +178,23 @@ IndexBuilder#shouldAddToIndexMap(Element):::Should this element be added to the 
 IndexBuilder#getIndexMap():::Return a map of all the individual member lists with Unicode character.:::return
 IndexBuilder#getMemberList(Character):::Return the sorted list of members, for passed Unicode Character.:::set->indexmap->get->if->return->out->new->ArrayList<>->out->addAll->return
 IndexBuilder#index():::Array of IndexMap keys, Unicode characters.:::return->indexmap->keySet->new->ArrayList<>
+JavaScriptScanner#scan(DocCommentTree, TreePath, Consumer)::: java script scanner scan:::return->new->DocTreePath->scan
+JavaScriptScanner#visitStartElement(StartElementTree, Consumer)::: java script scanner visit start element:::name->tree->getName->toString->if->name->equalsIgnoreCase->f->getCurrentPath->accept->return->super->visitStartElement
+JavaScriptScanner#visitAttribute(AttributeTree, Consumer)::: java script scanner visit attribute:::name->tree->getName->toString->toLowerCase->switch->value->tree->getValue->if->value->isEmpty->value->get->getKind->v->value->get->toString->trim->toLowerCase->if->v->startsWith->f->getCurrentPath->accept->break->if->name->startsWith->f->getCurrentPath->accept->break->return->super->visitAttribute
 MetaKeywords#getMetaKeywords(TypeElement):::Returns an array of strings where each element is a class, method or field name:::results->new->ArrayList<>->if->results->getClassKeyword->addAll->results->getFields->getMemberKeywords->addAll->results->getMethods->getMemberKeywords->addAll->trimToSize->return
 MetaKeywords#getClassKeyword(TypeElement):::Get the current class for a meta tag keyword, as the first and only element of an array list.:::metakeywords->new->ArrayList<>->cltypelower->isInterface->metakeywords->getFullyQualifiedName->add->return
 MetaKeywords#getMetaKeywords(PackageElement):::Get the package keywords.:::result->new->ArrayList<>->if->pkgName->getPackageName->result->add->return
 MetaKeywords#getMetaKeywordsForModule(ModuleElement):::Get the module keywords.:::if->return->Arrays->mdle->getQualifiedName->asList->else->return->Collections->emptyList
 MetaKeywords#getOverviewMetaKeywords(String, String):::Get the overview keywords.:::result->new->ArrayList<>->if->windowOverview->config->getText->if->docTitle->length->result->add->else->result->add->return
 MetaKeywords#getMemberKeywords(List):::Get members for meta tag keywords as an array, where each member name is a string element of the array:::results->new->ArrayList<>->foreach->membername->isMethod->getSimpleName->getSimpleName->if->results->contains->results->add->trimToSize->return
+StandardDocFileFactory#setDestDir(String)::: standard doc file factory set dest dir:::if->throw->new->AssertionError->if->destDirName->isEmpty->fileManager->hasLocation->try->dirName->destDirName->isEmpty->dir->Paths->get->fileManager->Arrays->asList->setLocationFromPaths->catch->message->configuration->getResources->getText->throw->new->SimpleDocletException->finally->fileManager->getLocationAsPaths->iterator->next
+StandardDocFileFactory#getDestDir()::: standard doc file factory get dest dir:::Objects->requireNonNull->return
+StandardDocFileFactory#createFileForDirectory(String)::: standard doc file factory create file for directory:::return->Paths->get->new->StandardDocFile
+StandardDocFileFactory#createFileForInput(String)::: standard doc file factory create file for input:::return->Paths->get->new->StandardDocFile
+StandardDocFileFactory#createFileForOutput(DocPath)::: standard doc file factory create file for output:::return->new->StandardDocFile
+StandardDocFileFactory#list(Location, DocPath)::: standard doc file factory list:::l->fileManager->hasLocation->files->new->LinkedHashSet<>->foreach->fileManager->getLocationAsPaths->if->Files->isDirectory->f->path->getPath->resolve->if->Files->exists->files->new->StandardDocFile->add->return
+StandardDocFileFactory#newFile(Path, String)::: standard doc file factory new file:::return->Paths->get->dir->resolve
+StandardDocFileFactory.StandardDocFile#getFileObject()::: standard doc file get file object:::return->getJavaFileObjectForInput
 StandardDocFileFactory.StandardDocFile#openInputStream():::Open an input stream for the file.:::try->fo->getJavaFileObjectForInput->return->fo->openInputStream->new->BufferedInputStream->catch->throw->new->DocFileIOException->finally
 StandardDocFileFactory.StandardDocFile#openOutputStream():::Open an output stream for the file:::if->throw->new->IllegalStateException->try->out->getFileObjectForOutput->openOutputStream->return->new->BufferedOutputStream->catch->throw->new->DocFileIOException->finally
 StandardDocFileFactory.StandardDocFile#openWriter():::Open an writer for the file, using the encoding (if any) given in the doclet configuration:::if->throw->new->IllegalStateException->try->out->getFileObjectForOutput->openOutputStream->return->new->OutputStreamWriter->new->BufferedWriter->catch->throw->new->DocFileIOException->finally
@@ -113,7 +213,11 @@ StandardDocFileFactory.StandardDocFile#resolve(DocPath):::Derive a new file by r
 StandardDocFileFactory.StandardDocFile#resolve(String):::Derive a new file by resolving a relative path against this file:::if->return->file->resolve->new->StandardDocFile->else->return->path->resolve->new->StandardDocFile
 StandardDocFileFactory.StandardDocFile#resolveAgainst(Location):::Resolve a relative file against the given output location.:::if->throw->new->IllegalArgumentException->return->getDestDir->resolve->new->StandardDocFile
 StandardDocFileFactory.StandardDocFile#toString():::Return a string to identify the contents of this object, for debugging purposes.:::sb->new->StringBuilder->sb->append->if->sb->append->append->append->if->sb->append->path->getPath->append->append->sb->append->append->sb->append->return->sb->toString
+StandardDocFileFactory.StandardDocFile#getJavaFileObjectForInput(Path)::: standard doc file get java file object for input:::return->fileManager->getJavaFileObjects->iterator->next
+StandardDocFileFactory.StandardDocFile#getFileObjectForOutput(DocPath)::: standard doc file get file object for output:::p->path->getPath->lastSep->for->i->p->length->pkg->p->substring->rest->p->substring->return->fileManager->getFileForOutput
 TypeElementCatalog#addTypeElement(TypeElement):::Add the given class to the catalog.:::if->return->addTypeElement->if->utils->isOrdinaryClass->addTypeElement->else->if->utils->isException->addTypeElement->else->if->utils->isEnum->addTypeElement->else->if->utils->isAnnotationType->addTypeElement->else->if->utils->isError->addTypeElement->else->if->utils->isInterface->addTypeElement
+TypeElementCatalog#addTypeElement(TypeElement, Map>):::Add the given class to the given map.:::pkg->utils->containingPackage->if->utils->isSpecified->utils->isDeprecated->return->s->map->get->if->packageSet->add->new->TreeSet<>->s->add->map->put
+TypeElementCatalog#getSet(Map>, PackageElement)::: type element catalog get set:::s->m->get->if->return->return->new->TreeSet<>
 TypeElementCatalog#allClasses(PackageElement):::Return all of the classes specified on the command-line that belong to the given package.:::return->utils->isSpecified->utils->utils->getEnclosedTypeElements->getTypeElementsAsSortedSet->getSet
 TypeElementCatalog#allUnnamedClasses():::Return all of the classes specified on the command-line that belong to the given package.:::foreach->allClasses->keySet->if->pkg->isUnnamed->return->allClasses->get->return->new->TreeSet<>
 TypeElementCatalog#packages():::Return a SortedSet of packages that this catalog stores.:::return
@@ -123,28 +227,110 @@ TypeElementCatalog#enums(PackageElement):::Return all of the enums specified on 
 TypeElementCatalog#annotationTypes(PackageElement):::Return all of the annotation types specified on the command-line that belong to the given package.:::return->getSet
 TypeElementCatalog#interfaces(PackageElement):::Return all of the interfaces specified on the command-line that belong to the given package.:::return->getSet
 TypeElementCatalog#ordinaryClasses(PackageElement):::Return all of the ordinary classes specified on the command-line that belong to the given package.:::return->getSet
+UncheckedDocletException#getCause()::: unchecked doclet exception get cause:::return->super->getCause
+UncheckedDocletException#initCause(Throwable)::: unchecked doclet exception init cause:::throw->new->UnsupportedOperationException
+Utils#getSymbol(String)::: utils get symbol:::type->symtab->get->if->typeElement->elementUtils->getTypeElement->if->return->typeElement->asType->if->return->symtab->put->return
+Utils#getObjectType()::: utils get object type:::return->getSymbol
+Utils#getExceptionType()::: utils get exception type:::return->getSymbol
+Utils#getErrorType()::: utils get error type:::return->getSymbol
+Utils#getSerializableType()::: utils get serializable type:::return->getSymbol
+Utils#getExternalizableType()::: utils get externalizable type:::return->getSymbol
+Utils#getIllegalArgumentExceptionType()::: utils get illegal argument exception type:::return->getSymbol
+Utils#getNullPointerExceptionType()::: utils get null pointer exception type:::return->getSymbol
+Utils#getDeprecatedType()::: utils get deprecated type:::return->getSymbol
+Utils#getFunctionalInterface()::: utils get functional interface:::return->getSymbol
 Utils#excludeDeprecatedMembers(List):::Return array of class members whose documentation is to be generated:::excludeList->members->stream->isDeprecated->filter->makeGeneralPurposeComparator->sorted->Collectors->ArrayList->new->toCollection->collect->return
 Utils#findMethod(TypeElement, ExecutableElement):::Search for the given method in the given class.:::foreach->getMethods->if->executableMembersEqual->return->return
 Utils#isSubclassOf(TypeElement, TypeElement):::Test whether a class is a subclass of another class.:::return->typeUtils->t1->asType->t2->asType->isSubtype
+Utils#executableMembersEqual(ExecutableElement, ExecutableElement)::: utils executable members equal:::if->isStatic->isStatic->parameters1->e1->getParameters->parameters2->e2->getParameters->if->e1->getSimpleName->e2->getSimpleName->equals->parameters1->size->parameters2->size->j->for->parameters1->size->if->parameters1->size->return->return->else->return->elementUtils->getEnclosingTypeElement->overrides->elementUtils->getEnclosingTypeElement->overrides->e1->equals
 Utils#isCoreClass(TypeElement):::According to The Java&trade; Language Specification, all the outer classes and static inner classes are core classes.:::return->getEnclosingTypeElement->isStatic
+Utils#getLocationForPackage(PackageElement)::: utils get location for package:::mdle->getElementUtils->getModuleOf->if->return->defaultLocation->return->getLocationForModule
+Utils#getLocationForModule(ModuleElement)::: utils get location for module:::loc->getLocationForModule->if->return->return->defaultLocation
+Utils#defaultLocation()::: utils default location:::fm->getJavaFileManager->return->fm->hasLocation
+Utils#isAnnotated(TypeMirror)::: utils is annotated:::return->e->getAnnotationMirrors->isEmpty
+Utils#isAnnotated(Element)::: utils is annotated:::return->e->getAnnotationMirrors->isEmpty
+Utils#isAnnotationType(Element)::: utils is annotation type:::return->new->SimpleElementVisitor9<Boolean,Void>->visit
 Utils#isClass(Element):::An Enum implementation is almost identical, thus this method returns if this element represents a CLASS or an ENUM:::return->e->getKind->isClass
+Utils#isConstructor(Element)::: utils is constructor:::return->e->getKind
+Utils#isEnum(Element)::: utils is enum:::return->e->getKind
+Utils#isEnumConstant(Element)::: utils is enum constant:::return->e->getKind
+Utils#isField(Element)::: utils is field:::return->e->getKind
+Utils#isInterface(Element)::: utils is interface:::return->e->getKind
+Utils#isMethod(Element)::: utils is method:::return->e->getKind
+Utils#isModule(Element)::: utils is module:::return->e->getKind
+Utils#isPackage(Element)::: utils is package:::return->e->getKind
+Utils#isAbstract(Element)::: utils is abstract:::return->e->getModifiers->contains
+Utils#isDefault(Element)::: utils is default:::return->e->getModifiers->contains
+Utils#isPackagePrivate(Element)::: utils is package private:::return->isPublic->isPrivate->isProtected
+Utils#isPrivate(Element)::: utils is private:::return->e->getModifiers->contains
+Utils#isProtected(Element)::: utils is protected:::return->e->getModifiers->contains
+Utils#isPublic(Element)::: utils is public:::return->e->getModifiers->contains
+Utils#isProperty(String)::: utils is property:::return->name->endsWith
+Utils#getPropertyName(String)::: utils get property name:::return->isProperty->name->name->length->length->substring
+Utils#getPropertyLabel(String)::: utils get property label:::return->name->name->lastIndexOf->substring
+Utils#isOverviewElement(Element)::: utils is overview element:::return->e->getKind
+Utils#isStatic(Element)::: utils is static:::return->e->getModifiers->contains
+Utils#isSerializable(TypeElement)::: utils is serializable:::return->typeUtils->e->asType->getSerializableType->isSubtype
+Utils#isExternalizable(TypeElement)::: utils is externalizable:::return->typeUtils->e->asType->getExternalizableType->isSubtype
+Utils#serializableFields(TypeElement)::: utils serializable fields:::return->getSerializableFields
+Utils#serializationMethods(TypeElement)::: utils serialization methods:::return->getSerializationMethods
+Utils#definesSerializableFields(TypeElement)::: utils defines serializable fields:::return->definesSerializableFields
+Utils#modifiersToString(Element, boolean)::: utils modifiers to string:::set->e->getModifiers->new->TreeSet<>->set->remove->set->remove->set->remove->return->new->ElementKindVisitor9<String,SortedSet<Modifier>>->visit
+Utils#isFunctionalInterface(AnnotationMirror)::: utils is functional interface:::return->amirror->getAnnotationType->getFunctionalInterface->equals->getSourceVersion->compareTo
+Utils#isNoType(TypeMirror)::: utils is no type:::return->t->getKind
+Utils#isOrdinaryClass(TypeElement)::: utils is ordinary class:::if->isEnum->isInterface->isAnnotationType->return->if->isError->isException->return->return
+Utils#isError(TypeElement)::: utils is error:::if->isEnum->isInterface->isAnnotationType->return->return->typeUtils->te->asType->getErrorType->isSubtype
+Utils#isException(TypeElement)::: utils is exception:::if->isEnum->isInterface->isAnnotationType->return->return->typeUtils->te->asType->getExceptionType->isSubtype
+Utils#isPrimitive(TypeMirror)::: utils is primitive:::return->new->SimpleTypeVisitor9<Boolean,Void>->visit
+Utils#isExecutableElement(Element)::: utils is executable element:::kind->e->getKind->switch->return->return
+Utils#isVariableElement(Element)::: utils is variable element:::kind->e->getKind->switch->return->return
+Utils#isTypeElement(Element)::: utils is type element:::switch->e->getKind->return->return
 Utils#signature(ExecutableElement):::Get the signature:::return->makeSignature
 Utils#flatSignature(ExecutableElement):::Get flat signature:::return->makeSignature
+Utils#makeSignature(ExecutableElement, boolean)::: utils make signature:::return->makeSignature
+Utils#makeSignature(ExecutableElement, boolean, boolean)::: utils make signature:::result->new->StringBuilder->result->append->iterator->e->getParameters->iterator->while->iterator->hasNext->next->iterator->next->type->next->asType->result->getTypeSignature->append->if->iterator->hasNext->result->append->if->e->isVarArgs->len->result->length->result->replace->result->append->return->result->toString
+Utils#getTypeSignature(TypeMirror, boolean, boolean)::: utils get type signature:::return->new->SimpleTypeVisitor9<StringBuilder,Void>->visit->toString
+Utils#isArrayType(TypeMirror)::: utils is array type:::return->t->getKind
+Utils#isDeclaredType(TypeMirror)::: utils is declared type:::return->t->getKind
+Utils#isErrorType(TypeMirror)::: utils is error type:::return->t->getKind
+Utils#isIntersectionType(TypeMirror)::: utils is intersection type:::return->t->getKind
+Utils#isTypeParameterElement(Element)::: utils is type parameter element:::return->e->getKind
+Utils#isTypeVariable(TypeMirror)::: utils is type variable:::return->t->getKind
+Utils#isVoid(TypeMirror)::: utils is void:::return->t->getKind
+Utils#isWildCard(TypeMirror)::: utils is wild card:::return->t->getKind
+Utils#ignoreBounds(TypeMirror)::: utils ignore bounds:::return->bound->getObjectType->equals->isAnnotated
+Utils#getBounds(TypeParameterElement)::: utils get bounds:::bounds->tpe->getBounds->if->bounds->isEmpty->upperBound->bounds->bounds->size->get->if->ignoreBounds->return->Collections->emptyList->return
 Utils#getReturnType(ExecutableElement):::Returns the TypeMirror of the ExecutableElement for all methods, a null if constructor.:::return->ee->getKind->ee->getReturnType
 Utils#overriddenType(ExecutableElement):::Return the type containing the method that this method overrides:::return->overriddenType
+Utils#getType(TypeMirror)::: utils get type:::return->isNoType->getObjectType
+Utils#getSuperType(TypeElement)::: utils get super type:::t->te->getSuperclass->return->getType
 Utils#overriddenClass(ExecutableElement):::Return the class that originally defined the method that is overridden by the current definition, or null if no such class exists.:::type->overriddenType->return->asTypeElement
+Utils#overriddenMethod(ExecutableElement)::: utils overridden method:::if->isStatic->return->origin->getEnclosingTypeElement->for->t->getSuperType->t->getKind->asTypeElement->getSuperType->return
+Utils#getTypeElementsAsSortedSet(Iterable)::: utils get type elements as sorted set:::set->makeGeneralPurposeComparator->new->TreeSet<>->foreach->set->add->return
+Utils#getSerialDataTrees(ExecutableElement)::: utils get serial data trees:::return->getBlockTags
+Utils#getFileObject(TypeElement)::: utils get file object:::return->docTrees->getPath->getCompilationUnit->getSourceFile
+Utils#getDeclaredType(TypeElement, TypeMirror)::: utils get declared type:::return->Collections->emptyList->getDeclaredType
 Utils#getDeclaredType(Collection, TypeElement, TypeMirror):::Finds the declaration of the enclosing's type parameter.:::targetElement->asTypeElement->targetTypeArgs->targetElement->getTypeParameters->if->targetTypeArgs->isEmpty->return->enclosingTypeArgs->enclosing->getTypeParameters->targetTypeArgTypes->targetTypeArgs->size->new->ArrayList<>->if->enclosingTypeArgs->isEmpty->foreach->typeArguments->getTypeArguments->if->typeArguments->size->targetTypeArgs->size->for->i->targetTypeArgs->size->break->if->targetTypeArgTypes->isEmpty->return->else->if->targetTypeArgs->size->enclosingTypeArgs->size->return->for->i->targetTypeArgs->size->dt->typeUtils->targetTypeArgTypes->targetTypeArgTypes->size->new->TypeMirrorArr->toArray->getDeclaredType->return
 Utils#getAllInterfaces(TypeElement):::Returns all the implemented super-interfaces of a given type, in the case of classes, include all the super-interfaces of the supertype:::results->new->LinkedHashSet<>->te->asType->getAllInterfaces->return
+Utils#getAllInterfaces(TypeMirror, Set)::: utils get all interfaces:::intfacs->typeUtils->directSupertypes->superType->foreach->if->getObjectType->continue->e->asTypeElement->if->isInterface->if->isPublic->isLinkable->results->add->getAllInterfaces->else->if->getAllInterfaces
 Utils#findClassInPackageElement(PackageElement, String):::Lookup for a class within this package.:::foreach->getAllClasses->if->getSimpleName->equals->return->return
+Utils#findClass(Element, String)::: utils find class:::encl->getEnclosingTypeElement->searchResult->searchClass->if->getEnclosingTypeElement->while->getEnclosingTypeElement->getEnclosingTypeElement->searchClass->return
 Utils#quote(String):::Enclose in quotes, used for paths and filenames that contains spaces:::return
 Utils#parsePackageName(PackageElement):::Parse the package name:::pkgname->p->isUnnamed->getPackageName->index->for->j->if->pkgname->substring->return
 Utils#replaceText(String, String, String):::Given a string, replace all occurrences of 'newStr' with 'oldStr'.:::if->oldStr->equals->return->return->originalStr->replace
 Utils#isDocumentedAnnotation(TypeElement):::Given an annotation, return true if it should be documented and false otherwise.:::foreach->annotation->getAnnotationMirrors->if->anno->getAnnotationType->asElement->getFullyQualifiedName->getName->equals->return->return
 Utils#isLinkable(TypeElement):::Return true if this class is linkable and false if we can't link to the desired class:::return->isIncluded->configuration->isGeneratedDoc->isExternal->isPublic->isProtected
 Utils#asTypeElement(TypeMirror):::Return this type as a TypeElement if it represents a class interface or annotation:::return->new->SimpleTypeVisitor9<TypeElement,Void>->visit
+Utils#getComponentType(TypeMirror)::: utils get component type:::while->isArrayType->getComponentType->return
 Utils#getDimension(TypeMirror):::Return the type's dimension information, as a string:::return->new->SimpleTypeVisitor9<String,Void>->visit
+Utils#getSuperClass(TypeElement)::: utils get super class:::if->isInterface->isAnnotationType->te->asType->getObjectType->equals->return->superclass->te->getSuperclass->if->isNoType->isClass->getObjectType->return->asTypeElement
+Utils#getFirstVisibleSuperClassAsTypeElement(TypeElement)::: utils get first visible super class as type element:::if->isAnnotationType->isInterface->te->asType->getObjectType->equals->return->firstVisibleSuperClass->getFirstVisibleSuperClass->return->asTypeElement
+Utils#getFirstVisibleSuperClass(TypeMirror)::: utils get first visible super class:::return->asTypeElement->getFirstVisibleSuperClass
 Utils#getFirstVisibleSuperClass(TypeElement):::Given a class, return the closest visible super class.:::superType->te->getSuperclass->if->isNoType->getObjectType->superClass->asTypeElement->while->hasHiddenTag->isPublic->isLinkable->supersuperType->superClass->getSuperclass->supersuperClass->asTypeElement->if->supersuperClass->getQualifiedName->superClass->getQualifiedName->equals->break->if->te->asType->equals->return->return
+Utils#getTypeElementName(TypeElement, boolean)::: utils get type element name:::typeName->if->isInterface->else->if->isException->else->if->isError->else->if->isAnnotationType->else->if->isEnum->else->if->isOrdinaryClass->toLowerCase->return->typeNameMap->configuration->getText->computeIfAbsent
+Utils#getTypeName(TypeMirror, boolean)::: utils get type name:::return->new->SimpleTypeVisitor9<String,Void>->visit
 Utils#replaceTabs(String):::Replace all tabs in a string with the appropriate number of spaces:::if->text->contains->return->tabLength->whitespace->textLength->text->length->result->new->StringBuilder->pos->lineLength->for->i->result->append->return->result->toString
+Utils#normalizeNewlines(CharSequence)::: utils normalize newlines:::sb->new->StringBuilder->textLength->text->length->NL->pos->for->i->sb->append->return
 Utils#setEnumDocumentation(TypeElement):::The documentation for values() and valueOf() in Enums are set by the doclet only iff the user or overridden methods are missing.:::foreach->getMethods->ee->if->getFullBody->isEmpty->continue->if->ee->getSimpleName->contentEquals->ee->getParameters->isEmpty->removeCommentHelper->setEnumValuesTree->if->ee->getSimpleName->contentEquals->ee->getParameters->size->removeCommentHelper->setEnumValueOfTree
 Utils#toUpperCase(String):::Returns a locale independent upper cased String:::return->s->toUpperCase
 Utils#toLowerCase(String):::Returns a locale independent lower cased String:::return->s->toLowerCase
@@ -157,6 +343,9 @@ Utils#filterOutPrivateClasses(Iterable, boolean):::In case of JavaFX mode on, fi
 Utils#elementsEqual(Element, Element):::Compares two elements.:::if->e1->getKind->e2->getKind->return->s1->getSimpleName->s2->getSimpleName->if->compareStrings->f1->getFullyQualifiedName->f2->getFullyQualifiedName->return->compareStrings->return
 Utils#compareStrings(String, String):::A general purpose case insensitive String comparator, which compares two Strings using a Collator strength of "TERTIARY".:::return->compareStrings
 Utils#compareCaseCompare(String, String):::A general purpose case sensitive String comparator, which compares two Strings using a Collator strength of "SECONDARY".:::return->compareStrings
+Utils#compareStrings(boolean, String, String)::: utils compare strings:::if->if->new->DocCollator->return->tertiaryCollator->compare->if->new->DocCollator->return->secondaryCollator->compare
+Utils.DocCollator#getKey(String)::: doc collator get key:::return->keys->instance->getCollationKey->computeIfAbsent
+Utils.DocCollator#compare(String, String)::: doc collator compare:::return->getKey->getKey->compareTo
 Utils#makeModuleComparator():::Comparator for ModuleElements, simply compares the fully qualified names:::if->new->Utils.ElementComparator->return
 Utils#makeAllClassesComparator():::Returns a Comparator for all classes, compares the simple names of TypeElement, if equal then the fully qualified names.:::if->new->Utils.ElementComparator->return
 Utils#makePackageComparator():::Returns a Comparator for packages, by comparing the fully qualified names.:::if->new->Utils.ElementComparator->return
@@ -169,16 +358,159 @@ Utils#makeTypeMirrorClassUseComparator():::Compares the FullyQualifiedNames of t
 Utils#makeTypeMirrorIndexUseComparator():::Compares the SimpleNames of TypeMirrors if equal then the FullyQualifiedNames of TypeMirrors.:::if->result->getTypeName->getTypeName->compareStrings->if->return->return->getQualifiedTypeName->getQualifiedTypeName->compareStrings->return
 Utils#getQualifiedTypeName(TypeMirror):::Get the qualified type name of a TypeMiror compatible with the Element's getQualified name, returns  the qualified name of the Reference type otherwise the primitive name.:::return->new->SimpleTypeVisitor9<String,Void>->visit
 Utils#getFullyQualifiedName(Element):::A generic utility which returns the fully qualified names of an entity, if the entity is not qualifiable then its enclosing entity, it is upto the caller to add the elements name as required.:::return->getFullyQualifiedName
+Utils#getFullyQualifiedName(Element, boolean)::: utils get fully qualified name:::return->new->SimpleElementVisitor9<String,Void>->visit
 Utils#makeClassUseComparator():::Comparator for ClassUse presentations, and sorts as follows: 1:::if->new->Utils.ElementComparator->return
+Utils.ElementComparator#compareParameters(boolean, List, List)::: element comparator compare parameters:::return->getParametersAsString->getParametersAsString->compareStrings
+Utils.ElementComparator#getParametersAsString(List)::: element comparator get parameters as string:::sb->new->StringBuilder->foreach->t->param->asType->sb->getTypeCode->append->append->append->append->return->sb->toString
+Utils.ElementComparator#getTypeCode(TypeMirror)::: element comparator get type code:::return->new->SimpleTypeVisitor9<String,Void>->visit
+Utils.ElementComparator#compareNames(Element, Element):::Compares two Elements, typically the name of a method, field or constructor.:::return->getSimpleName->getSimpleName->compareStrings
+Utils.ElementComparator#compareFullyQualifiedNames(Element, Element):::Compares the fully qualified names of the entities:::thisElement->getFullyQualifiedName->thatElement->getFullyQualifiedName->return->compareStrings
+Utils.ElementComparator#compareElementTypeKinds(Element, Element)::: element comparator compare element type kinds:::return->Integer->elementKindOrder->e1->getKind->get->elementKindOrder->e2->getKind->get->compare
+Utils.ElementComparator#hasParameters(Element)::: element comparator has parameters:::return->new->SimpleElementVisitor9<Boolean,Void>->visit
+Utils.ElementComparator#getFullyQualifiedName(Element):::The fully qualified names of the entities, used solely by the comparator.:::return->new->SimpleElementVisitor9<String,Void>->visit
 Utils#makeTypeSearchIndexComparator():::Returns a Comparator for SearchIndexItems representing types:::return->result->sii1->getSimpleName->sii2->getSimpleName->compareStrings->if->sii1->toString->sii2->toString->compareTo->return
 Utils#makeGenericSearchIndexComparator():::Returns a Comparator for SearchIndexItems representing modules, packages, or members:::if->result->sii1->getLabel->sii2->getLabel->compareStrings->if->sii1->toString->sii2->toString->compareTo->return->return
+Utils#getEnclosedTypeElements(PackageElement)::: utils get enclosed type elements:::out->getInterfaces->out->getClasses->addAll->out->getEnums->addAll->out->getAnnotationTypes->addAll->return
+Utils#getAnnotationMembers(TypeElement)::: utils get annotation members:::members->getAnnotationFields->members->getAnnotationMethods->addAll->return
+Utils#getAnnotationFields(TypeElement)::: utils get annotation fields:::return->getItems0
+Utils#getAnnotationFieldsUnfiltered(TypeElement)::: utils get annotation fields unfiltered:::return->getItems0
+Utils#getAnnotationMethods(TypeElement)::: utils get annotation methods:::return->getItems0
+Utils#getAnnotationTypes(Element)::: utils get annotation types:::return->getItems->convertToTypeElement
+Utils#getAnnotationTypesUnfiltered(Element)::: utils get annotation types unfiltered:::return->getItems->convertToTypeElement
+Utils#getFields(Element)::: utils get fields:::return->getItems->convertToVariableElement
+Utils#getFieldsUnfiltered(Element)::: utils get fields unfiltered:::return->getItems->convertToVariableElement
+Utils#getClasses(Element)::: utils get classes:::return->getItems->convertToTypeElement
+Utils#getClassesUnfiltered(Element)::: utils get classes unfiltered:::return->getItems->convertToTypeElement
+Utils#getConstructors(Element)::: utils get constructors:::return->getItems->convertToExecutableElement
+Utils#getMethods(Element)::: utils get methods:::return->getItems->convertToExecutableElement
+Utils#getMethodsUnfiltered(Element)::: utils get methods unfiltered:::return->getItems->convertToExecutableElement
+Utils#getOrdinalValue(VariableElement)::: utils get ordinal value:::if->member->getKind->throw->new->IllegalArgumentException->return->member->getEnclosingElement->getEnclosedElements->indexOf
+Utils#getModulePackageMap()::: utils get module package map:::if->new->HashMap<>->pkgs->configuration->getIncludedPackageElements->pkgs->mod->elementUtils->getModuleOf->modulePackageMap->new->HashSet<>->computeIfAbsent->add->forEach->return
+Utils#getDependentModules(ModuleElement)::: utils get dependent modules:::result->makeModuleComparator->new->TreeMap<>->queue->new->ArrayDeque<>->foreach->ElementFilter->mdle->getDirectives->requiresIn->dep->rd->getDependency->if->result->containsKey->if->rd->isTransitive->queue->addLast->result->rd->getDependency->getModifiers->put->for->m->queue->poll->queue->poll->return
+Utils#getModifiers(RequiresDirective)::: utils get modifiers:::modifiers->new->StringBuilder->sep->if->rd->isTransitive->modifiers->append->if->rd->isStatic->modifiers->append->modifiers->append->return->modifiers->length->modifiers->toString
+Utils#getLineNumber(Element)::: utils get line number:::path->getTreePath->if->encl->getEnclosingTypeElement->getTreePath->cu->path->getCompilationUnit->lineMap->cu->getLineMap->spos->docTrees->getSourcePositions->pos->spos->path->getLeaf->getStartPosition->return->lineMap->getLineNumber
+Utils#convertToExecutableElement(List)::: utils convert to executable element:::out->list->size->new->ArrayList<>->foreach->out->add->return
+Utils#convertToTypeElement(List)::: utils convert to type element:::out->list->size->new->ArrayList<>->foreach->out->add->return
+Utils#convertToVariableElement(List)::: utils convert to variable element:::out->list->size->new->ArrayList<>->foreach->out->add->return
+Utils#getInterfaces(Element)::: utils get interfaces:::return->getItems->convertToTypeElement
+Utils#getInterfacesUnfiltered(Element)::: utils get interfaces unfiltered:::return->getItems->convertToTypeElement
+Utils#getEnumConstants(Element)::: utils get enum constants:::return->getItems
+Utils#getEnums(Element)::: utils get enums:::return->getItems->convertToTypeElement
+Utils#getEnumsUnfiltered(Element)::: utils get enums unfiltered:::return->getItems->convertToTypeElement
+Utils#getAllClassesUnfiltered(Element)::: utils get all classes unfiltered:::clist->getClassesUnfiltered->clist->getInterfacesUnfiltered->addAll->clist->getAnnotationTypesUnfiltered->addAll->oset->makeGeneralPurposeComparator->new->TreeSet<>->oset->addAll->return
 Utils#getAllClasses(Element):::Returns a list containing classes and interfaces, including annotation types.:::oset->cachedClasses->get->if->return->clist->getClasses->clist->getInterfaces->addAll->clist->getAnnotationTypes->addAll->clist->getEnums->addAll->makeGeneralPurposeComparator->new->TreeSet<>->oset->addAll->cachedClasses->put->return
+Utils#getInnerClasses(Element, boolean)::: utils get inner classes:::olist->new->ArrayList<>->foreach->getClassesUnfiltered->if->isSelected->olist->add->foreach->getInterfacesUnfiltered->if->isSelected->olist->add->foreach->getAnnotationTypesUnfiltered->if->isSelected->olist->add->foreach->getEnumsUnfiltered->if->isSelected->olist->add->return
+Utils#getInnerClasses(Element)::: utils get inner classes:::return->getInnerClasses
+Utils#getInnerClassesUnfiltered(Element)::: utils get inner classes unfiltered:::return->getInnerClasses
 Utils#getOrdinaryClasses(Element):::Returns a list of classes that are not errors or exceptions:::return->getClasses->stream->isException->isError->filter->Collectors->toList->collect
+Utils#getErrors(Element)::: utils get errors:::return->getClasses->stream->this->isError->filter->Collectors->toList->collect
+Utils#getExceptions(Element)::: utils get exceptions:::return->getClasses->stream->this->isException->filter->Collectors->toList->collect
+Utils#getItems(Element, boolean, ElementKind)::: utils get items:::elements->new->ArrayList<>->return->new->SimpleElementVisitor9<List<Element>,Void>->visit
+Utils#recursiveGetItems(Collection, Element, boolean, ElementKind...)::: utils recursive get items:::list->getItems0->addAll->classes->getItems0->foreach->list->getItems0->addAll->if->isTypeElement->recursiveGetItems
+Utils#getItems0(Element, boolean, ElementKind...)::: utils get items0:::kinds->EnumSet->Arrays->asList->copyOf->return->getItems0
+Utils#getItems0(Element, boolean, Set)::: utils get items0:::elements->new->ArrayList<>->foreach->te->getEnclosedElements->if->kinds->e->getKind->contains->if->shouldDocument->elements->add->return
+Utils#shouldDocument(Element)::: utils should document:::if->new->SimpleElementVisitor9<Boolean,Void>->return->shouldDocumentVisitor->visit
 Utils#getSimpleName(Element):::Returns the name of the element after the last dot of the package name:::return->nameCache->this->getSimpleName0->computeIfAbsent
+Utils#getSimpleName0(Element)::: utils get simple name0:::if->new->SimpleElementVisitor9<String,Void>->return->snvisitor->visit
+Utils#getEnclosingTypeElement(Element)::: utils get enclosing type element:::if->e->getKind->return->encl->e->getEnclosingElement->kind->encl->getKind->if->return->while->kind->isClass->kind->isInterface->encl->getEnclosingElement->encl->getKind->return
+Utils#constantValueExpresion(VariableElement)::: utils constant value expresion:::if->new->ConstantValueExpression->return->cve->constantValueExpression
+Utils.ConstantValueExpression#constantValueExpression(WorkArounds, VariableElement)::: constant value expression constant value expression:::return->new->TypeKindVisitor9<String,Object>->ve->asType->workArounds->getConstValue->visit
+Utils.ConstantValueExpression#sourceForm(double, char)::: constant value expression source form:::if->Double->isNaN->return->if->return->if->return->return
+Utils.ConstantValueExpression#sourceForm(char)::: constant value expression source form:::buf->new->StringBuilder->buf->append->sourceChar->buf->append->return->buf->toString
+Utils.ConstantValueExpression#sourceForm(byte)::: constant value expression source form:::return->Integer->toString
+Utils.ConstantValueExpression#sourceForm(String)::: constant value expression source form:::buf->s->length->new->StringBuilder->buf->append->for->i->s->length->buf->append->return->buf->toString
+Utils.ConstantValueExpression#sourceChar(char, StringBuilder)::: constant value expression source char:::switch->buf->append->return->buf->append->return->buf->append->return->buf->append->return->buf->append->return->buf->append->return->buf->append->return->buf->append->return->if->isPrintableAscii->buf->append->return->unicodeEscape->return
+Utils.ConstantValueExpression#unicodeEscape(char, StringBuilder)::: constant value expression unicode escape:::chars->buf->append->buf->chars->charAt->append->buf->chars->charAt->append->buf->chars->charAt->append->buf->chars->charAt->append
+Utils.ConstantValueExpression#isPrintableAscii(char)::: constant value expression is printable ascii:::return
+Utils#isEnclosingPackageIncluded(TypeElement)::: utils is enclosing package included:::return->containingPackage->isIncluded
+Utils#isIncluded(Element)::: utils is included:::return->isIncluded
+Utils#isSpecified(Element)::: utils is specified:::if->new->SimpleElementVisitor9<Boolean,Void>->return->specifiedVisitor->visit
 Utils#getPackageName(PackageElement):::Get the package name for a given package element:::if->pkg->isUnnamed->return->return->pkg->getQualifiedName->toString
 Utils#getModuleName(ModuleElement):::Get the module name for a given module element:::if->mdle->isUnnamed->return->return->mdle->getQualifiedName->toString
+Utils#isAttribute(DocTree)::: utils is attribute:::return->isKind
+Utils#isAuthor(DocTree)::: utils is author:::return->isKind
+Utils#isComment(DocTree)::: utils is comment:::return->isKind
+Utils#isDeprecated(DocTree)::: utils is deprecated:::return->isKind
+Utils#isDocComment(DocTree)::: utils is doc comment:::return->isKind
+Utils#isDocRoot(DocTree)::: utils is doc root:::return->isKind
+Utils#isEndElement(DocTree)::: utils is end element:::return->isKind
+Utils#isEntity(DocTree)::: utils is entity:::return->isKind
+Utils#isErroneous(DocTree)::: utils is erroneous:::return->isKind
+Utils#isException(DocTree)::: utils is exception:::return->isKind
+Utils#isIdentifier(DocTree)::: utils is identifier:::return->isKind
+Utils#isInheritDoc(DocTree)::: utils is inherit doc:::return->isKind
+Utils#isLink(DocTree)::: utils is link:::return->isKind
+Utils#isLinkPlain(DocTree)::: utils is link plain:::return->isKind
+Utils#isLiteral(DocTree)::: utils is literal:::return->isKind
+Utils#isOther(DocTree)::: utils is other:::return->doctree->getKind
+Utils#isParam(DocTree)::: utils is param:::return->isKind
+Utils#isReference(DocTree)::: utils is reference:::return->isKind
+Utils#isReturn(DocTree)::: utils is return:::return->isKind
+Utils#isSee(DocTree)::: utils is see:::return->isKind
+Utils#isSerial(DocTree)::: utils is serial:::return->isKind
+Utils#isSerialData(DocTree)::: utils is serial data:::return->isKind
+Utils#isSerialField(DocTree)::: utils is serial field:::return->isKind
+Utils#isSince(DocTree)::: utils is since:::return->isKind
+Utils#isStartElement(DocTree)::: utils is start element:::return->isKind
+Utils#isText(DocTree)::: utils is text:::return->isKind
+Utils#isThrows(DocTree)::: utils is throws:::return->isKind
+Utils#isUnknownBlockTag(DocTree)::: utils is unknown block tag:::return->isKind
+Utils#isUnknownInlineTag(DocTree)::: utils is unknown inline tag:::return->isKind
+Utils#isValue(DocTree)::: utils is value:::return->isKind
+Utils#isVersion(DocTree)::: utils is version:::return->isKind
+Utils#isKind(DocTree, DocTree.Kind)::: utils is kind:::return->doctree->getKind
+Utils#getCommentHelper(Element)::: utils get comment helper:::return->wksMap->computeIfAbsent
+Utils#removeCommentHelper(Element)::: utils remove comment helper:::wksMap->remove
+Utils#filteredList(List, DocTree.Kind...)::: utils filtered list:::list->dlist->size->new->ArrayList<>->if->return->foreach->if->dt->getKind->foreach->if->dt->getKind->list->add->return
+Utils#getBlockTags0(Element, DocTree.Kind...)::: utils get block tags0:::dcTree->getDocCommentTree->if->return->Collections->emptyList->return->dcTree->getBlockTags->filteredList
+Utils#getBlockTags(Element)::: utils get block tags:::return->getBlockTags0
+Utils#getBlockTags(Element, DocTree.Kind...)::: utils get block tags:::return->getBlockTags0
+Utils#getBlockTags(Element, String)::: utils get block tags:::kind->switch->toUpperCase->valueOf->return->getBlockTags->return->getBlockTags->return->getBlockTags->break->blockTags->getBlockTags->out->new->ArrayList<>->tname->tagName->startsWith->tagName->substring->ch->getCommentHelper->foreach->if->ch->getTagName->equals->out->add->return
+Utils#hasBlockTag(Element, DocTree.Kind)::: utils has block tag:::return->hasBlockTag
+Utils#hasBlockTag(Element, DocTree.Kind, String)::: utils has block tag:::ch->getCommentHelper->tname->tagName->startsWith->tagName->substring->foreach->getBlockTags->if->dt->getKind->if->ch->getTagName->equals->return->return
 Utils#getTreePath(Element):::Gets a TreePath for an Element:::duo->dcTreeCache->get->if->isValidDuo->return->getSyntheticCommentDuo->if->isValidDuo->return->elementToTreePath->getElementToTreePath->path->elementToTreePath->get->if->elementToTreePath->containsKey->return->return->elementToTreePath->docTrees->getPath->computeIfAbsent
 Utils#getDocCommentTree0(Element):::Retrieves the doc comments for a given element.:::duo->kind->element->getKind->if->dcTreeCache->get->if->isValidDuo->getDocCommentTuple->if->isValidDuo->getHtmlCommentDuo->else->getSyntheticCommentDuo->if->isValidDuo->dcTreeCache->get->if->isValidDuo->getDocCommentTuple->docCommentTree->isValidDuo->path->isValidDuo->if->dcTreeCache->containsKey->if->if->configuration->isAllowScriptInComments->try->javaScriptScanner->throw->new->JavaScriptScanner.Fault->scan->catch->text->configuration->getText->throw->new->SimpleDocletException->new->UncheckedDocletException->finally->runDocLint->dcTreeCache->put->return
+Utils#getDocCommentTuple(Element)::: utils get doc comment tuple:::if->element->getKind->path->getTreePath->if->docCommentTree->docTrees->getDocCommentTree->return->new->DocCommentDuo->return
+Utils#checkJavaScriptInOption(String, String)::: utils check java script in option:::if->configuration->isAllowScriptInComments->dct->URI->name->replace->create->parse->if->return->try->javaScriptScanner->throw->new->JavaScriptScanner.Fault->scan->catch->text->configuration->getText->throw->new->SimpleDocletException->new->UncheckedDocletException->finally
+Utils#isValidDuo(DocCommentDuo)::: utils is valid duo:::return
+Utils#getDocCommentTree(Element)::: utils get doc comment tree:::ch->wksMap->get->if->return->dcTree->getDocCommentTree0->if->wksMap->getTreePath->new->CommentHelper->put->return
+Utils#getPreamble(Element)::: utils get preamble:::docCommentTree->getDocCommentTree->return->Collections->emptyList->docCommentTree->getPreamble
+Utils#getFullBody(Element)::: utils get full body:::docCommentTree->getDocCommentTree->return->Collections->emptyList->docCommentTree->getFullBody
+Utils#getBody(Element)::: utils get body:::docCommentTree->getDocCommentTree->return->Collections->emptyList->docCommentTree->getFullBody
+Utils#getDeprecatedTrees(Element)::: utils get deprecated trees:::return->getBlockTags
+Utils#getProvidesTrees(Element)::: utils get provides trees:::return->getBlockTags
+Utils#getSeeTrees(Element)::: utils get see trees:::return->getBlockTags
+Utils#getSerialTrees(Element)::: utils get serial trees:::return->getBlockTags
+Utils#getSerialFieldTrees(VariableElement)::: utils get serial field trees:::return->getBlockTags
+Utils#getThrowsTrees(Element)::: utils get throws trees:::return->getBlockTags
+Utils#getTypeParamTrees(Element)::: utils get type param trees:::return->getParamTrees
+Utils#getParamTrees(Element)::: utils get param trees:::return->getParamTrees
+Utils#getParamTrees(Element, boolean)::: utils get param trees:::out->new->ArrayList<>->foreach->getBlockTags->pt->if->pt->isTypeParameter->out->add->return
+Utils#getReturnTrees(Element)::: utils get return trees:::out->new->ArrayList<>->foreach->getBlockTags->out->add->return
+Utils#getUsesTrees(Element)::: utils get uses trees:::return->getBlockTags
+Utils#getFirstSentenceTrees(Element)::: utils get first sentence trees:::dcTree->getDocCommentTree->if->return->Collections->emptyList->out->new->ArrayList<>->foreach->dcTree->getFirstSentence->out->add->return
+Utils#containingModule(Element)::: utils containing module:::return->elementUtils->getModuleOf
+Utils#containingPackage(Element)::: utils containing package:::return->elementUtils->getPackageOf
+Utils#getTopMostContainingTypeElement(Element)::: utils get top most containing type element:::if->isPackage->return->outer->getEnclosingTypeElement->if->return->while->outer->getNestingKind->isNested->getEnclosingTypeElement->return
+Utils.WeakSoftHashMap#containsKey(Object)::: weak soft hash map contains key:::return->wkMap->containsKey
+Utils.WeakSoftHashMap#values()::: weak soft hash map values:::out->new->LinkedHashSet<>->foreach->wkMap->values->out->v->get->add->return
+Utils.WeakSoftHashMap#containsValue(Object)::: weak soft hash map contains value:::return->wkMap->new->SoftReference<>->containsValue
+Utils.WeakSoftHashMap#remove(Object)::: weak soft hash map remove:::value->wkMap->remove->return->value->get
+Utils.WeakSoftHashMap#put(Element, CommentHelper)::: weak soft hash map put:::nvalue->wkMap->new->SoftReference<>->put->return->nvalue->get
+Utils.WeakSoftHashMap#get(Object)::: weak soft hash map get:::value->wkMap->get->return->value->get
+Utils.WeakSoftHashMap#size()::: weak soft hash map size:::return->wkMap->size
+Utils.WeakSoftHashMap#isEmpty()::: weak soft hash map is empty:::return->wkMap->isEmpty
+Utils.WeakSoftHashMap#clear()::: weak soft hash map clear:::wkMap->clear
+Utils.WeakSoftHashMap#computeIfAbsent(Element)::: weak soft hash map compute if absent:::if->wkMap->containsKey->value->wkMap->get->if->cvalue->value->get->if->return->newValue->utils->getTreePath->utils->getDocCommentTree->new->CommentHelper->wkMap->new->SoftReference<>->put->return
+Utils.WeakSoftHashMap#putAll(Map)::: weak soft hash map put all:::foreach->map->entrySet->entry->getKey->entry->getValue->put
+Utils.WeakSoftHashMap#keySet()::: weak soft hash map key set:::return->wkMap->keySet
+Utils.WeakSoftHashMap#entrySet()::: weak soft hash map entry set:::out->new->LinkedHashSet<>->foreach->wkMap->keySet->n->get->new->SimpleEntry<>->out->add->return
+Utils.Pair#toString()::: pair to string:::out->new->StringBuffer->out->append->return->out->toString
+VisibleMemberCache#getVisibleMemberTable(TypeElement)::: visible member cache get visible member table:::return->cache->new->VisibleMemberTable->computeIfAbsent
+VisibleMemberTable#ensureInitialized()::: visible member table ensure initialized:::if->return->new->EnumMap<>->foreach->Kind->values->visibleMembers->new->ArrayList<>->put->computeParents->computeVisibleMembers
+VisibleMemberTable#getExtraMembers(Kind)::: visible member table get extra members:::ensureInitialized->return->visibleMembers->Collections->emptyList->getOrDefault
+VisibleMemberTable#getAllSuperclasses()::: visible member table get all superclasses:::ensureInitialized->return
+VisibleMemberTable#getAllSuperinterfaces()::: visible member table get all superinterfaces:::ensureInitialized->return
 VisibleMemberTable#getAllVisibleMembers(Kind):::Returns a list of all visible enclosed members of a type element, and inherited members:::ensureInitialized->return->visibleMembers->Collections->emptyList->getOrDefault
 VisibleMemberTable#getVisibleMembers(Kind, Predicate):::Returns a list of visible enclosed members of a specified kind, filtered by the specified predicate.:::ensureInitialized->return->visibleMembers->Collections->emptyList->getOrDefault->stream->filter->Collectors->toList->collect
 VisibleMemberTable#getVisibleMembers(Kind):::Returns a list of all enclosed members including any extra members:::declaredAndLeafMembers->encl->utils->getEnclosingTypeElement->return->isUndocumentedEnclosure->return->getVisibleMembers
@@ -191,3 +523,31 @@ VisibleMemberTable#hasVisibleMembers(Kind):::Returns true if this table contains
 VisibleMemberTable#getPropertyField(ExecutableElement):::Returns the property field associated with the property method.:::ensureInitialized->pm->propertyMap->get->return
 VisibleMemberTable#getPropertyGetter(ExecutableElement):::Returns the getter method associated with the property method.:::ensureInitialized->pm->propertyMap->get->return
 VisibleMemberTable#getPropertySetter(ExecutableElement):::Returns the setter method associated with the property method.:::ensureInitialized->pm->propertyMap->get->return
+VisibleMemberTable#isUndocumentedEnclosure(TypeElement)::: visible member table is undocumented enclosure:::return->utils->isPackagePrivate->utils->isLinkable
+VisibleMemberTable#computeParents()::: visible member table compute parents:::foreach->te->getInterfaces->intfc->utils->asTypeElement->if->vmt->mcache->getVisibleMemberTable->allSuperinterfaces->add->parents->add->allSuperinterfaces->vmt->getAllSuperinterfaces->addAll->if->vmt->mcache->getVisibleMemberTable->allSuperclasses->add->allSuperclasses->vmt->getAllSuperclasses->addAll->allSuperinterfaces->vmt->getAllSuperinterfaces->addAll->parents->add
+VisibleMemberTable#computeVisibleMembers()::: visible member table compute visible members:::lmt->new->LocalMemberTable->foreach->Kind->values->computeLeafMembers->computeVisibleMembers->computeVisibleProperties
+VisibleMemberTable#computeLeafMembers(LocalMemberTable, Kind)::: visible member table compute leaf members:::list->new->ArrayList<>->if->isUndocumentedEnclosure->list->lmt->getOrderedMembers->addAll->parents->list->pvmt->getExtraMembers->addAll->forEach->extraMembers->Collections->unmodifiableList->put
+VisibleMemberTable#computeVisibleMembers(LocalMemberTable, Kind)::: visible member table compute visible members:::switch->computeVisibleFieldsAndInnerClasses->return->computeVisibleMethods->return->return->list->lmt->getOrderedMembers->stream->this->mustDocument->filter->Collectors->toList->collect->visibleMembers->Collections->unmodifiableList->put->break
+VisibleMemberTable#mustDocument(Element)::: visible member table must document:::return->utils->hasHiddenTag->utils->shouldDocument
+VisibleMemberTable#allowInheritedMembers(Element, Kind, LocalMemberTable)::: visible member table allow inherited members:::return->isInherited->isMemberHidden
+VisibleMemberTable#isInherited(Element)::: visible member table is inherited:::if->utils->isPrivate->return->if->utils->isPackagePrivate->return->utils->containingPackage->utils->containingPackage->equals->return
+VisibleMemberTable#isMemberHidden(Element, Kind, LocalMemberTable)::: visible member table is member hidden:::elementUtils->getElementUtils->switch->list->lmt->getMembers->if->list->isEmpty->return->return->elementUtils->list->get->hides->throw->new->IllegalArgumentException
+VisibleMemberTable#computeVisibleFieldsAndInnerClasses(LocalMemberTable, Kind)::: visible member table compute visible fields and inner classes:::result->new->LinkedHashSet<>->foreach->result->pvmt->getExtraMembers->addAll->result->pvmt->getAllVisibleMembers->addAll->list->result->stream->allowInheritedMembers->filter->Collectors->toList->collect->list->lmt->getOrderedMembers->addAll->list->stream->this->mustDocument->filter->Collectors->toList->collect->visibleMembers->Collections->unmodifiableList->put
+VisibleMemberTable#computeVisibleMethods(LocalMemberTable)::: visible member table compute visible methods:::inheritedMethods->new->LinkedHashSet<>->overriddenByTable->new->HashMap<>->foreach->entrySet->p->e->getValue->if->list->overriddenByTable->new->ArrayList<>->computeIfAbsent->list->e->getKey->add->forEach->inheritedMethods->pvmt->getAllVisibleMembers->addAll->if->utils->shouldDocument->extraMethods->pvmt->getExtraMembers->if->lmt->getOrderedMembers->isEmpty->inheritedMethods->addAll->continue->foreach->found->lmethods->lmt->getMembers->foreach->method->overrides->if->break->if->inheritedMethods->add->list->inheritedMethods->stream->allowInheritedMethods->filter->Collectors->toList->collect->isVisible->p->overriddenMethodTable->getOrDefault->return->mlist->lmt->getOrderedMembers->llist->mlist->stream->map->filter->Collectors->toList->collect->list->addAll->list->stream->this->mustDocument->filter->Collectors->toList->collect->visibleMembers->Collections->unmodifiableList->put->foreach->overriddenMethodTable->putAll->Collections->unmodifiableMap
+VisibleMemberTable#isEnclosureInterface(Element)::: visible member table is enclosure interface:::enclosing->utils->getEnclosingTypeElement->return->utils->isInterface
+VisibleMemberTable#allowInheritedMethods(ExecutableElement, Map>, LocalMemberTable)::: visible member table allow inherited methods:::if->isInherited->return->haveStatic->utils->isStatic->inInterface->isEnclosureInterface->if->return->if->list->inheritedOverriddenTable->get->if->found->list->stream->this->isEnclosureInterface->anyMatch->if->return->elementUtils->getElementUtils->lMethods->lmt->getMembers->foreach->if->utils->isPrivate->continue->if->utils->isStatic->elementUtils->hides->return->if->elementUtils->utils->getEnclosingTypeElement->overrides->encl->utils->getEnclosingTypeElement->if->isUndocumentedEnclosure->overriddenMethodTable->new->OverridingMethodInfo->computeIfAbsent->return->simpleOverride->utils->isSimpleOverride->overriddenMethodTable->new->OverridingMethodInfo->computeIfAbsent->return->return
+VisibleMemberTable.LocalMemberTable#getMemberKey(Element)::: local member table get member key:::return->new->SimpleElementVisitor9<String,Void>->visit
+VisibleMemberTable.LocalMemberTable#addMember(Element, Kind)::: local member table add member:::list->orderedMembers->new->ArrayList<>->computeIfAbsent->list->add->map->memberMap->new->HashMap<>->computeIfAbsent->map->getMemberKey->new->ArrayList<>->computeIfAbsent->list->add
+VisibleMemberTable.LocalMemberTable#getOrderedMembers(Kind)::: local member table get ordered members:::return->orderedMembers->get
+VisibleMemberTable.LocalMemberTable#getMembers(Element, Kind)::: local member table get members:::key->getMemberKey->return->getMembers
+VisibleMemberTable.LocalMemberTable#getMembers(String, Kind)::: local member table get members:::map->memberMap->get->return->map->Collections->emptyList->getOrDefault
+VisibleMemberTable.LocalMemberTable#getPropertyMethods(String, int)::: local member table get property methods:::return->getMembers->stream->utils->isPublic->utils->isProtected->filter->Collectors->toList->collect
+VisibleMemberTable.PropertyMembers#toString()::: property members to string:::return
+VisibleMemberTable#computeVisibleProperties(LocalMemberTable)::: visible member table compute visible properties:::if->return->pUtils->list->visibleMembers->Collections->emptyList->getOrDefault->stream->map->pUtils->isPropertyMethod->filter->Collectors->toList->collect->visibleMembers->Collections->unmodifiableList->put->propertyMethods->list->stream->utils->getEnclosingTypeElement->filter->Collectors->toList->collect->foreach->baseName->pUtils->getBaseName->flist->lmt->getMembers->field->flist->isEmpty->flist->get->getter->setter->found->lmt->pUtils->getGetName->getPropertyMethods->if->found->isEmpty->found->get->if->lmt->pUtils->getIsName->getPropertyMethods->if->found->isEmpty->propertyTypeName->propertyMethod->getReturnType->toString->if->pUtils->hasIsMethod->found->get->lmt->pUtils->getSetName->getPropertyMethods->if->foreach->if->pUtils->isValidSetterMethod->break->propertyMap->new->PropertyMembers->put
+VisibleMemberTable#getImplementedMethodsFinder(ExecutableElement)::: visible member table get implemented methods finder:::imf->implementMethodsFinders->get->if->imf->get->new->ImplementedMethods->new->SoftReference<>->implementMethodsFinders->put->return->imf->get
+VisibleMemberTable#getImplementedMethods(ExecutableElement)::: visible member table get implemented methods:::imf->getImplementedMethodsFinder->return->imf->getImplementedMethods->stream->getsimplyOverriddenMethod->filter->Collectors->toList->collect
+VisibleMemberTable#getImplementedMethodHolder(ExecutableElement, ExecutableElement)::: visible member table get implemented method holder:::imf->getImplementedMethodsFinder->return->imf->getMethodHolder
+VisibleMemberTable.ImplementedMethods#getImplementedMethods():::Return the list of interface methods which the method passed in the constructor is implementing:::return
+VisibleMemberTable.ImplementedMethods#getMethodHolder(ExecutableElement)::: implemented methods get method holder:::return->interfaces->get
+VisibleMemberTable.ImplementedMethods#removeOverriddenMethod(ExecutableElement):::Search in the method list and check if it contains a method which is overridden by the method as parameter:::overriddenClass->utils->overriddenClass->if->for->i->methlist->size
+VisibleMemberTable.ImplementedMethods#overridingMethodFound(ExecutableElement):::Search in the already found methods' list and check if it contains a method which is overriding the method parameter or is the method parameter itself.:::containingClass->utils->getEnclosingTypeElement->foreach->if->utils->getEnclosingTypeElement->return->te->utils->overriddenClass->if->continue->if->utils->isSubclassOf->return->return

@@ -1,18 +1,34 @@
+CopyMoveHelper.CopyOptions#parse(CopyOption...)::: copy options parse:::result->new->CopyOptions->foreach->if->continue->if->continue->if->continue->if->throw->new->NullPointerException->throw->new->UnsupportedOperationException->return
+CopyMoveHelper#convertMoveToCopyOptions(CopyOption...):::Converts the given array of options for moving a file to options suitable for copying the file when a move is implemented as copy + delete.:::len->newOptions->new->CopyOptionArr->for->i->return
 CopyMoveHelper#copyToForeignTarget(Path, Path, CopyOption...):::Simple copy for use when source and target are associated with different providers:::opts->CopyOptions->parse->linkOptions->new->LinkOptionArr->new->LinkOptionArr->attrs->Files->readAttributes->if->attrs->isSymbolicLink->throw->new->IOException->if->Files->deleteIfExists->else->if->Files->exists->throw->target->toString->new->FileAlreadyExistsException->if->attrs->isDirectory->Files->createDirectory->else->try->in->Files->newInputStream->Files->copy->catch->finally->if->view->Files->getFileAttributeView->try->view->attrs->lastModifiedTime->attrs->lastAccessTime->attrs->creationTime->setTimes->catch->try->Files->delete->catch->x->addSuppressed->finally->throw->finally
 CopyMoveHelper#moveToForeignTarget(Path, Path, CopyOption...):::Simple move implements as copy+delete for use when source and target are associated with different providers:::convertMoveToCopyOptions->copyToForeignTarget->Files->delete
 DirectoryIteratorException#getCause():::Returns the cause of this exception.:::return->super->getCause
+DirectoryIteratorException#readObject(ObjectInputStream):::Called to read the object from a stream.:::s->defaultReadObject->cause->super->getCause->if->throw->new->InvalidObjectException
 DirectoryStream.Filter#accept(T):::Decides if the given directory entry should be accepted or filtered.:::
 DirectoryStream#iterator():::Returns the iterator associated with this DirectoryStream.:::
+FileChannelLinesSpliterator#tryAdvance(Consumer)::: file channel lines spliterator try advance:::line->readLine->if->action->accept->return->else->return
+FileChannelLinesSpliterator#forEachRemaining(Consumer)::: file channel lines spliterator for each remaining:::line->while->readLine->action->accept
+FileChannelLinesSpliterator#getBufferedReader()::: file channel lines spliterator get buffered reader:::rrbc->new->ReadableByteChannel->return->Channels->cs->newDecoder->newReader->new->BufferedReader
+FileChannelLinesSpliterator#readLine()::: file channel lines spliterator read line:::if->getBufferedReader->try->return->reader->readLine->catch->throw->new->UncheckedIOException->finally
+FileChannelLinesSpliterator#getMappedByteBuffer()::: file channel lines spliterator get mapped byte buffer:::try->return->fc->map->catch->throw->new->UncheckedIOException->finally
+FileChannelLinesSpliterator#trySplit()::: file channel lines spliterator try split:::if->return->b->if->getMappedByteBuffer->hi->lo->mid->c->b->get->if->else->if->if->b->get->else->midL->midR->while->b->get->if->break->b->get->if->if->b->get->break->return->new->FileChannelLinesSpliterator
+FileChannelLinesSpliterator#estimateSize()::: file channel lines spliterator estimate size:::return
+FileChannelLinesSpliterator#getExactSizeIfKnown()::: file channel lines spliterator get exact size if known:::return
+FileChannelLinesSpliterator#characteristics()::: file channel lines spliterator characteristics:::return
+Files#provider(Path):::Returns the FileSystemProvider to delegate to.:::return->path->getFileSystem->provider
+Files#asUncheckedRunnable(Closeable):::Convert a Closeable to a Runnable by converting checked IOException to UncheckedIOException:::return->try->c->close->catch->throw->new->UncheckedIOException->finally
 Files#newInputStream(Path, OpenOption...):::Opens a file, returning an input stream to read from the file:::return->provider->newInputStream
 Files#newOutputStream(Path, OpenOption...):::Opens or creates a file, returning an output stream that may be used to write bytes to the file:::return->provider->newOutputStream
 Files#newByteChannel(Path, Set, FileAttribute...):::Opens or creates a file, returning a seekable byte channel to access the file:::return->provider->newByteChannel
 Files#newByteChannel(Path, OpenOption...):::Opens or creates a file, returning a seekable byte channel to access the file:::set->if->Collections->emptySet->else->new->HashSet<>->Collections->addAll->return->newByteChannel
+Files.AcceptAllFilter#accept(Path)::: accept all filter accept:::return
 Files#newDirectoryStream(Path):::Opens a directory, returning a DirectoryStream to iterate over all entries in the directory:::return->provider->newDirectoryStream
 Files#newDirectoryStream(Path, String):::Opens a directory, returning a DirectoryStream to iterate over the entries in the directory:::if->glob->equals->return->newDirectoryStream->fs->dir->getFileSystem->matcher->fs->getPathMatcher->filter->new->DirectoryStream.Filter<>->return->fs->provider->newDirectoryStream
 Files#newDirectoryStream(Path, DirectoryStream.Filter):::Opens a directory, returning a DirectoryStream to iterate over the entries in the directory:::return->provider->newDirectoryStream
 Files#createFile(Path, FileAttribute...):::Creates a new and empty file, failing if the file already exists:::newByteChannel->close->return
 Files#createDirectory(Path, FileAttribute...):::Creates a new directory:::provider->createDirectory->return
 Files#createDirectories(Path, FileAttribute...):::Creates a directory by creating all nonexistent parent directories first:::try->createAndCheckIsDirectory->return->catch->throw->finally->se->try->dir->toAbsolutePath->catch->finally->parent->dir->getParent->while->try->provider->checkAccess->break->catch->finally->parent->getParent->if->if->throw->dir->toString->new->FileSystemException->else->throw->child->foreach->parent->relativize->child->resolve->createAndCheckIsDirectory->return
+Files#createAndCheckIsDirectory(Path, FileAttribute...):::Used by createDirectories to attempt to create a directory:::try->createDirectory->catch->if->isDirectory->throw->finally
 Files#createTempFile(Path, String, String, FileAttribute...):::Creates a new empty file in the specified directory, using the given prefix and suffix strings to generate its name:::return->TempFileHelper->Objects->requireNonNull->createTempFile
 Files#createTempFile(String, String, FileAttribute...):::Creates an empty file in the default temporary-file directory, using the given prefix and suffix to generate its name:::return->TempFileHelper->createTempFile
 Files#createTempDirectory(Path, String, FileAttribute...):::Creates a new directory in the specified directory, using the given prefix to generate its name:::return->TempFileHelper->Objects->requireNonNull->createTempDirectory
@@ -27,6 +43,8 @@ Files#readSymbolicLink(Path):::Reads the target of a symbolic link (optional ope
 Files#getFileStore(Path):::Returns the FileStore representing the file store where a file is located:::return->provider->getFileStore
 Files#isSameFile(Path, Path):::Tests if two paths locate the same file:::return->provider->isSameFile
 Files#isHidden(Path):::Tells whether or not a file is considered hidden:::return->provider->isHidden
+Files.FileTypeDetectors#createDefaultFileTypeDetector()::: file type detectors create default file type detector:::return->AccessController->new->PrivilegedAction<>->doPrivileged
+Files.FileTypeDetectors#loadInstalledDetectors()::: file type detectors load installed detectors:::return->AccessController->new->PrivilegedAction<>->doPrivileged
 Files#probeContentType(Path):::Probes the content type of a file:::foreach->result->detector->probeContentType->if->return->return->probeContentType
 Files#getFileAttributeView(Path, Class, LinkOption...):::Returns a file attribute view of a given type:::return->provider->getFileAttributeView
 Files#readAttributes(Path, Class, LinkOption...):::Reads a file's attributes as a bulk operation:::return->provider->readAttributes
@@ -43,8 +61,10 @@ Files#isRegularFile(Path, LinkOption...):::Tests whether a file is a regular fil
 Files#getLastModifiedTime(Path, LinkOption...):::Returns a file's last modified time:::return->readAttributes->lastModifiedTime
 Files#setLastModifiedTime(Path, FileTime):::Updates a file's last modified time attribute:::getFileAttributeView->Objects->requireNonNull->setTimes->return
 Files#size(Path):::Returns the size of a file (in bytes):::return->readAttributes->size
+Files#followLinks(LinkOption...):::Returns false if NOFOLLOW_LINKS is present.:::followLinks->foreach->if->continue->if->throw->new->NullPointerException->throw->new->AssertionError->return
 Files#exists(Path, LinkOption...):::Tests whether a file exists:::if->provider->provider->if->return->exists->try->if->followLinks->provider->checkAccess->else->readAttributes->return->catch->return->finally
 Files#notExists(Path, LinkOption...):::Tests whether the file located by this path does not exist:::try->if->followLinks->provider->checkAccess->else->readAttributes->return->catch->return->return->finally
+Files#isAccessible(Path, AccessMode...):::Used by isReadable, isWritable, isExecutable to test access to a file.:::try->provider->checkAccess->return->catch->return->finally
 Files#isReadable(Path):::Tests whether a file is readable:::return->isAccessible
 Files#isWritable(Path):::Tests whether a file is writable:::return->isAccessible
 Files#isExecutable(Path):::Tests whether a file is executable:::return->isAccessible
@@ -56,6 +76,7 @@ Files#newBufferedWriter(Path, Charset, OpenOption...):::Opens or creates a file 
 Files#newBufferedWriter(Path, OpenOption...):::Opens or creates a file for writing, returning a BufferedWriter to write text to the file in an efficient manner:::return->newBufferedWriter
 Files#copy(InputStream, Path, CopyOption...):::Copies all bytes from an input stream to a file:::Objects->requireNonNull->replaceExisting->foreach->if->else->if->throw->new->NullPointerException->else->throw->new->UnsupportedOperationException->se->if->try->deleteIfExists->catch->finally->ostream->try->newOutputStream->catch->if->throw->throw->finally->try->out->return->in->transferTo->catch->finally
 Files#copy(Path, OutputStream):::Copies all bytes from a file to an output stream:::Objects->requireNonNull->try->in->newInputStream->return->in->transferTo->catch->finally
+Files#read(InputStream, int):::Reads all the bytes from an input stream:::capacity->buf->new->byteArr->nread->n->for->return->Arrays->copyOf
 Files#readAllBytes(Path):::Reads all the bytes from a file:::try->sbc->Files->newByteChannel->in->Channels->newInputStream->if->setUninterruptible->size->sbc->size->if->throw->new->OutOfMemoryError->return->read->catch->finally
 Files#readString(Path):::Reads all content from a file into a string, decoding from bytes to characters using the StandardCharsets#UTF_8 UTF-8 Charset charset:::return->readString
 Files#readString(Path, Charset):::Reads all characters from a file into a string, decoding from bytes to characters using the specified Charset charset:::Objects->requireNonNull->Objects->requireNonNull->ba->readAllBytes->if->path->getClass->getModule->getModule->ba->clone->return->JLA->newStringNoRepl
@@ -71,6 +92,8 @@ Files#walk(Path, int, FileVisitOption...):::Return a Stream that is lazily popul
 Files#walk(Path, FileVisitOption...):::Return a Stream that is lazily populated with Path by walking the file tree rooted at a given starting file:::return->walk
 Files#find(Path, int, BiPredicate, FileVisitOption...):::Return a Stream that is lazily populated with Path by searching for files in a file tree rooted at a given starting file:::iterator->new->FileTreeIterator->try->spliterator->Spliterators->spliteratorUnknownSize->return->StreamSupport->stream->iterator->close->onClose->matcher->entry->file->entry->attributes->test->filter->entry->file->map->catch->iterator->close->throw->finally
 Files#lines(Path, Charset):::Read all lines from a file as a Stream:::if->path->getFileSystem->FileSystems->getDefault->cs->name->contains->fc->FileChannel->open->fcls->createFileChannelLinesStream->if->return->fc->close->return->Files->newBufferedReader->createBufferedReaderLinesStream
+Files#createFileChannelLinesStream(FileChannel, Charset)::: files create file channel lines stream:::try->length->fc->size->if->s->new->FileChannelLinesSpliterator->return->StreamSupport->stream->Files->asUncheckedRunnable->onClose->catch->try->fc->close->catch->try->e->addSuppressed->catch->finally->finally->throw->finally->return
+Files#createBufferedReaderLinesStream(BufferedReader)::: files create buffered reader lines stream:::try->return->br->lines->asUncheckedRunnable->onClose->catch->try->br->close->catch->try->e->addSuppressed->catch->finally->finally->throw->finally
 Files#lines(Path):::Read all lines from a file as a Stream:::return->lines
 FileStore#name():::Returns the name of this file store:::
 FileStore#type():::Returns the type of this file store:::
@@ -99,11 +122,30 @@ FileSystemException#getFile():::Returns the file used to create this exception.:
 FileSystemException#getOtherFile():::Returns the other file used to create this exception.:::return
 FileSystemException#getReason():::Returns the string explaining why the file system operation failed.:::return->super->getMessage
 FileSystemException#getMessage():::Returns the detail message string.:::if->return->getReason->sb->new->StringBuilder->if->sb->append->if->sb->append->sb->append->if->getReason->sb->append->sb->getReason->append->return->sb->toString
+FileSystems.DefaultFileSystemHolder#defaultFileSystem()::: default file system holder default file system:::provider->AccessController->new->PrivilegedAction<>->doPrivileged->return->provider->URI->create->getFileSystem
+FileSystems.DefaultFileSystemHolder#getDefaultProvider()::: default file system holder get default provider:::provider->DefaultFileSystemProvider->instance->prop->propValue->System->getProperty->if->foreach->propValue->split->try->c->Class->ClassLoader->getSystemClassLoader->forName->ctor->c->getDeclaredConstructor->ctor->newInstance->if->provider->getScheme->equals->throw->new->Error->catch->throw->new->Error->finally->return
 FileSystems#getDefault():::Returns the default FileSystem:::if->VM->isModuleSystemInited->return->else->return->DefaultFileSystemProvider->theFileSystem
 FileSystems#getFileSystem(URI):::Returns a reference to an existing FileSystem:::scheme->uri->getScheme->foreach->FileSystemProvider->installedProviders->if->scheme->provider->getScheme->equalsIgnoreCase->return->provider->getFileSystem->throw->new->ProviderNotFoundException
 FileSystems#newFileSystem(URI, Map):::Constructs a new file system that is identified by a URI   This method iterates over the FileSystemProvider#installedProviders() installed providers to locate the provider that is identified by the URI URI#getScheme scheme of the given URI:::return->newFileSystem
 FileSystems#newFileSystem(URI, Map, ClassLoader):::Constructs a new file system that is identified by a URI   This method first attempts to locate an installed provider in exactly the same manner as the #newFileSystem(URI,Map) newFileSystem(URI,Map) method:::scheme->uri->getScheme->foreach->FileSystemProvider->installedProviders->if->scheme->provider->getScheme->equalsIgnoreCase->try->return->provider->newFileSystem->catch->finally->if->sl->ServiceLoader->load->foreach->if->scheme->provider->getScheme->equalsIgnoreCase->try->return->provider->newFileSystem->catch->finally->throw->new->ProviderNotFoundException
 FileSystems#newFileSystem(Path, ClassLoader):::Constructs a new FileSystem to access the contents of a file as a file system:::if->throw->new->NullPointerException->env->Collections->emptyMap->foreach->FileSystemProvider->installedProviders->try->return->provider->newFileSystem->catch->finally->if->sl->ServiceLoader->load->foreach->try->return->provider->newFileSystem->catch->finally->throw->new->ProviderNotFoundException
+FileTreeIterator#fetchNextIfNeeded()::: file tree iterator fetch next if needed:::if->ev->walker->next->while->ioe->ev->ioeException->if->throw->new->UncheckedIOException->if->ev->type->return->walker->next
+FileTreeIterator#hasNext()::: file tree iterator has next:::if->walker->isOpen->throw->new->IllegalStateException->fetchNextIfNeeded->return
+FileTreeIterator#next()::: file tree iterator next:::if->walker->isOpen->throw->new->IllegalStateException->fetchNextIfNeeded->if->throw->new->NoSuchElementException->result->return
+FileTreeIterator#close()::: file tree iterator close:::walker->close
+FileTreeWalker.DirectoryNode#directory()::: directory node directory:::return
+FileTreeWalker.DirectoryNode#key()::: directory node key:::return
+FileTreeWalker.DirectoryNode#stream()::: directory node stream:::return
+FileTreeWalker.DirectoryNode#iterator()::: directory node iterator:::return
+FileTreeWalker.DirectoryNode#skip()::: directory node skip:::
+FileTreeWalker.DirectoryNode#skipped()::: directory node skipped:::return
+FileTreeWalker.Event#type()::: event type:::return
+FileTreeWalker.Event#file()::: event file:::return
+FileTreeWalker.Event#attributes()::: event attributes:::return
+FileTreeWalker.Event#ioeException()::: event ioe exception:::return
+FileTreeWalker#getAttributes(Path, boolean):::Returns the attributes of the given file, taking into account whether the walk is following sym links is not:::if->System->getSecurityManager->cached->get->if->cached->isSymbolicLink->return->attrs->try->Files->readAttributes->catch->if->throw->Files->readAttributes->finally->return
+FileTreeWalker#wouldLoop(Path, Object):::Returns true if walking into the given directory would result in a file system loop/cycle.:::foreach->ancestorKey->ancestor->key->if->if->key->equals->return->else->try->if->Files->ancestor->directory->isSameFile->return->catch->finally->return
+FileTreeWalker#visit(Path, boolean, boolean):::Visits the given file, returning the Event corresponding to that visit:::attrs->try->getAttributes->catch->return->new->Event->if->return->throw->finally->depth->stack->size->if->attrs->isDirectory->return->new->Event->if->attrs->fileKey->wouldLoop->return->entry->toString->new->FileSystemLoopException->new->Event->stream->try->Files->newDirectoryStream->catch->return->new->Event->if->return->throw->finally->stack->attrs->fileKey->new->DirectoryNode->push->return->new->Event
 FileTreeWalker#walk(Path):::Start walking from the given file.:::if->throw->new->IllegalStateException->ev->visit->return
 FileTreeWalker#next():::Returns the next Event or null if there are no more events or the walker is closed.:::top->stack->peek->if->return->ev->do->entry->ioe->if->top->skipped->iterator->top->iterator->try->if->iterator->hasNext->iterator->next->catch->x->getCause->finally->if->try->top->stream->close->catch->if->else->ioe->addSuppressed->finally->stack->pop->return->top->directory->new->Event->visit->while->return
 FileTreeWalker#pop():::Pops the directory node that is the current top of the stack so that there are no more events for the directory (including no END_DIRECTORY) event:::if->stack->isEmpty->node->stack->pop->try->node->stream->close->catch->finally
@@ -118,6 +160,7 @@ InvalidPathException#getInput():::Returns the input string.:::return
 InvalidPathException#getReason():::Returns a string explaining why the input string was rejected.:::return->super->getMessage
 InvalidPathException#getIndex():::Returns an index into the input string of the position at which the error occurred, or -1 if this position is not known.:::return
 InvalidPathException#getMessage():::Returns a string describing the error:::sb->new->StringBuilder->sb->getReason->append->if->sb->append->sb->append->sb->append->sb->append->return->sb->toString
+LinkPermission#checkName(String)::: link permission check name:::if->name->equals->name->equals->throw->new->IllegalArgumentException
 Path#of(String, String...):::Returns a Path by converting a path string, or a sequence of strings that when joined form a path string:::return->FileSystems->getDefault->getPath
 Path#of(URI):::Returns a Path by converting a URI:::scheme->uri->getScheme->if->throw->new->IllegalArgumentException->if->scheme->equalsIgnoreCase->return->FileSystems->getDefault->provider->getPath->foreach->FileSystemProvider->installedProviders->if->provider->getScheme->equalsIgnoreCase->return->provider->getPath->throw->new->FileSystemNotFoundException
 Path#getFileSystem():::Returns the file system that created this object.:::
@@ -163,6 +206,11 @@ SimpleFileVisitor#preVisitDirectory(T, BasicFileAttributes):::Invoked for a dire
 SimpleFileVisitor#visitFile(T, BasicFileAttributes):::Invoked for a file in a directory:::Objects->requireNonNull->Objects->requireNonNull->return
 SimpleFileVisitor#visitFileFailed(T, IOException):::Invoked for a file that could not be visited:::Objects->requireNonNull->throw
 SimpleFileVisitor#postVisitDirectory(T, IOException):::Invoked for a directory after entries in the directory, and all of their descendants, have been visited:::Objects->requireNonNull->if->throw->return
+StandardWatchEventKinds.StdWatchEventKind#name()::: std watch event kind name:::return
+StandardWatchEventKinds.StdWatchEventKind#type()::: std watch event kind type:::return
+StandardWatchEventKinds.StdWatchEventKind#toString()::: std watch event kind to string:::return
+TempFileHelper#generatePath(String, String, Path)::: temp file helper generate path:::n->random->nextLong->s->Long->toUnsignedString->name->dir->getFileSystem->getPath->if->name->getParent->throw->new->IllegalArgumentException->return->dir->resolve
+TempFileHelper#create(Path, String, String, boolean, FileAttribute[]):::Creates a file or directory in the given directory (or in the temporary directory if dir is null).:::if->if->if->if->dir->getFileSystem->FileSystems->getDefault->if->new->FileAttribute<?>Arr->else->hasPermissions->for->i->if->copy->new->FileAttribute<?>Arr->System->arraycopy->sm->System->getSecurityManager->for
 TempFileHelper#createTempFile(Path, String, String, FileAttribute[]):::Creates a temporary file in the given directory, or in the temporary directory if dir is null.:::return->create
 TempFileHelper#createTempDirectory(Path, String, FileAttribute[]):::Creates a temporary directory in the given directory, or in the temporary directory if dir is null.:::return->create
 Watchable#register(WatchService, WatchEvent.Kind[], WatchEvent.Modifier...):::Registers an object with a watch service:::

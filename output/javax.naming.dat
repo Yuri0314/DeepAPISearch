@@ -3,7 +3,9 @@ BinaryRefAddr#equals(Object):::Determines whether obj is equal to this address::
 BinaryRefAddr#hashCode():::Computes the hash code of this address using its address type and contents:::hash->addrType->hashCode->for->i->return
 BinaryRefAddr#toString():::Generates the string representation of this address:::str->new->StringBuilder->str->append->for->i->if->str->append->return->str->toString
 Binding#getClassName():::Retrieves the class name of the object bound to the name of this binding:::cname->super->getClassName->if->return->if->return->boundObj->getClass->getName->else->return
+Binding#getObject()::: binding get object:::return
 Binding#setObject(Object):::Sets the object associated with this binding.:::
+Binding#toString()::: binding to string:::return->super->toString->getObject
 CannotProceedException#getEnvironment():::Retrieves the environment that was in effect when this exception was created.:::return
 CannotProceedException#setEnvironment(Hashtable):::Sets the environment that will be returned when getEnvironment() is called.:::
 CannotProceedException#getRemainingNewName():::Retrieves the "remaining new name" field of this exception, which is used when this exception is thrown during a rename() operation.:::return
@@ -30,6 +32,8 @@ CompositeName#addAll(int, Name):::Adds the components of a composite name -- in 
 CompositeName#add(String):::Adds a single component to the end of this composite name.:::impl->add->return
 CompositeName#add(int, String):::Adds a single component at a specified position within this composite name:::impl->add->return
 CompositeName#remove(int):::Deletes a component from this composite name:::return->impl->remove
+CompositeName#writeObject(java.io.ObjectOutputStream):::Overridden to avoid implementation dependency.:::s->size->writeInt->comps->getAll->while->comps->hasMoreElements->s->comps->nextElement->writeObject
+CompositeName#readObject(java.io.ObjectInputStream):::Overridden to avoid implementation dependency.:::new->NameImpl->n->s->readInt->try->while->s->readObject->add->catch->throw->new->java.io.StreamCorruptedException->finally
 CompoundName#toString():::Generates the string representation of this compound name, using the syntax rules of the compound name:::return->impl->toString
 CompoundName#equals(Object):::Determines whether obj is syntactically equal to this compound name:::return->impl->equals
 CompoundName#hashCode():::Computes the hash code of this compound name:::return->impl->hashCode
@@ -48,6 +52,8 @@ CompoundName#addAll(int, Name):::Adds the components of a compound name -- in or
 CompoundName#add(String):::Adds a single component to the end of this compound name.:::impl->add->return
 CompoundName#add(int, String):::Adds a single component at a specified position within this compound name:::impl->add->return
 CompoundName#remove(int):::Deletes a component from this compound name:::return->impl->remove
+CompoundName#writeObject(java.io.ObjectOutputStream):::Overridden to avoid implementation dependency.:::s->writeObject->s->size->writeInt->comps->getAll->while->comps->hasMoreElements->s->comps->nextElement->writeObject
+CompoundName#readObject(java.io.ObjectInputStream):::Overridden to avoid implementation dependency.:::s->readObject->new->NameImpl->n->s->readInt->try->while->s->readObject->add->catch->throw->new->java.io.StreamCorruptedException->finally
 Context#lookup(Name):::Retrieves the named object:::
 Context#lookup(String):::Retrieves the named object:::
 Context#bind(Name, Object):::Binds a name to an object:::
@@ -80,11 +86,39 @@ Context#getNameInNamespace():::Retrieves the full name of this context within it
 InitialContext#init(Hashtable):::Initializes the initial context using the supplied environment:::ResourceManager->getInitialEnvironment->if->myProps->get->getDefaultInitCtx
 InitialContext#doLookup(Name):::A static method to retrieve the named object:::return->new->InitialContext->lookup
 InitialContext#doLookup(String):::A static method to retrieve the named object:::return->new->InitialContext->lookup
+InitialContext#getURLScheme(String)::: initial context get scheme:::colon_posn->str->indexOf->slash_posn->str->indexOf->if->return->str->substring->return
 InitialContext#getDefaultInitCtx():::Retrieves the initial context by calling NamingManager.getInitialContext() and cache it in defaultInitCtx:::if->NamingManager->getInitialContext->if->throw->new->NoInitialContextException->return
 InitialContext#getURLOrDefaultInitCtx(String):::Retrieves a context for resolving the string name name:::if->NamingManager->hasInitialContextFactoryBuilder->return->getDefaultInitCtx->scheme->getURLScheme->if->ctx->NamingManager->getURLContext->if->return->return->getDefaultInitCtx
 InitialContext#getURLOrDefaultInitCtx(Name):::Retrieves a context for resolving name:::if->NamingManager->hasInitialContextFactoryBuilder->return->getDefaultInitCtx->if->name->size->first->name->get->scheme->getURLScheme->if->ctx->NamingManager->getURLContext->if->return->return->getDefaultInitCtx
+InitialContext#lookup(String)::: initial context lookup:::return->getURLOrDefaultInitCtx->lookup
+InitialContext#lookup(Name)::: initial context lookup:::return->getURLOrDefaultInitCtx->lookup
+InitialContext#bind(String, Object)::: initial context bind:::getURLOrDefaultInitCtx->bind
+InitialContext#bind(Name, Object)::: initial context bind:::getURLOrDefaultInitCtx->bind
+InitialContext#rebind(String, Object)::: initial context rebind:::getURLOrDefaultInitCtx->rebind
+InitialContext#rebind(Name, Object)::: initial context rebind:::getURLOrDefaultInitCtx->rebind
+InitialContext#unbind(String)::: initial context unbind:::getURLOrDefaultInitCtx->unbind
+InitialContext#unbind(Name)::: initial context unbind:::getURLOrDefaultInitCtx->unbind
+InitialContext#rename(String, String)::: initial context rename:::getURLOrDefaultInitCtx->rename
+InitialContext#rename(Name, Name)::: initial context rename:::getURLOrDefaultInitCtx->rename
+InitialContext#list(String)::: initial context list:::return->getURLOrDefaultInitCtx->list
+InitialContext#list(Name)::: initial context list:::return->getURLOrDefaultInitCtx->list
+InitialContext#listBindings(String)::: initial context list bindings:::return->getURLOrDefaultInitCtx->listBindings
+InitialContext#listBindings(Name)::: initial context list bindings:::return->getURLOrDefaultInitCtx->listBindings
+InitialContext#destroySubcontext(String)::: initial context destroy subcontext:::getURLOrDefaultInitCtx->destroySubcontext
+InitialContext#destroySubcontext(Name)::: initial context destroy subcontext:::getURLOrDefaultInitCtx->destroySubcontext
+InitialContext#createSubcontext(String)::: initial context create subcontext:::return->getURLOrDefaultInitCtx->createSubcontext
+InitialContext#createSubcontext(Name)::: initial context create subcontext:::return->getURLOrDefaultInitCtx->createSubcontext
+InitialContext#lookupLink(String)::: initial context lookup link:::return->getURLOrDefaultInitCtx->lookupLink
+InitialContext#lookupLink(Name)::: initial context lookup link:::return->getURLOrDefaultInitCtx->lookupLink
+InitialContext#getNameParser(String)::: initial context get name parser:::return->getURLOrDefaultInitCtx->getNameParser
+InitialContext#getNameParser(Name)::: initial context get name parser:::return->getURLOrDefaultInitCtx->getNameParser
 InitialContext#composeName(String, String):::Composes the name of this context with a name relative to this context:::return
 InitialContext#composeName(Name, Name):::Composes the name of this context with a name relative to this context:::return->name->clone
+InitialContext#addToEnvironment(String, Object)::: initial context add to environment:::myProps->put->return->getDefaultInitCtx->addToEnvironment
+InitialContext#removeFromEnvironment(String)::: initial context remove from environment:::myProps->remove->return->getDefaultInitCtx->removeFromEnvironment
+InitialContext#getEnvironment()::: initial context get environment:::return->getDefaultInitCtx->getEnvironment
+InitialContext#close()::: initial context close:::if->defaultInitCtx->close
+InitialContext#getNameInNamespace()::: initial context get name in namespace:::return->getDefaultInitCtx->getNameInNamespace
 LinkException#getLinkResolvedName():::Retrieves the leading portion of the link name that was resolved successfully.:::return
 LinkException#getLinkRemainingName():::Retrieves the remaining unresolved portion of the link name.:::return
 LinkException#getLinkResolvedObj():::Retrieves the object to which resolution was successful:::return
@@ -120,7 +154,34 @@ NameClassPair#setRelative(boolean):::Sets whether the name of this binding is re
 NameClassPair#getNameInNamespace():::Retrieves the full name of this binding:::if->throw->new->UnsupportedOperationException->return
 NameClassPair#setNameInNamespace(String):::Sets the full name of this binding:::
 NameClassPair#toString():::Generates the string representation of this name/class pair:::return->isRelative->getName->getClassName
+NameImpl#isA(String, int, String)::: name impl is a:::return->n->startsWith
+NameImpl#isMeta(String, int)::: name impl is meta:::return->isA->isA->isA->isSeparator
+NameImpl#isSeparator(String, int)::: name impl is separator:::return->isA->isA
+NameImpl#skipSeparator(String, int)::: name impl skip separator:::if->isA->syntaxSeparator->length->else->if->isA->syntaxSeparator2->length->return
+NameImpl#extractComp(String, int, int, Vector)::: name impl extract comp:::beginQuote->endQuote->start->one->answer->new->StringBuilder->while->if->isA->isA->if->for->beginQuote->length->name->startsWith->if->throw->new->InvalidNameException->endQuote->length->if->isSeparator->break->throw->new->InvalidNameException->else->if->isSeparator->break->else->if->isA->if->syntaxEscape->length->isMeta->syntaxEscape->length->if->else->if->syntaxEscape->length->throw->new->InvalidNameException->else->if->isA->syntaxTypevalSeparator->length->isA->syntaxTypevalSeparator->length->isA->syntaxTypevalSeparator->length->answer->append->append->for->beginQuote->length->name->startsWith->if->throw->new->InvalidNameException->endQuote->length->answer->append->if->isSeparator->break->throw->name->substring->new->InvalidNameException->answer->name->charAt->append->if->comps->answer->toString->insertElementAt->else->comps->answer->toString->addElement->return
+NameImpl#getBoolean(Properties, String)::: name impl get boolean:::return->p->getProperty->toBoolean
+NameImpl#toBoolean(String)::: name impl to boolean:::return->name->toLowerCase->equals
+NameImpl#recordNamingConvention(Properties)::: name impl record naming convention:::syntaxDirectionStr->p->getProperty->if->syntaxDirectionStr->equals->else->if->syntaxDirectionStr->equals->else->if->syntaxDirectionStr->equals->else->throw->new->IllegalArgumentException->if->p->getProperty->p->getProperty->if->throw->new->IllegalArgumentException->else->p->getProperty->getBoolean->getBoolean->p->getProperty->p->getProperty->if->else->if->p->getProperty->p->getProperty->if->else->if->p->getProperty->p->getProperty
+NameImpl#stringifyComp(String)::: name impl stringify comp:::len->comp->length->escapeSeparator->escapeSeparator2->beginQuote->endQuote->strbuf->new->StringBuffer->if->comp->indexOf->if->else->if->else->if->if->comp->indexOf->if->if->else->if->if->else->if->if->strbuf->append->for->i->strbuf->append->else->start->for->i->return->strbuf->toString
+NameImpl#toString()::: name impl to string:::answer->new->StringBuffer->comp->compsAllEmpty->size->components->size->for->i->if->answer->append->return->answer->toString
+NameImpl#equals(Object)::: name impl equals:::if->target->if->target->size->this->size->mycomps->getAll->comps->target->getAll->while->mycomps->hasMoreElements->my->mycomps->nextElement->his->comps->nextElement->if->my->trim->his->trim->if->if->my->equalsIgnoreCase->return->else->if->my->equals->return->return->return
 NameImpl#compareTo(NameImpl):::Compares obj to this NameImpl to determine ordering:::if->return->len1->size->len2->obj->size->n->Math->min->index1->index2->while->comp1->get->comp2->obj->get->if->comp1->trim->comp2->trim->local->if->comp1->compareToIgnoreCase->else->comp1->compareTo->if->return->return
+NameImpl#size()::: name impl size:::return->components->size
+NameImpl#getAll()::: name impl get all:::return->components->elements
+NameImpl#get(int)::: name impl get:::return->components->elementAt
+NameImpl#getPrefix(int)::: name impl get prefix:::if->size->throw->new->ArrayIndexOutOfBoundsException->return->new->NameImplEnumerator
+NameImpl#getSuffix(int)::: name impl get suffix:::cnt->size->if->throw->new->ArrayIndexOutOfBoundsException->return->new->NameImplEnumerator
+NameImpl#isEmpty()::: name impl is empty:::return->components->isEmpty
+NameImpl#startsWith(int, Enumeration)::: name impl starts with:::if->size->return->try->mycomps->getPrefix->while->mycomps->hasMoreElements->my->mycomps->nextElement->his->prefix->nextElement->if->my->trim->his->trim->if->if->my->equalsIgnoreCase->return->else->if->my->equals->return->catch->return->finally->return
+NameImpl#endsWith(int, Enumeration)::: name impl ends with:::startIndex->size->if->size->return->try->mycomps->getSuffix->while->mycomps->hasMoreElements->my->mycomps->nextElement->his->suffix->nextElement->if->my->trim->his->trim->if->if->my->equalsIgnoreCase->return->else->if->my->equals->return->catch->return->finally->return
+NameImpl#addAll(Enumeration)::: name impl add all:::added->while->comps->hasMoreElements->try->comp->comps->nextElement->if->size->throw->new->InvalidNameException->components->addElement->catch->break->finally->return
+NameImpl#addAll(int, Enumeration)::: name impl add all:::added->for->i->comps->hasMoreElements->return
+NameImpl#add(String)::: name impl add:::if->size->throw->new->InvalidNameException->components->addElement
+NameImpl#add(int, String)::: name impl add:::if->size->throw->new->InvalidNameException->components->insertElementAt
+NameImpl#remove(int)::: name impl remove:::r->components->elementAt->components->removeElementAt->return
+NameImpl#hashCode()::: name impl hash code:::hash->for->e->getAll->e->hasMoreElements->return
+NameImplEnumerator#hasMoreElements()::: name impl enumerator has more elements:::return
+NameImplEnumerator#nextElement()::: name impl enumerator next element:::if->return->vector->elementAt->throw->new->NoSuchElementException
 NameParser#parse(String):::Parses a name into its components.:::
 NamingEnumeration#next():::Retrieves the next element in the enumeration:::
 NamingEnumeration#hasMore():::Determines whether there are any more elements in the enumeration:::

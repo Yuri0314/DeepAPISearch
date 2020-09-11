@@ -1,6 +1,94 @@
 AnnotationProxyMaker#generateAnnotation(Attribute.Compound, Class):::Returns a dynamic proxy for an annotation mirror.:::apm->new->AnnotationProxyMaker->return->annoType->apm->generateAnnotation->cast
+AnnotationProxyMaker#generateAnnotation():::Returns a dynamic proxy for an annotation mirror.:::return->AnnotationParser->getAllReflectedValues->annotationForMap
+AnnotationProxyMaker#getAllReflectedValues():::Returns a map from element names to their values in "dynamic proxy return form":::res->new->LinkedHashMap<>->foreach->getAllValues->entrySet->meth->entry->getKey->value->entry->getValue->generateValue->if->res->toString->put->else->return
+AnnotationProxyMaker#getAllValues():::Returns a map from element symbols to their values:::res->new->LinkedHashMap<>->sym->foreach->sym->members->getSymbols->if->m->def->m->getDefaultValue->if->res->put->foreach->res->put->return
+AnnotationProxyMaker#generateValue(MethodSymbol, Attribute):::Converts an element value to its "dynamic proxy return form":::vv->new->ValueVisitor->return->vv->getValue
+AnnotationProxyMaker.ValueVisitor#getValue(Attribute)::: value visitor get value:::method->try->annoType->toString->getMethod->catch->return->finally->method->getReturnType->attr->accept->if->AnnotationType->invocationHandlerReturnType->isInstance->typeMismatch->return
+AnnotationProxyMaker.ValueVisitor#visitConstant(Attribute.Constant)::: value visitor visit constant:::c->getValue
+AnnotationProxyMaker.ValueVisitor#visitClass(Attribute.Class)::: value visitor visit class:::new->MirroredTypeExceptionProxy
+AnnotationProxyMaker.ValueVisitor#visitArray(Attribute.Array)::: value visitor visit array:::elemName->getQualifiedName->if->elemName->equals->elems->new->ListBuffer<>->foreach->elem->elems->append->elems->toList->new->MirroredTypesExceptionProxy->else->len->returnClassSaved->returnClass->getComponentType->try->res->Array->newInstance->for->i->catch->finally
+AnnotationProxyMaker.ValueVisitor#visitEnum(Attribute.Enum)::: value visitor visit enum:::if->returnClass->isEnum->constName->toString->try->Enum->valueOf->catch->new->EnumConstantNotPresentExceptionProxy->finally->else
+AnnotationProxyMaker.ValueVisitor#visitCompound(Attribute.Compound)::: value visitor visit compound:::try->nested->returnClass->asSubclass->generateAnnotation->catch->finally
+AnnotationProxyMaker.ValueVisitor#visitError(Attribute.Error)::: value visitor visit error:::if->new->MirroredTypeExceptionProxy->else
+AnnotationProxyMaker.ValueVisitor#typeMismatch(Method, Attribute):::Sets "value" to an ExceptionProxy indicating a type mismatch.:::new->AnnotationTypeMismatchExceptionProxy
+AnnotationProxyMaker.MirroredTypeExceptionProxy#toString()::: mirrored type exception proxy to string:::return
+AnnotationProxyMaker.MirroredTypeExceptionProxy#hashCode()::: mirrored type exception proxy hash code:::return->hashCode
+AnnotationProxyMaker.MirroredTypeExceptionProxy#equals(Object)::: mirrored type exception proxy equals:::return->type->equals
+AnnotationProxyMaker.MirroredTypeExceptionProxy#generateException()::: mirrored type exception proxy generate exception:::return->new->MirroredTypeException
+AnnotationProxyMaker.MirroredTypeExceptionProxy#readObject(ObjectInputStream)::: mirrored type exception proxy read object:::s->defaultReadObject
+AnnotationProxyMaker.MirroredTypesExceptionProxy#toString()::: mirrored types exception proxy to string:::return
+AnnotationProxyMaker.MirroredTypesExceptionProxy#hashCode()::: mirrored types exception proxy hash code:::return->hashCode
+AnnotationProxyMaker.MirroredTypesExceptionProxy#equals(Object)::: mirrored types exception proxy equals:::return->types->equals
+AnnotationProxyMaker.MirroredTypesExceptionProxy#generateException()::: mirrored types exception proxy generate exception:::return->new->MirroredTypesException
+AnnotationProxyMaker.MirroredTypesExceptionProxy#readObject(ObjectInputStream)::: mirrored types exception proxy read object:::s->defaultReadObject
+FilteredMemberList#size()::: filtered member list size:::cnt->foreach->scope->getSymbols->if->unwanted->return
+FilteredMemberList#get(int)::: filtered member list get:::foreach->scope->getSymbols->if->unwanted->return->throw->new->IndexOutOfBoundsException
+FilteredMemberList#iterator()::: filtered member list iterator:::return->scope->unwanted->getSymbols->iterator
+FilteredMemberList#unwanted(Symbol):::Tests whether this is a symbol that should never be seen by clients, such as a synthetic class:::return->s->flags
+JavacElements#instance(Context)::: javac elements instance:::instance->context->get->if->new->JavacElements->return
+JavacElements#getAllModuleElements()::: javac elements get all module elements:::if->return->Collections->modules->allModules->unmodifiableSet->else->return->Collections->emptySet
+JavacElements#getModuleElement(CharSequence)::: javac elements get module element:::ensureEntered->if->modules->getDefaultModule->return->strName->name->toString->if->strName->equals->return->return->modules->names->fromString->getObservableModule
+JavacElements#getPackageElement(CharSequence)::: javac elements get package element:::return->doGetPackageElement
+JavacElements#getPackageElement(ModuleElement, CharSequence)::: javac elements get package element:::module->getClass->return->doGetPackageElement
+JavacElements#doGetPackageElement(ModuleElement, CharSequence)::: javac elements do get package element:::ensureEntered->return->doGetElement
+JavacElements#getTypeElement(CharSequence)::: javac elements get type element:::return->doGetTypeElement
+JavacElements#getTypeElement(ModuleElement, CharSequence)::: javac elements get type element:::module->getClass->return->doGetTypeElement
+JavacElements#doGetTypeElement(ModuleElement, CharSequence)::: javac elements do get type element:::ensureEntered->return->doGetElement
+JavacElements#doGetElement(ModuleElement, String, CharSequence, Class)::: javac elements do get element:::strName->name->toString->if->SourceVersion->isName->strName->isEmpty->return->if->return->unboundNameToSymbol->else->return->nameToSymbol
+JavacElements#unboundNameToSymbol(String, String, Class)::: javac elements unbound name to symbol:::if->modules->getDefaultModule->return->nameToSymbol->return->resultCache->Pair->of->found->new->LinkedHashSet<>->foreach->modules->allModules->sym->nameToSymbol->if->continue->if->found->add->else->if->if->sym->members->isEmpty->found->add->if->found->size->return->Optional->found->iterator->next->of->else->if->found->size->if->alreadyWarnedDuplicates->add->moduleNames->found->stream->s->packge->map->m->toString->map->Collectors->joining->collect->log->Notes->MultipleElements->note->return->Optional->empty->else->return->Optional->empty->computeIfAbsent->orElse
+JavacElements#nameToSymbol(ModuleSymbol, String, Class):::Returns a symbol given the type's or package's canonical name, or null if the name isn't found.:::name->names->fromString->sym->syms->getClass->syms->lookupPackage->try->if->javaCompiler->resolveIdent->if->clazz->isInstance->sym->complete->if->sym->exists->name->sym->getQualifiedName->equals->return->clazz->cast->return->catch->handleAPICompletionFailure->return->finally
+JavacElements#matchAnnoToTree(AnnotationMirror, Element, JCTree):::Returns the tree for an annotation given the annotated element and the element's own tree:::sym->cast->vis->new->Vis->tree->accept->if->return->annos->sym->getAnnotationMirrors->return->cast->matchAnnoToTree
+JavacElements#matchAnnoToTree(Attribute.Compound, List, List):::Returns the tree for an annotation given a list of annotations in which to search (recursively) and their corresponding trees:::foreach->foreach->if->continue->match->matchAttributeToTree->if->return->return
+JavacElements#matchAttributeToTree(Attribute, Attribute, JCTree):::Returns the tree for an attribute given an enclosing attribute to search (recursively) and the enclosing attribute's corresponding tree:::if->return->vis->new->Vis->attr->accept->return
+JavacElements#scanForAssign(MethodSymbol, JCTree):::Scans for a JCAssign node with a LHS matching a given symbol, and returns its RHS:::scanner->new->TS->tree->accept->return
 JavacElements#getTree(Element):::Returns the tree node corresponding to this element, or null if none can be found.:::treeTop->getTreeAndTopLevel->return
+JavacElements#getDocComment(Element)::: javac elements get doc comment:::treeTop->getTreeAndTopLevel->if->return->tree->toplevel->if->return->return->getCommentText
+JavacElements#getPackageOf(Element)::: javac elements get package of:::return->cast->packge
+JavacElements#getModuleOf(Element)::: javac elements get module of:::sym->cast->if->modules->getDefaultModule->return->return->sym->packge
+JavacElements#isDeprecated(Element)::: javac elements is deprecated:::sym->cast->sym->apiComplete->return->sym->isDeprecated
+JavacElements#getOrigin(Element)::: javac elements get origin:::sym->cast->if->sym->flags->return->return
+JavacElements#getOrigin(AnnotatedConstruct, AnnotationMirror)::: javac elements get origin:::ac->cast->if->ac->isSynthesized->return->return
+JavacElements#getOrigin(ModuleElement, ModuleElement.Directive)::: javac elements get origin:::switch->directive->getKind->rd->cast->if->contains->return->if->contains->return->return->ed->cast->if->contains->return->if->contains->return->return->od->cast->if->contains->return->if->contains->return->return->return
+JavacElements#getBinaryName(TypeElement)::: javac elements get binary name:::return->cast->flatName
+JavacElements#getElementValuesWithDefaults(AnnotationMirror)::: javac elements get element values with defaults:::anno->cast->annotype->a->getAnnotationType->valmap->anno->getElementValues->foreach->annotype->asElement->getEnclosedElements->methodsIn->meth->defaultValue->meth->getDefaultValue->if->valmap->containsKey->valmap->put->return
+JavacElements#getAllMembers(TypeElement)::: javac elements get all members:::sym->cast->scope->sym->members->dupUnshared->closure->types->sym->asType->closure->foreach->addMembers->return->new->FilteredMemberList
+JavacElements#addMembers(WriteableScope, Type)::: javac elements add members:::foreach->type->asElement->members->getSymbols->foreach->scope->e->getSimpleName->getSymbolsByName->if->overrider->flags->if->overrider->getKind->type->asElement->overrides->continue->derived->e->getEnclosingElement->kind->e->getKind->initializer->if->e->isInheritedIn->scope->enter
 JavacElements#getAllAnnotationMirrors(Element):::Returns all annotations of an element, whether inherited or directly present.:::sym->cast->annos->sym->getAnnotationMirrors->while->sym->getKind->sup->getSuperclass->if->sup->hasTag->sup->isErroneous->break->oldAnnos->newAnnos->sym->getAnnotationMirrors->foreach->if->isInherited->containsAnnoOfType->annos->prepend->return
+JavacElements#isInherited(Type):::Tests whether an annotation type is @Inherited.:::return->attribute
+JavacElements#containsAnnoOfType(List, Type):::Tests whether a list of annotations contains an annotation of a given type.:::foreach->if->return->return
+JavacElements#hides(Element, Element)::: javac elements hides:::hider->cast->hidee->cast->if->return->if->if->hider->isStatic->types->isSubSignature->return->hiderClass->enclClass->hideeClass->enclClass->if->hiderClass->isSubClass->return->return->hidee->isAccessibleIn
+JavacElements#overrides(ExecutableElement, ExecutableElement, TypeElement)::: javac elements overrides:::rider->cast->ridee->cast->origin->cast->return->rider->isStatic->ridee->isMemberOf->rider->overrides
+JavacElements#getConstantExpression(Object)::: javac elements get constant expression:::return->Constants->format
 JavacElements#printElements(java.io.Writer, Element...):::Print a representation of the elements to the given writer in the specified order:::foreach->new->PrintingProcessor.PrintingElementVisitor->visit->flush
+JavacElements#getName(CharSequence)::: javac elements get name:::return->names->cs->toString->fromString
+JavacElements#isFunctionalInterface(TypeElement)::: javac elements is functional interface:::if->element->getKind->return->else->tsym->cast->return->types->isFunctionalInterface
+JavacElements#getTreeAndTopLevel(Element):::Returns the tree node and compilation unit corresponding to this element, or null if they can't be found.:::sym->cast->enterEnv->getEnterEnv->if->return->tree->TreeInfo->declarationFor->if->return->return->new->Pair<>
 JavacElements#getTreeAndTopLevel(Element, AnnotationMirror, AnnotationValue):::Returns the best approximation for the tree node and compilation unit corresponding to the given element, annotation and value:::if->return->elemTreeTop->getTreeAndTopLevel->if->return->if->return->annoTree->matchAnnoToTree->if->return->if->return->new->Pair<>->valueTree->cast->cast->matchAttributeToTree->if->return->new->Pair<>->return->new->Pair<>
+JavacElements#getEnterEnv(Symbol):::Returns a symbol's enter environment, or null if it has none.:::ts->switch->break->break->sym->enclClass->return->enter->getEnv
+JavacElements#ensureEntered(String)::: javac elements ensure entered:::if->javacTaskImpl->ensureEntered->if->javaCompiler->isEnterDone->throw->new->IllegalStateException
+JavacElements#cast(Class, Object):::Returns an object cast to the specified type.:::if->clazz->isInstance->throw->o->toString->new->IllegalArgumentException->return->clazz->cast
+JavacElements#newRound()::: javac elements new round:::resultCache->clear
+JavacTypes#instance(Context)::: javac types instance:::instance->context->get->if->new->JavacTypes->return
+JavacTypes#asElement(TypeMirror)::: javac types as element:::switch->t->getKind->type->cast->return->type->asElement->return
+JavacTypes#isSameType(TypeMirror, TypeMirror)::: javac types is same type:::if->t1->getKind->t2->getKind->return->return->types->isSameType
+JavacTypes#isSubtype(TypeMirror, TypeMirror)::: javac types is subtype:::validateTypeNotIn->validateTypeNotIn->return->types->isSubtype
+JavacTypes#isAssignable(TypeMirror, TypeMirror)::: javac types is assignable:::validateTypeNotIn->validateTypeNotIn->return->types->isAssignable
+JavacTypes#contains(TypeMirror, TypeMirror)::: javac types contains:::validateTypeNotIn->validateTypeNotIn->return->types->containsType
+JavacTypes#isSubsignature(ExecutableType, ExecutableType)::: javac types is subsignature:::return->types->isSubSignature
+JavacTypes#directSupertypes(TypeMirror)::: javac types direct supertypes:::validateTypeNotIn->ty->return->types->directSupertypes->stream->Type->stripMetadataIfNeeded->map->Collectors->toList->collect
+JavacTypes#erasure(TypeMirror)::: javac types erasure:::kind->t->getKind->if->throw->t->toString->new->IllegalArgumentException->return->types->erasure->stripMetadataIfNeeded
+JavacTypes#boxedClass(PrimitiveType)::: javac types boxed class:::return->types->boxedClass
+JavacTypes#unboxedType(TypeMirror)::: javac types unboxed type:::if->t->getKind->throw->t->toString->new->IllegalArgumentException->unboxed->types->unboxedType->if->unboxed->isPrimitive->throw->t->toString->new->IllegalArgumentException->return
+JavacTypes#capture(TypeMirror)::: javac types capture:::validateTypeNotIn->return->types->capture->stripMetadataIfNeeded
+JavacTypes#getPrimitiveType(TypeKind)::: javac types get primitive type:::switch->return->return->return->return->return->return->return->return->throw->new->IllegalArgumentException
+JavacTypes#getNullType()::: javac types get null type:::return
+JavacTypes#getNoType(TypeKind)::: javac types get no type:::switch->return->return->throw->kind->toString->new->IllegalArgumentException
+JavacTypes#getArrayType(TypeMirror)::: javac types get array type:::switch->componentType->getKind->throw->componentType->toString->new->IllegalArgumentException->return->new->Type.ArrayType
+JavacTypes#getWildcardType(TypeMirror, TypeMirror)::: javac types get wildcard type:::bkind->bound->if->else->if->else->if->else->throw->new->IllegalArgumentException->switch->bound->getKind->return->new->Type.WildcardType->throw->bound->toString->new->IllegalArgumentException
+JavacTypes#getDeclaredType(TypeElement, TypeMirror...)::: javac types get declared type:::sym->if->return->sym->erasure->if->getEnclosingType->isParameterized->throw->sym->toString->new->IllegalArgumentException->return->getEnclosingType->getDeclaredType0
+JavacTypes#getDeclaredType(DeclaredType, TypeElement, TypeMirror...)::: javac types get declared type:::if->return->getDeclaredType->sym->outer->if->enclClass->throw->enclosing->toString->new->IllegalArgumentException->if->outer->isParameterized->return->getDeclaredType->return->getDeclaredType0
+JavacTypes#getDeclaredType0(Type, ClassSymbol, TypeMirror...)::: javac types get declared type0:::if->getTypeArguments->length->throw->new->IllegalArgumentException->targs->new->ListBuffer<>->foreach->if->throw->t->toString->new->IllegalArgumentException->targs->append->return->targs->toList->new->Type.ClassType
 JavacTypes#asMemberOf(DeclaredType, Element):::Returns the type of an element when that element is viewed as a member of, or otherwise directly contained by, a given type:::site->sym->if->types->sym->getEnclosingElement->asSuper->throw->new->IllegalArgumentException->return->types->memberType
+JavacTypes#validateTypeNotIn(TypeMirror, Set):::Throws an IllegalArgumentException if a type's kind is one of a set.:::if->invalidKinds->t->getKind->contains->throw->t->toString->new->IllegalArgumentException
+JavacTypes#cast(Class, Object):::Returns an object cast to the specified type.:::if->clazz->isInstance->throw->o->toString->new->IllegalArgumentException->return->clazz->cast
+JavacTypes#getOverriddenMethods(Element)::: javac types get overridden methods:::if->elem->getKind->elem->getModifiers->contains->elem->getModifiers->contains->return->Collections->emptySet->if->throw->new->IllegalArgumentException->m->origin->results->new->LinkedHashSet<>->foreach->types->closure->if->c->foreach->c->members->getSymbolsByName->if->m->overrides->results->add->return

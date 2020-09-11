@@ -1,8 +1,54 @@
+ChunkParser#readEvent()::: chunk parser read event:::while->input->position->pos->input->position->size->input->readInt->if->throw->new->IOException->typeId->input->readLong->if->ep->parsers->get->if->return->ep->parse->input->position->return
+ChunkParser#fillConstantPools(LongMap, LongMap)::: chunk parser fill constant pools:::nextCP->chunkHeader->getAbsoluteChunkStart->deltaToNext->chunkHeader->getConstantPoolPosition->while->input->position->position->size->input->readInt->typeId->input->readLong->if->throw->new->IOException->input->readLong->input->readLong->input->readLong->delta->flush->input->readBoolean->poolCount->input->readInt->Logger->return->log->for->i->if->input->position->throw->new->IOException
+ChunkParser#getName(long)::: chunk parser get name:::type->typeMap->get->return->type->getName
+ChunkParser#getTypes()::: chunk parser get types:::return->metadata->getTypes
+ChunkParser#getEventTypes()::: chunk parser get event types:::return->metadata->getEventTypes
+ChunkParser#isLastChunk()::: chunk parser is last chunk:::return->chunkHeader->isLastChunk
+ChunkParser#nextChunkParser()::: chunk parser next chunk parser:::return->chunkHeader->nextHeader->new->ChunkParser
+ConstantMap.Reference#resolve()::: reference resolve:::return->pool->get
+ConstantMap#get(long)::: constant map get:::if->return->objects->get->if->return->new->Reference->beingResolved->isResolving->get->if->equals->return->objects->get->if->equals->return->isResolving->put->resolved->objects->get->resolve->isResolving->put->if->factorized->factory->createObject->objects->put->return->else->objects->put->return
+ConstantMap#resolve(Object)::: constant map resolve:::if->return->resolve->resolve->if->o->getClass->isArray->array->for->i->return->return
+ConstantMap#resolve()::: constant map resolve:::keyList->new->ArrayList<>->objects->keys->keyList->add->forEachRemaining->foreach->get
+ConstantMap#put(long, Object)::: constant map put:::objects->put
+ConstantMap#setIsResolving()::: constant map set is resolving:::new->LongMap<>
+ConstantMap#setResolved()::: constant map set resolved:::
+ConstantMap#getName()::: constant map get name:::return
+EventParser#parse(RecordingInput)::: event parser parse:::values->new->ObjectArr->for->i->startTicks->startTime->timeConverter->convertTimestamp->if->durationTicks->endTime->timeConverter->convertTimestamp->return->new->RecordedEvent->else->return->new->RecordedEvent
+LongMap#put(long, T)::: long map put:::map->put
+LongMap#get(long)::: long map get:::return->map->get
+LongMap#iterator()::: long map iterator:::return->map->values->iterator
+LongMap#keys()::: long map keys:::return->map->keySet->iterator
+ObjectFactory#create(Type, TimeConverter)::: object factory create:::switch->type->getName->return->RecordedThread->createFactory->return->RecordedFrame->createFactory->return->RecordedMethod->createFactory->return->RecordedThreadGroup->createFactory->return->RecordedStackTrace->createFactory->return->RecordedClassLoader->createFactory->return->RecordedClass->createFactory->return
+ObjectFactory#createObject(long, Object)::: object factory create object:::if->return->if->return->createTyped->throw->new->InternalError
+ObjectFactory#createTyped(List, long, Object[])::: object factory create typed:::
 Parser#parse(RecordingInput):::Parses data from a RecordingInput and return an object.:::
+ParserFactory#getParsers()::: parser factory get parsers:::return
+ParserFactory#getConstantPools()::: parser factory get constant pools:::return
+ParserFactory#getTypeMap()::: parser factory get type map:::return
+ParserFactory#createEventParser(EventType)::: parser factory create event parser:::parsers->new->ArrayList<Parser>->foreach->eventType->getFields->parsers->createParser->add->return->parsers->new->ParserArr->toArray->new->EventParser
+ParserFactory#createParser(ValueDescriptor)::: parser factory create parser:::constantPool->PrivateAccess->getInstance->isConstantPool->if->v->isArray->valueType->PrivateAccess->getInstance->getType->element->PrivateAccess->getInstance->v->getName->v->getAnnotationElements->newValueDescriptor->return->createParser->new->ArrayParser->id->v->getTypeId->type->types->get->if->throw->v->getTypeName->new->IOException->if->pool->constantPools->get->if->ObjectFactory->create->type->getName->new->ConstantMap->constantPools->put->return->new->ConstantMapValueParser->parser->parsers->get->if->if->v->getFields->isEmpty->return->createCompositeParser->else->return->createPrimitiveParser->registerParserType->return
+ParserFactory#createPrimitiveParser(Type)::: parser factory create primitive parser:::switch->type->getName->return->new->IntegerParser->return->new->LongParser->return->new->FloatParser->return->new->DoubleParser->return->new->CharacterParser->return->new->BooleanParser->return->new->ShortParser->return->new->ByteParser->pool->ObjectFactory->create->type->getName->new->ConstantMap->constantPools->type->getId->put->return->new->StringParser->throw->type->getName->new->IOException
+ParserFactory#registerParserType(Type, Parser)::: parser factory register parser type:::p->parsers->t->getId->get->if->return->parsers->t->getId->put->return
+ParserFactory#createCompositeParser(Type)::: parser factory create composite parser:::vds->type->getFields->parsers->vds->size->new->ParserArr->composite->new->CompositeParser->registerParserType->index->foreach->createParser->return
+ParserFactory.BooleanParser#parse(RecordingInput)::: boolean parser parse:::return->input->readBoolean
+ParserFactory.ByteParser#parse(RecordingInput)::: byte parser parse:::return->Byte->input->readByte->valueOf
+ParserFactory.LongParser#parse(RecordingInput)::: long parser parse:::return->Long->input->readLong->valueOf
+ParserFactory.IntegerParser#parse(RecordingInput)::: integer parser parse:::return->Integer->input->readInt->valueOf
+ParserFactory.ShortParser#parse(RecordingInput)::: short parser parse:::return->Short->input->readShort->valueOf
+ParserFactory.CharacterParser#parse(RecordingInput)::: character parser parse:::return->Character->input->readChar->valueOf
+ParserFactory.FloatParser#parse(RecordingInput)::: float parser parse:::return->Float->input->readFloat->valueOf
+ParserFactory.DoubleParser#parse(RecordingInput)::: double parser parse:::return->Double->input->readDouble->valueOf
+ParserFactory.StringParser#parse(RecordingInput)::: string parser parse:::s->parseEncodedString->if->Objects->equals->return
+ParserFactory.StringParser#parseEncodedString(RecordingInput)::: string parser parse encoded string:::encoding->input->readByte->if->id->input->readLong->return->stringConstantMap->get->else->return->input->readEncodedString
+ParserFactory.ArrayParser#parse(RecordingInput)::: array parser parse:::size->input->readInt->array->new->ObjectArr->for->i->return
+ParserFactory.CompositeParser#parse(RecordingInput)::: composite parser parse:::values->new->ObjectArr->for->i->return
+ParserFactory.ConstantMapValueParser#parse(RecordingInput)::: constant map value parser parse:::return->pool->input->readLong->get
+RecordedClass#createFactory(Type, TimeConverter)::: recorded class create factory:::return->new->ObjectFactory<RecordedClass>
 RecordedClass#getModifiers():::Returns the modifiers of the class:::return->getTyped
 RecordedClass#getClassLoader():::Returns the class loader that defined the class:::return->getTyped
 RecordedClass#getName():::Returns the fully qualified name of the class (for example, "java.lang.String").:::return->getTyped->replace
 RecordedClass#getId():::Returns a unique ID for the class:::return
+RecordedClassLoader#createFactory(Type, TimeConverter)::: recorded class loader create factory:::return->new->ObjectFactory<RecordedClassLoader>
 RecordedClassLoader#getType():::Returns the class of the class loader:::return->getTyped
 RecordedClassLoader#getName():::Returns the name of the class loader (for example, "boot", "platform", and "app").:::return->getTyped
 RecordedClassLoader#getId():::Returns a unique ID for the class loader:::return
@@ -13,18 +59,27 @@ RecordedEvent#getStartTime():::Returns the start time of the event:::return->Ins
 RecordedEvent#getEndTime():::Returns the end time of the event:::return->Instant->ofEpochSecond
 RecordedEvent#getDuration():::Returns the duration of the event, measured in nanoseconds.:::return->Duration->ofNanos
 RecordedEvent#getFields():::Returns the list of descriptors that describes the fields of the event.:::return->getEventType->getFields
+RecordedFrame#createFactory(Type, TimeConverter)::: recorded frame create factory:::return->new->ObjectFactory<RecordedFrame>
 RecordedFrame#isJavaFrame():::Returns true if this is a Java frame, false otherwise:::if->hasField->return->getTyped->return
 RecordedFrame#getBytecodeIndex():::Returns the bytecode index for the execution point that is represented by this recorded frame.:::return->Integer->valueOf->getTyped
 RecordedFrame#getLineNumber():::Returns the line number for the execution point that is represented by this recorded frame, or -1 if doesn't exist:::return->Integer->valueOf->getTyped
 RecordedFrame#getType():::Returns the frame type for the execution point that is represented by this recorded frame (for example, "Interpreted", "JIT compiled" or "Inlined").:::return->getTyped
 RecordedFrame#getMethod():::Returns the method for the execution point that is represented by this recorded frame.:::return->getTyped
+RecordedMethod#createFactory(Type, TimeConverter)::: recorded method create factory:::return->new->ObjectFactory<RecordedMethod>
 RecordedMethod#getType():::Returns the class this method belongs to, if it belong to a Java frame:::return->getTyped
 RecordedMethod#getName():::Returns the name of this method, for example "toString":::return->getTyped
 RecordedMethod#getDescriptor():::Returns the method descriptor for this method (for example, "(Ljava/lang/String;)V"):::return->getTyped
 RecordedMethod#getModifiers():::Returns the modifiers for this method:::return->Integer->valueOf->getTyped
 RecordedMethod#isHidden():::Returns whether this method is hidden (for example, wrapper code in a lambda expressions).:::return->getTyped
+RecordedObject.UnsignedValue#value()::: unsigned value value:::return
+RecordedObject#getTyped(String, Class, T)::: recorded object get typed:::if->hasField->return->object->getValue->if->object->getClass->isAssignableFrom->return->else->return
 RecordedObject#hasField(String):::Returns true if a field with the given name exists, false otherwise.:::Objects->requireNonNull->foreach->if->v->getName->equals->return->dotIndex->name->indexOf->if->structName->name->substring->foreach->if->v->getFields->isEmpty->v->getName->equals->child->getValue->if->return->child->name->substring->hasField->return
 RecordedObject#getValue(String):::Returns the value of the field with the given name:::t->getValue->return
+RecordedObject#getValue(String, boolean)::: recorded object get value:::Objects->requireNonNull->index->foreach->if->name->v->getName->equals->object->if->return->if->v->getFields->isEmpty->if->PrivateAccess->getInstance->isUnsigned->if->return->return->new->UnsignedValue->return->else->if->return->array->if->v->isArray->return->structifyArray->return->v->getFields->new->RecordedObject->dotIndex->name->indexOf->if->structName->name->substring->foreach->if->v->getFields->isEmpty->v->getName->equals->child->getValue->subName->name->substring->if->return->child->getValue->else->v->getFields->getValueDescriptor->throw->new->NullPointerException->throw->new->IllegalArgumentException
+RecordedObject#getValueDescriptor(List, String, String)::: recorded object get value descriptor:::dotIndex->name->indexOf->if->first->name->substring->second->name->substring->foreach->if->v->getName->equals->fields->v->getFields->if->fields->isEmpty->return->v->getFields->getValueDescriptor->throw->new->IllegalArgumentException->foreach->if->v->getName->equals->if->v->getTypeName->equals->throw->v->getTypeName->new->IllegalArgumentException->return->throw->new->IllegalArgumentException
+RecordedObject#getTypedValue(String, String)::: recorded object get typed value:::Objects->requireNonNull->getValueDescriptor->return->getValue
+RecordedObject#structifyArray(ValueDescriptor, Object[], int)::: recorded object structify array:::if->return->structArray->new->ObjectArr->for->i->return
+RecordedObject#isStackFrameType(String)::: recorded object is stack frame type:::if->equals->return->if->equals->return->return
 RecordedObject#getFields():::Returns an immutable list of the fields for this object.:::return
 RecordedObject#getBoolean(String):::Returns the value of a field of type boolean:::o->getValue->if->return->booleanValue->throw->newIllegalArgumentException
 RecordedObject#getByte(String):::Returns the value of a field of type byte:::o->getValue->if->return->byteValue->throw->newIllegalArgumentException
@@ -36,22 +91,38 @@ RecordedObject#getLong(String):::Returns the value of a field of type long or of
 RecordedObject#getDouble(String):::Returns the value of a field of type double or of another primitive type that is convertible to type double by a widening conversion:::o->getValue->if->return->doubleValue->if->return->doubleValue->if->return->doubleValue->if->return->doubleValue->if->return->doubleValue->if->return->byteValue->if->return->charValue->throw->newIllegalArgumentException
 RecordedObject#getString(String):::Returns the value of a field of type String:::return->getTypedValue
 RecordedObject#getDuration(String):::Returns the value of a timespan field:::o->getValue->if->return->longValue->getDuration->if->return->longValue->getDuration->if->return->longValue->getDuration->if->return->charValue->getDuration->if->return->longValue->getDuration->if->u->value->if->return->Integer->toUnsignedLong->getDuration->if->return->Short->toUnsignedLong->getDuration->if->return->Short->toUnsignedLong->getDuration->throw->newIllegalArgumentException
+RecordedObject#getDuration(long, String)::: recorded object get duration:::v->getValueDescriptor->if->return->Duration->ofSeconds->ts->v->getAnnotation->if->switch->ts->value->return->Duration->ofNanos->return->Duration->ofSeconds->return->Duration->ofMillis->return->Duration->ofNanos->return->Duration->timeConverter->convertTimespan->ofNanos->throw->v->getTypeName->ts->value->new->IllegalArgumentException->throw->v->getTypeName->new->IllegalArgumentException
 RecordedObject#getInstant(String):::Returns the value of a timestamp field:::o->getValue->if->return->longValue->getInstant->if->return->longValue->getInstant->if->return->longValue->getInstant->if->return->charValue->getInstant->if->return->longValue->getInstant->if->u->value->if->return->Integer->toUnsignedLong->getInstant->if->return->Short->toUnsignedLong->getInstant->if->return->Short->toUnsignedLong->getInstant->throw->newIllegalArgumentException
+RecordedObject#getInstant(long, String)::: recorded object get instant:::v->getValueDescriptor->ts->v->getAnnotation->if->if->return->switch->ts->value->return->Instant->ofEpochMilli->return->Instant->timeConverter->convertTimestamp->ofEpochSecond->throw->v->getTypeName->ts->value->new->IllegalArgumentException->throw->v->getTypeName->new->IllegalArgumentException
 RecordedObject#getClass(String):::Returns the value of a field of type Class:::return->getTypedValue
 RecordedObject#getThread(String):::Returns the value of a field of type Thread:::return->getTypedValue
 RecordedObject#toString():::Returns a textual representation of this object.:::s->new->StringWriter->p->new->PrintWriter->new->PrettyWriter->p->setStackDepth->if->p->print->else->p->print->p->flush->return->s->toString
+RecordedObject#getOffsetDateTime(String)::: recorded object get offset date time:::instant->getInstant->if->instant->equals->return->return->OffsetDateTime->getInstant->timeConverter->getZoneOffset->ofInstant
+RecordedObject#newIllegalArgumentException(String, String)::: recorded object new illegal argument exception:::return->new->IllegalArgumentException
+RecordedStackTrace#createFactory(Type, TimeConverter)::: recorded stack trace create factory:::return->new->ObjectFactory<RecordedStackTrace>
 RecordedStackTrace#getFrames():::Returns the frames in the stack trace.:::array->getTyped->if->return->list->Arrays->asList->return
 RecordedStackTrace#isTruncated():::Returns true if the stack trace is truncated due to its size, false otherwise.:::return->getTyped
+RecordedThread#createFactory(Type, TimeConverter)::: recorded thread create factory:::return->new->ObjectFactory<RecordedThread>
 RecordedThread#getOSName():::Returns the thread name used by the operating system.:::return->getTyped
 RecordedThread#getOSThreadId():::Returns the thread ID used by the operating system.:::l->getTyped->return->l->longValue
 RecordedThread#getThreadGroup():::Returns the Java thread group, if available.:::return->getTyped
 RecordedThread#getJavaName():::Returns the Java thread name, or null if if doesn't exist:::return->getTyped
 RecordedThread#getJavaThreadId():::Returns the Java thread ID, or -1 if it's not a Java thread.:::l->getTyped->return->l->longValue
 RecordedThread#getId():::Returns a unique ID for both native threads and Java threads that can't be reused within the lifespan of the JVM:::return
+RecordedThreadGroup#createFactory(Type, TimeConverter)::: recorded thread group create factory:::return->new->ObjectFactory<RecordedThreadGroup>
 RecordedThreadGroup#getName():::Returns the name of the thread group, or null if doesn't exist.:::return->getTyped
 RecordedThreadGroup#getParent():::Returns the parent thread group, or null if it doesn't exist.:::return->getTyped
 RecordingFile#readEvent():::Reads the next event in the recording.:::if->ensureOpen->throw->new->EOFException->event->chunkParser->readEvent->if->findNext->return
 RecordingFile#hasMoreEvents():::Returns true if unread events exist in the recording file, false otherwise.:::return
 RecordingFile#readEventTypes():::Returns a list of all event types in this recording.:::ensureOpen->types->new->ArrayList<>->foundIds->new->HashSet<>->try->ri->new->RecordingInput->ch->new->ChunkHeader->aggregateEventTypeForChunk->while->ch->isLastChunk->ch->nextHeader->aggregateEventTypeForChunk->catch->finally->return
+RecordingFile#readTypes()::: recording file read types:::ensureOpen->types->new->ArrayList<>->foundIds->new->HashSet<>->try->ri->new->RecordingInput->ch->new->ChunkHeader->aggregateTypeForChunk->while->ch->isLastChunk->ch->nextHeader->aggregateTypeForChunk->catch->finally->return
+RecordingFile#aggregateTypeForChunk(ChunkHeader, List, HashSet)::: recording file aggregate type for chunk:::m->ch->readMetadata->foreach->m->getTypes->if->foundIds->t->getId->contains->types->add->foundIds->t->getId->add
+RecordingFile#aggregateEventTypeForChunk(ChunkHeader, List, HashSet)::: recording file aggregate event type for chunk:::m->ch->readMetadata->foreach->m->getEventTypes->if->foundIds->t->getId->contains->types->add->foundIds->t->getId->add
 RecordingFile#close():::Closes this recording file and releases any system resources that are associated with it.:::if->input->close
 RecordingFile#readAllEvents(Path):::Returns a list of all events in a file:::try->r->new->RecordingFile->list->new->ArrayList<>->while->r->hasMoreEvents->list->r->readEvent->add->return->catch->finally
+RecordingFile#findNext()::: recording file find next:::while->if->new->ChunkParser->else->if->chunkParser->isLastChunk->chunkParser->nextChunkParser->else->return->chunkParser->readEvent
+RecordingFile#ensureOpen()::: recording file ensure open:::if->throw->new->IOException
+TimeConverter#zoneOfSet(int)::: time converter zone of set:::try->return->ZoneOffset->ofTotalSeconds->catch->Logger->log->finally->return
+TimeConverter#convertTimestamp(long)::: time converter convert timestamp:::return
+TimeConverter#convertTimespan(long)::: time converter convert timespan:::return
+TimeConverter#getZoneOffset()::: time converter get zone offset:::return

@@ -1,0 +1,41 @@
+ArrayRangeWriteBarrier#getLength()::: array range write barrier get length:::return
+ArrayRangeWriteBarrier#getElementStride()::: array range write barrier get element stride:::return
+BarrierSet#addBarriers(FixedAccessNode)::: barrier set add barriers:::
+CardTableBarrierSet#addBarriers(FixedAccessNode)::: card table barrier set add barriers:::if->else->if->write->write->value->addWriteBarrier->else->if->atomic->atomic->getNewValue->addWriteBarrier->else->if->cmpSwap->cmpSwap->getNewValue->addWriteBarrier->else->if->addArrayRangeBarriers->else->GraalError->n->getBarrierType->n->getClass->guarantee
+CardTableBarrierSet#needsBarrier(FixedAccessNode)::: card table barrier set needs barrier:::if->return->else->if->write->return->write->value->needsWriteBarrier->else->if->atomic->return->atomic->getNewValue->needsWriteBarrier->else->if->cmpSwap->return->cmpSwap->getNewValue->needsWriteBarrier->else->if->return->needsWriteBarrier->else->GraalError->n->getBarrierType->n->getClass->guarantee->return
+CardTableBarrierSet#hasBarrier(FixedAccessNode)::: card table barrier set has barrier:::if->return->else->if->write->return->hasWriteBarrier->else->if->atomic->return->hasWriteBarrier->else->if->cmpSwap->return->hasWriteBarrier->else->if->return->hasWriteBarrier->else->GraalError->n->getBarrierType->n->getClass->guarantee->return
+CardTableBarrierSet#isMatchingBarrier(FixedAccessNode, WriteBarrier)::: card table barrier set is matching barrier:::if->return->else->if->return->matches->else->throw->GraalError->n->getClass->shouldNotReachHere
+CardTableBarrierSet#addArrayRangeBarriers(ArrayRangeWrite)::: card table barrier set add array range barriers:::if->needsWriteBarrier->graph->write->asNode->graph->serialArrayRangeWriteBarrier->graph->write->getAddress->write->getLength->write->getElementStride->new->SerialArrayRangeWriteBarrier->add->graph->write->asNode->addAfterFixed
+CardTableBarrierSet#addWriteBarrier(FixedAccessNode, ValueNode)::: card table barrier set add write barrier:::if->needsWriteBarrier->node->getAddress->node->graph->addSerialPostWriteBarrier
+CardTableBarrierSet#needsWriteBarrier(FixedAccessNode, ValueNode)::: card table barrier set needs write barrier:::barrierType->node->getBarrierType->switch->return->return->writeRequiresBarrier->throw->new->GraalError
+CardTableBarrierSet#writeRequiresBarrier(FixedAccessNode, ValueNode)::: card table barrier set write requires barrier:::return->isNonNullObjectValue
+CardTableBarrierSet#needsWriteBarrier(ArrayRangeWrite)::: card table barrier set needs write barrier:::return->write->writesObjectArray
+CardTableBarrierSet#hasWriteBarrier(FixedAccessNode)::: card table barrier set has write barrier:::return->node->next->node->next->matches
+CardTableBarrierSet#hasWriteBarrier(ArrayRangeWrite)::: card table barrier set has write barrier:::node->write->asNode->return->node->next->node->next->matches
+CardTableBarrierSet#addSerialPostWriteBarrier(FixedAccessNode, AddressNode, StructuredGraph)::: card table barrier set add serial post write barrier:::precise->node->getBarrierType->graph->graph->new->SerialWriteBarrier->add->addAfterFixed
+CardTableBarrierSet#isNonNullObjectValue(ValueNode)::: card table barrier set is non null object value:::return->value->stamp->StampTool->isPointerAlwaysNull
+CardTableBarrierSet#matches(FixedAccessNode, SerialWriteBarrier)::: card table barrier set matches:::if->barrier->usePrecise->if->barrier->getAddress->node->getAddress->return->GraphUtil->barrier->getAddress->getBase->unproxify->GraphUtil->node->getAddress->getBase->unproxify->return->barrier->getAddress->node->getAddress
+CardTableBarrierSet#matches(ArrayRangeWrite, SerialArrayRangeWriteBarrier)::: card table barrier set matches:::return->barrier->getAddress->node->getAddress->node->getLength->barrier->getLength->node->getElementStride->barrier->getElementStride
+G1BarrierSet#addBarriers(FixedAccessNode)::: g1 barrier set add barriers:::if->addReadNodeBarriers->else->if->write->write->value->write->getNullCheck->addWriteBarriers->else->if->atomic->atomic->getNewValue->atomic->getNullCheck->addWriteBarriers->else->if->cmpSwap->cmpSwap->getNewValue->cmpSwap->getExpectedValue->addWriteBarriers->else->if->addArrayRangeBarriers->else->GraalError->n->getBarrierType->n->getClass->guarantee
+G1BarrierSet#addReadNodeBarriers(ReadNode)::: g1 barrier set add read node barriers:::if->node->getBarrierType->graph->node->graph->barrier->graph->node->getAddress->new->G1ReferentFieldReadBarrier->add->graph->addAfterFixed
+G1BarrierSet#addWriteBarriers(FixedAccessNode, ValueNode, ValueNode, boolean, boolean)::: g1 barrier set add write barriers:::barrierType->node->getBarrierType->switch->break->if->isObjectValue->graph->node->graph->init->node->getLocationIdentity->isInit->if->node->getAddress->addG1PreWriteBarrier->if->writeRequiresPostBarrier->precise->node->getAddress->addG1PostWriteBarrier->break->throw->new->GraalError
+G1BarrierSet#writeRequiresPostBarrier(FixedAccessNode, ValueNode)::: g1 barrier set write requires post barrier:::return
+G1BarrierSet#addArrayRangeBarriers(ArrayRangeWrite)::: g1 barrier set add array range barriers:::if->write->writesObjectArray->graph->write->asNode->graph->if->write->isInitialization->g1ArrayRangePreWriteBarrier->graph->write->getAddress->write->getLength->write->getElementStride->new->G1ArrayRangePreWriteBarrier->add->graph->write->asNode->addBeforeFixed->g1ArrayRangePostWriteBarrier->graph->write->getAddress->write->getLength->write->getElementStride->new->G1ArrayRangePostWriteBarrier->add->graph->write->asNode->addAfterFixed
+G1BarrierSet#addG1PreWriteBarrier(FixedAccessNode, AddressNode, ValueNode, boolean, boolean, StructuredGraph)::: g1 barrier set add g1 pre write barrier:::preBarrier->graph->new->G1PreWriteBarrier->add->preBarrier->node->stateBefore->setStateBefore->node->setNullCheck->node->setStateBefore->graph->addBeforeFixed
+G1BarrierSet#addG1PostWriteBarrier(FixedAccessNode, AddressNode, ValueNode, boolean, StructuredGraph)::: g1 barrier set add g1 post write barrier:::alwaysNull->StampTool->isPointerAlwaysNull->graph->graph->new->G1PostWriteBarrier->add->addAfterFixed
+G1BarrierSet#isObjectValue(ValueNode)::: g1 barrier set is object value:::return->value->stamp
+G1PostWriteBarrier#alwaysNull()::: g1 post write barrier always null:::return
+G1PreWriteBarrier#getExpectedObject()::: g1 pre write barrier get expected object:::return->getValue
+G1PreWriteBarrier#doLoad()::: g1 pre write barrier do load:::return
+G1PreWriteBarrier#getNullCheck()::: g1 pre write barrier get null check:::return
+G1PreWriteBarrier#canDeoptimize()::: g1 pre write barrier can deoptimize:::return
+G1PreWriteBarrier#stateBefore()::: g1 pre write barrier state before:::return
+G1PreWriteBarrier#setStateBefore(FrameState)::: g1 pre write barrier set state before:::updateUsages
+G1ReferentFieldReadBarrier#getExpectedObject()::: g1 referent field read barrier get expected object:::return->getValue
+G1ReferentFieldReadBarrier#doLoad()::: g1 referent field read barrier do load:::return
+ObjectWriteBarrier#getValue()::: object write barrier get value:::return
+ObjectWriteBarrier#usePrecise()::: object write barrier use precise:::return
+SerialWriteBarrier#setVerifyOnly(boolean)::: serial write barrier set verify only:::
+SerialWriteBarrier#getVerifyOnly()::: serial write barrier get verify only:::return
+WriteBarrier#lower(LoweringTool)::: write barrier lower:::tool->getLowerer->lower
+WriteBarrier#getAddress()::: write barrier get address:::return

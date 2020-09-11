@@ -1,12 +1,27 @@
 HttpTimestamper#generateTimestamp(TSRequest):::Connects to the TSA and requests a timestamp.:::connection->tsaURI->toURL->openConnection->connection->setDoOutput->connection->setUseCaches->connection->setRequestProperty->connection->setRequestMethod->connection->setConnectTimeout->if->headers->connection->getRequestProperties->entrySet->debug->connection->getRequestMethod->println->foreach->debug->println->debug->println->connection->connect->output->try->connection->getOutputStream->new->DataOutputStream->request->tsQuery->encode->output->write->output->flush->if->debug->println->catch->finally->if->output->close->input->replyBuffer->try->connection->getInputStream->new->BufferedInputStream->if->header->connection->getHeaderField->debug->println->i->while->connection->getHeaderField->key->connection->getHeaderFieldKey->debug->println->debug->println->connection->getContentType->verifyMimeType->clen->connection->getContentLength->input->readAllBytes->if->throw->new->EOFException->if->debug->println->catch->finally->if->input->close->return->new->TSResponse
+HttpTimestamper#verifyMimeType(String)::: http timestamper verify mime type:::if->TS_REPLY_MIME_TYPE->equalsIgnoreCase->throw->new->IOException
+Timestamper#generateTimestamp(TSRequest)::: timestamper generate timestamp:::
 TimestampToken#getDate():::Extract the date and time from the timestamp token.:::return
+TimestampToken#getHashAlgorithm()::: timestamp token get hash algorithm:::return
+TimestampToken#getHashedMessage()::: timestamp token get hashed message:::return
+TimestampToken#getNonce()::: timestamp token get nonce:::return
+TimestampToken#getPolicyID()::: timestamp token get policy d:::return->policy->toString
+TimestampToken#getSerialNumber()::: timestamp token get serial number:::return
+TimestampToken#parse(byte[])::: timestamp token parse:::tstInfo->new->DerValue->if->throw->new->IOException->getInteger->getOID->messageImprint->getDerValue->AlgorithmId->getDerValue->parse->getOctetString->getBigInteger->getGeneralizedTime->while->available->d->getDerValue->if->d->getBigInteger->break
+TSRequest#getHashedMessage()::: request get hashed message:::return->hashValue->clone
 TSRequest#setVersion(int):::Sets the Time-Stamp Protocol version.:::
 TSRequest#setPolicyId(String):::Sets an object identifier for the Time-Stamp Protocol policy.:::
 TSRequest#setNonce(BigInteger):::Sets a nonce:::
 TSRequest#requestCertificate(boolean):::Request that the TSA include its signing certificate in the response.:::
 TSRequest#setExtensions(X509Extension[]):::Sets the Time-Stamp Protocol extensions.:::
+TSRequest#encode()::: request encode:::request->new->DerOutputStream->request->putInteger->messageImprint->new->DerOutputStream->hashAlgorithmId->encode->messageImprint->putOctetString->request->write->if->request->new->ObjectIdentifier->putOID->if->request->putInteger->if->request->putBoolean->out->new->DerOutputStream->out->write->return->out->toByteArray
 TSResponse#getStatusCode():::Retrieve the status code returned by the TSA.:::return
 TSResponse#getStatusMessages():::Retrieve the status messages returned by the TSA.:::return
 TSResponse#getFailureInfo():::Retrieve the failure info returned by the TSA.:::return
+TSResponse#getStatusCodeAsText()::: response get status code as text:::switch->return->return->return->return->return->return->return
+TSResponse#isSet(int)::: response is set:::return
+TSResponse#getFailureCodeAsText()::: response get failure code as text:::if->return->try->if->isSet->return->if->isSet->return->if->isSet->return->if->isSet->return->if->isSet->return->if->isSet->return->if->isSet->return->if->isSet->return->catch->finally->return
 TSResponse#getToken():::Retrieve the timestamp token returned by the TSA.:::return
+TSResponse#getTimestampToken()::: response get timestamp token:::return
 TSResponse#getEncodedToken():::Retrieve the ASN.1 BER encoded timestamp token returned by the TSA.:::return
+TSResponse#parse(byte[])::: response parse:::derValue->new->DerValue->if->throw->new->IOException->statusInfo->getDerValue->getInteger->if->debug->println->if->available->tag->peekByte->if->strings->getSequence->new->StringArr->for->i->if->available->getUnalignedBitString->toBooleanArray->if->available->timestampToken->getDerValue->timestampToken->toByteArray->new->PKCS7->tsToken->getContentInfo->getData->new->TimestampToken->if->if->throw->new->TimestampException->else->if->throw->new->TimestampException

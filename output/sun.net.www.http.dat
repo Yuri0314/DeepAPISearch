@@ -1,15 +1,115 @@
+ChunkedInputStream#ensureOpen():::Check to make sure that this stream has not been closed.:::if->throw->new->IOException
+ChunkedInputStream#ensureRawAvailable(int):::Ensures there is size bytes available in rawData:::if->used->if->tmp->new->byteArr->if->System->arraycopy->else->if->System->arraycopy
+ChunkedInputStream#closeUnderlying():::Close the underlying input stream by either returning it to the keep alive cache or closing the stream:::if->return->if->hc->finished->else->if->hurry->hc->closeServer
+ChunkedInputStream#fastRead(byte[], int, int):::Attempt to read the remainder of a chunk directly into the caller's buffer:::remaining->cnt->if->nread->try->in->read->catch->throw->finally->if->if->return->throw->new->IOException->else->return
+ChunkedInputStream#processRaw():::Process any outstanding bytes that have already been read into rawData:::pos->i->while->switch->while->if->break->if->throw->new->IOException->if->return->header->new->String->for->header->length->try->Integer->parseInt->catch->throw->new->IOException->finally->if->else->break->if->return->copyLen->Math->min->if->cnt->if->tmp->new->byteArr->System->arraycopy->else->System->arraycopy->System->arraycopy->if->else->return->break->if->return->if->throw->new->IOException->if->throw->new->IOException->break->while->if->break->if->return->if->throw->new->IOException->if->throw->new->IOException->if->closeUnderlying->return->trailer->new->String->trailer->indexOf->if->throw->new->IOException->key->trailer->substring->trim->value->trailer->trailer->length->substring->trim->responses->add->break
+ChunkedInputStream#readAheadNonBlocking():::Reads any available bytes from the underlying stream into rawData and returns the number of bytes of chunk data available in chunkData that the application can read.:::avail->in->available->if->ensureRawAvailable->nread->try->in->read->catch->throw->finally->if->return->processRaw->return
+ChunkedInputStream#readAheadBlocking():::Reads from the underlying stream until there is chunk data available in chunkData for the application to read.:::do->if->return->ensureRawAvailable->nread->try->in->read->catch->throw->finally->if->throw->new->IOException->processRaw->while->return
+ChunkedInputStream#readAhead(boolean):::Read ahead in either blocking or non-blocking mode:::if->return->if->if->return->readAheadBlocking->else->return->readAheadNonBlocking
 ChunkedInputStream#read():::See the general contract of the read method of InputStream.:::ensureOpen->if->if->readAhead->return->return
 ChunkedInputStream#read(byte[], int, int):::Reads bytes from this stream into the specified byte array, starting at the given offset.:::ensureOpen->if->throw->new->IndexOutOfBoundsException->else->if->return->avail->if->if->return->fastRead->readAhead->if->return->cnt->System->arraycopy->return
 ChunkedInputStream#available():::Returns the number of bytes that can be read from this input stream without blocking.:::ensureOpen->avail->if->return->readAhead->if->return->else->return
 ChunkedInputStream#close():::Close the stream by either returning the connection to the keep alive cache or closing the underlying stream:::if->return->closeUnderlying
 ChunkedInputStream#hurry():::Hurry the input stream by reading everything from the underlying stream:::if->return->try->readAhead->catch->return->finally->if->return->return
+ChunkedOutputStream#getHeaderSize(int)::: chunked output stream get header size:::return->Integer->toHexString->length
+ChunkedOutputStream#getHeader(int)::: chunked output stream get header:::try->hexStr->Integer->toHexString->hexBytes->hexStr->getBytes->header->getHeaderSize->new->byteArr->for->i->return->catch->throw->e->getMessage->new->InternalError->finally
+ChunkedOutputStream#flush(boolean)::: chunked output stream flush:::if->out->write->out->flush->reset->else->if->if->adjustedHeaderStartIndex->getHeaderSize->System->getHeader->getHeaderSize->arraycopy->out->write->else->out->write->out->flush->reset
+ChunkedOutputStream#checkError()::: chunked output stream check error:::return->out->checkError
+ChunkedOutputStream#ensureOpen()::: chunked output stream ensure open:::if->setError
+ChunkedOutputStream#write(byte[], int, int)::: chunked output stream write:::ensureOpen->if->throw->new->IndexOutOfBoundsException->else->if->return->bytesToWrite->inputIndex->do->if->for->i->System->arraycopy->flush->if->checkError->break->else->System->arraycopy->while
+ChunkedOutputStream#write(int)::: chunked output stream write:::b->write
+ChunkedOutputStream#reset()::: chunked output stream reset:::
+ChunkedOutputStream#size()::: chunked output stream size:::return
+ChunkedOutputStream#close()::: chunked output stream close:::ensureOpen->if->flush->flush
+ChunkedOutputStream#flush()::: chunked output stream flush:::ensureOpen->if->flush
+HttpCapture#init()::: http capture init:::rulesFile->new->java.security.PrivilegedAction<>->doPrivileged->if->rulesFile->isEmpty->in->try->new->FileReader->new->BufferedReader->catch->return->finally->try->line->in->readLine->while->line->trim->if->line->startsWith->s->line->split->if->if->new->ArrayList<>->new->ArrayList<>->patterns->Pattern->trim->compile->add->capFiles->trim->add->in->readLine->catch->finally->try->in->close->catch->finally
+HttpCapture#isInitialized()::: http capture is initialized:::return
+HttpCapture#sent(int)::: http capture sent:::if->out->write->out->flush->out->write
+HttpCapture#received(int)::: http capture received:::if->out->write->out->flush->out->write
+HttpCapture#flush()::: http capture flush:::out->flush
+HttpCapture#getCapture(java.net.URL)::: http capture get capture:::if->isInitialized->init->if->patterns->isEmpty->return->s->url->toString->for->i->patterns->size->return
+HttpCaptureInputStream#read()::: http capture input stream read:::i->super->read->capture->received->return
+HttpCaptureInputStream#close()::: http capture input stream close:::try->capture->flush->catch->finally->super->close
+HttpCaptureInputStream#read(byte[])::: http capture input stream read:::ret->super->read->for->i->return
+HttpCaptureInputStream#read(byte[], int, int)::: http capture input stream read:::ret->super->read->for->i->return
+HttpCaptureOutputStream#write(int)::: http capture output stream write:::capture->sent->out->write
+HttpCaptureOutputStream#write(byte[])::: http capture output stream write:::foreach->capture->sent->out->write
+HttpCaptureOutputStream#write(byte[], int, int)::: http capture output stream write:::for->i->out->write
+HttpCaptureOutputStream#flush()::: http capture output stream flush:::try->capture->flush->catch->finally->super->flush
 HttpClient#getDefaultPort():::return default port number (subclasses may override):::return
+HttpClient#getDefaultPort(String)::: http client get default port:::if->equalsIgnoreCase->return->if->equalsIgnoreCase->return->return
+HttpClient#logFinest(String)::: http client log finest:::if->logger->isLoggable->logger->finest
 HttpClient#resetProperties():::A NOP method kept for backwards binary compatibility:::
+HttpClient#getKeepAliveTimeout()::: http client get keep alive timeout:::return
+HttpClient#getHttpKeepAliveSet()::: http client get http keep alive set:::return
+HttpClient#newHttpProxy(String, int, String)::: http client new http proxy:::if->return->pport->getDefaultPort->saddr->InetSocketAddress->createUnresolved->return->new->Proxy
+HttpClient#New(URL)::: http client  new:::return->HttpClient->New
+HttpClient#New(URL, boolean)::: http client  new:::return->HttpClient->New
+HttpClient#New(URL, Proxy, int, boolean, HttpURLConnection)::: http client  new:::if->ret->if->kac->get->if->httpuc->streaming->httpuc->getRequestMethod->if->ret->available->ret->closeServer->if->ak->httpuc->getAuthenticatorKey->compatible->Objects->equals->Objects->ret->getAuthenticatorKey->equals->if->synchronized->if->ret->needsTunneling->httpuc->setTunnelState->logFinest->else->synchronized->ret->closeServer->if->new->HttpClient->if->httpuc->getAuthenticatorKey->else->security->System->getSecurityManager->if->if->security->InetAddress->url->getHost->getByName->getHostAddress->url->getPort->checkConnect->else->security->url->getHost->url->getPort->checkConnect->return
+HttpClient#New(URL, Proxy, int, HttpURLConnection)::: http client  new:::return->New
+HttpClient#New(URL, String, int, boolean)::: http client  new:::return->newHttpProxy->New
+HttpClient#New(URL, String, int, boolean, int, HttpURLConnection)::: http client  new:::return->newHttpProxy->New
+HttpClient#getAuthenticatorKey()::: http client get authenticator key:::k->if->return->return
+HttpClient#finished()::: http client finished:::if->return->if->isKeepingAlive->serverOutput->checkError->putInKeepAliveCache->else->closeServer
+HttpClient#available()::: http client available:::available->old->try->try->serverSocket->getSoTimeout->serverSocket->setSoTimeout->tmpbuf->serverSocket->getInputStream->new->BufferedInputStream->r->tmpbuf->read->if->logFinest->catch->logFinest->finally->if->serverSocket->setSoTimeout->catch->logFinest->finally->return
+HttpClient#putInKeepAliveCache()::: http client put in keep alive cache:::if->return->kac->put
+HttpClient#isInKeepAliveCache()::: http client is in keep alive cache:::return
+HttpClient#closeIdleConnection()::: http client close idle connection:::http->kac->get->if->http->closeServer
+HttpClient#openServer(String, int)::: http client open server:::doConnect->try->out->serverSocket->getOutputStream->if->new->HttpCaptureOutputStream->new->BufferedOutputStream->new->PrintStream->catch->throw->new->InternalError->finally->serverSocket->setTcpNoDelay
+HttpClient#needsTunneling()::: http client needs tunneling:::return
+HttpClient#isCachedConnection()::: http client is cached connection:::return
+HttpClient#afterConnect()::: http client after connect:::
+HttpClient#privilegedOpenServer(InetSocketAddress)::: http client privileged open server:::try->new->java.security.PrivilegedExceptionAction<>->doPrivileged->catch->throw->pae->getException->finally
+HttpClient#superOpenServer(String, int)::: http client super open server:::super->openServer
+HttpClient#openServer()::: http client open server:::security->System->getSecurityManager->if->security->checkConnect->if->return->if->url->getProtocol->equals->url->getProtocol->equals->if->proxy->type->setProxiedHost->proxy->address->privilegedOpenServer->return->else->openServer->return->else->if->proxy->type->setProxiedHost->proxy->address->privilegedOpenServer->return->else->super->openServer->return
+HttpClient#getURLFile()::: http client get file:::fileName->if->result->new->StringBuilder->result->url->getProtocol->append->result->append->if->url->getAuthority->url->getAuthority->length->result->append->result->url->getAuthority->append->if->url->getPath->result->url->getPath->append->if->url->getQuery->result->append->result->url->getQuery->append->result->toString->else->url->getFile->if->fileName->length->else->if->fileName->charAt->if->fileName->indexOf->return->else->throw->new->java.net.MalformedURLException
+HttpClient#writeRequests(MessageHeader)::: http client write requests:::requests->print->serverOutput->flush
+HttpClient#writeRequests(MessageHeader, PosterOutputStream)::: http client write requests:::requests->print->if->poster->writeTo->serverOutput->flush
+HttpClient#writeRequests(MessageHeader, PosterOutputStream, boolean)::: http client write requests:::writeRequests
+HttpClient#parseHTTP(MessageHeader, ProgressSource, HttpURLConnection)::: http client parse p:::try->serverSocket->getInputStream->if->new->HttpCaptureInputStream->new->BufferedInputStream->return->parseHTTPHeader->catch->if->closeServer->throw->closeServer->if->if->getRequestMethod->equals->httpuc->getRequestMethod->equals->else->openServer->if->needsTunneling->origRequests->httpuc->doTunneling->afterConnect->writeRequests->return->parseHTTP->throw->finally
+HttpClient#parseHTTPHeader(MessageHeader, ProgressSource, HttpURLConnection)::: http client parse header:::ret->b->new->byteArr->try->nread->serverInput->mark->while->r->serverInput->read->if->break->keep->authenticate->serverInput->reset->if->responses->parseHeader->cookieHandler->httpuc->getCookieHandler->if->uri->ParseUtil->toURI->if->cookieHandler->responses->getHeaders->put->if->responses->findValue->responses->findValue->if->responses->findValue->responses->findValue->canKeepAlive->if->authenticate->toLowerCase->if->authenticate->startsWith->if->authenticate->startsWith->authenticate->startsWith->if->keep->toLowerCase->equals->if->else->p->responses->findValue->new->HeaderParser->p->findInt->p->findInt->else->if->if->else->else->if->if->if->getRequestMethod->equals->httpuc->getRequestMethod->equals->else->closeServer->openServer->if->needsTunneling->origRequests->httpuc->doTunneling->afterConnect->writeRequests->return->parseHTTP->throw->new->SocketException->else->responses->set->catch->throw->finally->code->try->resp->responses->getValue->ind->resp->indexOf->while->resp->charAt->Integer->parseInt->catch->finally->if->responses->reset->return->parseHTTPHeader->cl->te->responses->findValue->if->te->equalsIgnoreCase->new->ChunkedInputStream->if->else->else->cls->responses->findValue->if->try->Long->parseLong->catch->finally->requestLine->requests->getKey->if->requestLine->startsWith->if->else->if->if->if->pi->responses->findValue->setContentType->useKeepAliveStream->isKeepingAlive->if->logFinest->new->KeepAliveStream->else->new->MeteredStream->else->if->if->pi->responses->findValue->setContentType->new->MeteredStream->else->else->if->pi->finishTracking->return
+HttpClient#getInputStream()::: http client get input stream:::return
+HttpClient#getOutputStream()::: http client get output stream:::return
+HttpClient#toString()::: http client to string:::return->getClass->getName
+HttpClient#isKeepingAlive()::: http client is keeping alive:::return->getHttpKeepAliveSet
+HttpClient#setCacheRequest(CacheRequest)::: http client set cache request:::
+HttpClient#getCacheRequest()::: http client get cache request:::return
+HttpClient#getRequestMethod()::: http client get request method:::if->requestLine->requests->getKey->if->return->requestLine->split->return
+HttpClient#setDoNotRetry(boolean)::: http client set do not retry:::
+HttpClient#setIgnoreContinue(boolean)::: http client set ignore continue:::
+HttpClient#closeServer()::: http client close server:::try->serverSocket->close->catch->finally
+HttpClient#getProxyHostUsed()::: http client get proxy host used:::if->return->else->return->proxy->address->getHostString
+HttpClient#getProxyPortUsed()::: http client get proxy port used:::if->return->proxy->address->getPort->return
+Hurryable#hurry()::: hurryable hurry:::
+KeepAliveCache#getMaxConnections()::: keep alive cache get max connections:::if->AccessController->new->GetIntegerAction->doPrivileged->intValue->if->return
 KeepAliveCache#put(URL, Object, HttpClient):::Register this URL and HttpClient (that supports keep-alive) with the cache:::startThread->if->if->keepAliveTimer->isAlive->if->clear->cache->AccessController->new->PrivilegedAction<>->doPrivileged->key->new->KeepAliveKey->v->super->get->if->keepAliveTimeout->http->getKeepAliveTimeout->new->ClientVector->v->put->super->put->else->v->put
+KeepAliveCache#remove(HttpClient, Object)::: keep alive cache remove:::key->new->KeepAliveKey->v->super->get->if->v->remove->if->v->isEmpty->removeVector
+KeepAliveCache#removeVector(KeepAliveKey)::: keep alive cache remove vector:::super->remove
 KeepAliveCache#get(URL, Object):::Check to see if this URL has a cached HttpClient:::key->new->KeepAliveKey->v->super->get->if->return->return->v->get
+KeepAliveCache#run()::: keep alive cache run:::do->try->Thread->sleep->catch->finally->synchronized->currentTime->System->currentTimeMillis->keysToRemove->new->ArrayList<>->foreach->keySet->v->get->synchronized->e->v->peek->while->if->v->poll->closeServer->else->break->v->peek->if->v->isEmpty->keysToRemove->add->foreach->removeVector->while->isEmpty
+KeepAliveCache#writeObject(ObjectOutputStream)::: keep alive cache write object:::throw->new->NotSerializableException
+KeepAliveCache#readObject(ObjectInputStream)::: keep alive cache read object:::throw->new->NotSerializableException
+ClientVector#get()::: client vector get:::if->isEmpty->return->hc->currentTime->System->currentTimeMillis->do->e->pop->if->closeServer->else->while->isEmpty->return
+ClientVector#put(HttpClient)::: client vector put:::if->size->KeepAliveCache->getMaxConnections->h->closeServer->else->System->currentTimeMillis->new->KeepAliveEntry->push
+ClientVector#remove(HttpClient)::: client vector remove:::foreach->if->return->super->remove->return
+ClientVector#writeObject(ObjectOutputStream)::: client vector write object:::throw->new->NotSerializableException
+ClientVector#readObject(ObjectInputStream)::: client vector read object:::throw->new->NotSerializableException
 KeepAliveKey#equals(Object):::Determine whether or not two objects of this type are equal:::if->return->kae->return->host->equals->protocol->equals
 KeepAliveKey#hashCode():::The hashCode() for this object is the string hashCode() of concatenation of the protocol, host name and port.:::str->return->str->hashCode->str->hashCode->hashCode
+KeepAliveCleanerEntry#getKeepAliveStream()::: keep alive cleaner entry get keep alive stream:::return
+KeepAliveCleanerEntry#getHttpClient()::: keep alive cleaner entry get http client:::return
+KeepAliveCleanerEntry#setQueuedForCleanup()::: keep alive cleaner entry set queued for cleanup:::
+KeepAliveCleanerEntry#getQueuedForCleanup()::: keep alive cleaner entry get queued for cleanup:::return
 KeepAliveStream#close():::Attempt to cache this connection:::if->return->if->return->try->if->nskip->if->available->do->while->Math->available->min->skip->else->if->new->KeepAliveCleanerEntry->queueForCleanup->else->hc->closeServer->if->hc->finished->catch->finally->if->pi->finishTracking->if
+KeepAliveStream#markSupported()::: keep alive stream mark supported:::return
+KeepAliveStream#mark(int)::: keep alive stream mark:::
+KeepAliveStream#reset()::: keep alive stream reset:::throw->new->IOException
+KeepAliveStream#hurry()::: keep alive stream hurry:::try->if->return->else->if->in->available->return->else->size->buf->new->byteArr->dis->new->DataInputStream->dis->readFully->new->ByteArrayInputStream->return->catch->return->finally
+KeepAliveStream#queueForCleanup(KeepAliveCleanerEntry)::: keep alive stream queue for cleanup:::synchronized->if->kace->getQueuedForCleanup->if->queue->offer->kace->getHttpClient->closeServer->return->kace->setQueuedForCleanup->queue->notifyAll->startCleanupThread->if->if->cleanerThread->isAlive->if->new->java.security.PrivilegedAction<Void>->doPrivileged
+KeepAliveStream#remainingToRead()::: keep alive stream remaining to read:::return
+KeepAliveStream#setClosed()::: keep alive stream set closed:::
+KeepAliveStreamCleaner#offer(KeepAliveCleanerEntry)::: keep alive stream cleaner offer:::if->size->return->return->super->offer
+KeepAliveStreamCleaner#run()::: keep alive stream cleaner run:::kace->do->try->synchronized->before->System->currentTimeMillis->timeout->while->poll->this->wait->after->System->currentTimeMillis->elapsed->if->poll->break->if->break->kas->kace->getKeepAliveStream->if->synchronized->hc->kace->getHttpClient->try->if->hc->isInKeepAliveCache->oldTimeout->hc->getReadTimeout->hc->setReadTimeout->remainingToRead->kas->remainingToRead->if->n->retries->while->kas->skip->if->if->hc->setReadTimeout->hc->finished->else->hc->closeServer->catch->hc->closeServer->finally->kas->setClosed->catch->finally->while
 PosterOutputStream#write(int):::Writes the specified byte to this output stream.:::if->return->super->write
 PosterOutputStream#write(byte[], int, int):::Writes len bytes from the specified byte array starting at offset off to this output stream.:::if->return->super->write
 PosterOutputStream#reset():::Resets the count field of this output stream to zero, so that all currently accumulated output in the output stream is discarded:::if->return->super->reset

@@ -6,6 +6,27 @@ DiagnosticCommandArgumentInfo#isMandatory():::Returns true if the argument is ma
 DiagnosticCommandArgumentInfo#isOption():::Returns true if the argument is an option,         false otherwise:::return
 DiagnosticCommandArgumentInfo#isMultiple():::Returns true if the argument can be specified multiple times,         false otherwise.:::return
 DiagnosticCommandArgumentInfo#getPosition():::Returns the expected position of this argument if it is not an option,         -1 otherwise:::return
+DiagnosticCommandImpl#getDiagnosticCommandMBean()::: diagnostic command impl get diagnostic command bean:::jvm->ManagementFactoryHelper->getVMManagement->if->jvm->isRemoteDiagnosticCommandsSupported->new->DiagnosticCommandImpl->return
+DiagnosticCommandImpl#getAttribute(String)::: diagnostic command impl get attribute:::throw->new->AttributeNotFoundException
+DiagnosticCommandImpl#setAttribute(Attribute)::: diagnostic command impl set attribute:::throw->attribute->getName->new->AttributeNotFoundException
+DiagnosticCommandImpl#getAttributes(String[])::: diagnostic command impl get attributes:::return->new->AttributeList
+DiagnosticCommandImpl#setAttributes(AttributeList)::: diagnostic command impl set attributes:::return->new->AttributeList
+DiagnosticCommandImpl.Wrapper#execute(String[])::: wrapper execute:::if->sm->System->getSecurityManager->if->sm->checkPermission->if->return->executeDiagnosticCommand->else->sb->new->StringBuilder->sb->append->for->i->return->sb->toString->executeDiagnosticCommand
+DiagnosticCommandImpl.OperationInfoComparator#compare(MBeanOperationInfo, MBeanOperationInfo)::: operation info comparator compare:::return->o1->getName->o2->getName->compareTo
+DiagnosticCommandImpl#getMBeanInfo()::: diagnostic command impl get bean info:::operations->new->OperationInfoComparator->new->TreeSet<>->wrappersmap->if->Collections->emptyMap->else->try->command->getDiagnosticCommands->info->getDiagnosticCommandInfo->stringArgInfo->new->MBeanParameterInfoArr->new->MBeanParameterInfo->new->HashMap<>->for->i->catch->Collections->emptyMap->finally->Collections->unmodifiableMap->map->new->HashMap<>->map->put->map->put->map->put->desc->new->ImmutableDescriptor->return->this->getClass->getName->operations->operations->size->new->MBeanOperationInfoArr->toArray->getNotificationInfo->new->MBeanInfo
+DiagnosticCommandImpl#invoke(String, Object[], String[])::: diagnostic command impl invoke:::if->throw->new->UnsupportedOperationException->if->getMBeanInfo->w->wrappers->get->if->if->getArgumentsInfo->isEmpty->return->w->execute->else->if->compareTo->return->w->execute->else->throw->Arrays->toString->new->NoSuchMethodException->new->ReflectionException->else->throw->Arrays->toString->new->NoSuchMethodException->new->ReflectionException
+DiagnosticCommandImpl#transform(String)::: diagnostic command impl transform:::sb->new->StringBuilder->toLower->toUpper->for->i->name->length->return->sb->toString
+DiagnosticCommandImpl#commandDescriptor(Wrapper)::: diagnostic command impl command descriptor:::map->new->HashMap<>->map->getName->put->map->getDescription->put->map->getImpact->put->map->getPermissionClass->put->map->getPermissionName->put->map->getPermissionAction->put->map->isEnabled->put->sb->new->StringBuilder->sb->append->sb->getName->append->map->sb->toString->executeDiagnosticCommand->put->if->getArgumentsInfo->getArgumentsInfo->isEmpty->allargmap->new->HashMap<>->foreach->getArgumentsInfo->argmap->new->HashMap<>->argmap->arginfo->getName->put->argmap->arginfo->getType->put->argmap->arginfo->getDescription->put->argmap->arginfo->isMandatory->put->argmap->arginfo->isMultiple->put->isOption->arginfo->isOption->argmap->put->if->argmap->arginfo->getPosition->put->else->argmap->put->allargmap->arginfo->getName->new->ImmutableDescriptor->put->map->new->ImmutableDescriptor->put->return->new->ImmutableDescriptor
+DiagnosticCommandImpl#getNotificationInfo()::: diagnostic command impl get notification info:::synchronized->if->new->MBeanNotificationInfoArr->new->MBeanNotificationInfo->return->notifInfo->clone
+DiagnosticCommandImpl#getNextSeqNumber()::: diagnostic command impl get next seq number:::return
+DiagnosticCommandImpl#createDiagnosticFrameworkNotification()::: diagnostic command impl create diagnostic framework notification:::if->hasListeners->return->on->try->ObjectName->getInstance->catch->finally->notif->getNextSeqNumber->new->Notification->notif->getMBeanInfo->setUserData->sendNotification
+DiagnosticCommandImpl#addNotificationListener(NotificationListener, NotificationFilter, Object)::: diagnostic command impl add notification listener:::before->hasListeners->super->addNotificationListener->after->hasListeners->if->setNotificationEnabled
+DiagnosticCommandImpl#removeNotificationListener(NotificationListener)::: diagnostic command impl remove notification listener:::before->hasListeners->super->removeNotificationListener->after->hasListeners->if->setNotificationEnabled
+DiagnosticCommandImpl#removeNotificationListener(NotificationListener, NotificationFilter, Object)::: diagnostic command impl remove notification listener:::before->hasListeners->super->removeNotificationListener->after->hasListeners->if->setNotificationEnabled
+DiagnosticCommandImpl#setNotificationEnabled(boolean)::: diagnostic command impl set notification enabled:::
+DiagnosticCommandImpl#getDiagnosticCommands()::: diagnostic command impl get diagnostic commands:::
+DiagnosticCommandImpl#getDiagnosticCommandInfo(String[])::: diagnostic command impl get diagnostic command info:::
+DiagnosticCommandImpl#executeDiagnosticCommand(String)::: diagnostic command impl execute diagnostic command:::
 DiagnosticCommandInfo#getName():::Returns the diagnostic command name.:::return
 DiagnosticCommandInfo#getDescription():::Returns the diagnostic command description.:::return
 DiagnosticCommandInfo#getImpact():::Returns the potential impact of the diagnostic command execution         on the Java virtual machine behavior.:::return
@@ -14,6 +35,103 @@ DiagnosticCommandInfo#getPermissionName():::Returns the permission name required
 DiagnosticCommandInfo#getPermissionAction():::Returns the permission action required to be allowed to invoke the         diagnostic command, or null if no permission is required or         if the permission has no action specified.:::return
 DiagnosticCommandInfo#isEnabled():::Returns true if the diagnostic command is enabled,         false otherwise:::return
 DiagnosticCommandInfo#getArgumentsInfo():::Returns the list of the diagnostic command arguments description:::return
+Flag#getValue()::: flag get value:::return
+Flag#isWriteable()::: flag is writeable:::return
+Flag#isExternal()::: flag is external:::return
+Flag#getVMOption()::: flag get option:::return->value->toString->new->VMOption
+Flag#getFlag(String)::: flag get flag:::names->new->StringArr->flags->getFlags->if->flags->isEmpty->return->else->return->flags->get
+Flag#getAllFlags()::: flag get all flags:::numFlags->getInternalFlagCount->return->getFlags
+Flag#getFlags(String[], int)::: flag get flags:::flags->new->FlagArr->count->getFlags->result->new->ArrayList<>->foreach->if->result->add->return
+Flag#getAllFlagNames()::: flag get all flag names:::
+Flag#getFlags(String[], Flag[], int)::: flag get flags:::
+Flag#getInternalFlagCount()::: flag get internal flag count:::
+Flag#setLongValue(String, long)::: flag set long value:::
+Flag#setDoubleValue(String, double)::: flag set double value:::
+Flag#setBooleanValue(String, boolean)::: flag set boolean value:::
+Flag#setStringValue(String, String)::: flag set string value:::
+Flag#initialize()::: flag initialize:::
+GarbageCollectionNotifInfoCompositeData#getGarbageCollectionNotifInfo()::: garbage collection notif info composite data get garbage collection notif info:::return
+GarbageCollectionNotifInfoCompositeData#toCompositeData(GarbageCollectionNotificationInfo)::: garbage collection notif info composite data to composite data:::gcnicd->new->GarbageCollectionNotifInfoCompositeData->return->gcnicd->getCompositeData
+GarbageCollectionNotifInfoCompositeData#getCompositeTypeByBuilder()::: garbage collection notif info composite data get composite type by builder:::builder->AccessController->new->PrivilegedAction<GcInfoBuilder>->doPrivileged->gict->synchronized->compositeTypeByBuilder->get->if->gcNotifInfoItemTypes->new->OpenType<?>Arr->builder->getGcInfoCompositeType->try->typeName->new->CompositeType->compositeTypeByBuilder->put->catch->throw->new->RuntimeException->finally->return
+GarbageCollectionNotifInfoCompositeData#getCompositeData()::: garbage collection notif info composite data get composite data:::gcNotifInfoItemValues->new->ObjectArr->gcNotifInfo->getGcName->gcNotifInfo->getGcAction->gcNotifInfo->getGcCause->GcInfoCompositeData->gcNotifInfo->getGcInfo->toCompositeData->gict->getCompositeTypeByBuilder->try->return->new->CompositeDataSupport->catch->throw->new->AssertionError->finally
+GarbageCollectionNotifInfoCompositeData#getGcName(CompositeData)::: garbage collection notif info composite data get gc name:::gcname->getString->if->throw->new->IllegalArgumentException->return
+GarbageCollectionNotifInfoCompositeData#getGcAction(CompositeData)::: garbage collection notif info composite data get gc action:::gcaction->getString->if->throw->new->IllegalArgumentException->return
+GarbageCollectionNotifInfoCompositeData#getGcCause(CompositeData)::: garbage collection notif info composite data get gc cause:::gccause->getString->if->throw->new->IllegalArgumentException->return
+GarbageCollectionNotifInfoCompositeData#getGcInfo(CompositeData)::: garbage collection notif info composite data get gc info:::gcInfoData->cd->get->return->GcInfo->from
 GarbageCollectionNotifInfoCompositeData#validateCompositeData(CompositeData):::Validate if the input CompositeData has the expected CompositeType (i.e:::if->throw->new->NullPointerException->if->getBaseGcNotifInfoCompositeType->cd->getCompositeType->isTypeMatched->throw->new->IllegalArgumentException
+GarbageCollectionNotifInfoCompositeData#getBaseGcNotifInfoCompositeType()::: garbage collection notif info composite data get base gc notif info composite type:::if->try->baseGcNotifInfoItemTypes->new->OpenType<?>Arr->GcInfoCompositeData->getBaseGcInfoCompositeType->new->CompositeType->catch->throw->new->RuntimeException->finally->return
+GarbageCollectorExtImpl#getAllPoolNames()::: garbage collector ext impl get all pool names:::if->ManagementFactoryHelper->getAllMemoryPoolNames->return
+GarbageCollectorExtImpl#getLastGcInfo()::: garbage collector ext impl get last gc info:::info->getGcInfoBuilder->getLastGcInfo->return
+GarbageCollectorExtImpl#getNotificationInfo()::: garbage collector ext impl get notification info:::return->new->MBeanNotificationInfoArr->new->MBeanNotificationInfo
+GarbageCollectorExtImpl#getNextSeqNumber()::: garbage collector ext impl get next seq number:::return
+GarbageCollectorExtImpl#createGCNotification(long, String, String, String, GcInfo)::: garbage collector ext impl create notification:::if->hasListeners->return->notif->getObjectName->getNextSeqNumber->new->Notification->info->new->GarbageCollectionNotificationInfo->cd->GarbageCollectionNotifInfoCompositeData->toCompositeData->notif->setUserData->sendNotification
+GarbageCollectorExtImpl#addNotificationListener(NotificationListener, NotificationFilter, Object)::: garbage collector ext impl add notification listener:::before->hasListeners->super->addNotificationListener->after->hasListeners->if->setNotificationEnabled
+GarbageCollectorExtImpl#removeNotificationListener(NotificationListener)::: garbage collector ext impl remove notification listener:::before->hasListeners->super->removeNotificationListener->after->hasListeners->if->setNotificationEnabled
+GarbageCollectorExtImpl#removeNotificationListener(NotificationListener, NotificationFilter, Object)::: garbage collector ext impl remove notification listener:::before->hasListeners->super->removeNotificationListener->after->hasListeners->if->setNotificationEnabled
+GarbageCollectorExtImpl#getGcInfoBuilder()::: garbage collector ext impl get gc info builder:::if->getAllPoolNames->new->GcInfoBuilder->return
+GarbageCollectorExtImpl#setNotificationEnabled(GarbageCollectorMXBean, boolean)::: garbage collector ext impl set notification enabled:::
+GarbageCollectorExtImpl#createGarbageCollector(String, String)::: garbage collector ext impl create garbage collector:::return->new->GarbageCollectorExtImpl
+GcInfoBuilder#getLastGcInfo()::: gc info builder get last gc info:::usageBeforeGC->new->MemoryUsageArr->usageAfterGC->new->MemoryUsageArr->values->new->ObjectArr->return->getLastGcInfo0
+GcInfoBuilder#getPoolNames()::: gc info builder get pool names:::return->poolNames->clone
+GcInfoBuilder#getGcExtItemCount()::: gc info builder get gc ext item count:::return
+GcInfoBuilder#getGcInfoCompositeType()::: gc info builder get gc info composite type:::if->return->gcInfoItemNames->GcInfoCompositeData->getBaseGcInfoItemNames->gcInfoItemTypes->GcInfoCompositeData->getBaseGcInfoItemTypes->numGcInfoItems->itemCount->new->StringArr->allItemDescs->new->StringArr->allItemTypes->new->OpenType<?>Arr->System->arraycopy->System->arraycopy->System->arraycopy->if->fillGcAttributeInfo->System->arraycopy->System->arraycopy->for->i->j->gict->try->typeName->gc->getName->gc->getName->new->CompositeType->catch->throw->new->RuntimeException->finally->return
+GcInfoBuilder#getItemNames()::: gc info builder get item names:::if->getGcInfoCompositeType->return
+GcInfoBuilder#getNumGcExtAttributes(GarbageCollectorMXBean)::: gc info builder get num gc ext attributes:::
+GcInfoBuilder#fillGcAttributeInfo(GarbageCollectorMXBean, int, String[], char[], String[])::: gc info builder fill gc attribute info:::
+GcInfoBuilder#getLastGcInfo0(GarbageCollectorMXBean, int, Object[], char[], MemoryUsage[], MemoryUsage[]):::Returns the last GcInfo:::
+GcInfoCompositeData#getGcInfo()::: gc info composite data get gc info:::return
+GcInfoCompositeData#toCompositeData(GcInfo)::: gc info composite data to composite data:::builder->AccessController->new->PrivilegedAction<GcInfoBuilder>->doPrivileged->extAttr->AccessController->new->PrivilegedAction<Object[]>->doPrivileged->gcicd->new->GcInfoCompositeData->return->gcicd->getCompositeData
+GcInfoCompositeData#getCompositeData()::: gc info composite data get composite data:::baseGcInfoItemValues->try->new->ObjectArr->info->getId->info->getStartTime->info->getEndTime->info->getDuration->memoryUsageMapType->info->getMemoryUsageBeforeGc->toOpenTypeData->memoryUsageMapType->info->getMemoryUsageAfterGc->toOpenTypeData->catch->throw->new->AssertionError->finally->gcExtItemCount->builder->getGcExtItemCount->if->throw->new->AssertionError->if->throw->new->AssertionError->values->new->ObjectArr->System->arraycopy->if->System->arraycopy->try->return->builder->getGcInfoCompositeType->builder->getItemNames->new->CompositeDataSupport->catch->throw->new->AssertionError->finally
+GcInfoCompositeData#getBaseGcInfoItemNames()::: gc info composite data get base gc info item names:::return
+GcInfoCompositeData#getBaseGcInfoItemTypes()::: gc info composite data get base gc info item types:::if->memoryUsageOpenType->memoryUsageMapType->getOpenType->new->OpenType<?>Arr->return
+GcInfoCompositeData#getId(CompositeData)::: gc info composite data get id:::return->getLong
+GcInfoCompositeData#getStartTime(CompositeData)::: gc info composite data get start time:::return->getLong
+GcInfoCompositeData#getEndTime(CompositeData)::: gc info composite data get end time:::return->getLong
+GcInfoCompositeData#getMemoryUsageBeforeGc(CompositeData)::: gc info composite data get memory usage before gc:::try->td->cd->get->return->memoryUsageMapType->toJavaTypeData->cast->catch->throw->new->AssertionError->finally
+GcInfoCompositeData#cast(Object)::: gc info composite data cast:::return
+GcInfoCompositeData#getMemoryUsageAfterGc(CompositeData)::: gc info composite data get memory usage after gc:::try->td->cd->get->return->memoryUsageMapType->toJavaTypeData->cast->catch->throw->new->AssertionError->finally
 GcInfoCompositeData#validateCompositeData(CompositeData):::Returns true if the input CompositeData has the expected CompositeType (i.e:::if->throw->new->NullPointerException->if->getBaseGcInfoCompositeType->cd->getCompositeType->isTypeMatched->throw->new->IllegalArgumentException
+GcInfoCompositeData#getBaseGcInfoCompositeType()::: gc info composite data get base gc info composite type:::if->try->getBaseGcInfoItemNames->getBaseGcInfoItemNames->getBaseGcInfoItemTypes->new->CompositeType->catch->throw->new->RuntimeException->finally->return
+HotSpotDiagnostic#dumpHeap(String, boolean)::: hot spot diagnostic dump heap:::propertyName->pa->Boolean->System->getProperty->parseBoolean->allowAnyFileSuffix->AccessController->doPrivileged->if->outputFile->endsWith->throw->new->IllegalArgumentException->security->System->getSecurityManager->if->security->checkWrite->Util->checkControlAccess->dumpHeap0
+HotSpotDiagnostic#dumpHeap0(String, boolean)::: hot spot diagnostic dump heap0:::
+HotSpotDiagnostic#getDiagnosticOptions()::: hot spot diagnostic get diagnostic options:::allFlags->Flag->getAllFlags->result->new->ArrayList<>->foreach->if->flag->isWriteable->flag->isExternal->result->flag->getVMOption->add->return
+HotSpotDiagnostic#getVMOption(String)::: hot spot diagnostic get option:::if->throw->new->NullPointerException->f->Flag->getFlag->if->throw->new->IllegalArgumentException->return->f->getVMOption
+HotSpotDiagnostic#setVMOption(String, String)::: hot spot diagnostic set option:::if->throw->new->NullPointerException->if->throw->new->NullPointerException->Util->checkControlAccess->flag->Flag->getFlag->if->throw->new->IllegalArgumentException->if->flag->isWriteable->throw->new->IllegalArgumentException->v->flag->getValue->if->try->l->Long->parseLong->Flag->setLongValue->catch->throw->new->IllegalArgumentException->finally->else->if->try->d->Double->parseDouble->Flag->setDoubleValue->catch->throw->new->IllegalArgumentException->finally->else->if->if->value->equalsIgnoreCase->value->equalsIgnoreCase->throw->new->IllegalArgumentException->Flag->Boolean->parseBoolean->setBooleanValue->else->if->Flag->setStringValue->else->throw->v->getClass->getName->new->IllegalArgumentException
+HotSpotDiagnostic#getObjectName()::: hot spot diagnostic get object name:::return->Util->newObjectName
+HotSpotThreadImpl#isThreadAllocatedMemorySupported()::: hot spot thread impl is thread allocated memory supported:::return->super->isThreadAllocatedMemorySupported
+HotSpotThreadImpl#isThreadAllocatedMemoryEnabled()::: hot spot thread impl is thread allocated memory enabled:::return->super->isThreadAllocatedMemoryEnabled
+HotSpotThreadImpl#getThreadCpuTime(long[])::: hot spot thread impl get thread cpu time:::return->super->getThreadCpuTime
+HotSpotThreadImpl#getThreadUserTime(long[])::: hot spot thread impl get thread user time:::return->super->getThreadUserTime
+HotSpotThreadImpl#getThreadAllocatedBytes(long)::: hot spot thread impl get thread allocated bytes:::return->super->getThreadAllocatedBytes
+HotSpotThreadImpl#getThreadAllocatedBytes(long[])::: hot spot thread impl get thread allocated bytes:::return->super->getThreadAllocatedBytes
+HotSpotThreadImpl#setThreadAllocatedMemoryEnabled(boolean)::: hot spot thread impl set thread allocated memory enabled:::super->setThreadAllocatedMemoryEnabled
+OperatingSystemImpl#getCommittedVirtualMemorySize()::: operating system impl get committed virtual memory size:::synchronized->return->getCommittedVirtualMemorySize0
+OperatingSystemImpl#getTotalSwapSpaceSize()::: operating system impl get total swap space size:::return->getTotalSwapSpaceSize0
+OperatingSystemImpl#getFreeSwapSpaceSize()::: operating system impl get free swap space size:::return->getFreeSwapSpaceSize0
+OperatingSystemImpl#getProcessCpuTime()::: operating system impl get process cpu time:::return->getProcessCpuTime0
+OperatingSystemImpl#getFreePhysicalMemorySize()::: operating system impl get free physical memory size:::return->getFreePhysicalMemorySize0
+OperatingSystemImpl#getTotalPhysicalMemorySize()::: operating system impl get total physical memory size:::return->getTotalPhysicalMemorySize0
+OperatingSystemImpl#getSystemCpuLoad()::: operating system impl get system cpu load:::return->getSystemCpuLoad0
+OperatingSystemImpl#getProcessCpuLoad()::: operating system impl get process cpu load:::return->getProcessCpuLoad0
+OperatingSystemImpl#getCommittedVirtualMemorySize0()::: operating system impl get committed virtual memory size0:::
+OperatingSystemImpl#getFreePhysicalMemorySize0()::: operating system impl get free physical memory size0:::
+OperatingSystemImpl#getFreeSwapSpaceSize0()::: operating system impl get free swap space size0:::
+OperatingSystemImpl#getProcessCpuLoad0()::: operating system impl get process cpu load0:::
+OperatingSystemImpl#getProcessCpuTime0()::: operating system impl get process cpu time0:::
+OperatingSystemImpl#getSystemCpuLoad0()::: operating system impl get system cpu load0:::
+OperatingSystemImpl#getTotalPhysicalMemorySize0()::: operating system impl get total physical memory size0:::
+OperatingSystemImpl#getTotalSwapSpaceSize0()::: operating system impl get total swap space size0:::
+OperatingSystemImpl#initialize0()::: operating system impl initialize0:::
+PlatformMBeanProviderImpl#getPlatformComponentList()::: platform bean provider impl get platform component list:::return
+PlatformMBeanProviderImpl#init()::: platform bean provider impl init:::initMBeanList->new->ArrayList<>->initMBeanList->new->PlatformComponent<MemoryManagerMXBean>->add->initMBeanList->new->PlatformComponent<java.lang.management.ThreadMXBean>->add->initMBeanList->new->PlatformComponent<OperatingSystemMXBean>->add->initMBeanList->new->PlatformComponent<com.sun.management.HotSpotDiagnosticMXBean>->add->diagMBean->DiagnosticCommandImpl->getDiagnosticCommandMBean->if->initMBeanList->new->PlatformComponent<DynamicMBean>->add->initMBeanList->trimToSize->return
+PlatformMBeanProviderImpl#getDiagnosticMXBean()::: platform bean provider impl get diagnostic bean:::if->new->HotSpotDiagnostic->return
+PlatformMBeanProviderImpl#getOperatingSystemMXBean()::: platform bean provider impl get operating system bean:::if->ManagementFactoryHelper->getVMManagement->new->OperatingSystemImpl->return
+VMOptionCompositeData#getVMOption()::: option composite data get option:::return
+VMOptionCompositeData#toCompositeData(VMOption)::: option composite data to composite data:::vcd->new->VMOptionCompositeData->return->vcd->getCompositeData
+VMOptionCompositeData#getCompositeData()::: option composite data get composite data:::vmOptionItemValues->option->getName->option->getValue->option->isWriteable->option->getOrigin->toString->try->return->new->CompositeDataSupport->catch->throw->new->AssertionError->finally
+VMOptionCompositeData#getVMOptionCompositeType()::: option composite data get option composite type:::return
+VMOptionCompositeData#getName(CompositeData)::: option composite data get name:::return->getString
+VMOptionCompositeData#getValue(CompositeData)::: option composite data get value:::return->getString
+VMOptionCompositeData#getOrigin(CompositeData)::: option composite data get origin:::o->getString->return->Enum->valueOf
+VMOptionCompositeData#isWriteable(CompositeData)::: option composite data is writeable:::return->getBoolean
 VMOptionCompositeData#validateCompositeData(CompositeData):::Validate if the input CompositeData has the expected CompositeType (i.e:::if->throw->new->NullPointerException->if->cd->getCompositeType->isTypeMatched->throw->new->IllegalArgumentException

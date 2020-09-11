@@ -1,27 +1,48 @@
 AbstractInterruptibleChannel#close():::Closes this channel:::synchronized->if->return->implCloseChannel
 AbstractInterruptibleChannel#implCloseChannel():::Closes this channel:::
+AbstractInterruptibleChannel#isOpen()::: abstract interruptible channel is open:::return
 AbstractInterruptibleChannel#begin():::Marks the beginning of an I/O operation that might block indefinitely:::if->new->Interruptible->blockedOn->me->Thread->currentThread->if->me->isInterrupted->interruptor->interrupt
 AbstractInterruptibleChannel#end(boolean):::Marks the end of an I/O operation that might block indefinitely:::blockedOn->interrupted->if->Thread->currentThread->throw->new->ClosedByInterruptException->if->throw->new->AsynchronousCloseException
+AbstractInterruptibleChannel#blockedOn(Interruptible)::: abstract interruptible channel blocked on:::SharedSecrets->getJavaLangAccess->blockedOn
 AbstractSelectableChannel#provider():::Returns the provider that created this channel.:::return
+AbstractSelectableChannel#addKey(SelectionKey)::: abstract selectable channel add key:::i->if->for->else->if->new->SelectionKeyArr->else->n->ks->new->SelectionKeyArr->for
+AbstractSelectableChannel#findKey(Selector)::: abstract selectable channel find key:::if->return->for->i->return
+AbstractSelectableChannel#removeKey(SelectionKey)::: abstract selectable channel remove key:::synchronized->for->i->invalidate
+AbstractSelectableChannel#haveValidKeys()::: abstract selectable channel have valid keys:::synchronized->if->return->for->i->return
+AbstractSelectableChannel#isRegistered()::: abstract selectable channel is registered:::synchronized->return
+AbstractSelectableChannel#keyFor(Selector)::: abstract selectable channel key for:::synchronized->return->findKey
 AbstractSelectableChannel#register(Selector, int, Object):::Registers this channel with the given selector, returning a selection key:::if->validOps->throw->new->IllegalArgumentException->if->isOpen->throw->new->ClosedChannelException->synchronized->if->isBlocking->throw->new->IllegalBlockingModeException->synchronized->if->isOpen->throw->new->ClosedChannelException->k->findKey->if->k->attach->k->interestOps->else->register->addKey->return
 AbstractSelectableChannel#implCloseChannel():::Closes this channel:::implCloseSelectableChannel->copyOfKeys->synchronized->if->keys->clone->if->foreach->if->k->cancel
 AbstractSelectableChannel#implCloseSelectableChannel():::Closes this selectable channel:::
+AbstractSelectableChannel#isBlocking()::: abstract selectable channel is blocking:::return
+AbstractSelectableChannel#blockingLock()::: abstract selectable channel blocking lock:::return
 AbstractSelectableChannel#configureBlocking(boolean):::Adjusts this channel's blocking mode:::synchronized->if->isOpen->throw->new->ClosedChannelException->blocking->if->if->haveValidKeys->throw->new->IllegalBlockingModeException->implConfigureBlocking->return
 AbstractSelectableChannel#implConfigureBlocking(boolean):::Adjusts this channel's blocking mode:::
+AbstractSelectionKey#isValid()::: abstract selection key is valid:::return
+AbstractSelectionKey#invalidate()::: abstract selection key invalidate:::
 AbstractSelectionKey#cancel():::Cancels this key:::synchronized->if->selector->cancel
+AbstractSelector#cancel(SelectionKey)::: abstract selector cancel:::synchronized->cancelledKeys->add
 AbstractSelector#close():::Closes this selector:::open->selectorOpen->getAndSet->if->return->implCloseSelector
 AbstractSelector#implCloseSelector():::Closes this selector:::
+AbstractSelector#isOpen()::: abstract selector is open:::return->selectorOpen->get
 AbstractSelector#provider():::Returns the provider that created this channel.:::return
 AbstractSelector#cancelledKeys():::Retrieves this selector's cancelled-key set:::return
 AbstractSelector#register(AbstractSelectableChannel, int, Object):::Registers the given channel with this selector:::
 AbstractSelector#deregister(AbstractSelectionKey):::Removes the given key from its channel's key set:::key->channel->removeKey
 AbstractSelector#begin():::Marks the beginning of an I/O operation that might block indefinitely:::if->new->Interruptible->AbstractInterruptibleChannel->blockedOn->me->Thread->currentThread->if->me->isInterrupted->interruptor->interrupt
 AbstractSelector#end():::Marks the end of an I/O operation that might block indefinitely:::AbstractInterruptibleChannel->blockedOn
+AsynchronousChannelProvider#checkPermission()::: asynchronous channel provider check permission:::sm->System->getSecurityManager->if->sm->new->RuntimePermission->checkPermission->return
+AsynchronousChannelProvider.ProviderHolder#load()::: provider holder load:::return->AccessController->new->PrivilegedAction<>->doPrivileged
+AsynchronousChannelProvider.ProviderHolder#loadProviderFromProperty()::: provider holder load provider from property:::cn->System->getProperty->if->return->try->tmp->Class->ClassLoader->getSystemClassLoader->forName->newInstance->return->catch->throw->new->ServiceConfigurationError->throw->new->ServiceConfigurationError->throw->new->ServiceConfigurationError->throw->new->ServiceConfigurationError->finally
+AsynchronousChannelProvider.ProviderHolder#loadProviderAsService()::: provider holder load provider as service:::sl->ServiceLoader->ClassLoader->getSystemClassLoader->load->i->sl->iterator->for
 AsynchronousChannelProvider#provider():::Returns the system-wide default asynchronous channel provider for this invocation of the Java virtual machine:::return
 AsynchronousChannelProvider#openAsynchronousChannelGroup(int, ThreadFactory):::Constructs a new asynchronous channel group with a fixed thread pool.:::
 AsynchronousChannelProvider#openAsynchronousChannelGroup(ExecutorService, int):::Constructs a new asynchronous channel group with the given thread pool.:::
 AsynchronousChannelProvider#openAsynchronousServerSocketChannel(AsynchronousChannelGroup):::Opens an asynchronous server-socket channel.:::
 AsynchronousChannelProvider#openAsynchronousSocketChannel(AsynchronousChannelGroup):::Opens an asynchronous socket channel.:::
+SelectorProvider#checkPermission()::: selector provider check permission:::sm->System->getSecurityManager->if->sm->new->RuntimePermission->checkPermission->return
+SelectorProvider#loadProviderFromProperty()::: selector provider load provider from property:::cn->System->getProperty->if->return->try->tmp->Class->ClassLoader->getSystemClassLoader->forName->newInstance->return->catch->throw->new->ServiceConfigurationError->throw->new->ServiceConfigurationError->throw->new->ServiceConfigurationError->throw->new->ServiceConfigurationError->finally
+SelectorProvider#loadProviderAsService()::: selector provider load provider as service:::sl->ServiceLoader->ClassLoader->getSystemClassLoader->load->i->sl->iterator->for
 SelectorProvider#provider():::Returns the system-wide default selector provider for this invocation of the Java virtual machine:::synchronized->if->return->return->AccessController->new->PrivilegedAction<>->doPrivileged
 SelectorProvider#openDatagramChannel():::Opens a datagram channel.:::
 SelectorProvider#openDatagramChannel(ProtocolFamily):::Opens a datagram channel.:::

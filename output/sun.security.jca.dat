@@ -1,19 +1,79 @@
+GetInstance.Instance#toArray()::: instance to array:::return->new->ObjectArr
+GetInstance#getService(String, String)::: get instance get service:::list->Providers->getProviderList->s->list->getService->if->throw->new->NoSuchAlgorithmException->return
+GetInstance#getService(String, String, String)::: get instance get service:::if->provider->length->throw->new->IllegalArgumentException->p->Providers->getProviderList->getProvider->if->throw->new->NoSuchProviderException->s->p->getService->if->throw->new->NoSuchAlgorithmException->return
+GetInstance#getService(String, String, Provider)::: get instance get service:::if->throw->new->IllegalArgumentException->s->provider->getService->if->throw->provider->getName->new->NoSuchAlgorithmException->return
 GetInstance#getServices(String, String):::Return a List of all the available Services that implement (type, algorithm):::list->Providers->getProviderList->return->list->getServices
 GetInstance#getServices(String, List):::This method exists for compatibility with JCE only:::list->Providers->getProviderList->return->list->getServices
 GetInstance#getServices(List):::Return a List of all the available Services that implement any of the specified algorithms:::list->Providers->getProviderList->return->list->getServices
+GetInstance#getInstance(String, Class, String)::: get instance get instance:::list->Providers->getProviderList->firstService->list->getService->if->throw->new->NoSuchAlgorithmException->failure->try->return->getInstance->catch->finally->foreach->list->getServices->if->continue->try->return->getInstance->catch->finally->throw
+GetInstance#getInstance(String, Class, String, Object)::: get instance get instance:::services->getServices->failure->foreach->try->return->getInstance->catch->finally->if->throw->else->throw->new->NoSuchAlgorithmException
+GetInstance#getInstance(String, Class, String, String)::: get instance get instance:::return->getService->getInstance
+GetInstance#getInstance(String, Class, String, Object, String)::: get instance get instance:::return->getService->getInstance
+GetInstance#getInstance(String, Class, String, Provider)::: get instance get instance:::return->getService->getInstance
+GetInstance#getInstance(String, Class, String, Object, Provider)::: get instance get instance:::return->getService->getInstance
+GetInstance#getInstance(Service, Class)::: get instance get instance:::instance->s->newInstance->instance->getClass->checkSuperClass->return->s->getProvider->new->Instance
+GetInstance#getInstance(Service, Class, Object)::: get instance get instance:::instance->s->newInstance->instance->getClass->checkSuperClass->return->s->getProvider->new->Instance
 GetInstance#checkSuperClass(Service, Class, Class):::Check is subClass is a subclass of superClass:::if->return->if->superClass->isAssignableFrom->throw->s->getType->s->getClassName->s->getType->new->NoSuchAlgorithmException
 JCAUtil#getTempArraySize(int):::Get the size of a temporary buffer array to use in order to be cache efficient:::return->Math->min
 JCAUtil#getSecureRandom():::Get a SecureRandom instance:::return
+ProviderConfig#checkSunPKCS11Solaris()::: provider config check sun s11 solaris:::o->AccessController->new->PrivilegedAction<Boolean>->doPrivileged->if
+ProviderConfig#hasArgument()::: provider config has argument:::return->argument->length
+ProviderConfig#shouldLoad()::: provider config should load:::return
+ProviderConfig#disableLoad()::: provider config disable load:::
+ProviderConfig#isLoaded()::: provider config is loaded:::return
+ProviderConfig#equals(Object)::: provider config equals:::if->return->if->return->other->return->equals->equals
+ProviderConfig#hashCode()::: provider config hash code:::return->provName->hashCode->argument->hashCode
+ProviderConfig#toString()::: provider config to string:::if->hasArgument->return->else->return
+ProviderConfig#getProvider()::: provider config get provider:::p->if->return->if->shouldLoad->return->if->provName->equals->provName->equals->new->sun.security.provider.Sun->else->if->provName->equals->provName->equals->new->sun.security.rsa.SunRsaSign->else->if->provName->equals->provName->equals->new->com.sun.crypto.provider.SunJCE->else->if->provName->equals->provName->equals->new->com.sun.net.ssl.internal.ssl.Provider->else->if->provName->equals->provName->equals->AccessController->new->PrivilegedAction<Provider>->doPrivileged->else->if->if->debug->println->new->Exception->printStackTrace->return->try->doLoadProvider->catch->finally->return
+ProviderConfig#doLoadProvider():::Load and instantiate the Provider described by this class:::return->AccessController->new->PrivilegedAction<Provider>->doPrivileged
+ProviderConfig#expand(String):::Perform property expansion of the provider value:::if->value->contains->return->return->AccessController->new->PrivilegedAction<String>->doPrivileged
+ProviderConfig.ProviderLoader#load(String):::Loads the provider with the specified class name.:::if->debug->println->iter->services->iterator->while->iter->hasNext->try->p->iter->next->pName->p->getName->if->debug->println->if->pName->equals->return->catch->if->debug->println->ex->printStackTrace->finally->try->return->legacyLoad->catch->throw->if->debug->println->ex->printStackTrace->return->finally
+ProviderConfig.ProviderLoader#legacyLoad(String)::: provider loader legacy load:::if->debug->println->try->provClass->ClassLoader->getSystemClassLoader->loadClass->if->isAssignableFrom->if->debug->println->return->p->AccessController->new->PrivilegedExceptionAction<Provider>->doPrivileged->return->catch->t->if->getCause->else->if->debug->println->t->printStackTrace->if->throw->return->if->debug->println->err->printStackTrace->return->finally
+ProviderList#fromSecurityProperties()::: provider list from security properties:::return->AccessController->new->PrivilegedAction<ProviderList>->doPrivileged
+ProviderList#add(ProviderList, Provider)::: provider list add:::return->insertAt
+ProviderList#insertAt(ProviderList, Provider, int)::: provider list insert at:::if->providerList->p->getName->getProvider->return->list->Arrays->asList->new->ArrayList<>->n->list->size->if->list->new->ProviderConfig->add->return->list->toArray->new->ProviderList
+ProviderList#remove(ProviderList, String)::: provider list remove:::if->providerList->getProvider->return->configs->providerList->size->new->ProviderConfigArr->j->foreach->if->config->getProvider->getName->equals->return->new->ProviderList
+ProviderList#newList(Provider...)::: provider list new list:::configs->new->ProviderConfigArr->for->i->return->new->ProviderList
 ProviderList#getJarList(String[]):::Construct a special ProviderList for JAR verification:::newConfigs->new->ArrayList<>->foreach->newConfig->new->ProviderConfig->foreach->if->config->equals->break->newConfigs->add->configArray->newConfigs->toArray->return->new->ProviderList
+ProviderList#size()::: provider list size:::return
 ProviderList#getProvider(int):::Return the Provider at the specified index:::p->getProvider->return
 ProviderList#providers():::Return an unmodifiable List of all Providers in this List:::return
+ProviderList#getProviderConfig(String)::: provider list get provider config:::index->getIndex->return
+ProviderList#getProvider(String)::: provider list get provider:::config->getProviderConfig->return->config->getProvider
 ProviderList#getIndex(String):::Return the index at which the provider with the specified name is installed or -1 if it is not present in this ProviderList.:::for->i->return
+ProviderList#loadAll()::: provider list load all:::if->return->if->debug->println->new->Exception->printStackTrace->n->for->i->if->return
 ProviderList#removeInvalid():::Try to load all Providers and return the ProviderList:::n->loadAll->if->return->newConfigs->new->ProviderConfigArr->for->i->j->return->new->ProviderList
+ProviderList#toArray()::: provider list to array:::return->providers->toArray
+ProviderList#toString()::: provider list to string:::return->Arrays->asList->toString
 ProviderList#getService(String, String):::Return a Service describing an implementation of the specified algorithm from the Provider with the highest precedence that supports that algorithm:::pList->i->if->preferredPropList->getAll->for->pList->size->for->return
 ProviderList#getServices(String, String):::Return a List containing all the Services describing implementations of the specified algorithms in precedence order:::return->new->ServiceList
 ProviderList#getServices(String, List):::This method exists for compatibility with JCE only:::ids->new->ArrayList<>->foreach->ids->new->ServiceId->add->return->getServices
+ProviderList#getServices(List)::: provider list get services:::return->new->ServiceList
+ProviderList.ServiceList#addService(Service)::: service list add service:::if->else->if->new->ArrayList<Service>->services->add->services->add
+ProviderList.ServiceList#tryGet(int)::: service list try get:::p->if->preferredPropList->getAll->while->if->return->else->if->services->size->return->services->get->if->return->if->preferredList->size->entry->preferredList->get->getProvider->if->if->debug->println->continue->else->getProvider->if->s->p->getService->if->addService->else->foreach->s->p->getService->if->addService
+ProviderList.ServiceList#get(int)::: service list get:::s->tryGet->if->throw->new->IndexOutOfBoundsException->return
+ProviderList.ServiceList#size()::: service list size:::n->if->services->size->else->while->tryGet->return
+ProviderList.ServiceList#isEmpty()::: service list is empty:::return->tryGet
+ProviderList.ServiceList#iterator()::: service list iterator:::return->new->Iterator<Service>
+ProviderList.PreferredList#getAll(ServiceList)::: preferred list get all:::if->return->getAll->l->new->ArrayList<PreferredEntry>->foreach->implGetAll->return
+ProviderList.PreferredList#getAll(String, String)::: preferred list get all:::l->new->ArrayList<PreferredEntry>->implGetAll->return
+ProviderList.PreferredList#implGetAll(ArrayList, String, String)::: preferred list impl get all:::e->for->i->size
+ProviderList.PreferredList#get(int)::: preferred list get:::return->list->get
+ProviderList.PreferredList#size()::: preferred list size:::return->list->size
+ProviderList.PreferredList#add(PreferredEntry)::: preferred list add:::return->list->add
+ProviderList.PreferredList#toString()::: preferred list to string:::s->foreach->e->toString->return
+ProviderList.PreferredEntry#match(String, String)::: preferred entry match:::if->debug->toString->print->println->if->type->compareToIgnoreCase->return->if->a->compareToIgnoreCase->if->debug->toString->println->return->if->foreach->if->debug->print->println->if->a->compareToIgnoreCase->if->debug->println->return->return
+ProviderList.PreferredEntry#print(String, String, String)::: preferred entry print:::return
+ProviderList.PreferredEntry#toString()::: preferred entry to string:::return->print
+Providers#getSunProvider()::: providers get sun provider:::return->new->sun.security.provider.Sun
 Providers#startJarVerification():::Start JAR verification:::currentList->getProviderList->jarList->currentList->getJarList->if->jarList->getProvider->p->try->new->sun.security.provider.VerificationProvider->catch->throw->new->RuntimeException->finally->ProviderList->add->return->beginThreadProviderList
 Providers#stopJarVerification(Object):::Stop JAR verification:::endThreadProviderList
 Providers#getProviderList():::Return the current ProviderList:::list->getThreadProviderList->if->getSystemProviderList->return
 Providers#setProviderList(ProviderList):::Set the current ProviderList:::if->getThreadProviderList->setSystemProviderList->else->changeThreadProviderList
 Providers#getFullProviderList():::Get the full provider list with invalid providers (those that could not be loaded) removed:::list->synchronized->getThreadProviderList->if->newList->list->removeInvalid->if->changeThreadProviderList->return->getSystemProviderList->newList->list->removeInvalid->if->setSystemProviderList->return
+Providers#getSystemProviderList()::: providers get system provider list:::return
+Providers#setSystemProviderList(ProviderList)::: providers set system provider list:::
+Providers#getThreadProviderList()::: providers get thread provider list:::if->return->return->threadLists->get
+Providers#changeThreadProviderList(ProviderList)::: providers change thread provider list:::threadLists->set
+Providers#beginThreadProviderList(ProviderList)::: providers begin thread provider list:::if->println->oldList->threadLists->get->threadLists->set->return
+Providers#endThreadProviderList(ProviderList)::: providers end thread provider list:::if->if->println->threadLists->remove->else->if->println->threadLists->set

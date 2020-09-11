@@ -1,0 +1,167 @@
+Assemble#getName()::: assemble get name:::return
+Assemble#getOptionSyntax()::: assemble get option syntax:::return->Collections->singletonList
+Assemble#getDescription()::: assemble get description:::return
+Assemble#displayOptionUsage(PrintStream)::: assemble display option usage:::stream->println->stream->println->stream->println
+Assemble#execute(Deque)::: assemble execute:::ensureMinArgumentCount->ensureMaxArgumentCount->repository->options->pop->getDirectory->file->Paths->options->pop->get->ensureFileDoesNotExist->ensureJFRFile->try->fos->file->toFile->new->FileOutputStream->files->listJFRFiles->if->files->isEmpty->throw->new->UserDataException->println->println->println->fos->getChannel->transferTo->println->println->catch->throw->e->getMessage->new->UserDataException->finally
+Assemble#listJFRFiles(Path)::: assemble list files:::try->files->new->ArrayList<>->if->Files->isDirectory->try->stream->Files->newDirectoryStream->foreach->if->Files->isDirectory->Files->isReadable->files->add->catch->finally->files->u->getFileName->v->getFileName->compareTo->sort->return->catch->throw->ioe->getMessage->new->UserDataException->finally
+Assemble#transferTo(List, Path, FileChannel)::: assemble transfer to:::pos->foreach->p->toString->println->try->sourceChannel->FileChannel->open->rem->Files->size->while->n->Math->min->w->out->transferFrom->catch->throw->ioe->getMessage->new->UserDataException->finally
+Command#createCommands()::: command create commands:::commands->new->ArrayList<>->commands->new->Print->add->commands->new->Metadata->add->commands->new->Summary->add->commands->new->Assemble->add->commands->new->Disassemble->add->commands->new->Version->add->commands->add->return->Collections->unmodifiableList
+Command#displayHelp()::: command display help:::println->println->displayAvailableCommands
+Command#getName()::: command get name:::
+Command#getDescription()::: command get description:::
+Command#execute(Deque)::: command execute:::
+Command#getTitle()::: command get title:::return->getDescription
+Command#displayAvailableCommands(PrintStream)::: command display available commands:::first->foreach->if->println->displayCommand->stream->c->getDescription->println
+Command#displayCommand(PrintStream, Command)::: command display command:::firstSyntax->alias->buildAlias->initial->c->getName->foreach->c->getOptionSyntax->if->if->syntaxLine->length->stream->println->else->stream->println->else->for->i->initial->length->stream->println
+Command#buildAlias(Command)::: command build alias:::aliases->c->getAliases->if->aliases->isEmpty->return->sb->new->StringBuilder->if->aliases->size->sb->append->sb->aliases->get->append->sb->append->return->sb->toString->sb->append->for->i->aliases->size->sb->append->return->sb->toString
+Command#getCommands()::: command get commands:::return
+Command#valueOf(String)::: command value of:::foreach->if->command->getName->equals->return->return
+Command#getOptionSyntax()::: command get option syntax:::return->Collections->singletonList
+Command#displayOptionUsage(PrintStream)::: command display option usage:::
+Command#acceptOption(Deque, String)::: command accept option:::if->expected->options->peek->equals->if->options->size->throw->options->peek->new->UserSyntaxException->options->remove->return->return
+Command#warnForWildcardExpansion(String, String)::: command warn for wildcard expansion:::try->if->filter->contains->p->Path->of->if->Files->exists->return->throw->new->UserDataException->catch->finally
+Command#acceptFilterOption(Deque, String)::: command accept filter option:::if->acceptOption->return->if->options->isEmpty->throw->new->UserSyntaxException->filter->options->peek->if->filter->startsWith->throw->new->UserSyntaxException->return
+Command#ensureMaxArgumentCount(Deque, int)::: command ensure max argument count:::if->options->size->throw->new->UserSyntaxException
+Command#ensureMinArgumentCount(Deque, int)::: command ensure min argument count:::if->options->size->throw->new->UserSyntaxException
+Command#getDirectory(String)::: command get directory:::try->path->Paths->get->toAbsolutePath->if->Files->exists->throw->new->UserDataException->if->Files->isDirectory->throw->new->UserDataException->return->catch->throw->new->UserDataException->finally
+Command#getJFRInputFile(Deque)::: command get input file:::if->options->isEmpty->throw->new->UserSyntaxException->file->options->removeLast->if->file->startsWith->throw->new->UserSyntaxException->try->path->Paths->get->toAbsolutePath->ensureAccess->ensureJFRFile->return->catch->throw->ioe->getMessage->new->UserDataException->throw->new->UserDataException->finally
+Command#ensureAccess(Path)::: command ensure access:::try->rad->path->toFile->new->RandomAccessFile->if->rad->length->throw->new->UserDataException->rad->read->catch->throw->new->UserDataException->throw->e->getMessage->new->UserDataException->finally
+Command#couldNotReadError(Path, IOException)::: command could not read error:::throw->p->toAbsolutePath->e->getMessage->new->UserDataException
+Command#ensureFileDoesNotExist(Path)::: command ensure file does not exist:::if->Files->exists->throw->new->UserDataException->return
+Command#ensureJFRFile(Path)::: command ensure file:::if->path->toString->endsWith->throw->new->UserDataException
+Command#displayUsage(PrintStream)::: command display usage:::displayCommand->stream->println->displayOptionUsage
+Command#println()::: command println:::println
+Command#print(String)::: command print:::print
+Command#println(String)::: command println:::println
+Command#matches(String)::: command matches:::foreach->getNames->if->s->equals->return->return
+Command#getAliases()::: command get aliases:::return->Collections->emptyList
+Command#getNames()::: command get names:::names->new->ArrayList<>->names->getName->add->names->getAliases->addAll->return
+Disassemble#getName()::: disassemble get name:::return
+Disassemble#getOptionSyntax()::: disassemble get option syntax:::list->new->ArrayList<>->list->add->list->add->list->add->list->add->return
+Disassemble#displayOptionUsage(PrintStream)::: disassemble display option usage:::stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println
+Disassemble#getDescription()::: disassemble get description:::return
+Disassemble#execute(Deque)::: disassemble execute:::if->options->isEmpty->throw->new->UserSyntaxException->file->getJFRInputFile->maxChunks->maxsize->output->System->getProperty->optionCount->options->size->while->if->acceptOption->options->pop->if->acceptOption->value->options->pop->try->Integer->parseInt->if->throw->new->UserDataException->catch->throw->new->UserDataException->finally->if->acceptOption->value->options->pop->try->Integer->parseInt->if->throw->new->UserDataException->catch->throw->new->UserDataException->finally->if->options->size->throw->options->peek->new->UserSyntaxException->options->size->outputPath->getDirectory->println->println->sizes->if->try->fileSize->Files->size->if->println->println->return->catch->throw->e->getMessage->new->UserDataException->finally->if->try->findChunkSizes->catch->throw->e->getMessage->new->UserDataException->finally->if->sizes->size->throw->sizes->size->new->UserDataException->println->if->sizes->size->combinedSizes->combineChunkSizes->sizes->size->print->combinedSizes->size->println->println->splitFile->else->throw->new->UserDataException
+Disassemble#findChunkSizes(Path)::: disassemble find chunk sizes:::try->input->p->toFile->new->RecordingInput->sizes->new->ArrayList<>->ch->new->ChunkHeader->sizes->ch->getSize->add->while->ch->isLastChunk->ch->nextHeader->sizes->ch->getSize->add->return->catch->finally
+Disassemble#combineChunkSizes(List, int, long)::: disassemble combine chunk sizes:::reduced->new->ArrayList<Long>->chunks->fileSize->sizes->get->for->i->sizes->size->if->reduced->add->return
+Disassemble#splitFile(Path, Path, List)::: disassemble split file:::padAmountZeros->String->splitPositions->size->valueOf->length->fileName->file->getFileName->toString->fileFormatter->fileName->fileName->length->subSequence->for->i->splitPositions->size->try->stream->file->toFile->new->FileInputStream->new->BufferedInputStream->new->DataInputStream->for->i->splitPositions->size->catch->throw->new->UserDataException->finally
+Disassemble#readBytes(InputStream, int)::: disassemble read bytes:::data->new->byteArr->totalRead->while->read->stream->read->if->throw->new->UserDataException->return
+EventPrintWriter#print(List)::: event print writer print:::
+EventPrintWriter#print(Path)::: event print writer print:::events->new->ArrayList<>->printBegin->try->file->new->RecordingFile->while->file->hasMoreEvents->event->file->readEvent->if->acceptEvent->events->add->if->isLastEventInChunk->sort->print->events->clear->catch->finally->printEnd->flush
+EventPrintWriter#printEnd()::: event print writer print end:::
+EventPrintWriter#printBegin()::: event print writer print begin:::
+EventPrintWriter#setEventFilter(Predicate)::: event print writer set event filter:::
+EventPrintWriter#acceptEvent(RecordedEvent)::: event print writer accept event:::return->eventFilter->event->getEventType->test
+EventPrintWriter#getStackDepth()::: event print writer get stack depth:::return
+EventPrintWriter#isLateField(String)::: event print writer is late field:::return->name->equals->name->equals
+EventPrintWriter#setStackDepth(int)::: event print writer set stack depth:::
+EventPrintWriter#getValue(RecordedObject, ValueDescriptor)::: event print writer get value:::valueType->typeOfValues->get->if->determineValueType->typeOfValues->put->switch->return->object->v->getName->getDuration->return->v->getName->getOffsetDataTime->return->object->v->getName->getValue
+EventPrintWriter#determineValueType(ValueDescriptor)::: event print writer determine value type:::if->v->getAnnotation->return->if->v->getAnnotation->return->return
+Help#getName()::: help get name:::return
+Help#getOptionSyntax()::: help get option syntax:::return->Collections->singletonList
+Help#getAliases()::: help get aliases:::return->List->of
+Help#displayOptionUsage(PrintStream)::: help display option usage:::println
+Help#getDescription()::: help get description:::return
+Help#execute(Deque)::: help execute:::if->options->isEmpty->Command->displayHelp->return->ensureMaxArgumentCount->commandName->options->remove->c->Command->valueOf->if->throw->new->UserDataException->c->getTitle->println->println->c->displayUsage
+JSONWriter#printBegin()::: writer print begin:::printObjectBegin->printDataStructureName->printObjectBegin->printDataStructureName->printArrayBegin
+JSONWriter#print(List)::: writer print:::foreach->printNewDataStructure->printEvent->flush
+JSONWriter#printEnd()::: writer print end:::printArrayEnd->printObjectEnd->printObjectEnd
+JSONWriter#printEvent(RecordedEvent)::: writer print event:::printObjectBegin->type->event->getEventType->type->getName->printValue->printNewDataStructure->printObjectBegin->first->foreach->event->getFields->getValue->printValueDescriptor->printObjectEnd->printObjectEnd
+JSONWriter#printValue(boolean, boolean, String, Object)::: writer print value:::printNewDataStructure->if->printIfNull->if->printAsString->return->if->dValue->if->Double->isNaN->Double->isInfinite->printNull->return->printAsString->return->if->fValue->if->Float->isNaN->Float->isInfinite->printNull->return->printAsString->return->if->printAsString->return->print->String->valueOf->printEscaped->print
+JSONWriter#printObject(RecordedObject)::: writer print object:::printObjectBegin->first->foreach->object->getFields->getValue->printValueDescriptor->printObjectEnd
+JSONWriter#printArray(ValueDescriptor, Object[])::: writer print array:::printArrayBegin->first->depth->foreach->if->getStackDepth->printValueDescriptor->printArrayEnd
+JSONWriter#printValueDescriptor(boolean, boolean, ValueDescriptor, Object)::: writer print value descriptor:::if->vd->isArray->vd->getName->printNewDataStructure->if->printIfNull->printArray->return->if->vd->getFields->isEmpty->vd->getName->printNewDataStructure->if->printIfNull->printObject->return->vd->getName->printValue
+JSONWriter#printNewDataStructure(boolean, boolean, String)::: writer print new data structure:::if->print->if->println->if->printDataStructureName
+JSONWriter#printIfNull(Object)::: writer print if null:::if->printNull->return->return
+JSONWriter#printNull()::: writer print null:::print
+JSONWriter#printDataStructureName(String)::: writer print data structure name:::printIndent->print->print->print
+JSONWriter#printObjectEnd()::: writer print object end:::retract->println->printIndent->print
+JSONWriter#printObjectBegin()::: writer print object begin:::println->indent
+JSONWriter#printArrayEnd()::: writer print array end:::print
+JSONWriter#printArrayBegin()::: writer print array begin:::print
+JSONWriter#printEscaped(String)::: writer print escaped:::for->i->text->length
+JSONWriter#printEscaped(char)::: writer print escaped:::if->print->return->if->print->return->if->print->return->if->print->return->if->print->return->if->print->return->if->print->return->if->print->return->if->print->Integer->toHexString->substring->print->return->print
+Main#main(String...)::: main main:::argList->Arrays->asList->new->LinkedList<>->if->argList->isEmpty->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->println->System->exit->command->argList->remove->foreach->Command->getCommands->if->c->matches->try->c->execute->System->exit->catch->c->getName->ude->getMessage->println->System->exit->c->getName->use->getMessage->println->println->println->println->c->displayUsage->System->exit->c->getName->e->getMessage->println->e->printStackTrace->System->exit->finally->println->println->println->println->Command->displayAvailableCommands->System->exit
+Metadata.TypeComparator#compare(Type, Type)::: type comparator compare:::g1->groupValue->g2->groupValue->if->n1->t1->getName->n2->t2->getName->package1->n1->n1->lastIndexOf->substring->package2->n2->n2->lastIndexOf->substring->if->package1->equals->return->n1->compareTo->else->if->t1->getSuperType->equals->package1->equals->if->package1->equals->return->if->package2->equals->return->return->package1->compareTo->else->return->Integer->groupValue->groupValue->compare
+Metadata.TypeComparator#groupValue(Type)::: type comparator group value:::superType->t->getSuperType->if->return->if->equals->return->if->equals->return->if->equals->return->return
+Metadata#getName()::: metadata get name:::return
+Metadata#getOptionSyntax()::: metadata get option syntax:::return->Collections->singletonList
+Metadata#getDescription()::: metadata get description:::return
+Metadata#execute(Deque)::: metadata execute:::file->getJFRInputFile->showIds->optionCount->options->size->while->if->acceptOption->if->options->size->throw->options->peek->new->UserSyntaxException->options->size->try->pw->new->PrintWriter->prettyWriter->new->PrettyWriter->prettyWriter->setShowIds->try->rf->new->RecordingFile->types->readTypes->Collections->new->TypeComparator->sort->foreach->prettyWriter->printType->prettyWriter->flush->catch->couldNotReadError->finally->catch->finally
+PrettyWriter#print(List)::: pretty writer print:::foreach->print->flush
+PrettyWriter#printType(Type)::: pretty writer print type:::if->print->String->t->getId->valueOf->println->commentIndex->t->getName->length->typeName->t->getName->index->typeName->lastIndexOf->if->println->t->getAnnotationElements->printAnnotations->typeName->substring->print->superType->t->getSuperType->if->print->println->indent->first->foreach->t->getFields->printField->retract->println->println
+PrettyWriter#printField(int, ValueDescriptor, boolean)::: pretty writer print field:::if->println->v->getAnnotationElements->printAnnotations->printIndent->vType->PrivateAccess->getInstance->getType->if->vType->getSuperType->equals->print->v->getTypeName->makeSimpleType->print->if->v->isArray->print->print->v->getName->print->print->v->getTypeId->printCommentRef
+PrettyWriter#printCommentRef(int, long)::: pretty writer print comment ref:::if->column->getColumn->if->print->else->while->print->println->else->println
+PrettyWriter#printAnnotations(int, List)::: pretty writer print annotations:::foreach->printIndent->print->a->getTypeName->makeSimpleType->print->vs->a->getValueDescriptors->if->vs->isEmpty->printAnnotation->a->getTypeId->printCommentRef->else->println
+PrettyWriter#printAnnotation(AnnotationElement)::: pretty writer print annotation:::sj->new->StringJoiner->vs->a->getValueDescriptors->foreach->o->a->v->getName->getValue->if->vs->size->v->getName->equals->sj->textify->add->else->sj->v->getName->textify->add->sj->toString->print
+PrettyWriter#textify(Object)::: pretty writer textify:::if->o->getClass->isArray->array->if->return->quoteIfNeeded->s->new->StringJoiner->foreach->s->quoteIfNeeded->add->return->s->toString->else->return->quoteIfNeeded
+PrettyWriter#quoteIfNeeded(Object)::: pretty writer quote if needed:::if->return->else->return->String->valueOf
+PrettyWriter#makeSimpleType(String)::: pretty writer make simple type:::index->typeName->lastIndexOf->return->typeName->substring
+PrettyWriter#print(RecordedEvent)::: pretty writer print:::event->getEventType->getName->print->println->indent->foreach->event->getFields->name->v->getName->if->isZeroDuration->isLateField->printFieldValue->if->event->getThread->printIndent->print->event->getThread->printThread->if->event->getStackTrace->printIndent->print->event->getStackTrace->printStackTrace->retract->printIndent->println->println
+PrettyWriter#isZeroDuration(RecordedEvent, String)::: pretty writer is zero duration:::return->name->equals->ZERO->event->getValue->equals
+PrettyWriter#printStackTrace(RecordedStackTrace)::: pretty writer print stack trace:::println->frames->stackTrace->getFrames->indent->i->while->frames->size->getStackDepth->frame->frames->get->if->frame->isJavaFrame->printIndent->printValue->println->if->stackTrace->isTruncated->getStackDepth->printIndent->println->retract->printIndent->println
+PrettyWriter#print(RecordedObject, String)::: pretty writer print:::println->indent->foreach->struct->getFields->printFieldValue->retract->printIndent->println
+PrettyWriter#printFieldValue(RecordedObject, ValueDescriptor)::: pretty writer print field value:::printIndent->v->getName->print->getValue->printValue
+PrettyWriter#printArray(Object[])::: pretty writer print array:::println->indent->for->i->retract->printIndent->println
+PrettyWriter#printValue(Object, ValueDescriptor, String)::: pretty writer print value:::if->println->return->if->if->printThread->return->if->printClass->return->if->printClassLoader->return->if->frame->if->frame->isJavaFrame->printJavaFrame->return->if->formatMethod->println->return->if->field->getTypeName->equals->printOldObject->return->print->return->if->value->getClass->isArray->printArray->return->if->field->getContentType->if->printFormatted->return->text->String->valueOf->if->println
+PrettyWriter#printOldObject(RecordedObject)::: pretty writer print old object:::println->indent->printIndent->try->printReferenceChain->catch->finally->retract->printIndent->println
+PrettyWriter#printReferenceChain(RecordedObject)::: pretty writer print reference chain:::currentEvent->getLong->printObject->for->ref->object->getValue->object->getValue
+PrettyWriter#printObject(RecordedObject, long)::: pretty writer print object:::clazz->object->getClass->if->className->clazz->getName->if->className->startsWith->Long->toString->decodeDescriptors->get->print->description->object->getString->if->print->print->println
+PrettyWriter#printClassLoader(RecordedClassLoader, String)::: pretty writer print class loader:::clazz->cl->getType->clazz->getName->print->if->print->print->String->cl->getId->valueOf->print->println
+PrettyWriter#printJavaFrame(RecordedFrame, String)::: pretty writer print java frame:::f->getMethod->formatMethod->print->line->f->getLineNumber->if->print->print
+PrettyWriter#formatMethod(RecordedMethod)::: pretty writer format method:::sb->new->StringBuilder->sb->m->getType->getName->append->sb->append->sb->m->getName->append->sb->append->sj->new->StringJoiner->md->m->getDescriptor->replace->parameter->md->md->lastIndexOf->substring->foreach->decodeDescriptors->typeName->qualifiedName->qualifiedName->lastIndexOf->substring->sj->add->sb->append->sb->append->return->sb->toString
+PrettyWriter#printClass(RecordedClass, String)::: pretty writer print class:::classLoader->clazz->getClassLoader->classLoaderName->if->if->classLoader->getName->classLoader->getName->else->classLoader->getType->getName->className->clazz->getName->if->className->startsWith->decodeDescriptors->get->println
+PrettyWriter#decodeDescriptors(String, String)::: pretty writer decode descriptors:::descriptors->new->ArrayList<>->for->index->descriptor->length->return
+PrettyWriter#printThread(RecordedThread, String)::: pretty writer print thread:::javaThreadId->thread->getJavaThreadId->if->thread->getJavaName->thread->getJavaThreadId->println->else->thread->getOSName->thread->getOSThreadId->println
+PrettyWriter#printFormatted(ValueDescriptor, Object)::: pretty writer print formatted:::if->d->if->d->getSeconds->d->getNano->println->return->if->d->compareTo->String->d->toNanos->format->println->else->if->d->compareTo->String->d->toNanos->format->println->else->if->d->compareTo->String->d->toMillis->format->println->else->String->d->toSeconds->format->println->return->if->odt->if->odt->equals->println->return->TIME_FORMAT->format->println->return->percentage->field->getAnnotation->if->if->d->doubleValue->String->format->println->return->dataAmount->field->getAnnotation->if->if->n->bytes->Utils->n->longValue->formatBytes->if->field->getAnnotation->println->return->memoryAddress->field->getAnnotation->if->if->d->longValue->String->format->println->return->return
+PrettyWriter#setShowIds(boolean)::: pretty writer set show ids:::
+Print#getName()::: print get name:::return
+Print#getOptionSyntax()::: print get option syntax:::list->new->ArrayList<>->list->add->list->add->list->add->list->add->list->add->return
+Print#getTitle()::: print get title:::return
+Print#getDescription()::: print get description:::return->getTitle
+Print#displayOptionUsage(PrintStream)::: print display option usage:::stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println->stream->println
+Print#execute(Deque)::: print execute:::file->getJFRInputFile->pw->Charset->forName->new->PrintWriter->eventFilter->stackDepth->eventWriter->optionCount->options->size->foundEventFilter->foundCategoryFilter->while->if->acceptFilterOption->if->throw->new->UserSyntaxException->filter->options->remove->warnForWildcardExpansion->addEventFilter->if->acceptFilterOption->if->throw->new->UserSyntaxException->filter->options->remove->warnForWildcardExpansion->addCategoryFilter->if->acceptOption->value->options->pop->try->Integer->parseInt->if->throw->new->UserSyntaxException->catch->throw->new->UserSyntaxException->finally->if->acceptFormatterOption->new->JSONWriter->if->acceptFormatterOption->new->XMLWriter->if->options->size->checkCommonError->checkCommonError->throw->options->peek->new->UserSyntaxException->options->size->if->new->PrettyWriter->eventWriter->setStackDepth->if->eventType->getId->addCache->eventWriter->setEventFilter->try->eventWriter->print->catch->couldNotReadError->finally->pw->flush
+Print#checkCommonError(Deque, String, String)::: print check common error:::if->typo->options->peek->equals->throw->new->UserSyntaxException
+Print#acceptFormatterOption(Deque, EventPrintWriter, String)::: print accept formatter option:::if->expected->options->peek->equals->if->throw->new->UserSyntaxException->options->remove->return->return
+Print#addCache(Predicate, Function)::: print add cache:::cache->new->HashMap<>->return->cache->cacheFunction->apply->filter->test->computeIfAbsent
+Print#recurseIfPossible(Predicate)::: print recurse if possible:::return->filter->test
+Print#addCategoryFilter(String, Predicate)::: print add category filter:::filters->explodeFilter->newFilter->foreach->eventType->getCategoryNames->foreach->if->match->return->if->category->contains->acronomify->equals->return->return->recurseIfPossible->return->eventFilter->or
+Print#acronomify(String)::: print acronomify:::newWord->acronym->foreach->multipleWords->toCharArray->if->if->Character->isAlphabetic->Character->isUpperCase->Character->isWhitespace->return
+Print#addEventFilter(String, Predicate)::: print add event filter:::filters->explodeFilter->newFilter->foreach->fullEventName->eventType->getName->if->match->return->eventName->fullEventName->fullEventName->lastIndexOf->substring->if->match->return->return->recurseIfPossible->return->eventFilter->or
+Print#match(String, String)::: print match:::if->filter->length->return->text->length->if->filter->charAt->filter->substring->for->n->text->length->else->if->text->length->return->else->if->filter->charAt->return->text->substring->filter->substring->match->else->if->filter->charAt->text->charAt->return->text->substring->filter->substring->match->return
+Print#explodeFilter(String)::: print explode filter:::list->new->ArrayList<>->foreach->filter->split->s->trim->if->s->isEmpty->list->add->return
+StructuredWriter#getColumn()::: structured writer get column:::return
+StructuredWriter#flush(boolean)::: structured writer flush:::if->out->builder->toString->print->builder->setLength->return->if->builder->length->out->builder->toString->print->builder->setLength
+StructuredWriter#printIndent()::: structured writer print indent:::builder->append
+StructuredWriter#println()::: structured writer println:::builder->append
+StructuredWriter#print(String...)::: structured writer print:::foreach->print
+StructuredWriter#printAsString(Object)::: structured writer print as string:::String->valueOf->print
+StructuredWriter#print(String)::: structured writer print:::builder->append->text->length
+StructuredWriter#print(char)::: structured writer print:::builder->append
+StructuredWriter#print(int)::: structured writer print:::String->valueOf->print
+StructuredWriter#indent()::: structured writer indent:::updateIndent
+StructuredWriter#retract()::: structured writer retract:::updateIndent
+StructuredWriter#println(String)::: structured writer println:::print->println
+StructuredWriter#updateIndent()::: structured writer update indent:::if->new->charArr->for->i
+Summary#getName()::: summary get name:::return
+Summary#getOptionSyntax()::: summary get option syntax:::return->Collections->singletonList
+Summary#displayOptionUsage(PrintStream)::: summary display option usage:::stream->println
+Summary#getDescription()::: summary get description:::return
+Summary#execute(Deque)::: summary execute:::ensureMaxArgumentCount->p->getJFRInputFile->try->printInformation->catch->couldNotReadError->finally
+Summary#printInformation(Path)::: summary print information:::totalDuration->chunks->try->input->p->toFile->new->RecordingInput->first->new->ChunkHeader->ch->eventPrefix->if->first->getMajor->stats->new->HashMap<>->stats->new->Statistics->put->stats->new->Statistics->put->minWidth->while->chunkEnd->ch->getEnd->md->ch->readMetadata->foreach->md->getEventTypes->stats->eventType->getId->eventType->getName->new->Statistics->computeIfAbsent->Math->eventType->getName->length->max->ch->getDurationNanos->input->ch->getEventStart->position->while->input->position->pos->input->position->size->input->readInt->eventTypeId->input->readLong->s->stats->get->if->input->position->if->ch->isLastChunk->break->ch->nextHeader->println->epochSeconds->first->getStartNanos->adjustNanos->first->getStartNanos->first->getMajor->first->getMinor->println->println->DATE_FORMAT->Instant->ofEpochSecond->format->println->println->statsList->stats->values->new->ArrayList<>->Collections->Long->compare->sort->println->header->typeHeader->Math->typeHeader->length->max->typeHeader->length->pad->println->header->length->pad->println->foreach->printf->catch->finally
+Summary#pad(int, char)::: summary pad:::sb->new->StringBuilder->for->i->return->sb->toString
+Version#getName()::: version get name:::return
+Version#getDescription()::: version get description:::return
+Version#execute(Deque)::: version execute:::println
+Version#getAliases()::: version get aliases:::return->List->of
+XMLWriter#printBegin()::: writer print begin:::println->println->indent->printIndent->println->indent
+XMLWriter#printEnd()::: writer print end:::retract->printIndent->println->retract->println
+XMLWriter#print(List)::: writer print:::foreach->printEvent
+XMLWriter#printEvent(RecordedEvent)::: writer print event:::type->event->getEventType->printIndent->print->type->getName->printAttribute->print->println->indent->foreach->event->getFields->getValue->printValueDescriptor->retract->printIndent->println->println
+XMLWriter#printAttribute(String, String)::: writer print attribute:::print
+XMLWriter#printObject(RecordedObject)::: writer print object:::println->indent->foreach->struct->getFields->getValue->printValueDescriptor->retract
+XMLWriter#printArray(ValueDescriptor, Object[])::: writer print array:::println->indent->depth->for->index->retract
+XMLWriter#printValueDescriptor(ValueDescriptor, Object, int)::: writer print value descriptor:::arrayElement->name->vd->getName->if->vd->isArray->if->printBeginElement->printArray->printIndent->printEndElement->return->if->vd->getFields->isEmpty->if->printBeginElement->printObject->printIndent->printEndElement->return->if->printBeginElement->String->valueOf->printEscaped->printEndElement
+XMLWriter#printBeginElement(String, String, Object, int)::: writer print begin element:::printIndent->print->if->printAttribute->if->Integer->toString->printAttribute->if->printAttribute->println->return->if->value->getClass->isArray->array->Integer->toString->printAttribute->print->return
+XMLWriter#printEndElement(String)::: writer print end element:::print->print->println
+XMLWriter#printEscaped(String)::: writer print escaped:::for->i->text->length
+XMLWriter#printEscaped(char)::: writer print escaped:::if->print->return->if->print->return->if->print->return->if->print->return->if->print->return->if->print->print->print->return->print

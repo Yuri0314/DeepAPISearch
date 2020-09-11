@@ -1,20 +1,71 @@
+CollectedHeap#initialize(TypeDataBase)::: collected heap initialize:::type->db->lookupType->type->getField->getOffset
 CollectedHeap#start():::Returns the lowest address of the heap.:::return->reservedRegion->start
+CollectedHeap#capacity()::: collected heap capacity:::return
+CollectedHeap#used()::: collected heap used:::return
+CollectedHeap#reservedRegion()::: collected heap reserved region:::return->addr->addOffsetTo->new->MemRegion
+CollectedHeap#isIn(Address)::: collected heap is in:::return->isInReserved
+CollectedHeap#isInReserved(Address)::: collected heap is in reserved:::return->reservedRegion->contains
+CollectedHeap#kind()::: collected heap kind:::
+CollectedHeap#oopAddressDescription(OopHandle)::: collected heap oop address description:::return->handle->toString
+CollectedHeap#oop_load_at(OopHandle, long)::: collected heap oop_load_at:::return->handle->getOopHandleAt
+CollectedHeap#print()::: collected heap print:::printOn
+CollectedHeap#printOn(PrintStream)::: collected heap print on:::mr->reservedRegion->tty->getAddress->mr->start->mr->end->println
+CollectedHeapName#toString()::: collected heap name to string:::return
+CompactibleSpace#initialize(TypeDataBase)::: compactible space initialize:::type->db->lookupType->type->getAddressField
 CompactibleSpace#compactionTop():::May be used temporarily during a compaction phase.:::return->compactionTopField->getValue
+ContiguousSpace#initialize(TypeDataBase)::: contiguous space initialize:::type->db->lookupType->type->getAddressField
+ContiguousSpace#top()::: contiguous space top:::return->topField->getValue
 ContiguousSpace#capacity():::In bytes:::return->end->bottom->minus
 ContiguousSpace#used():::In bytes:::return->top->bottom->minus
 ContiguousSpace#free():::In bytes:::return->end->top->minus
 ContiguousSpace#usedRegion():::In a contiguous space we have a more obvious bound on what parts       contain objects.:::return->bottom->top->new->MemRegion
 ContiguousSpace#getLiveRegions():::Returns regions of Space where live objects live:::res->new->ArrayList->res->bottom->top->new->MemRegion->add->return
 ContiguousSpace#contains(Address):::Testers:::return->bottom->lessThanOrEqual->top->greaterThan
+ContiguousSpace#printOn(PrintStream)::: contiguous space print on:::tty->bottom->top->end->print->super->printOn
+GenCollectedHeap#initialize(TypeDataBase)::: gen collected heap initialize:::type->db->lookupType->type->getAddressField->type->getAddressField->type->getAddressField->type->getAddressField->new->GenerationFactory
+GenCollectedHeap#nGens()::: gen collected heap n gens:::return
+GenCollectedHeap#getGen(int)::: gen collected heap get gen:::if->Assert->that->switch->return->genFactory->youngGenField->getValue->newObject->return->genFactory->oldGenField->getValue->newObject->return
+GenCollectedHeap#isIn(Address)::: gen collected heap is in:::for->i->nGens->return
+GenCollectedHeap#capacity()::: gen collected heap capacity:::capacity->for->i->nGens->return
+GenCollectedHeap#used()::: gen collected heap used:::used->for->i->nGens->return
 GenCollectedHeap#spec(int):::Package-private access to GenerationSpecs:::if->Assert->that->if->return->if->return->VMObjectFactory->youngGenSpecField->getAddress->newObject->else->return->VMObjectFactory->oldGenSpecField->getAddress->newObject
+GenCollectedHeap#printOn(PrintStream)::: gen collected heap print on:::for->i->nGens
+Generation#initialize(TypeDataBase)::: generation initialize:::type->db->lookupType->type->getField->getOffset->type->getField->getOffset->type->getField->db->lookupType->type->getCIntegerField->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue->db->lookupIntConstant->intValue
+Generation.Name#toString()::: name to string:::return
+Generation#kind()::: generation kind:::return
+Generation#nameForEnum(int)::: generation name for enum:::if->return->else->if->return->else->if->return->else->if->return->else->if->return->else->throw->new->RuntimeException
+Generation#invocations()::: generation invocations:::return->getStatRecord->getInvocations
 Generation#capacity():::The maximum number of object bytes the generation can currently       hold.:::
 Generation#used():::The number of used bytes in the gen.:::
 Generation#free():::The number of free bytes in the gen.:::
 Generation#contiguousAvailable():::The largest number of contiguous free words in the generation,       including expansion:::
+Generation#reserved()::: generation reserved:::return->addr->addOffsetTo->new->MemRegion
 Generation#usedRegion():::Returns a region guaranteed to contain all the objects in the       generation.:::return->reserved
+Generation#isIn(Address)::: generation is in:::blk->new->GenerationIsInClosure->spaceIterate->return->blk->space
 Generation#isInReserved(Address):::Returns "TRUE" iff "p" points into the reserved area of the      generation.:::return->reserved->contains
+Generation#virtualSpace()::: generation virtual space:::return->VMObjectFactory->addr->addOffsetTo->newObject
+Generation#name()::: generation name:::
 Generation#spaceIterate(SpaceClosure):::Equivalent to spaceIterate(blk, false):::spaceIterate
 Generation#spaceIterate(SpaceClosure, boolean):::Iteration - do not use for time critical operations:::
+Generation#print()::: generation print:::printOn
+Generation#printOn(PrintStream)::: generation print on:::
+Generation.StatRecord#getInvocations()::: stat record get invocations:::return->invocationField->getValue
+Generation#getStatRecord()::: generation get stat record:::return->VMObjectFactory->addr->statRecordField->getOffset->addOffsetTo->newObject
+GenerationFactory#initialize(TypeDataBase)::: generation factory initialize:::new->VirtualConstructor->ctor->addMapping->ctor->addMapping->ctor->addMapping->ctor->addMapping
+GenerationFactory#newObject(Address)::: generation factory new object:::try->return->ctor->instantiateWrapperFor->catch->return->new->Generation->finally
+GenerationIsInClosure#doSpace(Space)::: generation is in closure do space:::if->s->contains
+GenerationIsInClosure#space()::: generation is in closure space:::return
+GenerationSpec#initialize(TypeDataBase)::: generation spec initialize:::type->db->lookupType->type->getCIntegerField->type->getCIntegerField->type->getCIntegerField
+GenerationSpec#name()::: generation spec name:::return->Generation->nameField->getValue->nameForEnum
+GenerationSpec#initSize()::: generation spec init size:::return->initSizeField->getValue
+GenerationSpec#maxSize()::: generation spec max size:::return->maxSizeField->getValue
+OopStorage#initialize(TypeDataBase)::: oop storage initialize:::type->db->lookupType
+OopStorage#findOop(Address)::: oop storage find oop:::return
+OopStorage#oopsDo(AddressVisitor)::: oop storage oops do:::
+PrintRegionClosure#doSpace(Space)::: print region closure do space:::printOn
+Space#initialize(TypeDataBase)::: space initialize:::type->db->lookupType->type->getAddressField->type->getAddressField
+Space#bottom()::: space bottom:::return->bottomField->getValue
+Space#end()::: space end:::return->endField->getValue
 Space#usedRegion():::Returns a subregion of the space containing all the objects in       the space.:::return->bottom->end->new->MemRegion
 Space#bottomAsOopHandle():::Support for iteration over heap -- not sure how this will       interact with GC in reflective system, but necessary for the       debugging mechanism:::return->bottomField->getOopHandle
 Space#nextOopHandle(OopHandle, long):::Support for iteration over heap -- not sure how this will       interact with GC in reflective system, but necessary for the       debugging mechanism:::return->handle->addOffsetToAsOopHandle
@@ -23,3 +74,6 @@ Space#capacity():::Returned value is in bytes:::return->end->bottom->minus
 Space#used():::Returned value is in bytes:::
 Space#free():::Returned value is in bytes:::
 Space#contains(Address):::Testers:::return->bottom->lessThanOrEqual->end->greaterThan
+Space#print()::: space print:::printOn
+Space#printOn(PrintStream)::: space print on:::tty->print->tty->capacity->print->tty->print->tty->used->capacity->print->tty->print
+SpaceClosure#doSpace(Space)::: space closure do space:::

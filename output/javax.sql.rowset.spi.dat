@@ -1,12 +1,35 @@
 SyncFactory#registerProvider(String):::Adds the given synchronization provider to the factory register:::impl->new->ProviderImpl->impl->setClassname->initMapIfNecessary->implementations->put
 SyncFactory#getSyncFactory():::Returns the SyncFactory singleton.:::return
 SyncFactory#unregisterProvider(String):::Removes the designated currently registered synchronization provider from the Factory SPI register.:::initMapIfNecessary->if->implementations->containsKey->implementations->remove
+SyncFactory#initMapIfNecessary()::: sync factory init map if necessary:::properties->new->Properties->if->new->Hashtable<>->try->strRowsetProperties->try->AccessController->new->PrivilegedAction<String>->new->PropertyPermission->doPrivileged->catch->println->finally->if->try->fis->new->FileInputStream->properties->load->catch->finally->parseProperties->try->AccessController->in->getModule->getResourceAsStream->if->throw->new->SyncFactoryException->try->properties->load->catch->finally->return->doPrivileged->catch->e->ex->getException->if->throw->else->sfe->new->SyncFactoryException->sfe->ex->getException->initCause->throw->finally->parseProperties->catch->throw->new->SyncFactoryException->throw->new->SyncFactoryException->finally->properties->clear->providerImpls->try->AccessController->new->PrivilegedAction<String>->new->PropertyPermission->doPrivileged->catch->finally->if->i->if->providerImpls->indexOf->tokenizer->new->StringTokenizer->while->tokenizer->hasMoreElements->properties->tokenizer->nextToken->put->else->properties->put->parseProperties
+SyncFactory#parseProperties(Properties):::Internal handler for all standard property parsing:::impl->key->propertyNames->for->e->p->propertyNames->e->hasMoreElements
+SyncFactory#getPropertyNames(boolean):::Used by the parseProperties methods to disassemble each property tuple.:::return->getPropertyNames
+SyncFactory#getPropertyNames(boolean, String):::Disassembles each property and its associated value:::dot->propertyNames->new->StringArr->if->for->i->return->else->return
+SyncFactory#showImpl(ProviderImpl):::Internal debug method that outputs the registry contents.:::println->impl->getClassname->println->impl->getVendor->println->impl->getVersion->println->impl->getIndex->println
 SyncFactory#getInstance(String):::Returns the SyncProvider instance identified by providerID.:::if->throw->new->SyncFactoryException->initMapIfNecessary->initJNDIContext->impl->implementations->get->if->return->new->com.sun.rowset.providers.RIOptimisticProvider->try->ReflectUtil->checkPackageAccess->catch->sfe->new->SyncFactoryException->sfe->initCause->throw->finally->c->try->cl->Thread->currentThread->getContextClassLoader->Class->forName->result->c->newInstance->return->catch->throw->e->getMessage->new->SyncFactoryException->finally
 SyncFactory#getRegisteredProviders():::Returns an Enumeration of currently registered synchronization providers:::initMapIfNecessary->return->implementations->elements
 SyncFactory#setLogger(Logger):::Sets the logging object to be used by the SyncProvider implementation provided by the SyncFactory:::sec->System->getSecurityManager->if->sec->checkPermission->if->throw->new->NullPointerException
 SyncFactory#setLogger(Logger, Level):::Sets the logging object that is used by SyncProvider implementations provided by the SyncFactory SPI:::sec->System->getSecurityManager->if->sec->checkPermission->if->throw->new->NullPointerException->logger->setLevel
 SyncFactory#getLogger():::Returns the logging object for applications to retrieve synchronization events posted by SyncProvider implementations.:::result->if->throw->new->SyncFactoryException->return
 SyncFactory#setJNDIContext(javax.naming.Context):::Sets the initial JNDI context from which SyncProvider implementations can be retrieved from a JNDI namespace   This method checks to see that there is an SQLPermission object  which grants the permission setSyncFactory before allowing the method to succeed:::sec->System->getSecurityManager->if->sec->checkPermission->if->throw->new->SyncFactoryException
+SyncFactory#initJNDIContext():::Controls JNDI context initialization.:::if->try->parseJNDIContext->parseProperties->catch->e->printStackTrace->throw->e->getExplanation->new->SyncFactoryException->e->printStackTrace->throw->e->getMessage->new->SyncFactoryException->finally
+SyncFactory#parseJNDIContext():::Parses the set JNDI Context and passes bindings to the enumerateBindings method when complete.:::bindings->ic->listBindings->properties->new->Properties->enumerateBindings->return
+SyncFactory#enumerateBindings(NamingEnumeration, Properties):::Scans each binding on JNDI context and determines if any binding is an instance of SyncProvider, if so, add this to the registry and continue to scan the current context using a re-entrant call to this method until all bindings have been enumerated.:::syncProviderObj->try->bd->elementObj->element->while->bindings->hasMore->bindings->next->bd->getName->bd->getObject->if->ic->lookup->if->ic->lookup->if->sync->properties->sync->getProviderID->put->catch->bindings->next->enumerateBindings->finally
+ProviderImpl#setClassname(String)::: provider impl set classname:::
+ProviderImpl#getClassname()::: provider impl get classname:::return
+ProviderImpl#setVendor(String)::: provider impl set vendor:::
+ProviderImpl#getVendor()::: provider impl get vendor:::return
+ProviderImpl#setVersion(String)::: provider impl set version:::
+ProviderImpl#getVersion()::: provider impl get version:::return
+ProviderImpl#setIndex(int)::: provider impl set index:::
+ProviderImpl#getIndex()::: provider impl get index:::return
+ProviderImpl#getDataSourceLock()::: provider impl get data source lock:::dsLock->try->SyncFactory->getInstance->getDataSourceLock->catch->throw->sfEx->getMessage->new->SyncProviderException->finally->return
+ProviderImpl#getProviderGrade()::: provider impl get provider grade:::grade->try->SyncFactory->getInstance->getProviderGrade->catch->finally->return
+ProviderImpl#getProviderID()::: provider impl get provider d:::return
+ProviderImpl#getRowSetReader()::: provider impl get row set reader:::rsReader->try->SyncFactory->getInstance->getRowSetReader->catch->finally->return
+ProviderImpl#getRowSetWriter()::: provider impl get row set writer:::rsWriter->try->SyncFactory->getInstance->getRowSetWriter->catch->finally->return
+ProviderImpl#setDataSourceLock(int)::: provider impl set data source lock:::try->SyncFactory->getInstance->setDataSourceLock->catch->throw->sfEx->getMessage->new->SyncProviderException->finally
+ProviderImpl#supportsUpdatableView()::: provider impl supports updatable view:::view->try->SyncFactory->getInstance->supportsUpdatableView->catch->finally->return
 SyncProvider#getProviderID():::Returns the unique identifier for this SyncProvider object.:::
 SyncProvider#getRowSetReader():::Returns a javax.sql.RowSetReader object, which can be used to populate a RowSet object with data.:::
 SyncProvider#getRowSetWriter():::Returns a javax.sql.RowSetWriter object, which can be used to write a RowSet object's data back to the underlying data source.:::

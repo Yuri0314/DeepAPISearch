@@ -2,7 +2,14 @@ ClassFile#internalize(byte[], int, int):::Return internal representation of buf[
 ClassFile#internalize(Name):::Return internal representation of given name, converting '/' to '.':::return->name->getByteArray->name->getByteOffset->name->getByteLength->internalize
 ClassFile#externalize(byte[], int, int):::Return external representation of buf[offset..offset+len-1], converting '.' to '/':::translated->new->byteArr->for->j->return
 ClassFile#externalize(Name):::Return external representation of given name, converting '/' to '.':::return->name->getByteArray->name->getByteOffset->name->getByteLength->externalize
+ClassFile.NameAndType#setType(Type)::: name and type set type:::new->UniqueType
+ClassFile.NameAndType#equals(Object)::: name and type equals:::return->uniqueType->equals
+ClassFile.NameAndType#hashCode()::: name and type hash code:::return->name->hashCode->uniqueType->hashCode
+ClassReader.ParameterAnnotations#add(List)::: parameter annotations add:::if->else->proxies->prependList
 ClassReader#instance(Context):::Get the ClassReader instance for this invocation.:::instance->context->get->if->new->ClassReader->return
+ClassReader#enterMember(ClassSymbol, Symbol):::Add member to class unless it is synthetic.:::if->startsWith->enter
+ClassReader#badClassFile(String, Object...)::: class reader bad class file:::return->currentOwner->enclClass->diagFactory->fragment->new->ClassFinder.BadClassFile
+ClassReader#badEnclosingMethod(Symbol)::: class reader bad enclosing method:::return->currentOwner->enclClass->diagFactory->Fragments->BadEnclosingMethod->fragment->new->ClassFinder.BadEnclosingMethodAttr
 ClassReader#nextChar():::Read a character.:::return
 ClassReader#nextByte():::Read a byte.:::return
 ClassReader#nextInt():::Read an integer.:::return
@@ -17,6 +24,7 @@ ClassReader#readType(int):::Read signature and convert to type.:::index->return-
 ClassReader#readClassOrType(int):::If name is an array type or class signature, return the  corresponding type; otherwise return a ClassSymbol with given name.:::index->len->getChar->start->Assert->check->return->sigToType->names->internalize->fromUtf->enterClass
 ClassReader#readTypeParams(int):::Read signature and convert to type parameters.:::index->return->getChar->sigToTypeParams
 ClassReader#readClassSymbol(int):::Read class entry.:::obj->readPool->if->throw->currentClassFile->toString->badClassFile->return
+ClassReader#readClassName(int)::: class reader read class name:::index->if->return->tag->if->throw->currentClassFile->toString->badClassFile->nameIndex->getChar->len->getChar->start->if->throw->badClassFile->return->names->internalize->fromUtf
 ClassReader#readName(int):::Read name.:::obj->readPool->if->throw->currentClassFile->toString->badClassFile->return
 ClassReader#readNameAndType(int):::Read name and type.:::obj->readPool->if->throw->currentClassFile->toString->badClassFile->return
 ClassReader#readModuleName(int):::Read the name of a module:::return->readName
@@ -33,27 +41,119 @@ ClassReader#sigToTypeParams(byte[], int, int):::Convert signature to type parame
 ClassReader#sigToTypeParams():::Convert signature to type parameters, where signature is implicit.:::tvars->List->nil->if->start->while->tvars->sigToTypeParam->prepend->while->sigToTypeParam->return->tvars->reverse
 ClassReader#sigToTypeParam():::Convert (implicit) signature to type parameter.:::start->while->name->names->fromUtf->tvar->if->new->TypeVar->typevars->enter->else->findTypeVar->bounds->List->nil->allInterfaces->if->while->bounds->sigToType->prepend->if->types->bounds->reverse->setBounds->return
 ClassReader#findTypeVar(Name):::Find type variable with given name in `typevars' scope.:::s->typevars->findFirst->if->return->else->if->t->new->TypeVar->missingTypeVariables->prepend->return->throw->badClassFile
+ClassReader.AttributeReader#accepts(AttributeKind)::: attribute reader accepts:::if->kinds->contains->if->return->if->warnedAttrs->contains->prev->log->useSource->try->log->Warnings->FutureAttr->warning->catch->finally->log->useSource->warnedAttrs->add->return
+ClassReader.AttributeReader#read(Symbol, int)::: attribute reader read:::
+ClassReader#initAttributeReaders()::: class reader init attribute readers:::readers->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->new->AttributeReader->foreach->attributeReaders->put
+ClassReader#readEnclosingMethodAttr(Symbol)::: class reader read enclosing method attr:::members->remove->self->c->nextChar->readClassSymbol->nt->nextChar->readNameAndType->if->throw->badClassFile->m->self->flags->findMethod->if->throw->badEnclosingMethod->simpleBinaryName->if->isEmpty->else->ClassSymbol->formFullName->if->setEnclosingType->else->if->setEnclosingType->else->setEnclosingType->enterTypevars->if->missingTypeVariables->isEmpty->typeVars->new->ListBuffer<>->foreach->typeVars->findTypeVar->append->typeVars->toList->else->List->nil
+ClassReader#simpleBinaryName(Name, Name)::: class reader simple binary name:::simpleBinaryName->self->toString->enclosing->toString->length->substring->if->simpleBinaryName->length->simpleBinaryName->charAt->throw->badClassFile->index->while->simpleBinaryName->length->simpleBinaryName->charAt->isAsciiDigit->return->names->simpleBinaryName->substring->fromString
+ClassReader#findMethod(NameAndType, Scope, long)::: class reader find method:::if->return->type->asMethodType->foreach->scope->getSymbolsByName->if->asMethodType->isSameBinaryType->return->if->return->if->return->if->getParameterTypes->isEmpty->return->nt->getParameterTypes->getReturnType->getThrownTypes->new->MethodType->setType->return->findMethod
+ClassReader#isSameBinaryType(MethodType, MethodType):::Similar to Types.isSameType but avoids completion:::types1->types->mt1->getParameterTypes->erasure->types->mt1->getReturnType->erasure->prepend->types2->mt2->getParameterTypes->mt2->getReturnType->prepend->while->types1->isEmpty->types2->isEmpty->if->return->return->types1->isEmpty->types2->isEmpty
+ClassReader#isAsciiDigit(char):::Character.isDigit answers <tt>true</tt> to some non-ascii digits:::return
 ClassReader#readMemberAttrs(Symbol):::Read member attributes.:::readAttrs
+ClassReader#readAttrs(Symbol, AttributeKind)::: class reader read attrs:::ac->nextChar->for->i
 ClassReader#readClassAttrs(ClassSymbol):::Read class attributes.:::readAttrs
 ClassReader#readCode(Symbol):::Read code block.:::nextChar->nextChar->code_length->nextInt->exception_table_length->nextChar->readMemberAttrs->return
 ClassReader#readAnnotations():::Save annotations.:::numAttributes->nextChar->annotations->new->ListBuffer<>->for->i->return->annotations->toList
 ClassReader#attachAnnotations(Symbol):::Attach annotations.:::readAnnotations->attachAnnotations
 ClassReader#attachAnnotations(Symbol, List):::Attach annotations.:::if->annotations->isEmpty->return->proxies->new->ListBuffer<>->foreach->if->else->if->if->foreach->if->c->if->else->if->else->if->else->if->foreach->if->c->if->proxies->append->annotate->proxies->toList->new->AnnotationCompleter->normal
 ClassReader#readParameterAnnotations(Symbol):::Read parameter annotations.:::numParameters->if->new->ParameterAnnotationsArr->else->if->throw->badClassFile->for->pnum
+ClassReader#attachTypeAnnotations(Symbol)::: class reader attach type annotations:::numAttributes->nextChar->if->proxies->new->ListBuffer<>->for->i->annotate->proxies->toList->new->TypeAnnotationCompleter->normal
 ClassReader#attachAnnotationDefault(Symbol):::Attach the default value for an annotation element.:::meth->value->readAttributeValue->annotate->new->AnnotationDefaultCompleter->normal
+ClassReader#readTypeOrClassSymbol(int)::: class reader read type or class symbol:::if->return->readClassSymbol->return->readTypeToProxy
+ClassReader#readEnumType(int)::: class reader read enum type:::index->length->getChar->if->return->readName->enterClass->return->readTypeToProxy
+ClassReader#readTypeToProxy(int)::: class reader read type to proxy:::if->index->return->Arrays->getChar->copyOfRange->new->ProxyType->else->return->readType
+ClassReader#readCompoundAnnotation()::: class reader read compound annotation:::t->if->index->nextChar->Arrays->getChar->copyOfRange->new->ProxyType->else->nextChar->readTypeOrClassSymbol->numFields->nextChar->pairs->new->ListBuffer<>->for->i->return->pairs->toList->new->CompoundAnnotationProxy
+ClassReader#readTypeAnnotation()::: class reader read type annotation:::position->readPosition->proxy->readCompoundAnnotation->return->new->TypeAnnotationProxy
+ClassReader#readPosition()::: class reader read position:::tag->nextByte->if->TargetType->isValidTargetTypeValue->throw->String->format->badClassFile->type->TargetType->fromTargetTypeValue->switch->offset->nextChar->position->TypeAnnotationPosition->readTypePath->instanceOf->return->offset->nextChar->position->TypeAnnotationPosition->readTypePath->newObj->return->offset->nextChar->position->TypeAnnotationPosition->readTypePath->constructorRef->return->offset->nextChar->position->TypeAnnotationPosition->readTypePath->methodRef->return->table_length->nextChar->newLvarOffset->new->intArr->newLvarLength->new->intArr->newLvarIndex->new->intArr->for->i->position->TypeAnnotationPosition->readTypePath->localVariable->return->table_length->nextChar->newLvarOffset->new->intArr->newLvarLength->new->intArr->newLvarIndex->new->intArr->for->i->position->TypeAnnotationPosition->readTypePath->resourceVariable->return->exception_index->nextChar->position->TypeAnnotationPosition->readTypePath->exceptionParameter->position->setExceptionIndex->return->return->TypeAnnotationPosition->readTypePath->methodReceiver->parameter_index->nextByte->return->TypeAnnotationPosition->readTypePath->typeParameter->parameter_index->nextByte->return->TypeAnnotationPosition->readTypePath->methodTypeParameter->parameter_index->nextByte->bound_index->nextByte->return->TypeAnnotationPosition->readTypePath->typeParameterBound->parameter_index->nextByte->bound_index->nextByte->return->TypeAnnotationPosition->readTypePath->methodTypeParameterBound->type_index->nextChar->return->TypeAnnotationPosition->readTypePath->classExtends->type_index->nextChar->return->TypeAnnotationPosition->readTypePath->methodThrows->parameter_index->nextByte->return->TypeAnnotationPosition->readTypePath->methodParameter->offset->nextChar->type_index->nextByte->position->TypeAnnotationPosition->readTypePath->typeCast->return->offset->nextChar->type_index->nextByte->position->TypeAnnotationPosition->readTypePath->constructorInvocationTypeArg->return->offset->nextChar->type_index->nextByte->position->TypeAnnotationPosition->readTypePath->methodInvocationTypeArg->return->offset->nextChar->type_index->nextByte->position->TypeAnnotationPosition->readTypePath->constructorRefTypeArg->return->offset->nextChar->type_index->nextByte->position->TypeAnnotationPosition->readTypePath->methodRefTypeArg->return->return->TypeAnnotationPosition->readTypePath->methodReturn->return->TypeAnnotationPosition->readTypePath->field->throw->new->AssertionError->throw->new->AssertionError
+ClassReader#readTypePath()::: class reader read type path:::len->nextByte->loc->new->ListBuffer<>->for->i->return->TypeAnnotationPosition->loc->toList->getTypePathFromBinary
+ClassReader#readAttributeValue()::: class reader read attribute value:::c->switch->return->nextChar->readPool->new->Attribute.Constant->return->nextChar->readPool->new->Attribute.Constant->return->nextChar->readPool->new->Attribute.Constant->return->nextChar->readPool->new->Attribute.Constant->return->nextChar->readPool->new->Attribute.Constant->return->nextChar->readPool->new->Attribute.Constant->return->nextChar->readPool->new->Attribute.Constant->return->nextChar->readPool->new->Attribute.Constant->return->nextChar->readPool->toString->new->Attribute.Constant->return->nextChar->readEnumType->nextChar->readName->new->EnumAttributeProxy->return->nextChar->readTypeOrClassSymbol->new->ClassAttributeProxy->n->nextChar->l->new->ListBuffer<>->for->i->return->l->toList->new->ArrayAttributeProxy->return->readCompoundAnnotation->throw->new->AssertionError
+ClassReader.ProxyVisitor#visitEnumAttributeProxy(EnumAttributeProxy)::: proxy visitor visit enum attribute proxy:::
+ClassReader.ProxyVisitor#visitClassAttributeProxy(ClassAttributeProxy)::: proxy visitor visit class attribute proxy:::
+ClassReader.ProxyVisitor#visitArrayAttributeProxy(ArrayAttributeProxy)::: proxy visitor visit array attribute proxy:::
+ClassReader.ProxyVisitor#visitCompoundAnnotationProxy(CompoundAnnotationProxy)::: proxy visitor visit compound annotation proxy:::
+ClassReader.EnumAttributeProxy#accept(Visitor)::: enum attribute proxy accept:::visitEnumAttributeProxy
+ClassReader.EnumAttributeProxy#toString()::: enum attribute proxy to string:::return
+ClassReader.ClassAttributeProxy#accept(Visitor)::: class attribute proxy accept:::visitClassAttributeProxy
+ClassReader.ClassAttributeProxy#toString()::: class attribute proxy to string:::return
+ClassReader.ArrayAttributeProxy#accept(Visitor)::: array attribute proxy accept:::visitArrayAttributeProxy
+ClassReader.ArrayAttributeProxy#toString()::: array attribute proxy to string:::return
+ClassReader.CompoundAnnotationProxy#accept(Visitor)::: compound annotation proxy accept:::visitCompoundAnnotationProxy
+ClassReader.CompoundAnnotationProxy#toString()::: compound annotation proxy to string:::buf->new->StringBuilder->buf->append->buf->getQualifiedName->append->buf->append->first->for->v->v->nonEmpty->buf->append->return->buf->toString
+ClassReader.AnnotationDeproxy#deproxyCompoundList(List)::: annotation deproxy deproxy compound list:::buf->new->ListBuffer<>->for->l->l->nonEmpty->return->buf->toList
+ClassReader.AnnotationDeproxy#deproxyCompound(CompoundAnnotationProxy)::: annotation deproxy deproxy compound:::annotationType->resolvePossibleProxyType->buf->new->ListBuffer<>->for->l->l->nonEmpty->return->buf->toList->new->Attribute.Compound
+ClassReader.AnnotationDeproxy#findAccessMethod(Type, Name)::: annotation deproxy find access method:::failure->try->foreach->members->getSymbolsByName->if->getParameterTypes->length->return->catch->finally->prevSource->log->useSource->try->if->if->log->Warnings->AnnotationMethodNotFound->warning->else->log->Warnings->failure->getDetailValue->AnnotationMethodNotFoundReason->warning->catch->finally->log->useSource->mt->List->nil->List->nil->new->MethodType->return->new->MethodSymbol
+ClassReader.AnnotationDeproxy#deproxy(Type, Attribute)::: annotation deproxy deproxy:::oldType->try->a->accept->return->catch->finally
+ClassReader.AnnotationDeproxy#visitConstant(Attribute.Constant)::: annotation deproxy visit constant:::
+ClassReader.AnnotationDeproxy#visitClass(Attribute.Class)::: annotation deproxy visit class:::
+ClassReader.AnnotationDeproxy#visitEnum(Attribute.Enum)::: annotation deproxy visit enum:::throw->new->AssertionError
+ClassReader.AnnotationDeproxy#visitCompound(Attribute.Compound)::: annotation deproxy visit compound:::throw->new->AssertionError
+ClassReader.AnnotationDeproxy#visitArray(Attribute.Array)::: annotation deproxy visit array:::throw->new->AssertionError
+ClassReader.AnnotationDeproxy#visitError(Attribute.Error)::: annotation deproxy visit error:::throw->new->AssertionError
+ClassReader.AnnotationDeproxy#visitEnumAttributeProxy(EnumAttributeProxy)::: annotation deproxy visit enum attribute proxy:::enumType->resolvePossibleProxyType->enumTypeSym->enumerator->failure->try->foreach->enumTypeSym->members->getSymbolsByName->if->break->catch->finally->if->if->log->Warnings->failure->getDiagnostic->UnknownEnumConstantReason->warning->else->log->Warnings->UnknownEnumConstant->warning->new->VarSymbol->new->Attribute.Enum->else->new->Attribute.Enum
+ClassReader.AnnotationDeproxy#visitClassAttributeProxy(ClassAttributeProxy)::: annotation deproxy visit class attribute proxy:::classType->resolvePossibleProxyType->new->Attribute.Class
+ClassReader.AnnotationDeproxy#visitArrayAttributeProxy(ArrayAttributeProxy)::: annotation deproxy visit array attribute proxy:::length->length->ats->new->AttributeArr->elemtype->types->elemtype->i->for->p->p->nonEmpty->new->Attribute.Array
+ClassReader.AnnotationDeproxy#visitCompoundAnnotationProxy(CompoundAnnotationProxy)::: annotation deproxy visit compound annotation proxy:::deproxyCompound
+ClassReader.AnnotationDeproxy#resolvePossibleProxyType(Type)::: annotation deproxy resolve possible proxy type:::if->Assert->check->prevCurrentModule->try->return->resolve->catch->finally->else->return
+ClassReader.AnnotationDefaultCompleter#run()::: annotation default completer run:::previousClassFile->try->getReturnType->deproxy->catch->finally
+ClassReader.AnnotationDefaultCompleter#toString()::: annotation default completer to string:::return
+ClassReader.AnnotationCompleter#run()::: annotation completer run:::previousClassFile->try->newList->deproxyCompoundList->foreach->if->forRemoval->attr->member->if->c->if->if->sym->annotationsPendingCompletion->sym->setDeclarationAttributes->else->sym->appendAttributes->catch->finally
+ClassReader.AnnotationCompleter#toString()::: annotation completer to string:::return
+ClassReader.TypeAnnotationCompleter#deproxyTypeCompoundList(List)::: type annotation completer deproxy type compound list:::buf->new->ListBuffer<>->foreach->compound->deproxyCompound->typeCompound->new->Attribute.TypeCompound->buf->add->return->buf->toList
+ClassReader.TypeAnnotationCompleter#run()::: type annotation completer run:::previousClassFile->try->newList->deproxyTypeCompoundList->sym->newList->sym->getRawTypeAttributes->prependList->setTypeAttributes->catch->finally
 ClassReader#readField():::Read a field.:::flags->nextChar->adjustFieldFlags->name->nextChar->readName->type->nextChar->readType->v->new->VarSymbol->readMemberAttrs->return
 ClassReader#readMethod():::Read a method.:::flags->nextChar->adjustMethodFlags->name->nextChar->readName->type->nextChar->readType->if->currentOwner->isInterface->name->equals->if->if->else->throw->Integer->toString->Integer->toString->badClassFile->if->currentOwner->hasOuterInstance->local->members->includes->if->isEmpty->type->getParameterTypes->adjustMethodParams->type->getReturnType->type->getThrownTypes->new->MethodType->m->new->MethodSymbol->if->types->isSignaturePolymorphic->if->initParameterNames->prevOwner->try->readMemberAttrs->catch->finally->setParameters->if->last->type->getParameterTypes->last->if->last->hasTag->throw->badClassFile->return
+ClassReader#adjustMethodParams(long, List)::: class reader adjust method params:::isVarargs->if->varargsElem->args->last->adjustedArgs->new->ListBuffer<>->foreach->adjustedArgs->makeVarargs->append->adjustedArgs->toList->return
 ClassReader#initParameterNames(MethodSymbol):::Init the parameter names array:::excessSlots->expectedParameterSlots->Code->getParameterTypes->width->if->new->intArr->else->Arrays->fill
 ClassReader#setParameters(MethodSymbol, Type):::Set the parameters for a method symbol, including any names and annotations that were read:::firstParam->if->sym->flags->if->currentOwner->hasOuterInstance->if->isEmpty->if->skip->Code->jvmType->getParameterTypes->width->Code->getParameterTypes->width->paramNames->List->nil->params->new->ListBuffer<>->nameIndex->annotationIndex->foreach->getParameterTypes->name->parameterName->paramNames->prepend->param->new->VarSymbol->params->append->if->annotations->if->isEmpty->annotate->new->AnnotationCompleter->normal->Code->width->if->throw->badClassFile->Assert->checkNull->params->toList
+ClassReader#parameterName(int, List)::: class reader parameter name:::if->return->readName->prefix->while->argName->names->exclude->size->fromString->if->exclude->contains->return
 ClassReader#skipBytes(int):::skip n bytes:::
 ClassReader#skipMember():::Skip a field or method:::ac->nextChar->for->i
+ClassReader#skipInnerClasses()::: class reader skip inner classes:::n->nextChar->for->i
 ClassReader#enterTypevars(Symbol, Type):::Enter type variables of this classtype and all enclosing ones in  `typevars'.:::if->t->getEnclosingType->if->t->getEnclosingType->hasTag->t->getEnclosingType->enterTypevars->else->if->sym->isStatic->enterTypevars->for->xs->t->getTypeArguments->xs->nonEmpty
+ClassReader#enterClass(Name)::: class reader enter class:::if->flatName->return->return->syms->enterClass
+ClassReader#enterClass(Name, TypeSymbol)::: class reader enter class:::return->syms->enterClass
 ClassReader#readClass(ClassSymbol):::Read contents of a given class symbol `c':::ct->WriteableScope->create->typevars->dup->if->ct->getEnclosingType->hasTag->ct->getEnclosingType->enterTypevars->f->nextChar->flags->adjustClassFlags->if->if->c->packge->self->nextChar->readClassSymbol->if->throw->badClassFile->else->if->throw->Integer->toString->Integer->toString->badClassFile->this_class->nextChar->startbp->nextChar->interfaceCount->nextChar->fieldCount->nextChar->for->i->methodCount->nextChar->for->i->readClassAttrs->if->for->i->new->Pool->n->nextChar->if->throw->badClassFile->if->readClassSymbol->erasure->nextChar->is->List->nil->for->i->if->is->reverse->Assert->nextChar->check->for->i->Assert->nextChar->check->for->i->typevars->leave
 ClassReader#readInnerClasses(ClassSymbol):::Read inner class info:::n->nextChar->for->i
+ClassReader#readClassBuffer(ClassSymbol):::Read a class definition from the bytes in buf.:::magic->nextInt->if->throw->badClassFile->nextChar->nextChar->maxMajor->Version->MAX->maxMinor->Version->MAX->if->Version->MIN->Version->MIN->if->log->Warnings->BigMajorVersion->warning->else->throw->Integer->toString->Integer->toString->Integer->toString->Integer->toString->badClassFile->if->if->preview->isEnabled->log->preview->disabledError->error->else->preview->warnPreview->indexPool->if->ns->Integer->highestOneBit->new->byteArr->readClass
+ClassReader#readClassFile(ClassSymbol)::: class reader read class file:::warnedAttrs->clear->try->openInputStream->readInputStream->readClassBuffer->if->missingTypeVariables->isEmpty->foundTypeVariables->isEmpty->missing->found->List->nil->List->nil->List->nil->List->nil->ct->types->subst->types->subst->types->substBounds->for->types->types->nonEmpty->else->if->missingTypeVariables->isEmpty->foundTypeVariables->isEmpty->name->throw->badClassFile->if->c->new->CompleterDeproxy->new->AnnotationTypeMetadata->setAnnotationTypeMetadata->else->c->AnnotationTypeMetadata->notAnAnnotationType->setAnnotationTypeMetadata->if->if->interimUses->nonEmpty->interimProvides->nonEmpty->Assert->currentModule->isCompleted->check->new->UsesProvidesCompleter->else->List->nil->List->nil->catch->throw->ex->toString->badClassFile->throw->badClassFile->finally->List->nil->List->nil->List->nil->List->nil
+ClassReader#readInputStream(byte[], InputStream)::: class reader read input stream:::try->s->available->ensureCapacity->r->s->read->bp->while->ensureCapacity->s->read->return->catch->finally->try->s->close->catch->finally
+ClassReader#ensureCapacity(byte[], int)::: class reader ensure capacity:::if->old->Integer->highestOneBit->new->byteArr->System->arraycopy->return
+ClassReader#adjustFieldFlags(long)::: class reader adjust field flags:::return
+ClassReader#adjustMethodFlags(long)::: class reader adjust method flags:::if->if->return
+ClassReader#adjustClassFlags(long)::: class reader adjust class flags:::if->return
+ClassReader.SourceFileObject#toUri()::: source file object to uri:::try->return->name->toString->new->URI->catch->throw->name->toString->new->PathFileObject.CannotCreateUriError->finally
+ClassReader.SourceFileObject#getName()::: source file object get name:::return->name->toString
+ClassReader.SourceFileObject#getKind()::: source file object get kind:::return->BaseFileManager->getName->getKind
+ClassReader.SourceFileObject#openInputStream()::: source file object open input stream:::throw->new->UnsupportedOperationException
+ClassReader.SourceFileObject#openOutputStream()::: source file object open output stream:::throw->new->UnsupportedOperationException
+ClassReader.SourceFileObject#getCharContent(boolean)::: source file object get char content:::throw->new->UnsupportedOperationException
+ClassReader.SourceFileObject#openReader(boolean)::: source file object open reader:::throw->new->UnsupportedOperationException
+ClassReader.SourceFileObject#openWriter()::: source file object open writer:::throw->new->UnsupportedOperationException
+ClassReader.SourceFileObject#getLastModified()::: source file object get last modified:::throw->new->UnsupportedOperationException
+ClassReader.SourceFileObject#delete()::: source file object delete:::throw->new->UnsupportedOperationException
+ClassReader.SourceFileObject#isNameCompatible(String, JavaFileObject.Kind)::: source file object is name compatible:::return
+ClassReader.SourceFileObject#getNestingKind()::: source file object get nesting kind:::return
+ClassReader.SourceFileObject#getAccessLevel()::: source file object get access level:::return
+ClassReader.SourceFileObject#equals(Object):::Check if two file objects are equal:::if->return->if->return->o->return->name->equals
+ClassReader.SourceFileObject#hashCode()::: source file object hash code:::return->name->hashCode
+ClassReader.CompleterDeproxy#complete(ClassSymbol)::: completer deproxy complete:::Assert->check->theTarget->theRepeatable->deproxy->try->if->new->AnnotationDeproxy->deproxy->deproxyCompound->if->new->AnnotationDeproxy->deproxy->deproxyCompound->catch->throw->Fragments->e->getMessage->ExceptionMessage->fragment->new->CompletionFailure->finally->sym->getAnnotationTypeMetadata->setTarget->sym->getAnnotationTypeMetadata->setRepeatable
+ClassReader.ProxyType#getTag()::: proxy type get tag:::return
+ClassReader.ProxyType#cloneWithMetadata(TypeMetadata)::: proxy type clone with metadata:::throw->new->UnsupportedOperationException
+ClassReader.ProxyType#resolve()::: proxy type resolve:::return->sigToType
+ClassReader.ProxyType#toString()::: proxy type to string:::return
+ClassReader.UsesProvidesCompleter#complete(Symbol)::: uses provides completer complete:::directives->new->ListBuffer<>->directives->addAll->uses->new->ListBuffer<>->foreach->d->syms->enterClass->new->UsesDirective->uses->add->directives->add->uses->toList->provides->new->ListBuffer<>->foreach->impls->new->ListBuffer<>->foreach->impls->syms->enterClass->append->d->syms->enterClass->impls->toList->new->ProvidesDirective->provides->add->directives->add->provides->toList->directives->toList
 ClassWriter#instance(Context):::Get the ClassWriter instance for this context.:::instance->context->get->if->new->ClassWriter->return
 ClassWriter#flagNames(long):::Return flags as a string, separated by " ".:::sbuf->new->StringBuilder->i->f->while->if->sbuf->append->sbuf->append->return->sbuf->toString
 ClassWriter#putChar(ByteBuffer, int, int):::Write a character into given byte buffer;  byte buffer will not be grown.:::
 ClassWriter#putInt(ByteBuffer, int, int):::Write an integer into given byte buffer;  byte buffer will not be grown.:::
+ClassWriter.CWSignatureGenerator#assembleSig(Type):::Assemble signature of given type in string buffer:::switch->type->getTag->types->erasure->assembleSig->break->super->assembleSig
+ClassWriter.CWSignatureGenerator#append(char)::: signature generator append:::sigbuf->appendByte
+ClassWriter.CWSignatureGenerator#append(byte[])::: signature generator append:::sigbuf->appendBytes
+ClassWriter.CWSignatureGenerator#append(Name)::: signature generator append:::sigbuf->appendName
+ClassWriter.CWSignatureGenerator#classReference(ClassSymbol)::: signature generator class reference:::enterInner
+ClassWriter.CWSignatureGenerator#reset()::: signature generator reset:::sigbuf->reset
+ClassWriter.CWSignatureGenerator#toName()::: signature generator to name:::return->sigbuf->toName
+ClassWriter.CWSignatureGenerator#isEmpty()::: signature generator is empty:::return
 ClassWriter#typeSig(Type):::Return signature of given type:::Assert->signatureGen->isEmpty->check->signatureGen->assembleSig->n->signatureGen->toName->signatureGen->reset->return
 ClassWriter#xClassName(Type):::Given a type t, return the extended class name of its erasure in  external representation.:::if->t->hasTag->return->names->flatName->externalize->fromUtf->else->if->t->hasTag->return->types->erasure->typeSig->else->throw->new->AssertionError
 ClassWriter#writePool(Pool):::Write constant pool to pool buffer:::poolCountIdx->poolbuf->appendChar->i->while->value->Assert->checkNonNull->if->getUnderlyingSymbol->if->m->if->m->isDynamic->poolbuf->flags->appendByte->poolbuf->pool->put->appendChar->poolbuf->pool->nameType->put->appendChar->else->dynSym->handle->new->MethodHandle->key->new->DynamicMethod.BootstrapMethodsKey->val->bootstrapMethods->get->if->index->bootstrapMethods->size->new->DynamicMethod.BootstrapMethodsValue->bootstrapMethods->put->pool->put->pool->put->foreach->pool->put->poolbuf->appendByte->poolbuf->appendChar->poolbuf->pool->nameType->put->appendChar->else->if->v->poolbuf->appendByte->poolbuf->pool->put->appendChar->poolbuf->pool->nameType->put->appendChar->else->if->poolbuf->appendByte->bs->toUtf->poolbuf->appendChar->poolbuf->appendBytes->if->throw->value->toString->new->StringOverflow->else->if->c->if->pool->put->poolbuf->appendByte->if->hasTag->poolbuf->pool->typeSig->put->appendChar->else->poolbuf->pool->names->externalize->fromUtf->put->appendChar->enterInner->else->if->nt->poolbuf->appendByte->poolbuf->pool->put->appendChar->poolbuf->pool->typeSig->put->appendChar->else->if->poolbuf->appendByte->poolbuf->intValue->appendInt->else->if->poolbuf->appendByte->poolbuf->longValue->appendLong->else->if->poolbuf->appendByte->poolbuf->floatValue->appendFloat->else->if->poolbuf->appendByte->poolbuf->doubleValue->appendDouble->else->if->poolbuf->appendByte->poolbuf->pool->names->fromString->put->appendChar->else->if->type->if->type->hasTag->poolbuf->appendByte->poolbuf->pool->typeSig->put->appendChar->else->Assert->type->hasTag->check->poolbuf->appendByte->poolbuf->pool->xClassName->put->appendChar->else->if->ref->poolbuf->appendByte->poolbuf->appendByte->poolbuf->pool->put->appendChar->else->if->m->poolbuf->appendByte->poolbuf->pool->put->appendChar->else->if->m->poolbuf->appendByte->poolbuf->pool->names->externalize->fromUtf->put->appendChar->else->Assert->error->if->throw->new->PoolOverflow->putChar
@@ -67,30 +167,69 @@ ClassWriter#writeEnclosingMethodAttribute(Name, ClassSymbol):::Write the Enclosi
 ClassWriter#writeFlagAttrs(long):::Write flag attributes; return number of attributes written.:::acount->if->alenIdx->writeAttr->endAttr->return
 ClassWriter#writeMemberAttrs(Symbol):::Write member (field or method) attributes;  return number of attributes written.:::acount->sym->flags->writeFlagAttrs->flags->sym->flags->if->types->sym->erasure->isSameType->signatureGen->getThrownTypes->hasTypeVar->alenIdx->writeAttr->databuf->pool->typeSig->put->appendChar->endAttr->sym->getRawAttributes->writeJavaAnnotations->sym->getRawTypeAttributes->writeTypeAnnotations->return
 ClassWriter#writeMethodParametersAttr(MethodSymbol):::Write method parameter names attribute.:::ty->m->externalType->asMethodType->allparams->size->if->attrIndex->writeAttr->databuf->appendByte->foreach->flags->s->flags->m->flags->databuf->pool->put->appendChar->databuf->appendChar->foreach->flags->s->flags->m->flags->databuf->pool->put->appendChar->databuf->appendChar->foreach->flags->s->flags->m->flags->databuf->pool->put->appendChar->databuf->appendChar->endAttr->return->else->return
+ClassWriter#writeParamAnnotations(List, RetentionPolicy)::: class writer write param annotations:::foreach->buf->new->ListBuffer<>->foreach->s->getRawAttributes->if->types->getRetention->buf->append->databuf->buf->length->appendChar->foreach->writeCompoundAttribute
+ClassWriter#writeParamAnnotations(MethodSymbol, RetentionPolicy)::: class writer write param annotations:::databuf->length->appendByte->writeParamAnnotations
 ClassWriter#writeParameterAttrs(MethodSymbol):::Write method parameter annotations;  return number of attributes written.:::hasVisible->hasInvisible->if->foreach->foreach->s->getRawAttributes->switch->types->getRetention->break->break->break->attrCount->if->attrIndex->writeAttr->writeParamAnnotations->endAttr->if->attrIndex->writeAttr->writeParamAnnotations->endAttr->return
 ClassWriter#writeJavaAnnotations(List):::Write Java-language annotations; return number of JVM  attributes written (zero or one).:::if->attrs->isEmpty->return->visibles->new->ListBuffer<>->invisibles->new->ListBuffer<>->foreach->switch->types->getRetention->break->invisibles->append->break->visibles->append->break->attrCount->if->visibles->length->attrIndex->writeAttr->databuf->visibles->length->appendChar->foreach->writeCompoundAttribute->endAttr->if->invisibles->length->attrIndex->writeAttr->databuf->invisibles->length->appendChar->foreach->writeCompoundAttribute->endAttr->return
+ClassWriter#writeTypeAnnotations(List, boolean)::: class writer write type annotations:::if->typeAnnos->isEmpty->return->visibles->new->ListBuffer<>->invisibles->new->ListBuffer<>->foreach->if->tc->hasUnknownPosition->fixed->tc->tryFixPosition->if->pw->log->getWriter->pw->println->continue->if->isLocal->continue->if->emitToClassfile->continue->switch->types->getRetention->break->invisibles->append->break->visibles->append->break->attrCount->if->visibles->length->attrIndex->writeAttr->databuf->visibles->length->appendChar->foreach->writeTypeAnnotation->endAttr->if->invisibles->length->attrIndex->writeAttr->databuf->invisibles->length->appendChar->foreach->writeTypeAnnotation->endAttr->return
+ClassWriter.AttributeWriter#visitConstant(Attribute.Constant)::: attribute writer visit constant:::value->switch->getTag->databuf->appendByte->break->databuf->appendByte->break->databuf->appendByte->break->databuf->appendByte->break->databuf->appendByte->break->databuf->appendByte->break->databuf->appendByte->break->databuf->appendByte->break->Assert->check->databuf->appendByte->names->value->toString->fromString->break->throw->new->AssertionError->databuf->pool->put->appendChar
+ClassWriter.AttributeWriter#visitEnum(Attribute.Enum)::: attribute writer visit enum:::databuf->appendByte->databuf->pool->typeSig->put->appendChar->databuf->pool->put->appendChar
+ClassWriter.AttributeWriter#visitClass(Attribute.Class)::: attribute writer visit class:::databuf->appendByte->databuf->pool->types->erasure->typeSig->put->appendChar
+ClassWriter.AttributeWriter#visitCompound(Attribute.Compound)::: attribute writer visit compound:::databuf->appendByte->writeCompoundAttribute
+ClassWriter.AttributeWriter#visitError(Attribute.Error)::: attribute writer visit error:::throw->new->AssertionError
+ClassWriter.AttributeWriter#visitArray(Attribute.Array)::: attribute writer visit array:::databuf->appendByte->databuf->appendChar->foreach->a->accept
 ClassWriter#writeCompoundAttribute(Attribute.Compound):::Write a compound attribute excluding the '@' marker.:::databuf->pool->typeSig->put->appendChar->databuf->length->appendChar->foreach->databuf->pool->put->appendChar->accept
+ClassWriter#writeTypeAnnotation(Attribute.TypeCompound)::: class writer write type annotation:::writePosition->writeCompoundAttribute
+ClassWriter#writePosition(TypeAnnotationPosition)::: class writer write position:::databuf->targetTypeValue->appendByte->switch->databuf->appendChar->break->databuf->appendChar->for->i->break->databuf->p->getExceptionIndex->appendChar->break->break->databuf->appendByte->break->databuf->appendByte->databuf->appendByte->break->databuf->appendChar->break->databuf->appendChar->break->databuf->appendByte->break->databuf->appendChar->databuf->appendByte->break->break->throw->new->AssertionError->throw->new->AssertionError->databuf->size->appendByte->loc->TypeAnnotationPosition->getBinaryFromTypePath->foreach->databuf->appendByte
 ClassWriter#writeModuleAttribute(ClassSymbol):::Write the Module attribute if needed:::m->alenIdx->writeAttr->databuf->pool->put->appendChar->databuf->ModuleFlags->value->appendChar->databuf->pool->put->appendChar->requires->new->ListBuffer<>->foreach->if->contains->requires->add->databuf->requires->size->appendChar->foreach->databuf->pool->put->appendChar->databuf->RequiresFlag->value->appendChar->databuf->pool->put->appendChar->exports->databuf->exports->size->appendChar->foreach->databuf->pool->put->appendChar->databuf->ExportsFlag->value->appendChar->if->databuf->appendChar->else->databuf->size->appendChar->foreach->databuf->pool->put->appendChar->opens->databuf->opens->size->appendChar->foreach->databuf->pool->put->appendChar->databuf->OpensFlag->value->appendChar->if->databuf->appendChar->else->databuf->size->appendChar->foreach->databuf->pool->put->appendChar->uses->databuf->uses->size->appendChar->foreach->databuf->pool->put->appendChar->mergedProvides->new->LinkedHashMap<>->foreach->mergedProvides->new->LinkedHashSet<>->computeIfAbsent->addAll->databuf->mergedProvides->size->appendChar->mergedProvides->databuf->pool->put->appendChar->databuf->impls->size->appendChar->impls->databuf->pool->put->appendChar->forEach->forEach->endAttr->return
 ClassWriter#enterInner(ClassSymbol):::Enter an inner class into the `innerClasses' set/queue.:::if->isCompound->throw->new->AssertionError->try->c->complete->catch->ex->getMessage->println->throw->finally->if->hasTag->return->if->enclClass->innerClasses->contains->enclClass->enterInner->pool->put->if->pool->put->if->new->HashSet<>->new->ListBuffer<>->pool->put->innerClasses->add->innerClassesQueue->append
 ClassWriter#writeInnerClasses():::Write "inner classes" attribute.:::alenIdx->writeAttr->databuf->innerClassesQueue->length->appendChar->for->l->innerClassesQueue->toList->l->nonEmpty->endAttr
 ClassWriter#writeNestMembersIfNeeded(ClassSymbol):::Write NestMembers attribute (if needed):::nested->new->ListBuffer<>->listNested->nestedUnique->new->LinkedHashSet<>->if->nestedUnique->isEmpty->alenIdx->writeAttr->databuf->nestedUnique->size->appendChar->foreach->databuf->pool->put->appendChar->endAttr->return->return
 ClassWriter#writeNestHostIfNeeded(ClassSymbol):::Write NestHost attribute (if needed):::if->alenIdx->writeAttr->databuf->pool->csym->outermostClass->put->appendChar->endAttr->return->return
+ClassWriter#listNested(Symbol, ListBuffer)::: class writer list nested:::if->return->csym->if->seen->add->if->csym->members->foreach->sym->members->getSymbols->listNested->if->foreach->listNested
 ClassWriter#writeBootstrapMethods():::Write "bootstrapMethods" attribute.:::alenIdx->writeAttr->databuf->bootstrapMethods->size->appendChar->foreach->bootstrapMethods->entrySet->bsmKey->entry->getKey->databuf->pool->entry->getValue->get->appendChar->uniqueArgs->bsmKey->getUniqueArgs->databuf->appendChar->foreach->databuf->pool->get->appendChar->endAttr
 ClassWriter#writeField(VarSymbol):::Write field symbol, entering all references into constant pool.:::flags->v->flags->adjustFlags->databuf->appendChar->if->pw->log->getWriter->pw->println->pw->v->flags->flagNames->println->databuf->pool->put->appendChar->databuf->pool->v->erasure->typeSig->put->appendChar->acountIdx->beginAttrs->acount->if->v->getConstValue->alenIdx->writeAttr->databuf->pool->v->getConstValue->put->appendChar->endAttr->writeMemberAttrs->endAttrs
 ClassWriter#writeMethod(MethodSymbol):::Write method symbol, entering all references into constant pool.:::flags->m->flags->adjustFlags->databuf->appendChar->if->pw->log->getWriter->pw->println->pw->m->flags->flagNames->println->databuf->pool->put->appendChar->databuf->pool->m->externalType->typeSig->put->appendChar->acountIdx->beginAttrs->acount->if->alenIdx->writeAttr->writeCode->endAttr->thrown->m->erasure->getThrownTypes->if->thrown->nonEmpty->alenIdx->writeAttr->databuf->thrown->length->appendChar->for->l->l->nonEmpty->endAttr->if->alenIdx->writeAttr->accept->endAttr->if->options->isSet->target->hasMethodParameters->if->m->isLambdaMethod->writeMethodParametersAttr->writeMemberAttrs->if->m->isLambdaMethod->writeParameterAttrs->endAttrs
 ClassWriter#writeCode(Code):::Write code attribute of method.:::databuf->appendChar->databuf->appendChar->databuf->appendInt->databuf->appendBytes->databuf->length->appendChar->for->l->toList->l->nonEmpty->acountIdx->beginAttrs->acount->if->nonEmpty->alenIdx->writeAttr->databuf->length->appendChar->for->l->reverse->l->nonEmpty->endAttr->if->crt->alenIdx->writeAttr->crtIdx->beginAttrs->crtEntries->crt->writeCRT->endAttrs->endAttr->if->nGenericVars->alenIdx->writeAttr->databuf->code->getLVTSize->appendChar->for->i->endAttr->if->writeAttr->databuf->appendChar->count->for->i->Assert->check->endAttr->if->if->println->alenIdx->getAttributeName->writeAttr->writeStackMap->endAttr->getRawTypeAttributes->writeTypeAnnotations->endAttrs
+ClassWriter#needsLocalVariableTypeEntry(Type)::: class writer needs local variable type entry:::return->types->types->erasure->isSameType->check->checkDenotable
+ClassWriter#writeStackMap(Code)::: class writer write stack map:::nframes->if->println->databuf->appendChar->switch->for->i->break->Assert->checkNull->for->i->break->throw->new->AssertionError
+ClassWriter#writeStackMapType(Type)::: class writer write stack map type:::if->if->print->databuf->appendByte->else->switch->t->getTag->if->print->databuf->appendByte->break->if->print->databuf->appendByte->break->if->print->databuf->appendByte->break->if->print->databuf->appendByte->break->if->print->databuf->appendByte->break->if->print->databuf->appendByte->databuf->pool->put->appendChar->break->if->types->erasure->print->databuf->appendByte->databuf->pool->types->erasure->put->appendChar->break->if->print->databuf->appendByte->break->uninitType->databuf->appendByte->if->print->databuf->appendChar->break->throw->new->AssertionError
+ClassWriter.StackMapTableFrame#getFrameType()::: stack map table frame get frame type:::
+ClassWriter.StackMapTableFrame#write(ClassWriter)::: stack map table frame write:::frameType->getFrameType->appendByte->if->print
+ClassWriter.StackMapTableFrame.SameFrame#getFrameType()::: same frame get frame type:::return
+ClassWriter.StackMapTableFrame.SameFrame#write(ClassWriter)::: same frame write:::super->write->if->getFrameType->appendChar->if->print
+ClassWriter.StackMapTableFrame.SameLocals1StackItemFrame#getFrameType()::: same locals1 stack item frame get frame type:::return
+ClassWriter.StackMapTableFrame.SameLocals1StackItemFrame#write(ClassWriter)::: same locals1 stack item frame write:::super->write->if->getFrameType->appendChar->if->print->if->print->writer->writeStackMapType
+ClassWriter.StackMapTableFrame.ChopFrame#getFrameType()::: chop frame get frame type:::return
+ClassWriter.StackMapTableFrame.ChopFrame#write(ClassWriter)::: chop frame write:::super->write->appendChar->if->print
+ClassWriter.StackMapTableFrame.AppendFrame#getFrameType()::: append frame get frame type:::return
+ClassWriter.StackMapTableFrame.AppendFrame#write(ClassWriter)::: append frame write:::super->write->appendChar->if->print->for->i
+ClassWriter.StackMapTableFrame.FullFrame#getFrameType()::: full frame get frame type:::return
+ClassWriter.StackMapTableFrame.FullFrame#write(ClassWriter)::: full frame write:::super->write->appendChar->appendChar->if->print->print->for->i->appendChar->if->print->for->i
 ClassWriter.StackMapTableFrame#getInstance(Code.StackMapFrame, int, Type[], Types):::Compare this frame with the previous frame and produce  an entry of compressed stack map frame.:::locals->stack->offset_delta->if->if->compare->return->new->SameLocals1StackItemFrame->else->if->diff_length->compare->if->return->new->SameFrame->else->if->local_diff->new->TypeArr->for->i->j->return->new->AppendFrame->else->if->return->new->ChopFrame->return->new->FullFrame
+ClassWriter.StackMapTableFrame#isInt(Type)::: stack map table frame is int:::return->t->getTag->isStrictSubRangeOf->t->hasTag
+ClassWriter.StackMapTableFrame#isSameType(Type, Type, Types)::: stack map table frame is same type:::if->return->if->return->if->isInt->isInt->return->if->t1->hasTag->return->t2->hasTag->else->if->t1->hasTag->if->t2->hasTag->return->else->return->else->if->t2->hasTag->t2->hasTag->return->return->types->isSameType
+ClassWriter.StackMapTableFrame#compare(Type[], Type[], Types)::: stack map table frame compare:::diff_length->if->return->len->for->i->return
+ClassWriter#writeFields(Scope)::: class writer write fields:::vars->List->nil->foreach->s->getSymbols->if->vars->prepend->while->vars->nonEmpty->writeField
+ClassWriter#writeMethods(Scope)::: class writer write methods:::methods->List->nil->foreach->s->getSymbols->if->sym->flags->methods->prepend->while->methods->nonEmpty->writeMethod
 ClassWriter#writeClass(ClassSymbol):::Emit a class file for a given class.:::name->toString->outLocn->if->msym->c->packge->fileManager->toString->getLocationForModule->else->outFile->fileManager->getJavaFileForOutput->out->outFile->openOutputStream->try->writeClassFile->if->log->outFile->getName->printVerbose->out->close->catch->log->Errors->Fragments->ex->type->IllegalSignature->CannotGenerateClass->error->finally->if->out->close->outFile->delete->return
 ClassWriter#writeClassFile(OutputStream, ClassSymbol):::Write class `c' to outstream `out'.:::Assert->c->flags->check->databuf->reset->poolbuf->reset->signatureGen->reset->new->LinkedHashMap<>->supertype->types->supertype->interfaces->types->interfaces->typarams->getTypeArguments->flags->if->else->c->flags->adjustFlags->if->if->if->pw->log->getWriter->pw->println->pw->c->getQualifiedName->println->pw->flagNames->println->databuf->appendChar->if->unnamed->databuf->pool->new->ClassSymbol->put->appendChar->else->databuf->pool->put->appendChar->databuf->supertype->hasTag->pool->put->appendChar->databuf->interfaces->length->appendChar->for->l->l->nonEmpty->fieldsCount->methodsCount->foreach->c->members->getSymbols->switch->break->if->sym->flags->break->enterInner->break->Assert->error->if->foreach->enterInner->databuf->appendChar->c->members->writeFields->databuf->appendChar->c->members->writeMethods->acountIdx->beginAttrs->acount->sigReq->typarams->length->supertype->allparams->length->for->l->l->nonEmpty->if->alenIdx->writeAttr->if->typarams->length->signatureGen->assembleParamsSig->signatureGen->assembleSig->for->l->l->nonEmpty->databuf->pool->signatureGen->toName->put->appendChar->signatureGen->reset->endAttr->if->alenIdx->writeAttr->simpleName->PathFileObject->getSimpleName->databuf->names->fromString->put->appendChar->endAttr->if->alenIdx->writeAttr->databuf->names->Long->getLastModified->toString->fromString->put->appendChar->endAttr->writeAttr->databuf->names->Long->System->currentTimeMillis->toString->fromString->put->appendChar->endAttr->c->flags->writeFlagAttrs->c->getRawAttributes->writeJavaAnnotations->c->getRawTypeAttributes->writeTypeAnnotations->writeEnclosingMethodAttribute->if->writeModuleAttribute->flags->writeFlagAttrs->writeExtraClassAttributes->poolbuf->appendInt->if->preview->isEnabled->poolbuf->appendChar->else->poolbuf->appendChar->poolbuf->appendChar->if->if->target->hasNestmateAccess->writeNestMembersIfNeeded->writeNestHostIfNeeded->writePool->if->writeInnerClasses->if->bootstrapMethods->isEmpty->writeBootstrapMethods->endAttrs->poolbuf->appendBytes->out->write
 ClassWriter#writeExtraClassAttributes(ClassSymbol):::Allows subclasses to write additional class attributes:::return
+ClassWriter#adjustFlags(long)::: class writer adjust flags:::result->if->if->if->return
+ClassWriter#getLastModified(FileObject)::: class writer get last modified:::mod->try->filename->getLastModified->catch->throw->e->getMessage->new->AssertionError->finally->return
 Code#checkLimits(DiagnosticPosition, Log):::Check the code against VM spec limits; if  problems report them and return true.:::if->log->error->return->if->log->error->return->if->log->error->return->return
 Code#typecode(Type):::Given a type, return its type code (used implicitly in the  JVM architecture).:::switch->type->getTag->return->return->return->return->return->return->return->return->return->return->throw->type->getTag->new->AssertionError
 Code#truncate(int):::Collapse type code for subtypes of int to INTcode.:::switch->return->return
 Code#width(int):::The width in bytes of objects of the type.:::switch->return->return->return
+Code#width(Type)::: code width:::return->typecode->width
 Code#width(List):::The total width taken up by a vector of objects.:::w->for->l->l->nonEmpty->return
 Code#arraycode(Type):::Given a type, return its code for allocating arrays of that type.:::switch->type->getTag->return->return->return->return->return->return->return->return->return->return->throw->new->AssertionError
 Code#curCP():::The current output code pointer.:::if->resolvePending->if->markStatBegin->return
+Code#emit1(int):::Emit a byte of code.:::if->return->ArrayUtils->ensureCapacity
+Code#emit2(int):::Emit two bytes of code.:::if->return->if->emit1->emit1->else
 Code#emit4(int):::Emit four bytes of code.:::if->return->if->emit1->emit1->emit1->emit1->else
+Code#emitop(int):::Emit an opcode.:::if->resolvePending->if->if->markStatBegin->if->emitStackMap->if->mnem->println->emit1
+Code#postop()::: code postop:::Assert->check
 Code#emitLdc(int):::Emit a ldc (or ldc_w) instruction, taking into account operand size:::if->emitop1->else->emitop2
 Code#emitMultianewarray(int, int, Type):::Emit a multinewarray instruction.:::emitop->if->return->emit2->emit1->state->pop->state->push
 Code#emitNewarray(int, Type):::Emit newarray.:::emitop->if->return->emit1->state->pop->state->push
@@ -102,12 +241,17 @@ Code#emitInvokevirtual(int, Type):::Emit an invokevirtual instruction.:::argsize
 Code#emitInvokedynamic(int, Type):::Emit an invokedynamic instruction.:::argsize->mtype->getParameterTypes->width->emitop->if->return->emit2->emit2->state->pop->state->mtype->getReturnType->push
 Code#emitop0(int):::Emit an opcode with no operand field.:::emitop->if->return->switch->state->pop->a->Assert->a->hasTag->check->state->pop->state->types->types->elemtype->erasure->push->break->markDead->break->break->state->push->break->state->push->break->state->push->break->state->push->break->state->push->break->state->push->break->state->push->break->state->push->break->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->break->Assert->check->state->pop->markDead->break->state->pop->markDead->break->state->pop->break->Assert->check->state->pop->markDead->break->state->push->break->Assert->check->markDead->break->state->pop->state->push->break->state->pop->break->state->pop->break->state->pop->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->state->push->break->state->pop->break->val1->state->pop1->val2->state->pop1->state->push->state->push->state->push->break->state->pop->break->break->state->pop->break->state->pop->break->state->pop->break->if->value1->state->pop1->value2->state->pop1->state->push->state->push->state->push->state->push->else->value->state->pop2->state->push->state->push->break->if->value1->state->pop1->value2->state->pop1->value3->state->pop1->state->push->state->push->state->push->state->push->state->push->else->value1->state->pop2->value2->state->pop1->state->push->state->push->state->push->break->if->value1->state->pop1->value2->state->pop1->if->value3->state->pop1->value4->state->pop1->state->push->state->push->state->push->state->push->state->push->state->push->else->value3->state->pop2->state->push->state->push->state->push->state->push->state->push->else->value1->state->pop2->if->value2->state->pop1->value3->state->pop1->state->push->state->push->state->push->state->push->else->value2->state->pop2->state->push->state->push->state->push->break->value1->state->pop1->if->value2->state->pop1->value3->state->pop1->state->push->state->push->state->push->state->push->else->value2->state->pop2->state->push->state->push->state->push->break->state->pop->state->push->break->state->pop->state->push->break->value1->state->pop1->value2->state->pop1->state->push->state->push->break->state->pop->break->markDead->break->return->state->pop->break->throw->mnem->new->AssertionError->postop
 Code#emitop1(int, int):::Emit an opcode with a one-byte operand field.:::emitop->if->return->emit1->switch->state->push->break->state->typeForPool->push->break->throw->mnem->new->AssertionError->postop
+Code#typeForPool(Object):::The type of a constant pool entry.:::if->return->if->return->if->return->if->return->if->return->if->return->if->return->if->return->typeForPool->if->ty->if->return->if->return->throw->o->getClass->new->AssertionError
 Code#emitop1w(int, int):::Emit an opcode with a one-byte operand field;  widen if field does not fit in a byte.:::if->emitop->emitop->emit2->else->emitop->emit1->if->return->switch->state->push->break->state->push->break->state->push->break->state->push->break->state->push->break->state->pop->break->state->pop->break->markDead->break->throw->mnem->new->AssertionError->postop
 Code#emitop1w(int, int, int):::Emit an opcode with two one-byte operand fields;  widen if either field does not fit in a byte.:::if->emitop->emitop->emit2->emit2->else->emitop->emit1->emit1->if->return->switch->break->throw->mnem->new->AssertionError
 Code#emitop2(int, int):::Emit an opcode with a two-byte operand field.:::emitop->if->return->emit2->switch->state->erasure->push->break->state->erasure->pop->break->sym->if->else->state->sym->erasure->uninitializedObject->push->break->state->push->break->state->pop->break->state->pop->break->markDead->break->state->erasure->pop->state->pop->break->state->pop->state->erasure->push->break->state->pop->o->t->erasure->types->erasure->state->push->break->state->typeForPool->push->break->state->pop->state->push->break->state->typeForPool->push->break->break->throw->mnem->new->AssertionError
 Code#emitop4(int, int):::Emit an opcode with a four-byte operand field.:::emitop->if->return->emit4->switch->markDead->break->break->throw->mnem->new->AssertionError
 Code#align(int):::Align code pointer to next `incr' boundary.:::if->while->emitop0
+Code#put1(int, int):::Place a byte into code at address pc:::
+Code#put2(int, int):::Place two bytes into code at address pc:::put1->put1
 Code#put4(int, int):::Place four  bytes into code at address pc:::put1->put1->put1->put1
+Code#get1(int):::Return code byte at position pc as an unsigned int.:::return
+Code#get2(int):::Return two code bytes at position pc as an unsigned int.:::return->get1->get1
 Code#get4(int):::Return four code bytes at position pc as an int.:::return->get1->get1->get1->get1
 Code#isAlive():::Is code generation currently enabled?:::return
 Code#markDead():::Switch code generation on/off.:::
@@ -115,7 +259,10 @@ Code#entryPoint():::Declare an entry point; return current code pointer:::pc->cu
 Code#entryPoint(State):::Declare an entry point with initial state;  return current code pointer:::pc->curCP->newState->state->dup->setDefined->Assert->check->if->println->return
 Code#entryPoint(State, Type):::Declare an entry point with initial state plus a pushed value;  return current code pointer:::pc->curCP->newState->state->dup->setDefined->Assert->check->push->if->println->return
 Code#emitStackMap():::Emit a stack map entry.:::pc->curCP->if->return->switch->getLocalsSize->emitCLDCStackMap->break->getLocalsSize->emitStackMapFrame->break->throw->new->AssertionError->if->state->dump
+Code#getLocalsSize()::: code get locals size:::nextLocal->for->i->return
 Code#emitCLDCStackMap(int, int):::Emit a CLDC stack map frame.:::if->if->new->StackMapFrameArr->else->ArrayUtils->ensureCapacity->frame->new->StackMapFrame->new->TypeArr->for->i->new->TypeArr->for->i
+Code#emitStackMapFrame(int, int)::: code emit stack map frame:::if->getInitialFrame->else->if->frame->new->StackMapFrame->localCount->locals->new->TypeArr->for->i->new->TypeArr->for->i->j->stackCount->for->i->new->TypeArr->for->i->if->new->StackMapTableFrameArr->else->ArrayUtils->ensureCapacity->StackMapTableFrame->getInstance
+Code#getInitialFrame()::: code get initial frame:::frame->new->StackMapFrame->arg_types->meth->externalType->len->arg_types->length->count->if->meth->isStatic->thisType->new->TypeArr->if->meth->isConstructor->UninitializedType->uninitializedThis->else->types->erasure->else->new->TypeArr->foreach->types->erasure->return
 Code#negate(int):::Negate a branch opcode.:::if->return->else->if->return->else->return
 Code#emitJump(int):::Emit a jump instruction:::if->if->emitop4->else->negate->emitop2->emitop4->return->else->emitop2->return
 Code#branch(int):::Emit a branch with given opcode; return its chain:::result->if->if->isAlive->emitJump->state->dup->new->Chain->if->return
@@ -124,41 +271,131 @@ Code#resolve(Chain):::Resolve chain to point to current code pointer.:::Assert->
 Code#resolvePending():::Resolve any pending jumps.:::x->resolve
 Code#mergeChains(Chain, Chain):::Merge the jumps in of two chains into one.:::if->return->if->return->Assert->check->if->return->mergeChains->new->Chain->return->mergeChains->new->Chain
 Code#addCatch(char, char, char, char):::Add a catch clause to code.:::catchInfo->new->charArr->append
+Code#compressCatchTable()::: code compress catch table:::compressedCatchInfo->new->ListBuffer<>->handlerPcs->List->nil->foreach->handlerPcs->prepend->foreach->startpc->endpc->if->handlerPcs->contains->continue->else->compressedCatchInfo->append
 Code#addLineNumber(char, char):::Add a line number entry.:::if->if->lineInfo->nonEmpty->if->lineInfo->isEmpty->lineInfo->new->charArr->prepend
 Code#statBegin(int):::Mark beginning of statement.:::if
 Code#markStatBegin():::Force stat begin eagerly:::if->line->lineMap->getLineNumber->cp1->line1->if->addLineNumber
+Code.State#dup()::: state dup:::try->state->super->clone->new->Bits->stack->clone->if->locks->clone->if->println->dump->return->catch->throw->new->AssertionError->finally
+Code.State#lock(int)::: state lock:::if->new->intArr->else->ArrayUtils->ensureCapacity
+Code.State#unlock(int)::: state unlock:::Assert->check
+Code.State#push(Type)::: state push:::if->println->switch->t->getTag->return->break->break->ArrayUtils->ensureCapacity->switch->width->break->break->throw->new->AssertionError->if
+Code.State#pop1()::: state pop1:::if->println->result->Assert->width->check->return
+Code.State#peek()::: state peek:::return
+Code.State#pop2()::: state pop2:::if->println->result->Assert->width->check->return
+Code.State#pop(int)::: state pop:::if->println->while
+Code.State#pop(Type)::: state pop:::width->pop
 Code.State#forceStackTop(Type):::Force the top of the stack to be treated as this supertype  of its current type.:::if->return->switch->t->getTag->width->width->old->Assert->types->types->erasure->types->erasure->isSubtype->check->break
+Code.State#markInitialized(UninitializedType)::: state mark initialized:::newtype->old->initializedType->for->i->for->i
+Code.State#join(State)::: state join:::defined->andSet->Assert->check->for->i->return
+Code.State#error()::: state error:::throw->new->AssertionError
+Code.State#dump()::: state dump:::dump
+Code.State#dump(int)::: state dump:::print->if->println->else->println->println->for->i->lastLocal->for->i->if->println->for->i->if->print->for->i->println
+Code.LocalVar.Range#closed()::: range closed:::return
+Code.LocalVar.Range#toString()::: range to string:::currentStartPC->currentLength->return
+Code.LocalVar#dup()::: local var dup:::return->new->LocalVar
+Code.LocalVar#firstRange()::: local var first range:::return->aliveRanges->isEmpty->aliveRanges->get
+Code.LocalVar#lastRange()::: local var last range:::return->aliveRanges->isEmpty->aliveRanges->aliveRanges->size->get
+Code.LocalVar#removeLastRange()::: local var remove last range:::lastRange->lastRange->if->aliveRanges->remove
+Code.LocalVar#toString()::: local var to string:::if->return->sb->new->StringBuilder->append->append->append->append->foreach->sb->append->Integer->toString->append->append->Integer->toString->append->append->return->sb->toString
+Code.LocalVar#openRange(char)::: local var open range:::if->hasOpenRange->aliveRanges->new->Range->add
+Code.LocalVar#closeRange(char)::: local var close range:::if->isLastRangeInitialized->range->lastRange->if->if->else->removeLastRange
+Code.LocalVar#hasOpenRange()::: local var has open range:::if->aliveRanges->isEmpty->return->return->lastRange
+Code.LocalVar#isLastRangeInitialized()::: local var is last range initialized:::if->aliveRanges->isEmpty->return->return->lastRange
+Code.LocalVar#getWidestRange()::: local var get widest range:::if->aliveRanges->isEmpty->return->new->Range->else->firstRange->firstRange->lastRange->lastRange->length->return->new->Range
+Code#addLocalVar(VarSymbol):::Add a new local variable.:::adr->ArrayUtils->ensureCapacity->Assert->checkNull->if->resolvePending->new->LocalVar->excl
+Code#adjustAliveRanges(int, int)::: code adjust alive ranges:::foreach->if->foreach->if->range->closed
 Code#getLVTSize():::Calculates the size of the LocalVariableTable.:::result->for->i->return
 Code#setDefined(Bits):::Set the current variable defined state.:::if->diff->new->Bits->xorSet->for->adr->diff->nextBit->diff->nextBit
 Code#setDefined(int):::Mark a register as being (possibly) defined.:::v->if->excl->else->incl->if->v->openRange
 Code#setUndefined(int):::Mark a register as being undefined.:::excl->if->isLastRangeInitialized->v->length->curCP->v->lastRange->if->v->dup->v->closeRange->putVar->else->v->removeLastRange
+Code#endScope(int):::End the scope of a variable.:::v->if->if->v->isLastRangeInitialized->length->curCP->v->lastRange->if->v->closeRange->putVar->fillLocalVarPosition->excl
+Code#fillLocalVarPosition(LocalVar)::: code fill local var position:::if->isExceptionParameter->hasTypeAnnotations->return->widestRange->lv->getWidestRange->foreach->getRawTypeAttributes->p->if->widestRange->closed->new->intArr->new->intArr->new->intArr->else
+Code#fillExceptionParameterPositions()::: code fill exception parameter positions:::for->i
+Code#findExceptionIndex(TypeAnnotationPosition)::: code find exception index:::catchType->p->getCatchType->startPos->p->getStartPos->len->catchInfo->length->iter->catchInfo->toList->for->i->return
 Code#putVar(LocalVar):::Put a live variable range into the buffer to be output to the  class file.:::keepLocalVariables->isExceptionParameter->hasTypeAnnotations->if->return->ignoredSyntheticVar->flags->flags->flags->if->return->if->new->LocalVarArr->else->ArrayUtils->ensureCapacity
+Code#newLocal(int):::Create a new local variable address and return it.:::reg->w->width->if->return
+Code#newLocal(Type)::: code new local:::return->typecode->newLocal
+Code#newLocal(VarSymbol)::: code new local:::reg->v->erasure->newLocal->addLocalVar->return
 Code#newRegSegment():::Start a set of fresh registers.:::
 Code#endScopes(int):::End scopes of all variables with registers &ge; first.:::prevNextReg->for->i
+Code#mnem(int)::: code mnem:::return
 CRTable#put(Object, int, int, int):::Create a new CRTEntry and add it to the entries.:::entries->new->CRTEntry->append
 CRTable#writeCRT(ByteBuffer, Position.LineMap, Log):::Compute source positions and write CRT to the databuf.:::crtEntries->new->SourceComputer->csp->for->l->entries->toList->l->nonEmpty->return
 CRTable#length():::Return the number of the entries.:::return->entries->length
+CRTable#getTypes(int):::Return string describing flags enabled.:::types->if->if->if->if->if->if->if->if->if->return
+CRTable#encodePosition(int, Position.LineMap, Log):::Source file positions in CRT are integers in the format:  line-number << LINESHIFT + column-number :::line->lineMap->getLineNumber->col->lineMap->getColumnNumber->new_pos->Position->encodePosition->if->println->if->log->Warnings->PositionOverflow->warning->return
 CRTable.SourceComputer#csp(JCTree):::Visitor method: compute source positions for a single node.:::if->return->tree->accept->if->positions->put->return
 CRTable.SourceComputer#csp(List):::Visitor method: compute source positions for a list of nodes.:::if->trees->nonEmpty->return->list_sr->new->SourceRange->for->l->l->nonEmpty->positions->put->return
 CRTable.SourceComputer#cspCases(List)::: Visitor method: compute source positions for    a list of case blocks of switch statements.:::if->trees->nonEmpty->return->list_sr->new->SourceRange->for->l->l->nonEmpty->positions->put->return
 CRTable.SourceComputer#cspCatchers(List)::: Visitor method: compute source positions for   a list of catch clauses in try statements.:::if->trees->nonEmpty->return->list_sr->new->SourceRange->for->l->l->nonEmpty->positions->put->return
+CRTable.SourceComputer#visitMethodDef(JCMethodDecl)::: source computer visit method def:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith
+CRTable.SourceComputer#visitVarDef(JCVariableDecl)::: source computer visit var def:::sr->startPos->endPos->new->SourceRange->csp->sr->csp->mergeWith
+CRTable.SourceComputer#visitSkip(JCSkip)::: source computer visit skip:::sr->startPos->startPos->new->SourceRange
+CRTable.SourceComputer#visitBlock(JCBlock)::: source computer visit block:::sr->startPos->endPos->new->SourceRange->csp
+CRTable.SourceComputer#visitDoLoop(JCDoWhileLoop)::: source computer visit do loop:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitWhileLoop(JCWhileLoop)::: source computer visit while loop:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitForLoop(JCForLoop)::: source computer visit for loop:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitForeachLoop(JCEnhancedForLoop)::: source computer visit foreach loop:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitLabelled(JCLabeledStatement)::: source computer visit labelled:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith
+CRTable.SourceComputer#visitSwitch(JCSwitch)::: source computer visit switch:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->cspCases->mergeWith
+CRTable.SourceComputer#visitCase(JCCase)::: source computer visit case:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitSynchronized(JCSynchronized)::: source computer visit synchronized:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitTry(JCTry)::: source computer visit try:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith->sr->cspCatchers->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitCatch(JCCatch)::: source computer visit catch:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitConditional(JCConditional)::: source computer visit conditional:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitIf(JCIf)::: source computer visit if:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitExec(JCExpressionStatement)::: source computer visit exec:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith
+CRTable.SourceComputer#visitBreak(JCBreak)::: source computer visit break:::sr->startPos->endPos->new->SourceRange
+CRTable.SourceComputer#visitContinue(JCContinue)::: source computer visit continue:::sr->startPos->endPos->new->SourceRange
+CRTable.SourceComputer#visitReturn(JCReturn)::: source computer visit return:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith
+CRTable.SourceComputer#visitThrow(JCThrow)::: source computer visit throw:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith
+CRTable.SourceComputer#visitAssert(JCAssert)::: source computer visit assert:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitApply(JCMethodInvocation)::: source computer visit apply:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitNewClass(JCNewClass)::: source computer visit new class:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitNewArray(JCNewArray)::: source computer visit new array:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitParens(JCParens)::: source computer visit parens:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith
+CRTable.SourceComputer#visitAssign(JCAssign)::: source computer visit assign:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitAssignop(JCAssignOp)::: source computer visit assignop:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitUnary(JCUnary)::: source computer visit unary:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith
+CRTable.SourceComputer#visitBinary(JCBinary)::: source computer visit binary:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitTypeCast(JCTypeCast)::: source computer visit type cast:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitTypeTest(JCInstanceOf)::: source computer visit type test:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitIndexed(JCArrayAccess)::: source computer visit indexed:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitSelect(JCFieldAccess)::: source computer visit select:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith
+CRTable.SourceComputer#visitIdent(JCIdent)::: source computer visit ident:::sr->startPos->endPos->new->SourceRange
+CRTable.SourceComputer#visitLiteral(JCLiteral)::: source computer visit literal:::sr->startPos->endPos->new->SourceRange
+CRTable.SourceComputer#visitTypeIdent(JCPrimitiveTypeTree)::: source computer visit type ident:::sr->startPos->endPos->new->SourceRange
+CRTable.SourceComputer#visitTypeArray(JCArrayTypeTree)::: source computer visit type array:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith
+CRTable.SourceComputer#visitTypeApply(JCTypeApply)::: source computer visit type apply:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitLetExpr(LetExpr)::: source computer visit let expr:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith->sr->csp->mergeWith
+CRTable.SourceComputer#visitTypeParameter(JCTypeParameter)::: source computer visit type parameter:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith
+CRTable.SourceComputer#visitTypeUnion(JCTypeUnion)::: source computer visit type union:::sr->startPos->endPos->new->SourceRange->sr->csp->mergeWith
+CRTable.SourceComputer#visitWildcard(JCWildcard)::: source computer visit wildcard:::
+CRTable.SourceComputer#visitErroneous(JCErroneous)::: source computer visit erroneous:::
+CRTable.SourceComputer#visitTree(JCTree)::: source computer visit tree:::Assert->error
 CRTable.SourceComputer#startPos(JCTree):::The start position of given tree.:::if->return->return->TreeInfo->getStartPos
 CRTable.SourceComputer#endPos(JCTree):::The end position of given tree, if it has  defined endpos, NOPOS otherwise.:::if->return->return->TreeInfo->getEndPos
 CRTable.SourceRange#mergeWith(SourceRange):::Compare the starting and the ending positions  of the source range and combines them assigning  the widest range to this.:::if->return->if->else->if->if->else->if->return
+Gen#instance(Context)::: gen instance:::instance->context->get->if->new->Gen->return
 Gen#loadIntConst(int):::Generate code to load an integer constant.:::items->makeImmediateItem->load
 Gen#zero(int):::The opcode that loads a zero constant of a given type code.:::switch->return->return->return->return->throw->new->AssertionError
 Gen#one(int):::The opcode that loads a one constant of a given type code.:::return->zero
 Gen#emitMinusOne(int):::Generate code to load -1 of the given type code (either int or long).:::if->items->Long->valueOf->makeImmediateItem->load->else->code->emitop0
 Gen#binaryQualifier(Symbol, Type):::Construct a symbol to reflect the qualifying type that should  appear in the byte code as per JLS 13.1:::if->site->hasTag->if->return->qualifier->new->ClassSymbol->return->sym->clone->if->sym->flags->return->if->return->return->sym->clone
 Gen#makeRef(DiagnosticPosition, Type):::Insert a reference to given type in the constant pool,  checking for an array with too many dimensions;  return the reference's index.:::checkDimension->if->type->isAnnotated->return->pool->put->else->return->pool->type->hasTag->put
+Gen#checkDimension(DiagnosticPosition, Type):::Check if the given type is an array with too many dimensions.:::switch->t->getTag->t->getReturnType->checkDimension->for->args->t->getParameterTypes->args->nonEmpty->break->if->types->dimensions->log->error->break->break
 Gen#makeTemp(Type):::Create a tempory variable.:::v->new->VarSymbol->code->newLocal->return->items->makeLocalItem
 Gen#callMethod(DiagnosticPosition, Type, Name, List, boolean):::Generate code to call a non-private method or constructor.:::msym->rs->resolveInternalMethod->if->items->makeStaticItem->invoke->else->items->makeMemberItem->invoke
+Gen#isAccessSuper(JCMethodDecl):::Is the given method definition an access method  resulting from a qualified super? This is signified by an odd  access code.:::return->isOddAccessName
+Gen#isOddAccessName(Name):::Does given name start with "access$" and end in an odd digit?:::return->name->startsWith->name->name->getByteLength->getByteAt
 Gen#genFinalizer(Env):::Generate code to invoke the finalizer associated with given  environment:::if->code->isAlive->gen
 Gen#unwind(JCTree, Env):::Generate code to call all finalizers of structures aborted by  a non-local  exit:::env1->while->genFinalizer->if->break->return
 Gen#endFinalizerGap(Env):::Mark end of gap in catch-all range for finalizer.:::if->length->code->curCP->append
 Gen#endFinalizerGaps(Env, Env):::Mark end of all gaps in catch-all ranges for finalizers of environments  lying between, and including to two environments.:::last->while->endFinalizerGap
 Gen#hasFinally(JCTree, Env):::Do any of the structures aborted by a non-local exit have  finalizers that require an empty stack?:::while->if->hasTag->hasFinalizer->return->return
 Gen#normalizeDefs(List, ClassSymbol):::Distribute member initializer code into constructors and <clinit>  method.:::initCode->new->ListBuffer<>->initTAs->new->ListBuffer<>->clinitCode->new->ListBuffer<>->clinitTAs->new->ListBuffer<>->methodDefs->new->ListBuffer<>->for->l->l->nonEmpty->if->initCode->length->inits->initCode->toList->initTAs->c->getInitTypeAttributes->addAll->initTAlist->initTAs->toList->foreach->normalizeMethod->if->clinitCode->length->clinit->c->flags->List->nil->List->nil->new->MethodType->new->MethodSymbol->c->members->enter->clinitStats->clinitCode->toList->block->make->pos->at->Block->TreeInfo->clinitStats->last->endPos->methodDefs->make->MethodDef->append->if->clinitTAs->isEmpty->clinit->clinitTAs->toList->appendUniqueTypeAttributes->if->c->getClassInitTypeAttributes->isEmpty->clinit->c->getClassInitTypeAttributes->appendUniqueTypeAttributes->return->methodDefs->toList
+Gen#getAndRemoveNonFieldTAs(VarSymbol)::: gen get and remove non field as:::tas->sym->getRawTypeAttributes->fieldTAs->new->ListBuffer<>->nonfieldTAs->new->ListBuffer<>->foreach->Assert->ta->getPosition->check->if->ta->getPosition->fieldTAs->add->else->nonfieldTAs->add->sym->fieldTAs->toList->setTypeAttributes->return->nonfieldTAs->toList
+Gen#checkStringConstant(DiagnosticPosition, Object):::Check a constant value and report if it is a string that is  too large.:::if->length->return->log->error
 Gen#normalizeMethod(JCMethodDecl, List, List):::Insert instance initializer code into initial constructor.:::if->TreeInfo->isInitialConstructor->stats->newstats->new->ListBuffer<>->if->stats->nonEmpty->while->TreeInfo->isSyntheticInit->newstats->append->newstats->append->while->stats->nonEmpty->TreeInfo->isSyntheticInit->newstats->append->newstats->appendList->while->stats->nonEmpty->newstats->append->newstats->toList->if->TreeInfo->last->endPos->appendUniqueTypeAttributes
 Gen#genDef(JCTree, Env):::Visitor method: generate code for a definition, catching and reporting  any completion failures.:::prevEnv->try->tree->accept->catch->chk->tree->pos->completionError->finally
 Gen#genStat(JCTree, Env, int):::Derived visitor method: check whether CharacterRangeTable  should be emitted, if so, put a new entry into CRTable  and call method to generate bytecode:::if->genStat->return->startpc->code->curCP->genStat->if->tree->hasTag->code->curCP->put
@@ -167,15 +404,70 @@ Gen#genStats(List, Env, int):::Derived visitor method: check whether CharacterRa
 Gen#genStats(List, Env):::Derived visitor method: generate code for a list of statements.:::for->l->l->nonEmpty
 Gen#genCond(JCTree, int):::Derived visitor method: check whether CharacterRangeTable  should be emitted, if so, put a new entry into CRTable  and call method to generate bytecode:::if->return->genCond->startpc->code->curCP->item->genCond->code->curCP->put->return
 Gen#genCond(JCTree, boolean):::Derived visitor method: generate code for a boolean  expression in a control-flow context.:::inner_tree->TreeInfo->skipParens->if->inner_tree->hasTag->tree->cond->genCond->if->cond->isTrue->code->resolve->result->genCond->if->return->if->cond->isFalse->code->resolve->result->genCond->if->return->secondJumps->cond->jumpFalse->code->resolve->first->genCond->if->falseJumps->first->jumpFalse->code->resolve->trueJumps->code->branch->code->resolve->second->genCond->result->items->Code->mergeChains->Code->mergeChains->makeCondItem->if->return->else->result->genExpr->mkCond->if->return
+Gen#getCode()::: gen get code:::return
+Gen#getItems()::: gen get items:::return
+Gen#getAttrEnv()::: gen get attr env:::return
+Gen.ClassReferenceVisitor#visitTree(JCTree)::: class reference visitor visit tree:::
+Gen.ClassReferenceVisitor#visitBinary(JCBinary)::: class reference visitor visit binary:::accept->accept
+Gen.ClassReferenceVisitor#visitSelect(JCFieldAccess)::: class reference visitor visit select:::if->hasTag->pos->makeRef
+Gen.ClassReferenceVisitor#visitIdent(JCIdent)::: class reference visitor visit ident:::if->pool->put
+Gen.ClassReferenceVisitor#visitConditional(JCConditional)::: class reference visitor visit conditional:::accept->accept->accept
+Gen.ClassReferenceVisitor#visitUnary(JCUnary)::: class reference visitor visit unary:::accept
+Gen.ClassReferenceVisitor#visitParens(JCParens)::: class reference visitor visit parens:::accept
+Gen.ClassReferenceVisitor#visitTypeCast(JCTypeCast)::: class reference visitor visit type cast:::accept
 Gen#genExpr(JCTree, Type):::Visitor method: generate code for an expression, catching and reporting  any completion failures.:::prevPt->try->if->constValue->tree->accept->tree->pos->constValue->checkStringConstant->items->constValue->makeImmediateItem->else->tree->accept->return->result->coerce->catch->chk->tree->pos->completionError->return->items->makeStackItem->finally
 Gen#genArgs(List, List):::Derived visitor method: generate code for a list of method arguments.:::for->l->l->nonEmpty->Assert->pts->isEmpty->check
+Gen#visitMethodDef(JCMethodDecl)::: gen visit method def:::localEnv->env->dup->erasure->getReturnType->tree->pos->erasure->checkDimension->genMethod
 Gen#genMethod(JCMethodDecl, Env, boolean):::Generate code for a method.:::meth->extras->if->meth->isConstructor->if->meth->enclClass->isInner->meth->enclClass->isStatic->else->if->if->Code->types->erasure->getParameterTypes->width->log->tree->pos->error->else->if->startpcCrt->initCode->try->genStat->catch->initCode->genStat->finally->if->log->pos->Errors->StackSimError->error->throw->new->AssertionError->if->code->isAlive->code->TreeInfo->endPos->statBegin->if->getReturnType->hasTag->code->emitop0->else->startpc->code->entryPoint->c->items->makeCondItem->code->c->jumpTrue->resolve->if->code->curCP->put->code->endScopes->if->code->tree->pos->checkLimits->return->if->genMethod->if->code->compressCatchTable->code->fillExceptionParameterPositions
+Gen#initCode(JCMethodDecl, Env, boolean)::: gen init code:::meth->new->CRTable->new->Code->new->Items->if->println->if->selfType->if->meth->isConstructor->UninitializedType->uninitializedThis->code->code->new->VarSymbol->newLocal->setDefined->for->l->l->nonEmpty->startpcCrt->code->curCP->code->entryPoint->return
+Gen#visitVarDef(JCVariableDecl)::: gen visit var def:::v->code->newLocal->if->pos->v->getConstValue->checkStringConstant->if->v->getConstValue->Assert->check->v->erasure->genExpr->load->items->makeLocalItem->store->Assert->check->tree->pos->checkDimension
+Gen#visitSkip(JCSkip)::: gen visit skip:::
+Gen#visitBlock(JCBlock)::: gen visit block:::limit->localEnv->env->new->GenContext->dup->genStats->if->hasTag->code->statBegin->code->endScopes
+Gen#visitDoLoop(JCDoWhileLoop)::: gen visit do loop:::List->nil->genLoop
+Gen#visitWhileLoop(JCWhileLoop)::: gen visit while loop:::List->nil->genLoop
+Gen#visitForLoop(JCForLoop)::: gen visit for loop:::limit->genStats->genLoop->code->endScopes
+Gen#genLoop(JCStatement, JCStatement, JCExpression, List, boolean):::Generate code for a loop.:::loopEnv->env->new->GenContext->dup->startpc->code->entryPoint->if->c->if->code->statBegin->Assert->check->TreeInfo->skipParens->genCond->else->items->makeCondItem->loopDone->c->jumpFalse->code->resolve->Assert->check->genStat->code->resolve->genStats->code->code->branch->resolve->code->resolve->else->genStat->code->resolve->genStats->if->code->isAlive->c->if->code->statBegin->Assert->check->TreeInfo->skipParens->genCond->else->items->makeCondItem->code->c->jumpTrue->resolve->Assert->check->code->resolve->exit->if->code->resolve->excludeFrom
+Gen#visitForeachLoop(JCEnhancedForLoop)::: gen visit foreach loop:::throw->new->AssertionError
+Gen#visitLabelled(JCLabeledStatement)::: gen visit labelled:::localEnv->env->new->GenContext->dup->genStat->exit->if->code->resolve->excludeFrom
+Gen#visitSwitch(JCSwitch)::: gen visit switch:::limit->Assert->hasTag->check->startpcCrt->code->curCP->Assert->check->sel->genExpr->cases->if->cases->isEmpty->sel->load->drop->if->TreeInfo->skipParens->code->curCP->put->else->sel->load->if->TreeInfo->skipParens->code->curCP->put->switchEnv->env->new->GenContext->dup->lo->hi->nlabels->labels->cases->length->new->intArr->defaultIndex->l->for->i->table_space_cost->table_time_cost->lookup_space_cost->lookup_time_cost->opcode->startpc->code->curCP->code->emitop0->code->align->tableBase->code->curCP->offsets->code->emit4->if->code->emit4->code->emit4->for->i->else->code->emit4->for->i->new->intArr->stateSwitch->dup->code->markDead->for->i->exit->if->code->resolve->excludeFrom->if->code->get4->code->code->entryPoint->put4->if->defaultOffset->code->get4->for->i->else->if->for->i->if->qsort2->for->i->code->endScopes
 Gen#qsort2(int[], int[], int, int):::Sort (int) arrays of keys and values:::i->j->pivot->do->while->while->if->temp1->temp2->while->if->qsort2->if->qsort2
+Gen#visitSynchronized(JCSynchronized)::: gen visit synchronized:::limit->lockVar->makeTemp->Assert->check->genExpr->load->duplicate->lockVar->store->code->emitop0->lock->syncEnv->env->new->GenContext->dup->new->GenFinalizer->new->ListBuffer<>->List->nil->genTry->code->endScopes
+Gen#visitTry(JCTry)::: gen visit try:::tryEnv->env->new->GenContext->dup->oldEnv->new->GenFinalizer->new->ListBuffer<>->genTry
 Gen#genTry(JCTree, List, Env):::Generate code for a try or synchronized statement:::limit->startpc->code->curCP->stateTry->dup->genStat->endpc->code->curCP->gaps->toList->code->TreeInfo->endPos->statBegin->genFinalizer->code->TreeInfo->endPos->statBegin->exitChain->code->branch->endFinalizerGap->afterBody->hasFinalizer->hasFinalizer->if->for->l->l->nonEmpty->if->code->newRegSegment->catchallpc->code->entryPoint->startseg->while->nonEmpty->endseg->next->intValue->body->pos->registerCatch->next->intValue->code->TreeInfo->finalizerPos->statBegin->code->markStatBegin->excVar->makeTemp->excVar->store->genFinalizer->code->resolvePending->code->TreeInfo->finalizerPos->statBegin->code->markStatBegin->excVar->load->body->pos->next->intValue->registerCatch->code->emitop0->code->markDead->if->code->resolve->code->TreeInfo->finalizerPos->statBegin->code->markStatBegin->retVar->makeTemp->retVar->store->genLast->code->emitop1w->code->markDead->code->resolve->code->endScopes
 Gen#genCatch(JCCatch, Env, int, int, List):::Generate code for a catch clause.:::if->catchTypeExprs->catchTypesWithAnnotations->while->gaps->nonEmpty->foreach->subCatch->catchType->tree->pos->makeRef->end->intValue->tree->pos->code->curCP->registerCatch->foreach->setCatchInfo->intValue->if->foreach->subCatch->catchType->tree->pos->makeRef->tree->pos->code->curCP->registerCatch->foreach->setCatchInfo->exparam->code->statBegin->code->markStatBegin->limit->code->newLocal->items->makeLocalItem->store->code->TreeInfo->firstStatPos->statBegin->genStat->code->endScopes->code->TreeInfo->endPos->statBegin
+Gen#catchTypesWithAnnotations(JCCatch)::: gen catch types with annotations:::return->TreeInfo->isMultiCatch->getRawTypeAttributes->catchTypesWithAnnotationsFromMulticatch->List->getRawTypeAttributes->new->Pair<>->of
+Gen#catchTypesWithAnnotationsFromMulticatch(JCTypeUnion, List)::: gen catch types with annotations from multicatch:::alts->res->List->new->Pair<>->of->while->alt->if->a->res->annotate->fromAnnotations->new->Pair<>->prepend->else->res->List->nil->new->Pair<>->prepend->return->res->reverse
 Gen#registerCatch(DiagnosticPosition, int, int, int, int):::Register a catch clause in the "Exceptions" code-attribute.:::startpc1->endpc1->handler_pc1->if->code->addCatch->else->log->error
+Gen#visitIf(JCIf)::: gen visit if:::limit->thenExit->Assert->check->c->TreeInfo->skipParens->genCond->elseChain->c->jumpFalse->Assert->check->if->c->isFalse->code->resolve->genStat->code->branch->if->code->resolve->if->genStat->code->resolve->code->endScopes->Assert->check
+Gen#visitExec(JCExpressionStatement)::: gen visit exec:::e->switch->e->getTag->setTag->break->setTag->break->Assert->check->genExpr->drop->Assert->check
+Gen#visitBreak(JCBreak)::: gen visit break:::tmpPos->targetEnv->unwind->Assert->check->code->branch->addExit->endFinalizerGaps
+Gen#visitContinue(JCContinue)::: gen visit continue:::tmpPos->targetEnv->unwind->Assert->check->code->branch->addCont->endFinalizerGaps
+Gen#visitReturn(JCReturn)::: gen visit return:::limit->targetEnv->tmpPos->if->Assert->check->r->genExpr->load->if->hasFinally->makeTemp->r->store->unwind->r->load->code->Code->Code->typecode->truncate->emitop0->else->unwind->code->emitop0->endFinalizerGaps->code->endScopes
+Gen#visitThrow(JCThrow)::: gen visit throw:::Assert->check->genExpr->load->code->emitop0->Assert->check
+Gen#visitApply(JCMethodInvocation)::: gen visit apply:::setTypeAnnotationPositions->m->genExpr->msym->TreeInfo->symbol->msym->externalType->getParameterTypes->genArgs->if->msym->isDynamic->code->statBegin->m->invoke
+Gen#visitConditional(JCConditional)::: gen visit conditional:::thenExit->code->statBegin->c->genCond->elseChain->c->jumpFalse->if->c->isFalse->code->resolve->startpc->code->curCP->code->statBegin->genExpr->load->forceStackTop->if->code->curCP->put->code->branch->if->code->resolve->startpc->code->curCP->code->statBegin->genExpr->load->forceStackTop->if->code->curCP->put->code->resolve->items->makeStackItem
+Gen#setTypeAnnotationPositions(int)::: gen set type annotation positions:::meth->initOrClinit->getKind->getKind->foreach->meth->getRawTypeAttributes->if->ta->hasUnknownPosition->ta->tryFixPosition->if->matchesPos->updatePosOffset->if->return->foreach->getRawTypeAttributes->if->ta->hasUnknownPosition->ta->tryFixPosition->if->matchesPos->updatePosOffset->clazz->meth->enclClass->foreach->clazz->members->new->com.sun.tools.javac.model.FilteredMemberList->if->s->getKind->isField->continue->foreach->s->getRawTypeAttributes->if->ta->hasUnknownPosition->ta->tryFixPosition->if->matchesPos->updatePosOffset
+Gen#visitNewClass(JCNewClass)::: gen visit new class:::Assert->check->setTypeAnnotationPositions->code->tree->pos->makeRef->emitop2->code->emitop0->externalType->getParameterTypes->genArgs->items->makeMemberItem->invoke->items->makeStackItem
+Gen#visitNewArray(JCNewArray)::: gen visit new array:::setTypeAnnotationPositions->if->elemtype->types->elemtype->length->loadIntConst->arr->tree->pos->makeNewArray->i->for->l->l->nonEmpty->else->for->l->l->nonEmpty->tree->pos->length->makeNewArray
 Gen#makeNewArray(DiagnosticPosition, Type, int):::Generate code to create an array with given element type and number  of dimensions.:::elemtype->types->elemtype->if->types->dimensions->log->error->elemcode->Code->arraycode->if->code->makeRef->emitAnewarray->else->if->code->makeRef->emitMultianewarray->else->code->emitNewarray->return->items->makeStackItem
+Gen#visitParens(JCParens)::: gen visit parens:::genExpr
+Gen#visitAssign(JCAssign)::: gen visit assign:::l->genExpr->genExpr->load->if->hasTag->forceStackTop->items->makeAssignItem
+Gen#visitAssignop(JCAssignOp)::: gen visit assignop:::operator->l->if->concat->makeConcat->else->genExpr->if->tree->hasTag->tree->hasTag->getTag->isSubRangeOf->getTag->isSubRangeOf->constValue->ival->constValue->intValue->if->tree->hasTag->incr->return->l->duplicate->l->getParameterTypes->coerce->load->completeBinop->coerce->items->makeAssignItem
+Gen#visitUnary(JCUnary)::: gen visit unary:::operator->if->tree->hasTag->od->genCond->od->negate->else->od->getParameterTypes->genExpr->switch->tree->getTag->od->load->break->od->load->code->emitop0->break->od->load->emitMinusOne->code->emitop0->break->od->duplicate->if->tree->hasTag->incr->else->od->load->code->one->emitop0->code->emitop0->if->Code->truncate->code->emitop0->items->makeAssignItem->break->od->duplicate->if->res->od->load->tree->hasTag->incr->else->res->od->load->od->stash->code->one->emitop0->code->emitop0->if->Code->truncate->code->emitop0->od->store->break->od->load->code->emitop0->genNullCheck->break->Assert->error
+Gen#genNullCheck(JCTree):::Generate a null check from the object value at stack top.:::code->statBegin->if->tree->pos->List->of->callMethod->else->tree->pos->List->nil->callMethod->code->emitop0
+Gen#visitBinary(JCBinary)::: gen visit binary:::operator->if->concat->makeConcat->else->if->tree->hasTag->lcond->genCond->if->lcond->isFalse->falseJumps->lcond->jumpFalse->code->resolve->rcond->genCond->items->Code->mergeChains->makeCondItem->else->else->if->tree->hasTag->lcond->genCond->if->lcond->isTrue->trueJumps->lcond->jumpTrue->code->resolve->rcond->genCond->items->Code->mergeChains->makeCondItem->else->else->od->getParameterTypes->genExpr->od->load->completeBinop
 Gen#completeBinop(JCTree, JCTree, OperatorSymbol):::Complete generating code for operation, with left operand  already on stack.:::optype->opcode->if->constValue->constValue->intValue->else->if->TreeInfo->isNull->else->rtype->operator->erasure->getParameterTypes->if->genExpr->load->if->code->emitop0->if->return->items->makeCondItem->else->code->emitop0->return->items->makeStackItem
+Gen#visitTypeCast(JCTypeCast)::: gen visit type cast:::genExpr->load->setTypeAnnotationPositions->if->isPrimitive->types->isSameType->types->asSuper->code->tree->pos->makeRef->emitop2
+Gen#visitWildcard(JCWildcard)::: gen visit wildcard:::throw->this->getClass->getName->new->AssertionError
+Gen#visitTypeTest(JCInstanceOf)::: gen visit type test:::genExpr->load->setTypeAnnotationPositions->code->tree->pos->makeRef->emitop2->items->makeStackItem
+Gen#visitIndexed(JCArrayAccess)::: gen visit indexed:::genExpr->load->genExpr->load->items->makeIndexedItem
+Gen#visitIdent(JCIdent)::: gen visit ident:::sym->if->res->items->makeThisItem->items->makeSuperItem->if->res->load->items->makeMemberItem->else->if->items->makeLocalItem->else->if->isInvokeDynamic->items->makeDynamicItem->else->if->sym->flags->if->isAccessSuper->binaryQualifier->items->makeStaticItem->else->items->makeThisItem->load->binaryQualifier->items->nonVirtualForPrivateAccess->makeMemberItem
+Gen#nonVirtualForPrivateAccess(Symbol)::: gen non virtual for private access:::useVirtual->target->hasVirtualPrivateInvoke->return->sym->flags
+Gen#visitSelect(JCFieldAccess)::: gen visit select:::sym->if->code->tree->pos->makeRef->emitLdc->items->makeStackItem->return->ssym->TreeInfo->symbol->selectSuper->accessSuper->isAccessSuper->base->items->makeSuperItem->genExpr->if->getConstValue->if->sym->flags->if->base->load->base->drop->else->base->load->genNullCheck->items->getConstValue->makeImmediateItem->else->if->isInvokeDynamic->items->makeDynamicItem->return->else->binaryQualifier->if->sym->flags->if->base->load->base->drop->items->makeStaticItem->else->base->load->if->code->emitop0->items->makeStackItem->else->items->nonVirtualForPrivateAccess->makeMemberItem
+Gen#isInvokeDynamic(Symbol)::: gen is invoke dynamic:::return->isDynamic
+Gen#visitLiteral(JCLiteral)::: gen visit literal:::if->hasTag->code->emitop0->items->makeStackItem->else->items->makeImmediateItem
+Gen#visitLetExpr(LetExpr)::: gen visit let expr:::limit->genStats->genExpr->load->code->endScopes
+Gen#generateReferencesToPrunedTree(ClassSymbol, Pool)::: gen generate references to pruned tree:::prunedInfo->get->if->foreach->prunedTree->accept
 Gen#genClass(Env, JCClassDecl):::Generate code for a class definition.:::try->c->pool->reset->normalizeDefs->generateReferencesToPrunedTree->localEnv->new->GenContext->new->Env<>->for->l->l->nonEmpty->if->pool->numEntries->log->cdef->pos->error->if->for->l->l->nonEmpty->List->nil->return->catch->finally
 Gen.GenFinalizer#gen():::Generate code to clean up when unwinding.:::
 Gen.GenFinalizer#genLast():::Generate code to clean up at last.:::
@@ -190,6 +482,7 @@ Items#makeStackItem(Type):::Make an item representing a value on stack.:::return
 Items#makeDynamicItem(Symbol):::Make an item representing a dynamically invoked method.:::return->new->DynamicItem
 Items#makeIndexedItem(Type):::Make an item representing an indexed expression.:::return->new->IndexedItem
 Items#makeLocalItem(VarSymbol):::Make an item representing a local variable.:::return->v->erasure->new->LocalItem
+Items#makeLocalItem(Type, int):::Make an item representing a local anonymous variable.:::return->new->LocalItem
 Items#makeStaticItem(Symbol):::Make an item representing a static variable or method.:::return->new->StaticItem
 Items#makeMemberItem(Symbol, boolean):::Make an item representing an instance variable or method.:::return->new->MemberItem
 Items#makeImmediateItem(Type, Object):::Make an item representing a literal.:::return->new->ImmediateItem
@@ -206,14 +499,169 @@ Items.Item#mkCond():::Generate code to turn item into a testable condition.:::lo
 Items.Item#coerce(int):::Generate code to coerce item to given type code.:::if->return->else->load->typecode1->Code->truncate->targetcode1->Code->truncate->if->offset->code->emitop0->if->code->emitop0->return
 Items.Item#coerce(Type):::Generate code to coerce item to given type.:::return->Code->typecode->coerce
 Items.Item#width():::Return the width of this item on stack as a number of words.:::return
+Items.Item#toString()::: item to string:::
+Items.StackItem#load()::: stack item load:::return
+Items.StackItem#duplicate()::: stack item duplicate:::code->width->emitop0
+Items.StackItem#drop()::: stack item drop:::code->width->emitop0
+Items.StackItem#stash(int)::: stack item stash:::code->width->Code->width->emitop0
+Items.StackItem#width()::: stack item width:::return->Code->width
+Items.StackItem#toString()::: stack item to string:::return
+Items.IndexedItem#load()::: indexed item load:::code->emitop0->return
+Items.IndexedItem#store()::: indexed item store:::code->emitop0
+Items.IndexedItem#duplicate()::: indexed item duplicate:::code->emitop0
+Items.IndexedItem#drop()::: indexed item drop:::code->emitop0
+Items.IndexedItem#stash(int)::: indexed item stash:::code->Code->width->emitop0
+Items.IndexedItem#width()::: indexed item width:::return
+Items.IndexedItem#toString()::: indexed item to string:::return
+Items.SelfItem#load()::: self item load:::code->emitop0->return
+Items.SelfItem#toString()::: self item to string:::return
+Items.LocalItem#load()::: local item load:::if->code->Code->truncate->emitop0->else->code->Code->truncate->emitop1w->return
+Items.LocalItem#store()::: local item store:::if->code->Code->truncate->emitop0->else->code->Code->truncate->emitop1w->code->setDefined
+Items.LocalItem#incr(int)::: local item incr:::if->code->emitop1w->else->load->if->makeImmediateItem->load->code->emitop0->else->makeImmediateItem->load->code->emitop0->makeStackItem->coerce->store
+Items.LocalItem#toString()::: local item to string:::return
+Items.StaticItem#load()::: static item load:::code->pool->put->emitop2->return
+Items.StaticItem#store()::: static item store:::code->pool->put->emitop2
+Items.StaticItem#invoke()::: static item invoke:::mtype->member->erasure->rescode->Code->typecode->code->pool->put->emitInvokestatic->return
+Items.StaticItem#toString()::: static item to string:::return
+Items.DynamicItem#load()::: dynamic item load:::return
+Items.DynamicItem#store()::: dynamic item store:::
+Items.DynamicItem#invoke()::: dynamic item invoke:::mtype->member->erasure->rescode->Code->typecode->code->pool->put->emitInvokedynamic->return
+Items.DynamicItem#toString()::: dynamic item to string:::return
+Items.MemberItem#load()::: member item load:::code->pool->put->emitop2->return
+Items.MemberItem#store()::: member item store:::code->pool->put->emitop2
+Items.MemberItem#invoke()::: member item invoke:::mtype->member->externalType->rescode->Code->typecode->if->flags->code->pool->put->emitInvokeinterface->else->if->code->pool->put->emitInvokespecial->else->code->pool->put->emitInvokevirtual->return
+Items.MemberItem#duplicate()::: member item duplicate:::duplicate
+Items.MemberItem#drop()::: member item drop:::drop
+Items.MemberItem#stash(int)::: member item stash:::stash
+Items.MemberItem#width()::: member item width:::return
+Items.MemberItem#toString()::: member item to string:::return
+Items.ImmediateItem#ldc()::: immediate item ldc:::idx->pool->put->if->code->emitop2->else->code->emitLdc
+Items.ImmediateItem#load()::: immediate item load:::switch->ival->intValue->if->code->emitop0->else->if->code->emitop1->else->if->code->emitop2->else->ldc->break->lval->longValue->if->code->emitop0->else->ldc->break->fval->floatValue->if->isPosZero->code->emitop0->else->ldc->break->dval->doubleValue->if->isPosZero->code->emitop0->else->ldc->break->ldc->break->Assert->error->return
+Items.ImmediateItem#isPosZero(float):::Return true iff float number is positive 0.:::return
+Items.ImmediateItem#isPosZero(double):::Return true iff double number is positive 0.:::return
+Items.ImmediateItem#mkCond()::: immediate item mk cond:::ival->intValue->return->makeCondItem
+Items.ImmediateItem#coerce(int)::: immediate item coerce:::if->return->else->switch->if->Code->truncate->return->else->return->intValue->new->ImmediateItem->return->longValue->new->ImmediateItem->return->floatValue->new->ImmediateItem->return->doubleValue->new->ImmediateItem->return->intValue->new->ImmediateItem->return->intValue->new->ImmediateItem->return->intValue->new->ImmediateItem->return->super->coerce
+Items.ImmediateItem#toString()::: immediate item to string:::return
+Items.AssignItem#load()::: assign item load:::lhs->stash->lhs->store->return
+Items.AssignItem#duplicate()::: assign item duplicate:::load->duplicate
+Items.AssignItem#drop()::: assign item drop:::lhs->store
+Items.AssignItem#stash(int)::: assign item stash:::Assert->error
+Items.AssignItem#width()::: assign item width:::return->lhs->width->Code->width
+Items.AssignItem#toString()::: assign item to string:::return
+Items.CondItem#load()::: cond item load:::trueChain->falseChain->jumpFalse->if->isFalse->code->resolve->code->emitop0->code->branch->if->code->resolve->code->emitop0->code->resolve->return
+Items.CondItem#duplicate()::: cond item duplicate:::load->duplicate
+Items.CondItem#drop()::: cond item drop:::load->drop
+Items.CondItem#stash(int)::: cond item stash:::Assert->error
+Items.CondItem#mkCond()::: cond item mk cond:::return
+Items.CondItem#jumpTrue()::: cond item jump true:::if->return->Code->code->branch->mergeChains->startpc->code->curCP->c->Code->code->branch->mergeChains->code->curCP->put->return
+Items.CondItem#jumpFalse()::: cond item jump false:::if->return->Code->code->Code->negate->branch->mergeChains->startpc->code->curCP->c->Code->code->Code->negate->branch->mergeChains->code->curCP->put->return
+Items.CondItem#negate()::: cond item negate:::c->Code->negate->new->CondItem->return
+Items.CondItem#width()::: cond item width:::throw->new->AssertionError
+Items.CondItem#isTrue()::: cond item is true:::return
+Items.CondItem#isFalse()::: cond item is false:::return
+Items.CondItem#toString()::: cond item to string:::return->Code->mnem
 JNIWriter#instance(Context):::Get the ClassWriter instance for this context.:::instance->context->get->if->new->JNIWriter->return
+JNIWriter#lazyInit()::: writer lazy init:::if->Types->instance->if->Symtab->instance
+JNIWriter#isSynthetic(Symbol)::: writer is synthetic:::return->hasFlag
+JNIWriter#isStatic(Symbol)::: writer is static:::return->hasFlag
+JNIWriter#isFinal(Symbol)::: writer is final:::return->hasFlag
+JNIWriter#isNative(Symbol)::: writer is native:::return->hasFlag
+JNIWriter#hasFlag(Symbol, int)::: writer has flag:::return->m->flags
+JNIWriter#needsHeader(ClassSymbol)::: writer needs header:::lazyInit->if->c->isLocal->isSynthetic->return->return->c->outermostClass->needsHeader->needsHeader
+JNIWriter#needsHeader(ClassSymbol, boolean)::: writer needs header:::if->c->isLocal->isSynthetic->return->foreach->getSymbols->if->isNative->return->foreach->sym->getDeclarationAttributes->if->return->if->foreach->getSymbols->if->needsHeader->return->return
 JNIWriter#write(ClassSymbol):::Emit a class file for a given class.:::className->c->flatName->toString->outLocn->if->msym->c->packge->fileManager->toString->getLocationForModule->else->outFile->fileManager->className->replaceAll->getFileForOutput->out->outFile->openWriter->new->PrintWriter->try->write->if->log->outFile->getName->printVerbose->out->close->catch->finally->if->out->close->outFile->delete->return
+JNIWriter#write(PrintWriter, ClassSymbol)::: writer write:::lazyInit->try->cname->encode->fileTop->includes->guardBegin->cppGuardBegin->writeStatics->writeMethods->cppGuardEnd->guardEnd->catch->throw->new->IOException->finally
+JNIWriter#writeStatics(PrintWriter, ClassSymbol)::: writer write statics:::clist->new->ArrayList<>->for->cd->cd->getSuperclass->Collections->reverse->foreach->foreach->cd->getEnclosedElements->if->isFinal->i->isStatic->v->if->v->getConstantValue->p->new->Pair<>->printStaticDefines
+JNIWriter#printStaticDefines(PrintWriter, Pair)::: writer print static defines:::cls->f->value->f->getConstantValue->valueStr->switch->f->asType->getKind->break->value->toString->break->value->toString->break->ch->String->valueOf->break->fv->floatValue->Float->isInfinite->value->toString->break->d->doubleValue->Double->isInfinite->value->toString->break->if->out->print->cname->cls->getQualifiedName->encode->fname->f->getSimpleName->encode->out->println->out->print->out->println
+JNIWriter#writeMethods(PrintWriter, ClassSymbol, String)::: writer write methods:::classmethods->sym->getEnclosedElements->foreach->if->isNative->newtypesig->new->TypeSignature->methodName->md->getSimpleName->isOverloaded->foreach->if->methodName->md2->getSimpleName->equals->isNative->out->println->out->println->out->encode->println->out->newtypesig->getSignature->println->out->println->out->types->getReturnType->erasure->jniType->encodeMethod->println->out->print->out->md->isStatic->print->foreach->types->getParameterTypes->erasure->out->print->out->jniType->print->out->println->out->println
+JNIWriter#jniType(Type)::: writer jni type:::switch->t->getKind->ct->getComponentType->switch->ct->getKind->return->return->return->return->return->return->return->return->return->throw->ct->toString->new->Error->return->return->return->return->return->return->return->return->return->if->return->else->if->types->isAssignable->return->else->if->types->isAssignable->return->else->return->Assert->check->return
+JNIWriter#fileTop(PrintWriter)::: writer file top:::out->println
+JNIWriter#includes(PrintWriter)::: writer includes:::out->println
+JNIWriter#cppGuardBegin(PrintWriter)::: writer cpp guard begin:::out->println->out->println->out->println
+JNIWriter#cppGuardEnd(PrintWriter)::: writer cpp guard end:::out->println->out->println->out->println
+JNIWriter#guardBegin(PrintWriter, String)::: writer guard begin:::out->println->out->println->out->println->out->println
+JNIWriter#guardEnd(PrintWriter)::: writer guard end:::out->println
+JNIWriter#encodeMethod(Symbol, ClassSymbol, boolean)::: writer encode method:::result->new->StringBuilder->result->append->result->toString->encode->append->result->append->result->msym->getSimpleName->encode->append->if->typeSig->new->TypeSignature->sig->typeSig->getParameterSignature->result->append->encode->append->return->result->toString
+JNIWriter#encode(CharSequence, EncoderType)::: writer encode:::result->new->StringBuilder->length->name->length->for->i->return->result->toString
+JNIWriter#encodeChar(char)::: writer encode char:::s->Integer->toHexString->nzeros->s->length->result->new->charArr->for->i->for->i->j->return->new->String
+JNIWriter#isalnum(char)::: writer isalnum:::return
+JNIWriter#isprint(char)::: writer isprint:::return
+JNIWriter.TypeSignature#getParameterSignature(Type)::: type signature get parameter signature:::result->new->StringBuilder->foreach->mType->getParameterTypes->result->getJvmSignature->append->return
+JNIWriter.TypeSignature#getReturnSignature(Type)::: type signature get return signature:::return->mType->getReturnType->getJvmSignature
+JNIWriter.TypeSignature#getSignature(Type)::: type signature get signature:::sb->new->StringBuilder->sb->append->getParameterSignature->append->append->sb->getReturnSignature->append->return
+JNIWriter.TypeSignature.JvmTypeVisitor#visitClassType(Type.ClassType, StringBuilder)::: jvm type visitor visit class type:::setDeclaredType->return
+JNIWriter.TypeSignature.JvmTypeVisitor#visitArrayType(Type.ArrayType, StringBuilder)::: jvm type visitor visit array type:::s->append->return->t->getComponentType->accept
+JNIWriter.TypeSignature.JvmTypeVisitor#visitType(Type, StringBuilder)::: jvm type visitor visit type:::if->t->isPrimitiveOrVoid->s->getJvmPrimitiveSignature->append->return->return->t->accept
+JNIWriter.TypeSignature.JvmTypeVisitor#setDeclaredType(Type, StringBuilder)::: jvm type visitor set declared type:::classname->getQualifiedName->toString->classname->replace->s->append->append->append
+JNIWriter.TypeSignature.JvmTypeVisitor#getJvmPrimitiveSignature(Type)::: jvm type visitor get jvm primitive signature:::switch->t->getKind->return->return->return->return->return->return->return->return->return->Assert->error->return
+JNIWriter.TypeSignature#getJvmSignature(Type)::: type signature get jvm signature:::t->types->erasure->sig->new->StringBuilder->jv->new->JvmTypeVisitor->jv->visitType->return
+JNIWriter.SimpleTypeVisitor#defaultAction(Type, P)::: simple type visitor default action:::return
+JNIWriter.SimpleTypeVisitor#visitClassType(Type.ClassType, P)::: simple type visitor visit class type:::return->defaultAction
+JNIWriter.SimpleTypeVisitor#visitWildcardType(Type.WildcardType, P)::: simple type visitor visit wildcard type:::return->defaultAction
+JNIWriter.SimpleTypeVisitor#visitArrayType(Type.ArrayType, P)::: simple type visitor visit array type:::return->defaultAction
+JNIWriter.SimpleTypeVisitor#visitMethodType(Type.MethodType, P)::: simple type visitor visit method type:::return->defaultAction
+JNIWriter.SimpleTypeVisitor#visitPackageType(Type.PackageType, P)::: simple type visitor visit package type:::return->defaultAction
+JNIWriter.SimpleTypeVisitor#visitTypeVar(Type.TypeVar, P)::: simple type visitor visit type var:::return->defaultAction
+JNIWriter.SimpleTypeVisitor#visitCapturedType(Type.CapturedType, P)::: simple type visitor visit captured type:::return->defaultAction
+JNIWriter.SimpleTypeVisitor#visitForAll(Type.ForAll, P)::: simple type visitor visit for all:::return->defaultAction
+JNIWriter.SimpleTypeVisitor#visitUndetVar(Type.UndetVar, P)::: simple type visitor visit undet var:::return->defaultAction
+JNIWriter.SimpleTypeVisitor#visitErrorType(Type.ErrorType, P)::: simple type visitor visit error type:::return->defaultAction
+JNIWriter.SimpleTypeVisitor#visitType(Type, P)::: simple type visitor visit type:::return->defaultAction
+JNIWriter.SimpleTypeVisitor#visitModuleType(Type.ModuleType, P)::: simple type visitor visit module type:::return->defaultAction
+ModuleNameReader#readModuleName(Path)::: module name reader read module name:::try->in->Files->newInputStream->return->readModuleName->catch->finally
+ModuleNameReader#readModuleName(JavaFileObject)::: module name reader read module name:::try->in->jfo->openInputStream->return->readModuleName->catch->finally
+ModuleNameReader#readModuleName(InputStream)::: module name reader read module name:::readInputStream->magic->nextInt->if->throw->new->BadClassFile->minorVersion->nextChar->majorVersion->nextChar->if->throw->new->BadClassFile->indexPool->access_flags->nextChar->if->throw->Integer->toHexString->new->BadClassFile->this_class->nextChar->nextChar->checkZero->nextChar->checkZero->nextChar->checkZero->nextChar->checkZero->attributes_count->nextChar->for->i->throw->new->BadClassFile
+ModuleNameReader#checkZero(int, String)::: module name reader check zero:::if->throw->new->BadClassFile
 ModuleNameReader#getChar(int):::Extract a character at position bp from buf.:::return
 ModuleNameReader#nextChar():::Read a character.:::return
 ModuleNameReader#nextInt():::Read an integer.:::return
 ModuleNameReader#indexPool():::Index all constant pool entries, writing their start addresses into  poolIdx.:::nextChar->new->intArr->i->while->tag->switch->len->nextChar->break->break->break->break->break->throw->new->BadClassFile
+ModuleNameReader#getUtf8Value(int, boolean)::: module name reader get utf8 value:::utf8Index->if->len->getChar->start->if->return->ClassFile->internalize->new->String->else->return->new->String->throw->new->BadClassFile
+ModuleNameReader#getModuleName(int)::: module name reader get module name:::infoIndex->if->return->getChar->getUtf8Value->else->throw->new->BadClassFile
+ModuleNameReader#readInputStream(byte[], InputStream)::: module name reader read input stream:::try->s->available->ensureCapacity->r->s->read->bp->while->ensureCapacity->s->read->return->catch->finally->try->s->close->catch->finally
+ModuleNameReader#ensureCapacity(byte[], int)::: module name reader ensure capacity:::if->old->Integer->highestOneBit->new->byteArr->System->arraycopy->return
 Pool#numEntries():::Return the number of entries in the constant pool.:::return
 Pool#reset():::Remove everything from this pool.:::indices->clear
 Pool#put(Object):::Place an object in the pool, unless it is already there:::makePoolValue->Assert->check->Assert->check->index->indices->get->if->indices->put->ArrayUtils->ensureCapacity->if->ArrayUtils->ensureCapacity->return->index->intValue
+Pool#makePoolValue(Object)::: pool make pool value:::if->return->new->DynamicMethod->else->if->return->new->Method->else->if->return->new->Variable->else->if->t->if->t->hasTag->return->else->return->new->UniqueType->else->return
 Pool#get(Object):::Return the given object's index in the pool,  or -1 if object is not in there.:::n->indices->get->return->n->intValue
+Pool.Method#equals(Object)::: method equals:::if->return->o->m->return->equals
+Pool.Method#hashCode()::: method hash code:::m->return->hashCode->hashCode->uniqueType->hashCode
+Pool.DynamicMethod#equals(Object)::: dynamic method equals:::return->equalsImpl
+Pool.DynamicMethod#equalsImpl(Object, boolean)::: dynamic method equals impl:::if->super->equals->return->if->return->dm1->dm2->return->Arrays->equals
+Pool.DynamicMethod#hashCode()::: dynamic method hash code:::return->hashCodeImpl
+Pool.DynamicMethod#hashCodeImpl(boolean)::: dynamic method hash code impl:::hash->super->hashCode->dm->hashCode->for->i->return
+Pool.DynamicMethod#getUniqueTypeArray(Object[], Types)::: dynamic method get unique type array:::result->new->ObjectArr->for->i->return
+Pool.DynamicMethod.BootstrapMethodsKey#equals(Object)::: bootstrap methods key equals:::return->equalsImpl
+Pool.DynamicMethod.BootstrapMethodsKey#hashCode()::: bootstrap methods key hash code:::return->hashCodeImpl
+Pool.DynamicMethod.BootstrapMethodsKey#getUniqueArgs()::: bootstrap methods key get unique args:::return
+Pool.Variable#equals(Object)::: variable equals:::if->return->o->v->return->equals
+Pool.Variable#hashCode()::: variable hash code:::v->return->hashCode->hashCode->uniqueType->hashCode
+Pool.MethodHandle#equals(Object)::: method handle equals:::if->return->mr->if->return->o->return->equals
+Pool.MethodHandle#hashCode()::: method handle hash code:::return->hashCode->hashCode->uniqueType->hashCode
+Pool.MethodHandle#checkConsistent():::Check consistency of reference kind and symbol (see JVMS 4.4.8):::staticOk->expectedKind->nameFilter->interfaceOwner->switch->break->break->break->break->break->Assert->refSym->isStatic->check->Assert->check->Assert->nameFilter->accepts->check->Assert->isInterface->check
+StringConcat#instance(Context)::: string concat instance:::instance->context->get->if->makeConcat->return
+StringConcat#makeConcat(Context)::: string concat make concat:::target->Target->instance->opt->Options->instance->get->if->target->hasStringConcatFactory->if->else->if->equals->Assert->error->switch->return->new->Inline->return->new->IndyPlain->return->new->IndyConstants->Assert->error->throw->new->IllegalStateException
+StringConcat#makeConcat(JCTree.JCAssignOp)::: string concat make concat:::
+StringConcat#makeConcat(JCTree.JCBinary)::: string concat make concat:::
+StringConcat#collectAll(JCTree)::: string concat collect all:::return->List->nil->collect
+StringConcat#collectAll(JCTree.JCExpression, JCTree.JCExpression)::: string concat collect all:::return->List->nil->collectAll->appendList->collectAll->appendList
+StringConcat#collect(JCTree, List)::: string concat collect:::TreeInfo->skipParens->if->tree->hasTag->constValue->op->if->return->res->collect->appendList->collect->appendList->return->res->append
 StringConcat#sharpestAccessible(Type):::If the type is not accessible from current context, try to figure out the sharpest accessible supertype.:::if->originalType->hasTag->return->types->types->elemtype->sharpestAccessible->makeArrayType->type->while->rs->gen->getAttrEnv->type->asElement->isAccessible->types->supertype->return
+StringConcat.Inline#makeConcat(JCTree.JCAssignOp)::: inline make concat:::pos->tree->pos->newStringBuilder->l->gen->genExpr->if->l->width->gen->getCode->l->width->emitop0->l->load->appendString->args->collectAll->foreach->gen->genExpr->load->appendString->builderToString->return
+StringConcat.Inline#makeConcat(JCTree.JCBinary)::: inline make concat:::pos->tree->pos->newStringBuilder->args->collectAll->foreach->gen->genExpr->load->appendString->builderToString->return->gen->getItems->makeStackItem
+StringConcat.Inline#newStringBuilder(JCTree)::: inline new string builder:::pos->tree->pos->gen->getCode->gen->makeRef->emitop2->gen->getCode->emitop0->gen->List->nil->callMethod->return
+StringConcat.Inline#appendString(JCTree)::: inline append string:::t->baseType->if->t->isPrimitive->Assert->t->constValue->checkNull->method->sbAppends->get->if->rs->tree->pos->gen->getAttrEnv->List->of->resolveInternalMethod->sbAppends->put->gen->getItems->makeMemberItem->invoke
+StringConcat.Inline#builderToString(JCDiagnostic.DiagnosticPosition)::: inline builder to string:::gen->List->nil->callMethod
+StringConcat.Indy#makeConcat(JCTree.JCAssignOp)::: indy make concat:::args->collectAll->l->gen->genExpr->l->duplicate->l->load->tree->pos->emit->return
+StringConcat.Indy#makeConcat(JCTree.JCBinary)::: indy make concat:::args->collectAll->tree->pos->emit->return->gen->getItems->makeStackItem
+StringConcat.Indy#emit(JCDiagnostic.DiagnosticPosition, List, boolean, Type)::: indy emit:::
+StringConcat.Indy#split(List):::Peel the argument list into smaller chunks.:::splits->new->ListBuffer<>->slots->cArgs->new->ListBuffer<>->foreach->needSlots->getTag->getTag->if->splits->cArgs->toList->add->cArgs->clear->cArgs->add->if->cArgs->isEmpty->splits->cArgs->toList->add->return->splits->toList
+StringConcat.IndyPlain#emit(JCDiagnostic.DiagnosticPosition, List, boolean, Type):::Emit the indy concat for all these arguments, possibly peeling along the way:::split->split->first->foreach->Assert->t->isEmpty->check->dynamicArgs->new->ListBuffer<>->foreach->constVal->constValue->if->equals->continue->if->dynamicArgs->types->boxedClass->add->else->dynamicArgs->sharpestAccessible->add->if->gen->genExpr->load->dynamicArgs->toList->doCall->if->split->size->argTypes->new->ListBuffer<>->for->c->split->size->argTypes->toList->doCall
+StringConcat.IndyPlain#doCall(Type, JCDiagnostic.DiagnosticPosition, List):::Produce the actual invokedynamic call to StringConcatFactory:::indyType->List->nil->new->Type.MethodType->prevPos->try->make->at->bsm_staticArgs->List->of->bsm->rs->gen->getAttrEnv->resolveInternalMethod->dynSym->List->nil->toArray->new->Symbol.DynamicMethodSymbol->item->gen->getItems->makeDynamicItem->item->invoke->catch->finally->make->at
+StringConcat.IndyConstants#emit(JCDiagnostic.DiagnosticPosition, List, boolean, Type)::: indy constants emit:::split->split->first->foreach->Assert->t->isEmpty->check->recipe->t->size->new->StringBuilder->dynamicArgs->new->ListBuffer<>->staticArgs->new->ListBuffer<>->foreach->constVal->constValue->if->equals->continue->if->recipe->append->else->if->a->stringValue->if->a->indexOf->a->indexOf->recipe->append->staticArgs->add->else->recipe->append->else->recipe->append->dynamicArgs->sharpestAccessible->add->if->gen->genExpr->load->recipe->toString->staticArgs->toList->dynamicArgs->toList->doCall->if->split->size->argTypes->new->ListBuffer<>->recipe->new->StringBuilder->for->c->split->size->recipe->toString->List->nil->argTypes->toList->doCall
+StringConcat.IndyConstants#doCall(Type, JCDiagnostic.DiagnosticPosition, String, List, List):::Produce the actual invokedynamic call to StringConcatFactory:::indyType->List->nil->new->Type.MethodType->prevPos->try->make->at->constTypes->new->ListBuffer<>->constants->new->ListBuffer<>->foreach->constants->add->constTypes->add->bsm_staticArgs->List->of->append->appendList->bsm->rs->gen->getAttrEnv->resolveInternalMethod->dynSym->List->of->appendList->toArray->new->Symbol.DynamicMethodSymbol->item->gen->getItems->makeDynamicItem->item->invoke->catch->finally->make->at
+UninitializedType#uninitializedThis(Type)::: uninitialized type uninitialized this:::return->qtype->getMetadata->new->UninitializedType
+UninitializedType#uninitializedObject(Type, int)::: uninitialized type uninitialized object:::return->qtype->getMetadata->new->UninitializedType
+UninitializedType#cloneWithMetadata(TypeMetadata)::: uninitialized type clone with metadata:::return->new->UninitializedType
+UninitializedType#initializedType()::: uninitialized type initialized type:::return
