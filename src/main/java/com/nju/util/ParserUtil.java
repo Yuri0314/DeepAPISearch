@@ -95,7 +95,7 @@ public class ParserUtil {
      */
     public static String replaceHtmlChar(String description) {
         for (Map.Entry<String, String> entry : charEntity.entrySet())
-            description.replaceAll(entry.getKey(), entry.getValue());
+            description = description.replaceAll(entry.getKey(), entry.getValue());
         return description;
     }
 }
